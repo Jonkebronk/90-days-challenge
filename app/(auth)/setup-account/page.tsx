@@ -21,9 +21,14 @@ const setupSchema = z.object({
   lastName: z.string().min(1, 'Efternamn krävs'),
   birthdate: z.string().min(1, 'Födelsedatum krävs'),
   gender: z.string().min(1, 'Könsidentitet krävs'),
+  password: z.string().min(8, 'Lösenord måste vara minst 8 tecken'),
+  confirmPassword: z.string(),
   gdprConsent: z.boolean().refine((val) => val === true, {
     message: 'Du måste godkänna villkoren för att fortsätta',
   }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Lösenorden matchar inte',
+  path: ['confirmPassword'],
 })
 
 type SetupForm = z.infer<typeof setupSchema>
@@ -79,9 +84,13 @@ function SetupAccountContent() {
 
   const onNextStep = handleSubmit(async (data) => {
     if (step === 1) {
-      // Validate first step fields
-      if (!data.firstName || !data.lastName || !data.birthdate || !data.gender) {
+      // Validate first step fields including password
+      if (!data.firstName || !data.lastName || !data.birthdate || !data.gender || !data.password) {
         setError('Vänligen fyll i alla fält')
+        return
+      }
+      if (data.password !== data.confirmPassword) {
+        setError('Lösenorden matchar inte')
         return
       }
       setStep(2)
@@ -106,6 +115,7 @@ function SetupAccountContent() {
             lastName: data.lastName,
             birthdate: data.birthdate,
             gender: data.gender,
+            password: data.password,
             gdprConsent: data.gdprConsent,
           }),
         })
@@ -293,6 +303,38 @@ function SetupAccountContent() {
                   </Select>
                   {errors.gender && (
                     <p className="text-sm text-destructive">{errors.gender.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password">
+                    Skapa lösenord <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    {...register('password')}
+                    disabled={isLoading}
+                    placeholder="Minst 8 tecken"
+                  />
+                  {errors.password && (
+                    <p className="text-sm text-destructive">{errors.password.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">
+                    Bekräfta lösenord <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    {...register('confirmPassword')}
+                    disabled={isLoading}
+                    placeholder="Skriv lösenordet igen"
+                  />
+                  {errors.confirmPassword && (
+                    <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
                   )}
                 </div>
 

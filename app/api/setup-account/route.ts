@@ -28,7 +28,7 @@ async function sendWelcomeEmail(email: string, name: string, coachName: string) 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { token, firstName, lastName, birthdate, gender, gdprConsent } = body
+    const { token, firstName, lastName, birthdate, gender, password, gdprConsent } = body
 
     if (!token) {
       return NextResponse.json(
@@ -37,9 +37,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!firstName || !lastName || !birthdate || !gender) {
+    if (!firstName || !lastName || !birthdate || !gender || !password) {
       return NextResponse.json(
         { error: 'All fields are required' },
+        { status: 400 }
+      )
+    }
+
+    if (password.length < 8) {
+      return NextResponse.json(
+        { error: 'Password must be at least 8 characters' },
         { status: 400 }
       )
     }
@@ -74,6 +81,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10)
+
     // Update user and activate account
     await prisma.user.update({
       where: { id: user.id },
@@ -83,6 +93,7 @@ export async function POST(request: NextRequest) {
         name: `${firstName} ${lastName}`,
         birthdate: new Date(birthdate),
         gender,
+        password: hashedPassword,
         status: 'active',
         emailVerified: new Date(),
         // Clear invitation token after use
