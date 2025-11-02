@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { QRCodeSVG } from 'qrcode.react'
+import OnboardingFlow from './OnboardingFlow'
 
 const setupSchema = z.object({
   firstName: z.string().min(1, 'Förnamn krävs'),
@@ -41,9 +41,10 @@ function SetupAccountContent() {
   const [error, setError] = useState('')
   const [clientInfo, setClientInfo] = useState<{ firstName: string; lastName: string; email: string } | null>(null)
   const [verifying, setVerifying] = useState(true)
-  const [step, setStep] = useState(1) // 1 = basic info, 2 = GDPR consent, 3 = success/app download
+  const [step, setStep] = useState(1) // 1 = basic info, 2 = GDPR consent, 3 = onboarding
   const [coachName, setCoachName] = useState('John Sund')
   const [accountCreated, setAccountCreated] = useState(false)
+  const [userId, setUserId] = useState('')
 
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<SetupForm>({
     resolver: zodResolver(setupSchema),
@@ -123,7 +124,8 @@ function SetupAccountContent() {
         const result = await response.json()
 
         if (response.ok) {
-          // Show success page
+          // Save userId and show onboarding
+          setUserId(result.userId)
           setAccountCreated(true)
           setStep(3)
         } else {
@@ -174,52 +176,8 @@ function SetupAccountContent() {
     )
   }
 
-  if (accountCreated && step === 3) {
-    // App Store and Google Play URLs - update these with actual app URLs when available
-    const iosAppUrl = 'https://apps.apple.com/app/your-app-id'
-    const androidAppUrl = 'https://play.google.com/store/apps/details?id=com.yourapp'
-
-    return (
-      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-2xl border-0 shadow-none">
-          <CardHeader className="text-center pb-8">
-            <CardTitle className="text-4xl font-bold">Du är redo</CardTitle>
-            <CardDescription className="text-base mt-4">
-              Vänligen ladda ner appen från respektive appbutik nedan och logga in med de inloggningsuppgifter du har skapat här
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* iOS QR Code */}
-              <div className="flex flex-col items-center space-y-4">
-                <h3 className="text-lg font-semibold">Ladda ner för iOS</h3>
-                <div className="w-48 h-48 bg-white border-2 border-gray-200 rounded-lg flex items-center justify-center p-2">
-                  <QRCodeSVG
-                    value={iosAppUrl}
-                    size={176}
-                    level="H"
-                    includeMargin={false}
-                  />
-                </div>
-              </div>
-
-              {/* Android QR Code */}
-              <div className="flex flex-col items-center space-y-4">
-                <h3 className="text-lg font-semibold">Ladda ner till Android</h3>
-                <div className="w-48 h-48 bg-white border-2 border-gray-200 rounded-lg flex items-center justify-center p-2">
-                  <QRCodeSVG
-                    value={androidAppUrl}
-                    size={176}
-                    level="H"
-                    includeMargin={false}
-                  />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
+  if (accountCreated && step === 3 && userId) {
+    return <OnboardingFlow userId={userId} userName={`${clientInfo?.firstName || ''} ${clientInfo?.lastName || ''}`.trim()} />
   }
 
   return (

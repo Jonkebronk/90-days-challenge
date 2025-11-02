@@ -99,21 +99,35 @@ model VerificationToken {
 model UserProfile {
   id                 String   @id @default(cuid())
   userId             String   @unique
-  age                Int
-  gender             String
-  heightCm           Decimal  @db.Decimal(5, 2)
-  currentWeightKg    Decimal  @db.Decimal(5, 2)
-  targetWeightKg     Decimal? @db.Decimal(5, 2)
-  activityLevel      String
-  primaryGoal        String
-  intensityLevel     String
-  trainingLocation   String
-  trainingFrequency  Int
-  timePerSession     Int
-  mealsPerDay        Int
-  dietaryPreference  String[]
-  allergies          String[]
+
+  // Goals
+  primaryGoal        String?  // "build_muscle", "get_fit", "healthy_habits"
+
+  // Physiology
+  heightCm           Decimal? @db.Decimal(5, 2)
+  currentWeightKg    Decimal? @db.Decimal(5, 2)
+  genderAtBirth      String?  // "male", "female", "other"
+  activityLevelFree  String?  // "very_low", "low", "medium", "active", "very_active"
+  activityLevelWork  String?  // "very_low", "low", "medium", "high"
+
+  // Nutrition
+  nutritionNotes     String?  // Free text about food preferences
+  allergies          String[] // Array of allergies
+  dietaryPreferences String[] // "pescetarian", "vegan", "vegetarian", "halal", "kosher", "no_supplements"
+  excludedIngredients String[] // Array of ingredients to exclude
+  nutritionMissing   String?  // Additional nutrition info
+
+  // Activity
+  trainingDays       String[] // ["MON", "TUE", etc]
+  trainingExperience String?  // "beginner", "experienced", "very_experienced"
+  trainingDetails    String?  // Details about training experience
+
+  // Lifestyle
+  lifestyleNotes     String?  // Final comments before finishing
+
+  onboardingCompleted Boolean  @default(false)
   createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
