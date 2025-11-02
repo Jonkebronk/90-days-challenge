@@ -46,7 +46,7 @@ export default function FilesPage() {
   })
 
   useEffect(() => {
-    if (session?.user?.role === 'coach') {
+    if (session?.user && (session.user as any).role === 'coach') {
       fetchFiles()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -155,7 +155,7 @@ export default function FilesPage() {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
   }
 
-  if (session?.user?.role !== 'coach') {
+  if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
         <Card>

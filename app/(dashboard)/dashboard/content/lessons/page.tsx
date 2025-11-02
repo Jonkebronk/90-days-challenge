@@ -52,7 +52,7 @@ export default function LessonsPage() {
   })
 
   useEffect(() => {
-    if (session?.user?.role === 'coach') {
+    if (session?.user && (session.user as any).role === 'coach') {
       fetchLessons()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -180,7 +180,7 @@ export default function LessonsPage() {
     })
   }
 
-  if (session?.user?.role !== 'coach') {
+  if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
         <Card>
