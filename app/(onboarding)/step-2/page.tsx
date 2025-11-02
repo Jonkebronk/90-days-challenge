@@ -5,18 +5,17 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { OnboardingLayout } from '@/components/onboarding/OnboardingLayout'
+import { EducationPanel } from '@/components/onboarding/EducationPanel'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Progress } from '@/components/ui/progress'
 
 const goalsSchema = z.object({
   primary_goal: z.enum(['lose_weight', 'build_muscle', 'health'], {
-    required_error: 'Välj ett mål',
+    required_error: 'Please select a goal',
   }),
   intensity_level: z.enum(['beginner', 'intermediate', 'advanced'], {
-    required_error: 'Välj en nivå',
+    required_error: 'Please select an intensity level',
   }),
 })
 
@@ -26,11 +25,12 @@ export default function Step2Page() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
-  const { register, handleSubmit, formState: { errors } } = useForm<GoalsForm>({
+  const { register, handleSubmit, formState: { errors, isValid } } = useForm<GoalsForm>({
     resolver: zodResolver(goalsSchema),
+    mode: 'onChange',
   })
 
-  const onSubmit = async (data: GoalsForm) => {
+  const onNext = handleSubmit(async (data) => {
     setIsLoading(true)
 
     const existingData = localStorage.getItem('onboarding_data')
@@ -42,121 +42,139 @@ export default function Step2Page() {
     }))
 
     router.push('/step-3')
-  }
+  })
 
-  const goBack = () => {
-    router.back()
-  }
+  const educationContent = (
+    <EducationPanel
+      title="Setting Realistic Goals"
+      keyPoints={[
+        'Your goal determines your calorie target: deficit for weight loss, surplus for muscle gain',
+        'Healthy weight loss is 0.5-1kg per week (deficit of 500-1000 calories/day)',
+        'Muscle building takes time - expect 0.5-1kg gain per month',
+        'Intensity level affects how aggressive your plan is and recovery needs',
+      ]}
+      tip="It&apos;s better to start with a beginner or intermediate intensity and progress up than to burn out in week 2. Consistency beats intensity!"
+    >
+      <p>
+        Think of your goal as your destination, and intensity as how fast you&apos;ll drive to get there.
+      </p>
+      <p className="mt-3">
+        <strong>Weight Loss</strong> requires a calorie deficit - burning more than you consume. The magic number is about 7,700 calories to lose 1kg of fat.
+      </p>
+      <p className="mt-3">
+        <strong>Building Muscle</strong> requires a calorie surplus and progressive resistance training. You need extra fuel to build new tissue.
+      </p>
+      <p className="mt-3">
+        <strong>General Health</strong> focuses on balance - maintaining weight while improving fitness, energy, and wellbeing.
+      </p>
+      <div className="mt-4 p-4 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+        <h5 className="font-semibold text-sm mb-2">90-Day Realistic Targets:</h5>
+        <ul className="space-y-1 text-sm">
+          <li>• <strong>Weight Loss:</strong> 6-12kg safely</li>
+          <li>• <strong>Muscle Gain:</strong> 1.5-3kg of lean mass</li>
+          <li>• <strong>Health:</strong> Improved energy, sleep, and fitness markers</li>
+        </ul>
+      </div>
+    </EducationPanel>
+  )
 
   return (
-    <>
-      <Progress value={(2 / 8) * 100} className="mb-6" />
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Steg 2: Dina mål</CardTitle>
-          <CardDescription>
-            Vad vill du uppnå under de kommande 90 dagarna?
-          </CardDescription>
-        </CardHeader>
-
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-6">
-            <div className="space-y-3">
-              <Label>Primärt mål</Label>
-              <RadioGroup {...register('primary_goal')} disabled={isLoading}>
-                <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent cursor-pointer">
-                  <RadioGroupItem value="lose_weight" id="lose_weight" className="mt-1" />
-                  <div className="flex-1">
-                    <Label htmlFor="lose_weight" className="font-semibold cursor-pointer">
-                      Gå ner i vikt
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      Fokus på fettförlust och kaloriunderskott
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent cursor-pointer">
-                  <RadioGroupItem value="build_muscle" id="build_muscle" className="mt-1" />
-                  <div className="flex-1">
-                    <Label htmlFor="build_muscle" className="font-semibold cursor-pointer">
-                      Bygga muskler
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      Fokus på styrketräning och överskott
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent cursor-pointer">
-                  <RadioGroupItem value="health" id="health" className="mt-1" />
-                  <div className="flex-1">
-                    <Label htmlFor="health" className="font-semibold cursor-pointer">
-                      Allmän hälsa
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      Balanserad kost och träning för välmående
-                    </p>
-                  </div>
-                </div>
-              </RadioGroup>
-              {errors.primary_goal && (
-                <p className="text-sm text-destructive">{errors.primary_goal.message}</p>
-              )}
+    <OnboardingLayout
+      currentStep={2}
+      totalSteps={8}
+      title="Your Goals"
+      description="What do you want to achieve in the next 90 days?"
+      educationContent={educationContent}
+      onNext={onNext}
+      backHref="/step-1"
+      nextLabel="Continue"
+      isNextDisabled={!isValid || isLoading}
+    >
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <Label>Primary Goal</Label>
+          <RadioGroup {...register('primary_goal')} disabled={isLoading}>
+            <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent cursor-pointer">
+              <RadioGroupItem value="lose_weight" id="lose_weight" className="mt-1" />
+              <div className="flex-1">
+                <Label htmlFor="lose_weight" className="font-semibold cursor-pointer">
+                  Lose Weight
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Focus on fat loss and calorie deficit
+                </p>
+              </div>
             </div>
-
-            <div className="space-y-3">
-              <Label>Intensitetsnivå</Label>
-              <RadioGroup {...register('intensity_level')} disabled={isLoading}>
-                <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent cursor-pointer">
-                  <RadioGroupItem value="beginner" id="beginner" className="mt-1" />
-                  <div className="flex-1">
-                    <Label htmlFor="beginner" className="font-semibold cursor-pointer">
-                      Nybörjare
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      Mjukare start, försiktig progression
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent cursor-pointer">
-                  <RadioGroupItem value="intermediate" id="intermediate" className="mt-1" />
-                  <div className="flex-1">
-                    <Label htmlFor="intermediate" className="font-semibold cursor-pointer">
-                      Medel
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      Har viss erfarenhet, vill se snabbare resultat
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent cursor-pointer">
-                  <RadioGroupItem value="advanced" id="advanced" className="mt-1" />
-                  <div className="flex-1">
-                    <Label htmlFor="advanced" className="font-semibold cursor-pointer">
-                      Avancerad
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      Erfaren träning, vill maximera resultat
-                    </p>
-                  </div>
-                </div>
-              </RadioGroup>
-              {errors.intensity_level && (
-                <p className="text-sm text-destructive">{errors.intensity_level.message}</p>
-              )}
+            <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent cursor-pointer">
+              <RadioGroupItem value="build_muscle" id="build_muscle" className="mt-1" />
+              <div className="flex-1">
+                <Label htmlFor="build_muscle" className="font-semibold cursor-pointer">
+                  Build Muscle
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Focus on strength training and calorie surplus
+                </p>
+              </div>
             </div>
-          </CardContent>
+            <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent cursor-pointer">
+              <RadioGroupItem value="health" id="health" className="mt-1" />
+              <div className="flex-1">
+                <Label htmlFor="health" className="font-semibold cursor-pointer">
+                  General Health
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Balanced nutrition and exercise for wellbeing
+                </p>
+              </div>
+            </div>
+          </RadioGroup>
+          {errors.primary_goal && (
+            <p className="text-sm text-destructive">{errors.primary_goal.message}</p>
+          )}
+        </div>
 
-          <CardFooter className="flex gap-2">
-            <Button type="button" variant="outline" onClick={goBack} className="flex-1">
-              Tillbaka
-            </Button>
-            <Button type="submit" className="flex-1" disabled={isLoading}>
-              Nästa steg
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
-    </>
+        <div className="space-y-3">
+          <Label>Intensity Level</Label>
+          <RadioGroup {...register('intensity_level')} disabled={isLoading}>
+            <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent cursor-pointer">
+              <RadioGroupItem value="beginner" id="beginner" className="mt-1" />
+              <div className="flex-1">
+                <Label htmlFor="beginner" className="font-semibold cursor-pointer">
+                  Beginner
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Gentle start, cautious progression
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent cursor-pointer">
+              <RadioGroupItem value="intermediate" id="intermediate" className="mt-1" />
+              <div className="flex-1">
+                <Label htmlFor="intermediate" className="font-semibold cursor-pointer">
+                  Intermediate
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Have some experience, want faster results
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-accent cursor-pointer">
+              <RadioGroupItem value="advanced" id="advanced" className="mt-1" />
+              <div className="flex-1">
+                <Label htmlFor="advanced" className="font-semibold cursor-pointer">
+                  Advanced
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Experienced training, want maximum results
+                </p>
+              </div>
+            </div>
+          </RadioGroup>
+          {errors.intensity_level && (
+            <p className="text-sm text-destructive">{errors.intensity_level.message}</p>
+          )}
+        </div>
+      </div>
+    </OnboardingLayout>
   )
 }
