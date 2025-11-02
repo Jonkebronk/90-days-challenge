@@ -74,7 +74,7 @@ export default function LeadsPage() {
   })
 
   useEffect(() => {
-    if (session?.user?.role === 'coach') {
+    if (session?.user && (session.user as any).role === 'coach') {
       fetchLeads()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -210,7 +210,7 @@ export default function LeadsPage() {
     return leads.filter((lead) => lead.status === status).length
   }
 
-  if (session?.user?.role !== 'coach') {
+  if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
         <Card>
