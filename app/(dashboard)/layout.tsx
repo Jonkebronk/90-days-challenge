@@ -19,7 +19,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Check-in', href: '/dashboard/check-in', icon: Calendar },
   { name: 'Progress', href: '/dashboard/progress', icon: TrendingUp },
-  { name: 'Profil', href: '/dashboard/profile', icon: User },
+  { name: 'Profile', href: '/dashboard/profile', icon: User },
 ]
 
 export default function DashboardLayout({
@@ -46,7 +46,7 @@ export default function DashboardLayout({
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">90</span>
               </div>
-              <span className="font-bold text-lg hidden sm:inline">90-Dagars Challenge</span>
+              <span className="font-bold text-lg hidden sm:inline">90 Days Challenge</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -76,8 +76,8 @@ export default function DashboardLayout({
             {/* User Menu */}
             <div className="flex items-center gap-2">
               <div className="hidden sm:flex items-center gap-2 text-sm">
-                <span className="text-muted-foreground">Hej,</span>
-                <span className="font-medium">{session?.user?.name || 'Användare'}</span>
+                <span className="text-muted-foreground">Hello,</span>
+                <span className="font-medium">{session?.user?.name || 'User'}</span>
               </div>
               <Button
                 variant="ghost"
@@ -135,7 +135,7 @@ export default function DashboardLayout({
                 className="flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left text-muted-foreground hover:bg-accent transition-all"
               >
                 <LogOut className="w-5 h-5" />
-                <span>Logga ut</span>
+                <span>Sign Out</span>
               </button>
             </nav>
           </div>
