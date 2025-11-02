@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "npm run prisma:generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate || echo 'Prisma generate skipped'"
+    "prisma:generate": "prisma generate",
+    "postinstall": "npm run prisma:generate || echo 'Prisma generate skipped'"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
