@@ -36,22 +36,18 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
-        redirect: false,
+        callbackUrl: '/dashboard',
+        redirect: true,
       })
 
+      // This code won't run if redirect is true, but keep it as fallback
       if (result?.error) {
         toast({
           title: 'Login failed',
           description: 'Invalid email or password',
           variant: 'destructive',
         })
-      } else {
-        toast({
-          title: 'Welcome back!',
-          description: 'You are now signed in.',
-        })
-        // Force a hard navigation to ensure session is loaded
-        window.location.href = '/dashboard'
+        setIsLoading(false)
       }
     } catch (error) {
       toast({
@@ -59,7 +55,6 @@ export default function LoginPage() {
         description: 'Please try again later.',
         variant: 'destructive',
       })
-    } finally {
       setIsLoading(false)
     }
   }
