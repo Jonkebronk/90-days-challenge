@@ -11,13 +11,18 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
+import Link from 'next/link'
 
 const setupSchema = z.object({
   firstName: z.string().min(1, 'Förnamn krävs'),
   lastName: z.string().min(1, 'Efternamn krävs'),
   birthdate: z.string().min(1, 'Födelsedatum krävs'),
   gender: z.string().min(1, 'Könsidentitet krävs'),
+  gdprConsent: z.boolean().refine((val) => val === true, {
+    message: 'Du måste godkänna villkoren för att fortsätta',
+  }),
   password: z.string().min(8, 'Lösenord måste vara minst 8 tecken'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -35,11 +40,17 @@ function SetupAccountContent() {
   const [error, setError] = useState('')
   const [clientInfo, setClientInfo] = useState<{ firstName: string; lastName: string; email: string } | null>(null)
   const [verifying, setVerifying] = useState(true)
-  const [step, setStep] = useState(1) // 1 = basic info, 2 = password
+  const [step, setStep] = useState(1) // 1 = basic info, 2 = GDPR consent, 3 = password
+  const [coachName, setCoachName] = useState('John Sund')
 
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<SetupForm>({
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<SetupForm>({
     resolver: zodResolver(setupSchema),
+    defaultValues: {
+      gdprConsent: false,
+    },
   })
+
+  const gdprConsent = watch('gdprConsent')
 
   useEffect(() => {
     if (!token) {
@@ -77,6 +88,14 @@ function SetupAccountContent() {
         return
       }
       setStep(2)
+      setError('')
+    } else if (step === 2) {
+      // Validate GDPR consent
+      if (!data.gdprConsent) {
+        setError('Du måste godkänna villkoren för att fortsätta')
+        return
+      }
+      setStep(3)
       setError('')
     } else {
       // Submit final step
@@ -155,13 +174,11 @@ function SetupAccountContent() {
       <Card className="w-full max-w-lg border-0 shadow-none">
         <CardHeader className="text-center pb-8">
           <CardTitle className="text-3xl font-bold">
-            {step === 1 ? 'Hallå där - låt oss komma igång!' : 'Skapa ditt lösenord'}
+            Hallå där - låt oss komma igång!
           </CardTitle>
-          {step === 1 && (
-            <CardDescription className="text-base mt-2">
-              Låt oss skapa ditt konto med {clientInfo?.firstName} {clientInfo?.lastName}
-            </CardDescription>
-          )}
+          <CardDescription className="text-base mt-2">
+            Låt oss skapa ditt konto med {coachName}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onNextStep} className="space-y-6">
@@ -250,9 +267,49 @@ function SetupAccountContent() {
                   Nästa
                 </Button>
               </>
+            ) : step === 2 ? (
+              <>
+                {/* Step 2: GDPR Consent */}
+                <div className="space-y-6 py-4">
+                  <div className="flex items-start space-x-3">
+                    <Checkbox
+                      id="gdprConsent"
+                      checked={gdprConsent}
+                      onCheckedChange={(checked) => setValue('gdprConsent', checked as boolean)}
+                      className="mt-1"
+                    />
+                    <Label htmlFor="gdprConsent" className="text-sm leading-relaxed cursor-pointer">
+                      Jag samtycker härmed till att "{coachName}" som personuppgiftsansvarig, behandlar mina angivna hälsouppgifter, såsom information om allergier, information som indikerar fetma eller skador, eller annan relevant information som rör min fysiska eller psykiska hälsa som jag väljer att dela med mig av under online-coachningsprogrammet.
+                    </Label>
+                  </div>
+                  {errors.gdprConsent && (
+                    <p className="text-sm text-destructive">{errors.gdprConsent.message}</p>
+                  )}
+                </div>
+
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full bg-lime-400 hover:bg-lime-500 text-black font-semibold h-12 text-base"
+                  disabled={!gdprConsent}
+                >
+                  Registrera dig
+                </Button>
+
+                <div className="text-center">
+                  <Link href="/datapolicy" className="text-sm underline">
+                    Datapolicy
+                  </Link>
+                </div>
+              </>
             ) : (
               <>
-                {/* Step 2: Password */}
+                {/* Step 3: Password */}
                 <div className="space-y-2">
                   <Label htmlFor="password">Lösenord</Label>
                   <Input
@@ -291,7 +348,7 @@ function SetupAccountContent() {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setStep(1)}
+                    onClick={() => setStep(2)}
                     className="flex-1"
                     disabled={isLoading}
                   >
