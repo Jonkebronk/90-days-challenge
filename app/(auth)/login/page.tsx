@@ -14,8 +14,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from '@/hooks/use-toast'
 
 const loginSchema = z.object({
-  email: z.string().email('Ogiltig e-postadress'),
-  password: z.string().min(6, 'Lösenord måste vara minst 6 tecken'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
 })
 
 type LoginForm = z.infer<typeof loginSchema>
@@ -41,22 +41,22 @@ export default function LoginPage() {
 
       if (result?.error) {
         toast({
-          title: 'Inloggning misslyckades',
-          description: 'Fel email eller lösenord',
+          title: 'Login failed',
+          description: 'Invalid email or password',
           variant: 'destructive',
         })
       } else {
         toast({
-          title: 'Välkommen tillbaka!',
-          description: 'Du är nu inloggad.',
+          title: 'Welcome back!',
+          description: 'You are now signed in.',
         })
-        router.push('/dashboard')
-        router.refresh()
+        // Force a hard navigation to ensure session is loaded
+        window.location.href = '/dashboard'
       }
     } catch (error) {
       toast({
-        title: 'Ett fel uppstod',
-        description: 'Försök igen senare.',
+        title: 'An error occurred',
+        description: 'Please try again later.',
         variant: 'destructive',
       })
     } finally {
@@ -67,19 +67,19 @@ export default function LoginPage() {
   return (
     <Card>
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Logga in</CardTitle>
+        <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
         <CardDescription>
-          Ange din e-post och lösenord för att logga in
+          Enter your email and password to sign in
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">E-post</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
-              placeholder="din@email.com"
+              placeholder="your@email.com"
               {...register('email')}
               disabled={isLoading}
             />
@@ -88,7 +88,7 @@ export default function LoginPage() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Lösenord</Label>
+            <Label htmlFor="password">Password</Label>
             <Input
               id="password"
               type="password"
@@ -103,12 +103,12 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Loggar in...' : 'Logga in'}
+            {isLoading ? 'Signing in...' : 'Sign In'}
           </Button>
           <p className="text-sm text-muted-foreground text-center">
-            Har du inget konto?{' '}
+            Don't have an account?{' '}
             <Link href="/signup" className="text-primary hover:underline">
-              Registrera dig
+              Sign up
             </Link>
           </p>
         </CardFooter>
