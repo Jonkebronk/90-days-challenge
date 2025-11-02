@@ -15,15 +15,19 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Saknar email eller lösenord')
+          console.log('Authorization failed: Missing credentials')
+          throw new Error('Missing email or password')
         }
+
+        console.log('Attempting to authorize user:', credentials.email)
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         })
 
         if (!user || !user.password) {
-          throw new Error('Ingen användare hittades')
+          console.log('Authorization failed: User not found')
+          throw new Error('No user found')
         }
 
         const isCorrectPassword = await bcrypt.compare(
@@ -32,9 +36,11 @@ export const authOptions: NextAuthOptions = {
         )
 
         if (!isCorrectPassword) {
-          throw new Error('Felaktigt lösenord')
+          console.log('Authorization failed: Incorrect password')
+          throw new Error('Incorrect password')
         }
 
+        console.log('Authorization successful for user:', user.email)
         return {
           id: user.id,
           email: user.email,
