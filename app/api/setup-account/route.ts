@@ -5,11 +5,18 @@ import bcrypt from 'bcryptjs'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { token, password } = body
+    const { token, firstName, lastName, birthdate, gender, password } = body
 
     if (!token || !password) {
       return NextResponse.json(
         { error: 'Token and password are required' },
+        { status: 400 }
+      )
+    }
+
+    if (!firstName || !lastName || !birthdate || !gender) {
+      return NextResponse.json(
+        { error: 'All fields are required' },
         { status: 400 }
       )
     }
@@ -48,6 +55,11 @@ export async function POST(request: NextRequest) {
     await prisma.user.update({
       where: { id: user.id },
       data: {
+        firstName,
+        lastName,
+        name: `${firstName} ${lastName}`,
+        birthdate: new Date(birthdate),
+        gender,
         password: hashedPassword,
         status: 'active',
         emailVerified: new Date(),

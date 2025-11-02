@@ -19,6 +19,8 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         name: true,
+        firstName: true,
+        lastName: true,
         email: true,
         status: true,
         password: true,
@@ -43,6 +45,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       valid: true,
       client: {
+        firstName: user.firstName,
+        lastName: user.lastName,
         name: user.name,
         email: user.email,
       },

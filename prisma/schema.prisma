@@ -54,6 +54,8 @@ model User {
   // Extended client info
   firstName     String?
   lastName      String?
+  birthdate     DateTime?
+  gender        String?
   phone         String?
   countryCode   String?
   country       String?
