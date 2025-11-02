@@ -33,6 +33,7 @@ export default function ProgressPage() {
   const [logs, setLogs] = useState<DailyLog[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<'7' | '30' | '90'>('30')
+  const isCoach = session?.user && (session.user as any).role === 'coach'
 
   useEffect(() => {
     fetchLogs()
@@ -72,6 +73,41 @@ export default function ProgressPage() {
     ? logs.reduce((sum, log) => sum + log.sleepHours, 0) / logs.length
     : 0
 
+  // Coach view - Show overview/statistics
+  if (isCoach) {
+    return (
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
+        <div>
+          <Link href="/dashboard">
+            <Button variant="ghost" size="sm" className="mb-4">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Tillbaka
+            </Button>
+          </Link>
+          <h1 className="text-4xl font-bold mb-2">Statistik Översikt</h1>
+          <p className="text-muted-foreground text-lg">
+            Se statistik över alla klienter
+          </p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Klient Översikt</CardTitle>
+            <CardDescription>Statistik och progress för alla dina klienter</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Ingen statistik tillgänglig ännu</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                När klienter börjar checka in kommer deras statistik att visas här
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
@@ -83,6 +119,7 @@ export default function ProgressPage() {
     )
   }
 
+  // Client view - Show personal progress
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Header */}
