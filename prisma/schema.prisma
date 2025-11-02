@@ -1,0 +1,308 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// NextAuth models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  password      String?
+  image         String?
+  createdAt     DateTime  @default(now())
+
+  accounts      Account[]
+  sessions      Session[]
+  userProfile   UserProfile?
+  nutritionPlan NutritionPlan?
+  meals         Meal[]
+  workoutPlan   WorkoutPlan?
+  dailyLogs     DailyLog[]
+  workoutLogs   WorkoutLog[]
+  knowledgeProgress UserKnowledgeProgress[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// App models
+model UserProfile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  age                Int
+  gender             String
+  heightCm           Decimal  @db.Decimal(5, 2)
+  currentWeightKg    Decimal  @db.Decimal(5, 2)
+  targetWeightKg     Decimal? @db.Decimal(5, 2)
+  activityLevel      String
+  primaryGoal        String
+  intensityLevel     String
+  trainingLocation   String
+  trainingFrequency  Int
+  timePerSession     Int
+  mealsPerDay        Int
+  dietaryPreference  String[]
+  allergies          String[]
+  createdAt          DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model NutritionPlan {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  tdee           Decimal  @db.Decimal(7, 2)
+  targetCalories Decimal  @db.Decimal(7, 2)
+  proteinG       Decimal  @db.Decimal(6, 2)
+  carbsG         Decimal  @db.Decimal(6, 2)
+  fatG           Decimal  @db.Decimal(6, 2)
+  currentPhase   Int      @default(1)
+  startDate      DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("nutrition_plans")
+}
+
+model FoodItem {
+  id                String   @id @default(cuid())
+  name              String
+  category          String?
+  calories          Decimal  @db.Decimal(6, 2)
+  proteinG          Decimal  @db.Decimal(5, 2)
+  carbsG            Decimal  @db.Decimal(5, 2)
+  fatG              Decimal  @db.Decimal(5, 2)
+  isVegetarian      Boolean  @default(true)
+  isVegan           Boolean  @default(false)
+  commonServingSize String?
+
+  mealIngredients MealIngredient[]
+
+  @@map("food_items")
+}
+
+model Meal {
+  id             String   @id @default(cuid())
+  userId         String
+  name           String
+  mealType       String?
+  totalCalories  Decimal? @db.Decimal(7, 2)
+  totalProteinG  Decimal? @db.Decimal(6, 2)
+  totalCarbsG    Decimal? @db.Decimal(6, 2)
+  totalFatG      Decimal? @db.Decimal(6, 2)
+  isFavorite     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ingredients MealIngredient[]
+  mealLogs    MealLog[]
+
+  @@map("meals")
+}
+
+model MealIngredient {
+  id         String  @id @default(cuid())
+  mealId     String
+  foodItemId String
+  amountG    Decimal @db.Decimal(7, 2)
+
+  meal     Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  foodItem FoodItem @relation(fields: [foodItemId], references: [id])
+
+  @@map("meal_ingredients")
+}
+
+model Exercise {
+  id              String   @id @default(cuid())
+  name            String
+  category        String?
+  equipmentNeeded String[]
+  difficultyLevel String?
+  description     String?
+  videoUrl        String?
+  instructions    String[]
+
+  sessionExercises SessionExercise[]
+  exerciseLogs     ExerciseLog[]
+
+  @@map("exercises")
+}
+
+model WorkoutPlan {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  currentPhase Int      @default(1)
+  currentWeek  Int      @default(1)
+
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutSessions  WorkoutSession[]
+
+  @@map("workout_plans")
+}
+
+model WorkoutSession {
+  id                String  @id @default(cuid())
+  workoutPlanId     String
+  name              String
+  dayOfWeek         Int?
+  sessionType       String?
+  estimatedDuration Int?
+
+  workoutPlan      WorkoutPlan       @relation(fields: [workoutPlanId], references: [id], onDelete: Cascade)
+  sessionExercises SessionExercise[]
+  workoutLogs      WorkoutLog[]
+
+  @@map("workout_sessions")
+}
+
+model SessionExercise {
+  id                String @id @default(cuid())
+  workoutSessionId  String
+  exerciseId        String
+  orderIndex        Int
+  sets              Int
+  reps              Int?
+  restSeconds       Int    @default(60)
+
+  workoutSession WorkoutSession @relation(fields: [workoutSessionId], references: [id], onDelete: Cascade)
+  exercise       Exercise       @relation(fields: [exerciseId], references: [id])
+
+  @@map("session_exercises")
+}
+
+model DailyLog {
+  id          String   @id @default(cuid())
+  userId      String
+  logDate     DateTime
+  weightKg    Decimal? @db.Decimal(5, 2)
+  energyLevel Int?
+  sleepHours  Decimal? @db.Decimal(3, 1)
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealLogs MealLog[]
+
+  @@unique([userId, logDate])
+  @@map("daily_logs")
+}
+
+model MealLog {
+  id          String   @id @default(cuid())
+  dailyLogId  String
+  mealId      String
+  mealTime    DateTime @default(now())
+
+  dailyLog DailyLog @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
+  meal     Meal     @relation(fields: [mealId], references: [id])
+
+  @@map("meal_logs")
+}
+
+model WorkoutLog {
+  id                String   @id @default(cuid())
+  userId            String
+  workoutSessionId  String?
+  completedAt       DateTime @default(now())
+  durationMinutes   Int?
+  notes             String?
+
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutSession  WorkoutSession? @relation(fields: [workoutSessionId], references: [id])
+  exerciseLogs    ExerciseLog[]
+
+  @@map("workout_logs")
+}
+
+model ExerciseLog {
+  id            String  @id @default(cuid())
+  workoutLogId  String
+  exerciseId    String
+  setNumber     Int
+  reps          Int?
+  weightKg      Decimal? @db.Decimal(5, 2)
+  completed     Boolean @default(true)
+
+  workoutLog WorkoutLog @relation(fields: [workoutLogId], references: [id], onDelete: Cascade)
+  exercise   Exercise   @relation(fields: [exerciseId], references: [id])
+
+  @@map("exercise_logs")
+}
+
+model KnowledgeModule {
+  id                String   @id @default(cuid())
+  title             String
+  slug              String   @unique
+  phase             Int?
+  weekNumber        Int?
+  contentType       String?
+  content           String?
+  videoUrl          String?
+  estimatedDuration Int?
+  orderIndex        Int?
+
+  userProgress UserKnowledgeProgress[]
+
+  @@map("knowledge_modules")
+}
+
+model UserKnowledgeProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  moduleId    String
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+
+  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module KnowledgeModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+  @@map("user_knowledge_progress")
+}
