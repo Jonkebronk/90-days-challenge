@@ -50,6 +50,21 @@ model User {
   coachId       String?
   invitationToken String?  @unique
   invitationSentAt DateTime?
+
+  // Extended client info
+  firstName     String?
+  lastName      String?
+  phone         String?
+  countryCode   String?
+  country       String?
+  language      String?
+  tags          String[]
+  membershipStartDate DateTime?
+  membershipStatus String?
+  checkInFrequency String?
+  checkInPeriod String?
+  checkInDay    String?
+
   createdAt     DateTime  @default(now())
 
   accounts      Account[]

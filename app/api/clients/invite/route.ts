@@ -41,11 +41,25 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, email } = body
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      countryCode,
+      country,
+      language,
+      tags,
+      startDate,
+      membershipStatus,
+      checkInFrequency,
+      checkInPeriod,
+      checkInDay,
+    } = body
 
-    if (!name || !email) {
+    if (!firstName || !lastName || !email) {
       return NextResponse.json(
-        { error: 'Name and email are required' },
+        { error: 'First name, last name and email are required' },
         { status: 400 }
       )
     }
@@ -68,8 +82,20 @@ export async function POST(request: NextRequest) {
     // Create the client user with pending status
     const client = await prisma.user.create({
       data: {
-        name,
+        firstName,
+        lastName,
+        name: `${firstName} ${lastName}`,
         email,
+        phone,
+        countryCode,
+        country,
+        language,
+        tags: tags || [],
+        membershipStartDate: startDate ? new Date(startDate) : new Date(),
+        membershipStatus,
+        checkInFrequency,
+        checkInPeriod,
+        checkInDay,
         role: 'client',
         status: 'pending',
         coachId: coach.id,
@@ -79,7 +105,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Send invitation email
-    await sendInvitationEmail(email, name, invitationToken)
+    await sendInvitationEmail(email, `${firstName} ${lastName}`, invitationToken)
 
     return NextResponse.json({
       success: true,

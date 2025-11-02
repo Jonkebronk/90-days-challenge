@@ -9,8 +9,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Mail, CheckCircle2, Clock, User } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Plus, Mail, CheckCircle2, Clock, User, X } from 'lucide-react'
 import { toast } from 'sonner'
+import { Separator } from '@/components/ui/separator'
 
 interface Client {
   id: string
@@ -21,6 +23,22 @@ interface Client {
   createdAt: string
 }
 
+interface NewClientForm {
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  countryCode: string
+  country: string
+  language: string
+  tags: string[]
+  startDate: string
+  membershipStatus: string
+  checkInFrequency: string
+  checkInPeriod: string
+  checkInDay: string
+}
+
 export default function ClientsPage() {
   const { data: session } = useSession()
   const router = useRouter()
@@ -28,7 +46,25 @@ export default function ClientsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isInviting, setIsInviting] = useState(false)
-  const [newClient, setNewClient] = useState({ name: '', email: '' })
+  const [newClient, setNewClient] = useState<NewClientForm>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    countryCode: '+46',
+    country: 'Sverige',
+    language: 'Svenska',
+    tags: [],
+    startDate: new Date().toISOString().split('T')[0],
+    membershipStatus: 'Pågående',
+    checkInFrequency: '1',
+    checkInPeriod: 'Vecka',
+    checkInDay: 'Måndag',
+  })
+
+  const availableTags = ['Nutrition Only', 'VIP', 'Workout Only']
+  const countries = ['Sverige', 'Norge', 'Danmark', 'Finland']
+  const languages = ['Svenska', 'English', 'Norsk', 'Dansk']
 
   useEffect(() => {
     fetchClients()
@@ -48,9 +84,18 @@ export default function ClientsPage() {
     }
   }
 
+  const toggleTag = (tag: string) => {
+    setNewClient(prev => ({
+      ...prev,
+      tags: prev.tags.includes(tag)
+        ? prev.tags.filter(t => t !== tag)
+        : [...prev.tags, tag]
+    }))
+  }
+
   const handleInviteClient = async () => {
-    if (!newClient.name || !newClient.email) {
-      toast.error('Please fill in all fields')
+    if (!newClient.firstName || !newClient.lastName || !newClient.email) {
+      toast.error('Vänligen fyll i förnamn, efternamn och e-post')
       return
     }
 
@@ -65,9 +110,23 @@ export default function ClientsPage() {
       const data = await response.json()
 
       if (response.ok) {
-        toast.success(`Invitation sent to ${newClient.email}`)
+        toast.success(`Inbjudan skickad till ${newClient.email}`)
         setIsDialogOpen(false)
-        setNewClient({ name: '', email: '' })
+        setNewClient({
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          countryCode: '+46',
+          country: 'Sverige',
+          language: 'Svenska',
+          tags: [],
+          startDate: new Date().toISOString().split('T')[0],
+          membershipStatus: 'Pågående',
+          checkInFrequency: '1',
+          checkInPeriod: 'Vecka',
+          checkInDay: 'Måndag',
+        })
         fetchClients()
       } else {
         toast.error(data.error || 'Failed to send invitation')
@@ -116,44 +175,232 @@ export default function ClientsPage() {
               Add Client
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Invite New Client</DialogTitle>
-              <DialogDescription>
-                Send an invitation email to your client to join the program
-              </DialogDescription>
+              <DialogTitle>Lägg till ny klient</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Client Name</Label>
-                <Input
-                  id="name"
-                  placeholder="John Doe"
-                  value={newClient.name}
-                  onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
-                />
+
+            <div className="space-y-6 py-4">
+              {/* Klientinformation */}
+              <div className="space-y-4">
+                <h3 className="font-semibold">Klientinformation</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">Förnamn <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="firstName"
+                      value={newClient.firstName}
+                      onChange={(e) => setNewClient({ ...newClient, firstName: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Efternamn <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="lastName"
+                      value={newClient.lastName}
+                      onChange={(e) => setNewClient({ ...newClient, lastName: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">E-post <span className="text-destructive">*</span></Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={newClient.email}
+                    onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Telefon</Label>
+                  <div className="flex gap-2">
+                    <Select value={newClient.countryCode} onValueChange={(value) => setNewClient({ ...newClient, countryCode: value })}>
+                      <SelectTrigger className="w-24">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="+46">🇸🇪 +46</SelectItem>
+                        <SelectItem value="+47">🇳🇴 +47</SelectItem>
+                        <SelectItem value="+45">🇩🇰 +45</SelectItem>
+                        <SelectItem value="+358">🇫🇮 +358</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      id="phone"
+                      value={newClient.phone}
+                      onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                      placeholder="70 123 45 67"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="country">Land</Label>
+                    <Select value={newClient.country} onValueChange={(value) => setNewClient({ ...newClient, country: value })}>
+                      <SelectTrigger id="country">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {countries.map(country => (
+                          <SelectItem key={country} value={country}>{country}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="language">Språk</Label>
+                    <Select value={newClient.language} onValueChange={(value) => setNewClient({ ...newClient, language: value })}>
+                      <SelectTrigger id="language">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {languages.map(lang => (
+                          <SelectItem key={lang} value={lang}>{lang}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Taggar</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Välj taggar" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableTags.map(tag => (
+                        <div
+                          key={tag}
+                          className="px-2 py-1.5 cursor-pointer hover:bg-accent flex items-center gap-2"
+                          onClick={() => toggleTag(tag)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={newClient.tags.includes(tag)}
+                            readOnly
+                          />
+                          {tag}
+                        </div>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {newClient.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {newClient.tags.map(tag => (
+                        <Badge key={tag} variant="secondary" className="gap-1">
+                          {tag}
+                          <X
+                            className="w-3 h-3 cursor-pointer"
+                            onClick={() => toggleTag(tag)}
+                          />
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="john@example.com"
-                  value={newClient.email}
-                  onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
-                />
+
+              <Separator />
+
+              {/* Medlemskap */}
+              <div className="space-y-4">
+                <h3 className="font-semibold">Medlemskap</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="startDate">Startdatum</Label>
+                    <Input
+                      id="startDate"
+                      type="date"
+                      value={newClient.startDate}
+                      onChange={(e) => setNewClient({ ...newClient, startDate: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="membershipStatus">Varaktighet</Label>
+                    <Select value={newClient.membershipStatus} onValueChange={(value) => setNewClient({ ...newClient, membershipStatus: value })}>
+                      <SelectTrigger id="membershipStatus">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Pågående">Pågående</SelectItem>
+                        <SelectItem value="Pausad">Pausad</SelectItem>
+                        <SelectItem value="Avslutad">Avslutad</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Check-in */}
+              <div className="space-y-4">
+                <h3 className="font-semibold">Check-in</h3>
+                <p className="text-sm text-muted-foreground">Skicka påminnelse om check-in varje gång:</p>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label>Frekvens</Label>
+                    <Select value={newClient.checkInFrequency} onValueChange={(value) => setNewClient({ ...newClient, checkInFrequency: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1</SelectItem>
+                        <SelectItem value="2">2</SelectItem>
+                        <SelectItem value="3">3</SelectItem>
+                        <SelectItem value="4">4</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Check-in-period</Label>
+                    <Select value={newClient.checkInPeriod} onValueChange={(value) => setNewClient({ ...newClient, checkInPeriod: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Dag">Dag</SelectItem>
+                        <SelectItem value="Vecka">Vecka</SelectItem>
+                        <SelectItem value="Månad">Månad</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Dag</Label>
+                    <Select value={newClient.checkInDay} onValueChange={(value) => setNewClient({ ...newClient, checkInDay: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Måndag">Måndag</SelectItem>
+                        <SelectItem value="Tisdag">Tisdag</SelectItem>
+                        <SelectItem value="Onsdag">Onsdag</SelectItem>
+                        <SelectItem value="Torsdag">Torsdag</SelectItem>
+                        <SelectItem value="Fredag">Fredag</SelectItem>
+                        <SelectItem value="Lördag">Lördag</SelectItem>
+                        <SelectItem value="Söndag">Söndag</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
             </div>
-            <DialogFooter>
+
+            <DialogFooter className="gap-2">
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancel
+                Avbryt
               </Button>
               <Button
                 onClick={handleInviteClient}
                 disabled={isInviting}
-                className="bg-black hover:bg-black/90 text-white"
+                className="bg-lime-400 hover:bg-lime-500 text-black"
               >
-                {isInviting ? 'Sending...' : 'Send Invitation'}
+                {isInviting ? 'Skickar...' : 'Skicka in'}
               </Button>
             </DialogFooter>
           </DialogContent>
