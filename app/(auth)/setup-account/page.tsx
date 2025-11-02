@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { QRCodeSVG } from 'qrcode.react'
 
 const setupSchema = z.object({
   firstName: z.string().min(1, 'Förnamn krävs'),
@@ -23,11 +24,6 @@ const setupSchema = z.object({
   gdprConsent: z.boolean().refine((val) => val === true, {
     message: 'Du måste godkänna villkoren för att fortsätta',
   }),
-  password: z.string().min(8, 'Lösenord måste vara minst 8 tecken'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Lösenorden matchar inte",
-  path: ['confirmPassword'],
 })
 
 type SetupForm = z.infer<typeof setupSchema>
@@ -40,8 +36,9 @@ function SetupAccountContent() {
   const [error, setError] = useState('')
   const [clientInfo, setClientInfo] = useState<{ firstName: string; lastName: string; email: string } | null>(null)
   const [verifying, setVerifying] = useState(true)
-  const [step, setStep] = useState(1) // 1 = basic info, 2 = GDPR consent, 3 = password
+  const [step, setStep] = useState(1) // 1 = basic info, 2 = GDPR consent, 3 = success/app download
   const [coachName, setCoachName] = useState('John Sund')
+  const [accountCreated, setAccountCreated] = useState(false)
 
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<SetupForm>({
     resolver: zodResolver(setupSchema),
@@ -90,15 +87,12 @@ function SetupAccountContent() {
       setStep(2)
       setError('')
     } else if (step === 2) {
-      // Validate GDPR consent
+      // Validate GDPR consent and create account
       if (!data.gdprConsent) {
         setError('Du måste godkänna villkoren för att fortsätta')
         return
       }
-      setStep(3)
-      setError('')
-    } else {
-      // Submit final step
+
       setIsLoading(true)
       setError('')
 
@@ -112,20 +106,21 @@ function SetupAccountContent() {
             lastName: data.lastName,
             birthdate: data.birthdate,
             gender: data.gender,
-            password: data.password,
+            gdprConsent: data.gdprConsent,
           }),
         })
 
         const result = await response.json()
 
         if (response.ok) {
-          // Redirect to onboarding
-          router.push('/step-1')
+          // Show success page
+          setAccountCreated(true)
+          setStep(3)
         } else {
-          setError(result.error || 'Failed to create account')
+          setError(result.error || 'Misslyckades skapa konto')
         }
       } catch (err) {
-        setError('An error occurred. Please try again.')
+        setError('Ett fel uppstod. Försök igen.')
         console.error('Setup error:', err)
       } finally {
         setIsLoading(false)
@@ -163,6 +158,54 @@ function SetupAccountContent() {
             <Button className="w-full mt-4" onClick={() => router.push('/')}>
               Go to Homepage
             </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (accountCreated && step === 3) {
+    // App Store and Google Play URLs - update these with actual app URLs when available
+    const iosAppUrl = 'https://apps.apple.com/app/your-app-id'
+    const androidAppUrl = 'https://play.google.com/store/apps/details?id=com.yourapp'
+
+    return (
+      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center p-4">
+        <Card className="w-full max-w-2xl border-0 shadow-none">
+          <CardHeader className="text-center pb-8">
+            <CardTitle className="text-4xl font-bold">Du är redo</CardTitle>
+            <CardDescription className="text-base mt-4">
+              Vänligen ladda ner appen från respektive appbutik nedan och logga in med de inloggningsuppgifter du har skapat här
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* iOS QR Code */}
+              <div className="flex flex-col items-center space-y-4">
+                <h3 className="text-lg font-semibold">Ladda ner för iOS</h3>
+                <div className="w-48 h-48 bg-white border-2 border-gray-200 rounded-lg flex items-center justify-center p-2">
+                  <QRCodeSVG
+                    value={iosAppUrl}
+                    size={176}
+                    level="H"
+                    includeMargin={false}
+                  />
+                </div>
+              </div>
+
+              {/* Android QR Code */}
+              <div className="flex flex-col items-center space-y-4">
+                <h3 className="text-lg font-semibold">Ladda ner till Android</h3>
+                <div className="w-48 h-48 bg-white border-2 border-gray-200 rounded-lg flex items-center justify-center p-2">
+                  <QRCodeSVG
+                    value={androidAppUrl}
+                    size={176}
+                    level="H"
+                    includeMargin={false}
+                  />
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -307,70 +350,7 @@ function SetupAccountContent() {
                   </Link>
                 </div>
               </>
-            ) : (
-              <>
-                {/* Step 3: Password */}
-                <div className="space-y-2">
-                  <Label htmlFor="password">Lösenord</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Minst 8 tecken"
-                    {...register('password')}
-                    disabled={isLoading}
-                  />
-                  {errors.password && (
-                    <p className="text-sm text-destructive">{errors.password.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Bekräfta lösenord</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Ange lösenordet igen"
-                    {...register('confirmPassword')}
-                    disabled={isLoading}
-                  />
-                  {errors.confirmPassword && (
-                    <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
-                  )}
-                </div>
-
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
-                <div className="flex gap-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setStep(2)}
-                    className="flex-1"
-                    disabled={isLoading}
-                  >
-                    Tillbaka
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="flex-1 bg-lime-400 hover:bg-lime-500 text-black font-semibold"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Skapar...
-                      </>
-                    ) : (
-                      'Skapa konto'
-                    )}
-                  </Button>
-                </div>
-              </>
-            )}
+            ) : null}
           </form>
         </CardContent>
       </Card>
