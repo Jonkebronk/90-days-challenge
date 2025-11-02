@@ -10,7 +10,7 @@ export async function PATCH(
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session || session.user.role !== 'coach') {
+    if (!session || (session.user as any).role !== 'coach') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -53,7 +53,7 @@ export async function DELETE(
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session || session.user.role !== 'coach') {
+    if (!session || (session.user as any).role !== 'coach') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
