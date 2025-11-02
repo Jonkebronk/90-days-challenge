@@ -322,7 +322,7 @@ function SetupAccountContent() {
                       className="mt-1"
                     />
                     <Label htmlFor="gdprConsent" className="text-sm leading-relaxed cursor-pointer">
-                      Jag samtycker härmed till att "{coachName}" som personuppgiftsansvarig, behandlar mina angivna hälsouppgifter, såsom information om allergier, information som indikerar fetma eller skador, eller annan relevant information som rör min fysiska eller psykiska hälsa som jag väljer att dela med mig av under online-coachningsprogrammet.
+                      Jag samtycker härmed till att &quot;{coachName}&quot; som personuppgiftsansvarig, behandlar mina angivna hälsouppgifter, såsom information om allergier, information som indikerar fetma eller skador, eller annan relevant information som rör min fysiska eller psykiska hälsa som jag väljer att dela med mig av under online-coachningsprogrammet.
                     </Label>
                   </div>
                   {errors.gdprConsent && (

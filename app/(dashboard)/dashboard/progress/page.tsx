@@ -36,6 +36,7 @@ export default function ProgressPage() {
 
   useEffect(() => {
     fetchLogs()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange])
 
   const fetchLogs = async () => {
