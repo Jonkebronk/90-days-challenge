@@ -45,6 +45,11 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
+  role          String    @default("client") // "coach" or "client"
+  status        String    @default("pending") // "pending", "active", "inactive"
+  coachId       String?
+  invitationToken String?  @unique
+  invitationSentAt DateTime?
   createdAt     DateTime  @default(now())
 
   accounts      Account[]
@@ -56,6 +61,10 @@ model User {
   dailyLogs     DailyLog[]
   workoutLogs   WorkoutLog[]
   knowledgeProgress UserKnowledgeProgress[]
+
+  // Coach-Client relationship
+  coach         User?     @relation("CoachClients", fields: [coachId], references: [id])
+  clients       User[]    @relation("CoachClients")
 
   @@map("users")
 }

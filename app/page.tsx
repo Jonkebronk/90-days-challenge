@@ -27,10 +27,7 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-3">
               <Link href="/login">
-                <Button variant="ghost">Sign In</Button>
-              </Link>
-              <Link href="/signup">
-                <Button>Get Started</Button>
+                <Button>Coach Login</Button>
               </Link>
             </div>
           </div>
@@ -59,31 +56,23 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/signup">
-              <Button size="lg" className="text-lg px-8 py-6">
-                Start Your Journey
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6">
-                Sign In
-              </Button>
-            </Link>
+            <p className="text-lg text-muted-foreground">
+              Invite-only coaching program. Contact your coach to get started.
+            </p>
           </div>
 
           <div className="flex flex-wrap justify-center gap-8 pt-8 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-green-500" />
-              <span>No credit card required</span>
+              <span>Personalized coaching</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-green-500" />
-              <span>Free to use</span>
+              <span>Expert guidance</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-green-500" />
-              <span>Track unlimited data</span>
+              <span>90-day transformation</span>
             </div>
           </div>
         </div>
@@ -191,9 +180,9 @@ export default function Home() {
             <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold mx-auto">
               1
             </div>
-            <h3 className="text-xl font-bold">Create Account</h3>
+            <h3 className="text-xl font-bold">Get Invited</h3>
             <p className="text-muted-foreground">
-              Sign up for free and complete your profile setup
+              Receive an invitation from your coach to join the program
             </p>
           </div>
 
@@ -231,9 +220,9 @@ export default function Home() {
               to better health and fitness.
             </p>
             <div className="pt-4">
-              <Link href="/signup">
+              <Link href="/login">
                 <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
-                  Start Free Today
+                  Coach Login
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>

@@ -8,6 +8,7 @@ import {
   TrendingUp,
   Calendar,
   User,
+  Users,
   LogOut,
   Menu,
   X
@@ -17,6 +18,7 @@ import { useState } from 'react'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
+  { name: 'Clients', href: '/dashboard/clients', icon: Users },
   { name: 'Check-in', href: '/dashboard/check-in', icon: Calendar },
   { name: 'Progress', href: '/dashboard/progress', icon: TrendingUp },
   { name: 'Profile', href: '/dashboard/profile', icon: User },
