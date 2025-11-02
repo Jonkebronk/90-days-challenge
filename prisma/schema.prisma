@@ -388,3 +388,34 @@ model Lead {
 
   @@map("leads")
 }
+
+model File {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  fileUrl     String
+  fileType    String?  // "pdf", "image", "video", etc
+  fileSize    Int?     // in bytes
+  uploadedBy  String?  // coach id or name
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("files")
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String?
+  content     String   // Rich text content
+  coverImage  String?  // URL to cover image
+  attachments String[] // URLs to attached files
+  videoUrl    String?  // Optional video URL
+  audioUrl    String?  // Optional audio URL
+  visibility  String   @default("all") // "all", "specific_clients"
+  orderIndex  Int?     // For sorting lessons
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("lessons")
+}

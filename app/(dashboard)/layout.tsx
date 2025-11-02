@@ -11,14 +11,34 @@ import {
   Users,
   LogOut,
   Menu,
-  X
+  X,
+  BookOpen,
+  ChevronDown,
+  FileText,
+  GraduationCap,
+  UserPlus
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Clients', href: '/dashboard/clients', icon: Users },
+  { name: 'Team', href: '/dashboard/clients', icon: Users },
+  { name: 'Leads', href: '/dashboard/leads', icon: UserPlus },
+  {
+    name: 'Innehåll',
+    icon: BookOpen,
+    dropdown: [
+      { name: 'Filer', href: '/dashboard/content/files', icon: FileText },
+      { name: 'Lektioner', href: '/dashboard/content/lessons', icon: GraduationCap },
+    ]
+  },
   { name: 'Check-in', href: '/dashboard/check-in', icon: Calendar },
   { name: 'Progress', href: '/dashboard/progress', icon: TrendingUp },
   { name: 'Profile', href: '/dashboard/profile', icon: User },
@@ -56,10 +76,54 @@ export default function DashboardLayout({
               {navigation.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href
+
+                // Check if item has dropdown
+                if ('dropdown' in item && item.dropdown) {
+                  const isDropdownActive = item.dropdown.some(
+                    (dropdownItem) => pathname === dropdownItem.href
+                  )
+
+                  return (
+                    <DropdownMenu key={item.name}>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          className={`
+                            flex items-center gap-2 px-4 py-2 rounded-lg transition-all
+                            ${isDropdownActive
+                              ? 'bg-primary text-primary-foreground font-medium'
+                              : 'hover:bg-accent text-muted-foreground hover:text-foreground'
+                            }
+                          `}
+                        >
+                          <Icon className="w-4 h-4" />
+                          <span>{item.name}</span>
+                          <ChevronDown className="w-3 h-3" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        {item.dropdown.map((dropdownItem) => {
+                          const DropdownIcon = dropdownItem.icon
+                          return (
+                            <DropdownMenuItem key={dropdownItem.name} asChild>
+                              <Link
+                                href={dropdownItem.href}
+                                className="flex items-center gap-2 cursor-pointer"
+                              >
+                                <DropdownIcon className="w-4 h-4" />
+                                <span>{dropdownItem.name}</span>
+                              </Link>
+                            </DropdownMenuItem>
+                          )
+                        })}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )
+                }
+
                 return (
                   <Link
                     key={item.name}
-                    href={item.href}
+                    href={item.href || '#'}
                     className={`
                       flex items-center gap-2 px-4 py-2 rounded-lg transition-all
                       ${isActive
@@ -114,10 +178,46 @@ export default function DashboardLayout({
               {navigation.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href
+
+                // Check if item has dropdown
+                if ('dropdown' in item && item.dropdown) {
+                  return (
+                    <div key={item.name} className="space-y-1">
+                      <div className="flex items-center gap-3 px-4 py-3 text-muted-foreground font-medium">
+                        <Icon className="w-5 h-5" />
+                        <span>{item.name}</span>
+                      </div>
+                      <div className="pl-8 space-y-1">
+                        {item.dropdown.map((dropdownItem) => {
+                          const DropdownIcon = dropdownItem.icon
+                          const isDropdownActive = pathname === dropdownItem.href
+                          return (
+                            <Link
+                              key={dropdownItem.name}
+                              href={dropdownItem.href}
+                              onClick={() => setMobileMenuOpen(false)}
+                              className={`
+                                flex items-center gap-3 px-4 py-2 rounded-lg transition-all
+                                ${isDropdownActive
+                                  ? 'bg-primary text-primary-foreground font-medium'
+                                  : 'hover:bg-accent text-muted-foreground'
+                                }
+                              `}
+                            >
+                              <DropdownIcon className="w-4 h-4" />
+                              <span>{dropdownItem.name}</span>
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )
+                }
+
                 return (
                   <Link
                     key={item.name}
-                    href={item.href}
+                    href={item.href || '#'}
                     onClick={() => setMobileMenuOpen(false)}
                     className={`
                       flex items-center gap-3 px-4 py-3 rounded-lg transition-all
