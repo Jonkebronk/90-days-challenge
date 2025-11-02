@@ -14,12 +14,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from '@/hooks/use-toast'
 
 const signupSchema = z.object({
-  fullName: z.string().min(2, 'Namn måste vara minst 2 tecken'),
-  email: z.string().email('Ogiltig e-postadress'),
-  password: z.string().min(6, 'Lösenord måste vara minst 6 tecken'),
+  fullName: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: 'Lösenorden matchar inte',
+  message: 'Passwords do not match',
   path: ['confirmPassword'],
 })
 
@@ -53,8 +53,8 @@ export default function SignupPage() {
 
       if (!response.ok) {
         toast({
-          title: 'Registrering misslyckades',
-          description: result.error || 'Något gick fel',
+          title: 'Registration failed',
+          description: result.error || result.details || 'Something went wrong',
           variant: 'destructive',
         })
         return
@@ -69,22 +69,22 @@ export default function SignupPage() {
 
       if (signInResult?.error) {
         toast({
-          title: 'Konto skapat!',
-          description: 'Vänligen logga in',
+          title: 'Account created!',
+          description: 'Please sign in',
         })
         router.push('/login')
       } else {
         toast({
-          title: 'Välkommen!',
-          description: 'Ditt konto har skapats.',
+          title: 'Welcome!',
+          description: 'Your account has been created.',
         })
         router.push('/onboarding/step-1')
         router.refresh()
       }
     } catch (error) {
       toast({
-        title: 'Ett fel uppstod',
-        description: 'Försök igen senare.',
+        title: 'An error occurred',
+        description: 'Please try again later.',
         variant: 'destructive',
       })
     } finally {
@@ -95,19 +95,19 @@ export default function SignupPage() {
   return (
     <Card>
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Skapa konto</CardTitle>
+        <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
         <CardDescription>
-          Fyll i uppgifterna nedan för att börja din 90-dagarsresa
+          Fill in the details below to start your 90-day journey
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="fullName">Fullständigt namn</Label>
+            <Label htmlFor="fullName">Full Name</Label>
             <Input
               id="fullName"
               type="text"
-              placeholder="Ditt namn"
+              placeholder="Your name"
               {...register('fullName')}
               disabled={isLoading}
             />
@@ -116,11 +116,11 @@ export default function SignupPage() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">E-post</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
-              placeholder="din@email.com"
+              placeholder="your@email.com"
               {...register('email')}
               disabled={isLoading}
             />
@@ -129,7 +129,7 @@ export default function SignupPage() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Lösenord</Label>
+            <Label htmlFor="password">Password</Label>
             <Input
               id="password"
               type="password"
@@ -142,7 +142,7 @@ export default function SignupPage() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Bekräfta lösenord</Label>
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
             <Input
               id="confirmPassword"
               type="password"
@@ -157,12 +157,12 @@ export default function SignupPage() {
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Skapar konto...' : 'Skapa konto'}
+            {isLoading ? 'Creating account...' : 'Create Account'}
           </Button>
           <p className="text-sm text-muted-foreground text-center">
-            Har du redan ett konto?{' '}
+            Already have an account?{' '}
             <Link href="/login" className="text-primary hover:underline">
-              Logga in
+              Sign in
             </Link>
           </p>
         </CardFooter>

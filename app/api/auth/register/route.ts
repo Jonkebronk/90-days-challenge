@@ -8,7 +8,7 @@ export async function POST(request: Request) {
 
     if (!name || !email || !password) {
       return NextResponse.json(
-        { error: 'Saknar obligatoriska fält' },
+        { error: 'Missing required fields' },
         { status: 400 }
       )
     }
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'En användare med denna email finns redan' },
+        { error: 'A user with this email already exists' },
         { status: 400 }
       )
     }
@@ -49,8 +49,12 @@ export async function POST(request: Request) {
     )
   } catch (error) {
     console.error('Registration error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json(
-      { error: 'Något gick fel vid registrering' },
+      {
+        error: 'Failed to register',
+        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
+      },
       { status: 500 }
     )
   }
