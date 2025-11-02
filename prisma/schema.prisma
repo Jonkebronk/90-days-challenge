@@ -78,6 +78,7 @@ model User {
   dailyLogs     DailyLog[]
   workoutLogs   WorkoutLog[]
   knowledgeProgress UserKnowledgeProgress[]
+  checkIns      CheckIn[]
 
   // Coach-Client relationship
   coach         User?     @relation("CoachClients", fields: [coachId], references: [id])
@@ -345,4 +346,31 @@ model UserKnowledgeProgress {
 
   @@unique([userId, moduleId])
   @@map("user_knowledge_progress")
+}
+
+model CheckIn {
+  id                    String   @id @default(cuid())
+  userId                String
+  weekNumber            Int?     // Week number in the program
+
+  // Check-in data
+  statusUpdate          String?  // "Hur har du haft det sedan din senaste uppdatering?"
+  weightKg              Decimal? @db.Decimal(5, 2)
+  energyLevel           Int?     // 1-5 stars
+  mood                  Int?     // 1-5 (sad to happy)
+  dietPlanAdherence     Int?     // 1-5 stars (kostschema användning)
+  workoutPlanAdherence  Int?     // 1-5 stars (träningsschema användning)
+  sleepNotes            String?  // "Hur mycket sover du i genomsnitt per natt?"
+  dailySteps            String?  // "Hur många steg tar du vanligtvis per dag?"
+
+  // Progress photos
+  photoFront            String?  // URL to front photo
+  photoSide             String?  // URL to side photo
+  photoBack             String?  // URL to back photo
+
+  createdAt             DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("check_ins")
 }
