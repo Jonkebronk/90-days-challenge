@@ -30,9 +30,11 @@ export default function LoginPage() {
   })
 
   const onSubmit = async (data: LoginForm) => {
+    console.log('Form submitted with:', { email: data.email, password: '***' })
     setIsLoading(true)
 
     try {
+      console.log('Calling signIn...')
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
@@ -40,8 +42,11 @@ export default function LoginPage() {
         redirect: true,
       })
 
+      console.log('SignIn result:', result)
+
       // This code won't run if redirect is true, but keep it as fallback
       if (result?.error) {
+        console.log('Login error:', result.error)
         toast({
           title: 'Login failed',
           description: 'Invalid email or password',
@@ -50,6 +55,7 @@ export default function LoginPage() {
         setIsLoading(false)
       }
     } catch (error) {
+      console.error('Login exception:', error)
       toast({
         title: 'An error occurred',
         description: 'Please try again later.',
