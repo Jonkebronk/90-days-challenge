@@ -374,3 +374,17 @@ model CheckIn {
 
   @@map("check_ins")
 }
+
+model Lead {
+  id          String   @id @default(cuid())
+  name        String
+  email       String?
+  phone       String?
+  status      String   @default("new") // "new", "contacted", "in_dialog", "paused", "won", "lost"
+  notes       String?
+  tags        String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("leads")
+}
