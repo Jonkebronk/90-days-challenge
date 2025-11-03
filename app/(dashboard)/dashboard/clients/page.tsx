@@ -10,7 +10,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Plus, Mail, CheckCircle2, Clock, User, X, Trash2 } from 'lucide-react'
+import { Plus, Mail, CheckCircle2, Clock, User, X, Trash2, FileText } from 'lucide-react'
+import Link from 'next/link'
 import { toast } from 'sonner'
 import { Separator } from '@/components/ui/separator'
 
@@ -354,7 +355,7 @@ export default function ClientsPage() {
                     key={client.id}
                     className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent transition-colors"
                   >
-                    <div className="flex items-center gap-4">
+                    <Link href={`/dashboard/clients/${client.id}`} className="flex items-center gap-4 flex-1">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                         <span className="font-semibold text-primary">
                           {client.name?.[0]?.toUpperCase() || client.email[0].toUpperCase()}
@@ -367,7 +368,7 @@ export default function ClientsPage() {
                           {client.email}
                         </p>
                       </div>
-                    </div>
+                    </Link>
                     <div className="flex items-center gap-4">
                       {getStatusBadge(client.status)}
                       {client.status === 'pending' && client.invitationSentAt && (
