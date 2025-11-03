@@ -68,7 +68,6 @@ export default function DashboardLayout({
               <div className="w-8 h-8 bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-lg flex items-center justify-center">
                 <span className="text-[#0a0a0a] font-bold text-lg">90</span>
               </div>
-              <span className="font-bold text-lg hidden sm:inline bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">90 Days Challenge</span>
             </Link>
 
             {/* Desktop Navigation */}
