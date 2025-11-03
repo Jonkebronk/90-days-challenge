@@ -103,7 +103,7 @@ export default function GoldenTicketPage() {
             </h1>
 
             <p className="text-xl text-[#B0B0B0] italic">
-              En exklusiv träningsresa för utvalda individer
+              På 90 dagar kommer du att bygga en kropp med mer ork, mer energi, mer självförtroende, mer styrka, mer muskeldefinition, och mindre fett
             </p>
           </div>
 
@@ -153,8 +153,8 @@ export default function GoldenTicketPage() {
 
           {/* Vision text */}
           <div className="mt-12 pt-8 border-t border-[#D4AF37]/20">
-            <p className="text-sm text-[#B0B0B0] leading-relaxed">
-              På 90 dagar kommer du att bygga en kropp med mer ork, mer energi, mer självförtroende, mer styrka, mer muskeldefinition, och mindre fett
+            <p className="text-sm text-[#B0B0B0] leading-relaxed italic">
+              En exklusiv träningsresa för utvalda individer
             </p>
           </div>
         </div>
