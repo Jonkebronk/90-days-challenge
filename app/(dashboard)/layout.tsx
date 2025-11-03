@@ -63,13 +63,6 @@ export default function DashboardLayout({
       <header className="sticky top-0 z-50 bg-[rgba(10,10,10,0.8)] backdrop-blur-lg border-b border-[rgba(255,215,0,0.2)]">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-lg flex items-center justify-center">
-                <span className="text-[#0a0a0a] font-bold text-lg">90</span>
-              </div>
-            </Link>
-
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-1">
               {navigation.map((item) => {
