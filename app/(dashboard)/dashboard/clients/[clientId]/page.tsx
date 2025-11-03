@@ -32,13 +32,13 @@ const clientProfileSchema = z.object({
   activityLevelWork: z.enum(['very_low', 'low', 'medium', 'high']).optional(),
   trainingExperience: z.enum(['beginner', 'experienced', 'very_experienced']).optional(),
   trainingDetails: z.string().optional(),
-  trainingDays: z.array(z.string()).default([]),
+  trainingDays: z.array(z.string()).optional().default([]),
 
   // Step 4: Nutrition
   nutritionNotes: z.string().optional(),
-  allergies: z.array(z.string()).default([]),
-  dietaryPreferences: z.array(z.string()).default([]),
-  excludedIngredients: z.array(z.string()).default([]),
+  allergies: z.array(z.string()).optional().default([]),
+  dietaryPreferences: z.array(z.string()).optional().default([]),
+  excludedIngredients: z.array(z.string()).optional().default([]),
   nutritionMissing: z.string().optional(),
 
   // Step 5: Lifestyle
@@ -73,10 +73,13 @@ export default function ClientDetailPage({ params }: PageProps) {
   })
 
   useEffect(() => {
-    params.then(({ clientId }) => {
+    const loadClient = async () => {
+      const { clientId } = await params
       setClientId(clientId)
       fetchClientData(clientId)
-    })
+    }
+    loadClient()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchClientData = async (id: string) => {
