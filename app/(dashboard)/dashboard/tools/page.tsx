@@ -1,9 +1,21 @@
 'use client'
 
-import { useState } from 'react'
-import { Calculator, TrendingDown, Utensils, Settings } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Calculator, TrendingDown, Utensils, Settings, Save, User } from 'lucide-react'
+import { toast } from 'sonner'
+
+interface Client {
+  id: string
+  name: string | null
+  email: string
+}
 
 export default function CalorieCoachTool() {
+  const [clients, setClients] = useState<Client[]>([])
+  const [selectedClient, setSelectedClient] = useState<string>('')
+  const [isSaving, setIsSaving] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
   const [weight, setWeight] = useState('')
   const [activityLevel, setActivityLevel] = useState('30')
   const [deficit, setDeficit] = useState('0')
@@ -14,6 +26,96 @@ export default function CalorieCoachTool() {
   const [fatPerKg] = useState('0.7')
   const [customMacros, setCustomMacros] = useState<Array<{protein: number, fat: number, carbs: number}>>([])
   const [dailySteps, setDailySteps] = useState('5000')
+
+  // Fetch clients on mount
+  useEffect(() => {
+    fetchClients()
+  }, [])
+
+  // Load data when client is selected
+  useEffect(() => {
+    if (selectedClient) {
+      loadClientData(selectedClient)
+    }
+  }, [selectedClient])
+
+  const fetchClients = async () => {
+    try {
+      const response = await fetch('/api/clients')
+      if (response.ok) {
+        const data = await response.json()
+        setClients(data.clients.filter((c: Client) => c.name))
+      }
+    } catch (error) {
+      console.error('Failed to fetch clients:', error)
+    }
+  }
+
+  const loadClientData = async (clientId: string) => {
+    setIsLoading(true)
+    try {
+      const response = await fetch(`/api/calorie-plan?clientId=${clientId}`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.caloriePlan) {
+          const plan = data.caloriePlan
+          setWeight(plan.weight?.toString() || '')
+          setActivityLevel(plan.activityLevel || '30')
+          setDeficit(plan.deficit?.toString() || '0')
+          setDailySteps(plan.dailySteps?.toString() || '5000')
+          setProteinPerKg(plan.proteinPerKg?.toString() || '2.0')
+          setNumMeals(plan.numMeals?.toString() || '3')
+          setCustomDistribution(plan.customDistribution || false)
+          setMealDistribution(plan.mealCalories || [])
+          setCustomMacros(plan.customMacros ? JSON.parse(JSON.stringify(plan.customMacros)) : [])
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load client data:', error)
+      toast.error('Kunde inte ladda klientdata')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleSave = async () => {
+    if (!selectedClient) {
+      toast.error('Välj en klient först')
+      return
+    }
+
+    setIsSaving(true)
+    try {
+      const response = await fetch('/api/calorie-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId: selectedClient,
+          weight: weight ? parseFloat(weight) : null,
+          activityLevel,
+          deficit: parseInt(deficit),
+          dailySteps: parseInt(dailySteps),
+          proteinPerKg: parseFloat(proteinPerKg),
+          fatPerKg: parseFloat(fatPerKg),
+          numMeals: parseInt(numMeals),
+          customDistribution,
+          mealCalories: mealDistribution,
+          customMacros: customMacros.length > 0 ? customMacros : null
+        })
+      })
+
+      if (response.ok) {
+        toast.success('Kaloriplan sparad!')
+      } else {
+        toast.error('Kunde inte spara kaloriplan')
+      }
+    } catch (error) {
+      console.error('Failed to save:', error)
+      toast.error('Något gick fel')
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   const calculateBMR = () => {
     if (!weight) return 0
@@ -144,12 +246,47 @@ export default function CalorieCoachTool() {
   return (
     <div className="space-y-6">
       <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px]">
-        <div className="flex items-center gap-3 mb-8">
-          <Calculator className="text-[#FFD700]" size={32} />
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-            Kaloriverktyg för Coaches
-          </h1>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <Calculator className="text-[#FFD700]" size={32} />
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+              Kaloriverktyg för Coaches
+            </h1>
+          </div>
+
+          {/* Client Selector and Save Button */}
+          <div className="flex items-center gap-3">
+            <div className="min-w-[250px]">
+              <select
+                value={selectedClient}
+                onChange={(e) => setSelectedClient(e.target.value)}
+                className="w-full px-4 py-2 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.3)] rounded-lg text-white focus:outline-none focus:border-[#FFD700]"
+                disabled={isLoading}
+              >
+                <option value="">Välj klient...</option>
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.name || client.email}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              onClick={handleSave}
+              disabled={!selectedClient || isSaving}
+              className="px-6 py-2 bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              <Save size={18} />
+              {isSaving ? 'Sparar...' : 'Spara'}
+            </button>
+          </div>
         </div>
+
+        {isLoading && (
+          <div className="mb-6 p-4 bg-[rgba(59,130,246,0.1)] border border-[rgba(59,130,246,0.3)] rounded-lg text-center text-white">
+            Laddar klientdata...
+          </div>
+        )}
 
         {/* Sektion 1: Beräkna BMR */}
         <div className="mb-8 p-6 bg-[rgba(59,130,246,0.1)] border border-[rgba(59,130,246,0.3)] rounded-xl">
