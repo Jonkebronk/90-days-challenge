@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { clientId: string } }
+  { params }: { params: Promise<{ clientId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -23,7 +23,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Coach not found' }, { status: 404 })
     }
 
-    const { clientId } = params
+    const { clientId } = await params
 
     // Find the client
     const client = await prisma.user.findUnique({
