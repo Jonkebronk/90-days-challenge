@@ -16,7 +16,8 @@ import {
   ChevronDown,
   FileText,
   GraduationCap,
-  UserPlus
+  UserPlus,
+  Calculator
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
@@ -39,6 +40,7 @@ const navigation = [
       { name: 'Lektioner', href: '/dashboard/content/lessons', icon: GraduationCap },
     ]
   },
+  { name: 'Verktyg', href: '/dashboard/tools', icon: Calculator },
   { name: 'Check-in', href: '/dashboard/check-in', icon: Calendar },
   { name: 'Progress', href: '/dashboard/progress', icon: TrendingUp },
   { name: 'Profile', href: '/dashboard/profile', icon: User },
