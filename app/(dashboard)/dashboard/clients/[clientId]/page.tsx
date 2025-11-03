@@ -13,9 +13,20 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, Save } from 'lucide-react'
+import { ArrowLeft, Save, Calculator } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
+
+interface CaloriePlan {
+  weight: number | null
+  activityLevel: string | null
+  deficit: number | null
+  dailySteps: number | null
+  proteinPerKg: number | null
+  numMeals: number | null
+  customDistribution: boolean
+  mealCalories: number[]
+}
 
 const clientProfileSchema = z.object({
   // Step 1: Profile
@@ -66,6 +77,7 @@ export default function ClientDetailPage({ params }: PageProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [clientId, setClientId] = useState<string>('')
+  const [caloriePlan, setCaloriePlan] = useState<CaloriePlan | null>(null)
 
   const { register, handleSubmit, control, formState: { errors }, setValue } = useForm<ClientProfileForm>({
     mode: 'onChange',
@@ -82,6 +94,7 @@ export default function ClientDetailPage({ params }: PageProps) {
       const { clientId } = await params
       setClientId(clientId)
       fetchClientData(clientId)
+      fetchCaloriePlan(clientId)
     }
     loadClient()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -112,6 +125,20 @@ export default function ClientDetailPage({ params }: PageProps) {
       router.push('/dashboard/clients')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchCaloriePlan = async (id: string) => {
+    try {
+      const response = await fetch(`/api/calorie-plan?clientId=${id}`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.caloriePlan) {
+          setCaloriePlan(data.caloriePlan)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch calorie plan:', error)
     }
   }
 
@@ -170,6 +197,84 @@ export default function ClientDetailPage({ params }: PageProps) {
           <p className="text-muted-foreground">{client.email}</p>
         </div>
       </div>
+
+      {/* Calorie Plan Summary */}
+      {caloriePlan && (
+        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Calculator className="text-[#FFD700]" size={24} />
+                <CardTitle className="text-[#FFD700]">Kaloriplan</CardTitle>
+              </div>
+              <Link href="/dashboard/tools">
+                <Button variant="outline" size="sm" className="border-[#FFD700] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]">
+                  Redigera i verktyg
+                </Button>
+              </Link>
+            </div>
+            <CardDescription className="text-[rgba(255,255,255,0.6)]">
+              Sparad kaloriinformation för klienten
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {caloriePlan.weight && (
+                <div className="bg-[rgba(59,130,246,0.1)] p-4 rounded-lg border border-[rgba(59,130,246,0.3)]">
+                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Vikt</p>
+                  <p className="text-2xl font-bold text-blue-400">{caloriePlan.weight} kg</p>
+                </div>
+              )}
+              {caloriePlan.activityLevel && (
+                <div className="bg-[rgba(34,197,94,0.1)] p-4 rounded-lg border border-[rgba(34,197,94,0.3)]">
+                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Aktivitetsnivå</p>
+                  <p className="text-2xl font-bold text-green-400">x{caloriePlan.activityLevel}</p>
+                </div>
+              )}
+              {caloriePlan.deficit !== null && (
+                <div className="bg-[rgba(249,115,22,0.1)] p-4 rounded-lg border border-[rgba(249,115,22,0.3)]">
+                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Underskott</p>
+                  <p className="text-2xl font-bold text-orange-400">{caloriePlan.deficit} kcal</p>
+                </div>
+              )}
+              {caloriePlan.dailySteps && (
+                <div className="bg-[rgba(168,85,247,0.1)] p-4 rounded-lg border border-[rgba(168,85,247,0.3)]">
+                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Steg/dag</p>
+                  <p className="text-2xl font-bold text-purple-400">{caloriePlan.dailySteps.toLocaleString()}</p>
+                </div>
+              )}
+              {caloriePlan.proteinPerKg && (
+                <div className="bg-[rgba(239,68,68,0.1)] p-4 rounded-lg border border-[rgba(239,68,68,0.3)]">
+                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Protein</p>
+                  <p className="text-2xl font-bold text-red-400">{caloriePlan.proteinPerKg} g/kg</p>
+                </div>
+              )}
+              {caloriePlan.numMeals && (
+                <div className="bg-[rgba(34,197,94,0.1)] p-4 rounded-lg border border-[rgba(34,197,94,0.3)]">
+                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Antal måltider</p>
+                  <p className="text-2xl font-bold text-green-400">{caloriePlan.numMeals}</p>
+                </div>
+              )}
+              {caloriePlan.weight && caloriePlan.activityLevel && (
+                <div className="bg-[rgba(255,215,0,0.1)] p-4 rounded-lg border border-[rgba(255,215,0,0.3)]">
+                  <p className="text-sm text-[rgba(255,255,255,0.6)]">BMR</p>
+                  <p className="text-2xl font-bold text-[#FFD700]">
+                    {Math.round(caloriePlan.weight * parseFloat(caloriePlan.activityLevel))} kcal
+                  </p>
+                </div>
+              )}
+              {caloriePlan.weight && caloriePlan.activityLevel && caloriePlan.deficit !== null && (
+                <div className="bg-[rgba(255,215,0,0.1)] p-4 rounded-lg border border-[rgba(255,215,0,0.3)]">
+                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Målintag</p>
+                  <p className="text-2xl font-bold text-[#FFD700]">
+                    {Math.round(caloriePlan.weight * parseFloat(caloriePlan.activityLevel) - caloriePlan.deficit)} kcal
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <form onSubmit={onSubmit} className="space-y-6">
         {/* Profile Information */}
