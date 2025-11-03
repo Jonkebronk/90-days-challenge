@@ -150,13 +150,6 @@ export default function GoldenTicketPage() {
               )}
             </Button>
           </form>
-
-          {/* Vision text */}
-          <div className="mt-12 pt-8 border-t border-[#D4AF37]/20">
-            <p className="text-sm text-[#B0B0B0] leading-relaxed italic">
-              En exklusiv träningsresa för utvalda individer
-            </p>
-          </div>
         </div>
       </div>
 
