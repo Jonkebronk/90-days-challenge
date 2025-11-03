@@ -70,6 +70,12 @@ export default function ClientDetailPage({ params }: PageProps) {
   const { register, handleSubmit, control, formState: { errors }, setValue } = useForm<ClientProfileForm>({
     resolver: zodResolver(clientProfileSchema),
     mode: 'onChange',
+    defaultValues: {
+      trainingDays: [],
+      allergies: [],
+      dietaryPreferences: [],
+      excludedIngredients: [],
+    },
   })
 
   useEffect(() => {
