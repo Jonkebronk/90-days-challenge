@@ -150,21 +150,6 @@ export default function GoldenTicketPage() {
               )}
             </Button>
           </form>
-
-          {/* Mysterious hints */}
-          <div className="space-y-4 mt-12 pt-8 border-t border-[#D4AF37]/20">
-            <p className="text-xs text-[#B0B0B0] uppercase tracking-widest">
-              Limited to 100 members per cycle
-            </p>
-
-            <div className="flex items-center justify-center gap-8 text-xs text-[#D4AF37]/60">
-              <span>Elite Protocols</span>
-              <span>•</span>
-              <span>Proven Results</span>
-              <span>•</span>
-              <span>Expert Guidance</span>
-            </div>
-          </div>
         </div>
       </div>
 
