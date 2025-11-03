@@ -50,6 +50,9 @@ model User {
   coachId       String?
   invitationToken String?  @unique
   invitationSentAt DateTime?
+  inviteCode    String?   @unique // Golden ticket code (e.g., "GOLD-A7K9-2M4P")
+  inviteCodeExpiresAt DateTime? // Code expiration date
+  inviteCodeUsedAt DateTime? // When the code was used
 
   // Extended client info
   firstName     String?

@@ -22,6 +22,8 @@ interface Client {
   status: string
   invitationSentAt: string | null
   createdAt: string
+  inviteCode: string | null
+  inviteCodeExpiresAt: string | null
 }
 
 interface NewClientForm {

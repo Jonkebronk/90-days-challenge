@@ -73,6 +73,26 @@ export async function POST(request: NextRequest) {
     // Generate invitation token
     const invitationToken = crypto.randomBytes(32).toString('hex')
 
+    // Generate unique golden ticket code (format: GOLD-XXXX-XXXX)
+    const generateInviteCode = () => {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // Removed ambiguous characters
+      const part1 = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+      const part2 = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+      return `GOLD-${part1}-${part2}`
+    }
+
+    let inviteCode = generateInviteCode()
+    // Ensure code is unique
+    let existingCode = await prisma.user.findUnique({ where: { inviteCode } })
+    while (existingCode) {
+      inviteCode = generateInviteCode()
+      existingCode = await prisma.user.findUnique({ where: { inviteCode } })
+    }
+
+    // Code expires in 30 days
+    const inviteCodeExpiresAt = new Date()
+    inviteCodeExpiresAt.setDate(inviteCodeExpiresAt.getDate() + 30)
+
     // Create the client user with pending status
     // Membership starts today and lasts 3 months (90 days)
     const client = await prisma.user.create({
@@ -96,6 +116,8 @@ export async function POST(request: NextRequest) {
         coachId: coach.id,
         invitationToken,
         invitationSentAt: new Date(),
+        inviteCode,
+        inviteCodeExpiresAt,
       },
     })
 
@@ -109,6 +131,8 @@ export async function POST(request: NextRequest) {
         name: client.name,
         email: client.email,
         status: client.status,
+        inviteCode: client.inviteCode,
+        inviteCodeExpiresAt: client.inviteCodeExpiresAt,
       },
     })
   } catch (error) {
