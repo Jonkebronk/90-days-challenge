@@ -46,13 +46,7 @@ export async function POST(request: NextRequest) {
       lastName,
       email,
       phone,
-      countryCode,
-      country,
-      language,
       tags,
-      startDate,
-      membershipStatus,
-      checkInFrequency,
       checkInPeriod,
       checkInDay,
     } = body
@@ -79,6 +73,11 @@ export async function POST(request: NextRequest) {
     // Generate invitation token
     const invitationToken = crypto.randomBytes(32).toString('hex')
 
+    // Calculate end date (3 months from now)
+    const startDate = new Date()
+    const endDate = new Date()
+    endDate.setMonth(endDate.getMonth() + 3)
+
     // Create the client user with pending status
     const client = await prisma.user.create({
       data: {
@@ -86,14 +85,15 @@ export async function POST(request: NextRequest) {
         lastName,
         name: `${firstName} ${lastName}`,
         email,
-        phone,
-        countryCode,
-        country,
-        language,
+        phone: phone || null,
+        countryCode: '+46', // Default to Sweden
+        country: 'Sverige', // Default to Sweden
+        language: 'Svenska', // Default to Swedish
         tags: tags || [],
-        membershipStartDate: startDate ? new Date(startDate) : new Date(),
-        membershipStatus,
-        checkInFrequency,
+        membershipStartDate: startDate,
+        membershipEndDate: endDate,
+        membershipStatus: 'Pågående',
+        checkInFrequency: '1', // Always 1
         checkInPeriod,
         checkInDay,
         role: 'client',

@@ -28,13 +28,7 @@ interface NewClientForm {
   lastName: string
   email: string
   phone: string
-  countryCode: string
-  country: string
-  language: string
   tags: string[]
-  startDate: string
-  membershipStatus: string
-  checkInFrequency: string
   checkInPeriod: string
   checkInDay: string
 }
@@ -51,20 +45,12 @@ export default function ClientsPage() {
     lastName: '',
     email: '',
     phone: '',
-    countryCode: '+46',
-    country: 'Sverige',
-    language: 'Svenska',
     tags: [],
-    startDate: new Date().toISOString().split('T')[0],
-    membershipStatus: 'Pågående',
-    checkInFrequency: '1',
     checkInPeriod: 'Vecka',
     checkInDay: 'Måndag',
   })
 
   const availableTags = ['Nutrition Only', 'VIP', 'Workout Only']
-  const countries = ['Sverige', 'Norge', 'Danmark', 'Finland']
-  const languages = ['Svenska', 'English', 'Norsk', 'Dansk']
 
   useEffect(() => {
     fetchClients()
@@ -117,13 +103,7 @@ export default function ClientsPage() {
           lastName: '',
           email: '',
           phone: '',
-          countryCode: '+46',
-          country: 'Sverige',
-          language: 'Svenska',
           tags: [],
-          startDate: new Date().toISOString().split('T')[0],
-          membershipStatus: 'Pågående',
-          checkInFrequency: '1',
           checkInPeriod: 'Vecka',
           checkInDay: 'Måndag',
         })
@@ -215,55 +195,12 @@ export default function ClientsPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="phone">Telefon</Label>
-                  <div className="flex gap-2">
-                    <Select value={newClient.countryCode} onValueChange={(value) => setNewClient({ ...newClient, countryCode: value })}>
-                      <SelectTrigger className="w-24">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="+46">🇸🇪 +46</SelectItem>
-                        <SelectItem value="+47">🇳🇴 +47</SelectItem>
-                        <SelectItem value="+45">🇩🇰 +45</SelectItem>
-                        <SelectItem value="+358">🇫🇮 +358</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      id="phone"
-                      value={newClient.phone}
-                      onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
-                      placeholder="70 123 45 67"
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="country">Land</Label>
-                    <Select value={newClient.country} onValueChange={(value) => setNewClient({ ...newClient, country: value })}>
-                      <SelectTrigger id="country">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {countries.map(country => (
-                          <SelectItem key={country} value={country}>{country}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="language">Språk</Label>
-                    <Select value={newClient.language} onValueChange={(value) => setNewClient({ ...newClient, language: value })}>
-                      <SelectTrigger id="language">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {languages.map(lang => (
-                          <SelectItem key={lang} value={lang}>{lang}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <Input
+                    id="phone"
+                    value={newClient.phone}
+                    onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                    placeholder="070 123 45 67"
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -307,56 +244,11 @@ export default function ClientsPage() {
 
               <Separator />
 
-              {/* Medlemskap */}
-              <div className="space-y-4">
-                <h3 className="font-semibold">Medlemskap</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="startDate">Startdatum</Label>
-                    <Input
-                      id="startDate"
-                      type="date"
-                      value={newClient.startDate}
-                      onChange={(e) => setNewClient({ ...newClient, startDate: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="membershipStatus">Varaktighet</Label>
-                    <Select value={newClient.membershipStatus} onValueChange={(value) => setNewClient({ ...newClient, membershipStatus: value })}>
-                      <SelectTrigger id="membershipStatus">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Pågående">Pågående</SelectItem>
-                        <SelectItem value="Pausad">Pausad</SelectItem>
-                        <SelectItem value="Avslutad">Avslutad</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
               {/* Check-in */}
               <div className="space-y-4">
                 <h3 className="font-semibold">Check-in</h3>
                 <p className="text-sm text-muted-foreground">Skicka påminnelse om check-in varje gång:</p>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label>Frekvens</Label>
-                    <Select value={newClient.checkInFrequency} onValueChange={(value) => setNewClient({ ...newClient, checkInFrequency: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">1</SelectItem>
-                        <SelectItem value="2">2</SelectItem>
-                        <SelectItem value="3">3</SelectItem>
-                        <SelectItem value="4">4</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Check-in-period</Label>
                     <Select value={newClient.checkInPeriod} onValueChange={(value) => setNewClient({ ...newClient, checkInPeriod: value })}>
