@@ -43,17 +43,20 @@ export async function POST(
       )
     }
 
-    // Convert birthdate string to DateTime if provided
-    let birthdateValue = undefined
+    // Update User birthdate if provided
     if (body.birthdate) {
-      birthdateValue = new Date(body.birthdate)
+      await prisma.user.update({
+        where: { id: clientId },
+        data: {
+          birthdate: new Date(body.birthdate),
+        },
+      })
     }
 
     // Update or create the user profile
     const profile = await prisma.userProfile.upsert({
       where: { userId: clientId },
       update: {
-        birthdate: birthdateValue,
         genderAtBirth: body.gender,
         heightCm: body.heightCm ? parseFloat(body.heightCm) : null,
         currentWeightKg: body.currentWeightKg ? parseFloat(body.currentWeightKg) : null,
@@ -73,7 +76,6 @@ export async function POST(
       },
       create: {
         userId: clientId,
-        birthdate: birthdateValue,
         genderAtBirth: body.gender,
         heightCm: body.heightCm ? parseFloat(body.heightCm) : null,
         currentWeightKg: body.currentWeightKg ? parseFloat(body.currentWeightKg) : null,
