@@ -32,13 +32,13 @@ const clientProfileSchema = z.object({
   activityLevelWork: z.enum(['very_low', 'low', 'medium', 'high']).optional(),
   trainingExperience: z.enum(['beginner', 'experienced', 'very_experienced']).optional(),
   trainingDetails: z.string().optional(),
-  trainingDays: z.array(z.string()).optional().default([]),
+  trainingDays: z.array(z.string()).default([]),
 
   // Step 4: Nutrition
   nutritionNotes: z.string().optional(),
-  allergies: z.array(z.string()).optional().default([]),
-  dietaryPreferences: z.array(z.string()).optional().default([]),
-  excludedIngredients: z.array(z.string()).optional().default([]),
+  allergies: z.array(z.string()).default([]),
+  dietaryPreferences: z.array(z.string()).default([]),
+  excludedIngredients: z.array(z.string()).default([]),
   nutritionMissing: z.string().optional(),
 
   // Step 5: Lifestyle
