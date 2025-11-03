@@ -1,0 +1,69 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { clientId: string } }
+) {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Get the current user (coach)
+    const coach = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    })
+
+    if (!coach) {
+      return NextResponse.json({ error: 'Coach not found' }, { status: 404 })
+    }
+
+    const { clientId } = params
+
+    // Find the client
+    const client = await prisma.user.findUnique({
+      where: { id: clientId },
+    })
+
+    if (!client) {
+      return NextResponse.json({ error: 'Client not found' }, { status: 404 })
+    }
+
+    // Verify the client belongs to this coach
+    if (client.coachId !== coach.id) {
+      return NextResponse.json(
+        { error: 'You can only delete your own clients' },
+        { status: 403 }
+      )
+    }
+
+    // Only allow deletion of pending clients
+    if (client.status !== 'pending') {
+      return NextResponse.json(
+        { error: 'Only pending clients can be deleted' },
+        { status: 400 }
+      )
+    }
+
+    // Delete the client
+    await prisma.user.delete({
+      where: { id: clientId },
+    })
+
+    return NextResponse.json({
+      success: true,
+      message: 'Client deleted successfully',
+    })
+  } catch (error) {
+    console.error('Failed to delete client:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete client' },
+      { status: 500 }
+    )
+  }
+}

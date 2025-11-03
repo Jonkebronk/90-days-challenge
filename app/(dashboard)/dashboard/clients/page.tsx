@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Plus, Mail, CheckCircle2, Clock, User, X } from 'lucide-react'
+import { Plus, Mail, CheckCircle2, Clock, User, X, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Separator } from '@/components/ui/separator'
 
@@ -40,6 +40,7 @@ export default function ClientsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isInviting, setIsInviting] = useState(false)
+  const [deletingClientId, setDeletingClientId] = useState<string | null>(null)
   const [newClient, setNewClient] = useState<NewClientForm>({
     firstName: '',
     lastName: '',
@@ -116,6 +117,32 @@ export default function ClientsPage() {
       console.error('Invite error:', error)
     } finally {
       setIsInviting(false)
+    }
+  }
+
+  const handleDeleteClient = async (clientId: string, clientEmail: string) => {
+    if (!confirm(`Are you sure you want to delete ${clientEmail}?`)) {
+      return
+    }
+
+    setDeletingClientId(clientId)
+    try {
+      const response = await fetch(`/api/clients/${clientId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        toast.success('Client deleted successfully')
+        fetchClients()
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Failed to delete client')
+      }
+    } catch (error) {
+      toast.error('Failed to delete client')
+      console.error('Delete error:', error)
+    } finally {
+      setDeletingClientId(null)
     }
   }
 
@@ -347,6 +374,17 @@ export default function ClientsPage() {
                         <p className="text-xs text-muted-foreground">
                           Invited {new Date(client.invitationSentAt).toLocaleDateString()}
                         </p>
+                      )}
+                      {client.status === 'pending' && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteClient(client.id, client.email)}
+                          disabled={deletingClientId === client.id}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       )}
                     </div>
                   </div>
