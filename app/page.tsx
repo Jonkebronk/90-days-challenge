@@ -165,11 +165,6 @@ export default function GoldenTicketPage() {
               <span>Expert Guidance</span>
             </div>
           </div>
-
-          {/* Footer hint */}
-          <p className="text-xs text-[#B0B0B0]/50 mt-8">
-            Din coach har gett dig tillgång till något speciellt
-          </p>
         </div>
       </div>
 
