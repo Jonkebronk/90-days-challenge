@@ -58,17 +58,17 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b">
+      <header className="sticky top-0 z-50 bg-[rgba(10,10,10,0.8)] backdrop-blur-lg border-b border-[rgba(255,215,0,0.2)]">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/dashboard" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">90</span>
+              <div className="w-8 h-8 bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-lg flex items-center justify-center">
+                <span className="text-[#0a0a0a] font-bold text-lg">90</span>
               </div>
-              <span className="font-bold text-lg hidden sm:inline">90 Days Challenge</span>
+              <span className="font-bold text-lg hidden sm:inline bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">90 Days Challenge</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -90,8 +90,8 @@ export default function DashboardLayout({
                           className={`
                             flex items-center gap-2 px-4 py-2 rounded-lg transition-all
                             ${isDropdownActive
-                              ? 'bg-primary text-primary-foreground font-medium'
-                              : 'hover:bg-accent text-muted-foreground hover:text-foreground'
+                              ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-medium'
+                              : 'hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]'
                             }
                           `}
                         >
@@ -127,8 +127,8 @@ export default function DashboardLayout({
                     className={`
                       flex items-center gap-2 px-4 py-2 rounded-lg transition-all
                       ${isActive
-                        ? 'bg-primary text-primary-foreground font-medium'
-                        : 'hover:bg-accent text-muted-foreground hover:text-foreground'
+                        ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-medium'
+                        : 'hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]'
                       }
                     `}
                   >
@@ -142,8 +142,8 @@ export default function DashboardLayout({
             {/* User Menu */}
             <div className="flex items-center gap-2">
               <div className="hidden sm:flex items-center gap-2 text-sm">
-                <span className="text-muted-foreground">Hello,</span>
-                <span className="font-medium">{session?.user?.name || 'User'}</span>
+                <span className="text-[rgba(255,255,255,0.5)]">Hello,</span>
+                <span className="font-medium text-[#FFD700]">{session?.user?.name || 'User'}</span>
               </div>
               <Button
                 variant="ghost"
@@ -173,7 +173,7 @@ export default function DashboardLayout({
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t bg-white dark:bg-slate-900">
+          <div className="md:hidden border-t border-[rgba(255,215,0,0.2)] bg-[rgba(10,10,10,0.95)]">
             <nav className="container mx-auto px-4 py-4 space-y-1">
               {navigation.map((item) => {
                 const Icon = item.icon
@@ -183,7 +183,7 @@ export default function DashboardLayout({
                 if ('dropdown' in item && item.dropdown) {
                   return (
                     <div key={item.name} className="space-y-1">
-                      <div className="flex items-center gap-3 px-4 py-3 text-muted-foreground font-medium">
+                      <div className="flex items-center gap-3 px-4 py-3 text-[rgba(255,255,255,0.6)] font-medium">
                         <Icon className="w-5 h-5" />
                         <span>{item.name}</span>
                       </div>
@@ -199,8 +199,8 @@ export default function DashboardLayout({
                               className={`
                                 flex items-center gap-3 px-4 py-2 rounded-lg transition-all
                                 ${isDropdownActive
-                                  ? 'bg-primary text-primary-foreground font-medium'
-                                  : 'hover:bg-accent text-muted-foreground'
+                                  ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-medium'
+                                  : 'hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]'
                                 }
                               `}
                             >
@@ -222,8 +222,8 @@ export default function DashboardLayout({
                     className={`
                       flex items-center gap-3 px-4 py-3 rounded-lg transition-all
                       ${isActive
-                        ? 'bg-primary text-primary-foreground font-medium'
-                        : 'hover:bg-accent text-muted-foreground'
+                        ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-medium'
+                        : 'hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]'
                       }
                     `}
                   >
@@ -234,7 +234,7 @@ export default function DashboardLayout({
               })}
               <button
                 onClick={handleSignOut}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left text-muted-foreground hover:bg-accent transition-all"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700] transition-all"
               >
                 <LogOut className="w-5 h-5" />
                 <span>Sign Out</span>
