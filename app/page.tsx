@@ -112,11 +112,6 @@ export default function HomePage() {
           </svg>
         </div>
 
-        {/* Ornament */}
-        <div className="text-[rgba(255,215,0,0.3)] text-2xl tracking-[20px] mb-5 animate-twinkle">
-          ✦ ✦ ✦
-        </div>
-
         {/* Title */}
         <div className="mb-[30px]">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-5 animate-shimmer" />
