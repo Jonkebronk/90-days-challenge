@@ -214,7 +214,7 @@ export default function HomePage() {
               <ul className="space-y-3 text-left">
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
-                  <span>Du som letar efter en "magisk piller" utan att lägga in arbetet</span>
+                  <span>Du som letar efter en &ldquo;magisk piller&rdquo; utan att lägga in arbetet</span>
                 </li>
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
@@ -222,7 +222,7 @@ export default function HomePage() {
                 </li>
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
-                  <span>Du som inte kan följa en plan och vill "göra på ditt sätt"</span>
+                  <span>Du som inte kan följa en plan och vill &ldquo;göra på ditt sätt&rdquo;</span>
                 </li>
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
