@@ -45,34 +45,6 @@ export default function HomePage() {
 
       {/* Main container */}
       <div className="relative z-10 text-center px-10 py-10 max-w-[600px] animate-fadeIn">
-        {/* Symbol */}
-        <div className="w-[120px] h-[120px] mx-auto mb-10 animate-symbolPulse">
-          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#FFD700" stopOpacity="1" />
-                <stop offset="100%" stopColor="#FFA500" stopOpacity="1" />
-              </linearGradient>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <path
-              d="M50 10 L90 85 L10 85 Z"
-              fill="url(#goldGradient)"
-              filter="url(#glow)"
-              stroke="#FFD700"
-              strokeWidth="2"
-            />
-            <circle cx="50" cy="50" r="4" fill="#FFD700" />
-            <path d="M50 50 L50 75" stroke="#FFD700" strokeWidth="2" />
-          </svg>
-        </div>
-
         {/* Title */}
         <div className="mb-[50px]">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-5 animate-shimmer" />
@@ -234,22 +206,6 @@ export default function HomePage() {
 
         .animate-fadeIn {
           animation: fadeIn 1s ease-out;
-        }
-
-        @keyframes symbolPulse {
-          0%,
-          100% {
-            transform: scale(1);
-            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
-          }
-          50% {
-            transform: scale(1.05);
-            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.8));
-          }
-        }
-
-        .animate-symbolPulse {
-          animation: symbolPulse 3s infinite ease-in-out;
         }
 
         @keyframes twinkle {
