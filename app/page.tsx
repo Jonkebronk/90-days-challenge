@@ -1,59 +1,11 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { CountdownTimer } from '@/components/countdown-timer'
 
 export default function HomePage() {
   const router = useRouter()
-  const [code, setCode] = useState('')
-  const [isValidating, setIsValidating] = useState(false)
-  const [error, setError] = useState('')
-  const [showSuccess, setShowSuccess] = useState(false)
-
-  const handleCodeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase()
-    if (value.length > 4) {
-      value = value.slice(0, 4) + '-' + value.slice(4, 8)
-    }
-    setCode(value)
-  }
-
-  const handleSubmit = async () => {
-    setError('')
-    setIsValidating(true)
-
-    try {
-      const cleanCode = code.replace('-', '')
-      const response = await fetch('/api/verify-invite-code', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: cleanCode }),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        setShowSuccess(true)
-        setTimeout(() => {
-          router.push(`/setup-account?token=${data.invitationToken}`)
-        }, 2000)
-      } else {
-        setError(data.error || 'Ogiltig kod. Vänligen kontrollera och försök igen.')
-      }
-    } catch (err) {
-      setError('Något gick fel. Vänligen försök igen.')
-    } finally {
-      setIsValidating(false)
-    }
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && code.length >= 8) {
-      handleSubmit()
-    }
-  }
 
   return (
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center">
@@ -214,59 +166,12 @@ export default function HomePage() {
           </div>
 
           {/* CTA Button */}
-          <button className="w-full py-5 px-10 text-lg tracking-[3px] uppercase font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] border-none rounded-lg cursor-pointer transition-all duration-300 font-['Orbitron',sans-serif] relative overflow-hidden hover:scale-105 hover:shadow-[0_10px_40px_rgba(255,215,0,0.4)] active:scale-[0.98] before:content-[''] before:absolute before:top-0 before:left-[-100%] before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-[rgba(255,255,255,0.3)] before:to-transparent before:transition-[left] before:duration-500 hover:before:left-[100%]">
+          <button
+            onClick={() => router.push('/signup')}
+            className="w-full py-5 px-10 text-lg tracking-[3px] uppercase font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] border-none rounded-lg cursor-pointer transition-all duration-300 font-['Orbitron',sans-serif] relative overflow-hidden hover:scale-105 hover:shadow-[0_10px_40px_rgba(255,215,0,0.4)] active:scale-[0.98] before:content-[''] before:absolute before:top-0 before:left-[-100%] before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-[rgba(255,255,255,0.3)] before:to-transparent before:transition-[left] before:duration-500 hover:before:left-[100%]"
+          >
             Ansök Nu
           </button>
-        </div>
-
-        {/* OR divider */}
-        <div className="flex items-center gap-5 my-10">
-          <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
-          <span className="text-sm tracking-[2px] text-[rgba(255,255,255,0.4)] uppercase font-light">
-            eller
-          </span>
-          <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
-        </div>
-
-        {/* Input section */}
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-10 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.1)]">
-          <div className="flex items-center justify-center gap-2.5 text-sm tracking-[2px] text-[rgba(255,215,0,0.8)] mb-5 uppercase font-semibold">
-            <span className="text-lg">🔑</span>
-            <span>Din Kod</span>
-          </div>
-
-          <input
-            type="text"
-            className={`w-full py-5 px-5 text-2xl tracking-[8px] text-center bg-[rgba(0,0,0,0.3)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg text-[#FFD700] font-['Orbitron',sans-serif] font-bold transition-all duration-300 uppercase placeholder:text-[rgba(255,215,0,0.3)] placeholder:tracking-[4px] focus:outline-none focus:border-[#FFD700] focus:shadow-[0_0_20px_rgba(255,215,0,0.3)] focus:bg-[rgba(0,0,0,0.5)] ${
-              error ? 'animate-shake border-[#ff4444]' : ''
-            }`}
-            placeholder="XXXX-XXXX"
-            maxLength={9}
-            value={code}
-            onChange={handleCodeInput}
-            onKeyPress={handleKeyPress}
-            disabled={isValidating}
-          />
-
-          <button
-            onClick={handleSubmit}
-            disabled={isValidating || code.length < 8}
-            className="w-full mt-5 py-5 px-10 text-lg tracking-[3px] uppercase font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] border-none rounded-lg cursor-pointer transition-all duration-300 font-['Orbitron',sans-serif] relative overflow-hidden hover:scale-105 hover:shadow-[0_10px_40px_rgba(255,215,0,0.4)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 before:content-[''] before:absolute before:top-0 before:left-[-100%] before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-[rgba(255,255,255,0.3)] before:to-transparent before:transition-[left] before:duration-500 hover:before:left-[100%]"
-          >
-            {isValidating ? 'Validerar...' : 'Lås Upp Tillgång'}
-          </button>
-
-          {showSuccess && (
-            <div className="mt-5 bg-[rgba(0,217,255,0.1)] border-2 border-[rgba(0,217,255,0.3)] py-5 px-5 rounded-lg animate-fadeIn">
-              ✓ Välkommen. Din transformation börjar nu.
-            </div>
-          )}
-
-          {error && (
-            <div className="mt-5 text-[#ff4444] text-sm">
-              {error}
-            </div>
-          )}
         </div>
 
         {/* Footer */}
@@ -376,23 +281,6 @@ export default function HomePage() {
 
         .animate-titleGlow {
           animation: titleGlow 2s ease-in-out infinite;
-        }
-
-        @keyframes shake {
-          0%,
-          100% {
-            transform: translateX(0);
-          }
-          25% {
-            transform: translateX(-10px);
-          }
-          75% {
-            transform: translateX(10px);
-          }
-        }
-
-        .animate-shake {
-          animation: shake 0.5s;
         }
 
         @media (max-width: 768px) {
