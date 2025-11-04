@@ -16,7 +16,7 @@ export async function POST(
 
     const { id } = await params
     const body = await request.json()
-    const { type, title, content, videoUrl, orderIndex, quizOptions } = body
+    const { type, title, content, videoUrl, documentUrl, orderIndex, quizOptions } = body
 
     if (!type) {
       return NextResponse.json({ error: 'Type is required' }, { status: 400 })
@@ -29,6 +29,7 @@ export async function POST(
         title: title || null,
         content: content || null,
         videoUrl: videoUrl || null,
+        documentUrl: documentUrl || null,
         orderIndex: orderIndex || 0,
         quizOptions: quizOptions || null
       }

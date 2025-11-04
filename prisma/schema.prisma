@@ -435,10 +435,11 @@ model Lesson {
 model Slide {
   id          String   @id @default(cuid())
   lessonId    String
-  type        String   // "MDX_SLIDE", "VIDEO", "QUIZ"
+  type        String   // "MDX_SLIDE", "VIDEO", "QUIZ", "DOCUMENT"
   title       String?
   content     String?  // MDX content for slides, question for quiz
   videoUrl    String?  // YouTube/Vimeo embed URL
+  documentUrl String?  // URL to Word/PDF document
   orderIndex  Int      @default(0)
 
   // Quiz-specific fields (not saved in database)

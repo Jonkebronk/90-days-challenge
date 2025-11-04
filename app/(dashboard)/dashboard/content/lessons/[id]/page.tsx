@@ -33,6 +33,7 @@ import {
   HelpCircle,
   Eye,
   Save,
+  File,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { MDXPreview } from '@/components/mdx-preview'
@@ -44,6 +45,7 @@ type Slide = {
   title?: string | null
   content?: string | null
   videoUrl?: string | null
+  documentUrl?: string | null
   orderIndex: number
   quizOptions?: any
 }
@@ -88,12 +90,14 @@ export default function LessonEditorPage() {
     title: string
     content: string
     videoUrl: string
+    documentUrl: string
     quizOptions: Array<{ text: string; correct: boolean; explanation?: string }>
   }>({
     type: 'MDX_SLIDE',
     title: '',
     content: '',
     videoUrl: '',
+    documentUrl: '',
     quizOptions: [],
   })
 
@@ -237,6 +241,7 @@ export default function LessonEditorPage() {
       title: slide.title || '',
       content: slide.content || '',
       videoUrl: slide.videoUrl || '',
+      documentUrl: slide.documentUrl || '',
       quizOptions: (slide.quizOptions as any) || [],
     })
   }
@@ -247,6 +252,7 @@ export default function LessonEditorPage() {
       title: '',
       content: '',
       videoUrl: '',
+      documentUrl: '',
       quizOptions: [],
     })
   }
@@ -257,6 +263,8 @@ export default function LessonEditorPage() {
         return <Video className="h-4 w-4" />
       case 'QUIZ':
         return <HelpCircle className="h-4 w-4" />
+      case 'DOCUMENT':
+        return <File className="h-4 w-4" />
       default:
         return <FileText className="h-4 w-4" />
     }
@@ -268,6 +276,8 @@ export default function LessonEditorPage() {
         return 'Video'
       case 'QUIZ':
         return 'Quiz'
+      case 'DOCUMENT':
+        return 'Dokument'
       default:
         return 'MDX Slide'
     }
@@ -450,6 +460,7 @@ export default function LessonEditorPage() {
                           <SelectItem value="MDX_SLIDE">MDX Slide</SelectItem>
                           <SelectItem value="VIDEO">Video</SelectItem>
                           <SelectItem value="QUIZ">Quiz</SelectItem>
+                          <SelectItem value="DOCUMENT">Dokument</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -591,6 +602,23 @@ export default function LessonEditorPage() {
                             Lägg till alternativ
                           </Button>
                         </div>
+                      </div>
+                    )}
+                    {slideData.type === 'DOCUMENT' && (
+                      <div>
+                        <Label htmlFor="slide-documentUrl">Dokument URL *</Label>
+                        <Input
+                          id="slide-documentUrl"
+                          value={slideData.documentUrl}
+                          onChange={(e) =>
+                            setSlideData({ ...slideData, documentUrl: e.target.value })
+                          }
+                          placeholder="https://docs.google.com/document/... eller https://example.com/file.pdf"
+                          required
+                        />
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Stöder Google Docs, PDF-filer, och Word-dokument (via direktlänk eller Google Drive)
+                        </p>
                       </div>
                     )}
                     <div className="flex justify-end gap-2 pt-4">

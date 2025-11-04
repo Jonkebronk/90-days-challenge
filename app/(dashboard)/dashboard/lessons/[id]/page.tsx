@@ -10,6 +10,7 @@ import { toast } from 'sonner'
 import { MDXPreview } from '@/components/mdx-preview'
 import { VideoEmbed } from '@/components/video-embed'
 import { Quiz } from '@/components/quiz'
+import { DocumentViewer } from '@/components/document-viewer'
 
 type Slide = {
   id: string
@@ -17,6 +18,7 @@ type Slide = {
   title?: string | null
   content?: string | null
   videoUrl?: string | null
+  documentUrl?: string | null
   orderIndex: number
   quizOptions?: any
 }
@@ -132,17 +134,19 @@ export default function LessonViewerPage() {
     }
   }
 
-  if (!session?.user || (session.user as any).role === 'coach') {
+  if (!session?.user) {
     return (
       <div className="container mx-auto p-6">
         <Card>
           <CardContent className="p-6">
-            <p className="text-muted-foreground">Du har inte behörighet att se denna sida.</p>
+            <p className="text-muted-foreground">Du måste vara inloggad för att se denna sida.</p>
           </CardContent>
         </Card>
       </div>
     )
   }
+
+  const isCoach = (session.user as any).role === 'coach'
 
   if (isLoading) {
     return (
@@ -252,6 +256,18 @@ export default function LessonViewerPage() {
                       </div>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Document Slide */}
+              {currentSlide.type === 'DOCUMENT' && currentSlide.documentUrl && (
+                <div className="space-y-4">
+                  {currentSlide.content && (
+                    <div className="prose max-w-none mb-6">
+                      <MDXPreview content={currentSlide.content} />
+                    </div>
+                  )}
+                  <DocumentViewer url={currentSlide.documentUrl} title={currentSlide.title || undefined} />
                 </div>
               )}
             </CardContent>

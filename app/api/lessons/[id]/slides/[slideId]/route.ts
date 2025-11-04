@@ -16,13 +16,14 @@ export async function PUT(
 
     const { slideId } = await params
     const body = await request.json()
-    const { type, title, content, videoUrl, orderIndex, quizOptions } = body
+    const { type, title, content, videoUrl, documentUrl, orderIndex, quizOptions } = body
 
     const updateData: any = {}
     if (type !== undefined) updateData.type = type
     if (title !== undefined) updateData.title = title
     if (content !== undefined) updateData.content = content
     if (videoUrl !== undefined) updateData.videoUrl = videoUrl
+    if (documentUrl !== undefined) updateData.documentUrl = documentUrl
     if (orderIndex !== undefined) updateData.orderIndex = orderIndex
     if (quizOptions !== undefined) updateData.quizOptions = quizOptions
 
