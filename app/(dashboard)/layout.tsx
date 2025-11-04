@@ -19,7 +19,8 @@ import {
   UserPlus,
   Calculator,
   Activity,
-  Utensils
+  Utensils,
+  Zap
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
@@ -46,6 +47,7 @@ const navigation = [
     name: 'Verktyg',
     icon: Calculator,
     dropdown: [
+      { name: 'Klientplan Workspace', href: '/dashboard/tools/workspace', icon: Zap },
       { name: 'Kaloriverktyg', href: '/dashboard/tools', icon: Calculator },
       { name: 'Måltidsfördelning', href: '/dashboard/tools/meal-distribution', icon: Utensils },
       { name: 'Stegkalkylator', href: '/dashboard/tools/steps', icon: Activity },
