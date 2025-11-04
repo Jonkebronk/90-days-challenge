@@ -66,7 +66,7 @@ export default function HomePage() {
         </div>
 
         {/* Title */}
-        <div className="mb-[30px]">
+        <div className="mb-[50px]">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-5 animate-shimmer" />
           <h1 className="font-['Orbitron',sans-serif] text-5xl font-black tracking-[6px] leading-[1.2] uppercase animate-titleGlow bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
             90-DAGARS
@@ -74,11 +74,6 @@ export default function HomePage() {
             CHALLENGE
           </h1>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-5 animate-shimmer" />
-        </div>
-
-        {/* Countdown Timer */}
-        <div className="mb-12">
-          <CountdownTimer />
         </div>
 
         {/* Vem passar programmet för? Section */}
@@ -163,6 +158,16 @@ export default function HomePage() {
                 </li>
               </ul>
             </div>
+          </div>
+
+          {/* Countdown Timer */}
+          <div className="mb-8">
+            <div className="text-center mb-6">
+              <p className="text-[rgba(255,255,255,0.8)] text-lg md:text-xl tracking-[2px] uppercase font-['Orbitron',sans-serif] font-semibold">
+                Ansökningarna stänger om:
+              </p>
+            </div>
+            <CountdownTimer />
           </div>
 
           {/* CTA Button */}
