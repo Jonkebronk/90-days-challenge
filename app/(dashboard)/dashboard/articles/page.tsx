@@ -158,191 +158,148 @@ export default function ArticleBankPage() {
     )
   }
 
+  // Sort categories by orderIndex
+  const sortedCategories = [...categories].sort((a: any, b: any) =>
+    (a.orderIndex || 0) - (b.orderIndex || 0)
+  )
+
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Artikel Bank</h1>
-        <p className="text-muted-foreground mt-1">
-          Läs artiklar och lär dig mer om hälsa, träning och nutrition
-        </p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+      <div className="container mx-auto p-6 space-y-8 max-w-5xl">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
+          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
+            Artikel Bank
+          </h1>
+          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+            Din kunskapsresa genom de 90 dagarna
+          </p>
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
+        </div>
 
-      {/* Search and Filters */}
-      <Card>
-        <CardContent className="pt-6 space-y-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Sök artiklar..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
-          {/* Filters */}
-          <div className="flex items-center gap-4">
-            <Filter className="h-5 w-5 text-muted-foreground" />
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <Label className="text-xs">Kategori</Label>
-                <Select value={filterCategory} onValueChange={setFilterCategory}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Alla kategorier</SelectItem>
-                    {categories.map(cat => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-xs">Fas</Label>
-                <Select value={filterPhase} onValueChange={setFilterPhase}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Alla faser</SelectItem>
-                    <SelectItem value="1">Fas 1 (1-30)</SelectItem>
-                    <SelectItem value="2">Fas 2 (31-60)</SelectItem>
-                    <SelectItem value="3">Fas 3 (61-90)</SelectItem>
-                    <SelectItem value="none">Ingen fas</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-xs">Svårighetsgrad</Label>
-                <Select value={filterDifficulty} onValueChange={setFilterDifficulty}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Alla nivåer</SelectItem>
-                    <SelectItem value="beginner">Nybörjare</SelectItem>
-                    <SelectItem value="intermediate">Medel</SelectItem>
-                    <SelectItem value="advanced">Avancerad</SelectItem>
-                    <SelectItem value="none">Ingen nivå</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-xs">Status</Label>
-                <Select value={filterCompleted} onValueChange={setFilterCompleted}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Alla</SelectItem>
-                    <SelectItem value="true">Lästa</SelectItem>
-                    <SelectItem value="false">Olästa</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold">{articles.length}</p>
-              <p className="text-sm text-muted-foreground mt-1">Totalt artiklar</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold">
-                {articles.filter(a => isArticleCompleted(a)).length}
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">Lästa artiklar</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold">
-                {articles.length - articles.filter(a => isArticleCompleted(a)).length}
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">Olästa artiklar</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Articles by Category */}
-      {isLoading ? (
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-center text-muted-foreground">Laddar...</p>
-          </CardContent>
-        </Card>
-      ) : Object.keys(articlesByCategory).length === 0 ? (
-        <Card>
-          <CardContent className="p-12 text-center">
-            <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">Inga artiklar hittades.</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Prova att ändra dina filter.
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-4 backdrop-blur-[10px] text-center">
+            <p className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+              {articles.length}
             </p>
-          </CardContent>
-        </Card>
-      ) : (
-        Object.entries(articlesByCategory).map(([categoryName, categoryArticles]) => (
-          <Card key={categoryName}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5" />
-                {categoryName}
-                <Badge variant="outline">{categoryArticles.length} artikel(er)</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {categoryArticles.map(article => (
-                  <div
-                    key={article.id}
-                    onClick={() => router.push(`/dashboard/articles/${article.id}`)}
-                    className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors relative"
-                  >
-                    {isArticleCompleted(article) && (
-                      <div className="absolute top-2 right-2">
-                        <CheckCircle className="h-5 w-5 text-green-600" />
-                      </div>
-                    )}
-                    <h3 className="font-semibold mb-2 pr-8">{article.title}</h3>
-                    <div className="flex flex-wrap gap-2 text-xs">
-                      {article.phase && (
-                        <Badge variant="secondary">Fas {article.phase}</Badge>
-                      )}
-                      {article.difficulty && (
-                        <Badge variant="outline">{getDifficultyLabel(article.difficulty)}</Badge>
-                      )}
-                      {article.estimatedReadingMinutes && (
-                        <Badge variant="outline" className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {article.estimatedReadingMinutes} min
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                ))}
+            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1 tracking-[1px]">TOTALT</p>
+          </div>
+          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(34,197,94,0.2)] rounded-xl p-4 backdrop-blur-[10px] text-center">
+            <p className="text-3xl font-bold text-[#22c55e]">
+              {articles.filter(a => isArticleCompleted(a)).length}
+            </p>
+            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1 tracking-[1px]">LÄSTA</p>
+          </div>
+          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-4 backdrop-blur-[10px] text-center col-span-2 md:col-span-1">
+            <p className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+              {articles.length - articles.filter(a => isArticleCompleted(a)).length}
+            </p>
+            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1 tracking-[1px]">KVAR ATT LÄSA</p>
+          </div>
+        </div>
+
+        {/* Articles by Category - Always Visible */}
+        {isLoading ? (
+          <div className="text-center py-12">
+            <p className="text-[rgba(255,255,255,0.5)]">Laddar artiklar...</p>
+          </div>
+        ) : sortedCategories.map((category: any) => {
+          const categoryArticles = articles.filter(a => a.category.id === category.id)
+
+          if (categoryArticles.length === 0) return null
+
+          return (
+            <div key={category.id} className="space-y-3">
+              {/* Category Header */}
+              <div className="bg-gradient-to-r from-[rgba(255,215,0,0.1)] to-transparent border-l-4 border-[#FFD700] py-4 px-6 rounded-r-lg">
+                <h2 className="font-['Orbitron',sans-serif] text-xl md:text-2xl font-bold tracking-[2px] uppercase text-[#FFD700] flex items-center justify-between">
+                  <span>{category.name}</span>
+                  <span className="text-sm bg-[rgba(255,215,0,0.2)] px-3 py-1 rounded-full">
+                    {categoryArticles.length}
+                  </span>
+                </h2>
+                {category.description && (
+                  <p className="text-sm text-[rgba(255,255,255,0.5)] mt-2">{category.description}</p>
+                )}
               </div>
-            </CardContent>
-          </Card>
-        ))
-      )}
+
+              {/* Articles in Category */}
+              <div className="space-y-2 pl-4">
+                {categoryArticles.map(article => {
+                  const completed = isArticleCompleted(article)
+
+                  return (
+                    <button
+                      key={article.id}
+                      onClick={() => router.push(`/dashboard/articles/${article.id}`)}
+                      className="w-full text-left bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-lg p-4 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.5)] hover:bg-[rgba(255,215,0,0.05)] hover:-translate-x-1 hover:shadow-[0_0_20px_rgba(255,215,0,0.1)] group relative overflow-hidden"
+                    >
+                      {/* Shimmer effect on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.1)] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+
+                      <div className="relative flex items-start gap-4">
+                        {/* Status Icon */}
+                        <div className="flex-shrink-0 mt-1">
+                          {completed ? (
+                            <CheckCircle className="h-6 w-6 text-[#22c55e]" />
+                          ) : (
+                            <Circle className="h-6 w-6 text-[rgba(255,215,0,0.4)]" />
+                          )}
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-white text-lg mb-2 group-hover:text-[#FFD700] transition-colors">
+                            {article.title}
+                          </h3>
+
+                          {/* Metadata */}
+                          <div className="flex flex-wrap gap-2 text-xs">
+                            {article.difficulty && (
+                              <span className="px-2 py-1 bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded text-[rgba(255,215,0,0.8)]">
+                                {getDifficultyLabel(article.difficulty)}
+                              </span>
+                            )}
+                            {article.estimatedReadingMinutes && (
+                              <span className="px-2 py-1 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded text-[rgba(255,255,255,0.6)] flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {article.estimatedReadingMinutes} min
+                              </span>
+                            )}
+                            {completed && (
+                              <span className="px-2 py-1 bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.3)] rounded text-[#22c55e]">
+                                ✓ Läst
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Arrow */}
+                        <div className="flex-shrink-0 text-[rgba(255,215,0,0.4)] group-hover:text-[#FFD700] group-hover:translate-x-1 transition-all">
+                          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
+
+        {/* Empty State */}
+        {!isLoading && articles.length === 0 && (
+          <div className="text-center py-12">
+            <BookOpen className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.3)] mb-4" />
+            <p className="text-[rgba(255,255,255,0.5)]">Inga artiklar publicerade än.</p>
+            <p className="text-sm text-[rgba(255,255,255,0.3)] mt-2">Artiklar kommer snart!</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
