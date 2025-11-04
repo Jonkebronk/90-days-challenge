@@ -98,16 +98,6 @@ export default function DashboardPage() {
   if (isCoach) {
     return (
       <div className="space-y-8">
-        {/* Welcome Section */}
-        <div>
-          <h1 className="text-4xl font-bold mb-2">
-            Välkommen tillbaka, {session?.user?.name?.split(' ')[0] || 'Coach'}! 👋
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Här är din coaching-översikt för idag
-          </p>
-        </div>
-
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
