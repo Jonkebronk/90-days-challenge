@@ -170,14 +170,13 @@ export default function DashboardLayout({
             {/* User Menu */}
             <div className="flex items-center gap-2">
               <div className="hidden sm:flex items-center gap-2 text-sm">
-                <span className="text-[rgba(255,255,255,0.5)]">Hello,</span>
                 <span className="font-medium text-[#FFD700]">{session?.user?.name || 'User'}</span>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleSignOut}
-                className="hidden md:flex"
+                title="Logga ut"
               >
                 <LogOut className="w-4 h-4" />
               </Button>
@@ -260,13 +259,6 @@ export default function DashboardLayout({
                   </Link>
                 )
               })}
-              <button
-                onClick={handleSignOut}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700] transition-all"
-              >
-                <LogOut className="w-5 h-5" />
-                <span>Sign Out</span>
-              </button>
             </nav>
           </div>
         )}
