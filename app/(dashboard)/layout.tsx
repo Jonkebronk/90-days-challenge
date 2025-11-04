@@ -18,7 +18,8 @@ import {
   GraduationCap,
   UserPlus,
   Calculator,
-  Activity
+  Activity,
+  Utensils
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
@@ -46,6 +47,7 @@ const navigation = [
     icon: Calculator,
     dropdown: [
       { name: 'Kaloriverktyg', href: '/dashboard/tools', icon: Calculator },
+      { name: 'Måltidsfördelning', href: '/dashboard/tools/meal-distribution', icon: Utensils },
       { name: 'Stegkalkylator', href: '/dashboard/tools/steps', icon: Activity },
     ]
   },

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Calculator, TrendingDown, Utensils, Settings, Save, User } from 'lucide-react'
+import { Calculator, TrendingDown, Save } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface Client {
@@ -19,12 +19,8 @@ export default function CalorieCoachTool() {
   const [weight, setWeight] = useState('')
   const [activityLevel, setActivityLevel] = useState('30')
   const [deficit, setDeficit] = useState('0')
-  const [numMeals, setNumMeals] = useState('3')
-  const [mealDistribution, setMealDistribution] = useState<number[]>([])
-  const [customDistribution, setCustomDistribution] = useState(false)
   const [proteinPerKg, setProteinPerKg] = useState('2.0')
   const [fatPerKg] = useState('0.7')
-  const [customMacros, setCustomMacros] = useState<Array<{protein: number, fat: number, carbs: number}>>([])
   const [dailySteps, setDailySteps] = useState('5000')
 
   // Fetch clients on mount
@@ -64,10 +60,6 @@ export default function CalorieCoachTool() {
           setDeficit(plan.deficit?.toString() || '0')
           setDailySteps(plan.dailySteps?.toString() || '5000')
           setProteinPerKg(plan.proteinPerKg?.toString() || '2.0')
-          setNumMeals(plan.numMeals?.toString() || '3')
-          setCustomDistribution(plan.customDistribution || false)
-          setMealDistribution(plan.mealCalories || [])
-          setCustomMacros(plan.customMacros ? JSON.parse(JSON.stringify(plan.customMacros)) : [])
         }
       }
     } catch (error) {
@@ -86,21 +78,22 @@ export default function CalorieCoachTool() {
 
     setIsSaving(true)
     try {
+      // Fetch existing calorie plan to preserve meal distribution data
+      const getResponse = await fetch(`/api/calorie-plan?clientId=${selectedClient}`)
+      const existingData = await getResponse.json()
+
       const response = await fetch('/api/calorie-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           clientId: selectedClient,
+          ...existingData.caloriePlan,
           weight: weight ? parseFloat(weight) : null,
           activityLevel,
           deficit: parseInt(deficit),
           dailySteps: parseInt(dailySteps),
           proteinPerKg: parseFloat(proteinPerKg),
-          fatPerKg: parseFloat(fatPerKg),
-          numMeals: parseInt(numMeals),
-          customDistribution,
-          mealCalories: mealDistribution,
-          customMacros: customMacros.length > 0 ? customMacros : null
+          fatPerKg: parseFloat(fatPerKg)
         })
       })
 
@@ -157,91 +150,11 @@ export default function CalorieCoachTool() {
     }
   }
 
-  const distributeMeals = () => {
-    const target = calculateTargetWithSteps()
-    const meals = parseInt(numMeals)
-
-    if (customDistribution && mealDistribution.length === meals) {
-      return mealDistribution
-    }
-
-    const caloriesPerMeal = Math.round(target / meals)
-    return Array(meals).fill(caloriesPerMeal)
-  }
-
-  const handleNumMealsChange = (value: string) => {
-    setNumMeals(value)
-    setCustomDistribution(false)
-    setMealDistribution([])
-    setCustomMacros([])
-  }
-
-  const handleCustomMealChange = (index: number, value: string) => {
-    const newDist = [...mealDistribution]
-    newDist[index] = parseFloat(value) || 0
-    setMealDistribution(newDist)
-
-    if (customMacros.length > 0) {
-      const newMacros = [...customMacros]
-      const totalCal = calculateTargetWithSteps()
-      const mealRatio = newDist[index] / totalCal
-      const totalMacros = calculateMacros()
-
-      newMacros[index] = {
-        protein: Math.round(totalMacros.protein * mealRatio),
-        fat: Math.round(totalMacros.fat * mealRatio),
-        carbs: Math.round(totalMacros.carbs * mealRatio)
-      }
-      setCustomMacros(newMacros)
-    }
-  }
-
-  const handleMacroChange = (mealIndex: number, macro: string, value: string) => {
-    const newMacros = [...customMacros]
-    newMacros[mealIndex] = {
-      ...newMacros[mealIndex],
-      [macro]: parseFloat(value) || 0
-    }
-    setCustomMacros(newMacros)
-  }
-
-  const getMealMacros = () => {
-    const meals = parseInt(numMeals)
-    const totalMacros = calculateMacros()
-
-    if (customMacros.length === meals) {
-      return customMacros
-    }
-
-    const macrosPerMeal = {
-      protein: Math.round(totalMacros.protein / meals),
-      fat: Math.round(totalMacros.fat / meals),
-      carbs: Math.round(totalMacros.carbs / meals)
-    }
-
-    return Array(meals).fill(macrosPerMeal)
-  }
-
-  const enableCustomDistribution = () => {
-    setCustomDistribution(true)
-    setMealDistribution(distributeMeals())
-    setCustomMacros(getMealMacros())
-  }
-
   const bmr = calculateBMR()
   const targetCalories = calculateTargetCalories()
   const stepsCalories = calculateStepsCalories()
   const targetWithSteps = calculateTargetWithSteps()
-  const meals = distributeMeals()
-  const totalCustom = mealDistribution.reduce((sum, cal) => sum + cal, 0)
   const macros = calculateMacros()
-  const mealMacros = getMealMacros()
-
-  const totalCustomMacros = customMacros.length > 0 ? {
-    protein: customMacros.reduce((sum, m) => sum + m.protein, 0),
-    fat: customMacros.reduce((sum, m) => sum + m.fat, 0),
-    carbs: customMacros.reduce((sum, m) => sum + m.carbs, 0)
-  } : null
 
   return (
     <div className="space-y-6">
@@ -441,16 +354,15 @@ export default function CalorieCoachTool() {
           )}
         </div>
 
-        {/* Sektion 3: Måltidsfördelning */}
+        {/* Sektion 3: Makronutrienter */}
         <div className="mb-8 p-6 bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.3)] rounded-xl">
           <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-            <Utensils size={20} className="text-green-400" />
-            Måltidsfördelning & Makronutrienter
+            <Calculator size={20} className="text-green-400" />
+            Makronutrienter
           </h2>
 
-          {/* Makronutrienter */}
           {weight && targetCalories > 0 && (
-            <div className="mb-6 p-4 bg-[rgba(255,255,255,0.05)] border-2 border-green-400 rounded-xl">
+            <div className="p-4 bg-[rgba(255,255,255,0.05)] border-2 border-green-400 rounded-xl">
               <h3 className="font-semibold text-white mb-3">Makronutrientfördelning</h3>
 
               <div className="mb-4">
@@ -500,149 +412,12 @@ export default function CalorieCoachTool() {
                   <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">Resterande kcal</p>
                 </div>
               </div>
-            </div>
-          )}
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-[rgba(255,255,255,0.8)] mb-2">
-              Antal måltider
-            </label>
-            <select
-              value={numMeals}
-              onChange={(e) => handleNumMealsChange(e.target.value)}
-              className="w-full px-4 py-2 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.3)] rounded-lg text-white focus:outline-none focus:border-[#FFD700]"
-            >
-              {[2, 3, 4, 5, 6].map(num => (
-                <option key={num} value={num}>{num} måltider</option>
-              ))}
-            </select>
-          </div>
-
-          {weight && targetCalories > 0 && (
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <h3 className="font-semibold text-white">Fördelning per måltid:</h3>
-                {!customDistribution && (
-                  <button
-                    onClick={enableCustomDistribution}
-                    className="text-sm text-green-400 hover:text-green-300 font-medium flex items-center gap-1"
-                  >
-                    <Settings size={16} />
-                    Anpassa
-                  </button>
-                )}
+              <div className="mt-4 p-3 bg-[rgba(59,130,246,0.1)] border-l-4 border-blue-400 rounded-lg">
+                <p className="text-sm text-[rgba(255,255,255,0.8)]">
+                  För att fördela makros på måltider, gå till <span className="font-semibold text-[#FFD700]">Måltidsfördelning</span> i Verktyg-menyn
+                </p>
               </div>
-
-              {meals.map((calories, index) => {
-                const mealMacro = mealMacros[index]
-                return (
-                  <div key={index} className="p-4 bg-[rgba(255,255,255,0.05)] border-2 border-[rgba(255,215,0,0.2)] rounded-lg">
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="font-semibold text-white min-w-[80px]">Måltid {index + 1}</span>
-                      {customDistribution ? (
-                        <div className="flex-1">
-                          <label className="text-xs text-[rgba(255,255,255,0.6)]">Kalorier</label>
-                          <input
-                            type="number"
-                            value={mealDistribution[index] || 0}
-                            onChange={(e) => handleCustomMealChange(index, e.target.value)}
-                            className="w-full px-3 py-2 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.3)] rounded-lg text-white focus:outline-none focus:border-[#FFD700]"
-                          />
-                        </div>
-                      ) : (
-                        <span className="flex-1 text-xl font-bold text-green-400">
-                          {calories} kcal
-                        </span>
-                      )}
-                    </div>
-
-                    {customDistribution ? (
-                      <div className="grid grid-cols-3 gap-2 mt-3">
-                        <div>
-                          <label className="text-xs text-[rgba(255,255,255,0.6)]">Protein (g)</label>
-                          <input
-                            type="number"
-                            value={mealMacro?.protein || 0}
-                            onChange={(e) => handleMacroChange(index, 'protein', e.target.value)}
-                            className="w-full px-2 py-1 text-sm bg-[rgba(0,0,0,0.3)] border border-red-400 rounded text-white focus:outline-none focus:border-red-300"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs text-[rgba(255,255,255,0.6)]">Fett (g)</label>
-                          <input
-                            type="number"
-                            value={mealMacro?.fat || 0}
-                            onChange={(e) => handleMacroChange(index, 'fat', e.target.value)}
-                            className="w-full px-2 py-1 text-sm bg-[rgba(0,0,0,0.3)] border border-yellow-400 rounded text-white focus:outline-none focus:border-yellow-300"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs text-[rgba(255,255,255,0.6)]">Kolh. (g)</label>
-                          <input
-                            type="number"
-                            value={mealMacro?.carbs || 0}
-                            onChange={(e) => handleMacroChange(index, 'carbs', e.target.value)}
-                            className="w-full px-2 py-1 text-sm bg-[rgba(0,0,0,0.3)] border border-blue-400 rounded text-white focus:outline-none focus:border-blue-300"
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-3 gap-2 mt-3 text-sm">
-                        <div className="bg-[rgba(239,68,68,0.1)] p-2 rounded border border-red-400">
-                          <span className="text-[rgba(255,255,255,0.6)]">Protein: </span>
-                          <span className="font-semibold text-red-400">{mealMacro?.protein}g</span>
-                        </div>
-                        <div className="bg-[rgba(234,179,8,0.1)] p-2 rounded border border-yellow-400">
-                          <span className="text-[rgba(255,255,255,0.6)]">Fett: </span>
-                          <span className="font-semibold text-yellow-400">{mealMacro?.fat}g</span>
-                        </div>
-                        <div className="bg-[rgba(59,130,246,0.1)] p-2 rounded border border-blue-400">
-                          <span className="text-[rgba(255,255,255,0.6)]">Kolh.: </span>
-                          <span className="font-semibold text-blue-400">{mealMacro?.carbs}g</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-
-              {customDistribution && (
-                <div className="mt-4 p-4 bg-[rgba(255,255,255,0.05)] border-2 border-green-400 rounded-lg">
-                  <h4 className="font-semibold text-white mb-3">Anpassad total</h4>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium text-white">Kalorier:</span>
-                        <span className={`text-xl font-bold ${Math.abs(totalCustom - targetWithSteps) < 10 ? 'text-green-400' : 'text-orange-400'}`}>
-                          {totalCustom.toFixed(0)} kcal
-                        </span>
-                      </div>
-                      {Math.abs(totalCustom - targetWithSteps) >= 10 && (
-                        <p className="text-sm text-orange-400">
-                          Skillnad från mål: {(totalCustom - targetWithSteps).toFixed(0)} kcal
-                        </p>
-                      )}
-                    </div>
-
-                    {totalCustomMacros && (
-                      <div className="space-y-1 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-[rgba(255,255,255,0.6)]">Protein:</span>
-                          <span className="font-semibold text-red-400">{totalCustomMacros.protein}g</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-[rgba(255,255,255,0.6)]">Fett:</span>
-                          <span className="font-semibold text-yellow-400">{totalCustomMacros.fat}g</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-[rgba(255,255,255,0.6)]">Kolhydrater:</span>
-                          <span className="font-semibold text-blue-400">{totalCustomMacros.carbs}g</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -651,7 +426,7 @@ export default function CalorieCoachTool() {
         {weight && (
           <div className="p-6 bg-[rgba(99,102,241,0.1)] border-2 border-indigo-400 rounded-xl">
             <h2 className="text-xl font-semibold text-white mb-4">Sammanfattning</h2>
-            <div className="grid md:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-3 gap-4">
               <div className="bg-[rgba(255,255,255,0.05)] p-4 rounded-lg">
                 <p className="text-sm text-[rgba(255,255,255,0.6)]">Kaloribehov</p>
                 <p className="text-2xl font-bold text-blue-400">{bmr.toFixed(0)}</p>
@@ -673,11 +448,6 @@ export default function CalorieCoachTool() {
                     </span>
                   )}
                 </p>
-              </div>
-              <div className="bg-[rgba(255,255,255,0.05)] p-4 rounded-lg">
-                <p className="text-sm text-[rgba(255,255,255,0.6)]">Antal måltider</p>
-                <p className="text-2xl font-bold text-green-400">{numMeals}</p>
-                <p className="text-xs text-[rgba(255,255,255,0.5)]">per dag</p>
               </div>
             </div>
           </div>
