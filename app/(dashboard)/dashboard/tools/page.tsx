@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Calculator, TrendingDown, Utensils, Settings, Save, User } from 'lucide-react'
+import { Calculator, TrendingDown, Utensils, Settings, Save, User, Activity } from 'lucide-react'
 import { toast } from 'sonner'
+import Link from 'next/link'
 
 interface Client {
   id: string
@@ -288,6 +289,25 @@ export default function CalorieCoachTool() {
           </div>
         )}
 
+        {/* Link to Steps Calculator */}
+        <div className="mb-6">
+          <Link
+            href="/dashboard/tools/steps"
+            className="flex items-center gap-3 p-4 bg-[rgba(168,85,247,0.1)] border-2 border-purple-400 rounded-xl hover:bg-[rgba(168,85,247,0.15)] transition-all group"
+          >
+            <Activity className="text-purple-400 group-hover:scale-110 transition-transform" size={24} />
+            <div>
+              <h3 className="font-semibold text-white">Stegkalkylator</h3>
+              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+                Beräkna extra kalorier från dagliga steg (separat verktyg)
+              </p>
+            </div>
+            <svg className="w-5 h-5 text-purple-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+
         {/* Sektion 1: Beräkna BMR */}
         <div className="mb-8 p-6 bg-[rgba(59,130,246,0.1)] border border-[rgba(59,130,246,0.3)] rounded-xl">
           <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
@@ -447,50 +467,6 @@ export default function CalorieCoachTool() {
             <Utensils size={20} className="text-green-400" />
             Måltidsfördelning & Makronutrienter
           </h2>
-
-          {/* Daglig aktivitetsnivå - Steg */}
-          <div className="mb-6 p-4 bg-[rgba(168,85,247,0.1)] border-2 border-purple-400 rounded-xl">
-            <h3 className="font-semibold text-white mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              Daglig Aktivitetsnivå (Steg)
-            </h3>
-
-            <div className="mb-3">
-              <label className="block text-sm font-medium text-[rgba(255,255,255,0.8)] mb-2">
-                Antal steg per dag
-              </label>
-              <input
-                type="range"
-                min="1000"
-                max="15000"
-                step="500"
-                value={dailySteps}
-                onChange={(e) => setDailySteps(e.target.value)}
-                className="w-full h-2 bg-purple-900 rounded-lg appearance-none cursor-pointer"
-              />
-              <div className="flex justify-between text-xs text-[rgba(255,255,255,0.6)] mt-1">
-                <span>1,000</span>
-                <span>15,000</span>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-3">
-              <div className="bg-[rgba(255,255,255,0.05)] p-3 rounded-lg">
-                <p className="text-sm text-[rgba(255,255,255,0.6)]">Valda steg</p>
-                <p className="text-2xl font-bold text-purple-400">{parseInt(dailySteps).toLocaleString()}</p>
-              </div>
-              <div className="bg-[rgba(255,255,255,0.05)] p-3 rounded-lg">
-                <p className="text-sm text-[rgba(255,255,255,0.6)]">Extra kalorier från steg</p>
-                <p className="text-2xl font-bold text-purple-400">+{stepsCalories} kcal</p>
-              </div>
-            </div>
-
-            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-2">
-              1,000 steg ≈ 50 kcal
-            </p>
-          </div>
 
           {/* Makronutrienter */}
           {weight && targetCalories > 0 && (
@@ -709,7 +685,14 @@ export default function CalorieCoachTool() {
               <div className="bg-[rgba(255,255,255,0.05)] p-4 rounded-lg">
                 <p className="text-sm text-[rgba(255,255,255,0.6)]">Totalt intag</p>
                 <p className="text-2xl font-bold text-purple-400">{targetWithSteps.toFixed(0)}</p>
-                <p className="text-xs text-[rgba(255,255,255,0.5)]">inkl. {stepsCalories} från steg</p>
+                <p className="text-xs text-[rgba(255,255,255,0.5)]">
+                  inkl. {stepsCalories} från steg
+                  {stepsCalories === 0 && (
+                    <Link href="/dashboard/tools/steps" className="block text-purple-400 hover:text-purple-300 mt-1">
+                      → Sätt stegmål
+                    </Link>
+                  )}
+                </p>
               </div>
               <div className="bg-[rgba(255,255,255,0.05)] p-4 rounded-lg">
                 <p className="text-sm text-[rgba(255,255,255,0.6)]">Antal måltider</p>
