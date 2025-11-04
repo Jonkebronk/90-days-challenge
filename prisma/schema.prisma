@@ -85,6 +85,7 @@ model User {
   checkIns      CheckIn[]
   lessonProgress LessonProgress[]
   articleProgress ArticleProgress[]
+  recipeFavorites RecipeFavorite[]
 
   // Coach-Client relationship
   coach         User?     @relation("CoachClients", fields: [coachId], references: [id])
@@ -170,7 +171,8 @@ model FoodItem {
   isVegan           Boolean  @default(false)
   commonServingSize String?
 
-  mealIngredients MealIngredient[]
+  mealIngredients   MealIngredient[]
+  recipeIngredients RecipeIngredient[]
 
   @@map("food_items")
 }
@@ -577,4 +579,101 @@ model ArticleProgress {
 
   @@unique([userId, articleId])
   @@map("article_progress")
+}
+
+// Recipe Bank Models
+model RecipeCategory {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  slug        String   @unique
+  orderIndex  Int      @default(0)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  recipes     Recipe[]
+
+  @@map("recipe_categories")
+}
+
+model Recipe {
+  id                  String   @id @default(cuid())
+  title               String
+  description         String?
+  categoryId          String
+  servings            Int      @default(1)
+  prepTimeMinutes     Int?     // Preparation time
+  cookTimeMinutes     Int?     // Cooking time
+  difficulty          String?  // "easy", "medium", "hard"
+  cuisineType         String?  // "Italian", "Mexican", "Asian", etc.
+  mealType            String?  // "breakfast", "lunch", "dinner", "snack", "dessert"
+  coverImage          String?  // URL to recipe image
+  videoUrl            String?  // Optional cooking video
+
+  // Dietary tags (stored as array)
+  dietaryTags         String[] // "vegan", "vegetarian", "gluten-free", "dairy-free", "keto", "paleo", etc.
+
+  // Nutrition per serving (can be auto-calculated from ingredients)
+  caloriesPerServing  Decimal? @db.Decimal(7, 2)
+  proteinPerServing   Decimal? @db.Decimal(6, 2)
+  carbsPerServing     Decimal? @db.Decimal(6, 2)
+  fatPerServing       Decimal? @db.Decimal(6, 2)
+
+  // Publishing
+  published           Boolean  @default(false)
+  publishedAt         DateTime?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  category            RecipeCategory       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  ingredients         RecipeIngredient[]
+  instructions        RecipeInstruction[]
+  favorites           RecipeFavorite[]
+
+  @@map("recipes")
+}
+
+model RecipeIngredient {
+  id              String  @id @default(cuid())
+  recipeId        String
+  foodItemId      String
+  amount          Decimal @db.Decimal(7, 2) // Amount in grams
+  displayUnit     String? // "cups", "tbsp", "tsp", "pieces", etc. for display
+  displayAmount   String? // "1/2", "2", "3", etc. for display
+  orderIndex      Int     @default(0)
+  optional        Boolean @default(false)
+  notes           String? // "chopped", "diced", "melted", etc.
+
+  recipe          Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  foodItem        FoodItem @relation(fields: [foodItemId], references: [id])
+
+  @@map("recipe_ingredients")
+}
+
+model RecipeInstruction {
+  id          String @id @default(cuid())
+  recipeId    String
+  stepNumber  Int
+  instruction String // Step instruction text
+  duration    Int?   // Optional time for this step in minutes
+  imageUrl    String? // Optional image for this step
+
+  recipe      Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@map("recipe_instructions")
+}
+
+model RecipeFavorite {
+  id        String   @id @default(cuid())
+  userId    String
+  recipeId  String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, recipeId])
+  @@map("recipe_favorites")
 }

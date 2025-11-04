@@ -24,7 +24,8 @@ import {
   Scale,
   FolderOpen,
   Library,
-  Map
+  Map,
+  ChefHat
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
@@ -53,6 +54,7 @@ const navigation = [
   },
   { name: 'Artikel Bank', href: '/dashboard/articles', icon: Library, clientOnly: true },
   { name: 'Min Roadmap', href: '/dashboard/roadmap', icon: Map, clientOnly: true },
+  { name: 'Recept Bank', href: '/dashboard/recipes', icon: ChefHat },
   {
     name: 'Verktyg',
     icon: Calculator,
