@@ -27,13 +27,21 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* Coach portal link */}
-      <Link
-        href="/login"
-        className="absolute top-[30px] right-[30px] text-sm text-[rgba(255,215,0,0.7)] hover:text-[#FFD700] transition-all duration-300 tracking-wide font-light hover:-translate-x-1 z-20"
-      >
-        Coach Portal →
-      </Link>
+      {/* Portal links */}
+      <div className="absolute top-[30px] right-[30px] z-20 flex flex-col items-end gap-2">
+        <Link
+          href="/login"
+          className="text-sm text-[rgba(255,215,0,0.7)] hover:text-[#FFD700] transition-all duration-300 tracking-wide font-light hover:-translate-x-1"
+        >
+          Client Portal →
+        </Link>
+        <Link
+          href="/login"
+          className="text-sm text-[rgba(255,215,0,0.5)] hover:text-[rgba(255,215,0,0.8)] transition-all duration-300 tracking-wide font-light hover:-translate-x-1"
+        >
+          Coach Portal →
+        </Link>
+      </div>
 
       {/* Main container */}
       <div className="relative z-10 text-center px-10 py-10 max-w-[600px] animate-fadeIn">
