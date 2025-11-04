@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "prisma:generate": "prisma generate",
-    "postinstall": "npm run prisma:generate || echo 'Prisma generate skipped'"
+    "postinstall": "npm run prisma:generate || echo 'Prisma generate skipped'",
+    "setup:categories": "node scripts/setup-article-categories.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
