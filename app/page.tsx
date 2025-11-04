@@ -34,7 +34,7 @@ export default function HomePage() {
       </div>
 
       {/* Portal buttons */}
-      <div className="absolute top-[30px] right-[30px] z-20 flex flex-col items-end gap-3">
+      <div className="absolute top-[30px] right-[30px] z-20 flex flex-row items-center gap-4">
         <Link
           href="/login"
           className="px-6 py-3 text-sm font-semibold tracking-[2px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)] font-['Orbitron',sans-serif]"
@@ -157,12 +157,19 @@ export default function HomePage() {
           </div>
 
           {/* CTA Button */}
-          <button
-            onClick={() => router.push('/apply')}
-            className="w-full py-5 px-10 text-lg tracking-[3px] uppercase font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] border-none rounded-lg cursor-pointer transition-all duration-300 font-['Orbitron',sans-serif] relative overflow-hidden hover:scale-105 hover:shadow-[0_10px_40px_rgba(255,215,0,0.4)] active:scale-[0.98] before:content-[''] before:absolute before:top-0 before:left-[-100%] before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-[rgba(255,255,255,0.3)] before:to-transparent before:transition-[left] before:duration-500 hover:before:left-[100%]"
-          >
-            Ansök Nu
-          </button>
+          <div className="space-y-4">
+            <button
+              onClick={() => router.push('/apply')}
+              className="w-full py-5 px-10 text-lg tracking-[3px] uppercase font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] border-none rounded-lg cursor-pointer transition-all duration-300 font-['Orbitron',sans-serif] relative overflow-hidden hover:scale-105 hover:shadow-[0_10px_40px_rgba(255,215,0,0.4)] active:scale-[0.98] before:content-[''] before:absolute before:top-0 before:left-[-100%] before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-[rgba(255,255,255,0.3)] before:to-transparent before:transition-[left] before:duration-500 hover:before:left-[100%]"
+            >
+              Ansök Nu
+            </button>
+
+            {/* Limited spots message */}
+            <p className="text-base md:text-lg text-[#FFD700] tracking-[2px] uppercase font-semibold animate-pulse">
+              ⚠️ Begränsat antal platser
+            </p>
+          </div>
         </div>
 
         {/* FAQ Section */}
@@ -289,7 +296,7 @@ export default function HomePage() {
         <div className="mt-10 pt-[30px] border-t border-[rgba(255,215,0,0.2)]">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent my-[15px] opacity-30" />
           <p className="text-xs text-[rgba(255,215,0,0.6)] tracking-[1px]">
-            Begränsat antal platser
+            Vi behandlar dina uppgifter konfidentiellt
           </p>
         </div>
       </div>
