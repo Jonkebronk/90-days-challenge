@@ -47,13 +47,15 @@ const navigation = [
     dropdown: [
       { name: 'Filer', href: '/dashboard/content/files', icon: FileText },
       { name: 'Lektioner', href: '/dashboard/content/lessons', icon: GraduationCap },
-      { name: 'Kategorier', href: '/dashboard/content/categories', icon: FolderOpen },
+      { name: 'Artikel Kategorier', href: '/dashboard/content/categories', icon: FolderOpen },
       { name: 'Artiklar', href: '/dashboard/content/articles', icon: Library },
       { name: '90-Dagars Roadmap', href: '/dashboard/content/roadmap', icon: Map },
+      { name: 'Recept Kategorier', href: '/dashboard/content/recipe-categories', icon: FolderOpen },
+      { name: 'Recept', href: '/dashboard/content/recipes', icon: ChefHat },
     ]
   },
-  { name: 'Artikel Bank', href: '/dashboard/articles', icon: Library, clientOnly: true },
-  { name: 'Min Roadmap', href: '/dashboard/roadmap', icon: Map, clientOnly: true },
+  { name: 'Artikel Bank', href: '/dashboard/articles', icon: Library },
+  { name: 'Min Roadmap', href: '/dashboard/roadmap', icon: Map },
   { name: 'Recept Bank', href: '/dashboard/recipes', icon: ChefHat },
   {
     name: 'Verktyg',
