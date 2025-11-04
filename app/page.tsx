@@ -123,13 +123,8 @@ export default function HomePage() {
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-5 animate-shimmer" />
         </div>
 
-        {/* Apply button */}
-        <button className="w-full py-5 px-10 text-base tracking-[2px] uppercase font-semibold bg-[rgba(255,255,255,0.05)] text-[rgba(255,215,0,0.9)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg cursor-pointer transition-all duration-300 backdrop-blur-[10px] hover:bg-[rgba(255,215,0,0.1)] hover:border-[rgba(255,215,0,0.6)] hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(255,215,0,0.2)] active:translate-y-0">
-          Ansök Nu
-        </button>
-
         {/* Vem passar programmet för? Section */}
-        <div className="mt-20 animate-fadeIn">
+        <div className="mt-12 animate-fadeIn">
           {/* Section Title */}
           <div className="mb-8">
             <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 animate-shimmer" />
