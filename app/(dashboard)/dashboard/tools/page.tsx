@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Calculator, TrendingDown, Utensils, Settings, Save, User, Activity } from 'lucide-react'
+import { Calculator, TrendingDown, Utensils, Settings, Save, User } from 'lucide-react'
 import { toast } from 'sonner'
-import Link from 'next/link'
 
 interface Client {
   id: string
@@ -288,25 +287,6 @@ export default function CalorieCoachTool() {
             Laddar klientdata...
           </div>
         )}
-
-        {/* Link to Steps Calculator */}
-        <div className="mb-6">
-          <Link
-            href="/dashboard/tools/steps"
-            className="flex items-center gap-3 p-4 bg-[rgba(168,85,247,0.1)] border-2 border-purple-400 rounded-xl hover:bg-[rgba(168,85,247,0.15)] transition-all group"
-          >
-            <Activity className="text-purple-400 group-hover:scale-110 transition-transform" size={24} />
-            <div>
-              <h3 className="font-semibold text-white">Stegkalkylator</h3>
-              <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                Beräkna extra kalorier från dagliga steg (separat verktyg)
-              </p>
-            </div>
-            <svg className="w-5 h-5 text-purple-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        </div>
 
         {/* Sektion 1: Beräkna BMR */}
         <div className="mb-8 p-6 bg-[rgba(59,130,246,0.1)] border border-[rgba(59,130,246,0.3)] rounded-xl">
@@ -688,9 +668,9 @@ export default function CalorieCoachTool() {
                 <p className="text-xs text-[rgba(255,255,255,0.5)]">
                   inkl. {stepsCalories} från steg
                   {stepsCalories === 0 && (
-                    <Link href="/dashboard/tools/steps" className="block text-purple-400 hover:text-purple-300 mt-1">
-                      → Sätt stegmål
-                    </Link>
+                    <span className="block text-purple-400 mt-1">
+                      (Gå till Stegkalkylator för att sätta stegmål)
+                    </span>
                   )}
                 </p>
               </div>
