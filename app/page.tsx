@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { CountdownTimer } from '@/components/countdown-timer'
 
 export default function HomePage() {
   const router = useRouter()
@@ -121,6 +122,11 @@ export default function HomePage() {
             CHALLENGE
           </h1>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-5 animate-shimmer" />
+        </div>
+
+        {/* Countdown Timer */}
+        <div className="mb-12">
+          <CountdownTimer />
         </div>
 
         {/* Vem passar programmet för? Section */}
