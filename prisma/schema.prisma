@@ -83,6 +83,7 @@ model User {
   workoutLogs   WorkoutLog[]
   knowledgeProgress UserKnowledgeProgress[]
   checkIns      CheckIn[]
+  lessonProgress LessonProgress[]
 
   // Coach-Client relationship
   coach         User?     @relation("CoachClients", fields: [coachId], references: [id])
@@ -410,18 +411,63 @@ model File {
 model Lesson {
   id          String   @id @default(cuid())
   title       String
-  subtitle    String?
-  content     String   // Rich text content
+  description String?
+  phase       Int?     // 1, 2, or 3 (Fas 1: 1-30, Fas 2: 31-60, Fas 3: 61-90)
+  orderIndex  Int      @default(0) // Order within phase
   coverImage  String?  // URL to cover image
-  attachments String[] // URLs to attached files
-  videoUrl    String?  // Optional video URL
-  audioUrl    String?  // Optional audio URL
-  visibility  String   @default("all") // "all", "specific_clients"
-  orderIndex  Int?     // For sorting lessons
+
+  // Publishing
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+
+  // Prerequisites (lessons that must be completed first)
+  prerequisiteIds String[] // Array of lesson IDs
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  slides      Slide[]
+  progress    LessonProgress[]
+
   @@map("lessons")
+}
+
+model Slide {
+  id          String   @id @default(cuid())
+  lessonId    String
+  type        String   // "MDX_SLIDE", "VIDEO", "QUIZ"
+  title       String?
+  content     String?  // MDX content for slides, question for quiz
+  videoUrl    String?  // YouTube/Vimeo embed URL
+  orderIndex  Int      @default(0)
+
+  // Quiz-specific fields (not saved in database)
+  quizOptions Json?    // Quiz options if type is QUIZ
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@map("slides")
+}
+
+model LessonProgress {
+  id              String    @id @default(cuid())
+  userId          String
+  lessonId        String
+  completed       Boolean   @default(false)
+  completedAt     DateTime?
+  lastSlideIndex  Int       @default(0) // Last slide viewed
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson          Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@map("lesson_progress")
 }
 
 model CaloriePlan {
