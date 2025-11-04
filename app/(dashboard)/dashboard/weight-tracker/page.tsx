@@ -1,12 +1,20 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Save, TrendingDown, Target, Calendar, Scale } from 'lucide-react'
+import { Save, TrendingDown, Target, Calendar, Scale, Users } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 type WeightProfile = {
   startWeight: string
@@ -31,8 +39,19 @@ type WeekData = {
   }>
 }
 
+type Client = {
+  id: string
+  name: string | null
+  email: string
+}
+
 export default function WeightTrackerPage() {
+  const { data: session } = useSession()
+  const isCoach = (session?.user as any)?.role === 'coach'
+
   const [activeTab, setActiveTab] = useState<'weekly' | 'graph'>('weekly')
+  const [clients, setClients] = useState<Client[]>([])
+  const [selectedClientId, setSelectedClientId] = useState<string>('')
   const [profile, setProfile] = useState<WeightProfile>({
     startWeight: '',
     targetWeight: '',
@@ -41,34 +60,79 @@ export default function WeightTrackerPage() {
   })
   const [entries, setEntries] = useState<WeightEntry[]>([])
 
-  // Load data from localStorage on mount
+  // Fetch clients if coach
   useEffect(() => {
-    const savedProfile = localStorage.getItem('weight-profile')
-    const savedEntries = localStorage.getItem('weight-entries')
+    if (isCoach) {
+      fetchClients()
+    }
+  }, [isCoach])
+
+  const fetchClients = async () => {
+    try {
+      const response = await fetch('/api/clients')
+      if (response.ok) {
+        const data = await response.json()
+        setClients(data.clients || [])
+      }
+    } catch (error) {
+      console.error('Error fetching clients:', error)
+    }
+  }
+
+  // Load data from localStorage when client selection changes
+  useEffect(() => {
+    const storageKey = isCoach && selectedClientId
+      ? `weight-profile-${selectedClientId}`
+      : 'weight-profile'
+
+    const entriesKey = isCoach && selectedClientId
+      ? `weight-entries-${selectedClientId}`
+      : 'weight-entries'
+
+    const savedProfile = localStorage.getItem(storageKey)
+    const savedEntries = localStorage.getItem(entriesKey)
 
     if (savedProfile) {
       setProfile(JSON.parse(savedProfile))
+    } else {
+      setProfile({
+        startWeight: '',
+        targetWeight: '',
+        height: '',
+        targetDate: ''
+      })
     }
+
     if (savedEntries) {
       setEntries(JSON.parse(savedEntries))
+    } else {
+      setEntries([])
     }
-  }, [])
+  }, [selectedClientId, isCoach])
 
   // Save profile
   const saveProfile = () => {
-    localStorage.setItem('weight-profile', JSON.stringify(profile))
+    const storageKey = isCoach && selectedClientId
+      ? `weight-profile-${selectedClientId}`
+      : 'weight-profile'
+
+    localStorage.setItem(storageKey, JSON.stringify(profile))
     alert('Profil sparad!')
   }
 
   // Update weight entry
   const updateWeight = (date: string, weight: string) => {
+    const entriesKey = isCoach && selectedClientId
+      ? `weight-entries-${selectedClientId}`
+      : 'weight-entries'
+
     const weightNum = parseFloat(weight)
 
     if (weight === '' || isNaN(weightNum)) {
       // Remove entry
       const newEntries = entries.filter(e => e.date !== date)
       setEntries(newEntries)
-      localStorage.setItem('weight-entries', JSON.stringify(newEntries))
+      localStorage.setItem(entriesKey, JSON.stringify(newEntries))
       return
     }
 
@@ -91,7 +155,7 @@ export default function WeightTrackerPage() {
     // Sort by date
     newEntries.sort((a, b) => a.date.localeCompare(b.date))
     setEntries(newEntries)
-    localStorage.setItem('weight-entries', JSON.stringify(newEntries))
+    localStorage.setItem(entriesKey, JSON.stringify(newEntries))
   }
 
   // Calculate statistics
@@ -99,13 +163,57 @@ export default function WeightTrackerPage() {
   const weeks = generateWeeks(profile, entries)
   const graphData = prepareGraphData(entries)
 
+  const selectedClient = clients.find(c => c.id === selectedClientId)
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-          <Scale className="h-8 w-8 text-yellow-400" />
-          Viktspårning
-        </h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+            <Scale className="h-8 w-8 text-yellow-400" />
+            Viktspårning
+            {selectedClient && (
+              <span className="text-yellow-400 text-xl">- {selectedClient.name || selectedClient.email}</span>
+            )}
+          </h1>
+        </div>
+
+        {/* Client Selector for Coaches */}
+        {isCoach && (
+          <Card className="bg-gray-800 border-gray-700 mb-6">
+            <CardContent className="py-4">
+              <div className="flex items-center gap-4">
+                <Users className="h-5 w-5 text-yellow-400" />
+                <div className="flex-1">
+                  <Label htmlFor="client-select" className="text-white font-semibold mb-2 block">
+                    Välj klient
+                  </Label>
+                  <Select value={selectedClientId} onValueChange={setSelectedClientId}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                      <SelectValue placeholder="Välj en klient att spåra" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700">
+                      {clients.map((client) => (
+                        <SelectItem
+                          key={client.id}
+                          value={client.id}
+                          className="text-white hover:bg-gray-700"
+                        >
+                          {client.name || client.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              {!selectedClientId && (
+                <p className="text-gray-400 text-sm mt-2 ml-9">
+                  Välj en klient ovan för att hantera deras viktspårning
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Profile & Stats */}
@@ -217,10 +325,21 @@ export default function WeightTrackerPage() {
             {/* Weekly View */}
             {activeTab === 'weekly' && (
               <div className="space-y-4">
-                {weeks.length === 0 ? (
+                {isCoach && !selectedClientId ? (
                   <Card className="bg-gray-800 border-gray-700">
                     <CardContent className="py-12 text-center">
-                      <p className="text-gray-400">Fyll i din profil och börja registrera vikter för att se veckoöversikten.</p>
+                      <Users className="h-12 w-12 mx-auto mb-4 text-yellow-400" />
+                      <p className="text-gray-400">Välj en klient ovan för att se deras veckoöversikt.</p>
+                    </CardContent>
+                  </Card>
+                ) : weeks.length === 0 ? (
+                  <Card className="bg-gray-800 border-gray-700">
+                    <CardContent className="py-12 text-center">
+                      <p className="text-gray-400">
+                        {profile.targetDate
+                          ? 'Klicka "Spara profil" för att generera veckoöversikten.'
+                          : 'Fyll i profil med måldatum och klicka "Spara profil" för att se veckoöversikten.'}
+                      </p>
                     </CardContent>
                   </Card>
                 ) : (
@@ -425,13 +544,20 @@ function calculateStats(profile: WeightProfile, entries: WeightEntry[]) {
 }
 
 function generateWeeks(profile: WeightProfile, entries: WeightEntry[]): WeekData[] {
-  if (!profile.targetDate || entries.length === 0) {
+  if (!profile.targetDate) {
     return []
   }
 
-  const sortedEntries = [...entries].sort((a, b) => a.date.localeCompare(b.date))
-  const firstEntry = sortedEntries[0]
-  const startDate = getMonday(new Date(firstEntry.date))
+  // Start from first entry OR today if no entries yet
+  let startDate: Date
+  if (entries.length > 0) {
+    const sortedEntries = [...entries].sort((a, b) => a.date.localeCompare(b.date))
+    const firstEntry = sortedEntries[0]
+    startDate = getMonday(new Date(firstEntry.date))
+  } else {
+    startDate = getMonday(new Date())
+  }
+
   const endDate = new Date(profile.targetDate)
 
   const weeks: WeekData[] = []
