@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Save, TrendingDown, Target, Calendar, Scale, Users } from 'lucide-react'
+import { Save, TrendingDown, Target, Calendar, Scale, Users, Lock, Unlock } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
 import {
   Select,
@@ -59,6 +59,7 @@ export default function WeightTrackerPage() {
     targetDate: ''
   })
   const [entries, setEntries] = useState<WeightEntry[]>([])
+  const [lockedWeeks, setLockedWeeks] = useState<Set<number>>(new Set())
 
   // Fetch clients if coach
   useEffect(() => {
@@ -89,8 +90,13 @@ export default function WeightTrackerPage() {
       ? `weight-entries-${selectedClientId}`
       : 'weight-entries'
 
+    const lockedWeeksKey = isCoach && selectedClientId
+      ? `weight-locked-weeks-${selectedClientId}`
+      : 'weight-locked-weeks'
+
     const savedProfile = localStorage.getItem(storageKey)
     const savedEntries = localStorage.getItem(entriesKey)
+    const savedLockedWeeks = localStorage.getItem(lockedWeeksKey)
 
     if (savedProfile) {
       setProfile(JSON.parse(savedProfile))
@@ -108,6 +114,12 @@ export default function WeightTrackerPage() {
     } else {
       setEntries([])
     }
+
+    if (savedLockedWeeks) {
+      setLockedWeeks(new Set(JSON.parse(savedLockedWeeks)))
+    } else {
+      setLockedWeeks(new Set())
+    }
   }, [selectedClientId, isCoach])
 
   // Save profile
@@ -120,8 +132,30 @@ export default function WeightTrackerPage() {
     alert('Profil sparad!')
   }
 
+  // Toggle week lock
+  const toggleWeekLock = (weekNumber: number) => {
+    const lockedWeeksKey = isCoach && selectedClientId
+      ? `weight-locked-weeks-${selectedClientId}`
+      : 'weight-locked-weeks'
+
+    const newLockedWeeks = new Set(lockedWeeks)
+    if (newLockedWeeks.has(weekNumber)) {
+      newLockedWeeks.delete(weekNumber)
+    } else {
+      newLockedWeeks.add(weekNumber)
+    }
+
+    setLockedWeeks(newLockedWeeks)
+    localStorage.setItem(lockedWeeksKey, JSON.stringify(Array.from(newLockedWeeks)))
+  }
+
   // Update weight entry
-  const updateWeight = (date: string, weight: string) => {
+  const updateWeight = (date: string, weight: string, weekNumber: number) => {
+    // Check if week is locked
+    if (lockedWeeks.has(weekNumber)) {
+      return // Don't allow updates to locked weeks
+    }
+
     const entriesKey = isCoach && selectedClientId
       ? `weight-entries-${selectedClientId}`
       : 'weight-entries'
@@ -308,8 +342,6 @@ export default function WeightTrackerPage() {
                 <StatItem label="Avvikelse från mål" value={stats.deviationFromTarget} color={stats.deviationColor} />
                 <StatItem label="Gram per dag" value={stats.gramsPerDay} color="text-yellow-400" />
                 <StatItem label="Kg per vecka" value={stats.kgPerWeek} color="text-yellow-400" />
-                <StatItem label="Kalorier/dag" value={stats.caloriesPerDay} color="text-orange-400" />
-                <StatItem label="Kalorier/vecka" value={stats.caloriesPerWeek} color="text-orange-400" />
                 <StatItem label="Dagar till mål" value={stats.daysToTarget} color="text-blue-400" />
               </CardContent>
             </Card>
@@ -370,6 +402,8 @@ export default function WeightTrackerPage() {
                       week={week}
                       entries={entries}
                       onUpdateWeight={updateWeight}
+                      isLocked={lockedWeeks.has(week.weekNumber)}
+                      onToggleLock={() => toggleWeekLock(week.weekNumber)}
                     />
                   ))
                 )}
@@ -448,31 +482,49 @@ function StatItem({ label, value, color }: { label: string; value: string; color
 function WeekCard({
   week,
   entries,
-  onUpdateWeight
+  onUpdateWeight,
+  isLocked,
+  onToggleLock
 }: {
   week: WeekData
   entries: WeightEntry[]
-  onUpdateWeight: (date: string, weight: string) => void
+  onUpdateWeight: (date: string, weight: string, weekNumber: number) => void
+  isLocked: boolean
+  onToggleLock: () => void
 }) {
   const weeklyAverage = calculateWeeklyAverage(week, entries)
 
   return (
-    <Card className="bg-gray-800 border-gray-700 overflow-hidden">
+    <Card className={`border-gray-700 overflow-hidden ${isLocked ? 'bg-gray-850 opacity-90' : 'bg-gray-800'}`}>
       <div className="grid grid-cols-5 bg-yellow-400">
         <div className="col-span-1 p-4 flex items-center justify-center border-r border-yellow-500">
           <span className="text-4xl font-bold text-black">V{week.weekNumber}</span>
         </div>
         <div className="col-span-2 p-4 border-r border-yellow-500">
-          <div className="text-black font-semibold text-sm">Vecka {week.weekNumber}</div>
+          <div className="text-black font-semibold text-sm flex items-center gap-2">
+            Vecka {week.weekNumber}
+            {isLocked && <Lock className="h-3 w-3" />}
+          </div>
           <div className="text-black text-xs opacity-75">
             {formatDate(week.startDate)} - {formatDate(addDays(week.startDate, 6))}
           </div>
         </div>
-        <div className="col-span-2 p-4 flex items-center justify-center">
+        <div className="col-span-1 p-4 flex items-center justify-center border-r border-yellow-500">
           <div className="text-center">
             <div className="text-black text-xs font-semibold">Weekly Average</div>
             <div className="text-black text-2xl font-bold">{weeklyAverage}</div>
           </div>
+        </div>
+        <div className="col-span-1 p-4 flex items-center justify-center">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onToggleLock}
+            className="text-black hover:bg-yellow-500"
+            title={isLocked ? 'Lås upp vecka' : 'Lås vecka'}
+          >
+            {isLocked ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+          </Button>
         </div>
       </div>
       <CardContent className="p-0">
@@ -490,8 +542,13 @@ function WeekCard({
                       step="0.1"
                       placeholder="--"
                       value={entry?.weight || ''}
-                      onChange={(e) => onUpdateWeight(day.date, e.target.value)}
-                      className="bg-gray-700 border-gray-600 text-white text-center focus:ring-yellow-400"
+                      onChange={(e) => onUpdateWeight(day.date, e.target.value, week.weekNumber)}
+                      disabled={isLocked}
+                      className={`border-gray-600 text-white text-center focus:ring-yellow-400 ${
+                        isLocked
+                          ? 'bg-gray-600 cursor-not-allowed opacity-70'
+                          : 'bg-gray-700'
+                      }`}
                     />
                   </td>
                 </tr>
@@ -518,8 +575,6 @@ function calculateStats(profile: WeightProfile, entries: WeightEntry[]) {
       deviationColor: 'text-gray-400',
       gramsPerDay: '--',
       kgPerWeek: '--',
-      caloriesPerDay: '--',
-      caloriesPerWeek: '--',
       daysToTarget: '--'
     }
   }
@@ -539,8 +594,6 @@ function calculateStats(profile: WeightProfile, entries: WeightEntry[]) {
 
   const gramsPerDay = (totalWeightLoss * 1000) / daysSinceStart
   const kgPerWeek = (gramsPerDay * 7) / 1000
-  const caloriesPerDay = gramsPerDay * 7
-  const caloriesPerWeek = kgPerWeek * 7000
 
   // Days to target
   let daysToTarget = '--'
@@ -558,8 +611,6 @@ function calculateStats(profile: WeightProfile, entries: WeightEntry[]) {
     deviationColor: deviationFromTarget > 0 ? 'text-red-400' : 'text-green-400',
     gramsPerDay: `${gramsPerDay.toFixed(0)} g`,
     kgPerWeek: `${kgPerWeek.toFixed(2)} kg`,
-    caloriesPerDay: `${caloriesPerDay.toFixed(0)} kcal`,
-    caloriesPerWeek: `${caloriesPerWeek.toFixed(0)} kcal`,
     daysToTarget
   }
 }
