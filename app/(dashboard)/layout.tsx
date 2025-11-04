@@ -173,10 +173,11 @@ export default function DashboardLayout({
                 <span className="font-medium text-[#FFD700]">{session?.user?.name || 'User'}</span>
               </div>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="icon"
                 onClick={handleSignOut}
                 title="Logga ut"
+                className="border-[rgba(255,215,0,0.3)] hover:bg-[rgba(255,215,0,0.1)] hover:border-[rgba(255,215,0,0.6)] text-[rgba(255,215,0,0.8)] hover:text-[#FFD700]"
               >
                 <LogOut className="w-4 h-4" />
               </Button>
