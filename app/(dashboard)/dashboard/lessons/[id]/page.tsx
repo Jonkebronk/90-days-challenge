@@ -48,7 +48,7 @@ export default function LessonViewerPage() {
   const [isSavingProgress, setIsSavingProgress] = useState(false)
 
   useEffect(() => {
-    if (session?.user && (session.user as any).role !== 'coach') {
+    if (session?.user) {
       fetchLesson()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
