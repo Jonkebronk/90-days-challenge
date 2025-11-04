@@ -34,16 +34,16 @@ export default function HomePage() {
       </div>
 
       {/* Portal buttons */}
-      <div className="absolute top-[30px] right-[30px] z-20 flex flex-row items-center gap-4">
+      <div className="absolute top-[15px] right-[15px] md:top-[30px] md:right-[30px] z-20 flex flex-col md:flex-row items-end md:items-center gap-2 md:gap-4">
         <Link
           href="/login"
-          className="px-6 py-3 text-sm font-semibold tracking-[2px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)] font-['Orbitron',sans-serif]"
+          className="px-4 py-2 md:px-6 md:py-3 text-xs md:text-sm font-semibold tracking-[1px] md:tracking-[2px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)] font-['Orbitron',sans-serif]"
         >
           Client Portal
         </Link>
         <Link
           href="/login"
-          className="px-6 py-3 text-sm font-semibold tracking-[2px] uppercase bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] text-[rgba(255,215,0,0.7)] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.5)] hover:text-[#FFD700] hover:shadow-[0_0_20px_rgba(255,215,0,0.2)] font-['Orbitron',sans-serif]"
+          className="px-4 py-2 md:px-6 md:py-3 text-xs md:text-sm font-semibold tracking-[1px] md:tracking-[2px] uppercase bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] text-[rgba(255,215,0,0.7)] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.5)] hover:text-[#FFD700] hover:shadow-[0_0_20px_rgba(255,215,0,0.2)] font-['Orbitron',sans-serif]"
         >
           Coach Portal
         </Link>
