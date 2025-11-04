@@ -225,7 +225,10 @@ export default function LeadsPage() {
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Leads</h1>
+        <h1 className="text-3xl font-bold mb-2">Ansökningar</h1>
+        <p className="text-muted-foreground text-sm">
+          Ansökningar från potentiella klienter till 90-Dagars Challenge
+        </p>
 
         {/* Status tabs */}
         <div className="flex gap-2 mb-4 overflow-x-auto">
