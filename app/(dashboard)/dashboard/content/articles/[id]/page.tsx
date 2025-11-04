@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft, Save, Eye, EyeOff, Plus, X } from 'lucide-react'
+import { ArrowLeft, Save, Eye, EyeOff, Plus, X, Upload, FileText } from 'lucide-react'
 import { toast } from 'sonner'
 import { MDXPreview } from '@/components/mdx-preview'
 
@@ -67,6 +67,55 @@ export default function ArticleEditorPage() {
   })
 
   const [newTag, setNewTag] = useState('')
+  const [isImporting, setIsImporting] = useState(false)
+
+  const handleFileImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    const validTypes = ['.docx', '.pdf', '.txt']
+    const fileExt = '.' + file.name.split('.').pop()?.toLowerCase()
+    if (!validTypes.includes(fileExt)) {
+      toast.error('Ogiltig filtyp. Vänligen ladda upp .docx, .pdf eller .txt filer.')
+      return
+    }
+
+    setIsImporting(true)
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      const response = await fetch('/api/articles/extract-text', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+
+        // Update form with extracted content
+        setFormData(prev => ({
+          ...prev,
+          title: prev.title || data.title, // Only set title if empty
+          content: data.text,
+          slug: prev.slug || data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+        }))
+
+        toast.success(`Innehåll importerat från ${file.name}`)
+      } else {
+        const error = await response.json()
+        toast.error(error.error || 'Kunde inte importera filen')
+      }
+    } catch (error) {
+      console.error('Error importing file:', error)
+      toast.error('Ett fel uppstod vid import av filen')
+    } finally {
+      setIsImporting(false)
+      // Reset file input
+      event.target.value = ''
+    }
+  }
 
   useEffect(() => {
     if (session?.user) {
@@ -406,10 +455,48 @@ export default function ArticleEditorPage() {
             </TabsList>
 
             <TabsContent value="edit">
+              {/* File Import Section */}
+              <div className="mb-4 p-4 bg-gradient-to-r from-[rgba(255,215,0,0.05)] to-[rgba(255,215,0,0.02)] border-2 border-[rgba(255,215,0,0.2)] rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-[#FFD700]" />
+                    <h3 className="font-semibold text-[#FFD700]">Importera innehåll från fil</h3>
+                  </div>
+                </div>
+                <p className="text-sm text-[rgba(255,255,255,0.6)] mb-3">
+                  Ladda upp ett Word-dokument (.docx), PDF (.pdf) eller textfil (.txt) för att importera innehållet
+                </p>
+                <div className="flex items-center gap-3">
+                  <label htmlFor="file-import" className="cursor-pointer">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={isImporting}
+                      className="border-[rgba(255,215,0,0.4)] hover:bg-[rgba(255,215,0,0.1)] text-[#FFD700]"
+                      onClick={() => document.getElementById('file-import')?.click()}
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      {isImporting ? 'Importerar...' : 'Välj fil'}
+                    </Button>
+                    <input
+                      id="file-import"
+                      type="file"
+                      accept=".docx,.pdf,.txt"
+                      onChange={handleFileImport}
+                      className="hidden"
+                    />
+                  </label>
+                  <span className="text-xs text-[rgba(255,255,255,0.5)]">
+                    .docx, .pdf, .txt
+                  </span>
+                </div>
+              </div>
+
               <Textarea
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                placeholder="Skriv artikelinnehåll här med MDX-formatering..."
+                placeholder="Skriv artikelinnehåll här med MDX-formatering... eller importera från fil ovan"
                 className="min-h-[500px] font-mono"
               />
               <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
