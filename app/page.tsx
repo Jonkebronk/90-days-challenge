@@ -129,35 +129,7 @@ export default function HomePage() {
         </button>
 
         {/* Vem passar programmet för? Section */}
-        <div className="mt-16 animate-fadeIn">
-          {/* Pyramid Icon */}
-          <div className="w-[80px] h-[80px] mx-auto mb-6 animate-symbolPulse">
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="goldGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#FFD700" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#FFA500" stopOpacity="1" />
-                </linearGradient>
-                <filter id="glow2">
-                  <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-                  <feMerge>
-                    <feMergeNode in="coloredBlur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-              <path
-                d="M50 10 L90 85 L10 85 Z"
-                fill="url(#goldGradient2)"
-                filter="url(#glow2)"
-                stroke="#FFD700"
-                strokeWidth="2"
-              />
-              <circle cx="50" cy="50" r="4" fill="#FFD700" />
-              <path d="M50 50 L50 75" stroke="#FFD700" strokeWidth="2" />
-            </svg>
-          </div>
-
+        <div className="mt-20 animate-fadeIn">
           {/* Section Title */}
           <div className="mb-8">
             <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 animate-shimmer" />
