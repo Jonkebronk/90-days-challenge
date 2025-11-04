@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Plus, Mail, CheckCircle2, Clock, User, X, Trash2, FileText } from 'lucide-react'
+import { Plus, Mail, User, X, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { Separator } from '@/components/ui/separator'
@@ -149,16 +149,6 @@ export default function ClientsPage() {
     }
   }
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge className="bg-green-500"><CheckCircle2 className="w-3 h-3 mr-1" />Active</Badge>
-      case 'pending':
-        return <Badge variant="outline"><Clock className="w-3 h-3 mr-1" />Pending</Badge>
-      default:
-        return <Badge variant="secondary">{status}</Badge>
-    }
-  }
 
   if (isLoading) {
     return (
@@ -372,23 +362,15 @@ export default function ClientsPage() {
                       </div>
                     </Link>
                     <div className="flex items-center gap-4">
-                      {getStatusBadge(client.status)}
-                      {client.status === 'pending' && client.invitationSentAt && (
-                        <p className="text-xs text-muted-foreground">
-                          Invited {new Date(client.invitationSentAt).toLocaleDateString()}
-                        </p>
-                      )}
-                      {client.status === 'pending' && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteClient(client.id, client.email)}
-                          disabled={deletingClientId === client.id}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteClient(client.id, client.email)}
+                        disabled={deletingClientId === client.id}
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
                 ))}
