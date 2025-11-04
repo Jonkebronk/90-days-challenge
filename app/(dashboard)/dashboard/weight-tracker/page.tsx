@@ -258,13 +258,34 @@ export default function WeightTrackerPage() {
                 </div>
                 <div>
                   <Label htmlFor="targetDate" className="text-gray-400">Måldatum</Label>
-                  <Input
-                    id="targetDate"
-                    type="date"
-                    value={profile.targetDate}
-                    onChange={(e) => setProfile({ ...profile, targetDate: e.target.value })}
-                    className="bg-gray-700 border-gray-600 text-white"
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="targetDate"
+                      type="date"
+                      value={profile.targetDate}
+                      onChange={(e) => setProfile({ ...profile, targetDate: e.target.value })}
+                      className="bg-gray-700 border-gray-600 text-white flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        // Calculate 90 days (13 weeks) from today
+                        const today = new Date()
+                        const futureDate = new Date(today)
+                        futureDate.setDate(today.getDate() + 91) // 13 weeks = 91 days
+                        const dateStr = futureDate.toISOString().split('T')[0]
+                        setProfile({ ...profile, targetDate: dateStr })
+                      }}
+                      className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600 whitespace-nowrap"
+                      title="Sätt automatiskt till 90 dagar (13 veckor) från idag"
+                    >
+                      90 dagar
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Knappen sätter automatiskt måldatum till 13 veckor (90 dagar) från idag
+                  </p>
                 </div>
                 <Button
                   onClick={saveProfile}
