@@ -34,16 +34,31 @@ export default function HomePage() {
       </div>
 
       {/* Portal buttons */}
-      <div className="absolute top-[15px] right-[15px] md:top-[30px] md:right-[30px] z-20 flex flex-col md:flex-row items-end md:items-center gap-2 md:gap-4">
+      <div className="absolute top-[15px] right-[15px] md:top-[30px] md:right-[30px] z-20 flex flex-col md:flex-row items-end md:items-center gap-1 md:gap-4">
+        {/* Mobile: Small text links */}
         <Link
           href="/login"
-          className="px-4 py-2 md:px-6 md:py-3 text-xs md:text-sm font-semibold tracking-[1px] md:tracking-[2px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)] font-['Orbitron',sans-serif]"
+          className="md:hidden text-[10px] font-medium tracking-[1px] uppercase text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] transition-colors"
+        >
+          Client →
+        </Link>
+        <Link
+          href="/login"
+          className="md:hidden text-[10px] font-medium tracking-[1px] uppercase text-[rgba(255,215,0,0.6)] hover:text-[#FFD700] transition-colors"
+        >
+          Coach →
+        </Link>
+
+        {/* Desktop: Full buttons */}
+        <Link
+          href="/login"
+          className="hidden md:flex px-6 py-3 text-sm font-semibold tracking-[2px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)] font-['Orbitron',sans-serif]"
         >
           Client Portal
         </Link>
         <Link
           href="/login"
-          className="px-4 py-2 md:px-6 md:py-3 text-xs md:text-sm font-semibold tracking-[1px] md:tracking-[2px] uppercase bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] text-[rgba(255,215,0,0.7)] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.5)] hover:text-[#FFD700] hover:shadow-[0_0_20px_rgba(255,215,0,0.2)] font-['Orbitron',sans-serif]"
+          className="hidden md:flex px-6 py-3 text-sm font-semibold tracking-[2px] uppercase bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] text-[rgba(255,215,0,0.7)] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.5)] hover:text-[#FFD700] hover:shadow-[0_0_20px_rgba(255,215,0,0.2)] font-['Orbitron',sans-serif]"
         >
           Coach Portal
         </Link>
