@@ -21,7 +21,10 @@ import {
   Activity,
   Utensils,
   Zap,
-  Scale
+  Scale,
+  FolderOpen,
+  Library,
+  Map
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
@@ -34,16 +37,22 @@ import {
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Team', href: '/dashboard/clients', icon: Users },
-  { name: 'Leads', href: '/dashboard/leads', icon: UserPlus },
+  { name: 'Team', href: '/dashboard/clients', icon: Users, coachOnly: true },
+  { name: 'Leads', href: '/dashboard/leads', icon: UserPlus, coachOnly: true },
   {
     name: 'Innehåll',
     icon: BookOpen,
+    coachOnly: true,
     dropdown: [
       { name: 'Filer', href: '/dashboard/content/files', icon: FileText },
       { name: 'Lektioner', href: '/dashboard/content/lessons', icon: GraduationCap },
+      { name: 'Kategorier', href: '/dashboard/content/categories', icon: FolderOpen },
+      { name: 'Artiklar', href: '/dashboard/content/articles', icon: Library },
+      { name: '90-Dagars Roadmap', href: '/dashboard/content/roadmap', icon: Map },
     ]
   },
+  { name: 'Artikel Bank', href: '/dashboard/articles', icon: Library, clientOnly: true },
+  { name: 'Min Roadmap', href: '/dashboard/roadmap', icon: Map, clientOnly: true },
   {
     name: 'Verktyg',
     icon: Calculator,
@@ -73,6 +82,15 @@ export default function DashboardLayout({
     signOut({ callbackUrl: '/login' })
   }
 
+  const isCoach = (session?.user as any)?.role === 'coach'
+  const isClient = (session?.user as any)?.role === 'client'
+
+  const filteredNavigation = navigation.filter(item => {
+    if ((item as any).coachOnly && !isCoach) return false
+    if ((item as any).clientOnly && !isClient) return false
+    return true
+  })
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
       {/* Header */}
@@ -81,7 +99,7 @@ export default function DashboardLayout({
           <div className="flex items-center justify-between h-16">
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-1">
-              {navigation.map((item) => {
+              {filteredNavigation.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href
 
@@ -183,7 +201,7 @@ export default function DashboardLayout({
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-[rgba(255,215,0,0.2)] bg-[rgba(10,10,10,0.95)]">
             <nav className="container mx-auto px-4 py-4 space-y-1">
-              {navigation.map((item) => {
+              {filteredNavigation.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href
 
