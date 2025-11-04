@@ -3,6 +3,12 @@
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { CountdownTimer } from '@/components/countdown-timer'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 
 export default function HomePage() {
   const router = useRouter()
@@ -27,19 +33,19 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* Portal links */}
-      <div className="absolute top-[30px] right-[30px] z-20 flex flex-col items-end gap-2">
+      {/* Portal buttons */}
+      <div className="absolute top-[30px] right-[30px] z-20 flex flex-col items-end gap-3">
         <Link
           href="/login"
-          className="text-sm text-[rgba(255,215,0,0.7)] hover:text-[#FFD700] transition-all duration-300 tracking-wide font-light hover:-translate-x-1"
+          className="px-6 py-3 text-sm font-semibold tracking-[2px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)] font-['Orbitron',sans-serif]"
         >
-          Client Portal →
+          Client Portal
         </Link>
         <Link
           href="/login"
-          className="text-sm text-[rgba(255,215,0,0.5)] hover:text-[rgba(255,215,0,0.8)] transition-all duration-300 tracking-wide font-light hover:-translate-x-1"
+          className="px-6 py-3 text-sm font-semibold tracking-[2px] uppercase bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] text-[rgba(255,215,0,0.7)] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.5)] hover:text-[#FFD700] hover:shadow-[0_0_20px_rgba(255,215,0,0.2)] font-['Orbitron',sans-serif]"
         >
-          Coach Portal →
+          Coach Portal
         </Link>
       </div>
 
@@ -157,6 +163,126 @@ export default function HomePage() {
           >
             Ansök Nu
           </button>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="mt-16 animate-fadeIn">
+          {/* Section Title */}
+          <div className="mb-8">
+            <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 animate-shimmer" />
+            <h2 className="font-['Orbitron',sans-serif] text-3xl font-black tracking-[4px] leading-[1.2] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+              Vanliga Frågor
+            </h2>
+            <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 animate-shimmer" />
+          </div>
+
+          <Accordion type="single" collapsible className="space-y-4">
+            <AccordionItem
+              value="item-1"
+              className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] overflow-hidden"
+            >
+              <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-[rgba(255,215,0,0.05)] transition-colors">
+                <span className="text-lg font-bold text-[#FFD700] tracking-[1px] font-['Orbitron',sans-serif]">
+                  Vad är 90-Dagars Challenge?
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-4 text-[rgba(255,255,255,0.8)] leading-relaxed">
+                90-Dagars Challenge är ett strukturerat coaching-program där du får personlig vägledning för att gå ner 5-15 kg på 90 dagar. Du får tillgång till träningsprogram, kostplaner, recept och veckovisa check-ins med din coach.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem
+              value="item-2"
+              className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] overflow-hidden"
+            >
+              <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-[rgba(255,215,0,0.05)] transition-colors">
+                <span className="text-lg font-bold text-[#FFD700] tracking-[1px] font-['Orbitron',sans-serif]">
+                  Vad ingår i programmet?
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-4 text-[rgba(255,255,255,0.8)] leading-relaxed">
+                <ul className="space-y-2 list-disc list-inside">
+                  <li>Personlig coach som följer din progress</li>
+                  <li>Skräddarsydda träningsprogram</li>
+                  <li>Individuella kostplaner och makroberäkningar</li>
+                  <li>Recept och måltidsförslag</li>
+                  <li>Veckovisa check-ins och uppföljning</li>
+                  <li>90-dagars roadmap med artiklar och guider</li>
+                  <li>Tillgång till digitala verktyg och kalkylatorer</li>
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem
+              value="item-3"
+              className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] overflow-hidden"
+            >
+              <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-[rgba(255,215,0,0.05)] transition-colors">
+                <span className="text-lg font-bold text-[#FFD700] tracking-[1px] font-['Orbitron',sans-serif]">
+                  Behöver jag tillgång till ett gym?
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-4 text-[rgba(255,255,255,0.8)] leading-relaxed">
+                Nej, träningsprogrammen kan anpassas efter dina förutsättningar. Vi kan skapa program för hemmaträning, utomhusträning eller gymträning - beroende på vad som passar dig bäst.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem
+              value="item-4"
+              className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] overflow-hidden"
+            >
+              <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-[rgba(255,215,0,0.05)] transition-colors">
+                <span className="text-lg font-bold text-[#FFD700] tracking-[1px] font-['Orbitron',sans-serif]">
+                  Hur mycket vikt kan jag förvänta mig att gå ner?
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-4 text-[rgba(255,255,255,0.8)] leading-relaxed">
+                De flesta deltagare går ner mellan 5-15 kg under programmet, beroende på utgångsläge och hur väl man följer planen. Målet är en hållbar viktminskning på cirka 0,5-1 kg per vecka, vilket är vetenskapligt beprövat och säkert.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem
+              value="item-5"
+              className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] overflow-hidden"
+            >
+              <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-[rgba(255,215,0,0.05)] transition-colors">
+                <span className="text-lg font-bold text-[#FFD700] tracking-[1px] font-['Orbitron',sans-serif]">
+                  Vad händer om jag inte kan följa planen exakt?
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-4 text-[rgba(255,255,255,0.8)] leading-relaxed">
+                Din coach finns där för att hjälpa dig anpassa planen efter din livssituation. Livet händer, och det viktiga är att du kommunicerar med din coach så kan ni tillsammans hitta lösningar som fungerar för dig.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem
+              value="item-6"
+              className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] overflow-hidden"
+            >
+              <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-[rgba(255,215,0,0.05)] transition-colors">
+                <span className="text-lg font-bold text-[#FFD700] tracking-[1px] font-['Orbitron',sans-serif]">
+                  Hur mycket kostar programmet?
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-4 text-[rgba(255,255,255,0.8)] leading-relaxed">
+                Prissättningen diskuteras individuellt när din ansökan är godkänd. Vi vill först säkerställa att programmet passar dig och dina mål innan vi går in på detaljer om investering.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem
+              value="item-7"
+              className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] overflow-hidden"
+            >
+              <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-[rgba(255,215,0,0.05)] transition-colors">
+                <span className="text-lg font-bold text-[#FFD700] tracking-[1px] font-['Orbitron',sans-serif]">
+                  Vad skiljer detta från andra program?
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="px-6 pb-4 text-[rgba(255,255,255,0.8)] leading-relaxed">
+                Till skillnad från generiska online-program får du personlig coaching och individuell anpassning. Din coach följer din progress varje vecka och justerar planen efter dina resultat. Du är inte ensam - du har en dedikerad coach som håller dig ansvarig och motiverad hela vägen.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
 
         {/* Footer */}
