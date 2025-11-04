@@ -45,8 +45,6 @@ const navigation = [
     icon: BookOpen,
     coachOnly: true,
     dropdown: [
-      { name: 'Filer', href: '/dashboard/content/files', icon: FileText },
-      { name: 'Lektioner', href: '/dashboard/content/lessons', icon: GraduationCap },
       { name: 'Artikel Kategorier', href: '/dashboard/content/categories', icon: FolderOpen },
       { name: 'Artiklar', href: '/dashboard/content/articles', icon: Library },
       { name: '90-Dagars Roadmap', href: '/dashboard/content/roadmap', icon: Map },
