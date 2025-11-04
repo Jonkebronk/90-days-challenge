@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -106,7 +105,7 @@ export default function LoginPage() {
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
+        <CardFooter>
           <Button
             type="submit"
             className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold"
@@ -114,12 +113,6 @@ export default function LoginPage() {
           >
             {isLoading ? 'Signing in...' : 'Sign In'}
           </Button>
-          <p className="text-sm text-[rgba(255,255,255,0.5)] text-center">
-            Don&apos;t have an account?{' '}
-            <Link href="/signup" className="text-[#FFD700] hover:underline hover:text-[#FFA500]">
-              Sign up
-            </Link>
-          </p>
         </CardFooter>
       </form>
     </Card>
