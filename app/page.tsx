@@ -128,6 +128,124 @@ export default function HomePage() {
           Ansök Nu
         </button>
 
+        {/* Vem passar programmet för? Section */}
+        <div className="mt-16 animate-fadeIn">
+          {/* Pyramid Icon */}
+          <div className="w-[80px] h-[80px] mx-auto mb-6 animate-symbolPulse">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="goldGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#FFD700" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#FFA500" stopOpacity="1" />
+                </linearGradient>
+                <filter id="glow2">
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                  <feMerge>
+                    <feMergeNode in="coloredBlur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <path
+                d="M50 10 L90 85 L10 85 Z"
+                fill="url(#goldGradient2)"
+                filter="url(#glow2)"
+                stroke="#FFD700"
+                strokeWidth="2"
+              />
+              <circle cx="50" cy="50" r="4" fill="#FFD700" />
+              <path d="M50 50 L50 75" stroke="#FFD700" strokeWidth="2" />
+            </svg>
+          </div>
+
+          {/* Section Title */}
+          <div className="mb-8">
+            <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 animate-shimmer" />
+            <h2 className="font-['Orbitron',sans-serif] text-3xl font-black tracking-[4px] leading-[1.2] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+              Är du redo för<br />90 dagar som<br />förändrar allt?
+            </h2>
+            <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 animate-shimmer" />
+          </div>
+
+          {/* Two-column grid */}
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            {/* Left column - Passar för dig */}
+            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(34,197,94,0.3)] rounded-xl p-6 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(34,197,94,0.6)] hover:shadow-[0_0_30px_rgba(34,197,94,0.2)] hover:-translate-y-1">
+              <h3 className="text-xl font-bold text-[#22c55e] mb-4 tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                Passar för dig
+              </h3>
+              <ul className="space-y-3 text-left">
+                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
+                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                  <span>Du som vill gå ner 5-15 kg på 90 dagar med beprövade metoder</span>
+                </li>
+                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
+                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                  <span>Du som är redo att följa en strukturerad plan och lyssna på coaching</span>
+                </li>
+                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
+                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                  <span>Du som vill ha personlig coaching och stöd genom hela resan</span>
+                </li>
+                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
+                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                  <span>Du som är villig att investera i din hälsa och transformation</span>
+                </li>
+                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
+                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                  <span>Du som vill lära dig hållbara vanor för livet, inte bara en quick fix</span>
+                </li>
+                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
+                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                  <span>Du som är motiverad att checka in varje vecka och följa upp din progress</span>
+                </li>
+                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
+                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                  <span>Du som vill ha tillgång till träningsprogram, recept och kostplaner</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Right column - Passar INTE */}
+            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(239,68,68,0.3)] rounded-xl p-6 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(239,68,68,0.6)] hover:shadow-[0_0_30px_rgba(239,68,68,0.2)] hover:-translate-y-1">
+              <h3 className="text-xl font-bold text-[#ef4444] mb-4 tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                Passar INTE
+              </h3>
+              <ul className="space-y-3 text-left">
+                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
+                  <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
+                  <span>Du som letar efter en "magisk piller" utan att lägga in arbetet</span>
+                </li>
+                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
+                  <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
+                  <span>Du som inte är redo att göra förändringar i din livsstil</span>
+                </li>
+                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
+                  <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
+                  <span>Du som inte kan följa en plan och vill "göra på ditt sätt"</span>
+                </li>
+                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
+                  <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
+                  <span>Du som inte är villig att investera tid och pengar i din hälsa</span>
+                </li>
+                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
+                  <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
+                  <span>Du som söker extrema crash-dieter eller ohållbara metoder</span>
+                </li>
+                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
+                  <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
+                  <span>Du som har allvarliga medicinska tillstånd utan läkarkonsultation</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* CTA Button */}
+          <button className="w-full py-5 px-10 text-lg tracking-[3px] uppercase font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] border-none rounded-lg cursor-pointer transition-all duration-300 font-['Orbitron',sans-serif] relative overflow-hidden hover:scale-105 hover:shadow-[0_10px_40px_rgba(255,215,0,0.4)] active:scale-[0.98] before:content-[''] before:absolute before:top-0 before:left-[-100%] before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-[rgba(255,255,255,0.3)] before:to-transparent before:transition-[left] before:duration-500 hover:before:left-[100%]">
+            Ansök Nu
+          </button>
+        </div>
+
         {/* OR divider */}
         <div className="flex items-center gap-5 my-10">
           <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
