@@ -321,7 +321,11 @@ export default function LessonEditorPage() {
           <h1 className="text-3xl font-bold">{lesson.title}</h1>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.open(`/dashboard/lessons/${lessonId}`, '_blank')}
+          >
             <Eye className="h-4 w-4 mr-2" />
             Förhandsgranska
           </Button>
