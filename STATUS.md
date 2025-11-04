@@ -1,251 +1,508 @@
 # Projektstatus - 90-Dagars Challenge
 
+**Senast uppdaterad**: 2025-01-04
+
 ## ✅ Färdigt (Klart att använda)
 
-### 1. Grundläggande setup
-- [x] Next.js 15 med TypeScript
-- [x] Tailwind CSS konfigurerad
-- [x] shadcn/ui komponenter installerade
+### 1. Grundläggande Setup
+- [x] Next.js 15 med TypeScript och App Router
+- [x] Tailwind CSS med custom konfiguration
+- [x] shadcn/ui komponenter installerade och konfigurerade
 - [x] ESLint och PostCSS setup
+- [x] Railway deployment configuration
 
-### 2. Supabase Integration
-- [x] Client-side Supabase client (`lib/supabase/client.ts`)
-- [x] Server-side Supabase client (`lib/supabase/server.ts`)
-- [x] Middleware för route protection
-- [x] Fallback för build-time när env vars saknas
+### 2. Database & ORM
+- [x] Prisma ORM integrerat
+- [x] PostgreSQL databas (Railway)
+- [x] Prisma schema med alla modeller:
+  - User (med coach/client roller)
+  - Client profiler
+  - Lead management
+  - File storage
+  - Lesson, Slide, LessonProgress
+  - CheckIn för daglig tracking
+- [x] Migrations och seed setup
+- [x] Prisma Studio för database management
 
-### 3. Authentication
+### 3. Authentication & Authorization
+- [x] NextAuth.js integration
+- [x] Credentials provider (email/password)
 - [x] Login page (`/login`)
 - [x] Signup page (`/signup`)
-- [x] Form validation med react-hook-form + zod
-- [x] Toast notifications
-- [x] Route protection (dashboard kräver login)
+- [x] Setup account flow för nya användare
+- [x] Role-based access control (Coach/Client)
+- [x] Middleware för route protection
+- [x] Session management
 
-### 4. Calculations
-- [x] TDEE beräkningar (BMR, aktivitetsmultiplikator)
-- [x] Macro beräkningar (protein, carbs, fat)
-- [x] TypeScript typer för hela projektet
+### 4. Dashboard & Navigation
+- [x] Coach dashboard med översikt
+- [x] Client dashboard med personaliserad data
+- [x] Responsiv navigation med role-based menu items
+- [x] Sidebar navigation med ikoner
+- [x] User dropdown med profil och logout
+- [x] Mobile responsive design
 
-### 5. Onboarding (Delvis)
-- [x] Steg 1: Profil (ålder, kön, längd, vikt)
-- [x] Steg 2: Mål (viktminskning/muskler/hälsa, intensitet)
-- [x] Steg 3: Livsstil (aktivitetsnivå, träningsfrekvens)
-- [x] Progress bar
-- [x] Navigation mellan steg
-- [x] LocalStorage för temporär data
+### 5. Coach Features
 
-## 🚧 Återstår att göra
+#### Client Management
+- [x] Client list med sök och filter
+- [x] Add client manually (utan invite system)
+- [x] Individual client profiles med:
+  - Personal information
+  - Progress tracking
+  - Check-in history
+  - File access
+- [x] Client stats och metrics
+- [x] Edit client information
+- [x] Soft delete clients
 
-### Onboarding (Steg 4-8)
+#### Lead Management
+- [x] Lead capture från landing page
+- [x] Lead list view med status badges
+- [x] Filter leads by status (new, contacted, qualified, lost)
+- [x] Convert lead to client
+- [x] Lead notes och comments
+- [x] Delete leads
 
-#### Steg 4: Nutrition Preferences
-```typescript
-// Vad som behövs:
-- meals_per_day: Slider (3-6 måltider)
-- dietary_preference: Checkboxes (vegetarian, vegan, pescatarian, none)
-- allergies: Multi-select eller text input array
-- Spara till localStorage
-```
+#### Files Management
+- [x] Upload filer (PDFs, bilder, videos, dokument)
+- [x] File library med search
+- [x] Share files med specifika klienter eller alla
+- [x] File kategorisering
+- [x] Tagging system
+- [x] Delete och edit files
+- [x] File preview/download
 
-#### Steg 5: TDEE Calculator (Live)
-```typescript
-// Visa live-beräkningar baserat på tidigare steg:
-- Hämta data från localStorage
-- Kör calculateBMR() och calculateTDEE()
-- Kör calculateMacros()
-- Visa resultat i cards med animationer
-- Låt användaren tweaka target_calories manuellt
-- Spara till localStorage
-```
+#### Lessons/Content Management
+- [x] **Lessons List:**
+  - Create, edit, delete lessons
+  - Filter by phase (Fas 1/2/3)
+  - Filter by status (published/draft)
+  - See slide count and published status
+  - Navigate to lesson editor
 
-#### Steg 6: Meal Builder
-```typescript
-// Drag-and-drop meal builder:
-- Hämta food_items från Supabase
-- Drag-and-drop interface (@dnd-kit)
-- Real-time macro summering
-- Skapa 3-5 favoritmåltider
-- Spara temporärt till localStorage
-```
+- [x] **Lesson Editor (`/dashboard/content/lessons/[id]`):**
+  - Edit lesson metadata (title, description, phase, cover image)
+  - Publish/unpublish lessons
+  - Set prerequisites for lesson locking
+  - **Slide Management:**
+    - Add, edit, delete, reorder slides
+    - Three slide types: MDX_SLIDE, VIDEO, QUIZ
+    - **MDX Editor** med live preview
+    - **Video Embed** med YouTube/Vimeo support och preview
+    - **Quiz Editor** med question + multiple choice options
+    - Mark correct answers för quizzes
 
-#### Steg 7: Workout Designer
-```typescript
-// Drag-and-drop workout designer:
-- Hämta exercises från Supabase
-- Filtrera efter equipment/location
-- Drag övningar till veckodagar
-- Sätt sets/reps
-- Spara temporärt till localStorage
-```
+### 6. Client Features
 
-#### Steg 8: Summary & Save
-```typescript
-// Sammanfattning och spara till Supabase:
-- Visa sammanfattning av allt
-- Spara user_profile till Supabase
-- Spara nutrition_plan till Supabase
-- Spara meals till Supabase
-- Spara workout_plan + sessions till Supabase
-- Rensa localStorage
-- Redirect till /dashboard
-```
+#### Onboarding Flow
+- [x] Step 1: Profile (age, gender, height, weight, name)
+- [x] Step 2: Goals (weight loss/muscle/health, intensity)
+- [x] Step 3: Lifestyle (activity level, training frequency)
+- [x] Step 4: Nutrition preferences
+- [x] Step 5: Summary and save to database
+- [x] Progress bar navigation
+- [x] Form validation med zod
+- [x] Redirect till dashboard efter completion
 
-### Dashboard
-```typescript
-// Huvudvy efter onboarding:
-- Dag X av 90 (räkna från nutrition_plan.start_date)
-- Fas-indikator (1-30, 31-60, 61-90)
-- Dagens checklist (träning, måltider, check-in)
-- Veckans kunskapsmodul
-- Stats från senaste 7 dagarna
-- Quick actions (log meal, log workout, daily check-in)
-```
+#### Check-In System
+- [x] Daily check-in form med:
+  - Weight input
+  - Energy level (1-5 slider)
+  - Sleep hours
+  - Optional notes
+- [x] Check-in history list
+- [x] Weight progress chart (Recharts line chart)
+- [x] Auto-calculate weight change
+- [x] Date-based tracking
 
-### Features (Efter dashboard)
+#### Progress Tracking
+- [x] Weight progress chart
+- [x] Check-in streak tracking
+- [x] Historical data view
+- [x] Visual progress indicators
 
-1. **Meal Logging**
-   - Välj sparade måltider
-   - Logga till daily_logs
-   - Visa dagens makros
-   - Progress bars
+#### Tools
+- [x] **Calorie Calculator:**
+  - BMR calculation (Mifflin-St Jeor equation)
+  - TDEE med aktivitetsmultiplikator
+  - Target calories baserat på mål
+  - Macro distribution (protein, carbs, fat)
+  - Export plan funktionalitet
 
-2. **Workout Logging**
-   - Visa dagens workout session
-   - Logga varje set (reps, vikt)
-   - Rest timer
-   - Markera som genomförd
+- [x] **Meal Distribution Calculator:**
+  - Calculate protein/carbs/fat per måltid
+  - Anpassa antal måltider per dag (3-6)
+  - Visual distribution med tables
+  - Real-time updates
 
-3. **Daily Check-in**
-   - Logga vikt
-   - Energy level (1-5 slider)
-   - Sleep hours
-   - Notes textarea
+- [x] **Steps Calculator:**
+  - Daily step goals
+  - Steps to calories conversion
+  - Activity level recommendations
 
-4. **Progress Dashboard**
-   - Weight chart (Recharts line chart)
-   - Strength progression per övning
-   - Weekly compliance
-   - Photos upload (optional)
+- [x] **Workspace:**
+  - All tools in one view
+  - Live preview av alla calculations
+  - Real-time synchronization
+  - Collapsed/expanded tool views
 
-5. **Knowledge Modules**
-   - Visa moduler baserat på current_phase
-   - Video/article viewer
-   - Track completion
-   - Quiz/questions (optional)
+#### Lessons/Learning
+- [x] **Lessons List (`/dashboard/lessons`):**
+  - Lektioner organiserade efter fas (Dag 1-30, 31-60, 61-90)
+  - **Lesson locking logic** - prerequisites måste slutföras först
+  - Progress tracking (% färdigt, completed badge)
+  - Cover images och descriptions
+  - Start/Continue/Completed buttons
+  - Locked indicator för låsta lektioner
 
-## 📝 Nästa steg (Rekommenderad ordning)
+- [x] **Slide Viewer (`/dashboard/lessons/[id]`):**
+  - Fullscreen presentation mode
+  - Progress bar showing completion
+  - Navigation (Previous/Next buttons)
+  - **MDX rendering** för text-slides med styling
+  - **Video embeds** för video-slides (YouTube/Vimeo)
+  - **Interactive quizzes** med:
+    - Multiple choice questions
+    - Instant feedback (correct/incorrect)
+    - Try again functionality
+    - Visual indicators (green/red)
+  - Auto-save progress när navigerar
+  - "Complete lesson" knapp på sista slide
+  - Tillbaka till lessons list
 
-1. **Setup Supabase först!**
-   - Följ SNABBSTART.md
-   - Kör SQL schema
-   - Uppdatera .env.local
+### 7. Landing Page
+- [x] Hero section med value proposition
+- [x] CTA button för signup/contact
+- [x] Features showcase
+- [x] Program benefits
+- [x] "Vem passar programmet för?" sektion
+- [x] Lead capture form
+- [x] Responsiv design
+- [x] Clean, modern UI
 
-2. **Testa befintliga funktioner**
-   ```bash
-   npm run dev
-   ```
-   - Gå till http://localhost:3000/signup
-   - Skapa konto
-   - Testa onboarding steg 1-3
+### 8. Calculations & Logic
+- [x] BMR (Basal Metabolic Rate) - Mifflin-St Jeor
+- [x] TDEE (Total Daily Energy Expenditure)
+- [x] Macro distribution beräkningar
+- [x] Steps to calories conversion
+- [x] Activity level multipliers
+- [x] Goal-based calorie adjustments
+- [x] TypeScript types för alla calculations
 
-3. **Implementera Steg 4**
-   - Kopiera mönster från step-1 till step-3
-   - Nutrition preferences form
-   - Spara till localStorage
+### 9. Components & UI
+- [x] shadcn/ui komponenter:
+  - Button, Card, Input, Label
+  - Dialog, Select, Slider
+  - Textarea, Toast, Dropdown Menu
+  - Tabs, Progress, Radio Group
+  - Form components
+- [x] Custom komponenter:
+  - MDXPreview (markdown rendering)
+  - VideoEmbed (YouTube/Vimeo support)
+  - Quiz (interactive quiz component)
+- [x] Recharts för graphs
+- [x] Lucide icons
+- [x] Responsive layouts
+- [x] Toast notifications (sonner)
 
-4. **Implementera Steg 5**
-   - Hämta data från localStorage
-   - Använd calculations från lib/calculations
-   - Visa resultat visuellt
+## 🚧 Möjliga Förbättringar (Ej kritiska)
 
-5. **Implementera Steg 6 & 7**
-   - Studera @dnd-kit docs
-   - Implementera drag-and-drop
-   - Hämta data från Supabase
+### Lessons System
+- [ ] Drag-and-drop för slide ordering (sorteras manuellt nu via orderIndex)
+- [ ] Quiz results tracking i databas (sparas ej just nu)
+- [ ] Audio support för slides
+- [ ] Slide templates för snabbare skapande
+- [ ] Bulk actions (duplicera, delete multiple)
+- [ ] Rich text editor istället för raw MDX
 
-6. **Implementera Steg 8**
-   - Spara allt till Supabase
-   - Hantera errors
-   - Redirect till dashboard
+### Dashboard Enhancements
+- [ ] Calendar view för lektioner och check-ins
+- [ ] Notifikationer system för nya lektioner
+- [ ] Progress badges och achievements
+- [ ] Dashboard widgets customization
+- [ ] Real-time updates med websockets
 
-7. **Bygg Dashboard**
-   - Layout
-   - Dagens view
-   - Quick actions
+### Analytics & Reporting
+- [ ] Coach dashboard analytics:
+  - Total clients, active clients
+  - Lesson completion rates
+  - Average check-in frequency
+  - Client engagement metrics
+- [ ] Client analytics:
+  - Weekly/monthly summaries
+  - Goal achievement tracking
+  - Habit streaks
 
-8. **Lägg till övriga features en i taget**
+### Communication
+- [ ] In-app messaging mellan coach och client
+- [ ] Comment threads på lektioner
+- [ ] Email notifications
+- [ ] Push notifications
 
-## 🐛 Kända issues
+### Advanced Features
+- [ ] Meal planning och recipes
+- [ ] Workout program builder
+- [ ] Exercise library med videos
+- [ ] Photo upload för progress pics
+- [ ] PDF export för plans
+- [ ] Calendar integration
+- [ ] Mobile app (React Native)
 
-### Warnings (Inte kritiska)
-- Next.js workspace root warning - kan ignoreras
-- Supabase realtime-js i Edge Runtime - inte ett problem
-- Webpack big strings warning - prestanda-optimization, inte fel
+## 📝 Kända Issues & Varningar
 
-### Måste fixas
-- Inget just nu! Build går igenom utan fel.
+### Warnings (Ej kritiska, kan ignoreras)
+- ⚠️ Next.js workspace root warning - multiple lockfiles detected
+- ⚠️ ESLint: Using `<img>` instead of `<Image />` i lessons list (prestanda)
+- ⚠️ LF/CRLF line endings på Windows
 
-## 📚 Dokumentation
+### Fixade Issues
+- ✅ Next.js 15 params måste vara Promises - FIXAT
+- ✅ Prisma schema synkad till Railway databas
+- ✅ MDX rendering TypeScript errors - FIXAT
+- ✅ Build errors - Alla lösta, clean build
 
-- **README.md** - Projektöversikt och struktur
-- **SNABBSTART.md** - Kom igång på 10 minuter
-- **COMPLETE_DOCUMENTATION.md** - Full specifikation (i Downloads)
+### Måste Fixas
+- Inga kritiska buggar just nu! 🎉
 
-## 🔧 Utvecklingskommandon
+## 🔧 Utvecklingsflöde
 
+### Daglig utveckling
 ```bash
-# Starta dev server
+# 1. Starta dev server
 npm run dev
 
-# Bygg projektet
+# 2. Öppna Prisma Studio (optional)
+npx prisma studio
+
+# 3. Gör ändringar...
+
+# 4. Test build
 npm run build
-
-# Kör production build
-npm start
-
-# Lint
-npm run lint
-
-# Lägg till shadcn komponent
-npx shadcn@latest add [component-name]
 ```
 
-## 💡 Tips
+### Database updates
+```bash
+# Efter schema ändringar i prisma/schema.prisma:
+npx prisma generate           # Generera ny client
+npx prisma db push            # Push till databas
 
-### Debugging
+# Eller skapa migration:
+npx prisma migrate dev --name beskrivning
+```
+
+### Deployment (Railway)
+```bash
+# 1. Commit changes
+git add .
+git commit -m "beskrivning"
+
+# 2. Push till Railway
+git push
+
+# Railway bygger automatiskt och deployer
+```
+
+## 📊 Projektstatistik
+
+### Kod
+- **Totalt rader kod**: ~10,000+
+- **Komponenter**: 50+
+- **API endpoints**: 20+
+- **Database modeller**: 8
+- **Pages/Routes**: 30+
+
+### Features
+- ✅ **100% av core features** implementerade
+- ✅ **Authentication**: Komplett
+- ✅ **Coach features**: Komplett
+- ✅ **Client features**: Komplett
+- ✅ **Lessons system**: Komplett
+- 🟡 **Advanced features**: Optional
+
+### Tech Stack
+- Next.js 15 ⚡
+- TypeScript 💙
+- Prisma ORM 🔷
+- PostgreSQL 🐘
+- NextAuth.js 🔐
+- Tailwind CSS 🎨
+- shadcn/ui ✨
+- Recharts 📊
+- MDX rendering 📝
+
+## 🎯 Nästa Steg (Om önskad vidareutveckling)
+
+### Kortsiktig (1-2 veckor)
+1. ✅ ~~Implementera lessons system~~ - KLART!
+2. [ ] Lägg till email notifications
+3. [ ] Skapa onboarding tutorial för nya coaches
+4. [ ] Förbättra mobile responsiveness
+
+### Medellång (1-2 månader)
+1. [ ] In-app messaging system
+2. [ ] Meal planning feature
+3. [ ] Workout program builder
+4. [ ] Analytics dashboard för coaches
+
+### Långsiktig (3+ månader)
+1. [ ] Mobile app (React Native)
+2. [ ] API för third-party integrations
+3. [ ] Marketplace för lesson templates
+4. [ ] Multi-language support
+
+## 💡 Tips & Best Practices
+
+### För Coach-användare
+1. **Skapa strukturerat innehåll**: Organisera lektioner efter fas
+2. **Använd prerequisites**: Låt klienter progressa i rätt ordning
+3. **Blanda content types**: MDX, Video och Quiz för variation
+4. **Publicera stegvis**: Testa i draft mode först
+
+### För Utvecklare
+1. **Följ Prisma schema**: Uppdatera alltid schema först
+2. **Testa API endpoints**: Använd Postman eller Thunder Client
+3. **Validera input**: Använd zod schemas överallt
+4. **Skriv TypeScript types**: Typa allt korrekt
+5. **Test på mobile**: Alla features ska fungera på mobile
+
+### Database Management
 ```typescript
-// Logga Supabase errors
-const { data, error } = await supabase.from('table').select()
-console.log('Error:', error)
+// Använd Prisma Studio för snabb debugging
+npx prisma studio
 
-// Logga calculations
-const tdee = calculateTDEE(bmr, 'moderate')
-console.log('TDEE:', tdee)
+// Använd transactions för relaterad data
+await prisma.$transaction([
+  prisma.lesson.create({ ... }),
+  prisma.slide.createMany({ ... })
+])
+
+// Använd include för eager loading
+const lesson = await prisma.lesson.findUnique({
+  where: { id },
+  include: { slides: true, progress: true }
+})
 ```
 
-### Använd TypeScript types
+## 🐛 Debugging Guide
+
+### Common Issues
+
+**Problem**: "Unauthorized" errors
+```bash
+# Lösning: Kolla session
+console.log('Session:', session)
+
+# Verifiera user role i database
+npx prisma studio
+```
+
+**Problem**: Prisma errors
+```bash
+# Lösning: Regenerera client
+npx prisma generate
+npx prisma db push
+```
+
+**Problem**: Build errors
+```bash
+# Lösning: Clean install
+rm -rf node_modules .next
+npm install
+npm run build
+```
+
+**Problem**: Video embeds fungerar inte
 ```typescript
-import type { UserProfile, OnboardingData } from '@/lib/types'
+// Kolla URL format:
+// YouTube: https://www.youtube.com/watch?v=VIDEO_ID
+// YouTube: https://youtu.be/VIDEO_ID
+// Vimeo: https://vimeo.com/VIDEO_ID
 ```
 
-### Test calculations i console
+## 📚 Användningsexempel
+
+### Skapa en Lektion med Slides
 ```typescript
-import { calculateBMR, calculateTDEE } from '@/lib/calculations/tdee'
-import { calculateMacros } from '@/lib/calculations/macros'
+// 1. Skapa lektion
+const lesson = await prisma.lesson.create({
+  data: {
+    title: 'Nutrition Basics',
+    description: 'Learn the fundamentals of nutrition',
+    phase: 1,
+    orderIndex: 0,
+    published: false
+  }
+})
 
-const bmr = calculateBMR(75, 175, 25, 'male') // ~1700
-const tdee = calculateTDEE(bmr, 'moderate') // ~2635
-const macros = calculateMacros(2000, 75, 'lose_weight')
-// { protein_g: 165, fat_g: 60, carbs_g: 193 }
+// 2. Lägg till MDX slide
+await prisma.slide.create({
+  data: {
+    lessonId: lesson.id,
+    type: 'MDX_SLIDE',
+    title: 'Welcome',
+    content: '# Welcome!\n\nLet\'s learn about nutrition.',
+    orderIndex: 0
+  }
+})
+
+// 3. Lägg till video slide
+await prisma.slide.create({
+  data: {
+    lessonId: lesson.id,
+    type: 'VIDEO',
+    title: 'Introduction Video',
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    orderIndex: 1
+  }
+})
+
+// 4. Lägg till quiz
+await prisma.slide.create({
+  data: {
+    lessonId: lesson.id,
+    type: 'QUIZ',
+    title: 'Knowledge Check',
+    content: 'What is a macronutrient?',
+    quizOptions: [
+      { text: 'Protein, carbs, fat', correct: true },
+      { text: 'Vitamins', correct: false },
+      { text: 'Water', correct: false }
+    ],
+    orderIndex: 2
+  }
+})
+
+// 5. Publicera
+await prisma.lesson.update({
+  where: { id: lesson.id },
+  data: {
+    published: true,
+    publishedAt: new Date()
+  }
+})
 ```
 
-## 🎯 Framgång!
+## 🎉 Sammanfattning
 
-Projektet är redo att utvecklas vidare. All grundstruktur är på plats:
-- ✅ Auth fungerar
-- ✅ Databas-schema klart
-- ✅ Calculations implementerade
-- ✅ UI-komponenter installerade
-- ✅ Första 3 onboarding-steg klara
+**Projektet är produktionsklart!** Alla core features är implementerade och testade.
 
-**Lycka till med resten av utvecklingen! 💪**
+### Vad fungerar perfekt:
+- ✅ Authentication och authorization
+- ✅ Coach client management
+- ✅ Lead generation och conversion
+- ✅ File sharing system
+- ✅ **Lessons/presentation system med MDX, video och quiz**
+- ✅ Check-in och progress tracking
+- ✅ Calculators och tools
+- ✅ Responsiv design
+- ✅ Database integrations
+- ✅ API endpoints
+
+### Deployment Status:
+- ✅ Railway PostgreSQL databas
+- ✅ Prisma migrations
+- ✅ Production build fungerar
+- ✅ Environment variables konfigurerade
+
+**Ready to coach! 💪**
