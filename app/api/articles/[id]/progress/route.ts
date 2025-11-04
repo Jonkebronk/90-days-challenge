@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma'
 // POST /api/articles/[id]/progress - Mark article as read/update progress
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -15,7 +15,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id: articleId } = params
+    const { id: articleId } = await params
     const body = await request.json()
     const { completed } = body
 

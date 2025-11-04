@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma'
 // POST /api/recipes/[id]/favorite - Toggle favorite
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -15,7 +15,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id: recipeId } = params
+    const { id: recipeId } = await params
     const userId = session.user.id as string
 
     // Check if already favorited
