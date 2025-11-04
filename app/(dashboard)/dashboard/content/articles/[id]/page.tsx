@@ -304,14 +304,14 @@ export default function ArticleEditorPage() {
             <div>
               <Label htmlFor="phase">Fas</Label>
               <Select
-                value={formData.phase}
-                onValueChange={(value) => setFormData({ ...formData, phase: value })}
+                value={formData.phase || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, phase: value === 'none' ? '' : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Välj fas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Ingen fas</SelectItem>
+                  <SelectItem value="none">Ingen fas</SelectItem>
                   <SelectItem value="1">Fas 1 (1-30 dagar)</SelectItem>
                   <SelectItem value="2">Fas 2 (31-60 dagar)</SelectItem>
                   <SelectItem value="3">Fas 3 (61-90 dagar)</SelectItem>
@@ -321,14 +321,14 @@ export default function ArticleEditorPage() {
             <div>
               <Label htmlFor="difficulty">Svårighetsgrad</Label>
               <Select
-                value={formData.difficulty}
-                onValueChange={(value) => setFormData({ ...formData, difficulty: value })}
+                value={formData.difficulty || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, difficulty: value === 'none' ? '' : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Välj nivå" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Ingen nivå</SelectItem>
+                  <SelectItem value="none">Ingen nivå</SelectItem>
                   <SelectItem value="beginner">Nybörjare</SelectItem>
                   <SelectItem value="intermediate">Medel</SelectItem>
                   <SelectItem value="advanced">Avancerad</SelectItem>
