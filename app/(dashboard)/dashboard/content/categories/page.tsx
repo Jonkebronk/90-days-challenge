@@ -31,6 +31,7 @@ type ArticleCategory = {
   name: string
   description?: string | null
   slug: string
+  color: string
   orderIndex: number
   _count: {
     articles: number
@@ -49,7 +50,8 @@ export default function CategoriesPage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    slug: ''
+    slug: '',
+    color: '#FFD700'
   })
 
   useEffect(() => {
@@ -93,7 +95,7 @@ export default function CategoriesPage() {
       if (response.ok) {
         toast.success('Kategori skapad')
         setIsCreateDialogOpen(false)
-        setFormData({ name: '', description: '', slug: '' })
+        setFormData({ name: '', description: '', slug: '', color: '#FFD700' })
         fetchCategories()
       } else {
         const data = await response.json()
@@ -125,7 +127,7 @@ export default function CategoriesPage() {
         toast.success('Kategori uppdaterad')
         setIsEditDialogOpen(false)
         setSelectedCategory(null)
-        setFormData({ name: '', description: '', slug: '' })
+        setFormData({ name: '', description: '', slug: '', color: '#FFD700' })
         fetchCategories()
       } else {
         const data = await response.json()
@@ -206,7 +208,8 @@ export default function CategoriesPage() {
     setFormData({
       name: category.name,
       description: category.description || '',
-      slug: category.slug
+      slug: category.slug,
+      color: category.color || '#FFD700'
     })
     setIsEditDialogOpen(true)
   }
@@ -377,6 +380,31 @@ export default function CategoriesPage() {
                 rows={3}
               />
             </div>
+            <div>
+              <Label htmlFor="color">Färg *</Label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  id="color"
+                  value={formData.color}
+                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                  className="h-10 w-20 rounded border border-gray-300 cursor-pointer"
+                />
+                <Input
+                  value={formData.color}
+                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                  placeholder="#FFD700"
+                  className="flex-1"
+                />
+                <div
+                  className="h-10 w-10 rounded border-2 border-gray-300"
+                  style={{ backgroundColor: formData.color }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Välj en färg för kategoriaccenten
+              </p>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
@@ -423,6 +451,31 @@ export default function CategoriesPage() {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
               />
+            </div>
+            <div>
+              <Label htmlFor="edit-color">Färg *</Label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  id="edit-color"
+                  value={formData.color}
+                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                  className="h-10 w-20 rounded border border-gray-300 cursor-pointer"
+                />
+                <Input
+                  value={formData.color}
+                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                  placeholder="#FFD700"
+                  className="flex-1"
+                />
+                <div
+                  className="h-10 w-10 rounded border-2 border-gray-300"
+                  style={{ backgroundColor: formData.color }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Välj en färg för kategoriaccenten
+              </p>
             </div>
           </div>
           <DialogFooter>

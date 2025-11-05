@@ -21,6 +21,7 @@ import { toast } from 'sonner'
 type ArticleCategory = {
   id: string
   name: string
+  color?: string
 }
 
 type ArticleProgress = {
@@ -210,13 +211,27 @@ export default function ArticleBankPage() {
 
           if (categoryArticles.length === 0) return null
 
+          const categoryColor = category.color || '#FFD700'
+
           return (
             <div key={category.id} className="space-y-3">
               {/* Category Header */}
-              <div className="bg-gradient-to-r from-[rgba(255,215,0,0.1)] to-transparent border-l-4 border-[#FFD700] py-4 px-6 rounded-r-lg">
-                <h2 className="font-['Orbitron',sans-serif] text-xl md:text-2xl font-bold tracking-[2px] uppercase text-[#FFD700] flex items-center justify-between">
+              <div
+                className="bg-gradient-to-r to-transparent border-l-4 py-4 px-6 rounded-r-lg"
+                style={{
+                  borderLeftColor: categoryColor,
+                  background: `linear-gradient(to right, ${categoryColor}1a, transparent)`
+                }}
+              >
+                <h2
+                  className="font-['Orbitron',sans-serif] text-xl md:text-2xl font-bold tracking-[2px] uppercase flex items-center justify-between"
+                  style={{ color: categoryColor }}
+                >
                   <span>{category.name}</span>
-                  <span className="text-sm bg-[rgba(255,215,0,0.2)] px-3 py-1 rounded-full">
+                  <span
+                    className="text-sm px-3 py-1 rounded-full"
+                    style={{ backgroundColor: `${categoryColor}33` }}
+                  >
                     {categoryArticles.length}
                   </span>
                 </h2>

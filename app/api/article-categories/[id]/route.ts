@@ -51,12 +51,13 @@ export async function PATCH(
 
     const { id } = await params
     const body = await request.json()
-    const { name, description, slug, orderIndex } = body
+    const { name, description, slug, color, orderIndex } = body
 
     const updateData: any = {}
     if (name !== undefined) updateData.name = name
     if (description !== undefined) updateData.description = description
     if (slug !== undefined) updateData.slug = slug
+    if (color !== undefined) updateData.color = color
     if (orderIndex !== undefined) updateData.orderIndex = orderIndex
 
     const category = await prisma.articleCategory.update({

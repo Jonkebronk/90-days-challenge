@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { name, description, slug } = body
+    const { name, description, slug, color } = body
 
     if (!name || !slug) {
       return NextResponse.json({ error: 'Name and slug are required' }, { status: 400 })
@@ -54,6 +54,7 @@ export async function POST(request: Request) {
         name,
         description: description || null,
         slug,
+        color: color || '#FFD700',
         orderIndex: (lastCategory?.orderIndex || 0) + 1
       }
     })
