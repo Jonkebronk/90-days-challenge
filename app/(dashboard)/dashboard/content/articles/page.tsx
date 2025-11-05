@@ -192,8 +192,15 @@ export default function ArticlesPage() {
       })
 
       if (response.ok) {
+        const data = await response.json()
         toast.success(article.published ? 'Artikel avpublicerad' : 'Artikel publicerad')
-        fetchArticles()
+
+        // Update only the specific article in state to preserve scroll position
+        setArticles(prevArticles =>
+          prevArticles.map(a =>
+            a.id === article.id ? { ...a, published: data.article.published } : a
+          )
+        )
       } else {
         toast.error('Kunde inte uppdatera artikel')
       }
