@@ -44,10 +44,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Name and slug are required' }, { status: 400 })
     }
 
-    // Get the highest orderIndex
-    const lastCategory = await prisma.articleCategory.findFirst({
-      orderBy: { orderIndex: 'desc' }
+    // Get all categories to calculate next orderIndex (handles duplicates)
+    const existingCategories = await prisma.articleCategory.findMany({
+      select: { orderIndex: true }
     })
+
+    // Find the highest orderIndex, defaulting to -1 so first category gets 0
+    const maxOrderIndex = existingCategories.length > 0
+      ? Math.max(...existingCategories.map(c => c.orderIndex))
+      : -1
 
     const category = await prisma.articleCategory.create({
       data: {
@@ -55,13 +60,22 @@ export async function POST(request: Request) {
         description: description || null,
         slug,
         color: color || '#FFD700',
-        orderIndex: (lastCategory?.orderIndex || 0) + 1
+        orderIndex: maxOrderIndex + 1
       }
     })
 
     return NextResponse.json({ category })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating category:', error)
-    return NextResponse.json({ error: 'Failed to create category' }, { status: 500 })
+
+    // Check for specific errors
+    if (error.code === 'P2002') {
+      return NextResponse.json({ error: 'En kategori med denna slug existerar redan' }, { status: 400 })
+    }
+
+    return NextResponse.json({
+      error: 'Failed to create category',
+      details: error.message
+    }, { status: 500 })
   }
 }
