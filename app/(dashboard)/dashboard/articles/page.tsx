@@ -22,6 +22,7 @@ type ArticleCategory = {
   id: string
   name: string
   color?: string
+  orderIndex?: number
 }
 
 type ArticleProgress = {
@@ -37,6 +38,7 @@ type Article = {
   phase?: number | null
   estimatedReadingMinutes?: number | null
   coverImage?: string | null
+  orderIndex?: number
   category: ArticleCategory
   progress?: ArticleProgress[]
 }

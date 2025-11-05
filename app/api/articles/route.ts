@@ -45,7 +45,7 @@ export async function GET(request: Request) {
         }
       },
       orderBy: [
-        { phase: 'asc' },
+        { orderIndex: 'asc' },
         { createdAt: 'desc' }
       ]
     })
@@ -87,6 +87,12 @@ export async function POST(request: Request) {
       )
     }
 
+    // Get the highest orderIndex for articles in this category
+    const lastArticle = await prisma.article.findFirst({
+      where: { categoryId },
+      orderBy: { orderIndex: 'desc' }
+    })
+
     const article = await prisma.article.create({
       data: {
         title,
@@ -99,7 +105,8 @@ export async function POST(request: Request) {
         estimatedReadingMinutes: estimatedReadingMinutes && estimatedReadingMinutes !== '' ? parseInt(estimatedReadingMinutes) : null,
         coverImage: coverImage || null,
         published: published || false,
-        publishedAt: published ? new Date() : null
+        publishedAt: published ? new Date() : null,
+        orderIndex: (lastArticle?.orderIndex || 0) + 1
       },
       include: {
         category: true

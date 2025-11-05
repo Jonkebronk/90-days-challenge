@@ -70,7 +70,8 @@ export async function PATCH(
       phase,
       estimatedReadingMinutes,
       coverImage,
-      published
+      published,
+      orderIndex
     } = body
 
     const updateData: any = {}
@@ -83,6 +84,7 @@ export async function PATCH(
     if (phase !== undefined) updateData.phase = phase
     if (estimatedReadingMinutes !== undefined) updateData.estimatedReadingMinutes = estimatedReadingMinutes
     if (coverImage !== undefined) updateData.coverImage = coverImage
+    if (orderIndex !== undefined) updateData.orderIndex = orderIndex
 
     if (published !== undefined) {
       updateData.published = published

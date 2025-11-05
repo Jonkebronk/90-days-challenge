@@ -532,6 +532,7 @@ model Article {
   phase                   Int?     // 1 (days 1-30), 2 (days 31-60), 3 (days 61-90)
   estimatedReadingMinutes Int?     // How long it takes to read
   coverImage              String?  // URL to cover image
+  orderIndex              Int      @default(0) // For sorting articles within category
 
   // Publishing
   published               Boolean  @default(false)

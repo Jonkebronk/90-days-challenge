@@ -39,6 +39,8 @@ import {
   Eye,
   EyeOff,
   Filter,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -56,6 +58,7 @@ type Article = {
   difficulty?: string | null
   phase?: number | null
   estimatedReadingMinutes?: number | null
+  orderIndex: number
   published: boolean
   publishedAt?: Date | null
   createdAt: Date
@@ -212,6 +215,40 @@ export default function ArticlesPage() {
     setFormData({ ...formData, title, slug: generateSlug(title) })
   }
 
+  const handleMoveArticle = async (article: Article, direction: 'up' | 'down') => {
+    const currentIndex = filteredArticles.findIndex(a => a.id === article.id)
+    if (
+      (direction === 'up' && currentIndex === 0) ||
+      (direction === 'down' && currentIndex === filteredArticles.length - 1)
+    ) {
+      return
+    }
+
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    const otherArticle = filteredArticles[newIndex]
+
+    try {
+      // Swap orderIndex values
+      await Promise.all([
+        fetch(`/api/articles/${article.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderIndex: otherArticle.orderIndex })
+        }),
+        fetch(`/api/articles/${otherArticle.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderIndex: article.orderIndex })
+        })
+      ])
+
+      fetchArticles()
+    } catch (error) {
+      console.error('Error moving article:', error)
+      toast.error('Ett fel uppstod')
+    }
+  }
+
   const filteredArticles = articles.filter(article => {
     if (filterCategory !== 'all' && article.categoryId !== filterCategory) return false
     if (filterPhase !== 'all' && article.phase?.toString() !== filterPhase) return false
@@ -331,7 +368,7 @@ export default function ArticlesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredArticles.map((article) => (
+                {filteredArticles.map((article, index) => (
                   <TableRow key={article.id}>
                     <TableCell className="font-medium">{article.title}</TableCell>
                     <TableCell>
@@ -357,6 +394,22 @@ export default function ArticlesPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleMoveArticle(article, 'up')}
+                          disabled={index === 0}
+                        >
+                          <ArrowUp className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleMoveArticle(article, 'down')}
+                          disabled={index === filteredArticles.length - 1}
+                        >
+                          <ArrowDown className="h-4 w-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
