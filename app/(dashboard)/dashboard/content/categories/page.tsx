@@ -26,6 +26,21 @@ import {
 import { Plus, Pencil, Trash2, FolderOpen, ArrowUp, ArrowDown } from 'lucide-react'
 import { toast } from 'sonner'
 
+const PRESET_COLORS = [
+  { name: 'Gold', value: '#FFD700' },
+  { name: 'Orange', value: '#FF8C00' },
+  { name: 'Red', value: '#FF4444' },
+  { name: 'Pink', value: '#FF69B4' },
+  { name: 'Purple', value: '#9D4EDD' },
+  { name: 'Blue', value: '#3B82F6' },
+  { name: 'Cyan', value: '#06B6D4' },
+  { name: 'Green', value: '#10B981' },
+  { name: 'Lime', value: '#84CC16' },
+  { name: 'Yellow', value: '#EAB308' },
+  { name: 'Amber', value: '#F59E0B' },
+  { name: 'Teal', value: '#14B8A6' },
+]
+
 type ArticleCategory = {
   id: string
   name: string
@@ -381,28 +396,27 @@ export default function CategoriesPage() {
               />
             </div>
             <div>
-              <Label htmlFor="color">Färg *</Label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  id="color"
-                  value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="h-10 w-20 rounded border border-gray-300 cursor-pointer"
-                />
-                <Input
-                  value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  placeholder="#FFD700"
-                  className="flex-1"
-                />
-                <div
-                  className="h-10 w-10 rounded border-2 border-gray-300"
-                  style={{ backgroundColor: formData.color }}
-                />
+              <Label>Färg *</Label>
+              <div className="grid grid-cols-6 gap-2 mt-2">
+                {PRESET_COLORS.map((color) => (
+                  <button
+                    key={color.value}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, color: color.value })}
+                    className={`
+                      h-10 rounded-md transition-all hover:scale-110
+                      ${formData.color === color.value
+                        ? 'ring-2 ring-offset-2 ring-offset-background ring-primary scale-110'
+                        : 'hover:ring-1 hover:ring-offset-1 hover:ring-offset-background hover:ring-gray-400'
+                      }
+                    `}
+                    style={{ backgroundColor: color.value }}
+                    title={color.name}
+                  />
+                ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Välj en färg för kategoriaccenten
+              <p className="text-xs text-muted-foreground mt-2">
+                Vald färg: <span className="font-mono">{formData.color}</span>
               </p>
             </div>
           </div>
@@ -453,28 +467,27 @@ export default function CategoriesPage() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-color">Färg *</Label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  id="edit-color"
-                  value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="h-10 w-20 rounded border border-gray-300 cursor-pointer"
-                />
-                <Input
-                  value={formData.color}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  placeholder="#FFD700"
-                  className="flex-1"
-                />
-                <div
-                  className="h-10 w-10 rounded border-2 border-gray-300"
-                  style={{ backgroundColor: formData.color }}
-                />
+              <Label>Färg *</Label>
+              <div className="grid grid-cols-6 gap-2 mt-2">
+                {PRESET_COLORS.map((color) => (
+                  <button
+                    key={color.value}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, color: color.value })}
+                    className={`
+                      h-10 rounded-md transition-all hover:scale-110
+                      ${formData.color === color.value
+                        ? 'ring-2 ring-offset-2 ring-offset-background ring-primary scale-110'
+                        : 'hover:ring-1 hover:ring-offset-1 hover:ring-offset-background hover:ring-gray-400'
+                      }
+                    `}
+                    style={{ backgroundColor: color.value }}
+                    title={color.name}
+                  />
+                ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Välj en färg för kategoriaccenten
+              <p className="text-xs text-muted-foreground mt-2">
+                Vald färg: <span className="font-mono">{formData.color}</span>
               </p>
             </div>
           </div>
