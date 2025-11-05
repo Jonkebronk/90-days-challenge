@@ -94,9 +94,9 @@ export async function POST(request: Request) {
         slug,
         categoryId,
         tags: tags || [],
-        difficulty: difficulty || null,
-        phase: phase || null,
-        estimatedReadingMinutes: estimatedReadingMinutes || null,
+        difficulty: difficulty && difficulty !== '' ? difficulty : null,
+        phase: phase && phase !== '' ? parseInt(phase) : null,
+        estimatedReadingMinutes: estimatedReadingMinutes && estimatedReadingMinutes !== '' ? parseInt(estimatedReadingMinutes) : null,
         coverImage: coverImage || null,
         published: published || false,
         publishedAt: published ? new Date() : null
@@ -107,8 +107,20 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json({ article })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating article:', error)
-    return NextResponse.json({ error: 'Failed to create article' }, { status: 500 })
+
+    // Check for specific errors
+    if (error.code === 'P2002') {
+      return NextResponse.json({ error: 'En artikel med denna slug existerar redan' }, { status: 400 })
+    }
+    if (error.code === 'P2003') {
+      return NextResponse.json({ error: 'Ogiltig kategori vald' }, { status: 400 })
+    }
+
+    return NextResponse.json({
+      error: 'Failed to create article',
+      details: error.message
+    }, { status: 500 })
   }
 }
