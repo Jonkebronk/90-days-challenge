@@ -200,18 +200,28 @@ export default function ArticleEditorPage() {
   const handleTogglePublished = async () => {
     try {
       const newPublished = !formData.published
+
+      // First save all content, then toggle published status
       const response = await fetch(`/api/articles/${articleId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ published: newPublished })
+        body: JSON.stringify({
+          ...formData,
+          phase: formData.phase ? parseInt(formData.phase) : null,
+          estimatedReadingMinutes: formData.estimatedReadingMinutes
+            ? parseInt(formData.estimatedReadingMinutes)
+            : null,
+          published: newPublished
+        })
       })
 
       if (response.ok) {
-        toast.success(newPublished ? 'Artikel publicerad' : 'Artikel avpublicerad')
+        toast.success(newPublished ? 'Artikel sparad och publicerad' : 'Artikel sparad och avpublicerad')
         setFormData({ ...formData, published: newPublished })
         fetchArticle()
       } else {
-        toast.error('Kunde inte uppdatera status')
+        const data = await response.json()
+        toast.error(data.error || 'Kunde inte uppdatera artikel')
       }
     } catch (error) {
       console.error('Error toggling published:', error)
