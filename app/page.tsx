@@ -51,7 +51,7 @@ export default function HomePage() {
             <Link href="/" className="flex flex-row items-center gap-3 lg:gap-4 group">
               <div className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center">
                 <Image
-                  src="/images/compass.png"
+                  src="/images/compass-gold.png"
                   alt="Compass"
                   width={40}
                   height={40}
