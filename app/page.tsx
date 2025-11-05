@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { CountdownTimer } from '@/components/countdown-timer'
+import { Menu, X } from 'lucide-react'
+import { useState } from 'react'
 import {
   Accordion,
   AccordionContent,
@@ -12,9 +14,16 @@ import {
 
 export default function HomePage() {
   const router = useRouter()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const navItems = [
+    { name: 'Start', href: '#start' },
+    { name: 'Om Programmet', href: '#program' },
+    { name: 'Ansök', href: '/apply' },
+  ]
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center">
+    <div className="min-h-screen relative overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]" />
 
@@ -33,41 +42,84 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* Portal buttons */}
-      <div className="absolute top-[15px] right-[15px] md:top-[30px] md:right-[30px] z-20 flex flex-col md:flex-row items-end md:items-center gap-1 md:gap-4">
-        {/* Mobile: Small text links */}
-        <Link
-          href="/login"
-          className="md:hidden text-[10px] font-medium tracking-[1px] uppercase text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] transition-colors"
-        >
-          Client →
-        </Link>
-        <Link
-          href="/login"
-          className="md:hidden text-[10px] font-medium tracking-[1px] uppercase text-[rgba(255,215,0,0.6)] hover:text-[#FFD700] transition-colors"
-        >
-          Coach →
-        </Link>
+      {/* Header Navigation */}
+      <header className="relative z-50 bg-[rgba(10,10,10,0.8)] backdrop-blur-lg border-b border-[rgba(255,215,0,0.2)]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-3">
+              <div className="font-['Orbitron',sans-serif] text-2xl font-black tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+                90-DAGARS
+              </div>
+            </Link>
 
-        {/* Desktop: Full buttons */}
-        <Link
-          href="/login"
-          className="hidden md:flex px-6 py-3 text-sm font-semibold tracking-[2px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)] font-['Orbitron',sans-serif]"
-        >
-          Client Portal
-        </Link>
-        <Link
-          href="/login"
-          className="hidden md:flex px-6 py-3 text-sm font-semibold tracking-[2px] uppercase bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] text-[rgba(255,215,0,0.7)] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.5)] hover:text-[#FFD700] hover:shadow-[0_0_20px_rgba(255,215,0,0.2)] font-['Orbitron',sans-serif]"
-        >
-          Coach Portal
-        </Link>
-      </div>
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-8">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] transition-colors text-sm font-medium tracking-[1px] uppercase"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </nav>
+
+            {/* Login Button */}
+            <div className="hidden md:flex items-center space-x-4">
+              <Link
+                href="/login"
+                className="px-6 py-2.5 text-sm font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]"
+              >
+                Logga In
+              </Link>
+            </div>
+
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 text-[#FFD700] hover:text-[#FFA500] transition-colors"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-[rgba(255,215,0,0.2)] bg-[rgba(10,10,10,0.95)] backdrop-blur-lg">
+            <nav className="container mx-auto px-4 py-4 space-y-3">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)] rounded-lg transition-all text-sm font-medium tracking-[1px] uppercase"
+                >
+                  {item.name}
+                </Link>
+              ))}
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-3 text-center text-sm font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg"
+              >
+                Logga In
+              </Link>
+            </nav>
+          </div>
+        )}
+      </header>
 
       {/* Main container */}
-      <div className="relative z-10 text-center px-10 py-10 max-w-[600px] animate-fadeIn">
+      <div className="relative z-10 text-center px-10 py-20 max-w-[600px] mx-auto animate-fadeIn">
         {/* Title */}
-        <div className="mb-[50px]">
+        <div id="start" className="mb-[50px] scroll-mt-24">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-5 animate-shimmer" />
           <h1 className="font-['Orbitron',sans-serif] text-5xl font-black tracking-[6px] leading-[1.2] uppercase animate-titleGlow bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
             90-DAGARS
@@ -78,7 +130,7 @@ export default function HomePage() {
         </div>
 
         {/* Vem passar programmet för? Section */}
-        <div className="mt-12 animate-fadeIn">
+        <div id="program" className="mt-12 animate-fadeIn scroll-mt-24">
           {/* Section Title */}
           <div className="mb-8">
             <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 animate-shimmer" />
