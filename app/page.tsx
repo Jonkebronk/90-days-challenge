@@ -49,23 +49,21 @@ export default function HomePage() {
           <div className="flex items-center justify-between h-24">
             {/* Logo */}
             <Link href="/" className="flex flex-row items-center gap-3 lg:gap-4 group">
-              <div className="overflow-hidden w-12 h-12 lg:w-14 lg:h-14 flex items-center justify-center">
+              <div className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center">
                 <Image
-                  src="/images/logo.png"
-                  alt="Friskvårdskompassen Logo"
-                  width={64}
-                  height={64}
-                  className="w-auto object-contain transition-opacity group-hover:opacity-90"
+                  src="/images/compass.png"
+                  alt="Compass"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-contain transition-all group-hover:opacity-90 group-hover:scale-110"
                   style={{
-                    height: '100px',
-                    marginTop: '-32px',
                     filter: 'brightness(0) saturate(100%) invert(76%) sepia(82%) saturate(580%) hue-rotate(359deg) brightness(104%) contrast(101%)'
                   }}
                   priority
                 />
               </div>
-              <div className="flex items-center border-l-2 border-[rgba(255,215,0,0.3)] pl-3 lg:pl-4 h-12 lg:h-14">
-                <span className="font-['Orbitron',sans-serif] text-[9px] lg:text-xs font-semibold tracking-[1px] lg:tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent whitespace-nowrap">
+              <div className="flex items-center border-l-2 border-[rgba(255,215,0,0.3)] pl-3 lg:pl-4">
+                <span className="font-['Orbitron',sans-serif] text-[10px] lg:text-sm font-semibold tracking-[1.5px] lg:tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent whitespace-nowrap">
                   DIN VÄGVISARE TILL BÄTTRE HÄLSA
                 </span>
               </div>
