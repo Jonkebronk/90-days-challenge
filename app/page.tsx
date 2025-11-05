@@ -49,18 +49,18 @@ export default function HomePage() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-4 group">
-              <div className="overflow-hidden h-12 flex items-center">
+              <div className="overflow-hidden h-14 flex items-center">
                 <Image
                   src="/images/logo.png"
                   alt="Friskvårdskompassen Logo"
-                  width={160}
-                  height={48}
-                  className="w-auto object-contain object-top transition-opacity group-hover:opacity-90"
-                  style={{ height: '80px', marginTop: '-8px' }}
+                  width={180}
+                  height={56}
+                  className="w-auto object-contain transition-opacity group-hover:opacity-90"
+                  style={{ height: '90px', marginTop: '-4px' }}
                   priority
                 />
               </div>
-              <div className="hidden lg:block border-l-2 border-[rgba(255,215,0,0.3)] pl-4">
+              <div className="hidden lg:flex items-center border-l-2 border-[rgba(255,215,0,0.3)] pl-4 h-14">
                 <span className="font-['Orbitron',sans-serif] text-xs font-semibold tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent whitespace-nowrap">
                   DIN VÄGVISARE TILL BÄTTRE HÄLSA
                 </span>
