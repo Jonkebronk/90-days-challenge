@@ -50,6 +50,46 @@ export async function GET(request: Request) {
       ]
     })
 
+    // Auto-fix duplicated orderIndex values (only for coaches, only once per session)
+    if ((session.user as any).role === 'coach' && !where.categoryId) {
+      // Check if there are any duplicates
+      const categories = await prisma.articleCategory.findMany({
+        include: {
+          articles: {
+            select: { id: true, orderIndex: true },
+            orderBy: { createdAt: 'asc' }
+          }
+        }
+      })
+
+      let needsFix = false
+      for (const category of categories) {
+        const orderIndexes = category.articles.map(a => a.orderIndex)
+        const uniqueIndexes = new Set(orderIndexes)
+        if (orderIndexes.length !== uniqueIndexes.size) {
+          needsFix = true
+          break
+        }
+      }
+
+      // If duplicates found, fix them
+      if (needsFix) {
+        console.log('🔧 Auto-fixing duplicate orderIndex values...')
+        for (const category of categories) {
+          for (let i = 0; i < category.articles.length; i++) {
+            const article = category.articles[i]
+            if (article.orderIndex !== i) {
+              await prisma.article.update({
+                where: { id: article.id },
+                data: { orderIndex: i }
+              })
+            }
+          }
+        }
+        console.log('✅ OrderIndex values fixed!')
+      }
+    }
+
     return NextResponse.json({ articles })
   } catch (error) {
     console.error('Error fetching articles:', error)
@@ -87,11 +127,16 @@ export async function POST(request: Request) {
       )
     }
 
-    // Get the highest orderIndex for articles in this category
-    const lastArticle = await prisma.article.findFirst({
+    // Get all articles in category to calculate next orderIndex
+    const existingArticles = await prisma.article.findMany({
       where: { categoryId },
-      orderBy: { orderIndex: 'desc' }
+      select: { orderIndex: true }
     })
+
+    // Find the highest orderIndex, defaulting to -1 so first article gets 0
+    const maxOrderIndex = existingArticles.length > 0
+      ? Math.max(...existingArticles.map(a => a.orderIndex))
+      : -1
 
     const article = await prisma.article.create({
       data: {
@@ -106,7 +151,7 @@ export async function POST(request: Request) {
         coverImage: coverImage || null,
         published: published || false,
         publishedAt: published ? new Date() : null,
-        orderIndex: (lastArticle?.orderIndex || 0) + 1
+        orderIndex: maxOrderIndex + 1
       },
       include: {
         category: true
