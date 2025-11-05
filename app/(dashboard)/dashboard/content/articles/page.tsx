@@ -48,6 +48,7 @@ type ArticleCategory = {
   id: string
   name: string
   slug: string
+  color?: string
 }
 
 type Article = {
@@ -256,6 +257,21 @@ export default function ArticlesPage() {
     return true
   })
 
+  // Group articles by category
+  const articlesByCategory = filteredArticles.reduce((acc, article) => {
+    const categoryId = article.categoryId
+    if (!acc[categoryId]) {
+      acc[categoryId] = {
+        category: article.category,
+        articles: []
+      }
+    }
+    acc[categoryId].articles.push(article)
+    return acc
+  }, {} as Record<string, { category: ArticleCategory; articles: Article[] }>)
+
+  const categoryGroups = Object.values(articlesByCategory)
+
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
@@ -337,114 +353,129 @@ export default function ArticlesPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            Alla artiklar ({filteredArticles.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <p className="text-muted-foreground text-center py-8">Laddar...</p>
-          ) : filteredArticles.length === 0 ? (
-            <div className="text-center py-8">
-              <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">Inga artiklar ännu.</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Skapa din första artikel för att komma igång.
-              </p>
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Titel</TableHead>
-                  <TableHead>Kategori</TableHead>
-                  <TableHead>Fas</TableHead>
-                  <TableHead>Svårighetsgrad</TableHead>
-                  <TableHead>Tid</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Åtgärder</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredArticles.map((article, index) => (
-                  <TableRow key={article.id}>
-                    <TableCell className="font-medium">{article.title}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{article.category.name}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      {article.phase ? `Fas ${article.phase}` : '-'}
-                    </TableCell>
-                    <TableCell>
-                      {article.difficulty ? (
-                        <Badge variant="secondary">{article.difficulty}</Badge>
-                      ) : '-'}
-                    </TableCell>
-                    <TableCell>
-                      {article.estimatedReadingMinutes ? `${article.estimatedReadingMinutes} min` : '-'}
-                    </TableCell>
-                    <TableCell>
-                      {article.published ? (
-                        <Badge className="bg-green-600">Publicerad</Badge>
-                      ) : (
-                        <Badge variant="secondary">Utkast</Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleMoveArticle(article, 'up')}
-                          disabled={index === 0}
-                        >
-                          <ArrowUp className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleMoveArticle(article, 'down')}
-                          disabled={index === filteredArticles.length - 1}
-                        >
-                          <ArrowDown className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleTogglePublished(article)}
-                          title={article.published ? 'Avpublicera' : 'Publicera'}
-                        >
+      <div className="space-y-6">
+        {isLoading ? (
+          <Card>
+            <CardContent className="py-8">
+              <p className="text-muted-foreground text-center">Laddar...</p>
+            </CardContent>
+          </Card>
+        ) : filteredArticles.length === 0 ? (
+          <Card>
+            <CardContent className="py-8">
+              <div className="text-center">
+                <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <p className="text-muted-foreground">Inga artiklar ännu.</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Skapa din första artikel för att komma igång.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          categoryGroups.map((group) => (
+            <Card key={group.category.id} className="overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 border-b">
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-1 h-8 rounded-full"
+                      style={{ backgroundColor: group.category.color || '#FFD700' }}
+                    />
+                    <span>{group.category.name}</span>
+                    <Badge variant="secondary">{group.articles.length}</Badge>
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Titel</TableHead>
+                      <TableHead>Fas</TableHead>
+                      <TableHead>Svårighetsgrad</TableHead>
+                      <TableHead>Tid</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Åtgärder</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {group.articles.map((article, index) => (
+                      <TableRow key={article.id}>
+                        <TableCell className="font-medium">{article.title}</TableCell>
+                        <TableCell>
+                          {article.phase ? `Fas ${article.phase}` : '-'}
+                        </TableCell>
+                        <TableCell>
+                          {article.difficulty ? (
+                            <Badge variant="secondary">{article.difficulty}</Badge>
+                          ) : '-'}
+                        </TableCell>
+                        <TableCell>
+                          {article.estimatedReadingMinutes ? `${article.estimatedReadingMinutes} min` : '-'}
+                        </TableCell>
+                        <TableCell>
                           {article.published ? (
-                            <EyeOff className="h-4 w-4" />
+                            <Badge className="bg-green-600">Publicerad</Badge>
                           ) : (
-                            <Eye className="h-4 w-4" />
+                            <Badge variant="secondary">Utkast</Badge>
                           )}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteArticle(article)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleMoveArticle(article, 'up')}
+                              disabled={index === 0}
+                            >
+                              <ArrowUp className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleMoveArticle(article, 'down')}
+                              disabled={index === group.articles.length - 1}
+                            >
+                              <ArrowDown className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleTogglePublished(article)}
+                              title={article.published ? 'Avpublicera' : 'Publicera'}
+                            >
+                              {article.published ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteArticle(article)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
