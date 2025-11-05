@@ -300,10 +300,10 @@ export default function ArticlesPage() {
       </div>
 
       {/* Filters */}
-      <Card>
+      <Card className="bg-gradient-to-br from-[#1a0933]/50 to-[#0a0a0a]/50 border-[rgba(255,215,0,0.2)]">
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
-            <Filter className="h-5 w-5 text-muted-foreground" />
+            <Filter className="h-5 w-5 text-[#FFD700]" />
             <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label className="text-xs">Kategori</Label>
@@ -355,18 +355,18 @@ export default function ArticlesPage() {
 
       <div className="space-y-6">
         {isLoading ? (
-          <Card>
+          <Card className="bg-gradient-to-br from-[#1a0933]/50 to-[#0a0a0a]/50 border-[rgba(255,215,0,0.2)]">
             <CardContent className="py-8">
-              <p className="text-muted-foreground text-center">Laddar...</p>
+              <p className="text-[rgba(255,255,255,0.6)] text-center">Laddar...</p>
             </CardContent>
           </Card>
         ) : filteredArticles.length === 0 ? (
-          <Card>
+          <Card className="bg-gradient-to-br from-[#1a0933]/50 to-[#0a0a0a]/50 border-[rgba(255,215,0,0.2)]">
             <CardContent className="py-8">
               <div className="text-center">
-                <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">Inga artiklar ännu.</p>
-                <p className="text-sm text-muted-foreground mt-1">
+                <FileText className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
+                <p className="text-[rgba(255,255,255,0.7)]">Inga artiklar ännu.</p>
+                <p className="text-sm text-[rgba(255,255,255,0.5)] mt-1">
                   Skapa din första artikel för att komma igång.
                 </p>
               </div>
@@ -374,16 +374,33 @@ export default function ArticlesPage() {
           </Card>
         ) : (
           categoryGroups.map((group) => (
-            <Card key={group.category.id} className="overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 border-b">
+            <Card
+              key={group.category.id}
+              className="overflow-hidden bg-gradient-to-br from-[#1a0933]/50 to-[#0a0a0a]/50 border-[rgba(255,215,0,0.2)]"
+            >
+              <CardHeader
+                className="border-b border-[rgba(255,215,0,0.2)]"
+                style={{
+                  background: `linear-gradient(to right, ${group.category.color}1a, transparent)`
+                }}
+              >
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-1 h-8 rounded-full"
-                      style={{ backgroundColor: group.category.color || '#FFD700' }}
+                      className="w-1 h-8 rounded-full shadow-lg"
+                      style={{
+                        backgroundColor: group.category.color || '#FFD700',
+                        boxShadow: `0 0 10px ${group.category.color}40`
+                      }}
                     />
-                    <span>{group.category.name}</span>
-                    <Badge variant="secondary">{group.articles.length}</Badge>
+                    <span className="text-[rgba(255,255,255,0.9)] uppercase tracking-[1px] font-semibold">
+                      {group.category.name}
+                    </span>
+                    <Badge
+                      className="bg-[rgba(255,215,0,0.15)] text-[#FFD700] border border-[rgba(255,215,0,0.3)]"
+                    >
+                      {group.articles.length}
+                    </Badge>
                   </div>
                 </CardTitle>
               </CardHeader>
