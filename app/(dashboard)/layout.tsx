@@ -168,18 +168,18 @@ export default function DashboardLayout({
             </nav>
 
             {/* User Menu */}
-            <div className="flex items-center gap-2">
-              <div className="hidden sm:flex items-center gap-2 text-sm">
-                <span className="font-medium text-[#FFD700]">{session?.user?.name || 'User'}</span>
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:block px-3 py-1 bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded-md">
+                <span className="text-sm font-medium text-[#FFD700]">{session?.user?.name || 'User'}</span>
               </div>
               <Button
-                variant="outline"
-                size="icon"
+                variant="ghost"
+                size="sm"
                 onClick={handleSignOut}
-                title="Logga ut"
-                className="border-[rgba(255,215,0,0.3)] hover:bg-[rgba(255,215,0,0.1)] hover:border-[rgba(255,215,0,0.6)] text-[rgba(255,215,0,0.8)] hover:text-[#FFD700]"
+                className="text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Logga ut</span>
               </Button>
 
               {/* Mobile menu button */}
