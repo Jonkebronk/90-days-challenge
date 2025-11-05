@@ -250,6 +250,41 @@ export default function ArticlesPage() {
     }
   }
 
+  const handleMoveCategory = async (category: ArticleCategory, direction: 'up' | 'down') => {
+    const currentIndex = categories.findIndex(c => c.id === category.id)
+    if (
+      (direction === 'up' && currentIndex === 0) ||
+      (direction === 'down' && currentIndex === categories.length - 1)
+    ) {
+      return
+    }
+
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    const otherCategory = categories[newIndex]
+
+    try {
+      // Swap orderIndex values
+      await Promise.all([
+        fetch(`/api/article-categories/${category.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderIndex: otherCategory.orderIndex })
+        }),
+        fetch(`/api/article-categories/${otherCategory.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderIndex: category.orderIndex })
+        })
+      ])
+
+      fetchCategories()
+      fetchArticles()
+    } catch (error) {
+      console.error('Error moving category:', error)
+      toast.error('Ett fel uppstod')
+    }
+  }
+
   const filteredArticles = articles.filter(article => {
     if (filterCategory !== 'all' && article.categoryId !== filterCategory) return false
     if (filterPhase !== 'all' && article.phase?.toString() !== filterPhase) return false
@@ -306,10 +341,10 @@ export default function ArticlesPage() {
             <Filter className="h-5 w-5 text-[#FFD700]" />
             <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label className="text-xs">Kategori</Label>
+                <Label className="text-xs text-[rgba(255,255,255,0.7)]">Kategori</Label>
                 <Select value={filterCategory} onValueChange={setFilterCategory}>
-                  <SelectTrigger>
-                    <SelectValue />
+                  <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)]">
+                    <SelectValue placeholder="Välj kategori" className="text-[rgba(255,255,255,0.9)]" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Alla kategorier</SelectItem>
@@ -322,10 +357,10 @@ export default function ArticlesPage() {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs">Fas</Label>
+                <Label className="text-xs text-[rgba(255,255,255,0.7)]">Fas</Label>
                 <Select value={filterPhase} onValueChange={setFilterPhase}>
-                  <SelectTrigger>
-                    <SelectValue />
+                  <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)]">
+                    <SelectValue placeholder="Välj fas" className="text-[rgba(255,255,255,0.9)]" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Alla faser</SelectItem>
@@ -336,10 +371,10 @@ export default function ArticlesPage() {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs">Status</Label>
+                <Label className="text-xs text-[rgba(255,255,255,0.7)]">Status</Label>
                 <Select value={filterPublished} onValueChange={setFilterPublished}>
-                  <SelectTrigger>
-                    <SelectValue />
+                  <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)]">
+                    <SelectValue placeholder="Välj status" className="text-[rgba(255,255,255,0.9)]" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Alla</SelectItem>
@@ -373,7 +408,9 @@ export default function ArticlesPage() {
             </CardContent>
           </Card>
         ) : (
-          categoryGroups.map((group) => (
+          categoryGroups.map((group) => {
+            const categoryIndex = categories.findIndex(c => c.id === group.category.id)
+            return (
             <Card
               key={group.category.id}
               className="overflow-hidden bg-gradient-to-br from-[#1a0933]/50 to-[#0a0a0a]/50 border-[rgba(255,215,0,0.2)]"
@@ -401,6 +438,26 @@ export default function ArticlesPage() {
                     >
                       {group.articles.length}
                     </Badge>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleMoveCategory(group.category, 'up')}
+                      disabled={categoryIndex === 0}
+                      className="hover:bg-[rgba(255,215,0,0.1)]"
+                    >
+                      <ArrowUp className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleMoveCategory(group.category, 'down')}
+                      disabled={categoryIndex === categories.length - 1}
+                      className="hover:bg-[rgba(255,215,0,0.1)]"
+                    >
+                      <ArrowDown className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
+                    </Button>
                   </div>
                 </CardTitle>
               </CardHeader>
@@ -495,7 +552,8 @@ export default function ArticlesPage() {
                 </Table>
               </CardContent>
             </Card>
-          ))
+            )
+          })
         )}
       </div>
 
