@@ -217,7 +217,12 @@ export default function ArticlesPage() {
     setFormData({ ...formData, title, slug: generateSlug(title) })
   }
 
-  const handleMoveArticle = async (article: Article, direction: 'up' | 'down', categoryArticles: Article[]) => {
+  const handleMoveArticle = async (article: Article, direction: 'up' | 'down') => {
+    // Get ALL articles in the same category (not just filtered ones)
+    const categoryArticles = articles
+      .filter(a => a.categoryId === article.categoryId)
+      .sort((a, b) => a.orderIndex - b.orderIndex)
+
     const currentIndex = categoryArticles.findIndex(a => a.id === article.id)
     if (
       (direction === 'up' && currentIndex === 0) ||
@@ -506,24 +511,38 @@ export default function ArticlesPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleMoveArticle(article, 'up', group.articles)}
-                              disabled={index === 0}
-                              className="hover:bg-[rgba(255,215,0,0.1)]"
-                            >
-                              <ArrowUp className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleMoveArticle(article, 'down', group.articles)}
-                              disabled={index === group.articles.length - 1}
-                              className="hover:bg-[rgba(255,215,0,0.1)]"
-                            >
-                              <ArrowDown className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
-                            </Button>
+                            {(() => {
+                              // Get position in ALL category articles (not just filtered)
+                              const allCategoryArticles = articles
+                                .filter(a => a.categoryId === article.categoryId)
+                                .sort((a, b) => a.orderIndex - b.orderIndex)
+                              const positionInCategory = allCategoryArticles.findIndex(a => a.id === article.id)
+                              const isFirst = positionInCategory === 0
+                              const isLast = positionInCategory === allCategoryArticles.length - 1
+
+                              return (
+                                <>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleMoveArticle(article, 'up')}
+                                    disabled={isFirst}
+                                    className="hover:bg-[rgba(255,215,0,0.1)]"
+                                  >
+                                    <ArrowUp className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleMoveArticle(article, 'down')}
+                                    disabled={isLast}
+                                    className="hover:bg-[rgba(255,215,0,0.1)]"
+                                  >
+                                    <ArrowDown className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
+                                  </Button>
+                                </>
+                              )
+                            })()}
                             <Button
                               variant="ghost"
                               size="icon"
