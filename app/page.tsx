@@ -57,7 +57,7 @@ export default function HomePage() {
                   height={40}
                   className="w-full h-full object-contain transition-all group-hover:opacity-90 group-hover:scale-110"
                   style={{
-                    filter: 'brightness(0) saturate(100%) invert(76%) sepia(82%) saturate(580%) hue-rotate(359deg) brightness(104%) contrast(101%)'
+                    filter: 'invert(78%) sepia(68%) saturate(580%) hue-rotate(359deg) brightness(104%) contrast(101%)'
                   }}
                   priority
                 />
