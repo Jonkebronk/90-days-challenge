@@ -407,31 +407,31 @@ export default function ArticlesPage() {
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>Titel</TableHead>
-                      <TableHead>Fas</TableHead>
-                      <TableHead>Svårighetsgrad</TableHead>
-                      <TableHead>Tid</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Åtgärder</TableHead>
+                    <TableRow className="border-b border-[rgba(255,215,0,0.2)] hover:bg-transparent">
+                      <TableHead className="text-[rgba(255,255,255,0.7)] font-semibold">Titel</TableHead>
+                      <TableHead className="text-[rgba(255,255,255,0.7)] font-semibold">Fas</TableHead>
+                      <TableHead className="text-[rgba(255,255,255,0.7)] font-semibold">Svårighetsgrad</TableHead>
+                      <TableHead className="text-[rgba(255,255,255,0.7)] font-semibold">Tid</TableHead>
+                      <TableHead className="text-[rgba(255,255,255,0.7)] font-semibold">Status</TableHead>
+                      <TableHead className="text-right text-[rgba(255,255,255,0.7)] font-semibold">Åtgärder</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {group.articles.map((article, index) => (
-                      <TableRow key={article.id}>
-                        <TableCell className="font-medium">{article.title}</TableCell>
-                        <TableCell>
+                      <TableRow key={article.id} className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.05)]">
+                        <TableCell className="font-medium text-[rgba(255,255,255,0.9)]">{article.title}</TableCell>
+                        <TableCell className="text-[rgba(255,255,255,0.7)]">
                           {article.phase ? `Fas ${article.phase}` : '-'}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="text-[rgba(255,255,255,0.7)]">
                           {article.difficulty ? (
                             <Badge variant="secondary">{article.difficulty}</Badge>
                           ) : '-'}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="text-[rgba(255,255,255,0.7)]">
                           {article.estimatedReadingMinutes ? `${article.estimatedReadingMinutes} min` : '-'}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="text-[rgba(255,255,255,0.7)]">
                           {article.published ? (
                             <Badge className="bg-green-600">Publicerad</Badge>
                           ) : (
