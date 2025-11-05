@@ -57,6 +57,9 @@ export default function ArticleBankPage() {
   const [filterDifficulty, setFilterDifficulty] = useState<string>('all')
   const [filterCompleted, setFilterCompleted] = useState<string>('all')
 
+  // Show all state per category
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({})
+
   useEffect(() => {
     if (session?.user) {
       fetchArticles()
@@ -203,7 +206,7 @@ export default function ArticleBankPage() {
           </div>
         </div>
 
-        {/* Articles by Category - Always Visible */}
+        {/* Articles by Category - Grid Layout */}
         {isLoading ? (
           <div className="text-center py-12">
             <p className="text-[rgba(255,255,255,0.5)]">Laddar artiklar...</p>
@@ -214,96 +217,127 @@ export default function ArticleBankPage() {
           if (categoryArticles.length === 0) return null
 
           const categoryColor = category.color || '#FFD700'
+          const isExpanded = expandedCategories[category.id] || false
+          const displayedArticles = isExpanded ? categoryArticles : categoryArticles.slice(0, 3)
 
           return (
-            <div key={category.id} className="space-y-3">
-              {/* Category Header */}
-              <div
-                className="bg-gradient-to-r to-transparent border-l-4 py-4 px-6 rounded-r-lg"
-                style={{
-                  borderLeftColor: categoryColor,
-                  background: `linear-gradient(to right, ${categoryColor}1a, transparent)`
-                }}
-              >
-                <h2
-                  className="font-['Orbitron',sans-serif] text-xl md:text-2xl font-bold tracking-[2px] uppercase flex items-center justify-between"
-                  style={{ color: categoryColor }}
-                >
-                  <span>{category.name}</span>
+            <div key={category.id} className="space-y-6">
+              {/* Large Category Header with Background */}
+              <div className="relative rounded-2xl overflow-hidden h-32 mb-6">
+                {/* Background gradient */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: `linear-gradient(135deg, ${categoryColor}40, ${categoryColor}10)`
+                  }}
+                />
+                {/* Pattern overlay */}
+                <div className="absolute inset-0 opacity-10" style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                }} />
+
+                {/* Category content */}
+                <div className="relative z-10 h-full flex items-center px-8">
+                  <h2
+                    className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]"
+                    style={{ color: categoryColor }}
+                  >
+                    {category.name}
+                  </h2>
                   <span
-                    className="text-sm px-3 py-1 rounded-full"
-                    style={{ backgroundColor: `${categoryColor}33` }}
+                    className="ml-auto text-lg font-bold px-4 py-2 rounded-full backdrop-blur-md"
+                    style={{
+                      backgroundColor: `${categoryColor}33`,
+                      color: categoryColor,
+                      border: `2px solid ${categoryColor}`
+                    }}
                   >
                     {categoryArticles.length}
                   </span>
-                </h2>
-                {category.description && (
-                  <p className="text-sm text-[rgba(255,255,255,0.5)] mt-2">{category.description}</p>
-                )}
+                </div>
               </div>
 
-              {/* Articles in Category */}
-              <div className="space-y-2 pl-4">
-                {categoryArticles.map(article => {
+              {/* Articles Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {displayedArticles.map(article => {
                   const completed = isArticleCompleted(article)
 
                   return (
                     <button
                       key={article.id}
                       onClick={() => router.push(`/dashboard/articles/${article.id}`)}
-                      className="w-full text-left bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-lg p-4 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.5)] hover:bg-[rgba(255,215,0,0.05)] hover:-translate-x-1 hover:shadow-[0_0_20px_rgba(255,215,0,0.1)] group relative overflow-hidden"
+                      className="text-left bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.5)] hover:bg-[rgba(255,215,0,0.05)] hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(255,215,0,0.15)] group relative overflow-hidden"
                     >
-                      {/* Shimmer effect on hover */}
+                      {/* Shimmer effect */}
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.1)] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
 
-                      <div className="relative flex items-start gap-4">
-                        {/* Status Icon */}
-                        <div className="flex-shrink-0 mt-1">
-                          {completed ? (
-                            <CheckCircle className="h-6 w-6 text-[#22c55e]" />
-                          ) : (
-                            <Circle className="h-6 w-6 text-[rgba(255,215,0,0.4)]" />
-                          )}
-                        </div>
-
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-white text-lg mb-2 group-hover:text-[#FFD700] transition-colors">
-                            {article.title}
-                          </h3>
-
-                          {/* Metadata */}
-                          <div className="flex flex-wrap gap-2 text-xs">
-                            {article.difficulty && (
-                              <span className="px-2 py-1 bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded text-[rgba(255,215,0,0.8)]">
-                                {getDifficultyLabel(article.difficulty)}
-                              </span>
-                            )}
-                            {article.estimatedReadingMinutes && (
-                              <span className="px-2 py-1 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded text-[rgba(255,255,255,0.6)] flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {article.estimatedReadingMinutes} min
-                              </span>
-                            )}
-                            {completed && (
-                              <span className="px-2 py-1 bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.3)] rounded text-[#22c55e]">
-                                ✓ Läst
-                              </span>
-                            )}
+                      <div className="relative p-4">
+                        {/* Thumbnail placeholder or image */}
+                        {article.coverImage ? (
+                          <div className="h-32 mb-3 rounded-lg overflow-hidden">
+                            <img
+                              src={article.coverImage}
+                              alt={article.title}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
                           </div>
-                        </div>
+                        ) : (
+                          <div
+                            className="h-32 mb-3 rounded-lg flex items-center justify-center"
+                            style={{ backgroundColor: `${categoryColor}15` }}
+                          >
+                            <BookOpen className="h-12 w-12" style={{ color: `${categoryColor}60` }} />
+                          </div>
+                        )}
 
-                        {/* Arrow */}
-                        <div className="flex-shrink-0 text-[rgba(255,215,0,0.4)] group-hover:text-[#FFD700] group-hover:translate-x-1 transition-all">
-                          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
+                        {/* Status badge */}
+                        {completed && (
+                          <div className="absolute top-2 right-2 bg-[#22c55e] text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                            <CheckCircle className="h-3 w-3" />
+                            Läst
+                          </div>
+                        )}
+
+                        {/* Title */}
+                        <h3 className="font-semibold text-white text-base mb-3 line-clamp-2 min-h-[3rem] group-hover:text-[#FFD700] transition-colors">
+                          {article.title}
+                        </h3>
+
+                        {/* Metadata */}
+                        <div className="flex flex-wrap gap-2 text-xs">
+                          {article.difficulty && (
+                            <span className="px-2 py-1 bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded text-[rgba(255,215,0,0.8)]">
+                              {getDifficultyLabel(article.difficulty)}
+                            </span>
+                          )}
+                          {article.estimatedReadingMinutes && (
+                            <span className="px-2 py-1 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded text-[rgba(255,255,255,0.6)] flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {article.estimatedReadingMinutes} min
+                            </span>
+                          )}
                         </div>
                       </div>
                     </button>
                   )
                 })}
               </div>
+
+              {/* Show More Button */}
+              {categoryArticles.length > 3 && (
+                <div className="text-center pt-4">
+                  <Button
+                    onClick={() => setExpandedCategories(prev => ({
+                      ...prev,
+                      [category.id]: !isExpanded
+                    }))}
+                    variant="outline"
+                    className="border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] transition-all"
+                  >
+                    {isExpanded ? 'Visa mindre' : `Visa alla (${categoryArticles.length})`}
+                  </Button>
+                </div>
+              )}
             </div>
           )
         })}
