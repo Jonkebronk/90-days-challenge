@@ -48,19 +48,19 @@ export default function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center group">
-              <div className="relative">
-                <Image
-                  src="/images/logo.png"
-                  alt="Logo"
-                  width={120}
-                  height={40}
-                  className="h-10 w-auto object-contain brightness-0 invert opacity-90 group-hover:opacity-100 transition-opacity"
-                  style={{
-                    filter: 'brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(5deg) drop-shadow(0 0 8px rgba(255, 215, 0, 0.3))'
-                  }}
-                  priority
-                />
+            <Link href="/" className="flex items-center gap-4 group">
+              <Image
+                src="/images/logo.png"
+                alt="Friskvårdskompassen Logo"
+                width={180}
+                height={60}
+                className="h-14 w-auto object-contain transition-opacity group-hover:opacity-90"
+                priority
+              />
+              <div className="hidden sm:block border-l-2 border-[rgba(255,215,0,0.3)] pl-4">
+                <span className="font-['Orbitron',sans-serif] text-xl font-bold tracking-[3px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+                  NEXTEN
+                </span>
               </div>
             </Link>
 
