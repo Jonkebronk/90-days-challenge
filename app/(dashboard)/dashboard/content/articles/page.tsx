@@ -445,42 +445,47 @@ export default function ArticlesPage() {
                               size="icon"
                               onClick={() => handleMoveArticle(article, 'up')}
                               disabled={index === 0}
+                              className="hover:bg-[rgba(255,215,0,0.1)]"
                             >
-                              <ArrowUp className="h-4 w-4" />
+                              <ArrowUp className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => handleMoveArticle(article, 'down')}
                               disabled={index === group.articles.length - 1}
+                              className="hover:bg-[rgba(255,215,0,0.1)]"
                             >
-                              <ArrowDown className="h-4 w-4" />
+                              <ArrowDown className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => handleTogglePublished(article)}
                               title={article.published ? 'Avpublicera' : 'Publicera'}
+                              className="hover:bg-[rgba(255,215,0,0.1)]"
                             >
                               {article.published ? (
-                                <EyeOff className="h-4 w-4" />
+                                <EyeOff className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
                               ) : (
-                                <Eye className="h-4 w-4" />
+                                <Eye className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
                               )}
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
+                              className="hover:bg-[rgba(255,215,0,0.1)]"
                             >
-                              <Pencil className="h-4 w-4" />
+                              <Pencil className="h-4 w-4 text-[rgba(255,215,0,0.8)]" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => handleDeleteArticle(article)}
+                              className="hover:bg-red-500/10"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-4 w-4 text-red-400" />
                             </Button>
                           </div>
                         </TableCell>
