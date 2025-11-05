@@ -52,14 +52,14 @@ export default function HomePage() {
               <Image
                 src="/images/logo.png"
                 alt="Friskvårdskompassen Logo"
-                width={180}
-                height={60}
-                className="h-14 w-auto object-contain transition-opacity group-hover:opacity-90"
+                width={240}
+                height={80}
+                className="h-18 w-auto object-contain transition-opacity group-hover:opacity-90"
                 priority
               />
-              <div className="hidden sm:block border-l-2 border-[rgba(255,215,0,0.3)] pl-4">
-                <span className="font-['Orbitron',sans-serif] text-xl font-bold tracking-[3px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-                  NEXTEN
+              <div className="hidden lg:block border-l-2 border-[rgba(255,215,0,0.3)] pl-4">
+                <span className="font-['Orbitron',sans-serif] text-xs font-semibold tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent whitespace-nowrap">
+                  DIN VÄGVISARE TILL BÄTTRE HÄLSA
                 </span>
               </div>
             </Link>
