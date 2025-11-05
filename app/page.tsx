@@ -56,6 +56,7 @@ export default function HomePage() {
                   width={40}
                   height={40}
                   className="w-full h-full object-contain transition-all group-hover:opacity-90 group-hover:scale-110"
+                  style={{ mixBlendMode: 'screen' }}
                   priority
                 />
               </div>
