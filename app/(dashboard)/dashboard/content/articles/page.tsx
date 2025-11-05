@@ -223,20 +223,30 @@ export default function ArticlesPage() {
       .filter(a => a.categoryId === article.categoryId)
       .sort((a, b) => a.orderIndex - b.orderIndex)
 
+    console.log('Moving article:', article.title, 'Direction:', direction)
+    console.log('Category articles:', categoryArticles.map(a => ({ title: a.title, order: a.orderIndex })))
+
     const currentIndex = categoryArticles.findIndex(a => a.id === article.id)
+    console.log('Current index:', currentIndex)
+
     if (
       (direction === 'up' && currentIndex === 0) ||
       (direction === 'down' && currentIndex === categoryArticles.length - 1)
     ) {
+      console.log('Cannot move - at boundary')
       return
     }
 
     const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
     const otherArticle = categoryArticles[newIndex]
 
+    console.log('Swapping with:', otherArticle.title, 'orderIndex:', otherArticle.orderIndex)
+
     try {
+      toast.loading('Flyttar artikel...')
+
       // Swap orderIndex values
-      await Promise.all([
+      const results = await Promise.all([
         fetch(`/api/articles/${article.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -249,10 +259,15 @@ export default function ArticlesPage() {
         })
       ])
 
-      fetchArticles()
+      console.log('API responses:', results.map(r => r.status))
+
+      await fetchArticles()
+      toast.dismiss()
+      toast.success('Artikel flyttad')
     } catch (error) {
       console.error('Error moving article:', error)
-      toast.error('Ett fel uppstod')
+      toast.dismiss()
+      toast.error('Ett fel uppstod vid flytt av artikel')
     }
   }
 
