@@ -66,13 +66,19 @@ export default function HomePage() {
               ))}
             </nav>
 
-            {/* Login Button */}
-            <div className="hidden md:flex items-center space-x-4">
+            {/* Login Buttons */}
+            <div className="hidden md:flex items-center space-x-3">
               <Link
                 href="/login"
-                className="px-6 py-2.5 text-sm font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]"
+                className="px-5 py-2.5 text-xs font-semibold tracking-[1px] uppercase bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] text-[rgba(255,215,0,0.7)] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.5)] hover:text-[#FFD700]"
               >
-                Logga In
+                Client Login
+              </Link>
+              <Link
+                href="/login"
+                className="px-5 py-2.5 text-xs font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]"
+              >
+                Coach Login
               </Link>
             </div>
 
@@ -104,13 +110,22 @@ export default function HomePage() {
                   {item.name}
                 </Link>
               ))}
-              <Link
-                href="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 text-center text-sm font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg"
-              >
-                Logga In
-              </Link>
+              <div className="grid grid-cols-2 gap-3">
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 text-center text-xs font-semibold tracking-[1px] uppercase bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] text-[rgba(255,215,0,0.7)] rounded-lg"
+                >
+                  Client Login
+                </Link>
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-3 text-center text-xs font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg"
+                >
+                  Coach Login
+                </Link>
+              </div>
             </nav>
           </div>
         )}
