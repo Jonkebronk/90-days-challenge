@@ -49,6 +49,7 @@ type ArticleCategory = {
   name: string
   slug: string
   color?: string
+  orderIndex: number
 }
 
 type Article = {
