@@ -117,6 +117,14 @@ export default function ArticleEditorPage() {
     }
   }
 
+  // Auto-save to localStorage on formData change
+  useEffect(() => {
+    if (!isLoading && article) {
+      const draftKey = `article-draft-${articleId}`
+      localStorage.setItem(draftKey, JSON.stringify(formData))
+    }
+  }, [formData, isLoading, article, articleId])
+
   useEffect(() => {
     if (session?.user) {
       fetchArticle()
@@ -131,18 +139,47 @@ export default function ArticleEditorPage() {
       if (response.ok) {
         const data = await response.json()
         setArticle(data.article)
-        setFormData({
-          title: data.article.title,
-          content: data.article.content,
-          slug: data.article.slug,
-          categoryId: data.article.categoryId,
-          tags: data.article.tags || [],
-          difficulty: data.article.difficulty || '',
-          phase: data.article.phase?.toString() || '',
-          estimatedReadingMinutes: data.article.estimatedReadingMinutes?.toString() || '',
-          coverImage: data.article.coverImage || '',
-          published: data.article.published
-        })
+
+        // Check for draft in localStorage
+        const draftKey = `article-draft-${articleId}`
+        const savedDraft = localStorage.getItem(draftKey)
+
+        if (savedDraft) {
+          const draft = JSON.parse(savedDraft)
+          // Only use draft if it's different from saved version
+          if (draft.content !== data.article.content || draft.title !== data.article.title) {
+            toast.info('Utkast återställt från senaste redigering', { duration: 3000 })
+            setFormData(draft)
+          } else {
+            // Draft is same as saved, clear it
+            localStorage.removeItem(draftKey)
+            setFormData({
+              title: data.article.title,
+              content: data.article.content,
+              slug: data.article.slug,
+              categoryId: data.article.categoryId,
+              tags: data.article.tags || [],
+              difficulty: data.article.difficulty || '',
+              phase: data.article.phase?.toString() || '',
+              estimatedReadingMinutes: data.article.estimatedReadingMinutes?.toString() || '',
+              coverImage: data.article.coverImage || '',
+              published: data.article.published
+            })
+          }
+        } else {
+          setFormData({
+            title: data.article.title,
+            content: data.article.content,
+            slug: data.article.slug,
+            categoryId: data.article.categoryId,
+            tags: data.article.tags || [],
+            difficulty: data.article.difficulty || '',
+            phase: data.article.phase?.toString() || '',
+            estimatedReadingMinutes: data.article.estimatedReadingMinutes?.toString() || '',
+            coverImage: data.article.coverImage || '',
+            published: data.article.published
+          })
+        }
       } else {
         toast.error('Kunde inte hämta artikel')
         router.push('/dashboard/content/articles')
@@ -183,6 +220,10 @@ export default function ArticleEditorPage() {
       })
 
       if (response.ok) {
+        // Clear draft from localStorage after successful save
+        const draftKey = `article-draft-${articleId}`
+        localStorage.removeItem(draftKey)
+
         toast.success('Artikel sparad')
         fetchArticle()
       } else {
