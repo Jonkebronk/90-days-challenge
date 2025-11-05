@@ -6,11 +6,13 @@ import { useRouter, useParams } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Clock, CheckCircle, Circle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Clock, CheckCircle, Circle } from 'lucide-react'
 import { toast } from 'sonner'
 import { MDXPreview } from '@/components/mdx-preview'
+import { Progress } from '@/components/ui/progress'
 
 type ArticleCategory = {
+  id: string
   name: string
 }
 
@@ -24,6 +26,9 @@ type Article = {
   id: string
   title: string
   content: string
+  categoryId: string
+  orderIndex: number
+  published: boolean
   difficulty?: string | null
   phase?: number | null
   estimatedReadingMinutes?: number | null
@@ -39,6 +44,7 @@ export default function ArticleReaderPage() {
   const articleId = params.id as string
 
   const [article, setArticle] = useState<Article | null>(null)
+  const [categoryArticles, setCategoryArticles] = useState<Article[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isMarkingComplete, setIsMarkingComplete] = useState(false)
 
@@ -56,6 +62,9 @@ export default function ArticleReaderPage() {
         const data = await response.json()
         setArticle(data.article)
 
+        // Fetch all articles in the same category
+        await fetchCategoryArticles(data.article.categoryId)
+
         // Track that user viewed this article
         await fetch(`/api/articles/${articleId}/progress`, {
           method: 'POST',
@@ -71,6 +80,21 @@ export default function ArticleReaderPage() {
       toast.error('Ett fel uppstod')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchCategoryArticles = async (categoryId: string) => {
+    try {
+      const response = await fetch('/api/articles')
+      if (response.ok) {
+        const data = await response.json()
+        const articlesInCategory = data.articles
+          .filter((a: Article) => a.categoryId === categoryId && a.published)
+          .sort((a: Article, b: Article) => a.orderIndex - b.orderIndex)
+        setCategoryArticles(articlesInCategory)
+      }
+    } catch (error) {
+      console.error('Error fetching category articles:', error)
     }
   }
 
@@ -112,6 +136,24 @@ export default function ArticleReaderPage() {
     return labels[difficulty] || difficulty
   }
 
+  // Calculate category progress
+  const categoryProgress = categoryArticles.length > 0
+    ? {
+        completed: categoryArticles.filter(a => a.progress?.[0]?.completed).length,
+        total: categoryArticles.length,
+        percentage: Math.round((categoryArticles.filter(a => a.progress?.[0]?.completed).length / categoryArticles.length) * 100)
+      }
+    : null
+
+  // Find next and previous articles
+  const currentIndex = categoryArticles.findIndex(a => a.id === articleId)
+  const nextArticle = currentIndex >= 0 && currentIndex < categoryArticles.length - 1
+    ? categoryArticles[currentIndex + 1]
+    : null
+  const previousArticle = currentIndex > 0
+    ? categoryArticles[currentIndex - 1]
+    : null
+
   if (!session?.user) {
     return (
       <div className="container mx-auto p-6">
@@ -151,7 +193,7 @@ export default function ArticleReaderPage() {
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <Button
               variant="ghost"
               size="sm"
@@ -178,6 +220,19 @@ export default function ArticleReaderPage() {
               )}
             </Button>
           </div>
+
+          {/* Category Progress Bar */}
+          {categoryProgress && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">{article.category.name}</span>
+                <span className="font-medium text-gray-900">
+                  {categoryProgress.completed} av {categoryProgress.total} artiklar lästa
+                </span>
+              </div>
+              <Progress value={categoryProgress.percentage} className="h-2" />
+            </div>
+          )}
         </div>
       </div>
 
@@ -231,31 +286,67 @@ export default function ArticleReaderPage() {
           </Card>
 
           {/* Bottom Actions */}
-          <div className="mt-8 flex items-center justify-between">
-            <Button
-              variant="outline"
-              onClick={() => router.push('/dashboard/articles')}
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Tillbaka till artiklar
-            </Button>
-            <Button
-              onClick={handleToggleComplete}
-              disabled={isMarkingComplete}
-              variant={isCompleted ? 'outline' : 'default'}
-            >
-              {isCompleted ? (
-                <>
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Markerad som läst
-                </>
+          <div className="mt-8">
+            {/* Mark as Complete Button */}
+            <div className="flex justify-center mb-6">
+              <Button
+                onClick={handleToggleComplete}
+                disabled={isMarkingComplete}
+                variant={isCompleted ? 'outline' : 'default'}
+                size="lg"
+                className="min-w-[200px]"
+              >
+                {isCompleted ? (
+                  <>
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Markerad som läst
+                  </>
+                ) : (
+                  <>
+                    <Circle className="h-4 w-4 mr-2" />
+                    {isMarkingComplete ? 'Markerar...' : 'Markera som läst'}
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Navigation */}
+            <div className="flex items-center justify-between pt-6 border-t">
+              {previousArticle ? (
+                <Button
+                  variant="outline"
+                  onClick={() => router.push(`/dashboard/articles/${previousArticle.id}`)}
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Föregående
+                </Button>
               ) : (
-                <>
-                  <Circle className="h-4 w-4 mr-2" />
-                  {isMarkingComplete ? 'Markerar...' : 'Markera som läst'}
-                </>
+                <Button
+                  variant="ghost"
+                  onClick={() => router.push('/dashboard/articles')}
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Tillbaka till artiklar
+                </Button>
               )}
-            </Button>
+
+              {nextArticle ? (
+                <Button
+                  onClick={() => router.push(`/dashboard/articles/${nextArticle.id}`)}
+                >
+                  Nästa artikel
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  onClick={() => router.push('/dashboard/articles')}
+                >
+                  Tillbaka till artiklar
+                  <ArrowLeft className="h-4 w-4 ml-2" />
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
