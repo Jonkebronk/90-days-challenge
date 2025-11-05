@@ -223,7 +223,7 @@ export default function ArticleBankPage() {
           return (
             <div key={category.id} className="space-y-6">
               {/* Large Category Header with Background */}
-              <div className="relative rounded-2xl overflow-hidden h-32 mb-6">
+              <div className="relative rounded-2xl overflow-hidden mb-6" style={{ minHeight: category.description ? '140px' : '120px' }}>
                 {/* Background gradient */}
                 <div
                   className="absolute inset-0"
@@ -237,23 +237,30 @@ export default function ArticleBankPage() {
                 }} />
 
                 {/* Category content */}
-                <div className="relative z-10 h-full flex items-center px-8">
-                  <h2
-                    className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]"
-                    style={{ color: categoryColor }}
-                  >
-                    {category.name}
-                  </h2>
-                  <span
-                    className="ml-auto text-lg font-bold px-4 py-2 rounded-full backdrop-blur-md"
-                    style={{
-                      backgroundColor: `${categoryColor}33`,
-                      color: categoryColor,
-                      border: `2px solid ${categoryColor}`
-                    }}
-                  >
-                    {categoryArticles.length}
-                  </span>
+                <div className="relative z-10 h-full flex flex-col justify-center px-8 py-6">
+                  <div className="flex items-center justify-between">
+                    <h2
+                      className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]"
+                      style={{ color: categoryColor }}
+                    >
+                      {category.name}
+                    </h2>
+                    <span
+                      className="ml-4 text-lg font-bold px-4 py-2 rounded-full backdrop-blur-md flex-shrink-0"
+                      style={{
+                        backgroundColor: `${categoryColor}33`,
+                        color: categoryColor,
+                        border: `2px solid ${categoryColor}`
+                      }}
+                    >
+                      {categoryArticles.length}
+                    </span>
+                  </div>
+                  {category.description && (
+                    <p className="text-[rgba(255,255,255,0.7)] text-sm mt-3 max-w-3xl leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
+                      {category.description}
+                    </p>
+                  )}
                 </div>
               </div>
 
