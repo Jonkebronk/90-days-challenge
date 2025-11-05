@@ -81,7 +81,7 @@ export default function DashboardLayout({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: '/login' })
+    signOut({ callbackUrl: '/' })
   }
 
   const isCoach = (session?.user as any)?.role === 'coach'
