@@ -311,7 +311,10 @@ export default function ArticlesPage() {
     group.articles.sort((a, b) => a.orderIndex - b.orderIndex)
   })
 
-  const categoryGroups = Object.values(articlesByCategory)
+  // Sort category groups by category orderIndex
+  const categoryGroups = Object.values(articlesByCategory).sort((a, b) =>
+    a.category.orderIndex - b.category.orderIndex
+  )
 
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
@@ -347,10 +350,10 @@ export default function ArticlesPage() {
             <Filter className="h-5 w-5 text-[#FFD700]" />
             <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label className="text-xs text-[rgba(255,255,255,0.7)]">Kategori</Label>
+                <Label className="text-xs text-[rgba(255,255,255,0.7)] mb-1 block">Kategori</Label>
                 <Select value={filterCategory} onValueChange={setFilterCategory}>
-                  <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)]">
-                    <SelectValue placeholder="Välj kategori" className="text-[rgba(255,255,255,0.9)]" />
+                  <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)]">
+                    <SelectValue placeholder="Välj kategori" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Alla kategorier</SelectItem>
@@ -363,10 +366,10 @@ export default function ArticlesPage() {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs text-[rgba(255,255,255,0.7)]">Fas</Label>
+                <Label className="text-xs text-[rgba(255,255,255,0.7)] mb-1 block">Fas</Label>
                 <Select value={filterPhase} onValueChange={setFilterPhase}>
-                  <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)]">
-                    <SelectValue placeholder="Välj fas" className="text-[rgba(255,255,255,0.9)]" />
+                  <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)]">
+                    <SelectValue placeholder="Välj fas" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Alla faser</SelectItem>
@@ -377,10 +380,10 @@ export default function ArticlesPage() {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs text-[rgba(255,255,255,0.7)]">Status</Label>
+                <Label className="text-xs text-[rgba(255,255,255,0.7)] mb-1 block">Status</Label>
                 <Select value={filterPublished} onValueChange={setFilterPublished}>
-                  <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)]">
-                    <SelectValue placeholder="Välj status" className="text-[rgba(255,255,255,0.9)]" />
+                  <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)]">
+                    <SelectValue placeholder="Välj status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Alla</SelectItem>
