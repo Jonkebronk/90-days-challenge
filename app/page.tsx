@@ -48,8 +48,8 @@ export default function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-4 group">
-              <div className="overflow-hidden h-14 flex items-center">
+            <Link href="/" className="flex flex-col lg:flex-row items-center gap-2 lg:gap-4 group py-2 lg:py-0">
+              <div className="overflow-hidden h-12 lg:h-14 flex items-center">
                 <Image
                   src="/images/logo.png"
                   alt="Friskvårdskompassen Logo"
@@ -60,8 +60,8 @@ export default function HomePage() {
                   priority
                 />
               </div>
-              <div className="hidden lg:flex items-center border-l-2 border-[rgba(255,215,0,0.3)] pl-4 h-14">
-                <span className="font-['Orbitron',sans-serif] text-xs font-semibold tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent whitespace-nowrap">
+              <div className="flex items-center lg:border-l-2 border-[rgba(255,215,0,0.3)] lg:pl-4 lg:h-14">
+                <span className="font-['Orbitron',sans-serif] text-[10px] lg:text-xs font-semibold tracking-[1.5px] lg:tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent whitespace-nowrap">
                   DIN VÄGVISARE TILL BÄTTRE HÄLSA
                 </span>
               </div>
