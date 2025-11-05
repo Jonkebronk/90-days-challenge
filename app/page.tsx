@@ -46,21 +46,21 @@ export default function HomePage() {
       {/* Header Navigation */}
       <header className="relative z-50 bg-[rgba(10,10,10,0.8)] backdrop-blur-lg border-b border-[rgba(255,215,0,0.2)]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-24">
             {/* Logo */}
             <Link href="/" className="flex flex-col lg:flex-row items-center gap-2 lg:gap-4 group py-2 lg:py-0">
-              <div className="overflow-hidden h-12 lg:h-14 flex items-center">
+              <div className="overflow-hidden h-14 lg:h-16 flex items-center">
                 <Image
                   src="/images/logo.png"
                   alt="Friskvårdskompassen Logo"
                   width={180}
-                  height={56}
+                  height={64}
                   className="w-auto object-contain transition-opacity group-hover:opacity-90"
-                  style={{ height: '90px', marginTop: '-4px' }}
+                  style={{ height: '100px', marginTop: '-2px' }}
                   priority
                 />
               </div>
-              <div className="flex items-center lg:border-l-2 border-[rgba(255,215,0,0.3)] lg:pl-4 lg:h-14">
+              <div className="flex items-center lg:border-l-2 border-[rgba(255,215,0,0.3)] lg:pl-4 lg:h-16">
                 <span className="font-['Orbitron',sans-serif] text-[10px] lg:text-xs font-semibold tracking-[1.5px] lg:tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent whitespace-nowrap">
                   DIN VÄGVISARE TILL BÄTTRE HÄLSA
                 </span>
