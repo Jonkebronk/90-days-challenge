@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { CountdownTimer } from '@/components/countdown-timer'
 import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
@@ -47,10 +48,15 @@ export default function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="font-['Orbitron',sans-serif] text-2xl font-black tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-                90-DAGARS
-              </div>
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/images/logo.png"
+                alt="Logo"
+                width={120}
+                height={40}
+                className="h-10 w-auto object-contain"
+                priority
+              />
             </Link>
 
             {/* Desktop Navigation */}
