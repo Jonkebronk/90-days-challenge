@@ -216,17 +216,17 @@ export default function ArticlesPage() {
     setFormData({ ...formData, title, slug: generateSlug(title) })
   }
 
-  const handleMoveArticle = async (article: Article, direction: 'up' | 'down') => {
-    const currentIndex = filteredArticles.findIndex(a => a.id === article.id)
+  const handleMoveArticle = async (article: Article, direction: 'up' | 'down', categoryArticles: Article[]) => {
+    const currentIndex = categoryArticles.findIndex(a => a.id === article.id)
     if (
       (direction === 'up' && currentIndex === 0) ||
-      (direction === 'down' && currentIndex === filteredArticles.length - 1)
+      (direction === 'down' && currentIndex === categoryArticles.length - 1)
     ) {
       return
     }
 
     const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
-    const otherArticle = filteredArticles[newIndex]
+    const otherArticle = categoryArticles[newIndex]
 
     try {
       // Swap orderIndex values
@@ -443,7 +443,7 @@ export default function ArticlesPage() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => handleMoveArticle(article, 'up')}
+                              onClick={() => handleMoveArticle(article, 'up', group.articles)}
                               disabled={index === 0}
                               className="hover:bg-[rgba(255,215,0,0.1)]"
                             >
@@ -452,7 +452,7 @@ export default function ArticlesPage() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => handleMoveArticle(article, 'down')}
+                              onClick={() => handleMoveArticle(article, 'down', group.articles)}
                               disabled={index === group.articles.length - 1}
                               className="hover:bg-[rgba(255,215,0,0.1)]"
                             >
