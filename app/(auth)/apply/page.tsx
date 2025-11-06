@@ -26,7 +26,8 @@ export default function ApplyPage() {
     training: false,
     nutrition: false,
     lifestyle: false,
-    motivation: false
+    motivation: false,
+    agreement: false
   })
 
   const [formData, setFormData] = useState({
@@ -76,7 +77,11 @@ export default function ApplyPage() {
     whyApply: '',
     commitment: '',
     expectations: '',
-    challenges: ''
+    challenges: '',
+
+    // Agreement
+    termsAccepted: false,
+    signature: ''
   })
 
   const toggleSection = (section: keyof typeof expandedSections) => {
@@ -88,6 +93,16 @@ export default function ApplyPage() {
 
     if (!formData.name || !formData.email || !formData.phone) {
       toast.error('Vänligen fyll i alla obligatoriska fält')
+      return
+    }
+
+    if (!formData.termsAccepted) {
+      toast.error('Du måste acceptera villkoren för att fortsätta')
+      return
+    }
+
+    if (!formData.signature || formData.signature.trim().length < 2) {
+      toast.error('Vänligen signera genom att skriva ditt namn')
       return
     }
 
@@ -149,6 +164,11 @@ ${formData.expectations || 'Ej angivet'}
 
 Utmaningar:
 ${formData.challenges || 'Ej angivet'}
+
+=== AVTAL & SIGNATUR ===
+Villkor accepterade: ${formData.termsAccepted ? 'Ja' : 'Nej'}
+Signatur: ${formData.signature}
+Datum: ${new Date().toLocaleDateString('sv-SE')}
       `.trim()
 
       const response = await fetch('/api/apply', {
@@ -718,6 +738,111 @@ ${formData.challenges || 'Ej angivet'}
                     className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
                     placeholder="Vad har hindrat dig från att nå dina mål tidigare?"
                   />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 6. Customer Agreement */}
+          <div className="space-y-4">
+            <SectionHeader
+              title="Kundavtal & Villkor"
+              section="agreement"
+              isExpanded={expandedSections.agreement}
+            />
+            {expandedSections.agreement && (
+              <div className="space-y-6 bg-[rgba(0,0,0,0.2)] p-6 rounded-lg border border-[rgba(255,215,0,0.2)]">
+                {/* Release of Liability */}
+                <div className="space-y-3">
+                  <h3 className="text-[#FFD700] font-semibold text-lg">Ansvarsfriskrivning</h3>
+                  <div className="text-[rgba(255,255,255,0.7)] text-sm space-y-2 leading-relaxed">
+                    <p>
+                      Detta är ett program för fysisk träning som inkluderar, men är inte begränsat till, styrketräning,
+                      viktträning och olika konditionsövningar. Jag bekräftar härmed att jag är fullt fysiskt kapabel
+                      och att jag inte lider av någon funktionsnedsättning eller sjukdom som skulle hindra mig från att
+                      delta i detta program på ett säkert sätt.
+                    </p>
+                    <p>
+                      Vid bekräftelse av mitt deltagande i detta program upphäver jag allt ansvar för Maximum Performance
+                      Training för eventuella skador som kan uppstå som en följd av min deltagning i detta program eller
+                      när jag använder konditionerings- och träningsutrustning. Jag bekräftar att jag, på eget ansvar,
+                      deltar i alla konditionerings- och träningsaktiviteter och faciliteter, oavsett skada.
+                    </p>
+                    <p>
+                      Jag avsäger härmed Maximum Performance Training, även dess anställda och ägare av allt ansvar,
+                      inklusive men inte begränsat till medicinsk exponering, smärta och lidande som kan uppstå av någon
+                      anledning under eller efter mitt deltagande i programmet eller från vår användning av
+                      konditionerings- och träningsutrustning och faciliteter, oavsett fel, försumlighet eller ansvar.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
+
+                {/* Payment & Cancellation */}
+                <div className="space-y-3">
+                  <h3 className="text-[#FFD700] font-semibold text-lg">Betalning & Avbokning</h3>
+                  <div className="text-[rgba(255,255,255,0.7)] text-sm space-y-2 leading-relaxed">
+                    <p>
+                      Jag förstår att om jag blir accepterad till programmet krävs full betalning för minimum 4 veckors
+                      coaching i förskott för att säkra min plats. Efter detta kan jag välja att fortsätta genom
+                      PayPal, banköverföring eller kontant, men betalning ska göras senast vid andra veckans avtalsdag,
+                      eller avbrytas.
+                    </p>
+                    <p>
+                      Jag förstår att den här kontraktet är omedelbart uppsägbart och inte kan återbetalas. Om min
+                      coach rapporterar att jag saknar överenskommelse om vad som utgör regelbundet uppträdande i form
+                      av, men inte begränsat till:
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>Ej svarar på mitt schema när jag ombeds</li>
+                      <li>Ej skickar in mitt schema och mina kosttillskott regelbundet senast angivet datum</li>
+                    </ul>
+                    <p className="font-semibold text-[rgba(255,255,255,0.9)]">
+                      Jag bekräftar att återbetalning inte kan ske av dessa skäl och jag är enligt avtal åtagande att
+                      fullfölja denna 12-veckors avtalad period eller längre om avtalet förnyas.
+                    </p>
+                    <p>
+                      Klient kan avsluta tjänsterna efter avtalad period när som helst så länge återbetalning inte söks
+                      och ett varsel på 2 veckor lämnas. Fortsatt betalning efter uppsägningsdatumet kan inte
+                      återbetalas.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
+
+                {/* Accept Terms Checkbox */}
+                <div className="flex items-start gap-3 p-4 bg-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg">
+                  <input
+                    type="checkbox"
+                    id="termsAccepted"
+                    checked={formData.termsAccepted}
+                    onChange={(e) => setFormData({ ...formData, termsAccepted: e.target.checked })}
+                    className="mt-1 w-5 h-5 rounded border-[rgba(255,215,0,0.5)] bg-[rgba(0,0,0,0.3)] text-[#FFD700] focus:ring-[#FFD700] focus:ring-2 cursor-pointer"
+                    required
+                  />
+                  <label htmlFor="termsAccepted" className="text-[rgba(255,255,255,0.9)] font-medium cursor-pointer select-none">
+                    Ja, jag accepterar ovanstående villkor. *
+                  </label>
+                </div>
+
+                {/* Signature Field */}
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)] mb-2 block">
+                    Signatur (skriv ditt fullständiga namn) *
+                  </Label>
+                  <Input
+                    type="text"
+                    value={formData.signature}
+                    onChange={(e) => setFormData({ ...formData, signature: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white font-['Brush_Script_MT',cursive] text-2xl"
+                    placeholder="Ditt fullständiga namn"
+                    required
+                  />
+                  <p className="text-xs text-[rgba(255,255,255,0.5)] mt-2">
+                    Genom att skriva ditt namn ovan bekräftar du att du har läst och accepterat alla villkor.
+                  </p>
                 </div>
               </div>
             )}
