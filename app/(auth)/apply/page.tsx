@@ -69,7 +69,7 @@ VAD FÖRVÄNTAR DU DIG?
 ${formData.expectations || 'Ej angivet'}
       `.trim()
 
-      const response = await fetch('/api/leads', {
+      const response = await fetch('/api/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
