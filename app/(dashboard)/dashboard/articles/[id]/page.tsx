@@ -281,9 +281,9 @@ export default function ArticleReaderPage() {
           </div>
 
           {/* Article Content */}
-          <Card className="bg-[rgba(255,255,255,0.03)] border-[rgba(255,215,0,0.2)]">
+          <Card className="bg-[rgba(255,255,255,0.08)] border-[rgba(255,215,0,0.3)]">
             <CardContent className="p-8">
-              <div className="prose prose-lg max-w-none prose-invert prose-headings:text-[#FFD700] prose-p:text-[rgba(255,255,255,0.85)] prose-strong:text-white prose-li:text-[rgba(255,255,255,0.85)] prose-a:text-[#FFD700] prose-a:hover:text-[#FFA500]">
+              <div className="prose prose-lg max-w-none prose-invert prose-headings:text-[#FFD700] prose-headings:font-bold prose-p:text-[rgba(255,255,255,0.95)] prose-p:leading-relaxed prose-strong:text-[#FFD700] prose-strong:font-semibold prose-li:text-[rgba(255,255,255,0.95)] prose-a:text-[#FFD700] prose-a:hover:text-[#FFA500] prose-a:underline prose-blockquote:border-l-[#FFD700] prose-blockquote:text-[rgba(255,255,255,0.9)] prose-code:text-[#FFD700] prose-code:bg-[rgba(255,215,0,0.1)] prose-pre:bg-[rgba(0,0,0,0.3)]">
                 <MDXPreview content={article.content} />
               </div>
             </CardContent>
