@@ -22,6 +22,7 @@ type ArticleCategory = {
   id: string
   name: string
   description?: string | null
+  section?: string | null
   color?: string
   orderIndex?: number
 }
@@ -205,8 +206,39 @@ export default function ArticleBankPage() {
             <p className="text-[rgba(255,255,255,0.5)]">Laddar artiklar...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedCategories.map((category: any) => {
+          <>
+            {/* Group categories by section */}
+            {(() => {
+              // Group categories by section
+              const categoriesBySection = sortedCategories.reduce((acc: Record<string, any[]>, category: any) => {
+                const sectionName = category.section || 'Övrigt'
+                if (!acc[sectionName]) {
+                  acc[sectionName] = []
+                }
+                acc[sectionName].push(category)
+                return acc
+              }, {})
+
+              // Get section order (sections with categories come first, then "Övrigt")
+              const sectionOrder = Object.keys(categoriesBySection).sort((a, b) => {
+                if (a === 'Övrigt') return 1
+                if (b === 'Övrigt') return -1
+                return 0
+              })
+
+              return sectionOrder.map(sectionName => (
+                <div key={sectionName} className="mb-12">
+                  {/* Section Header */}
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-black tracking-wider uppercase text-[#FFD700] mb-2">
+                      {sectionName}
+                    </h2>
+                    <div className="h-[1px] bg-gradient-to-r from-[#FFD700] via-[rgba(255,215,0,0.3)] to-transparent" />
+                  </div>
+
+                  {/* Categories Grid for this section */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {categoriesBySection[sectionName].map((category: any) => {
               const categoryArticles = articles.filter(a => a.category.id === category.id)
 
               if (categoryArticles.length === 0) return null
@@ -311,8 +343,12 @@ export default function ArticleBankPage() {
                   )}
                 </div>
               )
-            })}
-          </div>
+                    })}
+                  </div>
+                </div>
+              ))
+            })()}
+          </>
         )}
 
         {/* Empty State */}

@@ -511,6 +511,7 @@ model ArticleCategory {
   description String?
   slug        String   @unique
   color       String   @default("#FFD700") // Hex color for category accent
+  section     String?  // Section/group name for organizing categories (e.g., "INNAN DU BÖRJAR", "GENOMGÅNG AV 90 DAGARS CHALLENGEN")
   orderIndex  Int      @default(0) // For sorting categories
 
   createdAt   DateTime @default(now())
