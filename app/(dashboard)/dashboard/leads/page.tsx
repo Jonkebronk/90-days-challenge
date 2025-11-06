@@ -495,64 +495,266 @@ export default function LeadsPage() {
                           <Eye className="h-4 w-4" />
                         </button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle className="text-2xl font-bold text-[#FFD700]">Ansökning - {lead.name}</DialogTitle>
+                      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a] border-2 border-[rgba(255,215,0,0.3)]">
+                        <DialogHeader className="border-b border-[rgba(255,215,0,0.2)] pb-4">
+                          <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+                            Ansökning - {lead.name}
+                          </DialogTitle>
+                          <p className="text-[rgba(255,255,255,0.5)] text-sm mt-2">
+                            Mottagen {new Date(lead.createdAt).toLocaleDateString('sv-SE', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </p>
                         </DialogHeader>
-                        <div className="space-y-6 py-4">
+                        <div className="space-y-4 py-6">
                           {/* Contact Info */}
-                          <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4">
-                            <h3 className="text-lg font-semibold text-[#FFD700] mb-3">Kontaktinformation</h3>
+                          <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-5">
+                            <h3 className="text-lg font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
+                              📞 Kontaktinformation
+                            </h3>
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Namn</p>
-                                <p className="text-[rgba(255,255,255,0.9)]">{lead.name}</p>
+                                <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Namn</p>
+                                <p className="text-[rgba(255,255,255,0.9)] font-medium">{lead.name}</p>
                               </div>
                               <div>
-                                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">E-post</p>
+                                <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">E-post</p>
                                 <p className="text-[rgba(255,255,255,0.9)]">{lead.email || '-'}</p>
                               </div>
                               <div>
-                                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Telefon</p>
+                                <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Telefon</p>
                                 <p className="text-[rgba(255,255,255,0.9)]">{lead.phone || '-'}</p>
                               </div>
                               <div>
-                                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Skapad</p>
-                                <p className="text-[rgba(255,255,255,0.9)]">
-                                  {new Date(lead.createdAt).toLocaleDateString('sv-SE', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                  })}
-                                </p>
+                                <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Status</p>
+                                <Select
+                                  value={lead.status}
+                                  onValueChange={(value) => handleUpdateStatus(lead.id, value)}
+                                >
+                                  <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white h-8">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {Object.entries(statusLabels).map(([value, label]) => (
+                                      <SelectItem key={value} value={value}>
+                                        {label}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
                               </div>
                             </div>
                           </div>
 
-                          {/* Status */}
-                          <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4">
-                            <h3 className="text-lg font-semibold text-[#FFD700] mb-3">Status</h3>
-                            <Select
-                              value={lead.status}
-                              onValueChange={(value) => handleUpdateStatus(lead.id, value)}
-                            >
-                              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {Object.entries(statusLabels).map(([value, label]) => (
-                                  <SelectItem key={value} value={value}>
-                                    {label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
+                          {/* Application Details - Formatted */}
+                          {lead.notes && lead.notes.includes('===') && (
+                            <>
+                              {/* Personal Info */}
+                              {lead.notes.match(/=== PERSONUPPGIFTER ===([\s\S]*?)===/)?.[1] && (
+                                <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-5">
+                                  <h3 className="text-lg font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
+                                    👤 Personuppgifter
+                                  </h3>
+                                  <div className="grid grid-cols-2 gap-3 text-sm">
+                                    {lead.notes.match(/Ålder: (.*)/)?.[1] && (
+                                      <div>
+                                        <span className="text-[rgba(255,215,0,0.7)]">Ålder:</span>
+                                        <span className="text-[rgba(255,255,255,0.9)] ml-2">{lead.notes.match(/Ålder: (.*)/)?.[1]}</span>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Kön: (.*)/)?.[1] && (
+                                      <div>
+                                        <span className="text-[rgba(255,215,0,0.7)]">Kön:</span>
+                                        <span className="text-[rgba(255,255,255,0.9)] ml-2">{lead.notes.match(/Kön: (.*)/)?.[1]}</span>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Stad: (.*)/)?.[1] && (
+                                      <div>
+                                        <span className="text-[rgba(255,215,0,0.7)]">Stad:</span>
+                                        <span className="text-[rgba(255,255,255,0.9)] ml-2">{lead.notes.match(/Stad: (.*)/)?.[1]}</span>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Land: (.*)/)?.[1] && (
+                                      <div>
+                                        <span className="text-[rgba(255,215,0,0.7)]">Land:</span>
+                                        <span className="text-[rgba(255,255,255,0.9)] ml-2">{lead.notes.match(/Land: (.*)/)?.[1]}</span>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Hittade oss via: (.*)/)?.[1] && (
+                                      <div className="col-span-2">
+                                        <span className="text-[rgba(255,215,0,0.7)]">Hittade oss via:</span>
+                                        <span className="text-[rgba(255,255,255,0.9)] ml-2">{lead.notes.match(/Hittade oss via: (.*)/)?.[1]}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
 
-                          {/* Application Details */}
-                          {lead.notes && (
-                            <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4">
-                              <h3 className="text-lg font-semibold text-[#FFD700] mb-3">Ansökningsdetaljer</h3>
+                              {/* Physical Stats */}
+                              {lead.notes.match(/=== FYSISKA MÅTT ===([\s\S]*?)===/)?.[1] && (
+                                <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-5">
+                                  <h3 className="text-lg font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
+                                    📏 Fysiska mått
+                                  </h3>
+                                  <div className="grid grid-cols-3 gap-4 text-sm">
+                                    {lead.notes.match(/Längd: (.*?) cm/)?.[1] && (
+                                      <div className="bg-[rgba(0,0,0,0.3)] p-3 rounded-lg border border-[rgba(255,215,0,0.1)]">
+                                        <p className="text-[rgba(255,215,0,0.7)] text-xs mb-1">Längd</p>
+                                        <p className="text-[rgba(255,255,255,0.9)] font-semibold text-lg">{lead.notes.match(/Längd: (.*?) cm/)?.[1]} cm</p>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Nuvarande vikt: (.*?) kg/)?.[1] && (
+                                      <div className="bg-[rgba(0,0,0,0.3)] p-3 rounded-lg border border-[rgba(255,215,0,0.1)]">
+                                        <p className="text-[rgba(255,215,0,0.7)] text-xs mb-1">Nuvarande vikt</p>
+                                        <p className="text-[rgba(255,255,255,0.9)] font-semibold text-lg">{lead.notes.match(/Nuvarande vikt: (.*?) kg/)?.[1]} kg</p>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Målvikt: (.*?) kg/)?.[1] && (
+                                      <div className="bg-[rgba(0,0,0,0.3)] p-3 rounded-lg border border-[rgba(255,215,0,0.1)]">
+                                        <p className="text-[rgba(255,215,0,0.7)] text-xs mb-1">Målvikt</p>
+                                        <p className="text-[rgba(34,197,94,0.9)] font-semibold text-lg">{lead.notes.match(/Målvikt: (.*?) kg/)?.[1]} kg</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Training */}
+                              {lead.notes.match(/=== TRÄNING ===([\s\S]*?)===/)?.[1] && (
+                                <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-5">
+                                  <h3 className="text-lg font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
+                                    💪 Träning
+                                  </h3>
+                                  <div className="space-y-3 text-sm">
+                                    {lead.notes.match(/Nuvarande träning: (.*)/)?.[1] && lead.notes.match(/Nuvarande träning: (.*)/)?.[1] !== 'Ej angivet' && (
+                                      <div>
+                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Nuvarande träning</p>
+                                        <p className="text-[rgba(255,255,255,0.9)]">{lead.notes.match(/Nuvarande träning: (.*)/)?.[1]}</p>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Erfarenhet: (.*)/)?.[1] && lead.notes.match(/Erfarenhet: (.*)/)?.[1] !== 'Ej angivet' && (
+                                      <div>
+                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Erfarenhet</p>
+                                        <p className="text-[rgba(255,255,255,0.9)]">{lead.notes.match(/Erfarenhet: (.*)/)?.[1]}</p>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Mål: (.*)/)?.[1] && lead.notes.match(/Mål: (.*)/)?.[1] !== 'Ej angivet' && (
+                                      <div>
+                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Träningsmål</p>
+                                        <p className="text-[rgba(255,255,255,0.9)]">{lead.notes.match(/Mål: (.*)/)?.[1]}</p>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Skador\/Begränsningar: (.*)/)?.[1] && lead.notes.match(/Skador\/Begränsningar: (.*)/)?.[1] !== 'Ej angivet' && (
+                                      <div>
+                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Skador/Begränsningar</p>
+                                        <p className="text-[rgba(255,255,255,0.9)]">{lead.notes.match(/Skador\/Begränsningar: (.*)/)?.[1]}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Nutrition */}
+                              {lead.notes.match(/=== NÄRING ===([\s\S]*?)===/)?.[1] && (
+                                <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-5">
+                                  <h3 className="text-lg font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
+                                    🍎 Näring & Kost
+                                  </h3>
+                                  <div className="space-y-3 text-sm">
+                                    {lead.notes.match(/Kost historik: (.*)/)?.[1] && lead.notes.match(/Kost historik: (.*)/)?.[1] !== 'Ej angivet' && (
+                                      <div>
+                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Kost historik</p>
+                                        <p className="text-[rgba(255,255,255,0.9)]">{lead.notes.match(/Kost historik: (.*)/)?.[1]}</p>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Allergier: (.*)/)?.[1] && lead.notes.match(/Allergier: (.*)/)?.[1] !== 'Ej angivet' && (
+                                      <div>
+                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Allergier</p>
+                                        <p className="text-[rgba(255,255,255,0.9)]">{lead.notes.match(/Allergier: (.*)/)?.[1]}</p>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Tidigare coaching: (.*)/)?.[1] && lead.notes.match(/Tidigare coaching: (.*)/)?.[1] !== 'Ej angivet' && (
+                                      <div>
+                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Tidigare coaching</p>
+                                        <p className="text-[rgba(255,255,255,0.9)]">{lead.notes.match(/Tidigare coaching: (.*)/)?.[1]}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Lifestyle */}
+                              {lead.notes.match(/=== LIVSSTIL ===([\s\S]*?)===/)?.[1] && (
+                                <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-5">
+                                  <h3 className="text-lg font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
+                                    🌟 Livsstil
+                                  </h3>
+                                  <div className="grid grid-cols-2 gap-3 text-sm">
+                                    {lead.notes.match(/Stressnivå: (.*)/)?.[1] && (
+                                      <div>
+                                        <span className="text-[rgba(255,215,0,0.7)]">Stressnivå:</span>
+                                        <span className="text-[rgba(255,255,255,0.9)] ml-2">{lead.notes.match(/Stressnivå: (.*)/)?.[1]}</span>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Sömn: (.*?) timmar/)?.[1] && (
+                                      <div>
+                                        <span className="text-[rgba(255,215,0,0.7)]">Sömn:</span>
+                                        <span className="text-[rgba(255,255,255,0.9)] ml-2">{lead.notes.match(/Sömn: (.*?) timmar/)?.[1]} timmar</span>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Yrke: (.*)/)?.[1] && lead.notes.match(/Yrke: (.*)/)?.[1] !== 'Ej angivet' && (
+                                      <div className="col-span-2">
+                                        <span className="text-[rgba(255,215,0,0.7)]">Yrke:</span>
+                                        <span className="text-[rgba(255,255,255,0.9)] ml-2">{lead.notes.match(/Yrke: (.*)/)?.[1]}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Motivation */}
+                              {lead.notes.match(/=== MOTIVATION ===([\s\S]*?)===/)?.[1] && (
+                                <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-5">
+                                  <h3 className="text-lg font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
+                                    🎯 Motivation & Mål
+                                  </h3>
+                                  <div className="space-y-4 text-sm">
+                                    {lead.notes.match(/Varför ansöker du\?([\s\S]*?)(?=Åtagande:|===|$)/)?.[1]?.trim() && lead.notes.match(/Varför ansöker du\?([\s\S]*?)(?=Åtagande:|===|$)/)?.[1]?.trim() !== 'Ej angivet' && (
+                                      <div>
+                                        <p className="text-[rgba(255,215,0,0.7)] mb-2 font-medium">Varför ansöker du?</p>
+                                        <p className="text-[rgba(255,255,255,0.9)] bg-[rgba(0,0,0,0.3)] p-3 rounded-lg border border-[rgba(255,215,0,0.1)] whitespace-pre-wrap">
+                                          {lead.notes.match(/Varför ansöker du\?([\s\S]*?)(?=Åtagande:|===|$)/)?.[1]?.trim()}
+                                        </p>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Åtagande:([\s\S]*?)(?=Förväntningar:|===|$)/)?.[1]?.trim() && lead.notes.match(/Åtagande:([\s\S]*?)(?=Förväntningar:|===|$)/)?.[1]?.trim() !== 'Ej angivet' && (
+                                      <div>
+                                        <p className="text-[rgba(255,215,0,0.7)] mb-2 font-medium">Åtagande</p>
+                                        <p className="text-[rgba(255,255,255,0.9)] bg-[rgba(0,0,0,0.3)] p-3 rounded-lg border border-[rgba(255,215,0,0.1)] whitespace-pre-wrap">
+                                          {lead.notes.match(/Åtagande:([\s\S]*?)(?=Förväntningar:|===|$)/)?.[1]?.trim()}
+                                        </p>
+                                      </div>
+                                    )}
+                                    {lead.notes.match(/Förväntningar:([\s\S]*?)(?=Utmaningar:|===|$)/)?.[1]?.trim() && lead.notes.match(/Förväntningar:([\s\S]*?)(?=Utmaningar:|===|$)/)?.[1]?.trim() !== 'Ej angivet' && (
+                                      <div>
+                                        <p className="text-[rgba(255,215,0,0.7)] mb-2 font-medium">Förväntningar</p>
+                                        <p className="text-[rgba(255,255,255,0.9)] bg-[rgba(0,0,0,0.3)] p-3 rounded-lg border border-[rgba(255,215,0,0.1)] whitespace-pre-wrap">
+                                          {lead.notes.match(/Förväntningar:([\s\S]*?)(?=Utmaningar:|===|$)/)?.[1]?.trim()}
+                                        </p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          )}
+
+                          {/* Fallback for simple notes */}
+                          {lead.notes && !lead.notes.includes('===') && (
+                            <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-5">
+                              <h3 className="text-lg font-semibold text-[#FFD700] mb-4">Anteckningar</h3>
                               <div className="text-[rgba(255,255,255,0.8)] whitespace-pre-wrap text-sm leading-relaxed">
                                 {lead.notes}
                               </div>
@@ -561,13 +763,13 @@ export default function LeadsPage() {
 
                           {/* Tags */}
                           {lead.tags && lead.tags.length > 0 && (
-                            <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4">
+                            <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-5">
                               <h3 className="text-lg font-semibold text-[#FFD700] mb-3">Taggar</h3>
                               <div className="flex flex-wrap gap-2">
                                 {lead.tags.map((tag, idx) => (
                                   <span
                                     key={idx}
-                                    className="px-3 py-1 bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded-full text-xs text-[rgba(255,215,0,0.9)]"
+                                    className="px-3 py-1.5 bg-gradient-to-r from-[rgba(255,215,0,0.1)] to-[rgba(255,165,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded-full text-sm text-[#FFD700] font-medium"
                                   >
                                     {tag}
                                   </span>
@@ -577,11 +779,11 @@ export default function LeadsPage() {
                           )}
 
                           {/* Actions */}
-                          <div className="flex justify-end gap-2 pt-4 border-t border-[rgba(255,215,0,0.1)]">
+                          <div className="flex justify-end gap-3 pt-6 border-t border-[rgba(255,215,0,0.2)]">
                             <Button
                               variant="outline"
                               onClick={() => setViewingLead(null)}
-                              className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,215,0,0.1)]"
+                              className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,215,0,0.1)] hover:border-[rgba(255,215,0,0.5)]"
                             >
                               Stäng
                             </Button>
@@ -591,9 +793,9 @@ export default function LeadsPage() {
                                 setViewingLead(null)
                               }}
                               disabled={lead.status === 'won'}
-                              className="bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white font-semibold hover:opacity-90 disabled:opacity-50"
+                              className="bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[rgba(34,197,94,0.2)]"
                             >
-                              Konvertera till klient
+                              {lead.status === 'won' ? 'Redan konverterad' : 'Konvertera till klient'}
                             </Button>
                           </div>
                         </div>
