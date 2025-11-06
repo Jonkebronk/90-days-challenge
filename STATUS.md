@@ -1,6 +1,6 @@
 # Projektstatus - 90-Dagars Challenge
 
-**Senast uppdaterad**: 2025-01-04
+**Senast uppdaterad**: 2025-01-06
 
 ## ✅ Färdigt (Klart att använda)
 
@@ -73,7 +73,85 @@
 - [x] Delete och edit files
 - [x] File preview/download
 
-#### Lessons/Content Management
+#### Article Bank System (Kunskapsbanken)
+- [x] **Article Management (Coach):**
+  - Create, edit, delete articles
+  - Rich MDX content support
+  - Article categories with sections
+  - Publishing workflow (draft/published)
+  - Phase assignment (1/2/3)
+  - Difficulty levels (beginner/intermediate/advanced)
+  - Cover images
+  - Reading time estimation
+  - Order management within categories
+
+- [x] **Article Reader (Client):**
+  - Articles organized by category and section
+  - Expandable category cards with "Mer" button
+  - Read/unread status tracking
+  - Progress tracking per category (X av Y artiklar lästa)
+  - Category progress bars
+  - Responsive article reader with MDX rendering
+  - Mark as read functionality
+  - Previous/Next article navigation within category
+
+#### Recipe Bank System (Receptbanken)
+- [x] **Recipe Management (Coach):**
+  - Create, edit, delete recipes
+  - Recipe categories
+  - Ingredients with portions and units
+  - Step-by-step instructions
+  - Automatic nutrition calculation
+  - Difficulty levels
+  - Dietary tags (vegetarian, vegan, etc.)
+  - Meal type classification (breakfast, lunch, dinner, snack)
+  - Preparation and cooking time
+
+- [x] **Recipe Browser (Client):**
+  - Recipes grouped by category
+  - Meal type filtering
+  - Difficulty filtering
+  - Favorite system (toggle favorite/unfavorite)
+  - Detailed recipe view with nutrition info
+  - Servings calculator
+  - Print-friendly layout
+
+#### 90-Day Roadmap System
+- [x] **Roadmap Management (Coach):**
+  - Assign articles to specific days (1-90)
+  - Set prerequisites for article unlocking
+  - Phase-based organization
+  - Drag-and-drop ordering
+  - Bulk assignment tools
+
+- [x] **Roadmap View (Client):**
+  - Day-by-day article assignments
+  - Current day highlighting
+  - Progress tracking per day
+  - Prerequisites enforcement (locked articles)
+  - Visual progress indicators
+
+#### Application & Invite System
+- [x] **Application Form:**
+  - Public application page (`/apply`)
+  - Comprehensive form with:
+    - Personal information
+    - Current photos upload (required)
+    - Goal and motivation questions
+    - Lifestyle and habits
+    - Customer agreement checkbox
+  - Lead creation from applications
+  - Email notifications (optional)
+
+- [x] **Invite Code System:**
+  - GOLD-code format (GOLD-XXXX-XXXX-XXXX)
+  - Exclusive invite section on landing page
+  - Invite code verification API
+  - Expiration date support
+  - Usage tracking
+  - Setup account flow with invite code
+
+#### Lessons/Content Management (Legacy)
 - [x] **Lessons List:**
   - Create, edit, delete lessons
   - Filter by phase (Fas 1/2/3)
@@ -106,15 +184,27 @@
 - [x] Redirect till dashboard efter completion
 
 #### Check-In System
-- [x] Daily check-in form med:
-  - Weight input
+- [x] **Weekly check-in form med:**
+  - Weight tracking
   - Energy level (1-5 slider)
-  - Sleep hours
-  - Optional notes
-- [x] Check-in history list
+  - Mood tracking
+  - Sleep quality notes
+  - Diet adherence rating (1-10)
+  - Workout adherence rating (1-10)
+  - Daily steps counter
+  - Status update (free text)
+  - **Progress photos** (front/side/back views)
+- [x] Check-in history list (för coach view)
+- [x] Photo gallery with before/after comparisons
 - [x] Weight progress chart (Recharts line chart)
 - [x] Auto-calculate weight change
 - [x] Date-based tracking
+
+#### Weight Tracker
+- [x] Separate weight tracking tool
+- [x] Weight graph visualization over time
+- [x] Trend analysis
+- [x] Goal weight comparison
 
 #### Progress Tracking
 - [x] Weight progress chart
@@ -147,7 +237,58 @@
   - Real-time synchronization
   - Collapsed/expanded tool views
 
-#### Lessons/Learning
+#### Educational Content
+
+**Kunskapsbanken (Article Bank):**
+- [x] **Article List (`/dashboard/articles`):**
+  - Articles organized by category
+  - Section-based grouping within categories
+  - Expandable category cards
+  - Read/unread status indicators
+  - Progress tracking per category
+  - "Läs mer" / "Mer" buttons for sections
+  - Filtering by phase and difficulty
+
+- [x] **Article Reader (`/dashboard/articles/[id]`):**
+  - Clean, focused reading experience
+  - MDX content rendering
+  - Category progress bar at top
+  - Mark as read button (centered below content)
+  - Previous/Next article navigation
+  - Reading time display
+  - Cover images
+  - Responsive typography
+
+**Receptbanken (Recipe Bank):**
+- [x] **Recipe Browser (`/dashboard/recipes`):**
+  - Recipes by category
+  - Meal type tabs (all/breakfast/lunch/dinner/snack)
+  - Difficulty filtering
+  - Favorite toggle
+  - Card-based layout with images
+  - Nutrition preview
+  - Preparation/cooking time display
+
+- [x] **Recipe Detail (`/dashboard/recipes/[id]`):**
+  - Full ingredient list with portions
+  - Step-by-step instructions
+  - Complete nutrition information
+  - Servings adjustment
+  - Favorite button
+  - Print-friendly layout
+  - Dietary tags display
+
+**90-Day Roadmap:**
+- [x] **Roadmap View (`/dashboard/roadmap`):**
+  - Day-by-day article assignments (Day 1-90)
+  - Current day highlighting
+  - Completed article checkmarks
+  - Locked articles (prerequisites not met)
+  - Phase-based visual organization
+  - Click to read assigned articles
+  - Progress percentage
+
+**Lessons (Legacy System):**
 - [x] **Lessons List (`/dashboard/lessons`):**
   - Lektioner organiserade efter fas (Dag 1-30, 31-60, 61-90)
   - **Lesson locking logic** - prerequisites måste slutföras först
@@ -173,13 +314,27 @@
 
 ### 7. Landing Page
 - [x] Hero section med value proposition
-- [x] CTA button för signup/contact
+- [x] Countdown timer for applications
+- [x] Animated particle effects (dark theme with gold accents)
+- [x] CTA buttons (Ansök nu / Har du invite-kod?)
 - [x] Features showcase
 - [x] Program benefits
-- [x] "Vem passar programmet för?" sektion
-- [x] Lead capture form
+- [x] "Passar för dig" / "Passar INTE" comparison section
+- [x] FAQ accordion section
+- [x] **Invite Code Section:**
+  - Exclusive GOLD-code entry
+  - Code verification before signup
+  - Premium feel with gold styling
+- [x] **Application Form (`/apply`):**
+  - Multi-step comprehensive form
+  - Current photos upload (required)
+  - Goal and motivation questions
+  - Lifestyle assessment
+  - Customer agreement
+  - Creates lead in system
+- [x] PWA support (manifest.json)
 - [x] Responsiv design
-- [x] Clean, modern UI
+- [x] Clean, modern dark UI
 
 ### 8. Calculations & Logic
 - [x] BMR (Basal Metabolic Rate) - Mifflin-St Jeor
@@ -314,11 +469,13 @@ git push
 
 ### Features
 - ✅ **100% av core features** implementerade
-- ✅ **Authentication**: Komplett
-- ✅ **Coach features**: Komplett
-- ✅ **Client features**: Komplett
-- ✅ **Lessons system**: Komplett
-- 🟡 **Advanced features**: Optional
+- ✅ **Authentication**: Komplett med invite-kod system
+- ✅ **Coach features**: Komplett (clients, leads, content, roadmap)
+- ✅ **Client features**: Komplett (articles, recipes, roadmap, tracking)
+- ✅ **Content systems**: Article Bank, Recipe Bank, Lessons (legacy)
+- ✅ **Application & Lead Gen**: Komplett
+- ✅ **90-Day Roadmap**: Komplett
+- 🟡 **Advanced features**: Optional (messaging, workout builder)
 
 ### Tech Stack
 - Next.js 15 ⚡
@@ -335,21 +492,26 @@ git push
 
 ### Kortsiktig (1-2 veckor)
 1. ✅ ~~Implementera lessons system~~ - KLART!
-2. [ ] Lägg till email notifications
-3. [ ] Skapa onboarding tutorial för nya coaches
-4. [ ] Förbättra mobile responsiveness
+2. ✅ ~~Article Bank system~~ - KLART!
+3. ✅ ~~Recipe Bank system~~ - KLART!
+4. ✅ ~~Application & Invite system~~ - KLART!
+5. ✅ ~~90-Day Roadmap~~ - KLART!
+6. [ ] Email notifications för nya artiklar/recept
+7. [ ] Push notifications för check-in påminnelser
 
 ### Medellång (1-2 månader)
-1. [ ] In-app messaging system
-2. [ ] Meal planning feature
-3. [ ] Workout program builder
+1. [ ] In-app messaging system (coach <-> client)
+2. [ ] Workout program builder (komplett system)
+3. [ ] Meal planning & meal prep tool
 4. [ ] Analytics dashboard för coaches
+5. [ ] Export progress reports (PDF)
 
 ### Långsiktig (3+ månader)
 1. [ ] Mobile app (React Native)
 2. [ ] API för third-party integrations
-3. [ ] Marketplace för lesson templates
-4. [ ] Multi-language support
+3. [ ] Video lessons hosting (egen video-server)
+4. [ ] Multi-language support (EN/SV)
+5. [ ] Community features (forum, groups)
 
 ## 💡 Tips & Best Practices
 
@@ -488,16 +650,21 @@ await prisma.lesson.update({
 **Projektet är produktionsklart!** Alla core features är implementerade och testade.
 
 ### Vad fungerar perfekt:
-- ✅ Authentication och authorization
-- ✅ Coach client management
-- ✅ Lead generation och conversion
+- ✅ Authentication med invite-kod system (GOLD-format)
+- ✅ Coach client management och lead generation
+- ✅ **Article Bank (Kunskapsbanken)** - Komplett content management system
+- ✅ **Recipe Bank (Receptbanken)** - Recept med näringsberäkning
+- ✅ **90-Day Roadmap** - Dag-för-dag artikel-tilldelningar
+- ✅ **Application System** - Omfattande ansökningsformulär
 - ✅ File sharing system
-- ✅ **Lessons/presentation system med MDX, video och quiz**
-- ✅ Check-in och progress tracking
+- ✅ Lessons/presentation system (legacy)
+- ✅ Weekly check-in med progress-foton
+- ✅ Weight tracker med trendanalys
 - ✅ Calculators och tools
-- ✅ Responsiv design
-- ✅ Database integrations
-- ✅ API endpoints
+- ✅ Responsiv design med dark theme
+- ✅ PWA support
+- ✅ Database integrations (27 models)
+- ✅ API endpoints (38 routes)
 
 ### Deployment Status:
 - ✅ Railway PostgreSQL databas

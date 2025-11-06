@@ -41,13 +41,24 @@ npm run dev
 
 ## 5️⃣ Testa!
 
-1. **Gå till** http://localhost:3000/signup
-2. **Registrera:**
+1. **Gå till** http://localhost:3000
+   - Se landing page med countdown och invite-kod sektion
+2. **Testa Application Form**
+   - Klicka "Ansök nu"
+   - Fyll i ansökningsformulär
+3. **Eller använd Invite Code**
+   - Klicka "Har du invite-kod?"
+   - Skapa konto med GOLD-kod (om du har en)
+4. **Registrera** (utan invite):
+   - Gå till `/signup`
    - Namn: Test User
    - Email: test@example.com
    - Lösenord: test123
-3. **Automatic login** → redirectas till `/onboarding/step-1`
-4. **Fyll i** onboarding steg 1-3
+5. **Onboarding** → redirectas till `/onboarding/step-1`
+   - Fyll i alla 5 steg
+6. **Dashboard**
+   - Utforska Article Bank, Recipe Bank, Roadmap
+   - Testa check-in och tools
 
 ---
 
@@ -56,13 +67,21 @@ npm run dev
 Du har nu:
 - ✅ Railway PostgreSQL databas
 - ✅ Prisma ORM setup
-- ✅ NextAuth.js authentication
-- ✅ Fungerade onboarding (steg 1-3)
+- ✅ NextAuth.js authentication med invite-kod system
+- ✅ Komplett onboarding (5 steg)
+- ✅ Article Bank & Recipe Bank
+- ✅ 90-Day Roadmap
+- ✅ Check-in system
+- ✅ Client tools (kaloriräknare, etc.)
 
 ## Nästa Steg
 
-- Implementera steg 4-8 av onboarding
-- Bygg dashboard
-- Lägg till meal & workout features
+1. **Skapa första coach-användaren:**
+   - Använd Prisma Studio: `npx prisma studio`
+   - Ändra role från "client" till "coach"
+2. **Som coach:**
+   - Skapa artiklar och recept
+   - Bygg 90-dagars roadmap
+   - Hantera clients och leads
 
-Se **RAILWAY_SETUP.md** för detaljerad guide!
+Se **STATUS.md** för fullständig feature-lista!

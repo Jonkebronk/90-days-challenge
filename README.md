@@ -49,11 +49,71 @@ En komplett coaching-plattform för personlig träning och kost, med interaktiva
 - [x] Tagging system
 
 #### ✅ Check-In System
-- [x] Daglig check-in för klienter
-- [x] Viktnedgång tracking
-- [x] Energy level och sleep tracking
-- [x] Progress graf med vikt över tid
-- [x] Check-in history
+- [x] Veckovis check-in för klienter
+- [x] Vikttracking med progress-foton (fram/sida/bak)
+- [x] Energy level, mood, och sleep tracking
+- [x] Diet och workout adherence ratings
+- [x] Dagliga steg och statusuppdateringar
+- [x] Check-in history för coach
+
+#### ✅ Weight Tracker
+- [x] Separat vikttracking-verktyg
+- [x] Graf över viktutveckling
+- [x] Trendanalys över tid
+
+#### 📚 Kunskapsbanken (Article Bank)
+- [x] **Article Management (Coach):**
+  - Skapa, redigera, ta bort artiklar
+  - MDX-stöd för rich content
+  - Artikelkategorier med sektioner
+  - Publiceringsflöde (draft/published)
+  - Fas-tilldelning (1/2/3)
+  - Svårighetsgrader
+  - Omslagsbilder och lästidsberäkning
+- [x] **Article Reader (Client):**
+  - Artiklar organiserade efter kategori och sektion
+  - Läst/oläst status tracking
+  - Progress tracking per kategori
+  - Expanderbara kategorikort
+  - Responsiv artikelläsare
+
+#### 🍳 Receptbanken (Recipe Bank)
+- [x] **Recipe Management (Coach):**
+  - Skapa, redigera, ta bort recept
+  - Receptkategorier
+  - Ingredienser med portioner
+  - Steg-för-steg instruktioner
+  - Näringsberäkning
+  - Svårighetsgrader och dietary tags
+  - Måltidstyp-klassificering
+- [x] **Recipe Browser (Client):**
+  - Recept efter kategori
+  - Måltidstyp-filtrering
+  - Svårighetsfiltrering
+  - Favoritmarkering
+  - Näringsinfo och tillagningstid
+
+#### 📅 90-Dagars Roadmap
+- [x] **Roadmap Management (Coach):**
+  - Tilldela artiklar till specifika dagar (1-90)
+  - Sätt prerequisites för progression
+  - Fas-baserad organisation
+- [x] **Roadmap View (Client):**
+  - Dag-för-dag artikeltilldelningar
+  - Progress tracking
+  - Prerequisites enforcement
+
+#### 🎫 Application & Invite System
+- [x] Ansökningsformulär från landing page
+- [x] Omfattande lead-capture
+  - Nuvarande foton upload
+  - Kundavtal-sektion
+  - Livsstilsfrågor
+- [x] Invite-kod system
+  - GOLD-kod format (GOLD-XXXX-XXXX-XXXX)
+  - Exklusiv invite-sektion på landing page
+  - Kodverifiering och utgångsdatum
+  - Lead-to-client konvertering
 
 #### 🎓 Lessons/Presentation System
 - [x] **Coach - Lessons List:**
@@ -181,20 +241,31 @@ UPDATE "User" SET role = 'coach' WHERE email = 'din@email.com';
 ├── app/
 │   ├── (auth)/                    # Auth routes
 │   │   ├── login/
-│   │   └── signup/
+│   │   ├── signup/
+│   │   ├── apply/                 # ✅ Application form
+│   │   └── setup-account/         # ✅ Invite code setup
 │   ├── (dashboard)/               # Dashboard routes
 │   │   └── dashboard/
 │   │       ├── check-in/          # ✅ Check-in system
 │   │       ├── clients/           # ✅ Client management
 │   │       ├── leads/             # ✅ Lead management
-│   │       ├── content/
+│   │       ├── content/           # ✅ Content creation (Coach only)
+│   │       │   ├── articles/      # ✅ Article CRUD
+│   │       │   ├── categories/    # ✅ Article category management
+│   │       │   ├── recipes/       # ✅ Recipe CRUD
+│   │       │   ├── recipe-categories/
 │   │       │   ├── files/         # ✅ File management
-│   │       │   └── lessons/       # ✅ Lesson management (Coach)
+│   │       │   ├── lessons/       # ✅ Lesson management
+│   │       │   └── roadmap/       # ✅ 90-day roadmap assignments
+│   │       ├── articles/          # ✅ Article bank (read-only)
+│   │       ├── recipes/           # ✅ Recipe bank
+│   │       ├── roadmap/           # ✅ 90-day roadmap (Client)
 │   │       ├── lessons/           # ✅ Lessons viewer (Client)
 │   │       ├── progress/          # ✅ Progress tracking
+│   │       ├── weight-tracker/    # ✅ Weight tracking
 │   │       ├── profile/           # ✅ User profile
 │   │       └── tools/             # ✅ Client tools
-│   │           ├── workspace/     # ✅ All tools in one view
+│   │           ├── workspace/     # ✅ Coach workspace
 │   │           ├── meal-distribution/
 │   │           └── steps/
 │   ├── (onboarding)/
@@ -203,13 +274,23 @@ UPDATE "User" SET role = 'coach' WHERE email = 'din@email.com';
 │   │   ├── step-3/                # ✅ Lifestyle
 │   │   ├── step-4/                # ✅ Nutrition
 │   │   └── step-5/                # ✅ Summary
-│   ├── api/                       # API routes
-│   │   ├── auth/
+│   ├── api/                       # API routes (38 endpoints)
+│   │   ├── auth/                  # NextAuth endpoints
 │   │   ├── check-in/
 │   │   ├── clients/
-│   │   ├── files/
 │   │   ├── leads/
-│   │   └── lessons/               # ✅ Lessons CRUD + Progress
+│   │   ├── articles/              # ✅ Article CRUD + progress
+│   │   ├── article-categories/
+│   │   ├── recipes/               # ✅ Recipe CRUD + favorites
+│   │   ├── recipe-categories/
+│   │   ├── lessons/               # ✅ Lessons CRUD + Progress
+│   │   ├── roadmap/               # ✅ Roadmap assignments
+│   │   ├── files/
+│   │   ├── calorie-plan/
+│   │   ├── onboarding/
+│   │   ├── apply/                 # ✅ Application submissions
+│   │   ├── verify-invite-code/    # ✅ Invite code verification
+│   │   └── admin/
 │   └── page.tsx                   # ✅ Landing page
 ├── components/
 │   ├── ui/                        # shadcn/ui komponenter
@@ -245,22 +326,38 @@ UPDATE "User" SET role = 'coach' WHERE email = 'din@email.com';
 
 ### Som Coach
 1. **Client Management**: Lägg till och hantera klienter från `/dashboard/clients`
-2. **Leads**: Fånga leads från landing page, konvertera till klienter
-3. **Files**: Ladda upp och dela filer med klienter
-4. **Lessons**: Skapa interaktiva presentationer med MDX, video och quiz
-   - Organisera efter fas (1-30, 31-60, 61-90 dagar)
-   - Publicera när redo
-   - Sätt prerequisites för att låsa lektioner
+   - Generera invite-koder (GOLD-format)
+   - Se client check-ins och progress
+2. **Leads**: Fånga leads från landing page/application form, konvertera till klienter
+3. **Kunskapsbanken**: Skapa och hantera artiklar
+   - Organisera i kategorier med sektioner
+   - MDX-stöd för rich content
+   - Sätt fas och svårighetsgrad
+4. **Receptbanken**: Skapa och dela recept
+   - Lägg till ingredienser och instruktioner
+   - Beräkna näringsvärden automatiskt
+5. **90-Dagars Roadmap**: Tilldela artiklar till specifika dagar (1-90)
+6. **Files**: Ladda upp och dela filer med klienter
+7. **Lessons** (Legacy): Skapa interaktiva presentationer med MDX, video och quiz
+8. **Workspace**: Använd coach-verktyg för att skapa client-planer
 
 ### Som Client
-1. **Dashboard**: Se dagens övergripande status
-2. **Check-in**: Logga daglig vikt, energi och sömn
-3. **Progress**: Se viktutveckling i graf
-4. **Tools**: Använd kaloriräknare, måltidsfördelning, stegräknare
-5. **Lessons**: Gå igenom lektioner i din egen takt
+1. **Dashboard**: Se dagens övergripande status och nästa steg
+2. **Kunskapsbanken**: Läs artiklar organiserade efter kategori
+   - Spåra läst/oläst status
+   - Följ category progress
+3. **Receptbanken**: Bläddra recept och markera favoriter
+   - Filtrera efter måltidstyp och svårighetsgrad
+   - Se näringsinfo och tillagningstid
+4. **90-Dagars Roadmap**: Följ dag-för-dag artikeltilldelningar
+5. **Check-in**: Veckovis check-in med vikt, foton, och metrics
+   - Energi, mood, diet/workout adherence
+   - Progress-foton (fram/sida/bak)
+6. **Weight Tracker**: Se viktutveckling i graf över tid
+7. **Tools**: Använd kaloriräknare, måltidsfördelning, stegräknare
+8. **Lessons** (Legacy): Gå igenom interaktiva presentationer
    - Följ fas-baserad progression
    - Ta quiz för att testa kunskap
-   - Spara progress automatiskt
 
 ## 🔧 Utvecklingskommandon
 
