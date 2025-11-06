@@ -281,9 +281,9 @@ export default function ArticleReaderPage() {
           </div>
 
           {/* Article Content */}
-          <Card className="bg-[rgba(255,255,255,0.08)] border-[rgba(255,215,0,0.3)]">
+          <Card className="bg-white border-[rgba(255,215,0,0.3)]">
             <CardContent className="p-8">
-              <div className="prose prose-lg max-w-none prose-invert prose-headings:text-[#FFD700] prose-headings:font-bold prose-p:text-[rgba(255,255,255,0.95)] prose-p:leading-relaxed prose-strong:text-[#FFD700] prose-strong:font-semibold prose-li:text-[rgba(255,255,255,0.95)] prose-a:text-[#FFD700] prose-a:hover:text-[#FFA500] prose-a:underline prose-blockquote:border-l-[#FFD700] prose-blockquote:text-[rgba(255,255,255,0.9)] prose-code:text-[#FFD700] prose-code:bg-[rgba(255,215,0,0.1)] prose-pre:bg-[rgba(0,0,0,0.3)]">
+              <div className="prose prose-lg max-w-none prose-headings:text-[#1a0933] prose-headings:font-bold prose-p:text-gray-800 prose-p:leading-relaxed prose-strong:text-[#1a0933] prose-strong:font-semibold prose-li:text-gray-800 prose-a:text-[#1a0933] prose-a:hover:text-[#FFA500] prose-a:underline prose-blockquote:border-l-[#FFD700] prose-blockquote:text-gray-700 prose-code:text-[#1a0933] prose-code:bg-gray-100 prose-pre:bg-gray-100 prose-pre:text-gray-900">
                 <MDXPreview content={article.content} />
               </div>
             </CardContent>
