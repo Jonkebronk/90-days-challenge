@@ -264,8 +264,8 @@ export default function ArticleBankPage() {
                 </div>
               </div>
 
-              {/* Articles Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Articles List - Horizontal Cards */}
+              <div className="space-y-3">
                 {displayedArticles.map(article => {
                   const completed = isArticleCompleted(article)
 
@@ -273,15 +273,12 @@ export default function ArticleBankPage() {
                     <button
                       key={article.id}
                       onClick={() => router.push(`/dashboard/articles/${article.id}`)}
-                      className="text-left bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.5)] hover:bg-[rgba(255,215,0,0.05)] hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(255,215,0,0.15)] group relative overflow-hidden"
+                      className="w-full text-left bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] transition-all duration-200 hover:border-[rgba(255,215,0,0.5)] hover:bg-[rgba(255,215,0,0.05)] hover:shadow-[0_4px_20px_rgba(255,215,0,0.15)] group overflow-hidden"
                     >
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.1)] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-
-                      <div className="relative p-4">
-                        {/* Thumbnail placeholder or image */}
+                      <div className="flex items-center gap-4 p-4">
+                        {/* Thumbnail - Left Side */}
                         {article.coverImage ? (
-                          <div className="h-32 mb-3 rounded-lg overflow-hidden">
+                          <div className="w-24 h-20 flex-shrink-0 rounded-lg overflow-hidden">
                             <img
                               src={article.coverImage}
                               alt={article.title}
@@ -290,38 +287,38 @@ export default function ArticleBankPage() {
                           </div>
                         ) : (
                           <div
-                            className="h-32 mb-3 rounded-lg flex items-center justify-center"
+                            className="w-24 h-20 flex-shrink-0 rounded-lg flex items-center justify-center"
                             style={{ backgroundColor: `${categoryColor}15` }}
                           >
-                            <BookOpen className="h-12 w-12" style={{ color: `${categoryColor}60` }} />
+                            <BookOpen className="h-8 w-8" style={{ color: `${categoryColor}80` }} />
                           </div>
                         )}
 
-                        {/* Status badge */}
-                        {completed && (
-                          <div className="absolute top-2 right-2 bg-[#22c55e] text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                            <CheckCircle className="h-3 w-3" />
-                            Läst
-                          </div>
-                        )}
+                        {/* Content - Middle */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-white text-base mb-1 group-hover:text-[#FFD700] transition-colors line-clamp-1">
+                            {article.title}
+                          </h3>
+                          <p className="text-sm text-[rgba(255,255,255,0.5)] line-clamp-1">
+                            {article.difficulty && getDifficultyLabel(article.difficulty)}
+                          </p>
+                        </div>
 
-                        {/* Title */}
-                        <h3 className="font-semibold text-white text-base mb-3 line-clamp-2 min-h-[3rem] group-hover:text-[#FFD700] transition-colors">
-                          {article.title}
-                        </h3>
-
-                        {/* Metadata */}
-                        <div className="flex flex-wrap gap-2 text-xs">
-                          {article.difficulty && (
-                            <span className="px-2 py-1 bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded text-[rgba(255,215,0,0.8)]">
-                              {getDifficultyLabel(article.difficulty)}
-                            </span>
-                          )}
+                        {/* Metadata - Right Side */}
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          {/* Reading time */}
                           {article.estimatedReadingMinutes && (
-                            <span className="px-2 py-1 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded text-[rgba(255,255,255,0.6)] flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              {article.estimatedReadingMinutes} min
-                            </span>
+                            <div className="flex items-center gap-1 text-[rgba(255,255,255,0.6)] text-sm">
+                              <Clock className="h-4 w-4" />
+                              <span>{article.estimatedReadingMinutes} min</span>
+                            </div>
+                          )}
+
+                          {/* Completion status */}
+                          {completed ? (
+                            <CheckCircle className="h-5 w-5 text-[#22c55e]" />
+                          ) : (
+                            <Circle className="h-5 w-5 text-[rgba(255,255,255,0.2)]" />
                           )}
                         </div>
                       </div>
