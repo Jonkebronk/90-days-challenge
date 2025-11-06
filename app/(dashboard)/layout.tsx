@@ -38,7 +38,7 @@ import {
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Team', href: '/dashboard/clients', icon: Users, coachOnly: true },
+  { name: 'Klienter', href: '/dashboard/clients', icon: Users, coachOnly: true },
   { name: 'Ansökningar', href: '/dashboard/leads', icon: UserPlus, coachOnly: true },
   {
     name: 'Innehåll',

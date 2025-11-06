@@ -21,8 +21,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Pencil, Trash2, Search } from 'lucide-react'
+import { Pencil, Trash2, Search, UserCheck } from 'lucide-react'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 type Lead = {
   id: string
@@ -56,6 +57,7 @@ const statusColors: Record<string, string> = {
 
 export default function LeadsPage() {
   const { data: session } = useSession()
+  const router = useRouter()
   const [leads, setLeads] = useState<Lead[]>([])
   const [filteredLeads, setFilteredLeads] = useState<Lead[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -63,6 +65,7 @@ export default function LeadsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [editingLead, setEditingLead] = useState<Lead | null>(null)
+  const [convertingLeadId, setConvertingLeadId] = useState<string | null>(null)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -192,6 +195,38 @@ export default function LeadsPage() {
     } catch (error) {
       console.error('Error deleting lead:', error)
       toast.error('Ett fel uppstod')
+    }
+  }
+
+  const handleConvertToClient = async (lead: Lead) => {
+    if (!confirm(`Konvertera ${lead.name} till klient?`)) return
+
+    try {
+      setConvertingLeadId(lead.id)
+      const response = await fetch(`/api/leads/${lead.id}/convert`, {
+        method: 'POST',
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        toast.success(`${lead.name} konverterad till klient!`, {
+          description: `Inbjudningskod: ${data.inviteCode}`,
+          duration: 10000,
+        })
+        fetchLeads()
+        // Navigate to clients page after a short delay
+        setTimeout(() => {
+          router.push('/dashboard/clients')
+        }, 2000)
+      } else {
+        const errorData = await response.json()
+        toast.error(errorData.error || 'Kunde inte konvertera till klient')
+      }
+    } catch (error) {
+      console.error('Error converting to client:', error)
+      toast.error('Ett fel uppstod')
+    } finally {
+      setConvertingLeadId(null)
     }
   }
 
@@ -558,6 +593,14 @@ export default function LeadsPage() {
                         </form>
                       </DialogContent>
                     </Dialog>
+                    <button
+                      onClick={() => handleConvertToClient(lead)}
+                      disabled={convertingLeadId === lead.id || lead.status === 'won'}
+                      className="p-2 hover:bg-[rgba(34,197,94,0.1)] rounded transition-colors text-[rgba(34,197,94,0.8)] hover:text-[rgb(34,197,94)] disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Skapa klient"
+                    >
+                      <UserCheck className="h-4 w-4" />
+                    </button>
                     <button
                       onClick={() => handleDelete(lead.id)}
                       className="p-2 hover:bg-[rgba(239,68,68,0.1)] rounded transition-colors text-[rgba(239,68,68,0.8)] hover:text-[rgb(239,68,68)]"
