@@ -65,11 +65,11 @@ export default function ArticleReaderPage() {
         // Fetch all articles in the same category
         await fetchCategoryArticles(data.article.categoryId)
 
-        // Track that user viewed this article
+        // Track that user viewed this article (only update lastReadAt, don't change completed status)
         await fetch(`/api/articles/${articleId}/progress`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ completed: false })
+          body: JSON.stringify({})  // Don't send completed field to preserve existing status
         })
       } else {
         toast.error('Kunde inte hämta artikel')
@@ -189,15 +189,16 @@ export default function ArticleReaderPage() {
   const isCompleted = article.progress && article.progress.length > 0 && article.progress[0].completed
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
       {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10">
+      <div className="bg-[rgba(0,0,0,0.3)] backdrop-blur-sm border-b border-[rgba(255,215,0,0.2)] sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => router.push('/dashboard/articles')}
+              className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700]"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Tillbaka till artiklar
@@ -205,7 +206,10 @@ export default function ArticleReaderPage() {
             <Button
               onClick={handleToggleComplete}
               disabled={isMarkingComplete}
-              variant={isCompleted ? 'outline' : 'default'}
+              className={isCompleted
+                ? 'bg-[rgba(34,197,94,0.2)] text-[#22c55e] border-[#22c55e] hover:bg-[rgba(34,197,94,0.3)]'
+                : 'bg-[#FFD700] text-black hover:bg-[#FFA500]'
+              }
             >
               {isCompleted ? (
                 <>
@@ -225,12 +229,12 @@ export default function ArticleReaderPage() {
           {categoryProgress && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">{article.category.name}</span>
-                <span className="font-medium text-gray-900">
+                <span className="text-[rgba(255,255,255,0.6)]">{article.category.name}</span>
+                <span className="font-medium text-[#FFD700]">
                   {categoryProgress.completed} av {categoryProgress.total} artiklar lästa
                 </span>
               </div>
-              <Progress value={categoryProgress.percentage} className="h-2" />
+              <Progress value={categoryProgress.percentage} className="h-2 bg-[rgba(255,215,0,0.2)]" />
             </div>
           )}
         </div>
@@ -241,7 +245,7 @@ export default function ArticleReaderPage() {
         <div className="max-w-4xl mx-auto">
           {/* Cover Image */}
           {article.coverImage && (
-            <div className="mb-8 rounded-lg overflow-hidden">
+            <div className="mb-8 rounded-lg overflow-hidden border border-[rgba(255,215,0,0.2)]">
               <img
                 src={article.coverImage}
                 alt={article.title}
@@ -253,33 +257,33 @@ export default function ArticleReaderPage() {
           {/* Article Header */}
           <div className="mb-8">
             <div className="flex flex-wrap gap-2 mb-4">
-              <Badge variant="secondary">{article.category.name}</Badge>
+              <Badge className="bg-[rgba(255,215,0,0.2)] text-[#FFD700] border-[rgba(255,215,0,0.3)]">{article.category.name}</Badge>
               {article.phase && (
-                <Badge variant="outline">Fas {article.phase}</Badge>
+                <Badge className="bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)] border-[rgba(255,255,255,0.2)]">Fas {article.phase}</Badge>
               )}
               {article.difficulty && (
-                <Badge variant="outline">{getDifficultyLabel(article.difficulty)}</Badge>
+                <Badge className="bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)] border-[rgba(255,255,255,0.2)]">{getDifficultyLabel(article.difficulty)}</Badge>
               )}
               {article.estimatedReadingMinutes && (
-                <Badge variant="outline" className="flex items-center gap-1">
+                <Badge className="bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)] border-[rgba(255,255,255,0.2)] flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {article.estimatedReadingMinutes} min läsning
                 </Badge>
               )}
               {isCompleted && (
-                <Badge className="bg-green-600 flex items-center gap-1">
+                <Badge className="bg-[rgba(34,197,94,0.2)] text-[#22c55e] border-[#22c55e] flex items-center gap-1">
                   <CheckCircle className="h-3 w-3" />
                   Läst
                 </Badge>
               )}
             </div>
-            <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
+            <h1 className="text-4xl font-bold mb-4 text-white">{article.title}</h1>
           </div>
 
           {/* Article Content */}
-          <Card>
+          <Card className="bg-[rgba(255,255,255,0.03)] border-[rgba(255,215,0,0.2)]">
             <CardContent className="p-8">
-              <div className="prose prose-lg max-w-none">
+              <div className="prose prose-lg max-w-none prose-invert prose-headings:text-[#FFD700] prose-p:text-[rgba(255,255,255,0.85)] prose-strong:text-white prose-li:text-[rgba(255,255,255,0.85)] prose-a:text-[#FFD700] prose-a:hover:text-[#FFA500]">
                 <MDXPreview content={article.content} />
               </div>
             </CardContent>
@@ -292,9 +296,11 @@ export default function ArticleReaderPage() {
               <Button
                 onClick={handleToggleComplete}
                 disabled={isMarkingComplete}
-                variant={isCompleted ? 'outline' : 'default'}
                 size="lg"
-                className="min-w-[200px]"
+                className={`min-w-[200px] ${isCompleted
+                  ? 'bg-[rgba(34,197,94,0.2)] text-[#22c55e] border-[#22c55e] hover:bg-[rgba(34,197,94,0.3)]'
+                  : 'bg-[#FFD700] text-black hover:bg-[#FFA500]'
+                }`}
               >
                 {isCompleted ? (
                   <>
@@ -311,11 +317,12 @@ export default function ArticleReaderPage() {
             </div>
 
             {/* Navigation */}
-            <div className="flex items-center justify-between pt-6 border-t">
+            <div className="flex items-center justify-between pt-6 border-t border-[rgba(255,215,0,0.2)]">
               {previousArticle ? (
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   onClick={() => router.push(`/dashboard/articles/${previousArticle.id}`)}
+                  className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] border-[rgba(255,215,0,0.2)]"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Föregående
@@ -324,6 +331,7 @@ export default function ArticleReaderPage() {
                 <Button
                   variant="ghost"
                   onClick={() => router.push('/dashboard/articles')}
+                  className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700]"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Tillbaka till artiklar
@@ -333,14 +341,16 @@ export default function ArticleReaderPage() {
               {nextArticle ? (
                 <Button
                   onClick={() => router.push(`/dashboard/articles/${nextArticle.id}`)}
+                  className="bg-[#FFD700] text-black hover:bg-[#FFA500]"
                 >
                   Nästa artikel
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               ) : (
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   onClick={() => router.push('/dashboard/articles')}
+                  className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] border-[rgba(255,215,0,0.2)]"
                 >
                   Tillbaka till artiklar
                   <ArrowLeft className="h-4 w-4 ml-2" />
