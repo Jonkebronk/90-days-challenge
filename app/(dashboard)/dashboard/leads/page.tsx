@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Pencil, Trash2, Search, UserCheck } from 'lucide-react'
+import { Eye, Trash2, Search, UserCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
@@ -64,7 +64,7 @@ export default function LeadsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [editingLead, setEditingLead] = useState<Lead | null>(null)
+  const [viewingLead, setViewingLead] = useState<Lead | null>(null)
   const [convertingLeadId, setConvertingLeadId] = useState<string | null>(null)
 
   // Form state
@@ -132,36 +132,19 @@ export default function LeadsPage() {
     e.preventDefault()
 
     try {
-      if (editingLead) {
-        // Update existing lead
-        const response = await fetch(`/api/leads/${editingLead.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        })
+      // Create new lead
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
 
-        if (response.ok) {
-          toast.success('Ansökning uppdaterad!')
-          fetchLeads()
-          setEditingLead(null)
-        } else {
-          toast.error('Kunde inte uppdatera ansökning')
-        }
+      if (response.ok) {
+        toast.success('Ansökning skapad!')
+        fetchLeads()
+        setIsAddDialogOpen(false)
       } else {
-        // Create new lead
-        const response = await fetch('/api/leads', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        })
-
-        if (response.ok) {
-          toast.success('Ansökning skapad!')
-          fetchLeads()
-          setIsAddDialogOpen(false)
-        } else {
-          toast.error('Kunde inte skapa ansökning')
-        }
+        toast.error('Kunde inte skapa ansökning')
       }
 
       // Reset form
@@ -230,15 +213,25 @@ export default function LeadsPage() {
     }
   }
 
-  const startEdit = (lead: Lead) => {
-    setEditingLead(lead)
-    setFormData({
-      name: lead.name,
-      email: lead.email || '',
-      phone: lead.phone || '',
-      status: lead.status,
-      notes: lead.notes || '',
-    })
+  const handleUpdateStatus = async (leadId: string, newStatus: string) => {
+    try {
+      const response = await fetch(`/api/leads/${leadId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      })
+
+      if (response.ok) {
+        toast.success('Status uppdaterad!')
+        fetchLeads()
+        setViewingLead(null)
+      } else {
+        toast.error('Kunde inte uppdatera status')
+      }
+    } catch (error) {
+      console.error('Error updating status:', error)
+      toast.error('Ett fel uppstod')
+    }
   }
 
   const getStatusCount = (status: string) => {
@@ -492,61 +485,58 @@ export default function LeadsPage() {
                     {new Date(lead.createdAt).toLocaleDateString('sv-SE')}
                   </div>
                   <div className="col-span-1 flex gap-2 justify-end">
-                    <Dialog>
+                    <Dialog open={viewingLead?.id === lead.id} onOpenChange={(open) => !open && setViewingLead(null)}>
                       <DialogTrigger asChild>
                         <button
-                          onClick={() => startEdit(lead)}
+                          onClick={() => setViewingLead(lead)}
                           className="p-2 hover:bg-[rgba(255,215,0,0.1)] rounded transition-colors text-[rgba(255,215,0,0.8)] hover:text-[#FFD700]"
+                          title="Visa ansökning"
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Eye className="h-4 w-4" />
                         </button>
                       </DialogTrigger>
-                      <DialogContent>
+                      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                         <DialogHeader>
-                          <DialogTitle>Redigera ansökning</DialogTitle>
+                          <DialogTitle className="text-2xl font-bold text-[#FFD700]">Ansökning - {lead.name}</DialogTitle>
                         </DialogHeader>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                          <div>
-                            <Label htmlFor="edit-name">Namn *</Label>
-                            <Input
-                              id="edit-name"
-                              value={formData.name}
-                              onChange={(e) =>
-                                setFormData({ ...formData, name: e.target.value })
-                              }
-                              required
-                            />
+                        <div className="space-y-6 py-4">
+                          {/* Contact Info */}
+                          <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4">
+                            <h3 className="text-lg font-semibold text-[#FFD700] mb-3">Kontaktinformation</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Namn</p>
+                                <p className="text-[rgba(255,255,255,0.9)]">{lead.name}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">E-post</p>
+                                <p className="text-[rgba(255,255,255,0.9)]">{lead.email || '-'}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Telefon</p>
+                                <p className="text-[rgba(255,255,255,0.9)]">{lead.phone || '-'}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Skapad</p>
+                                <p className="text-[rgba(255,255,255,0.9)]">
+                                  {new Date(lead.createdAt).toLocaleDateString('sv-SE', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                  })}
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <Label htmlFor="edit-email">E-post</Label>
-                            <Input
-                              id="edit-email"
-                              type="email"
-                              value={formData.email}
-                              onChange={(e) =>
-                                setFormData({ ...formData, email: e.target.value })
-                              }
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="edit-phone">Telefon</Label>
-                            <Input
-                              id="edit-phone"
-                              value={formData.phone}
-                              onChange={(e) =>
-                                setFormData({ ...formData, phone: e.target.value })
-                              }
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="edit-status">Status</Label>
+
+                          {/* Status */}
+                          <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4">
+                            <h3 className="text-lg font-semibold text-[#FFD700] mb-3">Status</h3>
                             <Select
-                              value={formData.status}
-                              onValueChange={(value) =>
-                                setFormData({ ...formData, status: value })
-                              }
+                              value={lead.status}
+                              onValueChange={(value) => handleUpdateStatus(lead.id, value)}
                             >
-                              <SelectTrigger>
+                              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -558,39 +548,55 @@ export default function LeadsPage() {
                               </SelectContent>
                             </Select>
                           </div>
-                          <div>
-                            <Label htmlFor="edit-notes">Anteckningar</Label>
-                            <Textarea
-                              id="edit-notes"
-                              value={formData.notes}
-                              onChange={(e) =>
-                                setFormData({ ...formData, notes: e.target.value })
-                              }
-                              rows={3}
-                            />
-                          </div>
-                          <div className="flex justify-end gap-2">
+
+                          {/* Application Details */}
+                          {lead.notes && (
+                            <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4">
+                              <h3 className="text-lg font-semibold text-[#FFD700] mb-3">Ansökningsdetaljer</h3>
+                              <div className="text-[rgba(255,255,255,0.8)] whitespace-pre-wrap text-sm leading-relaxed">
+                                {lead.notes}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Tags */}
+                          {lead.tags && lead.tags.length > 0 && (
+                            <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4">
+                              <h3 className="text-lg font-semibold text-[#FFD700] mb-3">Taggar</h3>
+                              <div className="flex flex-wrap gap-2">
+                                {lead.tags.map((tag, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="px-3 py-1 bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded-full text-xs text-[rgba(255,215,0,0.9)]"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Actions */}
+                          <div className="flex justify-end gap-2 pt-4 border-t border-[rgba(255,215,0,0.1)]">
                             <Button
-                              type="button"
                               variant="outline"
-                              onClick={() => {
-                                setEditingLead(null)
-                                setFormData({
-                                  name: '',
-                                  email: '',
-                                  phone: '',
-                                  status: 'new',
-                                  notes: '',
-                                })
-                              }}
+                              onClick={() => setViewingLead(null)}
+                              className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,215,0,0.1)]"
                             >
-                              Avbryt
+                              Stäng
                             </Button>
-                            <Button type="submit" className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold hover:opacity-90">
-                              Spara
+                            <Button
+                              onClick={() => {
+                                handleConvertToClient(lead)
+                                setViewingLead(null)
+                              }}
+                              disabled={lead.status === 'won'}
+                              className="bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white font-semibold hover:opacity-90 disabled:opacity-50"
+                            >
+                              Konvertera till klient
                             </Button>
                           </div>
-                        </form>
+                        </div>
                       </DialogContent>
                     </Dialog>
                     <button
