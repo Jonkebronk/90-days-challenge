@@ -23,6 +23,7 @@ export default function ApplyPage() {
   const [submitted, setSubmitted] = useState(false)
   const [expandedSections, setExpandedSections] = useState({
     personal: true,
+    photos: false,
     training: false,
     nutrition: false,
     lifestyle: false,
@@ -48,6 +49,11 @@ export default function ApplyPage() {
     goalWeight: '',
     morningHeartRate: '',
     bloodPressure: '',
+
+    // Current Photos
+    frontPhoto: null as File | null,
+    backPhoto: null as File | null,
+    sidePhoto: null as File | null,
 
     // Training
     currentTraining: '',
@@ -127,6 +133,11 @@ Nuvarande vikt: ${formData.currentWeight || 'Ej angivet'} kg
 Målvikt: ${formData.goalWeight || 'Ej angivet'} kg
 Morgonpuls: ${formData.morningHeartRate || 'Ej angivet'} bpm
 Blodtryck: ${formData.bloodPressure || 'Ej angivet'}
+
+=== AKTUELLA BILDER ===
+Framsida: ${formData.frontPhoto ? formData.frontPhoto.name : 'Ej bifogad'}
+Baksida: ${formData.backPhoto ? formData.backPhoto.name : 'Ej bifogad'}
+Sida: ${formData.sidePhoto ? formData.sidePhoto.name : 'Ej bifogad'}
 
 === TRÄNING ===
 Nuvarande träning: ${formData.currentTraining || 'Ej angivet'}
@@ -459,7 +470,169 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
             )}
           </div>
 
-          {/* Training Program */}
+          {/* 2. Current Photos */}
+          <div className="space-y-4">
+            <SectionHeader
+              title="Aktuella Bilder"
+              section="photos"
+              isExpanded={expandedSections.photos}
+            />
+            {expandedSections.photos && (
+              <div className="space-y-6 bg-[rgba(0,0,0,0.2)] p-6 rounded-lg border border-[rgba(255,215,0,0.2)]">
+                <div className="bg-yellow-500/10 border-2 border-yellow-500/30 rounded-lg p-4 mb-6">
+                  <div className="flex items-start gap-3">
+                    <span className="text-yellow-500 font-bold text-lg">⚠</span>
+                    <div className="text-yellow-200/90 text-sm">
+                      <p className="font-semibold mb-1">Observera!</p>
+                      <p>Det kan ta några minuter att ladda upp dina bilder beroende på anslutning. Om du får ett felmeddelande på nästa sida, gå tillbaka, åtgärda felet och försök skicka igen.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6">
+                  {/* Front Photo */}
+                  <div className="space-y-3">
+                    <Label className="text-[rgba(255,255,255,0.8)] text-center block">Framsida</Label>
+                    <div className="border-2 border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-4 text-center hover:border-[rgba(255,215,0,0.5)] transition-colors">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            setFormData({ ...formData, frontPhoto: file })
+                          }
+                        }}
+                        className="hidden"
+                        id="frontPhoto"
+                      />
+                      <label htmlFor="frontPhoto" className="cursor-pointer">
+                        {formData.frontPhoto ? (
+                          <div className="space-y-2">
+                            <img
+                              src={URL.createObjectURL(formData.frontPhoto)}
+                              alt="Front"
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                            <p className="text-xs text-[rgba(255,255,255,0.6)]">{formData.frontPhoto.name}</p>
+                          </div>
+                        ) : (
+                          <div className="py-8">
+                            <div className="text-4xl mb-2">📷</div>
+                            <p className="text-sm text-[rgba(255,255,255,0.6)]">Klicka för att välja</p>
+                            <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">eller dra och släpp</p>
+                          </div>
+                        )}
+                      </label>
+                    </div>
+                    {formData.frontPhoto && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, frontPhoto: null })}
+                        className="w-full text-xs text-red-400 hover:text-red-300"
+                      >
+                        Ta bort
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Back Photo */}
+                  <div className="space-y-3">
+                    <Label className="text-[rgba(255,255,255,0.8)] text-center block">Baksida</Label>
+                    <div className="border-2 border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-4 text-center hover:border-[rgba(255,215,0,0.5)] transition-colors">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            setFormData({ ...formData, backPhoto: file })
+                          }
+                        }}
+                        className="hidden"
+                        id="backPhoto"
+                      />
+                      <label htmlFor="backPhoto" className="cursor-pointer">
+                        {formData.backPhoto ? (
+                          <div className="space-y-2">
+                            <img
+                              src={URL.createObjectURL(formData.backPhoto)}
+                              alt="Back"
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                            <p className="text-xs text-[rgba(255,255,255,0.6)]">{formData.backPhoto.name}</p>
+                          </div>
+                        ) : (
+                          <div className="py-8">
+                            <div className="text-4xl mb-2">📷</div>
+                            <p className="text-sm text-[rgba(255,255,255,0.6)]">Klicka för att välja</p>
+                            <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">eller dra och släpp</p>
+                          </div>
+                        )}
+                      </label>
+                    </div>
+                    {formData.backPhoto && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, backPhoto: null })}
+                        className="w-full text-xs text-red-400 hover:text-red-300"
+                      >
+                        Ta bort
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Side Photo */}
+                  <div className="space-y-3">
+                    <Label className="text-[rgba(255,255,255,0.8)] text-center block">Sida</Label>
+                    <div className="border-2 border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-4 text-center hover:border-[rgba(255,215,0,0.5)] transition-colors">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            setFormData({ ...formData, sidePhoto: file })
+                          }
+                        }}
+                        className="hidden"
+                        id="sidePhoto"
+                      />
+                      <label htmlFor="sidePhoto" className="cursor-pointer">
+                        {formData.sidePhoto ? (
+                          <div className="space-y-2">
+                            <img
+                              src={URL.createObjectURL(formData.sidePhoto)}
+                              alt="Side"
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                            <p className="text-xs text-[rgba(255,255,255,0.6)]">{formData.sidePhoto.name}</p>
+                          </div>
+                        ) : (
+                          <div className="py-8">
+                            <div className="text-4xl mb-2">📷</div>
+                            <p className="text-sm text-[rgba(255,255,255,0.6)]">Klicka för att välja</p>
+                            <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">eller dra och släpp</p>
+                          </div>
+                        )}
+                      </label>
+                    </div>
+                    {formData.sidePhoto && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, sidePhoto: null })}
+                        className="w-full text-xs text-red-400 hover:text-red-300"
+                      >
+                        Ta bort
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 3. Training Program */}
           <div className="space-y-4">
             <SectionHeader title="Träningsprogram" section="training" isExpanded={expandedSections.training} />
 
@@ -537,7 +710,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
             )}
           </div>
 
-          {/* Nutrition */}
+          {/* 4. Nutrition */}
           <div className="space-y-4">
             <SectionHeader title="Näring" section="nutrition" isExpanded={expandedSections.nutrition} />
 
@@ -630,7 +803,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
             )}
           </div>
 
-          {/* Lifestyle */}
+          {/* 5. Lifestyle */}
           <div className="space-y-4">
             <SectionHeader title="Livsstil" section="lifestyle" isExpanded={expandedSections.lifestyle} />
 
@@ -690,7 +863,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
             )}
           </div>
 
-          {/* Motivation & Commitment */}
+          {/* 6. Motivation & Commitment */}
           <div className="space-y-4">
             <SectionHeader title="Motivation & Åtagande" section="motivation" isExpanded={expandedSections.motivation} />
 
@@ -743,7 +916,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
             )}
           </div>
 
-          {/* 6. Customer Agreement */}
+          {/* 7. Customer Agreement */}
           <div className="space-y-4">
             <SectionHeader
               title="Kundavtal & Villkor"
