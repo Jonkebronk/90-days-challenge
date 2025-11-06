@@ -193,38 +193,6 @@ export default function ArticleReaderPage() {
       {/* Header */}
       <div className="bg-[rgba(0,0,0,0.3)] backdrop-blur-sm border-b border-[rgba(255,215,0,0.2)] sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.push('/dashboard/articles')}
-              className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700]"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Tillbaka till artiklar
-            </Button>
-            <Button
-              onClick={handleToggleComplete}
-              disabled={isMarkingComplete}
-              className={isCompleted
-                ? 'bg-[rgba(34,197,94,0.2)] text-[#22c55e] border-[#22c55e] hover:bg-[rgba(34,197,94,0.3)]'
-                : 'bg-[#FFD700] text-black hover:bg-[#FFA500]'
-              }
-            >
-              {isCompleted ? (
-                <>
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Markerad som läst
-                </>
-              ) : (
-                <>
-                  <Circle className="h-4 w-4 mr-2" />
-                  {isMarkingComplete ? 'Markerar...' : 'Markera som läst'}
-                </>
-              )}
-            </Button>
-          </div>
-
           {/* Category Progress Bar */}
           {categoryProgress && (
             <div className="space-y-2">
@@ -320,18 +288,16 @@ export default function ArticleReaderPage() {
             <div className="flex items-center justify-between pt-6 border-t border-[rgba(255,215,0,0.2)]">
               {previousArticle ? (
                 <Button
-                  variant="ghost"
                   onClick={() => router.push(`/dashboard/articles/${previousArticle.id}`)}
-                  className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] border-[rgba(255,215,0,0.2)]"
+                  className="bg-[#FFD700] text-black hover:bg-[#FFA500]"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Föregående
                 </Button>
               ) : (
                 <Button
-                  variant="ghost"
                   onClick={() => router.push('/dashboard/articles')}
-                  className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700]"
+                  className="bg-[#FFD700] text-black hover:bg-[#FFA500]"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Tillbaka till artiklar
@@ -348,12 +314,11 @@ export default function ArticleReaderPage() {
                 </Button>
               ) : (
                 <Button
-                  variant="ghost"
                   onClick={() => router.push('/dashboard/articles')}
-                  className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] border-[rgba(255,215,0,0.2)]"
+                  className="bg-[#FFD700] text-black hover:bg-[#FFA500]"
                 >
                   Tillbaka till artiklar
-                  <ArrowLeft className="h-4 w-4 ml-2" />
+                  <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               )}
             </div>
