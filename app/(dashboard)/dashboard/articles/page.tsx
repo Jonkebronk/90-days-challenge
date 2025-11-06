@@ -239,15 +239,6 @@ export default function ArticleBankPage() {
                     </div>
                   </div>
 
-                  {/* Category Description */}
-                  {category.description && (
-                    <div className="px-4 pt-4 pb-3 border-b border-[rgba(255,215,0,0.1)]">
-                      <p className="text-sm text-[rgba(255,255,255,0.7)] leading-relaxed line-clamp-2">
-                        {category.description}
-                      </p>
-                    </div>
-                  )}
-
                   {/* Articles List */}
                   <div className="flex-1 p-4 space-y-3">
                     {displayedArticles.map(article => {
