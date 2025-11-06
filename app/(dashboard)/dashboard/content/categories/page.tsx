@@ -45,6 +45,7 @@ type ArticleCategory = {
   id: string
   name: string
   description?: string | null
+  section?: string | null
   slug: string
   color: string
   orderIndex: number
@@ -65,6 +66,7 @@ export default function CategoriesPage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    section: '',
     slug: '',
     color: '#FFD700'
   })
@@ -110,7 +112,7 @@ export default function CategoriesPage() {
       if (response.ok) {
         toast.success('Kategori skapad')
         setIsCreateDialogOpen(false)
-        setFormData({ name: '', description: '', slug: '', color: '#FFD700' })
+        setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
         fetchCategories()
       } else {
         const data = await response.json()
@@ -142,9 +144,9 @@ export default function CategoriesPage() {
         toast.success('Kategori uppdaterad')
         setIsEditDialogOpen(false)
         setSelectedCategory(null)
-        setFormData({ name: '', description: '', slug: '', color: '#FFD700' })
+        setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
         fetchCategories()
-      } else {
+      } else{
         const data = await response.json()
         toast.error(data.error || 'Kunde inte uppdatera kategori')
       }
@@ -223,6 +225,7 @@ export default function CategoriesPage() {
     setFormData({
       name: category.name,
       description: category.description || '',
+      section: category.section || '',
       slug: category.slug,
       color: category.color || '#FFD700'
     })
@@ -291,6 +294,7 @@ export default function CategoriesPage() {
                 <TableRow>
                   <TableHead>Namn</TableHead>
                   <TableHead>Beskrivning</TableHead>
+                  <TableHead>Sektion</TableHead>
                   <TableHead>Slug</TableHead>
                   <TableHead className="text-center">Artiklar</TableHead>
                   <TableHead className="text-right">Åtgärder</TableHead>
@@ -302,6 +306,9 @@ export default function CategoriesPage() {
                     <TableCell className="font-medium">{category.name}</TableCell>
                     <TableCell className="text-muted-foreground">
                       {category.description || '-'}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {category.section || '-'}
                     </TableCell>
                     <TableCell>
                       <code className="text-xs bg-gray-100 px-2 py-1 rounded">
@@ -372,6 +379,18 @@ export default function CategoriesPage() {
                 onChange={(e) => handleNameChange(e.target.value)}
                 placeholder="t.ex. Nutrition, Träning, Mindset"
               />
+            </div>
+            <div>
+              <Label htmlFor="section">Sektion (gruppering)</Label>
+              <Input
+                id="section"
+                value={formData.section}
+                onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+                placeholder="t.ex. INNAN DU BÖRJAR, GENOMGÅNG AV 90 DAGARS CHALLENGEN"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Grupperar kategorier under en rubrik i Kunskapsbanken
+              </p>
             </div>
             <div>
               <Label htmlFor="slug">Slug *</Label>
@@ -448,6 +467,18 @@ export default function CategoriesPage() {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
+            </div>
+            <div>
+              <Label htmlFor="edit-section">Sektion (gruppering)</Label>
+              <Input
+                id="edit-section"
+                value={formData.section}
+                onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+                placeholder="t.ex. INNAN DU BÖRJAR, GENOMGÅNG AV 90 DAGARS CHALLENGEN"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Grupperar kategorier under en rubrik i Kunskapsbanken
+              </p>
             </div>
             <div>
               <Label htmlFor="edit-slug">Slug *</Label>
