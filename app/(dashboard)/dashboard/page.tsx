@@ -4,27 +4,27 @@ import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
 import {
   Calendar,
   TrendingUp,
-  Target,
-  Flame,
-  Award,
-  ChevronRight,
   Users,
   UserPlus,
   FileText,
-  GraduationCap
+  BookOpen,
+  ChefHat,
+  ChevronRight,
+  Sparkles
 } from 'lucide-react'
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const [currentDay, setCurrentDay] = useState(1)
-  const [currentPhase, setCurrentPhase] = useState(1)
+  const [stats, setStats] = useState({
+    clients: 0,
+    leads: 0,
+    checkIns: 0,
+    content: 0
+  })
   const isCoach = session?.user && (session.user as any).role === 'coach'
 
   useEffect(() => {
@@ -34,61 +34,38 @@ export default function DashboardPage() {
   }, [status, router])
 
   useEffect(() => {
-    // Calculate current day (mock - will be from database later)
-    // For now, use a mock start date
-    const mockStartDate = new Date('2025-01-01')
-    const today = new Date()
-    const diffTime = Math.abs(today.getTime() - mockStartDate.getTime())
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    const day = Math.min(diffDays, 90)
+    if (isCoach) {
+      fetchCoachStats()
+    }
+  }, [isCoach])
 
-    setCurrentDay(day)
+  const fetchCoachStats = async () => {
+    try {
+      // Fetch clients
+      const clientsRes = await fetch('/api/clients')
+      const clientsData = await clientsRes.json()
 
-    // Calculate phase
-    if (day <= 30) setCurrentPhase(1)
-    else if (day <= 60) setCurrentPhase(2)
-    else setCurrentPhase(3)
-  }, [])
+      // Fetch leads
+      const leadsRes = await fetch('/api/leads')
+      const leadsData = await leadsRes.json()
 
-  const progress = (currentDay / 90) * 100
-
-  const getPhaseInfo = (phase: number) => {
-    switch (phase) {
-      case 1:
-        return {
-          title: 'Fas 1: BYGG GRUNDEN',
-          description: 'Dag 1-30: Lär dig grunderna och bygg din basplan',
-          color: 'from-blue-500 to-cyan-500'
-        }
-      case 2:
-        return {
-          title: 'Fas 2: VÄXLA UPP',
-          description: 'Dag 31-60: Optimera och justera din plan',
-          color: 'from-purple-500 to-pink-500'
-        }
-      case 3:
-        return {
-          title: 'Fas 3: SISTA PUSHEN',
-          description: 'Dag 61-90: Maximera resultat och planera framåt',
-          color: 'from-orange-500 to-red-500'
-        }
-      default:
-        return {
-          title: 'Fas 1: BYGG GRUNDEN',
-          description: 'Dag 1-30',
-          color: 'from-blue-500 to-cyan-500'
-        }
+      setStats({
+        clients: clientsData.clients?.length || 0,
+        leads: leadsData.leads?.length || 0,
+        checkIns: 0, // TODO: Implement check-ins count
+        content: 0 // TODO: Implement content count
+      })
+    } catch (error) {
+      console.error('Error fetching stats:', error)
     }
   }
 
-  const phaseInfo = getPhaseInfo(currentPhase)
-
   if (status === 'loading') {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Laddar...</p>
+          <div className="w-12 h-12 border-4 border-[#FFD700] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-[rgba(255,255,255,0.8)]">Laddar...</p>
         </div>
       </div>
     )
@@ -98,352 +75,195 @@ export default function DashboardPage() {
   if (isCoach) {
     return (
       <div className="space-y-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
+          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
+            Dashboard
+          </h1>
+          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+            Översikt över din coaching-verksamhet
+          </p>
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
+        </div>
+
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Aktiva Klienter</CardTitle>
-              <Users className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">klienter</p>
-            </CardContent>
-          </Card>
+          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[rgba(255,255,255,0.7)] text-sm font-medium">Aktiva Klienter</span>
+              <Users className="h-5 w-5 text-[#FFD700]" />
+            </div>
+            <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">{stats.clients}</div>
+            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">klienter</p>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Nya Leads</CardTitle>
-              <UserPlus className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">denna vecka</p>
-            </CardContent>
-          </Card>
+          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[rgba(255,255,255,0.7)] text-sm font-medium">Nya Leads</span>
+              <UserPlus className="h-5 w-5 text-[#22c55e]" />
+            </div>
+            <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">{stats.leads}</div>
+            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">denna vecka</p>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Check-ins</CardTitle>
-              <Calendar className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">inväntar granskning</p>
-            </CardContent>
-          </Card>
+          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[rgba(255,255,255,0.7)] text-sm font-medium">Check-ins</span>
+              <Calendar className="h-5 w-5 text-[#a855f7]" />
+            </div>
+            <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">{stats.checkIns}</div>
+            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">inväntar granskning</p>
+          </div>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Innehåll</CardTitle>
-              <FileText className="h-4 w-4 text-orange-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">filer & lektioner</p>
-            </CardContent>
-          </Card>
+          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[rgba(255,255,255,0.7)] text-sm font-medium">Innehåll</span>
+              <FileText className="h-5 w-5 text-[#FFA500]" />
+            </div>
+            <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">{stats.content}</div>
+            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">filer & lektioner</p>
+          </div>
         </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
-            <Link href="/dashboard/clients">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                      <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div>
-                      <CardTitle>Hantera Team</CardTitle>
-                      <CardDescription>Se alla klienter</CardDescription>
-                    </div>
+          <Link href="/dashboard/clients">
+            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:scale-105 transition-all cursor-pointer group">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center">
+                    <Users className="w-6 h-6 text-[#0a0a0a]" />
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Hantera Team</h3>
+                    <p className="text-sm text-[rgba(255,255,255,0.6)]">Se alla klienter</p>
+                  </div>
                 </div>
-              </CardHeader>
-            </Link>
-          </Card>
+                <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.7)] group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </Link>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
-            <Link href="/dashboard/leads">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                      <UserPlus className="w-6 h-6 text-green-600 dark:text-green-400" />
-                    </div>
-                    <div>
-                      <CardTitle>Leads</CardTitle>
-                      <CardDescription>Hantera intressenter</CardDescription>
-                    </div>
+          <Link href="/dashboard/leads">
+            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:scale-105 transition-all cursor-pointer group">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center">
+                    <UserPlus className="w-6 h-6 text-white" />
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Leads</h3>
+                    <p className="text-sm text-[rgba(255,255,255,0.6)]">Hantera intressenter</p>
+                  </div>
                 </div>
-              </CardHeader>
-            </Link>
-          </Card>
+                <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.7)] group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </Link>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
-            <Link href="/dashboard/content/files">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                      <FileText className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                    </div>
-                    <div>
-                      <CardTitle>Filer</CardTitle>
-                      <CardDescription>Ladda upp innehåll</CardDescription>
-                    </div>
+          <Link href="/dashboard/articles">
+            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:scale-105 transition-all cursor-pointer group">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#a855f7] to-[#7c3aed] flex items-center justify-center">
+                    <BookOpen className="w-6 h-6 text-white" />
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Kunskapsbanken</h3>
+                    <p className="text-sm text-[rgba(255,255,255,0.6)]">Läs artiklar</p>
+                  </div>
                 </div>
-              </CardHeader>
-            </Link>
-          </Card>
+                <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.7)] group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </Link>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
-            <Link href="/dashboard/content/lessons">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
-                      <GraduationCap className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-                    </div>
-                    <div>
-                      <CardTitle>Lektioner</CardTitle>
-                      <CardDescription>Skapa utbildning</CardDescription>
-                    </div>
+          <Link href="/dashboard/recipes">
+            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:scale-105 transition-all cursor-pointer group">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFA500] to-[#ff8800] flex items-center justify-center">
+                    <ChefHat className="w-6 h-6 text-[#0a0a0a]" />
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Recept</h3>
+                    <p className="text-sm text-[rgba(255,255,255,0.6)]">Hitta matinspiration</p>
+                  </div>
                 </div>
-              </CardHeader>
-            </Link>
-          </Card>
+                <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.7)] group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </Link>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
-            <Link href="/dashboard/check-in">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center">
-                      <Calendar className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
-                    </div>
-                    <div>
-                      <CardTitle>Check-ins</CardTitle>
-                      <CardDescription>Granska klient-data</CardDescription>
-                    </div>
+          <Link href="/dashboard/check-in">
+            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:scale-105 transition-all cursor-pointer group">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center">
+                    <Calendar className="w-6 h-6 text-white" />
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Check-ins</h3>
+                    <p className="text-sm text-[rgba(255,255,255,0.6)]">Granska klient-data</p>
+                  </div>
                 </div>
-              </CardHeader>
-            </Link>
-          </Card>
+                <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.7)] group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </Link>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
-            <Link href="/dashboard/progress">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-pink-100 dark:bg-pink-900 flex items-center justify-center">
-                      <TrendingUp className="w-6 h-6 text-pink-600 dark:text-pink-400" />
-                    </div>
-                    <div>
-                      <CardTitle>Statistik</CardTitle>
-                      <CardDescription>Översikt & grafer</CardDescription>
-                    </div>
+          <Link href="/dashboard/progress">
+            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:scale-105 transition-all cursor-pointer group">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#ec4899] to-[#db2777] flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-white" />
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Statistik</h3>
+                    <p className="text-sm text-[rgba(255,255,255,0.6)]">Översikt & grafer</p>
+                  </div>
                 </div>
-              </CardHeader>
-            </Link>
-          </Card>
+                <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.7)] group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </Link>
         </div>
 
         {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Senaste Aktivitet</CardTitle>
-            <CardDescription>Vad som händer med dina klienter</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-8 text-muted-foreground">
-              <p>Ingen aktivitet ännu</p>
-              <p className="text-sm">Börja genom att bjuda in klienter</p>
+        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px]">
+          <div className="p-6 border-b border-[rgba(255,215,0,0.1)]">
+            <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">Senaste Aktivitet</h2>
+            <p className="text-[rgba(255,255,255,0.6)] text-sm mt-1">Vad som händer med dina klienter</p>
+          </div>
+          <div className="p-8">
+            <div className="text-center py-8">
+              <Sparkles className="w-12 h-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
+              <p className="text-[rgba(255,255,255,0.6)]">Ingen aktivitet ännu</p>
+              <p className="text-sm text-[rgba(255,255,255,0.4)] mt-2">Börja genom att bjuda in klienter</p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     )
   }
 
-  // Client Dashboard
+  // Client Dashboard - Keep as is for now since we're focusing on coach dashboard
   return (
     <div className="space-y-8">
-      {/* Welcome Section */}
-      <div>
-        <h1 className="text-4xl font-bold mb-2">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-[rgba(255,255,255,0.9)] mb-2">
           Välkommen tillbaka, {session?.user?.name?.split(' ')[0] || 'Champion'}! 👋
         </h1>
-        <p className="text-muted-foreground text-lg">
+        <p className="text-[rgba(255,255,255,0.6)] text-lg">
           Här är din översikt för idag
         </p>
       </div>
 
-      {/* Day Counter Card */}
-      <Card className="overflow-hidden border-2">
-        <div className={`h-2 bg-gradient-to-r ${phaseInfo.color}`} />
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl">{phaseInfo.title}</CardTitle>
-              <CardDescription className="text-base mt-1">
-                {phaseInfo.description}
-              </CardDescription>
-            </div>
-            <div className="text-right">
-              <div className="text-5xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                {currentDay}
-              </div>
-              <div className="text-sm text-muted-foreground">av 90 dagar</div>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Övergripande progress</span>
-              <span className="font-medium">{Math.round(progress)}%</span>
-            </div>
-            <Progress value={progress} className="h-3" />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Start</span>
-              <span>{90 - currentDay} dagar kvar</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Dagens Kalorier</CardTitle>
-            <Flame className="h-4 w-4 text-orange-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0 / 2000</div>
-            <p className="text-xs text-muted-foreground">kcal</p>
-            <Progress value={0} className="mt-2 h-2" />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Veckans Träning</CardTitle>
-            <Target className="h-4 w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0 / 4</div>
-            <p className="text-xs text-muted-foreground">pass genomförda</p>
-            <Progress value={0} className="mt-2 h-2" />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Check-in Streak</CardTitle>
-            <Award className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0 dagar</div>
-            <p className="text-xs text-muted-foreground">i rad</p>
-            <Progress value={0} className="mt-2 h-2" />
-          </CardContent>
-        </Card>
+      <div className="text-center py-12 text-[rgba(255,255,255,0.6)]">
+        <p>Klient-dashboard kommer snart</p>
       </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
-          <Link href="/dashboard/check-in">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                    <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div>
-                    <CardTitle>Dagens Check-in</CardTitle>
-                    <CardDescription>Logga vikt, energi & sömn</CardDescription>
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </div>
-            </CardHeader>
-          </Link>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
-          <Link href="/dashboard/progress">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <div>
-                    <CardTitle>Se Din Progress</CardTitle>
-                    <CardDescription>Grafer och statistik</CardDescription>
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-              </div>
-            </CardHeader>
-          </Link>
-        </Card>
-      </div>
-
-      {/* Today's Focus */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Dagens Fokus</CardTitle>
-          <CardDescription>Vad du bör tänka på idag</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-start gap-3 p-3 bg-accent rounded-lg">
-              <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-primary-foreground text-xs font-bold">1</span>
-              </div>
-              <div>
-                <p className="font-medium">Gör din dagliga check-in</p>
-                <p className="text-sm text-muted-foreground">Logga din vikt och hur du mår</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 bg-accent rounded-lg">
-              <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-primary-foreground text-xs font-bold">2</span>
-              </div>
-              <div>
-                <p className="font-medium">Håll koll på dina måltider</p>
-                <p className="text-sm text-muted-foreground">Försök hålla dig inom ditt kaloriintag</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 bg-accent rounded-lg">
-              <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-primary-foreground text-xs font-bold">3</span>
-              </div>
-              <div>
-                <p className="font-medium">Reflektera över veckan</p>
-                <p className="text-sm text-muted-foreground">Se över din progress och planera för nästa vecka</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }
