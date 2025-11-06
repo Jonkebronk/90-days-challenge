@@ -254,6 +254,13 @@ export default function ArticleBankPage() {
                           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.1)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                           <div className="flex items-start gap-3 relative z-10">
+                            {/* Completion Status Icon */}
+                            {completed ? (
+                              <CheckCircle className="h-5 w-5 text-[#22c55e] flex-shrink-0 mt-0.5" />
+                            ) : (
+                              <Circle className="h-5 w-5 text-[rgba(255,255,255,0.2)] flex-shrink-0 mt-0.5" />
+                            )}
+
                             {/* Thumbnail */}
                             {article.coverImage && (
                               <div className="w-20 h-14 flex-shrink-0 rounded-md overflow-hidden bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.1)]">
@@ -275,12 +282,6 @@ export default function ArticleBankPage() {
                                   <div className="flex items-center gap-1.5">
                                     <Clock className="h-3.5 w-3.5" />
                                     <span>{article.estimatedReadingMinutes} min</span>
-                                  </div>
-                                )}
-                                {completed && (
-                                  <div className="flex items-center gap-1.5 text-[#22c55e]">
-                                    <CheckCircle className="h-3.5 w-3.5" />
-                                    <span>Genomförd</span>
                                   </div>
                                 )}
                               </div>
