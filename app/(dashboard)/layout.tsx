@@ -167,9 +167,6 @@ export default function DashboardLayout({
 
             {/* User Menu */}
             <div className="flex items-center gap-3">
-              <div className="hidden sm:block px-3 py-1 bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded-md">
-                <span className="text-sm font-medium text-[#FFD700]">{session?.user?.name || 'User'}</span>
-              </div>
               <Button
                 variant="ghost"
                 size="sm"
