@@ -49,6 +49,23 @@ export async function POST(request: NextRequest) {
       tags,
       checkInPeriod,
       checkInDay,
+      // Onboarding fields
+      primaryGoal,
+      heightCm,
+      currentWeightKg,
+      genderAtBirth,
+      birthDate,
+      activityLevelFree,
+      activityLevelWork,
+      nutritionNotes,
+      allergies,
+      dietaryPreferences,
+      excludedIngredients,
+      nutritionMissing,
+      trainingDays,
+      trainingExperience,
+      trainingDetails,
+      lifestyleNotes,
     } = body
 
     if (!firstName || !lastName || !email) {
@@ -102,6 +119,8 @@ export async function POST(request: NextRequest) {
         name: `${firstName} ${lastName}`,
         email,
         phone: phone || null,
+        birthdate: birthDate ? new Date(birthDate) : null,
+        gender: genderAtBirth || null,
         countryCode: '+46', // Default to Sweden
         country: 'Sverige', // Default to Sweden
         language: 'Svenska', // Default to Swedish
@@ -118,6 +137,27 @@ export async function POST(request: NextRequest) {
         invitationSentAt: new Date(),
         inviteCode,
         inviteCodeExpiresAt,
+        // Create UserProfile with onboarding data
+        userProfile: {
+          create: {
+            primaryGoal: primaryGoal || null,
+            heightCm: heightCm ? parseFloat(heightCm) : null,
+            currentWeightKg: currentWeightKg ? parseFloat(currentWeightKg) : null,
+            genderAtBirth: genderAtBirth || null,
+            activityLevelFree: activityLevelFree || null,
+            activityLevelWork: activityLevelWork || null,
+            nutritionNotes: nutritionNotes || null,
+            allergies: allergies || [],
+            dietaryPreferences: dietaryPreferences || [],
+            excludedIngredients: excludedIngredients ? [excludedIngredients] : [],
+            nutritionMissing: nutritionMissing || null,
+            trainingDays: trainingDays || [],
+            trainingExperience: trainingExperience || null,
+            trainingDetails: trainingDetails || null,
+            lifestyleNotes: lifestyleNotes || null,
+            onboardingCompleted: true, // Mark as completed since coach filled it out
+          },
+        },
       },
     })
 

@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { Plus, Mail, User, X, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
@@ -34,6 +35,23 @@ interface NewClientForm {
   tags: string[]
   checkInPeriod: string
   checkInDay: string
+  // Onboarding fields
+  primaryGoal: string
+  heightCm: string
+  currentWeightKg: string
+  genderAtBirth: string
+  birthDate: string
+  activityLevelFree: string
+  activityLevelWork: string
+  nutritionNotes: string
+  allergies: string[]
+  dietaryPreferences: string[]
+  excludedIngredients: string
+  nutritionMissing: string
+  trainingDays: string[]
+  trainingExperience: string
+  trainingDetails: string
+  lifestyleNotes: string
 }
 
 export default function ClientsPage() {
@@ -52,9 +70,45 @@ export default function ClientsPage() {
     tags: [],
     checkInPeriod: 'Vecka',
     checkInDay: 'Måndag',
+    // Onboarding defaults
+    primaryGoal: '',
+    heightCm: '',
+    currentWeightKg: '',
+    genderAtBirth: '',
+    birthDate: '',
+    activityLevelFree: '',
+    activityLevelWork: '',
+    nutritionNotes: '',
+    allergies: [],
+    dietaryPreferences: [],
+    excludedIngredients: '',
+    nutritionMissing: '',
+    trainingDays: [],
+    trainingExperience: '',
+    trainingDetails: '',
+    lifestyleNotes: '',
   })
 
   const availableTags = ['Nutrition Only', 'VIP', 'Workout Only']
+
+  const allergiesList = [
+    'Gluten', 'Laktos', 'Nötter', 'Skaldjur', 'Ägg', 'Soja'
+  ]
+
+  const dietPreferencesList = [
+    'pescetarian', 'vegan', 'vegetarian', 'halal', 'kosher', 'no_supplements'
+  ]
+
+  const daysOfWeek = ['MÅN', 'TIS', 'ONS', 'TORS', 'FRE', 'LÖR', 'SÖN']
+
+  const toggleArrayItem = (field: 'tags' | 'allergies' | 'dietaryPreferences' | 'trainingDays', value: string) => {
+    setNewClient(prev => ({
+      ...prev,
+      [field]: prev[field].includes(value)
+        ? prev[field].filter((item: string) => item !== value)
+        : [...prev[field], value]
+    }))
+  }
 
   useEffect(() => {
     fetchClients()
@@ -74,14 +128,6 @@ export default function ClientsPage() {
     }
   }
 
-  const toggleTag = (tag: string) => {
-    setNewClient(prev => ({
-      ...prev,
-      tags: prev.tags.includes(tag)
-        ? prev.tags.filter(t => t !== tag)
-        : [...prev.tags, tag]
-    }))
-  }
 
   const handleInviteClient = async () => {
     if (!newClient.firstName || !newClient.lastName || !newClient.email) {
@@ -110,6 +156,22 @@ export default function ClientsPage() {
           tags: [],
           checkInPeriod: 'Vecka',
           checkInDay: 'Måndag',
+          primaryGoal: '',
+          heightCm: '',
+          currentWeightKg: '',
+          genderAtBirth: '',
+          birthDate: '',
+          activityLevelFree: '',
+          activityLevelWork: '',
+          nutritionNotes: '',
+          allergies: [],
+          dietaryPreferences: [],
+          excludedIngredients: '',
+          nutritionMissing: '',
+          trainingDays: [],
+          trainingExperience: '',
+          trainingDetails: '',
+          lifestyleNotes: '',
         })
         fetchClients()
       } else {
@@ -249,7 +311,7 @@ export default function ClientsPage() {
                         <div
                           key={tag}
                           className="px-2 py-1.5 cursor-pointer hover:bg-[rgba(255,215,0,0.1)] flex items-center gap-2"
-                          onClick={() => toggleTag(tag)}
+                          onClick={() => toggleArrayItem('tags', tag)}
                         >
                           <input
                             type="checkbox"
@@ -268,12 +330,267 @@ export default function ClientsPage() {
                           {tag}
                           <X
                             className="w-3 h-3 cursor-pointer"
-                            onClick={() => toggleTag(tag)}
+                            onClick={() => toggleArrayItem('tags', tag)}
                           />
                         </Badge>
                       ))}
                     </div>
                   )}
+                </div>
+              </div>
+
+              <Separator className="bg-[rgba(255,215,0,0.2)]" />
+
+              {/* Fysiskt tillstånd & Mål */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-[#FFD700]">Fysiskt tillstånd & Demografia</h3>
+
+                <div className="space-y-2">
+                  <Label htmlFor="birthDate" className="text-[rgba(255,255,255,0.8)]">Födelsedatum</Label>
+                  <Input
+                    id="birthDate"
+                    type="date"
+                    value={newClient.birthDate}
+                    onChange={(e) => setNewClient({ ...newClient, birthDate: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white"
+                  />
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="heightCm" className="text-[rgba(255,255,255,0.8)]">Längd (cm)</Label>
+                    <Input
+                      id="heightCm"
+                      type="number"
+                      value={newClient.heightCm}
+                      onChange={(e) => setNewClient({ ...newClient, heightCm: e.target.value })}
+                      placeholder="175"
+                      className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="currentWeightKg" className="text-[rgba(255,255,255,0.8)]">Vikt (kg)</Label>
+                    <Input
+                      id="currentWeightKg"
+                      type="number"
+                      value={newClient.currentWeightKg}
+                      onChange={(e) => setNewClient({ ...newClient, currentWeightKg: e.target.value })}
+                      placeholder="75"
+                      className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="genderAtBirth" className="text-[rgba(255,255,255,0.8)]">Kön</Label>
+                    <Select value={newClient.genderAtBirth} onValueChange={(value) => setNewClient({ ...newClient, genderAtBirth: value })}>
+                      <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white">
+                        <SelectValue placeholder="Välj" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="male">Man</SelectItem>
+                        <SelectItem value="female">Kvinna</SelectItem>
+                        <SelectItem value="other">Annat</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-[rgba(255,255,255,0.8)]">Primärt mål</Label>
+                  <Select value={newClient.primaryGoal} onValueChange={(value) => setNewClient({ ...newClient, primaryGoal: value })}>
+                    <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectValue placeholder="Välj mål" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="build_muscle">Bygga muskler</SelectItem>
+                      <SelectItem value="get_fit">Komma i form</SelectItem>
+                      <SelectItem value="healthy_habits">Bygga hälsosamma vanor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <Separator className="bg-[rgba(255,215,0,0.2)]" />
+
+              {/* Aktivitet & Träning */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-[#FFD700]">Aktivitet & Träning</h3>
+
+                <div className="space-y-2">
+                  <Label className="text-[rgba(255,255,255,0.8)]">Aktivitetsnivå (Fritid)</Label>
+                  <Select value={newClient.activityLevelFree} onValueChange={(value) => setNewClient({ ...newClient, activityLevelFree: value })}>
+                    <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectValue placeholder="Välj nivå" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="very_low">Mycket låg</SelectItem>
+                      <SelectItem value="low">Låg</SelectItem>
+                      <SelectItem value="medium">Medel</SelectItem>
+                      <SelectItem value="active">Aktiv</SelectItem>
+                      <SelectItem value="very_active">Mycket aktiv</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-[rgba(255,255,255,0.8)]">Aktivitetsnivå (Jobb)</Label>
+                  <Select value={newClient.activityLevelWork} onValueChange={(value) => setNewClient({ ...newClient, activityLevelWork: value })}>
+                    <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectValue placeholder="Välj nivå" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="very_low">Mycket låg</SelectItem>
+                      <SelectItem value="low">Låg</SelectItem>
+                      <SelectItem value="medium">Medel</SelectItem>
+                      <SelectItem value="high">Hög</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-[rgba(255,255,255,0.8)]">Träningsdagar</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {daysOfWeek.map(day => (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => toggleArrayItem('trainingDays', day)}
+                        className={`px-4 py-2 rounded-lg border font-semibold transition-all ${
+                          newClient.trainingDays.includes(day)
+                            ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] border-[#FFD700]'
+                            : 'bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:border-[#FFD700]'
+                        }`}
+                      >
+                        {day}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-[rgba(255,255,255,0.8)]">Träningserfarenhet</Label>
+                  <Select value={newClient.trainingExperience} onValueChange={(value) => setNewClient({ ...newClient, trainingExperience: value })}>
+                    <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectValue placeholder="Välj erfarenhet" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="beginner">Nybörjare</SelectItem>
+                      <SelectItem value="experienced">Erfaren</SelectItem>
+                      <SelectItem value="very_experienced">Mycket erfaren</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="trainingDetails" className="text-[rgba(255,255,255,0.8)]">Träningsdetaljer</Label>
+                  <Textarea
+                    id="trainingDetails"
+                    value={newClient.trainingDetails}
+                    onChange={(e) => setNewClient({ ...newClient, trainingDetails: e.target.value })}
+                    placeholder="Beskriv dina träningsvanor..."
+                    rows={3}
+                    className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  />
+                </div>
+              </div>
+
+              <Separator className="bg-[rgba(255,215,0,0.2)]" />
+
+              {/* Näring */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-[#FFD700]">Näring</h3>
+
+                <div className="space-y-2">
+                  <Label htmlFor="nutritionNotes" className="text-[rgba(255,255,255,0.8)]">Nutritionsanteckningar</Label>
+                  <Textarea
+                    id="nutritionNotes"
+                    value={newClient.nutritionNotes}
+                    onChange={(e) => setNewClient({ ...newClient, nutritionNotes: e.target.value })}
+                    placeholder="Matpreferenser, vanor, etc..."
+                    rows={3}
+                    className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-[rgba(255,255,255,0.8)]">Allergier</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {allergiesList.map(allergy => (
+                      <button
+                        key={allergy}
+                        type="button"
+                        onClick={() => toggleArrayItem('allergies', allergy)}
+                        className={`px-3 py-2 rounded-full border text-sm transition-all ${
+                          newClient.allergies.includes(allergy)
+                            ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] border-[#FFD700]'
+                            : 'bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:border-[#FFD700]'
+                        }`}
+                      >
+                        {allergy}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-[rgba(255,255,255,0.8)]">Kostpreferenser</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {dietPreferencesList.map(pref => (
+                      <button
+                        key={pref}
+                        type="button"
+                        onClick={() => toggleArrayItem('dietaryPreferences', pref)}
+                        className={`px-3 py-2 rounded-full border text-sm transition-all ${
+                          newClient.dietaryPreferences.includes(pref)
+                            ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] border-[#FFD700]'
+                            : 'bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:border-[#FFD700]'
+                        }`}
+                      >
+                        {pref}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="excludedIngredients" className="text-[rgba(255,255,255,0.8)]">Exkluderade ingredienser</Label>
+                  <Input
+                    id="excludedIngredients"
+                    value={newClient.excludedIngredients}
+                    onChange={(e) => setNewClient({ ...newClient, excludedIngredients: e.target.value })}
+                    placeholder="T.ex. broccoli, paprika..."
+                    className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="nutritionMissing" className="text-[rgba(255,255,255,0.8)]">Övrig nutritionsinformation</Label>
+                  <Textarea
+                    id="nutritionMissing"
+                    value={newClient.nutritionMissing}
+                    onChange={(e) => setNewClient({ ...newClient, nutritionMissing: e.target.value })}
+                    placeholder="Något vi har missat?"
+                    rows={2}
+                    className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  />
+                </div>
+              </div>
+
+              <Separator className="bg-[rgba(255,215,0,0.2)]" />
+
+              {/* Livsstil */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-[#FFD700]">Livsstil</h3>
+
+                <div className="space-y-2">
+                  <Label htmlFor="lifestyleNotes" className="text-[rgba(255,255,255,0.8)]">Livsstilsanteckningar</Label>
+                  <Textarea
+                    id="lifestyleNotes"
+                    value={newClient.lifestyleNotes}
+                    onChange={(e) => setNewClient({ ...newClient, lifestyleNotes: e.target.value })}
+                    placeholder="Vanor, utmaningar, mål..."
+                    rows={3}
+                    className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  />
                 </div>
               </div>
 
