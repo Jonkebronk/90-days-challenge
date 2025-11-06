@@ -46,12 +46,12 @@ const statusLabels: Record<string, string> = {
 }
 
 const statusColors: Record<string, string> = {
-  new: 'bg-blue-100 text-blue-800',
-  contacted: 'bg-purple-100 text-purple-800',
-  in_dialog: 'bg-yellow-100 text-yellow-800',
-  paused: 'bg-gray-100 text-gray-800',
-  won: 'bg-green-100 text-green-800',
-  lost: 'bg-red-100 text-red-800',
+  new: 'bg-[rgba(59,130,246,0.2)] text-[rgb(96,165,250)] border border-[rgba(59,130,246,0.3)]',
+  contacted: 'bg-[rgba(168,85,247,0.2)] text-[rgb(192,132,252)] border border-[rgba(168,85,247,0.3)]',
+  in_dialog: 'bg-[rgba(255,215,0,0.2)] text-[rgb(255,215,0)] border border-[rgba(255,215,0,0.3)]',
+  paused: 'bg-[rgba(156,163,175,0.2)] text-[rgb(209,213,219)] border border-[rgba(156,163,175,0.3)]',
+  won: 'bg-[rgba(34,197,94,0.2)] text-[rgb(74,222,128)] border border-[rgba(34,197,94,0.3)]',
+  lost: 'bg-[rgba(239,68,68,0.2)] text-[rgb(248,113,113)] border border-[rgba(239,68,68,0.3)]',
 }
 
 export default function LeadsPage() {
@@ -93,7 +93,7 @@ export default function LeadsPage() {
         const data = await response.json()
         setLeads(data.leads)
       } else {
-        toast.error('Kunde inte hämta leads')
+        toast.error('Kunde inte hämta ansökningar')
       }
     } catch (error) {
       console.error('Error fetching leads:', error)
@@ -138,11 +138,11 @@ export default function LeadsPage() {
         })
 
         if (response.ok) {
-          toast.success('Lead uppdaterad!')
+          toast.success('Ansökning uppdaterad!')
           fetchLeads()
           setEditingLead(null)
         } else {
-          toast.error('Kunde inte uppdatera lead')
+          toast.error('Kunde inte uppdatera ansökning')
         }
       } else {
         // Create new lead
@@ -153,11 +153,11 @@ export default function LeadsPage() {
         })
 
         if (response.ok) {
-          toast.success('Lead skapad!')
+          toast.success('Ansökning skapad!')
           fetchLeads()
           setIsAddDialogOpen(false)
         } else {
-          toast.error('Kunde inte skapa lead')
+          toast.error('Kunde inte skapa ansökning')
         }
       }
 
@@ -176,7 +176,7 @@ export default function LeadsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Är du säker på att du vill ta bort denna lead?')) return
+    if (!confirm('Är du säker på att du vill ta bort denna ansökning?')) return
 
     try {
       const response = await fetch(`/api/leads/${id}`, {
@@ -184,10 +184,10 @@ export default function LeadsPage() {
       })
 
       if (response.ok) {
-        toast.success('Lead borttagen!')
+        toast.success('Ansökning borttagen!')
         fetchLeads()
       } else {
-        toast.error('Kunde inte ta bort lead')
+        toast.error('Kunde inte ta bort ansökning')
       }
     } catch (error) {
       console.error('Error deleting lead:', error)
@@ -223,113 +223,119 @@ export default function LeadsPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Ansökningar</h1>
-        <p className="text-muted-foreground text-sm">
-          Ansökningar från potentiella klienter till 90-Dagars Challenge
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+      <div className="container mx-auto p-6 space-y-8 max-w-7xl">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
+          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
+            Ansökningar
+          </h1>
+          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+            Inkomna ansökningar från potentiella klienter
+          </p>
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
+        </div>
 
         {/* Status tabs */}
-        <div className="flex gap-2 mb-4 overflow-x-auto">
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           <button
             onClick={() => setStatusFilter('all')}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap ${
+            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
               statusFilter === 'all'
-                ? 'bg-green-700 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold'
+                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)] hover:bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.2)]'
             }`}
           >
-            Alla {leads.length > 0 && <span className="ml-1">{leads.length}</span>}
+            Alla {leads.length > 0 && <span className="ml-1">({leads.length})</span>}
           </button>
           <button
             onClick={() => setStatusFilter('new')}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap ${
+            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
               statusFilter === 'new'
-                ? 'bg-green-700 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold'
+                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)] hover:bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.2)]'
             }`}
           >
-            Ny {getStatusCount('new') > 0 && <span className="ml-1">{getStatusCount('new')}</span>}
+            Ny {getStatusCount('new') > 0 && <span className="ml-1">({getStatusCount('new')})</span>}
           </button>
           <button
             onClick={() => setStatusFilter('contacted')}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap ${
+            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
               statusFilter === 'contacted'
-                ? 'bg-green-700 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold'
+                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)] hover:bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.2)]'
             }`}
           >
-            Kontaktad
+            Kontaktad {getStatusCount('contacted') > 0 && <span className="ml-1">({getStatusCount('contacted')})</span>}
           </button>
           <button
             onClick={() => setStatusFilter('in_dialog')}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap ${
+            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
               statusFilter === 'in_dialog'
-                ? 'bg-green-700 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold'
+                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)] hover:bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.2)]'
             }`}
           >
-            I Dialog
+            I Dialog {getStatusCount('in_dialog') > 0 && <span className="ml-1">({getStatusCount('in_dialog')})</span>}
           </button>
           <button
             onClick={() => setStatusFilter('paused')}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap ${
+            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
               statusFilter === 'paused'
-                ? 'bg-green-700 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold'
+                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)] hover:bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.2)]'
             }`}
           >
-            Pausad
+            Pausad {getStatusCount('paused') > 0 && <span className="ml-1">({getStatusCount('paused')})</span>}
           </button>
           <button
             onClick={() => setStatusFilter('won')}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap ${
+            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
               statusFilter === 'won'
-                ? 'bg-green-700 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold'
+                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)] hover:bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.2)]'
             }`}
           >
-            Vunnen {getStatusCount('won') > 0 && <span className="ml-1">{getStatusCount('won')}</span>}
+            Vunnen {getStatusCount('won') > 0 && <span className="ml-1">({getStatusCount('won')})</span>}
           </button>
           <button
             onClick={() => setStatusFilter('lost')}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap ${
+            className={`px-4 py-2 rounded-lg whitespace-nowrap transition-all ${
               statusFilter === 'lost'
-                ? 'bg-green-700 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold'
+                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)] hover:bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.2)]'
             }`}
           >
-            Förlorad
+            Förlorad {getStatusCount('lost') > 0 && <span className="ml-1">({getStatusCount('lost')})</span>}
           </button>
         </div>
-      </div>
 
-      <Card>
-        <CardHeader>
+      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px]">
+        <div className="p-6 border-b border-[rgba(255,215,0,0.1)]">
           <div className="flex justify-between items-center">
-            <CardTitle>
-              Visar {filteredLeads.length} lead{filteredLeads.length !== 1 ? 's' : ''}
-            </CardTitle>
+            <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">
+              Visar {filteredLeads.length} ansökning{filteredLeads.length !== 1 ? 'ar' : ''}
+            </h2>
             <div className="flex gap-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(255,215,0,0.5)]" />
                 <Input
-                  placeholder="Sök"
+                  placeholder="Sök..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 w-64"
+                  className="pl-9 w-64 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
               <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-green-600 hover:bg-green-700 text-white">
-                    Lägg till lead
+                  <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold hover:opacity-90 transition-opacity">
+                    Lägg till ansökning
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Lägg till lead</DialogTitle>
+                    <DialogTitle>Lägg till ansökning</DialogTitle>
                   </DialogHeader>
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -402,7 +408,7 @@ export default function LeadsPage() {
                       >
                         Avbryt
                       </Button>
-                      <Button type="submit" className="bg-green-600 hover:bg-green-700">
+                      <Button type="submit" className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold hover:opacity-90">
                         Lägg till
                       </Button>
                     </div>
@@ -411,16 +417,16 @@ export default function LeadsPage() {
               </Dialog>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div className="p-6">
           {isLoading ? (
-            <p className="text-muted-foreground">Laddar...</p>
+            <p className="text-[rgba(255,255,255,0.5)] text-center py-8">Laddar...</p>
           ) : filteredLeads.length === 0 ? (
-            <p className="text-muted-foreground">Inga leads hittades.</p>
+            <p className="text-[rgba(255,255,255,0.5)] text-center py-8">Inga ansökningar hittades.</p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-2">
               {/* Table header */}
-              <div className="grid grid-cols-12 gap-4 pb-2 border-b font-semibold text-sm">
+              <div className="grid grid-cols-12 gap-4 pb-3 border-b border-[rgba(255,215,0,0.2)] font-semibold text-sm text-[rgba(255,215,0,0.8)]">
                 <div className="col-span-3">Namn</div>
                 <div className="col-span-3">Telefon</div>
                 <div className="col-span-2">Status</div>
@@ -432,22 +438,22 @@ export default function LeadsPage() {
               {filteredLeads.map((lead) => (
                 <div
                   key={lead.id}
-                  className="grid grid-cols-12 gap-4 py-3 border-b items-center hover:bg-gray-50"
+                  className="grid grid-cols-12 gap-4 py-3 border-b border-[rgba(255,215,0,0.1)] items-center hover:bg-[rgba(255,215,0,0.05)] transition-colors rounded-lg px-2"
                 >
-                  <div className="col-span-3 font-medium">{lead.name}</div>
-                  <div className="col-span-3 text-muted-foreground">
+                  <div className="col-span-3 font-medium text-[rgba(255,255,255,0.9)]">{lead.name}</div>
+                  <div className="col-span-3 text-[rgba(255,255,255,0.6)]">
                     {lead.phone || '-'}
                   </div>
                   <div className="col-span-2">
                     <span
-                      className={`inline-block px-2 py-1 rounded-full text-xs ${
+                      className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
                         statusColors[lead.status]
                       }`}
                     >
                       {statusLabels[lead.status]}
                     </span>
                   </div>
-                  <div className="col-span-3 text-muted-foreground text-sm">
+                  <div className="col-span-3 text-[rgba(255,255,255,0.6)] text-sm">
                     {new Date(lead.createdAt).toLocaleDateString('sv-SE')}
                   </div>
                   <div className="col-span-1 flex gap-2 justify-end">
@@ -455,14 +461,14 @@ export default function LeadsPage() {
                       <DialogTrigger asChild>
                         <button
                           onClick={() => startEdit(lead)}
-                          className="p-2 hover:bg-gray-200 rounded"
+                          className="p-2 hover:bg-[rgba(255,215,0,0.1)] rounded transition-colors text-[rgba(255,215,0,0.8)] hover:text-[#FFD700]"
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>Redigera lead</DialogTitle>
+                          <DialogTitle>Redigera ansökning</DialogTitle>
                         </DialogHeader>
                         <form onSubmit={handleSubmit} className="space-y-4">
                           <div>
@@ -545,7 +551,7 @@ export default function LeadsPage() {
                             >
                               Avbryt
                             </Button>
-                            <Button type="submit" className="bg-green-600 hover:bg-green-700">
+                            <Button type="submit" className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold hover:opacity-90">
                               Spara
                             </Button>
                           </div>
@@ -554,7 +560,7 @@ export default function LeadsPage() {
                     </Dialog>
                     <button
                       onClick={() => handleDelete(lead.id)}
-                      className="p-2 hover:bg-red-100 rounded text-red-600"
+                      className="p-2 hover:bg-[rgba(239,68,68,0.1)] rounded transition-colors text-[rgba(239,68,68,0.8)] hover:text-[rgb(239,68,68)]"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -563,8 +569,9 @@ export default function LeadsPage() {
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+      </div>
     </div>
   )
 }
