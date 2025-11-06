@@ -217,36 +217,39 @@ export default function ArticleBankPage() {
               const hasMore = categoryArticles.length > 3
 
               return (
-                <div key={category.id} className="flex flex-col bg-[rgba(255,255,255,0.02)] border border-[rgba(255,215,0,0.15)] rounded-lg overflow-hidden">
+                <div key={category.id} className="flex flex-col bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-xl overflow-hidden shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/50 hover:border-[rgba(255,215,0,0.35)] transition-all duration-300">
                   {/* Category Header with Image/Gradient */}
                   <div
-                    className="relative h-24 flex items-center justify-center"
+                    className="relative h-28 flex items-center justify-center px-4"
                     style={{
-                      background: `linear-gradient(135deg, ${categoryColor}22, ${categoryColor}11)`
+                      background: `linear-gradient(135deg, ${categoryColor}33, ${categoryColor}15)`
                     }}
                   >
                     <h2
-                      className="text-xl font-bold tracking-wide uppercase z-10"
+                      className="text-xl font-black tracking-wider uppercase z-10 text-center leading-tight"
                       style={{ color: categoryColor }}
                     >
                       {category.name}
                     </h2>
-                    <div className="absolute top-2 right-2 text-xs text-[rgba(255,255,255,0.5)]">
-                      {categoryArticles.filter(a => isArticleCompleted(a)).length} / {categoryArticles.length}
+                    <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/30 backdrop-blur-sm">
+                      <span className="text-xs font-semibold" style={{ color: categoryColor }}>
+                        {categoryArticles.filter(a => isArticleCompleted(a)).length}
+                      </span>
+                      <span className="text-xs text-[rgba(255,255,255,0.5)]"> / {categoryArticles.length}</span>
                     </div>
                   </div>
 
                   {/* Category Description */}
                   {category.description && (
-                    <div className="px-4 pt-3 pb-2">
-                      <p className="text-xs text-[rgba(255,255,255,0.6)] line-clamp-2">
+                    <div className="px-4 pt-4 pb-3 border-b border-[rgba(255,215,0,0.1)]">
+                      <p className="text-sm text-[rgba(255,255,255,0.7)] leading-relaxed line-clamp-2">
                         {category.description}
                       </p>
                     </div>
                   )}
 
                   {/* Articles List */}
-                  <div className="flex-1 p-4 space-y-2">
+                  <div className="flex-1 p-4 space-y-3">
                     {displayedArticles.map(article => {
                       const completed = isArticleCompleted(article)
 
@@ -254,12 +257,15 @@ export default function ArticleBankPage() {
                         <button
                           key={article.id}
                           onClick={() => router.push(`/dashboard/articles/${article.id}`)}
-                          className="w-full text-left bg-[rgba(0,0,0,0.2)] border border-[rgba(255,215,0,0.1)] rounded-md p-3 hover:border-[rgba(255,215,0,0.3)] hover:bg-[rgba(255,215,0,0.05)] transition-all duration-200 group"
+                          className="w-full text-left bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.15)] rounded-lg p-3.5 hover:border-[rgba(255,215,0,0.5)] hover:bg-[rgba(255,215,0,0.08)] hover:scale-[1.02] transition-all duration-200 group relative overflow-hidden"
                         >
-                          <div className="flex items-start gap-3">
+                          {/* Subtle glow on hover */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.1)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                          <div className="flex items-start gap-3 relative z-10">
                             {/* Thumbnail */}
                             {article.coverImage && (
-                              <div className="w-16 h-12 flex-shrink-0 rounded overflow-hidden bg-[rgba(255,255,255,0.05)]">
+                              <div className="w-20 h-14 flex-shrink-0 rounded-md overflow-hidden bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.1)]">
                                 <img
                                   src={article.coverImage}
                                   alt={article.title}
@@ -270,18 +276,21 @@ export default function ArticleBankPage() {
 
                             {/* Content */}
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-sm text-white group-hover:text-[#FFD700] transition-colors line-clamp-2 mb-1">
+                              <h3 className="text-sm font-medium text-white group-hover:text-[#FFD700] transition-colors line-clamp-2 mb-2 leading-snug">
                                 {article.title}
                               </h3>
-                              <div className="flex items-center gap-2 text-xs text-[rgba(255,255,255,0.5)]">
+                              <div className="flex items-center gap-3 text-xs text-[rgba(255,255,255,0.5)]">
                                 {article.estimatedReadingMinutes && (
-                                  <div className="flex items-center gap-1">
-                                    <Clock className="h-3 w-3" />
+                                  <div className="flex items-center gap-1.5">
+                                    <Clock className="h-3.5 w-3.5" />
                                     <span>{article.estimatedReadingMinutes} min</span>
                                   </div>
                                 )}
                                 {completed && (
-                                  <CheckCircle className="h-3 w-3 text-[#22c55e]" />
+                                  <div className="flex items-center gap-1.5 text-[#22c55e]">
+                                    <CheckCircle className="h-3.5 w-3.5" />
+                                    <span>Genomförd</span>
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -293,15 +302,18 @@ export default function ArticleBankPage() {
 
                   {/* "Mer" Button */}
                   {hasMore && (
-                    <div className="px-4 pb-4">
+                    <div className="px-4 pb-4 pt-2">
                       <button
                         onClick={() => setExpandedCategories(prev => ({
                           ...prev,
                           [category.id]: !prev[category.id]
                         }))}
-                        className="w-full py-2 text-sm text-[#FFD700] hover:text-white border border-[rgba(255,215,0,0.3)] hover:border-[rgba(255,215,0,0.5)] rounded-md transition-all duration-200"
+                        className="w-full py-2.5 text-sm font-semibold text-[#FFD700] hover:text-white bg-[rgba(255,215,0,0.05)] hover:bg-[rgba(255,215,0,0.12)] border border-[rgba(255,215,0,0.3)] hover:border-[rgba(255,215,0,0.6)] rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+                        style={{
+                          boxShadow: isExpanded ? `0 0 10px ${categoryColor}22` : 'none'
+                        }}
                       >
-                        {isExpanded ? 'Visa mindre' : 'Mer'}
+                        {isExpanded ? '↑ Visa mindre' : '↓ Mer'}
                       </button>
                     </div>
                   )}
