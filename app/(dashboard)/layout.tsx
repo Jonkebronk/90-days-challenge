@@ -47,13 +47,11 @@ const navigation = [
     dropdown: [
       { name: 'Artikel Kategorier', href: '/dashboard/content/categories', icon: FolderOpen },
       { name: 'Artiklar', href: '/dashboard/content/articles', icon: Library },
-      { name: '90-Dagars Roadmap', href: '/dashboard/content/roadmap', icon: Map },
       { name: 'Recept Kategorier', href: '/dashboard/content/recipe-categories', icon: FolderOpen },
       { name: 'Recept', href: '/dashboard/content/recipes', icon: ChefHat },
     ]
   },
   { name: 'Artikel Bank', href: '/dashboard/articles', icon: Library },
-  { name: 'Min Roadmap', href: '/dashboard/roadmap', icon: Map },
   { name: 'Recept Bank', href: '/dashboard/recipes', icon: ChefHat },
   {
     name: 'Verktyg',
