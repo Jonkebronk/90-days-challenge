@@ -152,88 +152,103 @@ export default function ClientsPage() {
 
   if (isLoading) {
     return (
-      <div className="p-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-1/4"></div>
-          <div className="h-64 bg-muted rounded"></div>
+      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+        <div className="container mx-auto p-6 space-y-8 max-w-7xl">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-[rgba(255,215,0,0.1)] rounded w-1/4"></div>
+            <div className="h-64 bg-[rgba(255,215,0,0.1)] rounded"></div>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Clients</h1>
-          <p className="text-muted-foreground">Manage and invite your clients</p>
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+      <div className="container mx-auto p-6 space-y-8 max-w-7xl">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
+          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
+            Klienter
+          </h1>
+          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+            Hantera och bjud in dina klienter
+          </p>
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-lime-400 hover:bg-lime-500 text-black">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Client
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+
+        <div className="flex justify-end mb-6">
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold hover:opacity-90 transition-opacity">
+                <Plus className="w-4 h-4 mr-2" />
+                Lägg till klient
+              </Button>
+            </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)]">
             <DialogHeader>
-              <DialogTitle>Lägg till ny klient</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-[#FFD700]">Lägg till ny klient</DialogTitle>
             </DialogHeader>
 
             <div className="space-y-6 py-4">
               {/* Klientinformation */}
               <div className="space-y-4">
-                <h3 className="font-semibold">Klientinformation</h3>
+                <h3 className="font-semibold text-[#FFD700]">Klientinformation</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">Förnamn <span className="text-destructive">*</span></Label>
+                    <Label htmlFor="firstName" className="text-[rgba(255,255,255,0.8)]">Förnamn <span className="text-red-400">*</span></Label>
                     <Input
                       id="firstName"
                       value={newClient.firstName}
                       onChange={(e) => setNewClient({ ...newClient, firstName: e.target.value })}
+                      className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">Efternamn <span className="text-destructive">*</span></Label>
+                    <Label htmlFor="lastName" className="text-[rgba(255,255,255,0.8)]">Efternamn <span className="text-red-400">*</span></Label>
                     <Input
                       id="lastName"
                       value={newClient.lastName}
                       onChange={(e) => setNewClient({ ...newClient, lastName: e.target.value })}
+                      className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">E-post <span className="text-destructive">*</span></Label>
+                  <Label htmlFor="email" className="text-[rgba(255,255,255,0.8)]">E-post <span className="text-red-400">*</span></Label>
                   <Input
                     id="email"
                     type="email"
                     value={newClient.email}
                     onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Telefon</Label>
+                  <Label htmlFor="phone" className="text-[rgba(255,255,255,0.8)]">Telefon</Label>
                   <Input
                     id="phone"
                     value={newClient.phone}
                     onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
                     placeholder="070 123 45 67"
+                    className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Taggar</Label>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Taggar</Label>
                   <Select>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white">
                       <SelectValue placeholder="Välj taggar" />
                     </SelectTrigger>
                     <SelectContent>
                       {availableTags.map(tag => (
                         <div
                           key={tag}
-                          className="px-2 py-1.5 cursor-pointer hover:bg-accent flex items-center gap-2"
+                          className="px-2 py-1.5 cursor-pointer hover:bg-[rgba(255,215,0,0.1)] flex items-center gap-2"
                           onClick={() => toggleTag(tag)}
                         >
                           <input
@@ -249,7 +264,7 @@ export default function ClientsPage() {
                   {newClient.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
                       {newClient.tags.map(tag => (
-                        <Badge key={tag} variant="secondary" className="gap-1">
+                        <Badge key={tag} className="bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] text-[rgba(255,215,0,0.9)] gap-1">
                           {tag}
                           <X
                             className="w-3 h-3 cursor-pointer"
@@ -262,17 +277,17 @@ export default function ClientsPage() {
                 </div>
               </div>
 
-              <Separator />
+              <Separator className="bg-[rgba(255,215,0,0.2)]" />
 
               {/* Check-in */}
               <div className="space-y-4">
-                <h3 className="font-semibold">Check-in</h3>
-                <p className="text-sm text-muted-foreground">Skicka påminnelse om check-in varje gång:</p>
+                <h3 className="font-semibold text-[#FFD700]">Check-in</h3>
+                <p className="text-sm text-[rgba(255,255,255,0.6)]">Skicka påminnelse om check-in varje gång:</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Check-in-period</Label>
+                    <Label className="text-[rgba(255,255,255,0.8)]">Check-in-period</Label>
                     <Select value={newClient.checkInPeriod} onValueChange={(value) => setNewClient({ ...newClient, checkInPeriod: value })}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -283,9 +298,9 @@ export default function ClientsPage() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Dag</Label>
+                    <Label className="text-[rgba(255,255,255,0.8)]">Dag</Label>
                     <Select value={newClient.checkInDay} onValueChange={(value) => setNewClient({ ...newClient, checkInDay: value })}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-[rgba(255,215,0,0.3)] text-white">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -304,70 +319,71 @@ export default function ClientsPage() {
             </div>
 
             <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,215,0,0.1)]">
                 Avbryt
               </Button>
               <Button
                 onClick={handleInviteClient}
                 disabled={isInviting}
-                className="bg-lime-400 hover:bg-lime-500 text-black"
+                className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold hover:opacity-90"
               >
-                {isInviting ? 'Skickar...' : 'Skicka in'}
+                {isInviting ? 'Skickar...' : 'Skicka inbjudan'}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
 
-      <div className="grid gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>All Clients</CardTitle>
-            <CardDescription>
-              {clients.length} {clients.length === 1 ? 'client' : 'clients'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px]">
+          <div className="p-6 border-b border-[rgba(255,215,0,0.1)]">
+            <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">
+              Alla klienter
+            </h2>
+            <p className="text-[rgba(255,255,255,0.6)] text-sm mt-1">
+              {clients.length} {clients.length === 1 ? 'klient' : 'klienter'}
+            </p>
+          </div>
+          <div className="p-6">
             {clients.length === 0 ? (
               <div className="text-center py-12">
-                <User className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No clients yet</h3>
-                <p className="text-muted-foreground mb-4">
-                  Start by inviting your first client to the program
+                <User className="w-12 h-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
+                <h3 className="text-lg font-semibold mb-2 text-[rgba(255,255,255,0.9)]">Inga klienter än</h3>
+                <p className="text-[rgba(255,255,255,0.6)] mb-4">
+                  Börja med att bjuda in din första klient till programmet
                 </p>
-                <Button onClick={() => setIsDialogOpen(true)} className="bg-lime-400 hover:bg-lime-500 text-black">
+                <Button onClick={() => setIsDialogOpen(true)} className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold hover:opacity-90">
                   <Plus className="w-4 h-4 mr-2" />
-                  Invite Client
+                  Bjud in klient
                 </Button>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {clients.map((client) => (
                   <div
                     key={client.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent transition-colors"
+                    className="flex items-center justify-between p-4 border border-[rgba(255,215,0,0.2)] rounded-lg hover:bg-[rgba(255,215,0,0.05)] hover:border-[rgba(255,215,0,0.4)] transition-all"
                   >
                     <Link href={`/dashboard/clients/${client.id}`} className="flex items-center gap-4 flex-1">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <span className="font-semibold text-primary">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center">
+                        <span className="font-bold text-[#0a0a0a] text-lg">
                           {client.name?.[0]?.toUpperCase() || client.email[0].toUpperCase()}
                         </span>
                       </div>
                       <div>
-                        <p className="font-semibold">{client.name || 'No name'}</p>
-                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                        <p className="font-semibold text-[rgba(255,255,255,0.9)]">{client.name || 'Inget namn'}</p>
+                        <p className="text-sm text-[rgba(255,255,255,0.6)] flex items-center gap-1">
                           <Mail className="w-3 h-3" />
                           {client.email}
                         </p>
                       </div>
                     </Link>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDeleteClient(client.id, client.email)}
                         disabled={deletingClientId === client.id}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        className="text-[rgba(239,68,68,0.8)] hover:text-[rgb(239,68,68)] hover:bg-[rgba(239,68,68,0.1)]"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -376,8 +392,8 @@ export default function ClientsPage() {
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )
