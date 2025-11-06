@@ -23,8 +23,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Plus, Pencil, Trash2, FolderOpen, ArrowUp, ArrowDown } from 'lucide-react'
+import { Plus, Pencil, Trash2, FolderOpen, ArrowUp, ArrowDown, Check, ChevronsUpDown } from 'lucide-react'
 import { toast } from 'sonner'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command'
+import { cn } from '@/lib/utils'
 
 const PRESET_COLORS = [
   { name: 'Gold', value: '#FFD700' },
@@ -71,6 +74,8 @@ export default function CategoriesPage() {
     color: '#FFD700'
   })
 
+  const [sectionComboboxOpen, setSectionComboboxOpen] = useState(false)
+
   useEffect(() => {
     if (session?.user) {
       fetchCategories()
@@ -95,6 +100,16 @@ export default function CategoriesPage() {
     }
   }
 
+  // Get unique sections from existing categories
+  const getUniqueSections = () => {
+    const sections = categories
+      .map(cat => cat.section)
+      .filter((section): section is string => Boolean(section))
+    return Array.from(new Set(sections)).sort()
+  }
+
+  const uniqueSections = getUniqueSections()
+
   const handleCreateCategory = async () => {
     if (!formData.name || !formData.slug) {
       toast.error('Namn och slug krävs')
@@ -112,6 +127,7 @@ export default function CategoriesPage() {
       if (response.ok) {
         toast.success('Kategori skapad')
         setIsCreateDialogOpen(false)
+        setSectionComboboxOpen(false)
         setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
         fetchCategories()
       } else {
@@ -143,6 +159,7 @@ export default function CategoriesPage() {
       if (response.ok) {
         toast.success('Kategori uppdaterad')
         setIsEditDialogOpen(false)
+        setSectionComboboxOpen(false)
         setSelectedCategory(null)
         setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
         fetchCategories()
@@ -362,7 +379,13 @@ export default function CategoriesPage() {
       </Card>
 
       {/* Create Dialog */}
-      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+      <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
+        setIsCreateDialogOpen(open)
+        if (!open) {
+          setSectionComboboxOpen(false)
+          setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
+        }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Skapa ny kategori</DialogTitle>
@@ -382,12 +405,62 @@ export default function CategoriesPage() {
             </div>
             <div>
               <Label htmlFor="section">Sektion (gruppering)</Label>
-              <Input
-                id="section"
-                value={formData.section}
-                onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                placeholder="t.ex. INNAN DU BÖRJAR, GENOMGÅNG AV 90 DAGARS CHALLENGEN"
-              />
+              {uniqueSections.length > 0 ? (
+                <Popover open={sectionComboboxOpen} onOpenChange={setSectionComboboxOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={sectionComboboxOpen}
+                      className="w-full justify-between font-normal"
+                    >
+                      {formData.section || "Välj sektion eller skriv ny..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" align="start">
+                    <Command>
+                      <CommandInput
+                        placeholder="Sök eller skriv ny sektion..."
+                        value={formData.section}
+                        onValueChange={(value) => setFormData({ ...formData, section: value })}
+                      />
+                      <CommandEmpty>
+                        <div className="py-2 px-2 text-sm text-muted-foreground">
+                          Tryck Enter för att skapa &quot;{formData.section}&quot;
+                        </div>
+                      </CommandEmpty>
+                      <CommandGroup>
+                        {uniqueSections.map((section) => (
+                          <CommandItem
+                            key={section}
+                            value={section}
+                            onSelect={(value) => {
+                              setFormData({ ...formData, section: value })
+                              setSectionComboboxOpen(false)
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                formData.section === section ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {section}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <Input
+                  id="section"
+                  value={formData.section}
+                  onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+                  placeholder="t.ex. INNAN DU BÖRJAR, GENOMGÅNG AV 90 DAGARS CHALLENGEN"
+                />
+              )}
               <p className="text-xs text-muted-foreground mt-1">
                 Grupperar kategorier under en rubrik i Kunskapsbanken
               </p>
@@ -451,7 +524,14 @@ export default function CategoriesPage() {
       </Dialog>
 
       {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
+        setIsEditDialogOpen(open)
+        if (!open) {
+          setSectionComboboxOpen(false)
+          setSelectedCategory(null)
+          setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
+        }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Redigera kategori</DialogTitle>
@@ -470,12 +550,62 @@ export default function CategoriesPage() {
             </div>
             <div>
               <Label htmlFor="edit-section">Sektion (gruppering)</Label>
-              <Input
-                id="edit-section"
-                value={formData.section}
-                onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                placeholder="t.ex. INNAN DU BÖRJAR, GENOMGÅNG AV 90 DAGARS CHALLENGEN"
-              />
+              {uniqueSections.length > 0 ? (
+                <Popover open={sectionComboboxOpen} onOpenChange={setSectionComboboxOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={sectionComboboxOpen}
+                      className="w-full justify-between font-normal"
+                    >
+                      {formData.section || "Välj sektion eller skriv ny..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" align="start">
+                    <Command>
+                      <CommandInput
+                        placeholder="Sök eller skriv ny sektion..."
+                        value={formData.section}
+                        onValueChange={(value) => setFormData({ ...formData, section: value })}
+                      />
+                      <CommandEmpty>
+                        <div className="py-2 px-2 text-sm text-muted-foreground">
+                          Tryck Enter för att skapa &quot;{formData.section}&quot;
+                        </div>
+                      </CommandEmpty>
+                      <CommandGroup>
+                        {uniqueSections.map((section) => (
+                          <CommandItem
+                            key={section}
+                            value={section}
+                            onSelect={(value) => {
+                              setFormData({ ...formData, section: value })
+                              setSectionComboboxOpen(false)
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                formData.section === section ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {section}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <Input
+                  id="edit-section"
+                  value={formData.section}
+                  onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+                  placeholder="t.ex. INNAN DU BÖRJAR, GENOMGÅNG AV 90 DAGARS CHALLENGEN"
+                />
+              )}
               <p className="text-xs text-muted-foreground mt-1">
                 Grupperar kategorier under en rubrik i Kunskapsbanken
               </p>
