@@ -36,10 +36,28 @@ export async function GET(request: Request) {
       where.published = true
     }
 
+    // Get current user from session
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email! }
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
     const articles = await prisma.article.findMany({
       where,
       include: {
         category: true,
+        progress: {
+          where: {
+            userId: user.id
+          },
+          select: {
+            completed: true,
+            completedAt: true
+          }
+        },
         _count: {
           select: { roadmapAssignments: true, progress: true }
         }
