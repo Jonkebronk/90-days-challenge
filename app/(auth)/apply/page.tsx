@@ -38,7 +38,6 @@ export default function ApplyPage() {
     phone: '',
     city: '',
     country: 'Sverige',
-    instagram: '',
     hearAboutUs: '',
 
     // Physical Stats
@@ -47,8 +46,6 @@ export default function ApplyPage() {
     height: '',
     currentWeight: '',
     goalWeight: '',
-    morningHeartRate: '',
-    bloodPressure: '',
 
     // Current Photos
     frontPhoto: null as File | null,
@@ -124,15 +121,12 @@ ANSÖKAN - 90-Dagars Challenge
 Kön: ${formData.gender || 'Ej angivet'}
 Stad: ${formData.city || 'Ej angivet'}
 Land: ${formData.country || 'Ej angivet'}
-Instagram: ${formData.instagram || 'Ej angivet'}
 Hittade oss via: ${formData.hearAboutUs || 'Ej angivet'}
 
 === FYSISKA MÅTT ===
 Längd: ${formData.height || 'Ej angivet'} cm
 Nuvarande vikt: ${formData.currentWeight || 'Ej angivet'} kg
 Målvikt: ${formData.goalWeight || 'Ej angivet'} kg
-Morgonpuls: ${formData.morningHeartRate || 'Ej angivet'} bpm
-Blodtryck: ${formData.bloodPressure || 'Ej angivet'}
 
 === AKTUELLA BILDER ===
 Framsida: ${formData.frontPhoto ? formData.frontPhoto.name : 'Ej bifogad'}
@@ -363,16 +357,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                 </div>
 
                 <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Instagram</Label>
-                  <Input
-                    value={formData.instagram}
-                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                    placeholder="@dittanvändarnamn"
-                  />
-                </div>
-
-                <div>
                   <Label className="text-[rgba(255,255,255,0.8)]">Hur hittade du oss?</Label>
                   <Input
                     value={formData.hearAboutUs}
@@ -443,34 +427,295 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                     />
                   </div>
                 </div>
+              </div>
+            )}
+          </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-[rgba(255,255,255,0.8)]">Morgonpuls (bpm)</Label>
-                    <Input
-                      type="number"
-                      value={formData.morningHeartRate}
-                      onChange={(e) => setFormData({ ...formData, morningHeartRate: e.target.value })}
-                      className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                      placeholder="60"
-                    />
-                  </div>
+          {/* 2. Training Program */}
+          <div className="space-y-4">
+            <SectionHeader title="Träningsprogram" section="training" isExpanded={expandedSections.training} />
 
-                  <div>
-                    <Label className="text-[rgba(255,255,255,0.8)]">Blodtryck</Label>
-                    <Input
-                      value={formData.bloodPressure}
-                      onChange={(e) => setFormData({ ...formData, bloodPressure: e.target.value })}
-                      className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                      placeholder="120/80"
-                    />
-                  </div>
+            {expandedSections.training && (
+              <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Nuvarande träning</Label>
+                  <Textarea
+                    value={formData.currentTraining}
+                    onChange={(e) => setFormData({ ...formData, currentTraining: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
+                    placeholder="Beskriv din nuvarande träningsrutin (t.ex. 'Gym 3x/vecka, fokus på styrketräning')"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Träningserfarenhet</Label>
+                  <Select value={formData.trainingExperience} onValueChange={(value) => setFormData({ ...formData, trainingExperience: value })}>
+                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectValue placeholder="Välj din erfarenhetsnivå" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="beginner">Nybörjare (0-6 månader)</SelectItem>
+                      <SelectItem value="intermediate">Medel (6 månader - 2 år)</SelectItem>
+                      <SelectItem value="advanced">Avancerad (2+ år)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Träningsmål</Label>
+                  <Textarea
+                    value={formData.trainingGoals}
+                    onChange={(e) => setFormData({ ...formData, trainingGoals: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                    placeholder="Vad vill du uppnå? (t.ex. bygga muskler, öka styrka, förbättra kondition)"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Skador eller begränsningar</Label>
+                  <Textarea
+                    value={formData.injuries}
+                    onChange={(e) => setFormData({ ...formData, injuries: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                    placeholder="Eventuella skador, smärtor eller fysiska begränsningar vi bör veta om"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Tillgänglig tid för träning</Label>
+                  <Select value={formData.availableTime} onValueChange={(value) => setFormData({ ...formData, availableTime: value })}>
+                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectValue placeholder="Hur många dagar per vecka?" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1-2">1-2 dagar/vecka</SelectItem>
+                      <SelectItem value="3-4">3-4 dagar/vecka</SelectItem>
+                      <SelectItem value="5-6">5-6 dagar/vecka</SelectItem>
+                      <SelectItem value="7">7 dagar/vecka</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Föredraget träningsschema</Label>
+                  <Input
+                    value={formData.workoutSchedule}
+                    onChange={(e) => setFormData({ ...formData, workoutSchedule: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                    placeholder="T.ex. 'Morgon 06:00' eller 'Kväll efter jobbet'"
+                  />
                 </div>
               </div>
             )}
           </div>
 
-          {/* 2. Current Photos */}
+          {/* 3. Nutrition */}
+          <div className="space-y-4">
+            <SectionHeader title="Näring" section="nutrition" isExpanded={expandedSections.nutrition} />
+
+            {expandedSections.nutrition && (
+              <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Kost historik</Label>
+                  <Textarea
+                    value={formData.dietHistory}
+                    onChange={(e) => setFormData({ ...formData, dietHistory: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
+                    placeholder="Beskriv dina tidigare erfarenheter av kostförändringar, dieter du provat, etc."
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Erfarenhet av makroräkning</Label>
+                  <Select value={formData.macroTracking} onValueChange={(value) => setFormData({ ...formData, macroTracking: value })}>
+                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectValue placeholder="Har du räknat makron tidigare?" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="never">Aldrig</SelectItem>
+                      <SelectItem value="some">Lite erfarenhet</SelectItem>
+                      <SelectItem value="experienced">Mycket erfarenhet</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Matsmältning</Label>
+                  <Textarea
+                    value={formData.digestion}
+                    onChange={(e) => setFormData({ ...formData, digestion: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                    placeholder="Eventuella problem med matsmältningen? (t.ex. IBS, laktosintolerans)"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Allergier och intoleranser</Label>
+                  <Input
+                    value={formData.allergies}
+                    onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                    placeholder="T.ex. gluten, laktos, nötter"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Favoritmat</Label>
+                  <Input
+                    value={formData.favoriteFoods}
+                    onChange={(e) => setFormData({ ...formData, favoriteFoods: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                    placeholder="Mat du älskar och gärna äter"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Mat du inte gillar</Label>
+                  <Input
+                    value={formData.foodsDislikes}
+                    onChange={(e) => setFormData({ ...formData, foodsDislikes: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                    placeholder="Mat vi bör undvika i din plan"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Kosttillskott</Label>
+                  <Textarea
+                    value={formData.supplements}
+                    onChange={(e) => setFormData({ ...formData, supplements: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                    placeholder="Vilka kosttillskott tar du för närvarande?"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Tidigare coaching eller PT</Label>
+                  <Textarea
+                    value={formData.previousCoaching}
+                    onChange={(e) => setFormData({ ...formData, previousCoaching: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                    placeholder="Har du haft personlig tränare eller coach tidigare? Vad funkade/funkade inte?"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 4. Lifestyle */}
+          <div className="space-y-4">
+            <SectionHeader title="Livsstil" section="lifestyle" isExpanded={expandedSections.lifestyle} />
+
+            {expandedSections.lifestyle && (
+              <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Stressnivå</Label>
+                  <Select value={formData.stressLevel} onValueChange={(value) => setFormData({ ...formData, stressLevel: value })}>
+                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectValue placeholder="Hur stressad känner du dig?" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Låg stress</SelectItem>
+                      <SelectItem value="medium">Måttlig stress</SelectItem>
+                      <SelectItem value="high">Hög stress</SelectItem>
+                      <SelectItem value="very-high">Mycket hög stress</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Sömn per natt</Label>
+                  <Select value={formData.sleepHours} onValueChange={(value) => setFormData({ ...formData, sleepHours: value })}>
+                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectValue placeholder="Hur många timmar sover du?" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="<5">Mindre än 5 timmar</SelectItem>
+                      <SelectItem value="5-6">5-6 timmar</SelectItem>
+                      <SelectItem value="6-7">6-7 timmar</SelectItem>
+                      <SelectItem value="7-8">7-8 timmar</SelectItem>
+                      <SelectItem value=">8">Mer än 8 timmar</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Yrke</Label>
+                  <Input
+                    value={formData.occupation}
+                    onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                    placeholder="Vad arbetar du med?"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Livsstil</Label>
+                  <Textarea
+                    value={formData.lifestyle}
+                    onChange={(e) => setFormData({ ...formData, lifestyle: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
+                    placeholder="Beskriv din vardag, fritidsintressen, sociala liv, etc."
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 5. Motivation & Commitment */}
+          <div className="space-y-4">
+            <SectionHeader title="Motivation & Åtagande" section="motivation" isExpanded={expandedSections.motivation} />
+
+            {expandedSections.motivation && (
+              <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Varför vill du delta i 90-Dagars Challenge?</Label>
+                  <Textarea
+                    value={formData.whyApply}
+                    onChange={(e) => setFormData({ ...formData, whyApply: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[120px]"
+                    placeholder="Berätta om dina mål och vad som motiverar dig..."
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Kan du följa en strukturerad plan i 90 dagar?</Label>
+                  <Select value={formData.commitment} onValueChange={(value) => setFormData({ ...formData, commitment: value })}>
+                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectValue placeholder="Välj ditt svar" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="yes-100">Ja, 100% committed</SelectItem>
+                      <SelectItem value="yes-mostly">Ja, men behöver lite flexibilitet</SelectItem>
+                      <SelectItem value="unsure">Osäker, vill veta mer först</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Vad förväntar du dig av programmet?</Label>
+                  <Textarea
+                    value={formData.expectations}
+                    onChange={(e) => setFormData({ ...formData, expectations: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
+                    placeholder="Vad hoppas du uppnå efter 90 dagar?"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Största utmaningar</Label>
+                  <Textarea
+                    value={formData.challenges}
+                    onChange={(e) => setFormData({ ...formData, challenges: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
+                    placeholder="Vad har hindrat dig från att nå dina mål tidigare?"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 6. Current Photos */}
           <div className="space-y-4">
             <SectionHeader
               title="Aktuella Bilder"
@@ -627,290 +872,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                       </button>
                     )}
                   </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* 3. Training Program */}
-          <div className="space-y-4">
-            <SectionHeader title="Träningsprogram" section="training" isExpanded={expandedSections.training} />
-
-            {expandedSections.training && (
-              <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Nuvarande träning</Label>
-                  <Textarea
-                    value={formData.currentTraining}
-                    onChange={(e) => setFormData({ ...formData, currentTraining: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
-                    placeholder="Beskriv din nuvarande träningsrutin (t.ex. 'Gym 3x/vecka, fokus på styrketräning')"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Träningserfarenhet</Label>
-                  <Select value={formData.trainingExperience} onValueChange={(value) => setFormData({ ...formData, trainingExperience: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                      <SelectValue placeholder="Välj din erfarenhetsnivå" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="beginner">Nybörjare (0-6 månader)</SelectItem>
-                      <SelectItem value="intermediate">Medel (6 månader - 2 år)</SelectItem>
-                      <SelectItem value="advanced">Avancerad (2+ år)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Träningsmål</Label>
-                  <Textarea
-                    value={formData.trainingGoals}
-                    onChange={(e) => setFormData({ ...formData, trainingGoals: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Vad vill du uppnå? (t.ex. bygga muskler, öka styrka, förbättra kondition)"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Skador eller begränsningar</Label>
-                  <Textarea
-                    value={formData.injuries}
-                    onChange={(e) => setFormData({ ...formData, injuries: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Eventuella skador, smärtor eller fysiska begränsningar vi bör veta om"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Tillgänglig tid för träning</Label>
-                  <Select value={formData.availableTime} onValueChange={(value) => setFormData({ ...formData, availableTime: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                      <SelectValue placeholder="Hur många dagar per vecka?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1-2">1-2 dagar/vecka</SelectItem>
-                      <SelectItem value="3-4">3-4 dagar/vecka</SelectItem>
-                      <SelectItem value="5-6">5-6 dagar/vecka</SelectItem>
-                      <SelectItem value="7">7 dagar/vecka</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Föredraget träningsschema</Label>
-                  <Input
-                    value={formData.workoutSchedule}
-                    onChange={(e) => setFormData({ ...formData, workoutSchedule: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                    placeholder="T.ex. 'Morgon 06:00' eller 'Kväll efter jobbet'"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* 4. Nutrition */}
-          <div className="space-y-4">
-            <SectionHeader title="Näring" section="nutrition" isExpanded={expandedSections.nutrition} />
-
-            {expandedSections.nutrition && (
-              <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Kost historik</Label>
-                  <Textarea
-                    value={formData.dietHistory}
-                    onChange={(e) => setFormData({ ...formData, dietHistory: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
-                    placeholder="Beskriv dina tidigare erfarenheter av kostförändringar, dieter du provat, etc."
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Erfarenhet av makroräkning</Label>
-                  <Select value={formData.macroTracking} onValueChange={(value) => setFormData({ ...formData, macroTracking: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                      <SelectValue placeholder="Har du räknat makron tidigare?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="never">Aldrig</SelectItem>
-                      <SelectItem value="some">Lite erfarenhet</SelectItem>
-                      <SelectItem value="experienced">Mycket erfarenhet</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Matsmältning</Label>
-                  <Textarea
-                    value={formData.digestion}
-                    onChange={(e) => setFormData({ ...formData, digestion: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Eventuella problem med matsmältningen? (t.ex. IBS, laktosintolerans)"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Allergier och intoleranser</Label>
-                  <Input
-                    value={formData.allergies}
-                    onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                    placeholder="T.ex. gluten, laktos, nötter"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Favoritmat</Label>
-                  <Input
-                    value={formData.favoriteFoods}
-                    onChange={(e) => setFormData({ ...formData, favoriteFoods: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                    placeholder="Mat du älskar och gärna äter"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Mat du inte gillar</Label>
-                  <Input
-                    value={formData.foodsDislikes}
-                    onChange={(e) => setFormData({ ...formData, foodsDislikes: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                    placeholder="Mat vi bör undvika i din plan"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Kosttillskott</Label>
-                  <Textarea
-                    value={formData.supplements}
-                    onChange={(e) => setFormData({ ...formData, supplements: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Vilka kosttillskott tar du för närvarande?"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Tidigare coaching eller PT</Label>
-                  <Textarea
-                    value={formData.previousCoaching}
-                    onChange={(e) => setFormData({ ...formData, previousCoaching: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Har du haft personlig tränare eller coach tidigare? Vad funkade/funkade inte?"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* 5. Lifestyle */}
-          <div className="space-y-4">
-            <SectionHeader title="Livsstil" section="lifestyle" isExpanded={expandedSections.lifestyle} />
-
-            {expandedSections.lifestyle && (
-              <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Stressnivå</Label>
-                  <Select value={formData.stressLevel} onValueChange={(value) => setFormData({ ...formData, stressLevel: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                      <SelectValue placeholder="Hur stressad känner du dig?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Låg stress</SelectItem>
-                      <SelectItem value="medium">Måttlig stress</SelectItem>
-                      <SelectItem value="high">Hög stress</SelectItem>
-                      <SelectItem value="very-high">Mycket hög stress</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Sömn per natt</Label>
-                  <Select value={formData.sleepHours} onValueChange={(value) => setFormData({ ...formData, sleepHours: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                      <SelectValue placeholder="Hur många timmar sover du?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="<5">Mindre än 5 timmar</SelectItem>
-                      <SelectItem value="5-6">5-6 timmar</SelectItem>
-                      <SelectItem value="6-7">6-7 timmar</SelectItem>
-                      <SelectItem value="7-8">7-8 timmar</SelectItem>
-                      <SelectItem value=">8">Mer än 8 timmar</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Yrke</Label>
-                  <Input
-                    value={formData.occupation}
-                    onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                    placeholder="Vad arbetar du med?"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Livsstil</Label>
-                  <Textarea
-                    value={formData.lifestyle}
-                    onChange={(e) => setFormData({ ...formData, lifestyle: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
-                    placeholder="Beskriv din vardag, fritidsintressen, sociala liv, etc."
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* 6. Motivation & Commitment */}
-          <div className="space-y-4">
-            <SectionHeader title="Motivation & Åtagande" section="motivation" isExpanded={expandedSections.motivation} />
-
-            {expandedSections.motivation && (
-              <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Varför vill du delta i 90-Dagars Challenge?</Label>
-                  <Textarea
-                    value={formData.whyApply}
-                    onChange={(e) => setFormData({ ...formData, whyApply: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[120px]"
-                    placeholder="Berätta om dina mål och vad som motiverar dig..."
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Kan du följa en strukturerad plan i 90 dagar?</Label>
-                  <Select value={formData.commitment} onValueChange={(value) => setFormData({ ...formData, commitment: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                      <SelectValue placeholder="Välj ditt svar" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="yes-100">Ja, 100% committed</SelectItem>
-                      <SelectItem value="yes-mostly">Ja, men behöver lite flexibilitet</SelectItem>
-                      <SelectItem value="unsure">Osäker, vill veta mer först</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Vad förväntar du dig av programmet?</Label>
-                  <Textarea
-                    value={formData.expectations}
-                    onChange={(e) => setFormData({ ...formData, expectations: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
-                    placeholder="Vad hoppas du uppnå efter 90 dagar?"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Största utmaningar</Label>
-                  <Textarea
-                    value={formData.challenges}
-                    onChange={(e) => setFormData({ ...formData, challenges: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
-                    placeholder="Vad har hindrat dig från att nå dina mål tidigare?"
-                  />
                 </div>
               </div>
             )}
