@@ -21,6 +21,7 @@ import { toast } from 'sonner'
 type ArticleCategory = {
   id: string
   name: string
+  description?: string | null
   color?: string
   orderIndex?: number
 }
@@ -49,6 +50,7 @@ export default function ArticleBankPage() {
   const [articles, setArticles] = useState<Article[]>([])
   const [categories, setCategories] = useState<ArticleCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({})
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('')
@@ -168,7 +170,7 @@ export default function ArticleBankPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
-      <div className="container mx-auto p-6 space-y-8 max-w-5xl">
+      <div className="container mx-auto p-6 space-y-8 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
@@ -197,79 +199,117 @@ export default function ArticleBankPage() {
           </div>
         </div>
 
-        {/* Articles by Category - Grid Layout */}
+        {/* Categories Grid */}
         {isLoading ? (
           <div className="text-center py-12">
             <p className="text-[rgba(255,255,255,0.5)]">Laddar artiklar...</p>
           </div>
-        ) : sortedCategories.map((category: any) => {
-          const categoryArticles = articles.filter(a => a.category.id === category.id)
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sortedCategories.map((category: any) => {
+              const categoryArticles = articles.filter(a => a.category.id === category.id)
 
-          if (categoryArticles.length === 0) return null
+              if (categoryArticles.length === 0) return null
 
-          const categoryColor = category.color || '#FFD700'
+              const categoryColor = category.color || '#FFD700'
+              const isExpanded = expandedCategories[category.id]
+              const displayedArticles = isExpanded ? categoryArticles : categoryArticles.slice(0, 3)
+              const hasMore = categoryArticles.length > 3
 
-          return (
-            <div key={category.id} className="space-y-3 mb-8">
-              {/* Minimal Category Header */}
-              <div className="flex items-center justify-between mb-4 pb-2 border-b border-[rgba(255,215,0,0.2)]">
-                <h2
-                  className="text-lg font-semibold tracking-wide uppercase"
-                  style={{ color: categoryColor }}
-                >
-                  {category.name}
-                </h2>
-                <span className="text-xs text-[rgba(255,255,255,0.5)]">
-                  {categoryArticles.filter(a => isArticleCompleted(a)).length} / {categoryArticles.length}
-                </span>
-              </div>
-
-              {/* Articles List - Minimal Compact */}
-              <div className="space-y-2">
-                {categoryArticles.map(article => {
-                  const completed = isArticleCompleted(article)
-
-                  return (
-                    <button
-                      key={article.id}
-                      onClick={() => router.push(`/dashboard/articles/${article.id}`)}
-                      className="w-full text-left bg-[rgba(255,255,255,0.02)] border border-[rgba(255,215,0,0.15)] rounded-lg transition-all duration-200 hover:border-[rgba(255,215,0,0.4)] hover:bg-[rgba(255,215,0,0.05)] group"
+              return (
+                <div key={category.id} className="flex flex-col bg-[rgba(255,255,255,0.02)] border border-[rgba(255,215,0,0.15)] rounded-lg overflow-hidden">
+                  {/* Category Header with Image/Gradient */}
+                  <div
+                    className="relative h-24 flex items-center justify-center"
+                    style={{
+                      background: `linear-gradient(135deg, ${categoryColor}22, ${categoryColor}11)`
+                    }}
+                  >
+                    <h2
+                      className="text-xl font-bold tracking-wide uppercase z-10"
+                      style={{ color: categoryColor }}
                     >
-                      <div className="flex items-center gap-4 px-4 py-3">
-                        {/* Completion status - Left */}
-                        {completed ? (
-                          <CheckCircle className="h-4 w-4 text-[#22c55e] flex-shrink-0" />
-                        ) : (
-                          <Circle className="h-4 w-4 text-[rgba(255,255,255,0.2)] flex-shrink-0" />
-                        )}
+                      {category.name}
+                    </h2>
+                    <div className="absolute top-2 right-2 text-xs text-[rgba(255,255,255,0.5)]">
+                      {categoryArticles.filter(a => isArticleCompleted(a)).length} / {categoryArticles.length}
+                    </div>
+                  </div>
 
-                        {/* Title - Middle (takes most space) */}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm text-white group-hover:text-[#FFD700] transition-colors truncate">
-                            {article.title}
-                          </h3>
-                        </div>
+                  {/* Category Description */}
+                  {category.description && (
+                    <div className="px-4 pt-3 pb-2">
+                      <p className="text-xs text-[rgba(255,255,255,0.6)] line-clamp-2">
+                        {category.description}
+                      </p>
+                    </div>
+                  )}
 
-                        {/* Metadata - Right */}
-                        <div className="flex items-center gap-3 flex-shrink-0 text-xs text-[rgba(255,255,255,0.5)]">
-                          {article.difficulty && (
-                            <span className="hidden sm:inline">{getDifficultyLabel(article.difficulty)}</span>
-                          )}
-                          {article.estimatedReadingMinutes && (
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              <span>{article.estimatedReadingMinutes} min</span>
+                  {/* Articles List */}
+                  <div className="flex-1 p-4 space-y-2">
+                    {displayedArticles.map(article => {
+                      const completed = isArticleCompleted(article)
+
+                      return (
+                        <button
+                          key={article.id}
+                          onClick={() => router.push(`/dashboard/articles/${article.id}`)}
+                          className="w-full text-left bg-[rgba(0,0,0,0.2)] border border-[rgba(255,215,0,0.1)] rounded-md p-3 hover:border-[rgba(255,215,0,0.3)] hover:bg-[rgba(255,215,0,0.05)] transition-all duration-200 group"
+                        >
+                          <div className="flex items-start gap-3">
+                            {/* Thumbnail */}
+                            {article.coverImage && (
+                              <div className="w-16 h-12 flex-shrink-0 rounded overflow-hidden bg-[rgba(255,255,255,0.05)]">
+                                <img
+                                  src={article.coverImage}
+                                  alt={article.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            )}
+
+                            {/* Content */}
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-sm text-white group-hover:text-[#FFD700] transition-colors line-clamp-2 mb-1">
+                                {article.title}
+                              </h3>
+                              <div className="flex items-center gap-2 text-xs text-[rgba(255,255,255,0.5)]">
+                                {article.estimatedReadingMinutes && (
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    <span>{article.estimatedReadingMinutes} min</span>
+                                  </div>
+                                )}
+                                {completed && (
+                                  <CheckCircle className="h-3 w-3 text-[#22c55e]" />
+                                )}
+                              </div>
                             </div>
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          )
-        })}
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                  {/* "Mer" Button */}
+                  {hasMore && (
+                    <div className="px-4 pb-4">
+                      <button
+                        onClick={() => setExpandedCategories(prev => ({
+                          ...prev,
+                          [category.id]: !prev[category.id]
+                        }))}
+                        className="w-full py-2 text-sm text-[#FFD700] hover:text-white border border-[rgba(255,215,0,0.3)] hover:border-[rgba(255,215,0,0.5)] rounded-md transition-all duration-200"
+                      >
+                        {isExpanded ? 'Visa mindre' : 'Mer'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
 
         {/* Empty State */}
         {!isLoading && articles.length === 0 && (
