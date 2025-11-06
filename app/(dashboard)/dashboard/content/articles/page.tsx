@@ -359,9 +359,9 @@ export default function ArticlesPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">Artiklar</h1>
+          <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">Skapa Artiklar</h1>
           <p className="text-[rgba(255,255,255,0.6)] mt-1">
-            Skapa och hantera artiklar för artikel banken
+            Skapa och hantera artiklar för Kunskapsbanken
           </p>
         </div>
         <Button onClick={() => setIsCreateDialogOpen(true)}>

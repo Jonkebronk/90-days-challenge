@@ -259,9 +259,9 @@ export default function CategoriesPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Artikel Kategorier</h1>
+          <h1 className="text-3xl font-bold">Skapa Kategorier</h1>
           <p className="text-muted-foreground mt-1">
-            Skapa och hantera kategorier för artikel banken
+            Skapa och hantera kategorier för Kunskapsbanken
           </p>
         </div>
         <Button onClick={() => setIsCreateDialogOpen(true)}>

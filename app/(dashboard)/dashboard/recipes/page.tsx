@@ -183,7 +183,7 @@ export default function RecipeBankPage() {
       <div>
         <h1 className="text-3xl font-bold flex items-center gap-2">
           <ChefHat className="h-8 w-8" />
-          Recept Bank
+          Recept
         </h1>
         <p className="text-muted-foreground mt-1">
           Utforska hälsosamma och näringsrika recept

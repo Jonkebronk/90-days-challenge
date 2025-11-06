@@ -176,7 +176,7 @@ export default function ArticleBankPage() {
         <div className="text-center mb-12">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
           <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
-            Artikel Bank
+            Kunskapsbanken
           </h1>
           <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
             Din kunskapsresa genom de 90 dagarna

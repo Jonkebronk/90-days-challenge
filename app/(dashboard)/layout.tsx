@@ -45,14 +45,14 @@ const navigation = [
     icon: BookOpen,
     coachOnly: true,
     dropdown: [
-      { name: 'Artikel Kategorier', href: '/dashboard/content/categories', icon: FolderOpen },
-      { name: 'Artiklar', href: '/dashboard/content/articles', icon: Library },
-      { name: 'Recept Kategorier', href: '/dashboard/content/recipe-categories', icon: FolderOpen },
-      { name: 'Recept', href: '/dashboard/content/recipes', icon: ChefHat },
+      { name: 'Skapa Kategorier', href: '/dashboard/content/categories', icon: FolderOpen },
+      { name: 'Skapa Artiklar', href: '/dashboard/content/articles', icon: Library },
+      { name: 'Skapa Recept Kategorier', href: '/dashboard/content/recipe-categories', icon: FolderOpen },
+      { name: 'Skapa Recept', href: '/dashboard/content/recipes', icon: ChefHat },
     ]
   },
-  { name: 'Artikel Bank', href: '/dashboard/articles', icon: Library },
-  { name: 'Recept Bank', href: '/dashboard/recipes', icon: ChefHat },
+  { name: 'Kunskapsbanken', href: '/dashboard/articles', icon: Library },
+  { name: 'Recept', href: '/dashboard/recipes', icon: ChefHat },
   {
     name: 'Verktyg',
     icon: Calculator,
