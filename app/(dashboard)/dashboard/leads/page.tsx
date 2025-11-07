@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Eye, Trash2, Search, UserCheck } from 'lucide-react'
+import { Eye, Trash2, Search, UserCheck, ChevronDown, ChevronUp } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
@@ -66,14 +66,73 @@ export default function LeadsPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [viewingLead, setViewingLead] = useState<Lead | null>(null)
   const [convertingLeadId, setConvertingLeadId] = useState<string | null>(null)
+  const [expandedSections, setExpandedSections] = useState({
+    personal: true,
+    photos: false,
+    training: false,
+    nutrition: false,
+    lifestyle: false,
+    motivation: false,
+    agreement: false
+  })
 
   // Form state
   const [formData, setFormData] = useState({
+    // Personal Information
     name: '',
     email: '',
     phone: '',
+    city: '',
+    country: 'Sverige',
+    hearAboutUs: '',
+
+    // Physical Stats
+    age: '',
+    gender: '',
+    height: '',
+    currentWeight: '',
+    goalWeight: '',
+
+    // Current Photos
+    frontPhoto: null as File | null,
+    backPhoto: null as File | null,
+    sidePhoto: null as File | null,
+
+    // Training
+    currentTraining: '',
+    trainingExperience: '',
+    trainingGoals: '',
+    injuries: '',
+    availableTime: '',
+    workoutSchedule: '',
+
+    // Nutrition
+    dietHistory: '',
+    macroTracking: '',
+    digestion: '',
+    allergies: '',
+    favoriteFoods: '',
+    foodsDislikes: '',
+    supplements: '',
+    previousCoaching: '',
+
+    // Lifestyle
+    stressLevel: '',
+    sleepHours: '',
+    occupation: '',
+    lifestyle: '',
+
+    // Motivation
+    whyApply: '',
+    commitment: '',
+    expectations: '',
+    challenges: '',
+
+    // Agreement
+    termsAccepted: false,
+    signature: '',
+
     status: 'new',
-    notes: '',
   })
 
   useEffect(() => {
@@ -128,15 +187,95 @@ export default function LeadsPage() {
     setFilteredLeads(filtered)
   }
 
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    if (!formData.name || !formData.email || !formData.phone) {
+      toast.error('Vänligen fyll i alla obligatoriska fält')
+      return
+    }
+
     try {
+      // Create detailed lead notes
+      const leadNotes = `
+ANSÖKAN - 90-Dagars Challenge
+
+=== PERSONUPPGIFTER ===
+Ålder: ${formData.age || 'Ej angivet'}
+Kön: ${formData.gender || 'Ej angivet'}
+Stad: ${formData.city || 'Ej angivet'}
+Land: ${formData.country || 'Ej angivet'}
+Hittade oss via: ${formData.hearAboutUs || 'Ej angivet'}
+
+=== FYSISKA MÅTT ===
+Längd: ${formData.height || 'Ej angivet'} cm
+Nuvarande vikt: ${formData.currentWeight || 'Ej angivet'} kg
+Målvikt: ${formData.goalWeight || 'Ej angivet'} kg
+
+=== AKTUELLA BILDER ===
+Framsida: ${formData.frontPhoto ? formData.frontPhoto.name : 'Ej bifogad'}
+Baksida: ${formData.backPhoto ? formData.backPhoto.name : 'Ej bifogad'}
+Sida: ${formData.sidePhoto ? formData.sidePhoto.name : 'Ej bifogad'}
+
+=== TRÄNING ===
+Nuvarande träning: ${formData.currentTraining || 'Ej angivet'}
+Erfarenhet: ${formData.trainingExperience || 'Ej angivet'}
+Mål: ${formData.trainingGoals || 'Ej angivet'}
+Skador/Begränsningar: ${formData.injuries || 'Ej angivet'}
+Tillgänglig tid: ${formData.availableTime || 'Ej angivet'}
+Träningsschema: ${formData.workoutSchedule || 'Ej angivet'}
+
+=== NÄRING ===
+Kost historik: ${formData.dietHistory || 'Ej angivet'}
+Makro tracking: ${formData.macroTracking || 'Ej angivet'}
+Matsmältning: ${formData.digestion || 'Ej angivet'}
+Allergier: ${formData.allergies || 'Ej angivet'}
+Favoritmat: ${formData.favoriteFoods || 'Ej angivet'}
+Mat ogillar: ${formData.foodsDislikes || 'Ej angivet'}
+Kosttillskott: ${formData.supplements || 'Ej angivet'}
+Tidigare coaching: ${formData.previousCoaching || 'Ej angivet'}
+
+=== LIVSSTIL ===
+Stressnivå: ${formData.stressLevel || 'Ej angivet'}
+Sömn: ${formData.sleepHours || 'Ej angivet'} timmar
+Yrke: ${formData.occupation || 'Ej angivet'}
+Livsstil: ${formData.lifestyle || 'Ej angivet'}
+
+=== MOTIVATION ===
+Varför ansöker du?
+${formData.whyApply || 'Ej angivet'}
+
+Åtagande:
+${formData.commitment || 'Ej angivet'}
+
+Förväntningar:
+${formData.expectations || 'Ej angivet'}
+
+Utmaningar:
+${formData.challenges || 'Ej angivet'}
+
+=== AVTAL & SIGNATUR ===
+Villkor accepterade: ${formData.termsAccepted ? 'Ja' : 'Nej'}
+Signatur: ${formData.signature || 'Ej angivet'}
+Datum: ${new Date().toLocaleDateString('sv-SE')}
+      `.trim()
+
       // Create new lead
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          status: formData.status,
+          notes: leadNotes,
+          tags: ['manual-entry', 'coach-added']
+        }),
       })
 
       if (response.ok) {
@@ -152,8 +291,42 @@ export default function LeadsPage() {
         name: '',
         email: '',
         phone: '',
+        city: '',
+        country: 'Sverige',
+        hearAboutUs: '',
+        age: '',
+        gender: '',
+        height: '',
+        currentWeight: '',
+        goalWeight: '',
+        frontPhoto: null,
+        backPhoto: null,
+        sidePhoto: null,
+        currentTraining: '',
+        trainingExperience: '',
+        trainingGoals: '',
+        injuries: '',
+        availableTime: '',
+        workoutSchedule: '',
+        dietHistory: '',
+        macroTracking: '',
+        digestion: '',
+        allergies: '',
+        favoriteFoods: '',
+        foodsDislikes: '',
+        supplements: '',
+        previousCoaching: '',
+        stressLevel: '',
+        sleepHours: '',
+        occupation: '',
+        lifestyle: '',
+        whyApply: '',
+        commitment: '',
+        expectations: '',
+        challenges: '',
+        termsAccepted: false,
+        signature: '',
         status: 'new',
-        notes: '',
       })
     } catch (error) {
       console.error('Error saving lead:', error)
@@ -361,65 +534,468 @@ export default function LeadsPage() {
                     Lägg till ansökning
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Lägg till ansökning</DialogTitle>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a] border-2 border-[rgba(255,215,0,0.3)]">
+                  <DialogHeader className="border-b border-[rgba(255,215,0,0.2)] pb-4">
+                    <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent font-['Orbitron',sans-serif]">
+                      Lägg till ansökning
+                    </DialogTitle>
+                    <p className="text-[rgba(255,255,255,0.6)] text-sm mt-2">
+                      Fyll i formuläret för att skapa en ny klientansökan
+                    </p>
                   </DialogHeader>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <Label htmlFor="name">Namn *</Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email">E-post</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="phone">Telefon</Label>
-                      <Input
-                        id="phone"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="status">Status</Label>
-                      <Select
-                        value={formData.status}
-                        onValueChange={(value) => setFormData({ ...formData, status: value })}
+                  <form onSubmit={handleSubmit} className="space-y-4 py-4">
+                    {/* Personal Information */}
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => toggleSection('personal')}
+                        className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
                       >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Object.entries(statusLabels).map(([value, label]) => (
-                            <SelectItem key={value} value={value}>
-                              {label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        <h3 className="text-lg font-bold text-[#FFD700] tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                          Personuppgifter
+                        </h3>
+                        {expandedSections.personal ? (
+                          <ChevronUp className="w-5 h-5 text-[#FFD700] group-hover:scale-110 transition-transform" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-[#FFD700] group-hover:scale-110 transition-transform" />
+                        )}
+                      </button>
+
+                      {expandedSections.personal && (
+                        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-4 backdrop-blur-[10px] space-y-4">
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Fullständigt namn *</Label>
+                            <Input
+                              required
+                              value={formData.name}
+                              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                              placeholder="För- och efternamn"
+                            />
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <Label className="text-[rgba(255,255,255,0.8)]">E-post *</Label>
+                              <Input
+                                required
+                                type="email"
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                                placeholder="email@example.com"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-[rgba(255,255,255,0.8)]">Telefon *</Label>
+                              <Input
+                                required
+                                type="tel"
+                                value={formData.phone}
+                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                                placeholder="070-123 45 67"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <Label className="text-[rgba(255,255,255,0.8)]">Stad</Label>
+                              <Input
+                                value={formData.city}
+                                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                                placeholder="Stockholm"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-[rgba(255,255,255,0.8)]">Land</Label>
+                              <Input
+                                value={formData.country}
+                                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                                placeholder="Sverige"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Hur hittade du oss?</Label>
+                            <Input
+                              value={formData.hearAboutUs}
+                              onChange={(e) => setFormData({ ...formData, hearAboutUs: e.target.value })}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                              placeholder="Instagram, Google, rekommendation"
+                            />
+                          </div>
+
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <Label className="text-[rgba(255,255,255,0.8)]">Ålder</Label>
+                              <Input
+                                type="number"
+                                value={formData.age}
+                                onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                                placeholder="25"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-[rgba(255,255,255,0.8)]">Kön</Label>
+                              <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
+                                <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                                  <SelectValue placeholder="Välj" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="male">Man</SelectItem>
+                                  <SelectItem value="female">Kvinna</SelectItem>
+                                  <SelectItem value="other">Annat</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          <div className="grid md:grid-cols-3 gap-4">
+                            <div>
+                              <Label className="text-[rgba(255,255,255,0.8)]">Längd (cm)</Label>
+                              <Input
+                                type="number"
+                                value={formData.height}
+                                onChange={(e) => setFormData({ ...formData, height: e.target.value })}
+                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                                placeholder="175"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-[rgba(255,255,255,0.8)]">Nuvarande vikt (kg)</Label>
+                              <Input
+                                type="number"
+                                value={formData.currentWeight}
+                                onChange={(e) => setFormData({ ...formData, currentWeight: e.target.value })}
+                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                                placeholder="80"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-[rgba(255,255,255,0.8)]">Målvikt (kg)</Label>
+                              <Input
+                                type="number"
+                                value={formData.goalWeight}
+                                onChange={(e) => setFormData({ ...formData, goalWeight: e.target.value })}
+                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                                placeholder="70"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Status</Label>
+                            <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {Object.entries(statusLabels).map(([value, label]) => (
+                                  <SelectItem key={value} value={value}>
+                                    {label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div>
-                      <Label htmlFor="notes">Anteckningar</Label>
-                      <Textarea
-                        id="notes"
-                        value={formData.notes}
-                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                        rows={3}
-                      />
+
+                    {/* Training */}
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => toggleSection('training')}
+                        className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
+                      >
+                        <h3 className="text-lg font-bold text-[#FFD700] tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                          Träning
+                        </h3>
+                        {expandedSections.training ? (
+                          <ChevronUp className="w-5 h-5 text-[#FFD700] group-hover:scale-110 transition-transform" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-[#FFD700] group-hover:scale-110 transition-transform" />
+                        )}
+                      </button>
+
+                      {expandedSections.training && (
+                        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-4 backdrop-blur-[10px] space-y-4">
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Nuvarande träning</Label>
+                            <Textarea
+                              value={formData.currentTraining}
+                              onChange={(e) => setFormData({ ...formData, currentTraining: e.target.value })}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                              placeholder="Beskriv nuvarande träningsrutin"
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Träningserfarenhet</Label>
+                            <Select value={formData.trainingExperience} onValueChange={(value) => setFormData({ ...formData, trainingExperience: value })}>
+                              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                                <SelectValue placeholder="Välj erfarenhetsnivå" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="beginner">Nybörjare (0-6 månader)</SelectItem>
+                                <SelectItem value="intermediate">Medel (6 månader - 2 år)</SelectItem>
+                                <SelectItem value="advanced">Avancerad (2+ år)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Träningsmål</Label>
+                            <Textarea
+                              value={formData.trainingGoals}
+                              onChange={(e) => setFormData({ ...formData, trainingGoals: e.target.value })}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[60px]"
+                              placeholder="Vad vill du uppnå?"
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Skador/begränsningar</Label>
+                            <Textarea
+                              value={formData.injuries}
+                              onChange={(e) => setFormData({ ...formData, injuries: e.target.value })}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[60px]"
+                              placeholder="Eventuella skador eller begränsningar"
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Tillgänglig tid</Label>
+                            <Select value={formData.availableTime} onValueChange={(value) => setFormData({ ...formData, availableTime: value })}>
+                              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                                <SelectValue placeholder="Hur många dagar/vecka?" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="1-2">1-2 dagar/vecka</SelectItem>
+                                <SelectItem value="3-4">3-4 dagar/vecka</SelectItem>
+                                <SelectItem value="5-6">5-6 dagar/vecka</SelectItem>
+                                <SelectItem value="7">7 dagar/vecka</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Träningsschema</Label>
+                            <Input
+                              value={formData.workoutSchedule}
+                              onChange={(e) => setFormData({ ...formData, workoutSchedule: e.target.value })}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                              placeholder="T.ex. 'Morgon 06:00'"
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex justify-end gap-2">
+
+                    {/* Nutrition */}
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => toggleSection('nutrition')}
+                        className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
+                      >
+                        <h3 className="text-lg font-bold text-[#FFD700] tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                          Näring
+                        </h3>
+                        {expandedSections.nutrition ? (
+                          <ChevronUp className="w-5 h-5 text-[#FFD700] group-hover:scale-110 transition-transform" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-[#FFD700] group-hover:scale-110 transition-transform" />
+                        )}
+                      </button>
+
+                      {expandedSections.nutrition && (
+                        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-4 backdrop-blur-[10px] space-y-4">
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Kost historik</Label>
+                            <Textarea
+                              value={formData.dietHistory}
+                              onChange={(e) => setFormData({ ...formData, dietHistory: e.target.value })}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                              placeholder="Tidigare erfarenheter av kostförändringar"
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Makroräkning</Label>
+                            <Select value={formData.macroTracking} onValueChange={(value) => setFormData({ ...formData, macroTracking: value })}>
+                              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                                <SelectValue placeholder="Erfarenhet av makroräkning?" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="never">Aldrig</SelectItem>
+                                <SelectItem value="some">Lite erfarenhet</SelectItem>
+                                <SelectItem value="experienced">Mycket erfarenhet</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Allergier</Label>
+                            <Input
+                              value={formData.allergies}
+                              onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                              placeholder="T.ex. gluten, laktos"
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Favoritmat</Label>
+                            <Input
+                              value={formData.favoriteFoods}
+                              onChange={(e) => setFormData({ ...formData, favoriteFoods: e.target.value })}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                              placeholder="Mat du älskar"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Lifestyle */}
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => toggleSection('lifestyle')}
+                        className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
+                      >
+                        <h3 className="text-lg font-bold text-[#FFD700] tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                          Livsstil
+                        </h3>
+                        {expandedSections.lifestyle ? (
+                          <ChevronUp className="w-5 h-5 text-[#FFD700] group-hover:scale-110 transition-transform" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-[#FFD700] group-hover:scale-110 transition-transform" />
+                        )}
+                      </button>
+
+                      {expandedSections.lifestyle && (
+                        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-4 backdrop-blur-[10px] space-y-4">
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Stressnivå</Label>
+                            <Select value={formData.stressLevel} onValueChange={(value) => setFormData({ ...formData, stressLevel: value })}>
+                              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                                <SelectValue placeholder="Hur stressad känner du dig?" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="low">Låg stress</SelectItem>
+                                <SelectItem value="medium">Måttlig stress</SelectItem>
+                                <SelectItem value="high">Hög stress</SelectItem>
+                                <SelectItem value="very-high">Mycket hög stress</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Sömn per natt</Label>
+                            <Select value={formData.sleepHours} onValueChange={(value) => setFormData({ ...formData, sleepHours: value })}>
+                              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                                <SelectValue placeholder="Hur många timmar?" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="<5">Mindre än 5 timmar</SelectItem>
+                                <SelectItem value="5-6">5-6 timmar</SelectItem>
+                                <SelectItem value="6-7">6-7 timmar</SelectItem>
+                                <SelectItem value="7-8">7-8 timmar</SelectItem>
+                                <SelectItem value=">8">Mer än 8 timmar</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Yrke</Label>
+                            <Input
+                              value={formData.occupation}
+                              onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                              placeholder="Vad arbetar du med?"
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Livsstil</Label>
+                            <Textarea
+                              value={formData.lifestyle}
+                              onChange={(e) => setFormData({ ...formData, lifestyle: e.target.value })}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                              placeholder="Beskriv din vardag"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Motivation */}
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => toggleSection('motivation')}
+                        className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
+                      >
+                        <h3 className="text-lg font-bold text-[#FFD700] tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                          Motivation
+                        </h3>
+                        {expandedSections.motivation ? (
+                          <ChevronUp className="w-5 h-5 text-[#FFD700] group-hover:scale-110 transition-transform" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-[#FFD700] group-hover:scale-110 transition-transform" />
+                        )}
+                      </button>
+
+                      {expandedSections.motivation && (
+                        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-4 backdrop-blur-[10px] space-y-4">
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Varför ansöker du?</Label>
+                            <Textarea
+                              value={formData.whyApply}
+                              onChange={(e) => setFormData({ ...formData, whyApply: e.target.value })}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
+                              placeholder="Dina mål och motivation"
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Åtagande</Label>
+                            <Select value={formData.commitment} onValueChange={(value) => setFormData({ ...formData, commitment: value })}>
+                              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                                <SelectValue placeholder="Kan du följa planen?" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="yes-100">Ja, 100% committed</SelectItem>
+                                <SelectItem value="yes-mostly">Ja, men behöver flexibilitet</SelectItem>
+                                <SelectItem value="unsure">Osäker</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div>
+                            <Label className="text-[rgba(255,255,255,0.8)]">Förväntningar</Label>
+                            <Textarea
+                              value={formData.expectations}
+                              onChange={(e) => setFormData({ ...formData, expectations: e.target.value })}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                              placeholder="Vad förväntar du dig?"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Submit buttons */}
+                    <div className="flex justify-end gap-3 pt-4 border-t border-[rgba(255,215,0,0.2)]">
                       <Button
                         type="button"
                         variant="outline"
@@ -429,15 +1005,50 @@ export default function LeadsPage() {
                             name: '',
                             email: '',
                             phone: '',
+                            city: '',
+                            country: 'Sverige',
+                            hearAboutUs: '',
+                            age: '',
+                            gender: '',
+                            height: '',
+                            currentWeight: '',
+                            goalWeight: '',
+                            frontPhoto: null,
+                            backPhoto: null,
+                            sidePhoto: null,
+                            currentTraining: '',
+                            trainingExperience: '',
+                            trainingGoals: '',
+                            injuries: '',
+                            availableTime: '',
+                            workoutSchedule: '',
+                            dietHistory: '',
+                            macroTracking: '',
+                            digestion: '',
+                            allergies: '',
+                            favoriteFoods: '',
+                            foodsDislikes: '',
+                            supplements: '',
+                            previousCoaching: '',
+                            stressLevel: '',
+                            sleepHours: '',
+                            occupation: '',
+                            lifestyle: '',
+                            whyApply: '',
+                            commitment: '',
+                            expectations: '',
+                            challenges: '',
+                            termsAccepted: false,
+                            signature: '',
                             status: 'new',
-                            notes: '',
                           })
                         }}
+                        className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,215,0,0.1)]"
                       >
                         Avbryt
                       </Button>
                       <Button type="submit" className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold hover:opacity-90">
-                        Lägg till
+                        Skapa ansökning
                       </Button>
                     </div>
                   </form>
