@@ -90,7 +90,6 @@ export default function LeadsPage() {
     gender: '',
     height: '',
     currentWeight: '',
-    goalWeight: '',
 
     // Current Photos
     frontPhoto: null as File | null,
@@ -214,7 +213,6 @@ Land: ${formData.country || 'Ej angivet'}
 === FYSISKA MÅTT ===
 Längd: ${formData.height || 'Ej angivet'} cm
 Nuvarande vikt: ${formData.currentWeight || 'Ej angivet'} kg
-Målvikt: ${formData.goalWeight || 'Ej angivet'} kg
 
 === AKTUELLA BILDER ===
 Framsida: ${formData.frontPhoto ? formData.frontPhoto.name : 'Ej bifogad'}
@@ -297,7 +295,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
         gender: '',
         height: '',
         currentWeight: '',
-        goalWeight: '',
         frontPhoto: null,
         backPhoto: null,
         sidePhoto: null,
@@ -645,7 +642,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                             </div>
                           </div>
 
-                          <div className="grid md:grid-cols-3 gap-4">
+                          <div className="grid md:grid-cols-2 gap-4">
                             <div>
                               <Label className="text-[rgba(255,255,255,0.8)]">Längd (cm)</Label>
                               <Input
@@ -664,16 +661,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                                 onChange={(e) => setFormData({ ...formData, currentWeight: e.target.value })}
                                 className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
                                 placeholder="80"
-                              />
-                            </div>
-                            <div>
-                              <Label className="text-[rgba(255,255,255,0.8)]">Målvikt (kg)</Label>
-                              <Input
-                                type="number"
-                                value={formData.goalWeight}
-                                onChange={(e) => setFormData({ ...formData, goalWeight: e.target.value })}
-                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                                placeholder="70"
                               />
                             </div>
                           </div>
@@ -1077,7 +1064,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                             gender: '',
                             height: '',
                             currentWeight: '',
-                            goalWeight: '',
                             frontPhoto: null,
                             backPhoto: null,
                             sidePhoto: null,
@@ -1274,7 +1260,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                                   <h3 className="text-lg font-semibold text-[#FFD700] mb-4 flex items-center gap-2">
                                     📏 Fysiska mått
                                   </h3>
-                                  <div className="grid grid-cols-3 gap-4 text-sm">
+                                  <div className="grid grid-cols-2 gap-4 text-sm">
                                     {lead.notes.match(/Längd: (.*?) cm/)?.[1] && (
                                       <div className="bg-[rgba(0,0,0,0.3)] p-3 rounded-lg border border-[rgba(255,215,0,0.1)]">
                                         <p className="text-[rgba(255,215,0,0.7)] text-xs mb-1">Längd</p>
@@ -1285,12 +1271,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                                       <div className="bg-[rgba(0,0,0,0.3)] p-3 rounded-lg border border-[rgba(255,215,0,0.1)]">
                                         <p className="text-[rgba(255,215,0,0.7)] text-xs mb-1">Nuvarande vikt</p>
                                         <p className="text-[rgba(255,255,255,0.9)] font-semibold text-lg">{lead.notes.match(/Nuvarande vikt: (.*?) kg/)?.[1]} kg</p>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Målvikt: (.*?) kg/)?.[1] && (
-                                      <div className="bg-[rgba(0,0,0,0.3)] p-3 rounded-lg border border-[rgba(255,215,0,0.1)]">
-                                        <p className="text-[rgba(255,215,0,0.7)] text-xs mb-1">Målvikt</p>
-                                        <p className="text-[rgba(34,197,94,0.9)] font-semibold text-lg">{lead.notes.match(/Målvikt: (.*?) kg/)?.[1]} kg</p>
                                       </div>
                                     )}
                                   </div>
