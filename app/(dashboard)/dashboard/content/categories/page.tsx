@@ -265,118 +265,131 @@ export default function CategoriesPage() {
 
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
-      <div className="container mx-auto p-6">
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-muted-foreground">Du har inte behörighet att se denna sida.</p>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+        <div className="container mx-auto p-6">
+          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
+            <p className="text-[rgba(255,255,255,0.7)]">Du har inte behörighet att se denna sida.</p>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Skapa Kategorier</h1>
-          <p className="text-muted-foreground mt-1">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+      <div className="container mx-auto p-6 space-y-8 max-w-7xl">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
+          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
+            Kategorier
+          </h1>
+          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
             Skapa och hantera kategorier för Kunskapsbanken
           </p>
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Ny kategori
-        </Button>
-      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Alla kategorier</CardTitle>
-        </CardHeader>
-        <CardContent>
+        {/* Action button */}
+        <div className="flex justify-end">
+          <Button
+            onClick={() => setIsCreateDialogOpen(true)}
+            className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold hover:opacity-90 transition-opacity"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Ny kategori
+          </Button>
+        </div>
+
+        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px]">
+          <div className="p-6 border-b border-[rgba(255,215,0,0.1)]">
+            <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">Alla kategorier</h2>
+          </div>
+          <div className="p-6">
           {isLoading ? (
-            <p className="text-muted-foreground text-center py-8">Laddar...</p>
+            <p className="text-[rgba(255,255,255,0.5)] text-center py-8">Laddar...</p>
           ) : categories.length === 0 ? (
             <div className="text-center py-8">
-              <FolderOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">Inga kategorier ännu.</p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <FolderOpen className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
+              <p className="text-[rgba(255,255,255,0.7)]">Inga kategorier ännu.</p>
+              <p className="text-sm text-[rgba(255,255,255,0.5)] mt-1">
                 Skapa din första kategori för att komma igång.
               </p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Namn</TableHead>
-                  <TableHead>Beskrivning</TableHead>
-                  <TableHead>Sektion</TableHead>
-                  <TableHead>Slug</TableHead>
-                  <TableHead className="text-center">Artiklar</TableHead>
-                  <TableHead className="text-right">Åtgärder</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {categories.map((category, index) => (
-                  <TableRow key={category.id}>
-                    <TableCell className="font-medium">{category.name}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {category.description || '-'}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {category.section || '-'}
-                    </TableCell>
-                    <TableCell>
-                      <code className="text-xs bg-gray-100 px-2 py-1 rounded">
-                        {category.slug}
-                      </code>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {category._count.articles}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleMoveCategory(category, 'up')}
-                          disabled={index === 0}
-                        >
-                          <ArrowUp className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleMoveCategory(category, 'down')}
-                          disabled={index === categories.length - 1}
-                        >
-                          <ArrowDown className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openEditDialog(category)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteCategory(category)}
-                          disabled={category._count.articles > 0}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <div className="space-y-2">
+              {/* Table header */}
+              <div className="grid grid-cols-12 gap-4 pb-3 border-b border-[rgba(255,215,0,0.2)] font-semibold text-sm text-[rgba(255,215,0,0.8)]">
+                <div className="col-span-2">Namn</div>
+                <div className="col-span-3">Beskrivning</div>
+                <div className="col-span-2">Sektion</div>
+                <div className="col-span-2">Slug</div>
+                <div className="col-span-1 text-center">Artiklar</div>
+                <div className="col-span-2 text-right">Åtgärder</div>
+              </div>
+
+              {/* Table rows */}
+              {categories.map((category, index) => (
+                <div
+                  key={category.id}
+                  className="grid grid-cols-12 gap-4 py-3 border-b border-[rgba(255,215,0,0.1)] items-center hover:bg-[rgba(255,215,0,0.05)] transition-colors rounded-lg px-2"
+                >
+                  <div className="col-span-2 font-medium text-[rgba(255,255,255,0.9)]">
+                    {category.name}
+                  </div>
+                  <div className="col-span-3 text-[rgba(255,255,255,0.6)] text-sm">
+                    {category.description || '-'}
+                  </div>
+                  <div className="col-span-2 text-[rgba(255,255,255,0.6)] text-sm">
+                    {category.section || '-'}
+                  </div>
+                  <div className="col-span-2">
+                    <code className="text-xs bg-[rgba(255,215,0,0.1)] text-[#FFD700] px-2 py-1 rounded border border-[rgba(255,215,0,0.2)]">
+                      {category.slug}
+                    </code>
+                  </div>
+                  <div className="col-span-1 text-center text-[rgba(255,255,255,0.9)]">
+                    {category._count.articles}
+                  </div>
+                  <div className="col-span-2 flex items-center justify-end gap-2">
+                    <button
+                      onClick={() => handleMoveCategory(category, 'up')}
+                      disabled={index === 0}
+                      className="p-2 hover:bg-[rgba(255,215,0,0.1)] rounded transition-colors text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] disabled:opacity-30 disabled:cursor-not-allowed"
+                      title="Flytta upp"
+                    >
+                      <ArrowUp className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleMoveCategory(category, 'down')}
+                      disabled={index === categories.length - 1}
+                      className="p-2 hover:bg-[rgba(255,215,0,0.1)] rounded transition-colors text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] disabled:opacity-30 disabled:cursor-not-allowed"
+                      title="Flytta ner"
+                    >
+                      <ArrowDown className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => openEditDialog(category)}
+                      className="p-2 hover:bg-[rgba(255,215,0,0.1)] rounded transition-colors text-[rgba(255,215,0,0.8)] hover:text-[#FFD700]"
+                      title="Redigera"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteCategory(category)}
+                      disabled={category._count.articles > 0}
+                      className="p-2 hover:bg-[rgba(239,68,68,0.1)] rounded transition-colors text-[rgba(239,68,68,0.8)] hover:text-[rgb(239,68,68)] disabled:opacity-30 disabled:cursor-not-allowed"
+                      title="Radera"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
-        </CardContent>
-      </Card>
+          </div>
+        </div>
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
@@ -386,25 +399,28 @@ export default function CategoriesPage() {
           setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
         }
       }}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Skapa ny kategori</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-w-2xl bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a] border-2 border-[rgba(255,215,0,0.3)]">
+          <DialogHeader className="border-b border-[rgba(255,215,0,0.2)] pb-4">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent font-['Orbitron',sans-serif]">
+              Skapa ny kategori
+            </DialogTitle>
+            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
               Lägg till en ny kategori för att organisera artiklar.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-4 py-4">
             <div>
-              <Label htmlFor="name">Namn *</Label>
+              <Label htmlFor="name" className="text-[rgba(255,255,255,0.8)]">Namn *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleNameChange(e.target.value)}
                 placeholder="t.ex. Nutrition, Träning, Mindset"
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
               />
             </div>
             <div>
-              <Label htmlFor="section">Sektion (gruppering)</Label>
+              <Label htmlFor="section" className="text-[rgba(255,255,255,0.8)]">Sektion (gruppering)</Label>
               {uniqueSections.length > 0 ? (
                 <Popover open={sectionComboboxOpen} onOpenChange={setSectionComboboxOpen}>
                   <PopoverTrigger asChild>
@@ -412,7 +428,7 @@ export default function CategoriesPage() {
                       variant="outline"
                       role="combobox"
                       aria-expanded={sectionComboboxOpen}
-                      className="w-full justify-between font-normal"
+                      className="w-full justify-between font-normal bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white hover:bg-[rgba(255,215,0,0.1)]"
                     >
                       {formData.section || "Välj sektion eller skriv ny..."}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -459,36 +475,39 @@ export default function CategoriesPage() {
                   value={formData.section}
                   onChange={(e) => setFormData({ ...formData, section: e.target.value })}
                   placeholder="t.ex. INNAN DU BÖRJAR, GENOMGÅNG AV 90 DAGARS CHALLENGEN"
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
                 />
               )}
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
                 Grupperar kategorier under en rubrik i Kunskapsbanken
               </p>
             </div>
             <div>
-              <Label htmlFor="slug">Slug *</Label>
+              <Label htmlFor="slug" className="text-[rgba(255,255,255,0.8)]">Slug *</Label>
               <Input
                 id="slug"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                 placeholder="t.ex. nutrition, traning, mindset"
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
               />
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
                 URL-vänligt namn (endast små bokstäver, siffror och bindestreck)
               </p>
             </div>
             <div>
-              <Label htmlFor="description">Beskrivning</Label>
+              <Label htmlFor="description" className="text-[rgba(255,255,255,0.8)]">Beskrivning</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Kort beskrivning av kategorin..."
                 rows={3}
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
               />
             </div>
             <div>
-              <Label>Färg *</Label>
+              <Label className="text-[rgba(255,255,255,0.8)]">Färg *</Label>
               <div className="grid grid-cols-6 gap-2 mt-2">
                 {PRESET_COLORS.map((color) => (
                   <button
@@ -507,16 +526,24 @@ export default function CategoriesPage() {
                   />
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Vald färg: <span className="font-mono">{formData.color}</span>
+              <p className="text-xs text-[rgba(255,255,255,0.5)] mt-2">
+                Vald färg: <span className="font-mono text-[#FFD700]">{formData.color}</span>
               </p>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+          <DialogFooter className="border-t border-[rgba(255,215,0,0.2)] pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsCreateDialogOpen(false)}
+              className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,215,0,0.1)]"
+            >
               Avbryt
             </Button>
-            <Button onClick={handleCreateCategory} disabled={isSaving}>
+            <Button
+              onClick={handleCreateCategory}
+              disabled={isSaving}
+              className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold hover:opacity-90"
+            >
               {isSaving ? 'Skapar...' : 'Skapa kategori'}
             </Button>
           </DialogFooter>
@@ -532,24 +559,27 @@ export default function CategoriesPage() {
           setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
         }
       }}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Redigera kategori</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-w-2xl bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a] border-2 border-[rgba(255,215,0,0.3)]">
+          <DialogHeader className="border-b border-[rgba(255,215,0,0.2)] pb-4">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent font-['Orbitron',sans-serif]">
+              Redigera kategori
+            </DialogTitle>
+            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
               Uppdatera kategoriinformationen.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-4 py-4">
             <div>
-              <Label htmlFor="edit-name">Namn *</Label>
+              <Label htmlFor="edit-name" className="text-[rgba(255,255,255,0.8)]">Namn *</Label>
               <Input
                 id="edit-name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
               />
             </div>
             <div>
-              <Label htmlFor="edit-section">Sektion (gruppering)</Label>
+              <Label htmlFor="edit-section" className="text-[rgba(255,255,255,0.8)]">Sektion (gruppering)</Label>
               {uniqueSections.length > 0 ? (
                 <Popover open={sectionComboboxOpen} onOpenChange={setSectionComboboxOpen}>
                   <PopoverTrigger asChild>
@@ -557,7 +587,7 @@ export default function CategoriesPage() {
                       variant="outline"
                       role="combobox"
                       aria-expanded={sectionComboboxOpen}
-                      className="w-full justify-between font-normal"
+                      className="w-full justify-between font-normal bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white hover:bg-[rgba(255,215,0,0.1)]"
                     >
                       {formData.section || "Välj sektion eller skriv ny..."}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -604,31 +634,34 @@ export default function CategoriesPage() {
                   value={formData.section}
                   onChange={(e) => setFormData({ ...formData, section: e.target.value })}
                   placeholder="t.ex. INNAN DU BÖRJAR, GENOMGÅNG AV 90 DAGARS CHALLENGEN"
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
                 />
               )}
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
                 Grupperar kategorier under en rubrik i Kunskapsbanken
               </p>
             </div>
             <div>
-              <Label htmlFor="edit-slug">Slug *</Label>
+              <Label htmlFor="edit-slug" className="text-[rgba(255,255,255,0.8)]">Slug *</Label>
               <Input
                 id="edit-slug"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
               />
             </div>
             <div>
-              <Label htmlFor="edit-description">Beskrivning</Label>
+              <Label htmlFor="edit-description" className="text-[rgba(255,255,255,0.8)]">Beskrivning</Label>
               <Textarea
                 id="edit-description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
               />
             </div>
             <div>
-              <Label>Färg *</Label>
+              <Label className="text-[rgba(255,255,255,0.8)]">Färg *</Label>
               <div className="grid grid-cols-6 gap-2 mt-2">
                 {PRESET_COLORS.map((color) => (
                   <button
@@ -647,21 +680,30 @@ export default function CategoriesPage() {
                   />
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Vald färg: <span className="font-mono">{formData.color}</span>
+              <p className="text-xs text-[rgba(255,255,255,0.5)] mt-2">
+                Vald färg: <span className="font-mono text-[#FFD700]">{formData.color}</span>
               </p>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+          <DialogFooter className="border-t border-[rgba(255,215,0,0.2)] pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditDialogOpen(false)}
+              className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,215,0,0.1)]"
+            >
               Avbryt
             </Button>
-            <Button onClick={handleUpdateCategory} disabled={isSaving}>
+            <Button
+              onClick={handleUpdateCategory}
+              disabled={isSaving}
+              className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold hover:opacity-90"
+            >
               {isSaving ? 'Sparar...' : 'Spara ändringar'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   )
 }
