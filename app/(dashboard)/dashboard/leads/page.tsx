@@ -203,6 +203,8 @@ export default function LeadsPage() {
       const leadNotes = `
 ANSÖKAN - 90-Dagars Challenge
 
+Även om vårt program har en specifik, beprövad metodik och struktur, är detaljerna fortfarande anpassade efter dig — din kropp, din livsstil, dina omständigheter. Denna inledande kartläggning är en utmärkt utgångspunkt för oss båda att se var vi befinner oss och fastställa den bästa startpunkten för dig.
+
 === PERSONUPPGIFTER ===
 Ålder: ${formData.age || 'Ej angivet'}
 Kön: ${formData.gender || 'Ej angivet'}
