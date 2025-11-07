@@ -84,7 +84,6 @@ export default function LeadsPage() {
     phone: '',
     city: '',
     country: 'Sverige',
-    hearAboutUs: '',
 
     // Physical Stats
     age: '',
@@ -209,7 +208,6 @@ ANSÖKAN - 90-Dagars Challenge
 Kön: ${formData.gender || 'Ej angivet'}
 Stad: ${formData.city || 'Ej angivet'}
 Land: ${formData.country || 'Ej angivet'}
-Hittade oss via: ${formData.hearAboutUs || 'Ej angivet'}
 
 === FYSISKA MÅTT ===
 Längd: ${formData.height || 'Ej angivet'} cm
@@ -293,7 +291,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
         phone: '',
         city: '',
         country: 'Sverige',
-        hearAboutUs: '',
         age: '',
         gender: '',
         height: '',
@@ -618,16 +615,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                                 placeholder="Sverige"
                               />
                             </div>
-                          </div>
-
-                          <div>
-                            <Label className="text-[rgba(255,255,255,0.8)]">Hur hittade du oss?</Label>
-                            <Input
-                              value={formData.hearAboutUs}
-                              onChange={(e) => setFormData({ ...formData, hearAboutUs: e.target.value })}
-                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                              placeholder="Instagram, Google, rekommendation"
-                            />
                           </div>
 
                           <div className="grid md:grid-cols-2 gap-4">
@@ -1007,7 +994,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                             phone: '',
                             city: '',
                             country: 'Sverige',
-                            hearAboutUs: '',
                             age: '',
                             gender: '',
                             height: '',
