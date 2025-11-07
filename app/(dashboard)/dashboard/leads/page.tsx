@@ -695,6 +695,78 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                       )}
                     </div>
 
+                    {/* Photos */}
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={() => toggleSection('photos')}
+                        className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
+                      >
+                        <h3 className="text-lg font-bold text-[#FFD700] tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                          Aktuella Bilder
+                        </h3>
+                        {expandedSections.photos ? (
+                          <ChevronUp className="w-5 h-5 text-[#FFD700] group-hover:scale-110 transition-transform" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-[#FFD700] group-hover:scale-110 transition-transform" />
+                        )}
+                      </button>
+
+                      {expandedSections.photos && (
+                        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-4 backdrop-blur-[10px] space-y-4">
+                          <div className="space-y-4">
+                            <div>
+                              <Label className="text-[rgba(255,255,255,0.8)]">Framsida</Label>
+                              <p className="text-xs text-[rgba(255,255,255,0.5)] mb-2">
+                                Foto framifrån (standing front view)
+                              </p>
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0] || null
+                                  setFormData({ ...formData, frontPhoto: file })
+                                }}
+                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white file:bg-[rgba(255,215,0,0.1)] file:text-[#FFD700] file:border-0 file:mr-4 file:py-2 file:px-4"
+                              />
+                            </div>
+
+                            <div>
+                              <Label className="text-[rgba(255,255,255,0.8)]">Baksida</Label>
+                              <p className="text-xs text-[rgba(255,255,255,0.5)] mb-2">
+                                Foto bakifrån (standing back view)
+                              </p>
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0] || null
+                                  setFormData({ ...formData, backPhoto: file })
+                                }}
+                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white file:bg-[rgba(255,215,0,0.1)] file:text-[#FFD700] file:border-0 file:mr-4 file:py-2 file:px-4"
+                              />
+                            </div>
+
+                            <div>
+                              <Label className="text-[rgba(255,255,255,0.8)]">Sida</Label>
+                              <p className="text-xs text-[rgba(255,255,255,0.5)] mb-2">
+                                Foto från sidan (standing side view)
+                              </p>
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0] || null
+                                  setFormData({ ...formData, sidePhoto: file })
+                                }}
+                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white file:bg-[rgba(255,215,0,0.1)] file:text-[#FFD700] file:border-0 file:mr-4 file:py-2 file:px-4"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
                     {/* Training */}
                     <div className="space-y-3">
                       <button
@@ -913,12 +985,17 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                           </div>
 
                           <div>
-                            <Label className="text-[rgba(255,255,255,0.8)]">Livsstil</Label>
+                            <Label className="text-[rgba(255,255,255,0.8)]">
+                              Hur ser din vardag ut? *
+                            </Label>
+                            <p className="text-xs text-[rgba(255,255,255,0.5)] mb-2">
+                              Välj en vardag och ta mig från tiden du vaknar hela vägen till tiden du går och lägger dig.
+                            </p>
                             <Textarea
                               value={formData.lifestyle}
                               onChange={(e) => setFormData({ ...formData, lifestyle: e.target.value })}
-                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                              placeholder="Beskriv din vardag"
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[120px]"
+                              placeholder="Beskriv en typisk vardag från morgon till kväll..."
                             />
                           </div>
                         </div>
