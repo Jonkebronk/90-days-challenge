@@ -1,16 +1,17 @@
 'use client'
 
-import { Calculator, Utensils, Activity } from 'lucide-react'
+import { Calculator, Utensils, Activity, ChefHat } from 'lucide-react'
 
 interface ToolsSidebarProps {
-  activeTool: 'calories' | 'meals' | 'steps'
-  onToolChange: (tool: 'calories' | 'meals' | 'steps') => void
+  activeTool: 'calories' | 'meals' | 'steps' | 'mealplan'
+  onToolChange: (tool: 'calories' | 'meals' | 'steps' | 'mealplan') => void
 }
 
 const tools = [
   { id: 'calories' as const, name: 'Kaloriverktyg', icon: Calculator, color: 'blue' },
   { id: 'meals' as const, name: 'Måltidsfördelning', icon: Utensils, color: 'green' },
-  { id: 'steps' as const, name: 'Stegkalkylator', icon: Activity, color: 'purple' }
+  { id: 'steps' as const, name: 'Stegkalkylator', icon: Activity, color: 'purple' },
+  { id: 'mealplan' as const, name: 'Kostschema', icon: ChefHat, color: 'orange' }
 ]
 
 export default function ToolsSidebar({ activeTool, onToolChange }: ToolsSidebarProps) {

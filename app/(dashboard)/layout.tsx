@@ -60,8 +60,8 @@ const navigation = [
   },
   { name: 'Kunskapsbanken', href: '/dashboard/articles', icon: Library },
   { name: 'Recept', href: '/dashboard/recipes', icon: ChefHat },
-  { name: 'Kostschema', href: '/dashboard/meal-plan', icon: Utensils, clientOnly: true },
-  { name: 'Träningsprogram', href: '/dashboard/workout', icon: Dumbbell, clientOnly: true },
+  { name: 'Kostschema', href: '/dashboard/meal-plan', icon: Utensils },
+  { name: 'Träningsprogram', href: '/dashboard/workout', icon: Dumbbell },
   {
     name: 'Verktyg',
     icon: Calculator,

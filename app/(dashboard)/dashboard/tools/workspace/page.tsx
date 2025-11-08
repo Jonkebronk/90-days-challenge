@@ -8,9 +8,10 @@ import ClientSelector from './components/ClientSelector'
 import CalorieTool from './components/CalorieTool'
 import MealDistributionTool from './components/MealDistributionTool'
 import StepsTool from './components/StepsTool'
+import MealPlanTool from './components/MealPlanTool'
 
 export default function WorkspacePage() {
-  const [activeTool, setActiveTool] = useState<'calories' | 'meals' | 'steps'>('calories')
+  const [activeTool, setActiveTool] = useState<'calories' | 'meals' | 'steps' | 'mealplan'>('calories')
 
   return (
     <ClientPlanProvider>
@@ -29,6 +30,7 @@ export default function WorkspacePage() {
               {activeTool === 'calories' && <CalorieTool />}
               {activeTool === 'meals' && <MealDistributionTool />}
               {activeTool === 'steps' && <StepsTool />}
+              {activeTool === 'mealplan' && <MealPlanTool />}
             </div>
           </div>
 
