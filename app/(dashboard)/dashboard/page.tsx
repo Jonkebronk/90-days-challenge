@@ -249,20 +249,191 @@ export default function DashboardPage() {
     )
   }
 
-  // Client Dashboard - Keep as is for now since we're focusing on coach dashboard
+  // Client Dashboard
   return (
     <div className="space-y-8">
+      {/* Welcome Header */}
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-[rgba(255,255,255,0.9)] mb-2">
-          Välkommen tillbaka, {session?.user?.name?.split(' ')[0] || 'Champion'}! 👋
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
+        <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
+          Välkommen {session?.user?.name?.split(' ')[0] || 'Champion'}!
         </h1>
-        <p className="text-[rgba(255,255,255,0.6)] text-lg">
-          Här är din översikt för idag
+        <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+          Din översikt för 90-Dagars Challenge
         </p>
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
       </div>
 
-      <div className="text-center py-12 text-[rgba(255,255,255,0.6)]">
-        <p>Klient-dashboard kommer snart</p>
+      {/* Main Action Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+
+        {/* Check-in Card */}
+        <Link href="/dashboard/check-in">
+          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(59,130,246,0.1)] to-transparent opacity-50" />
+
+            {/* Icon */}
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(59,130,246,0.4)]">
+              <Calendar className="w-10 h-10 text-white" />
+            </div>
+
+            {/* Title & Description */}
+            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Check-in</h3>
+            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+              Gör din veckocheckning
+            </p>
+
+            {/* Arrow indicator */}
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+          </div>
+        </Link>
+
+        {/* Progress Card */}
+        <Link href="/dashboard/progress">
+          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(236,72,153,0.1)] to-transparent opacity-50" />
+
+            {/* Icon */}
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#ec4899] to-[#db2777] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(236,72,153,0.4)]">
+              <TrendingUp className="w-10 h-10 text-white" />
+            </div>
+
+            {/* Title & Description */}
+            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Framsteg</h3>
+            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+              Se din utveckling & statistik
+            </p>
+
+            {/* Arrow indicator */}
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+          </div>
+        </Link>
+
+        {/* Kunskapsbanken Card */}
+        <Link href="/dashboard/articles">
+          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(168,85,247,0.1)] to-transparent opacity-50" />
+
+            {/* Icon */}
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#a855f7] to-[#7c3aed] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(168,85,247,0.4)]">
+              <BookOpen className="w-10 h-10 text-white" />
+            </div>
+
+            {/* Title & Description */}
+            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Kunskapsbanken</h3>
+            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+              Läs artiklar & guider
+            </p>
+
+            {/* Arrow indicator */}
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+          </div>
+        </Link>
+
+        {/* Recept Card */}
+        <Link href="/dashboard/recipes">
+          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(255,165,0,0.1)] to-transparent opacity-50" />
+
+            {/* Icon */}
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#FFA500] to-[#ff8800] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(255,165,0,0.4)]">
+              <ChefHat className="w-10 h-10 text-[#0a0a0a]" />
+            </div>
+
+            {/* Title & Description */}
+            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Recept</h3>
+            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+              Hitta matinspiration
+            </p>
+
+            {/* Arrow indicator */}
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+          </div>
+        </Link>
+
+        {/* Profile Card */}
+        <Link href="/dashboard/profile">
+          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(34,197,94,0.1)] to-transparent opacity-50" />
+
+            {/* Icon */}
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(34,197,94,0.4)]">
+              <Users className="w-10 h-10 text-white" />
+            </div>
+
+            {/* Title & Description */}
+            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Min Profil</h3>
+            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+              Hantera dina uppgifter
+            </p>
+
+            {/* Arrow indicator */}
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+          </div>
+        </Link>
+
+        {/* Coming Soon Card */}
+        <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.1)] rounded-2xl p-8 backdrop-blur-[10px] overflow-hidden h-[280px] flex flex-col items-center justify-center opacity-60">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[rgba(100,100,100,0.1)] to-transparent opacity-30" />
+
+          {/* Icon */}
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[rgba(255,255,255,0.1)] to-[rgba(255,255,255,0.05)] flex items-center justify-center mb-6">
+            <Sparkles className="w-10 h-10 text-[rgba(255,215,0,0.5)]" />
+          </div>
+
+          {/* Title & Description */}
+          <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.5)] mb-2 relative z-10">Mer Kommer</h3>
+          <p className="text-[rgba(255,255,255,0.4)] text-center text-sm relative z-10">
+            Spännande funktioner på gång!
+          </p>
+        </div>
+      </div>
+
+      {/* Quick Tips Section */}
+      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] max-w-6xl mx-auto">
+        <div className="p-6 border-b border-[rgba(255,215,0,0.1)]">
+          <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">Kom Igång</h2>
+          <p className="text-[rgba(255,255,255,0.6)] text-sm mt-1">Tips för att få ut det mesta av programmet</p>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm">1</span>
+              </div>
+              <div>
+                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Gör din första check-in</h4>
+                <p className="text-[rgba(255,255,255,0.6)] text-xs">Dokumentera din startvikt och mål</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#a855f7] to-[#7c3aed] flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm">2</span>
+              </div>
+              <div>
+                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Utforska kunskapsbanken</h4>
+                <p className="text-[rgba(255,255,255,0.6)] text-xs">Lär dig grunderna för framgång</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FFA500] to-[#ff8800] flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm">3</span>
+              </div>
+              <div>
+                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Planera dina måltider</h4>
+                <p className="text-[rgba(255,255,255,0.6)] text-xs">Använd recepten för inspiration</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
