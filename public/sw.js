@@ -1,5 +1,5 @@
 // Service Worker for 90 Days Challenge PWA
-const CACHE_NAME = '90-days-v1'
+const CACHE_NAME = '90-days-v2'
 const urlsToCache = [
   '/',
   '/dashboard',
@@ -14,14 +14,29 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache')
-        return cache.addAll(urlsToCache)
+        // Add URLs one by one to prevent failure on missing resources
+        return Promise.all(
+          urlsToCache.map(url =>
+            cache.add(url).catch(err => {
+              console.log('Failed to cache:', url, err)
+              return Promise.resolve() // Don't fail the entire install
+            })
+          )
+        )
       })
       .catch((err) => console.log('Cache install failed:', err))
   )
+  // Force the waiting service worker to become active
+  self.skipWaiting()
 })
 
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', (event) => {
+  // Skip chrome extensions and non-http requests
+  if (!event.request.url.startsWith('http')) {
+    return
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
@@ -42,7 +57,13 @@ self.addEventListener('fetch', (event) => {
 
             caches.open(CACHE_NAME)
               .then((cache) => {
-                cache.put(event.request, responseToCache)
+                cache.put(event.request, responseToCache).catch(err => {
+                  // Ignore cache put errors (e.g., for opaque responses)
+                  console.log('Failed to cache:', event.request.url, err)
+                })
+              })
+              .catch(err => {
+                console.log('Failed to open cache:', err)
               })
 
             return response
@@ -64,10 +85,14 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (!cacheWhitelist.includes(cacheName)) {
+            console.log('Deleting old cache:', cacheName)
             return caches.delete(cacheName)
           }
         })
       )
+    }).then(() => {
+      // Take control of all clients immediately
+      return self.clients.claim()
     })
   )
 })
