@@ -783,13 +783,15 @@ function ClientJournalContent() {
 
 export default function ClientJournalPage() {
   return (
-    <Suspense fallback={
-      <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] p-12 text-center">
-          <p className="text-[rgba(255,255,255,0.6)]">Laddar...</p>
+    <Suspense
+      fallback={
+        <div className="container mx-auto p-6">
+          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] p-12 text-center">
+            <p className="text-[rgba(255,255,255,0.6)]">Laddar klientjournal...</p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <ClientJournalContent />
     </Suspense>
   )
