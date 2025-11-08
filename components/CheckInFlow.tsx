@@ -45,11 +45,31 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     setPhotoFiles(prev => ({ ...prev, [type]: file }))
   }
 
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = (error) => reject(error)
+    })
+  }
+
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
-      // For now, we'll just save the data without uploading images
-      // Image upload will be added in next iteration
+      // Convert photos to base64
+      const photoUrls: { front?: string; side?: string; back?: string } = {}
+
+      if (photoFiles.front) {
+        photoUrls.front = await convertFileToBase64(photoFiles.front)
+      }
+      if (photoFiles.side) {
+        photoUrls.side = await convertFileToBase64(photoFiles.side)
+      }
+      if (photoFiles.back) {
+        photoUrls.back = await convertFileToBase64(photoFiles.back)
+      }
+
       const response = await fetch('/api/check-in', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -57,6 +77,9 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
           userId,
           ...formData,
           weightKg: formData.weightKg ? parseFloat(formData.weightKg) : null,
+          photoFront: photoUrls.front,
+          photoSide: photoUrls.side,
+          photoBack: photoUrls.back,
         }),
       })
 
@@ -557,29 +580,50 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-              {['front', 'side', 'back'].map((type) => (
-                <div key={type} className="space-y-2">
-                  <label className="block">
-                    <div className="w-full aspect-[3/4] border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50">
-                      <div className="text-4xl mb-2">↑</div>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0]
-                          if (file) {
-                            handleFileChange(type as 'front' | 'side' | 'back', file)
-                          }
-                        }}
-                      />
-                    </div>
-                  </label>
-                  <p className="text-sm text-center capitalize">
-                    {type === 'front' ? 'Framsida' : type === 'side' ? 'Sidan' : 'Bakifrån'}
-                  </p>
-                </div>
-              ))}
+              {['front', 'side', 'back'].map((type) => {
+                const file = photoFiles[type as keyof typeof photoFiles]
+                const preview = file ? URL.createObjectURL(file) : null
+
+                return (
+                  <div key={type} className="space-y-2">
+                    <label className="block">
+                      <div className="w-full aspect-[3/4] border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 overflow-hidden relative">
+                        {preview ? (
+                          <>
+                            <img src={preview} alt={type} className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                handleFileChange(type as 'front' | 'side' | 'back', null)
+                              }}
+                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                            >
+                              ✕
+                            </button>
+                          </>
+                        ) : (
+                          <div className="text-4xl mb-2">↑</div>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              handleFileChange(type as 'front' | 'side' | 'back', file)
+                            }
+                          }}
+                        />
+                      </div>
+                    </label>
+                    <p className="text-sm text-center capitalize">
+                      {type === 'front' ? 'Framsida' : type === 'side' ? 'Sidan' : 'Bakifrån'}
+                    </p>
+                  </div>
+                )
+              })}
             </div>
 
             <Button

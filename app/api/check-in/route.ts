@@ -14,6 +14,9 @@ export async function POST(request: NextRequest) {
       workoutPlanAdherence,
       sleepNotes,
       dailySteps,
+      photoFront,
+      photoSide,
+      photoBack,
     } = body
 
     if (!userId) {
@@ -35,6 +38,9 @@ export async function POST(request: NextRequest) {
         workoutPlanAdherence,
         sleepNotes,
         dailySteps,
+        photoFront,
+        photoSide,
+        photoBack,
       },
     })
 
@@ -87,6 +93,17 @@ export async function POST(request: NextRequest) {
         summaryLines.push(`Dagliga steg: ${dailySteps}`)
       }
 
+      // Collect progress photos for message
+      const progressPhotos: string[] = []
+      if (photoFront) progressPhotos.push(photoFront)
+      if (photoSide) progressPhotos.push(photoSide)
+      if (photoBack) progressPhotos.push(photoBack)
+
+      if (progressPhotos.length > 0) {
+        summaryLines.push('')
+        summaryLines.push(`📸 ${progressPhotos.length} framstegsbilder bifogade`)
+      }
+
       await prisma.message.create({
         data: {
           content: summaryLines.join('\n'),
@@ -94,7 +111,7 @@ export async function POST(request: NextRequest) {
           receiverId: user.coachId,
           isCheckInSummary: true,
           checkInId: checkIn.id,
-          images: []
+          images: progressPhotos
         }
       })
 
