@@ -13,6 +13,7 @@ import {
   BookOpen,
   ChefHat,
   Utensils,
+  Dumbbell,
   ChevronRight,
   Sparkles
 } from 'lucide-react'
@@ -371,6 +372,28 @@ export default function DashboardPage() {
             <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Kostschema</h3>
             <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
               Din personliga måltidsplan
+            </p>
+
+            {/* Arrow indicator */}
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+          </div>
+        </Link>
+
+        {/* Träningsprogram Card */}
+        <Link href="/dashboard/workout">
+          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(139,92,246,0.1)] to-transparent opacity-50" />
+
+            {/* Icon */}
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(139,92,246,0.4)]">
+              <Dumbbell className="w-10 h-10 text-white" />
+            </div>
+
+            {/* Title & Description */}
+            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Träningsprogram</h3>
+            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+              Ditt personliga träningsschema
             </p>
 
             {/* Arrow indicator */}

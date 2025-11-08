@@ -13,7 +13,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, Save, Calculator } from 'lucide-react'
+import { ArrowLeft, Save, Calculator, Dumbbell, Calendar, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
 
@@ -67,6 +67,32 @@ interface Client {
   status: string
 }
 
+interface AssignedWorkout {
+  id: string
+  workoutProgram: {
+    id: string
+    name: string
+    description: string | null
+    difficulty: string | null
+    days: {
+      id: string
+      name: string
+      dayNumber: number
+      isRestDay: boolean
+    }[]
+  }
+  startDate: string
+  active: boolean
+}
+
+interface WorkoutProgram {
+  id: string
+  name: string
+  description: string | null
+  difficulty: string | null
+  days: any[]
+}
+
 interface PageProps {
   params: Promise<{ clientId: string }>
 }
@@ -78,6 +104,11 @@ export default function ClientDetailPage({ params }: PageProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [clientId, setClientId] = useState<string>('')
   const [caloriePlan, setCaloriePlan] = useState<CaloriePlan | null>(null)
+  const [assignedWorkout, setAssignedWorkout] = useState<AssignedWorkout | null>(null)
+  const [availablePrograms, setAvailablePrograms] = useState<WorkoutProgram[]>([])
+  const [showWorkoutAssign, setShowWorkoutAssign] = useState(false)
+  const [selectedProgramId, setSelectedProgramId] = useState('')
+  const [isAssigning, setIsAssigning] = useState(false)
 
   const { register, handleSubmit, control, formState: { errors }, setValue } = useForm<ClientProfileForm>({
     mode: 'onChange',
@@ -95,6 +126,8 @@ export default function ClientDetailPage({ params }: PageProps) {
       setClientId(clientId)
       fetchClientData(clientId)
       fetchCaloriePlan(clientId)
+      fetchAssignedWorkout(clientId)
+      fetchAvailablePrograms()
     }
     loadClient()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -139,6 +172,63 @@ export default function ClientDetailPage({ params }: PageProps) {
       }
     } catch (error) {
       console.error('Failed to fetch calorie plan:', error)
+    }
+  }
+
+  const fetchAssignedWorkout = async (id: string) => {
+    try {
+      const response = await fetch(`/api/clients/${id}/workout`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.assignment) {
+          setAssignedWorkout(data.assignment)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch assigned workout:', error)
+    }
+  }
+
+  const fetchAvailablePrograms = async () => {
+    try {
+      const response = await fetch('/api/workout-programs')
+      if (response.ok) {
+        const data = await response.json()
+        setAvailablePrograms(data.programs || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch programs:', error)
+    }
+  }
+
+  const handleAssignWorkout = async () => {
+    if (!selectedProgramId) {
+      toast.error('Please select a program')
+      return
+    }
+
+    setIsAssigning(true)
+    try {
+      const response = await fetch(`/api/workout-programs/${selectedProgramId}/assign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId })
+      })
+
+      if (response.ok) {
+        toast.success('Workout program assigned successfully')
+        setShowWorkoutAssign(false)
+        setSelectedProgramId('')
+        fetchAssignedWorkout(clientId)
+      } else {
+        const errorData = await response.json()
+        toast.error(errorData.error || 'Failed to assign program')
+      }
+    } catch (error) {
+      console.error('Failed to assign workout:', error)
+      toast.error('Failed to assign program')
+    } finally {
+      setIsAssigning(false)
     }
   }
 
@@ -275,6 +365,142 @@ export default function ClientDetailPage({ params }: PageProps) {
           </CardContent>
         </Card>
       )}
+
+      {/* Workout Assignment Section */}
+      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Dumbbell className="text-[#FFD700]" size={24} />
+              <CardTitle className="text-[#FFD700]">Träningsprogram</CardTitle>
+            </div>
+            {!assignedWorkout && !showWorkoutAssign && (
+              <Button
+                onClick={() => setShowWorkoutAssign(true)}
+                variant="outline"
+                size="sm"
+                className="border-[#FFD700] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+              >
+                Tilldela program
+              </Button>
+            )}
+          </div>
+          <CardDescription className="text-[rgba(255,255,255,0.6)]">
+            Tilldelade träningsprogram för klienten
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {assignedWorkout ? (
+            <div className="space-y-4">
+              <div className="bg-[rgba(255,215,0,0.05)] p-4 rounded-lg border border-[rgba(255,215,0,0.3)]">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">
+                      {assignedWorkout.workoutProgram.name}
+                    </h3>
+                    {assignedWorkout.workoutProgram.description && (
+                      <p className="text-sm text-[rgba(255,255,255,0.6)] mt-1">
+                        {assignedWorkout.workoutProgram.description}
+                      </p>
+                    )}
+                  </div>
+                  {assignedWorkout.workoutProgram.difficulty && (
+                    <span className={`text-xs px-2 py-1 rounded ${
+                      assignedWorkout.workoutProgram.difficulty === 'beginner'
+                        ? 'bg-[rgba(40,167,69,0.2)] text-[#28a745]'
+                        : assignedWorkout.workoutProgram.difficulty === 'intermediate'
+                        ? 'bg-[rgba(255,193,7,0.2)] text-[#ffc107]'
+                        : 'bg-[rgba(220,53,69,0.2)] text-[#dc3545]'
+                    }`}>
+                      {assignedWorkout.workoutProgram.difficulty}
+                    </span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.7)]">
+                    <Calendar className="w-4 h-4 text-[#FFD700]" />
+                    <span>{assignedWorkout.workoutProgram.days.length} dagar</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.7)]">
+                    <Dumbbell className="w-4 h-4 text-[#FFD700]" />
+                    <span>
+                      {assignedWorkout.workoutProgram.days.filter(d => !d.isRestDay).length} träningsdagar
+                    </span>
+                  </div>
+                  <div className="text-sm text-[rgba(255,255,255,0.7)]">
+                    Startdatum: {new Date(assignedWorkout.startDate).toLocaleDateString('sv-SE')}
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                variant="outline"
+                className="w-full border-[rgba(255,215,0,0.3)] text-[rgba(255,215,0,0.9)] hover:bg-[rgba(255,215,0,0.1)]"
+                onClick={() => setShowWorkoutAssign(true)}
+              >
+                Ändra program
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          ) : showWorkoutAssign ? (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-[rgba(255,255,255,0.8)]">Välj träningsprogram</Label>
+                <Select value={selectedProgramId} onValueChange={setSelectedProgramId}>
+                  <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                    <SelectValue placeholder="Välj ett program" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availablePrograms.map(program => (
+                      <SelectItem key={program.id} value={program.id}>
+                        <div className="flex items-center gap-2">
+                          <span>{program.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            ({program.days.length} dagar)
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleAssignWorkout}
+                  disabled={isAssigning || !selectedProgramId}
+                  className="flex-1 bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+                >
+                  {isAssigning ? 'Tilldelar...' : 'Tilldela program'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowWorkoutAssign(false)
+                    setSelectedProgramId('')
+                  }}
+                  className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+                >
+                  Avbryt
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-[rgba(255,255,255,0.5)]">
+              <Dumbbell className="w-12 h-12 mx-auto mb-3 opacity-30" />
+              <p>Inget träningsprogram tilldelat ännu</p>
+              <Button
+                onClick={() => setShowWorkoutAssign(true)}
+                variant="outline"
+                className="mt-4 border-[#FFD700] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+              >
+                Tilldela program
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <form onSubmit={onSubmit} className="space-y-6">
         {/* Profile Information */}

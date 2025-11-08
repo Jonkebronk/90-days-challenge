@@ -27,7 +27,8 @@ import {
   Map,
   ChefHat,
   ClipboardList,
-  Bell
+  Bell,
+  Dumbbell
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
@@ -60,6 +61,7 @@ const navigation = [
   { name: 'Kunskapsbanken', href: '/dashboard/articles', icon: Library },
   { name: 'Recept', href: '/dashboard/recipes', icon: ChefHat },
   { name: 'Kostschema', href: '/dashboard/meal-plan', icon: Utensils, clientOnly: true },
+  { name: 'Träningsprogram', href: '/dashboard/workout', icon: Dumbbell, clientOnly: true },
   {
     name: 'Verktyg',
     icon: Calculator,
