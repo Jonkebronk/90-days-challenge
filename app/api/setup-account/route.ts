@@ -28,7 +28,7 @@ async function sendWelcomeEmail(email: string, name: string, coachName: string) 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { token, firstName, lastName, birthdate, gender, password, gdprConsent } = body
+    const { token, password, gdprConsent } = body
 
     if (!token) {
       return NextResponse.json(
@@ -37,9 +37,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!firstName || !lastName || !birthdate || !gender || !password) {
+    if (!password) {
       return NextResponse.json(
-        { error: 'All fields are required' },
+        { error: 'Password is required' },
         { status: 400 }
       )
     }
@@ -88,11 +88,6 @@ export async function POST(request: NextRequest) {
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        firstName,
-        lastName,
-        name: `${firstName} ${lastName}`,
-        birthdate: new Date(birthdate),
-        gender,
         password: hashedPassword,
         status: 'active',
         emailVerified: new Date(),
@@ -105,7 +100,7 @@ export async function POST(request: NextRequest) {
     const coachName = user.coach?.name || 'John Sund'
     await sendWelcomeEmail(
       user.email,
-      `${firstName} ${lastName}`,
+      user.name || `${user.firstName} ${user.lastName}`,
       coachName
     )
 

@@ -17,10 +17,6 @@ import Link from 'next/link'
 import OnboardingFlow from './OnboardingFlow'
 
 const setupSchema = z.object({
-  firstName: z.string().min(1, 'Förnamn krävs'),
-  lastName: z.string().min(1, 'Efternamn krävs'),
-  birthdate: z.string().min(1, 'Födelsedatum krävs'),
-  gender: z.string().min(1, 'Könsidentitet krävs'),
   password: z.string().min(8, 'Lösenord måste vara minst 8 tecken'),
   confirmPassword: z.string(),
   gdprConsent: z.boolean().refine((val) => val === true, {
@@ -68,9 +64,6 @@ function SetupAccountContent() {
       .then((data) => {
         if (data.valid) {
           setClientInfo(data.client)
-          // Pre-fill name fields
-          setValue('firstName', data.client.firstName || '')
-          setValue('lastName', data.client.lastName || '')
         } else {
           setError(data.error || 'Invalid or expired invitation')
         }
@@ -85,9 +78,9 @@ function SetupAccountContent() {
 
   const onNextStep = handleSubmit(async (data) => {
     if (step === 1) {
-      // Validate first step fields including password
-      if (!data.firstName || !data.lastName || !data.birthdate || !data.gender || !data.password) {
-        setError('Vänligen fyll i alla fält')
+      // Validate password
+      if (!data.password) {
+        setError('Vänligen ange ett lösenord')
         return
       }
       if (data.password !== data.confirmPassword) {
@@ -112,10 +105,6 @@ function SetupAccountContent() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             token,
-            firstName: data.firstName,
-            lastName: data.lastName,
-            birthdate: data.birthdate,
-            gender: data.gender,
             password: data.password,
             gdprConsent: data.gdprConsent,
           }),
@@ -188,82 +177,19 @@ function SetupAccountContent() {
             Hallå där - låt oss komma igång!
           </CardTitle>
           <CardDescription className="text-base mt-2">
-            Låt oss skapa ditt konto med {coachName}
+            Skapa ditt konto för {clientInfo?.firstName} {clientInfo?.lastName}
           </CardDescription>
+          {clientInfo?.email && (
+            <p className="text-sm text-muted-foreground mt-2">
+              Användarnamn: <span className="font-medium">{clientInfo.email}</span>
+            </p>
+          )}
         </CardHeader>
         <CardContent>
           <form onSubmit={onNextStep} className="space-y-6">
             {step === 1 ? (
               <>
-                {/* Step 1: Basic Info */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">
-                      Förnamn <span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                      id="firstName"
-                      {...register('firstName')}
-                      disabled={isLoading}
-                      className="bg-muted"
-                    />
-                    {errors.firstName && (
-                      <p className="text-sm text-destructive">{errors.firstName.message}</p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">
-                      Efternamn <span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                      id="lastName"
-                      {...register('lastName')}
-                      disabled={isLoading}
-                      className="bg-muted"
-                    />
-                    {errors.lastName && (
-                      <p className="text-sm text-destructive">{errors.lastName.message}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="birthdate">Vilket är ditt födelsedatum?</Label>
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">Födelsedag</Label>
-                    <Input
-                      id="birthdate"
-                      type="date"
-                      {...register('birthdate')}
-                      disabled={isLoading}
-                      placeholder="MM/DD/YYYY"
-                    />
-                  </div>
-                  {errors.birthdate && (
-                    <p className="text-sm text-destructive">{errors.birthdate.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="gender">Vilken könsidentitet har du?</Label>
-                  <Select
-                    onValueChange={(value) => setValue('gender', value)}
-                    disabled={isLoading}
-                  >
-                    <SelectTrigger id="gender">
-                      <SelectValue placeholder="Kön" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">Man</SelectItem>
-                      <SelectItem value="female">Kvinna</SelectItem>
-                      <SelectItem value="other">Annat</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.gender && (
-                    <p className="text-sm text-destructive">{errors.gender.message}</p>
-                  )}
-                </div>
-
+                {/* Step 1: Password Only */}
                 <div className="space-y-2">
                   <Label htmlFor="password">
                     Skapa lösenord <span className="text-destructive">*</span>
