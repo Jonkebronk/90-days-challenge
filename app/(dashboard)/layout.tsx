@@ -25,7 +25,8 @@ import {
   FolderOpen,
   Library,
   Map,
-  ChefHat
+  ChefHat,
+  ClipboardList
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
@@ -39,6 +40,7 @@ import {
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Klienter', href: '/dashboard/clients', icon: Users, coachOnly: true },
+  { name: 'Journal', href: '/dashboard/journal', icon: ClipboardList, coachOnly: true },
   { name: 'Ansökningar', href: '/dashboard/leads', icon: UserPlus, coachOnly: true },
   {
     name: 'Innehåll',
