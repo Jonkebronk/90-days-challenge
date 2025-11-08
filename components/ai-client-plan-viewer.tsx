@@ -190,11 +190,11 @@ export function AIClientPlanViewer({
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Översikt</TabsTrigger>
-          <TabsTrigger value="calories">Kalorier</TabsTrigger>
-          <TabsTrigger value="meals">Måltider</TabsTrigger>
-          <TabsTrigger value="recommendations">Rekommendationer</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.2)]">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-[rgba(255,255,255,0.6)]">Översikt</TabsTrigger>
+          <TabsTrigger value="calories" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-[rgba(255,255,255,0.6)]">Kalorier</TabsTrigger>
+          <TabsTrigger value="meals" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-[rgba(255,255,255,0.6)]">Måltider</TabsTrigger>
+          <TabsTrigger value="recommendations" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-[rgba(255,255,255,0.6)]">Rekommendationer</TabsTrigger>
         </TabsList>
 
         {/* ÖVERSIKT TAB */}
