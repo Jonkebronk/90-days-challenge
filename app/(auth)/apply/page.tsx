@@ -38,7 +38,6 @@ export default function ApplyPage() {
     phone: '',
     city: '',
     country: 'Sverige',
-    hearAboutUs: '',
 
     // Physical Stats
     age: '',
@@ -121,7 +120,6 @@ ANSÖKAN - 90-Dagars Challenge
 Kön: ${formData.gender || 'Ej angivet'}
 Stad: ${formData.city || 'Ej angivet'}
 Land: ${formData.country || 'Ej angivet'}
-Hittade oss via: ${formData.hearAboutUs || 'Ej angivet'}
 
 === FYSISKA MÅTT ===
 Längd: ${formData.height || 'Ej angivet'} cm
@@ -283,8 +281,8 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
           <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
             Ansök till 90-Dagars Challenge
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
-            Fyll i formuläret nedan så att vi kan skapa din perfekta plan
+          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px] max-w-3xl mx-auto leading-relaxed">
+            Även om vårt program har en specifik, beprövad metodik och struktur, anpassas detaljerna helt efter dig — din kropp, din livsstil, dina förutsättningar. Detta formulär är en viktig startpunkt för oss båda att se var du är idag och bestämma den bästa vägen framåt för dig.
           </p>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
         </div>
@@ -354,16 +352,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                       placeholder="Sverige"
                     />
                   </div>
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Hur hittade du oss?</Label>
-                  <Input
-                    value={formData.hearAboutUs}
-                    onChange={(e) => setFormData({ ...formData, hearAboutUs: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                    placeholder="T.ex. Instagram, Google, rekommendation"
-                  />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
