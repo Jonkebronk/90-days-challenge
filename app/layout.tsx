@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "sonner";
 import SessionProvider from "@/components/providers/SessionProvider";
 import { constructMetadata } from "@/lib/metadata";
+import { PWARegister } from "@/components/pwa-register";
 
 export const metadata: Metadata = constructMetadata({
   title: "90-Dagars Challenge - Personlig Träning & Nutrition",
@@ -31,6 +32,7 @@ export default function RootLayout({
     <html lang="sv">
       <body className="antialiased">
         <SessionProvider>
+          <PWARegister />
           {children}
           <Toaster />
           <Sonner />
