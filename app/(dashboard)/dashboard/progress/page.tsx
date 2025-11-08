@@ -121,94 +121,90 @@ export default function ProgressPage() {
 
   // Client view - Show personal progress
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-        </Link>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold">Din Progress</h1>
-          <p className="text-muted-foreground">Se hur du utvecklas över tid</p>
-        </div>
-
-        {/* Time Range Selector */}
-        <div className="flex gap-1 p-1 bg-muted rounded-lg">
-          <Button
-            size="sm"
-            variant={timeRange === '7' ? 'default' : 'ghost'}
-            onClick={() => setTimeRange('7')}
-          >
-            7d
-          </Button>
-          <Button
-            size="sm"
-            variant={timeRange === '30' ? 'default' : 'ghost'}
-            onClick={() => setTimeRange('30')}
-          >
-            30d
-          </Button>
-          <Button
-            size="sm"
-            variant={timeRange === '90' ? 'default' : 'ghost'}
-            onClick={() => setTimeRange('90')}
-          >
-            90d
-          </Button>
-        </div>
+      <div className="text-center">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
+        <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
+          Din Progress
+        </h1>
+        <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+          Se hur du utvecklas över tid
+        </p>
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Viktförändring</CardDescription>
-          </CardHeader>
-          <CardContent>
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Time Range Selector */}
+        <div className="flex justify-end">
+          <div className="flex gap-2 p-1 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.2)] rounded-lg">
+            <Button
+              size="sm"
+              onClick={() => setTimeRange('7')}
+              className={timeRange === '7'
+                ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold'
+                : 'bg-transparent hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.7)]'}
+            >
+              7d
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => setTimeRange('30')}
+              className={timeRange === '30'
+                ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold'
+                : 'bg-transparent hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.7)]'}
+            >
+              30d
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => setTimeRange('90')}
+              className={timeRange === '90'
+                ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold'
+                : 'bg-transparent hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.7)]'}
+            >
+              90d
+            </Button>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all p-6">
+            <p className="text-[rgba(255,215,0,0.8)] text-sm font-medium mb-3">Viktförändring</p>
             <div className="flex items-baseline gap-2">
-              <div className="text-3xl font-bold">
+              <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
                 {weightChange > 0 ? '+' : ''}{weightChange.toFixed(1)} kg
               </div>
-              {weightChange < 0 && <TrendingDown className="w-5 h-5 text-green-500" />}
-              {weightChange > 0 && <TrendingUp className="w-5 h-5 text-red-500" />}
-              {weightChange === 0 && <Minus className="w-5 h-5 text-muted-foreground" />}
+              {weightChange < 0 && <TrendingDown className="w-5 h-5 text-[#22c55e]" />}
+              {weightChange > 0 && <TrendingUp className="w-5 h-5 text-[#ef4444]" />}
+              {weightChange === 0 && <Minus className="w-5 h-5 text-[rgba(255,255,255,0.4)]" />}
             </div>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-[rgba(255,255,255,0.5)] mt-2">
               Från {startWeight}kg till {currentWeight}kg
             </p>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Genomsnittlig Energi</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">
+          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all p-6">
+            <p className="text-[rgba(255,215,0,0.8)] text-sm font-medium mb-3">Genomsnittlig Energi</p>
+            <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
               {avgEnergy.toFixed(1)} / 5
             </div>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-[rgba(255,255,255,0.5)] mt-2">
               {avgEnergy >= 4 ? 'Bra nivåer! 🎉' : avgEnergy >= 3 ? 'Okej nivåer 👍' : 'Försök få mer vila 😴'}
             </p>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Genomsnittlig Sömn</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">
+          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all p-6">
+            <p className="text-[rgba(255,215,0,0.8)] text-sm font-medium mb-3">Genomsnittlig Sömn</p>
+            <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
               {avgSleep.toFixed(1)}h
             </div>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-[rgba(255,255,255,0.5)] mt-2">
               {avgSleep >= 7 ? 'Bra! 😴' : 'Försök sova mer 🌙'}
             </p>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </div>
 
       {/* Charts */}
       {logs.length > 0 ? (
@@ -320,21 +316,22 @@ export default function ProgressPage() {
           </TabsContent>
         </Tabs>
       ) : (
-        <Card>
-          <CardContent className="py-12">
-            <div className="text-center space-y-4">
-              <div className="text-6xl mb-4">📊</div>
-              <h3 className="text-2xl font-bold">Ingen data än</h3>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                Börja med att göra din första dagliga check-in för att se din progress här!
-              </p>
-              <Link href="/dashboard/check-in">
-                <Button>Gör Check-in</Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all p-12">
+          <div className="text-center space-y-4">
+            <div className="text-6xl mb-4">📊</div>
+            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">Ingen data än</h3>
+            <p className="text-[rgba(255,255,255,0.6)] max-w-md mx-auto">
+              Börja med att göra din första dagliga check-in för att se din progress här!
+            </p>
+            <Link href="/dashboard/check-in">
+              <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold">
+                Gör Check-in
+              </Button>
+            </Link>
+          </div>
+        </div>
       )}
+      </div>
     </div>
   )
 }

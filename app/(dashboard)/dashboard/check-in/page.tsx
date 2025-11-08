@@ -102,23 +102,33 @@ export default function CheckInPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Check-in</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground mb-4">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="text-center">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
+        <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
+          Check-in
+        </h1>
+        <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+          Dokumentera din veckovisa framgång
+        </p>
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
+      </div>
+
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all p-8">
+          <h2 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-4">Veckovis Check-in</h2>
+          <p className="text-[rgba(255,255,255,0.6)] mb-6">
             Det är dags för din veckovisa check-in. Klicka nedan för att börja.
           </p>
           <Button
             onClick={() => setShowCheckIn(true)}
-            className="bg-green-700 hover:bg-green-800 text-white"
+            className="bg-gradient-to-r from-[#22c55e] to-[#16a34a] hover:from-[#22c55e] hover:to-[#22c55e] text-white font-semibold"
           >
             Starta Check-in
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }
