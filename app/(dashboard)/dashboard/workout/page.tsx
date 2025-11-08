@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, BarChart3 } from 'lucide-react'
+import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, BarChart3, Plus } from 'lucide-react'
 import Link from 'next/link'
 
 interface WorkoutDay {
@@ -156,6 +156,18 @@ export default function WorkoutPage() {
           )}
         </div>
         <div className="flex gap-2">
+          <Link href="/dashboard/workout/builder">
+            <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90">
+              <Plus className="w-4 h-4 mr-2" />
+              Skapa pass
+            </Button>
+          </Link>
+          <Link href="/dashboard/workout/templates">
+            <Button variant="outline" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,215,0,0.5)]">
+              <Dumbbell className="w-4 h-4 mr-2" />
+              Mallar
+            </Button>
+          </Link>
           <Link href="/dashboard/workout/records">
             <Button variant="outline" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,215,0,0.5)]">
               <Trophy className="w-4 h-4 mr-2" />

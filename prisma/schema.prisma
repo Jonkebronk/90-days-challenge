@@ -232,6 +232,7 @@ model Exercise {
   exerciseLogs            ExerciseLog[]
   workoutProgramExercises WorkoutProgramExercise[]
   workoutSetLogs          WorkoutSetLog[]          @relation("SetLogs")
+  workoutTemplateExercises WorkoutTemplateExercise[]
 
   @@map("exercises")
 }
@@ -459,8 +460,9 @@ model AssignedWorkoutProgram {
 model WorkoutSessionLog {
   id                    String   @id @default(cuid())
   userId                String   // Client who performed the workout
-  workoutProgramDayId   String   // Which day of the program
+  workoutProgramDayId   String?  // Which day of the program (optional for template workouts)
   assignedProgramId     String?  // Link to assignment (optional)
+  templateName          String?  // Name of template used (for custom workouts)
 
   startedAt             DateTime @default(now())
   completedAt           DateTime?
@@ -475,8 +477,8 @@ model WorkoutSessionLog {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
-  user                  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workoutProgramDay     WorkoutProgramDay @relation(fields: [workoutProgramDayId], references: [id])
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutProgramDay     WorkoutProgramDay?     @relation(fields: [workoutProgramDayId], references: [id])
   sets                  WorkoutSetLog[]
 
   @@map("workout_session_logs")
@@ -1040,6 +1042,7 @@ model WorkoutTemplateExercise {
   updatedAt             DateTime @updatedAt
 
   workoutTemplate       WorkoutTemplate @relation(fields: [workoutTemplateId], references: [id], onDelete: Cascade)
+  exercise              Exercise @relation(fields: [exerciseId], references: [id])
 
   @@map("workout_template_exercises")
 }
