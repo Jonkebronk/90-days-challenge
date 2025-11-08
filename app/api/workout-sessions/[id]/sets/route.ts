@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { checkAndCreatePR } from '@/lib/pr-helper'
 
 // Log a set during a workout session
 export async function POST(
@@ -57,7 +58,20 @@ export async function POST(
       }
     })
 
-    return NextResponse.json({ set: setLog }, { status: 201 })
+    // Check for PRs
+    const userId = (session.user as any).id
+    const newPRs = await checkAndCreatePR(
+      userId,
+      exerciseId,
+      reps,
+      weightKg,
+      setLog.id
+    )
+
+    return NextResponse.json({
+      set: setLog,
+      personalRecords: newPRs
+    }, { status: 201 })
   } catch (error) {
     console.error('Error logging set:', error)
     return NextResponse.json(

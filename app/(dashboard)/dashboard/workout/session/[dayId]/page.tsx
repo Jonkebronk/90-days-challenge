@@ -80,6 +80,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [currentWeight, setCurrentWeight] = useState<string>('')
   const [workoutNotes, setWorkoutNotes] = useState<string>('')
 
+  // PR tracking
+  const [newPRs, setNewPRs] = useState<any[]>([])
+  const [showPRCelebration, setShowPRCelebration] = useState(false)
+
   const [isCompleting, setIsCompleting] = useState(false)
 
   useEffect(() => {
@@ -175,6 +179,16 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       })
 
       if (response.ok) {
+        const data = await response.json()
+
+        // Check for PRs
+        if (data.personalRecords && data.personalRecords.length > 0) {
+          setNewPRs(data.personalRecords)
+          setShowPRCelebration(true)
+          // Auto-hide after 5 seconds
+          setTimeout(() => setShowPRCelebration(false), 5000)
+        }
+
         // Update local state
         setSetLogs(prev => ({
           ...prev,
@@ -292,6 +306,28 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
+      {/* PR Celebration */}
+      {showPRCelebration && newPRs.length > 0 && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-bounce">
+          <div className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black px-8 py-4 rounded-2xl shadow-[0_0_50px_rgba(255,215,0,0.6)] border-4 border-[#FFD700]">
+            <div className="flex items-center gap-3">
+              <Trophy className="w-8 h-8" />
+              <div>
+                <div className="text-xl font-bold">🎉 NEW PERSONAL RECORD! 🎉</div>
+                {newPRs.map((pr, idx) => (
+                  <div key={idx} className="text-sm font-semibold">
+                    {pr.recordType === 'max_weight' && `Max Weight: ${pr.newValue}kg`}
+                    {pr.recordType === 'max_reps' && `Max Reps: ${pr.newValue}`}
+                    {pr.recordType === 'max_volume' && `Max Volume: ${pr.newValue.toFixed(0)}kg`}
+                    {pr.recordType === 'max_one_rep_max' && `Est. 1RM: ${pr.newValue.toFixed(1)}kg`}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
