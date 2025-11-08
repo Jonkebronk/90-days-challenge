@@ -16,12 +16,11 @@ import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import OnboardingFlow from './OnboardingFlow'
 
+// Simplified schema - GDPR validation handled manually
 const setupSchema = z.object({
   password: z.string().min(8, 'Lösenord måste vara minst 8 tecken'),
   confirmPassword: z.string(),
-  gdprConsent: z.boolean().refine((val) => val === true, {
-    message: 'Du måste godkänna villkoren för att fortsätta',
-  }),
+  gdprConsent: z.boolean().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Lösenorden matchar inte',
   path: ['confirmPassword'],
@@ -42,10 +41,13 @@ function SetupAccountContent() {
   const [accountCreated, setAccountCreated] = useState(false)
   const [userId, setUserId] = useState('')
 
-  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<SetupForm>({
+  const { register, handleSubmit, formState: { errors }, setValue, watch, trigger } = useForm<SetupForm>({
     resolver: zodResolver(setupSchema),
+    mode: 'onChange',
     defaultValues: {
       gdprConsent: false,
+      password: '',
+      confirmPassword: '',
     },
   })
 
@@ -76,20 +78,22 @@ function SetupAccountContent() {
       })
   }, [token, setValue])
 
-  const onNextStep = handleSubmit(async (data) => {
-    if (step === 1) {
-      // Validate password
-      if (!data.password) {
-        setError('Vänligen ange ett lösenord')
-        return
-      }
-      if (data.password !== data.confirmPassword) {
-        setError('Lösenorden matchar inte')
-        return
-      }
-      setStep(2)
-      setError('')
-    } else if (step === 2) {
+  const onNextStep = handleSubmit(
+    async (data) => {
+      console.log('Form submitted with data:', data)
+      if (step === 1) {
+        // Validate password
+        if (!data.password) {
+          setError('Vänligen ange ett lösenord')
+          return
+        }
+        if (data.password !== data.confirmPassword) {
+          setError('Lösenorden matchar inte')
+          return
+        }
+        setStep(2)
+        setError('')
+      } else if (step === 2) {
       // Validate GDPR consent and create account
       if (!data.gdprConsent) {
         setError('Du måste godkänna villkoren för att fortsätta')
@@ -127,6 +131,10 @@ function SetupAccountContent() {
         setIsLoading(false)
       }
     }
+  },
+  (errors) => {
+    console.log('Form validation errors:', errors)
+    setError('Vänligen fyll i alla obligatoriska fält korrekt')
   })
 
   if (verifying) {
