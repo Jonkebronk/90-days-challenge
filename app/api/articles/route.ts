@@ -69,7 +69,7 @@ export async function GET(request: Request) {
     })
 
     // Auto-fix duplicated orderIndex values (only for coaches, only once per session)
-    if ((session.user as any).role === 'coach' && !where.categoryId) {
+    if ((session.user as any).role?.toUpperCase() === 'COACH' && !where.categoryId) {
       // Check if there are any duplicates
       const categories = await prisma.articleCategory.findMany({
         include: {

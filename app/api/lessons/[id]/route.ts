@@ -15,7 +15,7 @@ export async function GET(
     }
 
     const { id } = await params
-    const isCoach = (session.user as any).role === 'coach'
+    const isCoach = (session.user as any).role?.toUpperCase() === 'COACH'
     const lesson = await prisma.lesson.findUnique({
       where: { id },
       include: {

@@ -103,7 +103,7 @@ export default function ClientLessonsPage() {
     router.push(`/dashboard/lessons/${lesson.id}`)
   }
 
-  if (!session?.user || (session.user as any).role === 'coach') {
+  if (!session?.user || (session.user as any).role?.toUpperCase() === 'COACH') {
     return (
       <div className="container mx-auto p-6">
         <Card>

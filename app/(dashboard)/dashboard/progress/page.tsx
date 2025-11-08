@@ -33,7 +33,7 @@ export default function ProgressPage() {
   const [logs, setLogs] = useState<DailyLog[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<'7' | '30' | '90'>('30')
-  const isCoach = session?.user && (session.user as any).role === 'coach'
+  const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
 
   useEffect(() => {
     fetchLogs()

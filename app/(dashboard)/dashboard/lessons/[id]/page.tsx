@@ -146,7 +146,7 @@ export default function LessonViewerPage() {
     )
   }
 
-  const isCoach = (session.user as any).role === 'coach'
+  const isCoach = (session.user as any).role?.toUpperCase() === 'COACH'
 
   if (isLoading) {
     return (

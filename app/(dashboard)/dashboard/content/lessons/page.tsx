@@ -66,7 +66,7 @@ export default function LessonsPage() {
   })
 
   useEffect(() => {
-    if (session?.user && (session.user as any).role === 'coach') {
+    if (session?.user && (session.user as any).role?.toUpperCase() === 'COACH') {
       fetchLessons()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

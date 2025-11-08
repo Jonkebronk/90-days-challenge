@@ -47,7 +47,7 @@ type Client = {
 
 export default function WeightTrackerPage() {
   const { data: session } = useSession()
-  const isCoach = (session?.user as any)?.role === 'coach'
+  const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
 
   const [activeTab, setActiveTab] = useState<'weekly' | 'graph'>('weekly')
   const [clients, setClients] = useState<Client[]>([])

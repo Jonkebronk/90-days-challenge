@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const phase = searchParams.get('phase')
     const published = searchParams.get('published')
-    const isCoach = (session.user as any).role === 'coach'
+    const isCoach = (session.user as any).role?.toUpperCase() === 'COACH'
 
     // Build where clause
     const where: any = {}

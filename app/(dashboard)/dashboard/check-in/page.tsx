@@ -26,7 +26,7 @@ export default function CheckInPage() {
   const [showCheckIn, setShowCheckIn] = useState(false)
   const [checkIns, setCheckIns] = useState<CheckIn[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const isCoach = session?.user && (session.user as any).role === 'coach'
+  const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
 
   useEffect(() => {
     if (isCoach) {
