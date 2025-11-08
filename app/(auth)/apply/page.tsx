@@ -172,25 +172,93 @@ Signatur: ${formData.signature}
 Datum: ${new Date().toLocaleDateString('sv-SE')}
       `.trim()
 
-      const response = await fetch('/api/apply', {
+      // Convert photos to base64 if uploaded
+      const convertFileToBase64 = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.readAsDataURL(file)
+          reader.onload = () => resolve(reader.result as string)
+          reader.onerror = (error) => reject(error)
+        })
+      }
+
+      let frontPhotoBase64 = undefined
+      let sidePhotoBase64 = undefined
+      let backPhotoBase64 = undefined
+
+      if (formData.frontPhoto) {
+        frontPhotoBase64 = await convertFileToBase64(formData.frontPhoto)
+      }
+      if (formData.sidePhoto) {
+        sidePhotoBase64 = await convertFileToBase64(formData.sidePhoto)
+      }
+      if (formData.backPhoto) {
+        backPhotoBase64 = await convertFileToBase64(formData.backPhoto)
+      }
+
+      // Send to AI endpoint for processing
+      const response = await fetch('/api/ai-coach/process-application', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: formData.name,
+          // Personal Information
+          fullName: formData.name,
           email: formData.email,
           phone: formData.phone,
-          status: 'new',
-          notes: leadNotes,
-          tags: ['90-dagars-challenge', 'web-ansokan']
+          city: formData.city,
+          country: formData.country,
+
+          // Physical Stats
+          age: parseInt(formData.age) || 0,
+          gender: formData.gender,
+          height: parseInt(formData.height) || 0,
+          currentWeight: parseFloat(formData.currentWeight) || 0,
+
+          // Training
+          currentTraining: formData.currentTraining,
+          trainingExperience: formData.trainingExperience,
+          trainingGoal: formData.trainingGoals,
+          injuries: formData.injuries,
+          availableTime: formData.availableTime,
+          preferredSchedule: formData.workoutSchedule,
+
+          // Nutrition
+          dietHistory: formData.dietHistory,
+          macroExperience: formData.macroTracking,
+          digestionIssues: formData.digestion,
+          allergies: formData.allergies,
+          favoriteFood: formData.favoriteFoods,
+          dislikedFood: formData.foodsDislikes,
+          supplements: formData.supplements,
+          previousCoaching: formData.previousCoaching,
+
+          // Lifestyle
+          stressLevel: formData.stressLevel,
+          sleepHours: formData.sleepHours,
+          occupation: formData.occupation,
+          lifestyle: formData.lifestyle,
+
+          // Motivation
+          whyJoin: formData.whyApply,
+          canFollowPlan: formData.commitment,
+          expectations: formData.expectations,
+          biggestChallenges: formData.challenges,
+
+          // Photos
+          frontPhoto: frontPhotoBase64,
+          sidePhoto: sidePhotoBase64,
+          backPhoto: backPhotoBase64,
         })
       })
 
       if (response.ok) {
+        const data = await response.json()
         setSubmitted(true)
-        toast.success('Ansökan mottagen!')
+        toast.success('Ansökan mottagen! AI har genererat din personliga plan.')
+        console.log('Generated AI plan:', data.plan)
       } else {
         const data = await response.json()
-        toast.error(data.error || 'Något gick fel')
+        toast.error(data.error || 'Något gick fel vid bearbetning av ansökan')
       }
     } catch (error) {
       console.error('Error submitting application:', error)

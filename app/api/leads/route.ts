@@ -65,9 +65,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, email, phone, status, notes, tags } = body
+    const { name, fullName, email, phone, status, notes, tags } = body
 
-    if (!name) {
+    // Use fullName if provided, otherwise use name for backwards compatibility
+    const leadName = fullName || name
+
+    if (!leadName) {
       return NextResponse.json(
         { error: 'Name is required' },
         { status: 400 }
@@ -76,10 +79,10 @@ export async function POST(request: NextRequest) {
 
     const lead = await prisma.lead.create({
       data: {
-        name,
+        fullName: leadName,
         email,
         phone,
-        status: status || 'new',
+        status: status || 'NEW',
         notes,
         tags: tags || [],
       },

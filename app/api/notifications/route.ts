@@ -71,12 +71,12 @@ export async function GET() {
       notifications.push({
         id: `lead-${lead.id}`,
         type: 'NEW_LEAD',
-        message: `Ny ansökan från ${lead.name}`,
+        message: `Ny ansökan från ${lead.fullName || 'Okänd'}`,
         timestamp: lead.createdAt,
         link: `/dashboard/leads`,
         data: {
           leadId: lead.id,
-          leadName: lead.name
+          leadName: lead.fullName
         }
       })
     }

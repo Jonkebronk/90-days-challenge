@@ -5,10 +5,13 @@ import { prisma } from '@/lib/prisma'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, email, phone, status, notes, tags } = body
+    const { name, fullName, email, phone, status, notes, tags } = body
+
+    // Use fullName if provided, otherwise use name for backwards compatibility
+    const applicantName = fullName || name
 
     // Validate required fields
-    if (!name || !email || !phone) {
+    if (!applicantName || !email || !phone) {
       return NextResponse.json(
         { error: 'Namn, e-post och telefon är obligatoriska' },
         { status: 400 }
@@ -39,10 +42,10 @@ export async function POST(request: NextRequest) {
     // Create the lead
     const lead = await prisma.lead.create({
       data: {
-        name,
+        fullName: applicantName,
         email,
         phone,
-        status: status || 'new',
+        status: status || 'NEW',
         notes: notes || '',
         tags: tags || ['web-ansokan'],
       },

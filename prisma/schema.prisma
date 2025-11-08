@@ -604,12 +604,66 @@ model CheckIn {
 
 model Lead {
   id          String   @id @default(cuid())
-  name        String
+
+  // Basic Info
+  fullName    String?
   email       String?
   phone       String?
-  status      String   @default("new") // "new", "contacted", "in_dialog", "paused", "won", "lost"
-  notes       String?
+  city        String?
+  country     String?
+  age         Int?
+  gender      String?
+  height      Int?           // cm
+  currentWeight Decimal?     // kg @db.Decimal(5, 2)
+
+  // Training
+  currentTraining     String?  @db.Text
+  trainingExperience  String?  @db.Text
+  trainingGoal        String?  @db.Text
+  injuries            String?  @db.Text
+  availableTime       String?  @db.Text
+  preferredSchedule   String?  @db.Text
+
+  // Nutrition
+  dietHistory         String?  @db.Text
+  macroExperience     String?  @db.Text
+  digestionIssues     String?  @db.Text
+  allergies           String?  @db.Text
+  favoriteFood        String?  @db.Text
+  dislikedFood        String?  @db.Text
+  supplements         String?  @db.Text
+  previousCoaching    String?  @db.Text
+
+  // Lifestyle
+  stressLevel         String?  @db.Text
+  sleepHours          String?  @db.Text
+  occupation          String?  @db.Text
+  lifestyle           String?  @db.Text
+
+  // Motivation
+  whyJoin             String?  @db.Text
+  canFollowPlan       String?  @db.Text
+  expectations        String?  @db.Text
+  biggestChallenges   String?  @db.Text
+
+  // Photos
+  frontPhoto          String?  @db.Text
+  sidePhoto           String?  @db.Text
+  backPhoto           String?  @db.Text
+
+  // Status
+  status      String   @default("NEW") // "NEW", "CONTACTED", "IN_DIALOG", "PAUSED", "CONVERTED", "LOST"
+  notes       String?  @db.Text
   tags        String[]
+
+  // AI-Generated Plan
+  aiGeneratedPlan   Json?
+  aiProcessedAt     DateTime?
+  aiModelVersion    String?
+  planApproved      Boolean   @default(false)
+  planApprovedAt    DateTime?
+  planApprovedBy    String?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

@@ -77,7 +77,7 @@ export async function POST(
     // Create the client user
     const client = await prisma.user.create({
       data: {
-        name: lead.name,
+        name: lead.fullName,
         email: lead.email || `lead-${leadId}@temporary.com`, // Temporary email if none provided
         phone: lead.phone,
         role: 'client',
