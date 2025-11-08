@@ -26,16 +26,18 @@ import {
   Library,
   Map,
   ChefHat,
-  ClipboardList
+  ClipboardList,
+  Bell
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Badge } from '@/components/ui/badge'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -79,6 +81,9 @@ export default function DashboardLayout({
   const pathname = usePathname()
   const { data: session } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [notifications, setNotifications] = useState<any[]>([])
+  const [notificationCount, setNotificationCount] = useState(0)
+  const [notificationsOpen, setNotificationsOpen] = useState(false)
 
   const handleSignOut = () => {
     signOut({ callbackUrl: '/' })
@@ -92,6 +97,47 @@ export default function DashboardLayout({
     if ((item as any).clientOnly && !isClient) return false
     return true
   })
+
+  // Fetch notifications for coaches
+  const fetchNotifications = async () => {
+    if (!isCoach) return
+
+    try {
+      const response = await fetch('/api/notifications')
+      if (response.ok) {
+        const data = await response.json()
+        setNotifications(data.notifications || [])
+        setNotificationCount(data.unreadCount || 0)
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchNotifications()
+
+    // Poll for new notifications every 60 seconds
+    const interval = setInterval(fetchNotifications, 60000)
+
+    return () => clearInterval(interval)
+  }, [isCoach])
+
+  const formatNotificationTime = (timestamp: string) => {
+    const date = new Date(timestamp)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+
+    if (diffMins < 1) return 'Just nu'
+    if (diffMins < 60) return `${diffMins}min sedan`
+    if (diffHours < 24) return `${diffHours}h sedan`
+    if (diffDays === 1) return 'Igår'
+    if (diffDays < 7) return `${diffDays} dagar sedan`
+    return date.toLocaleDateString('sv-SE')
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
@@ -169,6 +215,81 @@ export default function DashboardLayout({
 
             {/* User Menu */}
             <div className="flex items-center gap-3">
+              {/* Notifications Bell (Coach only) */}
+              {isCoach && (
+                <DropdownMenu open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="relative text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+                    >
+                      <Bell className="w-4 h-4" />
+                      {notificationCount > 0 && (
+                        <Badge
+                          className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] text-xs font-bold border-none"
+                        >
+                          {notificationCount > 99 ? '99+' : notificationCount}
+                        </Badge>
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-80 max-h-[500px] overflow-y-auto bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)] backdrop-blur-lg"
+                  >
+                    <div className="px-3 py-2 border-b border-[rgba(255,215,0,0.2)]">
+                      <h3 className="text-sm font-semibold text-[#FFD700]">
+                        Notifikationer {notificationCount > 0 && `(${notificationCount})`}
+                      </h3>
+                    </div>
+
+                    {notifications.length === 0 ? (
+                      <div className="px-4 py-8 text-center text-[rgba(255,255,255,0.4)] text-sm">
+                        Inga nya notifikationer
+                      </div>
+                    ) : (
+                      <div className="py-1">
+                        {notifications.map((notification) => (
+                          <DropdownMenuItem
+                            key={notification.id}
+                            asChild
+                          >
+                            <Link
+                              href={notification.link}
+                              className="flex flex-col gap-1 px-3 py-3 cursor-pointer hover:bg-[rgba(255,215,0,0.1)] focus:bg-[rgba(255,215,0,0.1)] border-b border-[rgba(255,215,0,0.1)] last:border-b-0"
+                              onClick={() => setNotificationsOpen(false)}
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <p className="text-sm text-white font-medium leading-tight">
+                                  {notification.message}
+                                </p>
+                                <Badge
+                                  className={`shrink-0 text-xs ${
+                                    notification.type === 'NEW_LEAD'
+                                      ? 'bg-[rgba(255,215,0,0.2)] text-[#FFD700] border border-[rgba(255,215,0,0.3)]'
+                                      : notification.type === 'NEW_PHOTOS'
+                                      ? 'bg-[rgba(0,123,255,0.2)] text-[#007bff] border border-[rgba(0,123,255,0.3)]'
+                                      : 'bg-[rgba(40,167,69,0.2)] text-[#28a745] border border-[rgba(40,167,69,0.3)]'
+                                  }`}
+                                >
+                                  {notification.type === 'NEW_LEAD' && 'Ansökan'}
+                                  {notification.type === 'NEW_CHECKIN' && 'Check-in'}
+                                  {notification.type === 'NEW_PHOTOS' && 'Bilder'}
+                                </Badge>
+                              </div>
+                              <p className="text-xs text-[rgba(255,255,255,0.5)]">
+                                {formatNotificationTime(notification.timestamp)}
+                              </p>
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </div>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+
               <Button
                 variant="ghost"
                 size="sm"
