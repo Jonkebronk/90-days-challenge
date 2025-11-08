@@ -220,7 +220,7 @@ export default function WorkoutHistoryPage() {
               <div
                 key={session.id}
                 className="group bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all cursor-pointer"
-                onClick={() => router.push(`/dashboard/workout/session/${session.id}`)}
+                onClick={() => router.push(`/dashboard/workout/session/completed/${session.id}`)}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>

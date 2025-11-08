@@ -44,8 +44,10 @@ interface ProgramDay {
   exercises: ProgramExercise[]
 }
 
-export default function CreateWorkoutProgramPage() {
+export default function EditWorkoutProgramPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
+  const [programId, setProgramId] = useState('')
+  const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [exerciseSearchTerms, setExerciseSearchTerms] = useState<Record<string, string>>({})
@@ -59,8 +61,51 @@ export default function CreateWorkoutProgramPage() {
   const [days, setDays] = useState<ProgramDay[]>([])
 
   useEffect(() => {
-    fetchExercises()
+    const loadData = async () => {
+      const { id } = await params
+      setProgramId(id)
+      await Promise.all([fetchProgram(id), fetchExercises()])
+    }
+    loadData()
   }, [])
+
+  const fetchProgram = async (id: string) => {
+    try {
+      const response = await fetch(`/api/workout-programs/${id}`)
+      if (response.ok) {
+        const data = await response.json()
+        const program = data.program
+
+        setName(program.name)
+        setDescription(program.description || '')
+        setDifficulty(program.difficulty || '')
+        setDurationWeeks(program.durationWeeks)
+        setPublished(program.published)
+
+        // Map days with exercises
+        setDays(program.days.map((day: any) => ({
+          dayNumber: day.dayNumber,
+          name: day.name,
+          description: day.description || '',
+          isRestDay: day.isRestDay,
+          exercises: day.exercises.map((ex: any) => ({
+            exerciseId: ex.exerciseId,
+            exercise: ex.exercise,
+            sets: ex.sets,
+            repsMin: ex.repsMin,
+            repsMax: ex.repsMax,
+            restSeconds: ex.restSeconds,
+            notes: ex.notes || '',
+            targetWeight: ex.targetWeight
+          }))
+        })))
+      }
+    } catch (error) {
+      console.error('Error fetching program:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const fetchExercises = async () => {
     try {
@@ -133,8 +178,8 @@ export default function CreateWorkoutProgramPage() {
 
     setSaving(true)
     try {
-      const response = await fetch('/api/workout-programs', {
-        method: 'POST',
+      const response = await fetch(`/api/workout-programs/${programId}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
@@ -166,6 +211,14 @@ export default function CreateWorkoutProgramPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin" />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -181,10 +234,10 @@ export default function CreateWorkoutProgramPage() {
         </Link>
         <div className="flex-1">
           <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
-            Skapa träningsprogram
+            Redigera träningsprogram
           </h1>
           <p className="text-[rgba(255,255,255,0.6)] mt-1">
-            Bygg ett anpassat träningsprogram för dina klienter
+            Uppdatera ditt träningsprogram
           </p>
         </div>
         <div className="flex gap-2">
@@ -200,7 +253,7 @@ export default function CreateWorkoutProgramPage() {
             disabled={saving}
             className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
           >
-            {saving ? 'Sparar...' : 'Spara program'}
+            {saving ? 'Sparar...' : 'Spara ändringar'}
           </Button>
         </div>
       </div>

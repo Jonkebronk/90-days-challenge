@@ -78,6 +78,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   // Form state for current set
   const [currentReps, setCurrentReps] = useState<string>('')
   const [currentWeight, setCurrentWeight] = useState<string>('')
+  const [workoutNotes, setWorkoutNotes] = useState<string>('')
 
   const [isCompleting, setIsCompleting] = useState(false)
 
@@ -222,7 +223,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           completed: true,
-          durationMinutes: Math.floor(elapsedSeconds / 60)
+          durationMinutes: Math.floor(elapsedSeconds / 60),
+          notes: workoutNotes || null
         })
       })
 
@@ -315,15 +317,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           >
             <Play className="w-4 h-4 mr-2" />
             Starta träning
-          </Button>
-        ) : isWorkoutComplete ? (
-          <Button
-            onClick={completeWorkout}
-            disabled={isCompleting}
-            className="bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white hover:opacity-90"
-          >
-            <Trophy className="w-4 h-4 mr-2" />
-            {isCompleting ? 'Avslutar...' : 'Avsluta träning'}
           </Button>
         ) : null}
       </div>
@@ -535,6 +528,40 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           )
         })}
       </div>
+
+      {/* Workout Notes & Complete */}
+      {sessionId && isWorkoutComplete && (
+        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(34,197,94,0.3)]">
+          <CardHeader>
+            <CardTitle className="text-[rgba(255,255,255,0.95)] flex items-center gap-2">
+              <Trophy className="w-6 h-6 text-[#22c55e]" />
+              Bra jobbat! Alla övningar klara
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label className="text-[rgba(255,255,255,0.8)]">
+                Anteckningar (valfritt)
+              </Label>
+              <textarea
+                value={workoutNotes}
+                onChange={(e) => setWorkoutNotes(e.target.value)}
+                placeholder="Hur kändes passet? Några nya personliga rekord eller observationer?"
+                className="w-full mt-2 p-3 bg-[rgba(0,0,0,0.3)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl text-white placeholder-[rgba(255,255,255,0.4)] focus:border-[rgba(255,215,0,0.5)] outline-none min-h-[100px] resize-y"
+                rows={4}
+              />
+            </div>
+            <Button
+              onClick={completeWorkout}
+              disabled={isCompleting}
+              className="w-full bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white hover:opacity-90 text-lg py-6"
+            >
+              <Trophy className="w-5 h-5 mr-2" />
+              {isCompleting ? 'Avslutar träning...' : 'Avsluta träning'}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

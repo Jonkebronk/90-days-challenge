@@ -232,6 +232,30 @@ export default function ClientDetailPage({ params }: PageProps) {
     }
   }
 
+  const handleUnassignWorkout = async () => {
+    if (!assignedWorkout) return
+
+    if (!confirm('Är du säker på att du vill ta bort detta träningsprogram från klienten?')) return
+
+    try {
+      const response = await fetch(`/api/workout-programs/${assignedWorkout.workoutProgram.id}/unassign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId })
+      })
+
+      if (response.ok) {
+        toast.success('Workout program unassigned successfully')
+        fetchAssignedWorkout(clientId)
+      } else {
+        toast.error('Failed to unassign program')
+      }
+    } catch (error) {
+      console.error('Failed to unassign workout:', error)
+      toast.error('Failed to unassign program')
+    }
+  }
+
   const onSubmit = handleSubmit(async (data) => {
     setIsSaving(true)
     try {
@@ -434,14 +458,23 @@ export default function ClientDetailPage({ params }: PageProps) {
                 </div>
               </div>
 
-              <Button
-                variant="outline"
-                className="w-full border-[rgba(255,215,0,0.3)] text-[rgba(255,215,0,0.9)] hover:bg-[rgba(255,215,0,0.1)]"
-                onClick={() => setShowWorkoutAssign(true)}
-              >
-                Ändra program
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="flex-1 border-[rgba(255,215,0,0.3)] text-[rgba(255,215,0,0.9)] hover:bg-[rgba(255,215,0,0.1)]"
+                  onClick={() => setShowWorkoutAssign(true)}
+                >
+                  Ändra program
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1 border-[rgba(255,100,100,0.3)] text-[rgba(255,100,100,0.9)] hover:bg-[rgba(255,100,100,0.1)]"
+                  onClick={handleUnassignWorkout}
+                >
+                  Ta bort program
+                </Button>
+              </div>
             </div>
           ) : showWorkoutAssign ? (
             <div className="space-y-4">
