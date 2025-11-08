@@ -95,8 +95,8 @@ export default function DashboardLayout({
     signOut({ callbackUrl: '/' })
   }
 
-  const isCoach = (session?.user as any)?.role === 'coach'
-  const isClient = (session?.user as any)?.role === 'client'
+  const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
+  const isClient = (session?.user as any)?.role?.toUpperCase() === 'CLIENT'
 
   const filteredNavigation = navigation.filter(item => {
     if ((item as any).coachOnly && !isCoach) return false
