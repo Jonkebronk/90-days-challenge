@@ -24,6 +24,28 @@ export async function GET() {
         coachId: userId
       },
       include: {
+        weeks: {
+          include: {
+            days: {
+              include: {
+                exercises: {
+                  include: {
+                    exercise: true
+                  },
+                  orderBy: {
+                    orderIndex: 'asc'
+                  }
+                }
+              },
+              orderBy: {
+                dayNumber: 'asc'
+              }
+            }
+          },
+          orderBy: {
+            weekNumber: 'asc'
+          }
+        },
         days: {
           include: {
             exercises: {
@@ -82,6 +104,8 @@ export async function POST(request: Request) {
       difficulty,
       durationWeeks,
       published,
+      useMultiWeek,
+      weeks,
       days
     } = body
 
@@ -92,40 +116,92 @@ export async function POST(request: Request) {
       )
     }
 
-    // Create program with nested days and exercises
+    // Create program - with either week structure or flat day structure
+    const programData: any = {
+      coachId: userId,
+      name,
+      description,
+      difficulty,
+      durationWeeks,
+      published: published || false
+    }
+
+    if (useMultiWeek && weeks) {
+      // Multi-week structure: create weeks with nested days
+      programData.weeks = {
+        create: weeks.map((week: any, weekIndex: number) => ({
+          weekNumber: week.weekNumber,
+          title: week.title,
+          description: week.description,
+          orderIndex: week.orderIndex || weekIndex,
+          days: {
+            create: week.days.map((day: any, dayIndex: number) => ({
+              dayNumber: day.dayNumber || dayIndex + 1,
+              name: day.name,
+              description: day.description,
+              isRestDay: day.isRestDay || false,
+              orderIndex: day.orderIndex || dayIndex,
+              exercises: day.exercises ? {
+                create: day.exercises.map((ex: any, exIndex: number) => ({
+                  exerciseId: ex.exerciseId,
+                  sets: ex.sets,
+                  repsMin: ex.repsMin,
+                  repsMax: ex.repsMax,
+                  restSeconds: ex.restSeconds || 60,
+                  tempo: ex.tempo,
+                  notes: ex.notes,
+                  targetWeight: ex.targetWeight,
+                  targetRPE: ex.targetRPE,
+                  orderIndex: ex.orderIndex || exIndex
+                }))
+              } : undefined
+            }))
+          }
+        }))
+      }
+    } else if (days) {
+      // Flat structure: days directly on program (no weeks)
+      programData.days = {
+        create: days.map((day: any, dayIndex: number) => ({
+          dayNumber: day.dayNumber || dayIndex + 1,
+          name: day.name,
+          description: day.description,
+          isRestDay: day.isRestDay || false,
+          orderIndex: day.orderIndex || dayIndex,
+          exercises: day.exercises ? {
+            create: day.exercises.map((ex: any, exIndex: number) => ({
+              exerciseId: ex.exerciseId,
+              sets: ex.sets,
+              repsMin: ex.repsMin,
+              repsMax: ex.repsMax,
+              restSeconds: ex.restSeconds || 60,
+              tempo: ex.tempo,
+              notes: ex.notes,
+              targetWeight: ex.targetWeight,
+              targetRPE: ex.targetRPE,
+              orderIndex: ex.orderIndex || exIndex
+            }))
+          } : undefined
+        }))
+      }
+    }
+
     const program = await prisma.workoutProgram.create({
-      data: {
-        coachId: userId,
-        name,
-        description,
-        difficulty,
-        durationWeeks,
-        published: published || false,
-        days: days ? {
-          create: days.map((day: any, dayIndex: number) => ({
-            dayNumber: day.dayNumber || dayIndex + 1,
-            name: day.name,
-            description: day.description,
-            isRestDay: day.isRestDay || false,
-            orderIndex: day.orderIndex || dayIndex,
-            exercises: day.exercises ? {
-              create: day.exercises.map((ex: any, exIndex: number) => ({
-                exerciseId: ex.exerciseId,
-                sets: ex.sets,
-                repsMin: ex.repsMin,
-                repsMax: ex.repsMax,
-                restSeconds: ex.restSeconds || 60,
-                tempo: ex.tempo,
-                notes: ex.notes,
-                targetWeight: ex.targetWeight,
-                targetRPE: ex.targetRPE,
-                orderIndex: ex.orderIndex || exIndex
-              }))
-            } : undefined
-          }))
-        } : undefined
-      },
+      data: programData,
       include: {
+        weeks: {
+          include: {
+            days: {
+              include: {
+                exercises: {
+                  include: {
+                    exercise: true
+                  }
+                }
+              }
+            }
+          }
+        },
         days: {
           include: {
             exercises: {
