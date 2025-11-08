@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Dumbbell, Calendar, Play, Coffee, ChevronRight } from 'lucide-react'
+import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History } from 'lucide-react'
 import Link from 'next/link'
 
 interface WorkoutDay {
@@ -82,13 +82,21 @@ export default function WorkoutPage() {
   if (!assignment) {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
-            Träningsprogram
-          </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
-            Ditt personliga träningsprogram
-          </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
+              Träningsprogram
+            </h1>
+            <p className="text-[rgba(255,255,255,0.6)] mt-1">
+              Ditt personliga träningsprogram
+            </p>
+          </div>
+          <Link href="/dashboard/workout/history">
+            <Button variant="outline" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,215,0,0.5)]">
+              <History className="w-4 h-4 mr-2" />
+              Historik
+            </Button>
+          </Link>
         </div>
 
         <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
@@ -111,15 +119,23 @@ export default function WorkoutPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
-          {workoutProgram.name}
-        </h1>
-        {workoutProgram.description && (
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
-            {workoutProgram.description}
-          </p>
-        )}
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
+            {workoutProgram.name}
+          </h1>
+          {workoutProgram.description && (
+            <p className="text-[rgba(255,255,255,0.6)] mt-1">
+              {workoutProgram.description}
+            </p>
+          )}
+        </div>
+        <Link href="/dashboard/workout/history">
+          <Button variant="outline" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,215,0,0.5)]">
+            <History className="w-4 h-4 mr-2" />
+            Historik
+          </Button>
+        </Link>
       </div>
 
       {/* Program Info Card */}
