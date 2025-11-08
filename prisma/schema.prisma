@@ -77,6 +77,7 @@ model User {
   userProfile   UserProfile?
   nutritionPlan NutritionPlan?
   caloriePlan   CaloriePlan?
+  mealPlan      MealPlan?   @relation("AssignedMealPlan")
   meals         Meal[]
   workoutPlan   WorkoutPlan?
   dailyLogs     DailyLog[]
@@ -173,6 +174,7 @@ model FoodItem {
 
   mealIngredients   MealIngredient[]
   recipeIngredients RecipeIngredient[]
+  mealPlanItems     MealPlanItem[]
 
   @@map("food_items")
 }
@@ -679,4 +681,112 @@ model RecipeFavorite {
 
   @@unique([userId, recipeId])
   @@map("recipe_favorites")
+}
+
+// Meal Plan (Kostschema) Models
+model MealPlan {
+  id                    String   @id @default(cuid())
+  userId                String   @unique // Client this plan is for
+  coachId               String?  // Coach who created the plan
+  name                  String   @default("Kostschema")
+
+  // Daily totals
+  totalProtein          Decimal? @db.Decimal(6, 2)
+  totalFat              Decimal? @db.Decimal(6, 2)
+  totalCarbs            Decimal? @db.Decimal(6, 2)
+  totalCalories         Decimal? @db.Decimal(7, 2)
+
+  // Training supplements
+  preWorkoutProtein     Decimal? @db.Decimal(5, 2)
+  preWorkoutFat         Decimal? @db.Decimal(5, 2)
+  preWorkoutCarbs       Decimal? @db.Decimal(5, 2)
+  preWorkoutCalories    Decimal? @db.Decimal(6, 2)
+
+  postWorkoutProtein    Decimal? @db.Decimal(5, 2)
+  postWorkoutFat        Decimal? @db.Decimal(5, 2)
+  postWorkoutCarbs      Decimal? @db.Decimal(5, 2)
+  postWorkoutCalories   Decimal? @db.Decimal(6, 2)
+
+  active                Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user                  User     @relation("AssignedMealPlan", fields: [userId], references: [id], onDelete: Cascade)
+  meals                 MealPlanMeal[]
+  supplementItems       MealPlanSupplementItem[]
+
+  @@map("meal_plans")
+}
+
+model MealPlanMeal {
+  id                    String   @id @default(cuid())
+  mealPlanId            String
+  mealNumber            Int      // 1, 2, 3, etc.
+  name                  String?  // Optional name like "Frukost", "Lunch"
+
+  // Meal totals
+  totalProtein          Decimal? @db.Decimal(6, 2)
+  totalFat              Decimal? @db.Decimal(6, 2)
+  totalCarbs            Decimal? @db.Decimal(6, 2)
+  totalCalories         Decimal? @db.Decimal(7, 2)
+
+  orderIndex            Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  mealPlan              MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  items                 MealPlanItem[]
+
+  @@map("meal_plan_meals")
+}
+
+model MealPlanItem {
+  id                    String   @id @default(cuid())
+  mealPlanMealId        String
+  foodItemId            String?  // Can be null for custom items
+  customName            String?  // For custom food items not in database
+  amountG               Decimal  @db.Decimal(7, 2) // Amount in grams
+
+  // Macros for this item (portion)
+  protein               Decimal? @db.Decimal(6, 2)
+  fat                   Decimal? @db.Decimal(6, 2)
+  carbs                 Decimal? @db.Decimal(6, 2)
+  calories              Decimal? @db.Decimal(7, 2)
+
+  isSupplement          Boolean  @default(false) // True for Omega-3, Multivitamin, etc.
+  supplementBadge       String?  // "KÖP" badge text if applicable
+  notes                 String?  // "eller 37.5g naturell yoghurt 3.5% fett"
+
+  orderIndex            Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  meal                  MealPlanMeal @relation(fields: [mealPlanMealId], references: [id], onDelete: Cascade)
+  foodItem              FoodItem? @relation(fields: [foodItemId], references: [id])
+
+  @@map("meal_plan_items")
+}
+
+model MealPlanSupplementItem {
+  id                    String   @id @default(cuid())
+  mealPlanId            String
+  timing                String   // "pre_workout" or "post_workout"
+  name                  String   // "BCAA/ EAA", "Carbs(maltodextrin)", etc.
+  amountG               Decimal? @db.Decimal(7, 2) // Amount in grams
+  amountUnit            String?  // "st", "g", etc.
+
+  // Macros
+  protein               Decimal? @db.Decimal(6, 2)
+  fat                   Decimal? @db.Decimal(6, 2)
+  carbs                 Decimal? @db.Decimal(6, 2)
+  calories              Decimal? @db.Decimal(6, 2)
+
+  supplementBadge       String?  // "KÖP" badge
+  orderIndex            Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  mealPlan              MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+
+  @@map("meal_plan_supplement_items")
 }

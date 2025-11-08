@@ -57,6 +57,7 @@ const navigation = [
   },
   { name: 'Kunskapsbanken', href: '/dashboard/articles', icon: Library },
   { name: 'Recept', href: '/dashboard/recipes', icon: ChefHat },
+  { name: 'Kostschema', href: '/dashboard/meal-plan', icon: Utensils, clientOnly: true },
   {
     name: 'Verktyg',
     icon: Calculator,
