@@ -278,36 +278,37 @@ export default function ClientDetailPage({ params }: PageProps) {
 
       <form onSubmit={onSubmit} className="space-y-6">
         {/* Profile Information */}
-        <Card>
+        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-            <CardDescription>Physical measurements and demographics</CardDescription>
+            <CardTitle className="text-[#FFD700]">Basic Information</CardTitle>
+            <CardDescription className="text-[rgba(255,255,255,0.6)]">Physical measurements and demographics</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="birthdate">Födelsedatum</Label>
+                <Label htmlFor="birthdate" className="text-[rgba(255,255,255,0.8)]">Födelsedatum</Label>
                 <Input
                   id="birthdate"
                   type="date"
                   {...register('birthdate')}
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label>Kön</Label>
+                <Label className="text-[rgba(255,255,255,0.8)]">Kön</Label>
                 <Controller
                   name="gender"
                   control={control}
                   render={({ field }) => (
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
                         <SelectValue placeholder="Välj kön" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="male">Man</SelectItem>
-                        <SelectItem value="female">Kvinna</SelectItem>
-                        <SelectItem value="other">Annat</SelectItem>
+                      <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+                        <SelectItem value="male" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Man</SelectItem>
+                        <SelectItem value="female" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Kvinna</SelectItem>
+                        <SelectItem value="other" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Annat</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -315,22 +316,24 @@ export default function ClientDetailPage({ params }: PageProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="heightCm">Längd (cm)</Label>
+                <Label htmlFor="heightCm" className="text-[rgba(255,255,255,0.8)]">Längd (cm)</Label>
                 <Input
                   id="heightCm"
                   type="number"
                   placeholder="175"
                   {...register('heightCm')}
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="currentWeightKg">Vikt (kg)</Label>
+                <Label htmlFor="currentWeightKg" className="text-[rgba(255,255,255,0.8)]">Vikt (kg)</Label>
                 <Input
                   id="currentWeightKg"
                   type="number"
                   placeholder="75"
                   {...register('currentWeightKg')}
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
             </div>
@@ -338,34 +341,34 @@ export default function ClientDetailPage({ params }: PageProps) {
         </Card>
 
         {/* Goals */}
-        <Card>
+        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle>Mål</CardTitle>
-            <CardDescription>Vad vill klienten uppnå?</CardDescription>
+            <CardTitle className="text-[#FFD700]">Mål</CardTitle>
+            <CardDescription className="text-[rgba(255,255,255,0.6)]">Vad vill klienten uppnå?</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
-              <Label>Primärt Mål</Label>
+              <Label className="text-[rgba(255,255,255,0.8)]">Primärt Mål</Label>
               <Controller
                 name="primaryGoal"
                 control={control}
                 render={({ field }) => (
                   <RadioGroup onValueChange={field.onChange} value={field.value}>
-                    <div className="flex items-center space-x-2 p-3 border rounded-lg">
+                    <div className="flex items-center space-x-2 p-3 border-2 border-[rgba(255,215,0,0.2)] rounded-lg bg-[rgba(0,0,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors">
                       <RadioGroupItem value="build_muscle" id="build_muscle" />
-                      <Label htmlFor="build_muscle" className="cursor-pointer flex-1">
+                      <Label htmlFor="build_muscle" className="cursor-pointer flex-1 text-white">
                         Bygga muskler
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-2 p-3 border rounded-lg">
+                    <div className="flex items-center space-x-2 p-3 border-2 border-[rgba(255,215,0,0.2)] rounded-lg bg-[rgba(0,0,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors">
                       <RadioGroupItem value="get_fit" id="get_fit" />
-                      <Label htmlFor="get_fit" className="cursor-pointer flex-1">
+                      <Label htmlFor="get_fit" className="cursor-pointer flex-1 text-white">
                         Bli mer fit
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-2 p-3 border rounded-lg">
+                    <div className="flex items-center space-x-2 p-3 border-2 border-[rgba(255,215,0,0.2)] rounded-lg bg-[rgba(0,0,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors">
                       <RadioGroupItem value="healthy_habits" id="healthy_habits" />
-                      <Label htmlFor="healthy_habits" className="cursor-pointer flex-1">
+                      <Label htmlFor="healthy_habits" className="cursor-pointer flex-1 text-white">
                         Utveckla hälsosamma vanor
                       </Label>
                     </div>
@@ -377,29 +380,29 @@ export default function ClientDetailPage({ params }: PageProps) {
         </Card>
 
         {/* Activity & Training */}
-        <Card>
+        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle>Aktivitet & Träning</CardTitle>
-            <CardDescription>Daglig aktivitet och träningserfarenhet</CardDescription>
+            <CardTitle className="text-[#FFD700]">Aktivitet & Träning</CardTitle>
+            <CardDescription className="text-[rgba(255,255,255,0.6)]">Daglig aktivitet och träningserfarenhet</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Aktivitetsnivå (Fritid)</Label>
+                <Label className="text-[rgba(255,255,255,0.8)]">Aktivitetsnivå (Fritid)</Label>
                 <Controller
                   name="activityLevelFree"
                   control={control}
                   render={({ field }) => (
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
                         <SelectValue placeholder="Välj nivå" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="very_low">Mycket låg</SelectItem>
-                        <SelectItem value="low">Låg</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="active">Aktiv</SelectItem>
-                        <SelectItem value="very_active">Mycket aktiv</SelectItem>
+                      <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+                        <SelectItem value="very_low" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Mycket låg</SelectItem>
+                        <SelectItem value="low" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Låg</SelectItem>
+                        <SelectItem value="medium" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Medium</SelectItem>
+                        <SelectItem value="active" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Aktiv</SelectItem>
+                        <SelectItem value="very_active" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Mycket aktiv</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -407,20 +410,20 @@ export default function ClientDetailPage({ params }: PageProps) {
               </div>
 
               <div className="space-y-2">
-                <Label>Aktivitetsnivå (Jobb)</Label>
+                <Label className="text-[rgba(255,255,255,0.8)]">Aktivitetsnivå (Jobb)</Label>
                 <Controller
                   name="activityLevelWork"
                   control={control}
                   render={({ field }) => (
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
                         <SelectValue placeholder="Välj nivå" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="very_low">Sittande</SelectItem>
-                        <SelectItem value="low">Lätt aktivitet</SelectItem>
-                        <SelectItem value="medium">Måttlig aktivitet</SelectItem>
-                        <SelectItem value="high">Hög aktivitet</SelectItem>
+                      <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+                        <SelectItem value="very_low" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Sittande</SelectItem>
+                        <SelectItem value="low" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Lätt aktivitet</SelectItem>
+                        <SelectItem value="medium" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Måttlig aktivitet</SelectItem>
+                        <SelectItem value="high" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Hög aktivitet</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -428,19 +431,19 @@ export default function ClientDetailPage({ params }: PageProps) {
               </div>
 
               <div className="space-y-2">
-                <Label>Träningserfarenhet</Label>
+                <Label className="text-[rgba(255,255,255,0.8)]">Träningserfarenhet</Label>
                 <Controller
                   name="trainingExperience"
                   control={control}
                   render={({ field }) => (
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
                         <SelectValue placeholder="Välj erfarenhet" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="beginner">Nybörjare</SelectItem>
-                        <SelectItem value="experienced">Erfaren</SelectItem>
-                        <SelectItem value="very_experienced">Mycket erfaren</SelectItem>
+                      <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+                        <SelectItem value="beginner" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Nybörjare</SelectItem>
+                        <SelectItem value="experienced" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Erfaren</SelectItem>
+                        <SelectItem value="very_experienced" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Mycket erfaren</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -449,7 +452,7 @@ export default function ClientDetailPage({ params }: PageProps) {
             </div>
 
             <div className="space-y-2">
-              <Label>Träningsdagar</Label>
+              <Label className="text-[rgba(255,255,255,0.8)]">Träningsdagar</Label>
               <div className="flex flex-wrap gap-2">
                 {weekDays.map(day => (
                   <Button
@@ -465,7 +468,7 @@ export default function ClientDetailPage({ params }: PageProps) {
                         setValue('trainingDays', [...currentDays, day])
                       }
                     }}
-                    className={control._formValues.trainingDays?.includes(day) ? 'bg-lime-400 text-black hover:bg-lime-500' : ''}
+                    className={control._formValues.trainingDays?.includes(day) ? 'bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold border-0' : 'bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white hover:border-[rgba(255,215,0,0.5)]'}
                   >
                     {day}
                   </Button>
@@ -474,26 +477,27 @@ export default function ClientDetailPage({ params }: PageProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="trainingDetails">Träningsdetaljer</Label>
+              <Label htmlFor="trainingDetails" className="text-[rgba(255,255,255,0.8)]">Träningsdetaljer</Label>
               <Textarea
                 id="trainingDetails"
                 placeholder="Beskriv klientens träningserfarenhet..."
                 {...register('trainingDetails')}
                 rows={3}
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Nutrition */}
-        <Card>
+        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle>Näring</CardTitle>
-            <CardDescription>Kostpreferenser och allergier</CardDescription>
+            <CardTitle className="text-[#FFD700]">Näring</CardTitle>
+            <CardDescription className="text-[rgba(255,255,255,0.6)]">Kostpreferenser och allergier</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Allergier</Label>
+              <Label className="text-[rgba(255,255,255,0.8)]">Allergier</Label>
               <div className="flex flex-wrap gap-2">
                 {commonAllergies.map(allergy => (
                   <Button
@@ -509,7 +513,7 @@ export default function ClientDetailPage({ params }: PageProps) {
                         setValue('allergies', [...currentAllergies, allergy])
                       }
                     }}
-                    className={control._formValues.allergies?.includes(allergy) ? 'bg-red-100 border-red-300' : ''}
+                    className={control._formValues.allergies?.includes(allergy) ? 'bg-[rgba(239,68,68,0.2)] border-red-400 text-red-300 font-medium' : 'bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white hover:border-[rgba(255,215,0,0.5)]'}
                   >
                     {allergy}
                   </Button>
@@ -518,7 +522,7 @@ export default function ClientDetailPage({ params }: PageProps) {
             </div>
 
             <div className="space-y-2">
-              <Label>Kostpreferenser</Label>
+              <Label className="text-[rgba(255,255,255,0.8)]">Kostpreferenser</Label>
               <div className="flex flex-wrap gap-2">
                 {dietaryOptions.map(option => (
                   <Button
@@ -534,7 +538,7 @@ export default function ClientDetailPage({ params }: PageProps) {
                         setValue('dietaryPreferences', [...currentPrefs, option])
                       }
                     }}
-                    className={control._formValues.dietaryPreferences?.includes(option) ? 'bg-lime-100 border-lime-300' : ''}
+                    className={control._formValues.dietaryPreferences?.includes(option) ? 'bg-[rgba(34,197,94,0.2)] border-green-400 text-green-300 font-medium' : 'bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white hover:border-[rgba(255,215,0,0.5)]'}
                   >
                     {option}
                   </Button>
@@ -543,41 +547,44 @@ export default function ClientDetailPage({ params }: PageProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="nutritionNotes">Kostanteckningar</Label>
+              <Label htmlFor="nutritionNotes" className="text-[rgba(255,255,255,0.8)]">Kostanteckningar</Label>
               <Textarea
                 id="nutritionNotes"
                 placeholder="Matpreferenser, matvanor, etc..."
                 {...register('nutritionNotes')}
                 rows={3}
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="nutritionMissing">Övrig information</Label>
+              <Label htmlFor="nutritionMissing" className="text-[rgba(255,255,255,0.8)]">Övrig information</Label>
               <Textarea
                 id="nutritionMissing"
                 placeholder="Annan viktig näringsinformation..."
                 {...register('nutritionMissing')}
                 rows={2}
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Lifestyle */}
-        <Card>
+        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle>Livsstil</CardTitle>
-            <CardDescription>Övriga kommentarer och anteckningar</CardDescription>
+            <CardTitle className="text-[#FFD700]">Livsstil</CardTitle>
+            <CardDescription className="text-[rgba(255,255,255,0.6)]">Övriga kommentarer och anteckningar</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="lifestyleNotes">Livsstilsanteckningar</Label>
+              <Label htmlFor="lifestyleNotes" className="text-[rgba(255,255,255,0.8)]">Livsstilsanteckningar</Label>
               <Textarea
                 id="lifestyleNotes"
                 placeholder="Sömn, stress, arbetsschema, etc..."
                 {...register('lifestyleNotes')}
                 rows={4}
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
           </CardContent>
@@ -587,13 +594,13 @@ export default function ClientDetailPage({ params }: PageProps) {
           <Button
             type="submit"
             disabled={isSaving}
-            className="bg-lime-400 hover:bg-lime-500 text-black"
+            className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
           >
             <Save className="w-4 h-4 mr-2" />
             {isSaving ? 'Sparar...' : 'Spara Profil'}
           </Button>
           <Link href="/dashboard/clients">
-            <Button type="button" variant="outline">
+            <Button type="button" variant="outline" className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]">
               Avbryt
             </Button>
           </Link>
