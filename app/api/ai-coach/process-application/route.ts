@@ -99,7 +99,9 @@ export async function POST(request: NextRequest) {
           activity: calculatedPlan.activity,
           recommendations: calculatedPlan.recommendations,
           aiRecommendations: aiRecommendations || undefined
-        }
+        },
+        aiProcessedAt: new Date(),
+        aiModelVersion: 'claude-sonnet-4-20250514'
       }
     });
 

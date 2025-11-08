@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,12 +8,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Brain, Loader2 } from 'lucide-react';
+import { ArrowLeft, Brain, Loader2, Users } from 'lucide-react';
 import { toast } from 'sonner';
+
+interface Client {
+  id: string;
+  name: string;
+  email: string;
+  status: string;
+}
 
 export default function CreateAIPlanPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [selectedClientId, setSelectedClientId] = useState<string>('');
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -29,6 +38,56 @@ export default function CreateAIPlanPage() {
     sleepHours: '',
     stressLevel: '',
   });
+
+  // Fetch clients on mount
+  useEffect(() => {
+    async function fetchClients() {
+      try {
+        const response = await fetch('/api/clients');
+        if (response.ok) {
+          const data = await response.json();
+          setClients(data.clients || []);
+        }
+      } catch (error) {
+        console.error('Error fetching clients:', error);
+      }
+    }
+    fetchClients();
+  }, []);
+
+  // Handle client selection
+  const handleClientSelect = (clientId: string) => {
+    setSelectedClientId(clientId);
+
+    if (clientId === 'new') {
+      // Reset form for manual entry
+      setFormData({
+        fullName: '',
+        email: '',
+        phone: '',
+        age: '',
+        gender: 'man',
+        height: '',
+        currentWeight: '',
+        trainingGoal: '',
+        currentTraining: '',
+        trainingExperience: '',
+        lifestyle: '',
+        sleepHours: '',
+        stressLevel: '',
+      });
+    } else {
+      // Find selected client and populate basic info
+      const client = clients.find(c => c.id === clientId);
+      if (client) {
+        setFormData(prev => ({
+          ...prev,
+          fullName: client.name || '',
+          email: client.email || '',
+        }));
+      }
+    }
+  };
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -108,6 +167,42 @@ export default function CreateAIPlanPage() {
       </div>
 
       <form onSubmit={handleSubmit}>
+        {/* Client Selector */}
+        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] mb-6">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Users className="w-5 h-5 text-[#FFD700]" />
+              Välj Klient
+            </CardTitle>
+            <CardDescription className="text-[rgba(255,255,255,0.5)]">
+              Välj en befintlig klient eller skapa en ny manuellt
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Select value={selectedClientId} onValueChange={handleClientSelect}>
+              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                <SelectValue placeholder="Välj klient eller skapa ny..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="new">
+                  <span className="flex items-center gap-2">
+                    <Brain className="w-4 h-4" />
+                    Skapa ny (manuell inmatning)
+                  </span>
+                </SelectItem>
+                {clients.map((client) => (
+                  <SelectItem key={client.id} value={client.id}>
+                    <span className="flex flex-col">
+                      <span className="font-medium">{client.name}</span>
+                      <span className="text-xs text-[rgba(255,255,255,0.5)]">{client.email}</span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+
         {/* Personal Information */}
         <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] mb-6">
           <CardHeader>
