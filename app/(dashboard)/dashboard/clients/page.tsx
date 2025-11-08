@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus, Mail, User, X, Trash2 } from 'lucide-react'
+import { Plus, Mail, User, X, Trash2, Copy, CheckCircle2, Key } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { Separator } from '@/components/ui/separator'
@@ -62,6 +62,14 @@ export default function ClientsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isInviting, setIsInviting] = useState(false)
   const [deletingClientId, setDeletingClientId] = useState<string | null>(null)
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false)
+  const [createdClientData, setCreatedClientData] = useState<{
+    name: string
+    email: string
+    inviteCode: string
+    inviteCodeExpiresAt: string
+  } | null>(null)
+  const [copiedCode, setCopiedCode] = useState(false)
   const [newClient, setNewClient] = useState<NewClientForm>({
     firstName: '',
     lastName: '',
@@ -146,8 +154,19 @@ export default function ClientsPage() {
       const data = await response.json()
 
       if (response.ok) {
-        toast.success(`Inbjudan skickad till ${newClient.email}`)
+        // Store the created client data including invite code
+        setCreatedClientData({
+          name: data.client.name,
+          email: data.client.email,
+          inviteCode: data.client.inviteCode,
+          inviteCodeExpiresAt: data.client.inviteCodeExpiresAt,
+        })
+
+        // Close invite dialog and open success dialog
         setIsDialogOpen(false)
+        setSuccessDialogOpen(true)
+
+        // Reset form
         setNewClient({
           firstName: '',
           lastName: '',
@@ -183,6 +202,26 @@ export default function ClientsPage() {
     } finally {
       setIsInviting(false)
     }
+  }
+
+  const copyInviteCode = async (code: string) => {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopiedCode(true)
+      toast.success('Kod kopierad!')
+      setTimeout(() => setCopiedCode(false), 2000)
+    } catch (error) {
+      toast.error('Kunde inte kopiera kod')
+    }
+  }
+
+  const formatExpiryDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('sv-SE', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
   }
 
   const handleDeleteClient = async (clientId: string, clientEmail: string) => {
@@ -651,6 +690,87 @@ export default function ClientsPage() {
         </Dialog>
       </div>
 
+      {/* Success Dialog with GOLD Code */}
+      <Dialog open={successDialogOpen} onOpenChange={setSuccessDialogOpen}>
+        <DialogContent className="max-w-md bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)]">
+          <DialogHeader>
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center">
+                <CheckCircle2 className="w-8 h-8 text-[#0a0a0a]" />
+              </div>
+            </div>
+            <DialogTitle className="text-2xl font-bold text-[#FFD700] text-center">
+              Klient skapad!
+            </DialogTitle>
+            <DialogDescription className="text-[rgba(255,255,255,0.7)] text-center">
+              {createdClientData?.name} har bjudits in till programmet
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* GOLD Code Display */}
+            <div className="bg-[rgba(255,215,0,0.1)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Key className="w-5 h-5 text-[#FFD700]" />
+                <h3 className="font-semibold text-[#FFD700]">GOLD Inbjudningskod</h3>
+              </div>
+
+              <div className="flex items-center gap-2 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.3)] rounded-lg p-3">
+                <code className="flex-1 text-xl font-mono font-bold text-white tracking-wider">
+                  {createdClientData?.inviteCode}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => copyInviteCode(createdClientData?.inviteCode || '')}
+                  className="text-[#FFD700] hover:bg-[rgba(255,215,0,0.2)]"
+                >
+                  {copiedCode ? (
+                    <CheckCircle2 className="w-4 h-4" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+
+              <p className="text-xs text-[rgba(255,255,255,0.6)] mt-2">
+                Giltig till: {createdClientData?.inviteCodeExpiresAt && formatExpiryDate(createdClientData.inviteCodeExpiresAt)}
+              </p>
+            </div>
+
+            {/* Instructions */}
+            <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4">
+              <h4 className="font-semibold text-[rgba(255,255,255,0.9)] mb-2">Instruktioner för klienten:</h4>
+              <ol className="text-sm text-[rgba(255,255,255,0.7)] space-y-2 list-decimal list-inside">
+                <li>Gå till inloggningssidan</li>
+                <li>Klicka på &quot;Har du en inbjudningskod?&quot;</li>
+                <li>Ange GOLD-koden ovan</li>
+                <li>Skapa ett lösenord och kom igång!</li>
+              </ol>
+            </div>
+
+            {/* Email notification */}
+            <div className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.6)]">
+              <Mail className="w-4 h-4 text-[#FFD700]" />
+              <span>En inbjudan har också skickats till {createdClientData?.email}</span>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                setSuccessDialogOpen(false)
+                setCreatedClientData(null)
+                setCopiedCode(false)
+              }}
+              className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold hover:opacity-90 w-full"
+            >
+              Stäng
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
         <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px]">
           <div className="p-6 border-b border-[rgba(255,215,0,0.1)]">
             <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">
@@ -678,33 +798,74 @@ export default function ClientsPage() {
                 {clients.map((client) => (
                   <div
                     key={client.id}
-                    className="flex items-center justify-between p-4 border border-[rgba(255,215,0,0.2)] rounded-lg hover:bg-[rgba(255,215,0,0.05)] hover:border-[rgba(255,215,0,0.4)] transition-all"
+                    className="border border-[rgba(255,215,0,0.2)] rounded-lg hover:bg-[rgba(255,215,0,0.05)] hover:border-[rgba(255,215,0,0.4)] transition-all"
                   >
-                    <Link href={`/dashboard/clients/${client.id}`} className="flex items-center gap-4 flex-1">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center">
-                        <span className="font-bold text-[#0a0a0a] text-lg">
-                          {client.name?.[0]?.toUpperCase() || client.email[0].toUpperCase()}
-                        </span>
+                    <div className="flex items-center justify-between p-4">
+                      <Link href={`/dashboard/clients/${client.id}`} className="flex items-center gap-4 flex-1">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center">
+                          <span className="font-bold text-[#0a0a0a] text-lg">
+                            {client.name?.[0]?.toUpperCase() || client.email[0].toUpperCase()}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold text-[rgba(255,255,255,0.9)]">{client.name || 'Inget namn'}</p>
+                            {client.status === 'pending' && (
+                              <Badge className="bg-[rgba(255,165,0,0.2)] text-[#FFA500] border border-[rgba(255,165,0,0.3)] text-xs">
+                                Väntande
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-[rgba(255,255,255,0.6)] flex items-center gap-1">
+                            <Mail className="w-3 h-3" />
+                            {client.email}
+                          </p>
+                        </div>
+                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteClient(client.id, client.email)}
+                          disabled={deletingClientId === client.id}
+                          className="text-[rgba(239,68,68,0.8)] hover:text-[rgb(239,68,68)] hover:bg-[rgba(239,68,68,0.1)]"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
-                      <div>
-                        <p className="font-semibold text-[rgba(255,255,255,0.9)]">{client.name || 'Inget namn'}</p>
-                        <p className="text-sm text-[rgba(255,255,255,0.6)] flex items-center gap-1">
-                          <Mail className="w-3 h-3" />
-                          {client.email}
-                        </p>
-                      </div>
-                    </Link>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteClient(client.id, client.email)}
-                        disabled={deletingClientId === client.id}
-                        className="text-[rgba(239,68,68,0.8)] hover:text-[rgb(239,68,68)] hover:bg-[rgba(239,68,68,0.1)]"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
                     </div>
+
+                    {/* Show GOLD code for pending clients */}
+                    {client.status === 'pending' && client.inviteCode && (
+                      <div className="px-4 pb-4">
+                        <div className="bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded-lg p-3">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 flex-1">
+                              <Key className="w-4 h-4 text-[#FFD700]" />
+                              <div>
+                                <p className="text-xs text-[rgba(255,255,255,0.6)] mb-1">GOLD-kod</p>
+                                <code className="text-sm font-mono font-bold text-[#FFD700] tracking-wide">
+                                  {client.inviteCode}
+                                </code>
+                                {client.inviteCodeExpiresAt && (
+                                  <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
+                                    Giltig till: {formatExpiryDate(client.inviteCodeExpiresAt)}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => copyInviteCode(client.inviteCode || '')}
+                              className="text-[#FFD700] hover:bg-[rgba(255,215,0,0.2)]"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
