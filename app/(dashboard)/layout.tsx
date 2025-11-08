@@ -60,6 +60,7 @@ const navigation = [
   {
     name: 'Verktyg',
     icon: Calculator,
+    coachOnly: true,
     dropdown: [
       { name: 'Klientplan Workspace', href: '/dashboard/tools/workspace', icon: Zap },
       { name: 'Kaloriverktyg', href: '/dashboard/tools', icon: Calculator },
