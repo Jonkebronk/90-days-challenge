@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy } from 'lucide-react'
+import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, BarChart3 } from 'lucide-react'
 import Link from 'next/link'
 
 interface WorkoutDay {
@@ -135,6 +135,12 @@ export default function WorkoutPage() {
             <Button variant="outline" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,215,0,0.5)]">
               <Trophy className="w-4 h-4 mr-2" />
               Rekord
+            </Button>
+          </Link>
+          <Link href="/dashboard/analytics">
+            <Button variant="outline" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,215,0,0.5)]">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Analytics
             </Button>
           </Link>
           <Link href="/dashboard/workout/history">
