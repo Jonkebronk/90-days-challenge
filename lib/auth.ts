@@ -78,9 +78,11 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
+      console.log('[SESSION CALLBACK] Token:', { id: token.id, role: token.role })
       if (session.user) {
         session.user.id = token.id as string
         ;(session.user as any).role = token.role
+        console.log('[SESSION CALLBACK] Session user:', { id: session.user.id, role: (session.user as any).role, email: session.user.email })
       }
       return session
     },

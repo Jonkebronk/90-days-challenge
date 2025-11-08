@@ -29,6 +29,12 @@ export default function DashboardPage() {
   })
   const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
 
+  // Debug logging
+  console.log('[DASHBOARD] Status:', status)
+  console.log('[DASHBOARD] Session:', session)
+  console.log('[DASHBOARD] User role:', (session?.user as any)?.role)
+  console.log('[DASHBOARD] isCoach:', isCoach)
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login')
