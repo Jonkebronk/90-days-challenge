@@ -27,7 +27,7 @@ export default function DashboardPage() {
     checkIns: 0,
     content: 0
   })
-  const isCoach = session?.user && (session.user as any).role === 'coach'
+  const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
 
   useEffect(() => {
     if (status === 'unauthenticated') {
