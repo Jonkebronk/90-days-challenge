@@ -19,7 +19,10 @@ import {
   ChevronUp,
   Trophy,
   Star,
-  X
+  X,
+  SkipForward,
+  Plus,
+  RotateCcw
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -76,6 +79,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   // Rest timer
   const [restTimerSeconds, setRestTimerSeconds] = useState(0)
   const [isResting, setIsResting] = useState(false)
+  const [originalRestTime, setOriginalRestTime] = useState(0)
 
   // Exercise tracking
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0)
@@ -127,7 +131,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         setRestTimerSeconds(prev => {
           if (prev <= 1) {
             setIsResting(false)
-            // Play sound or notification
+            // Play sound notification
+            playRestCompleteSound()
             return 0
           }
           return prev - 1
@@ -136,6 +141,25 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     }
     return () => clearInterval(interval)
   }, [isResting, restTimerSeconds])
+
+  const playRestCompleteSound = () => {
+    // Create a simple beep sound
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+    const oscillator = audioContext.createOscillator()
+    const gainNode = audioContext.createGain()
+
+    oscillator.connect(gainNode)
+    gainNode.connect(audioContext.destination)
+
+    oscillator.frequency.value = 800
+    oscillator.type = 'sine'
+
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
+
+    oscillator.start(audioContext.currentTime)
+    oscillator.stop(audioContext.currentTime + 0.5)
+  }
 
   const fetchWorkoutDay = async (id: string) => {
     try {
@@ -244,6 +268,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           // Start rest timer
           if (exercise && exercise.restSeconds > 0) {
             setRestTimerSeconds(exercise.restSeconds)
+            setOriginalRestTime(exercise.restSeconds)
             setIsResting(true)
           }
         }
@@ -304,6 +329,31 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
     return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  const togglePause = () => {
+    setIsRunning(!isRunning)
+  }
+
+  const skipRest = () => {
+    setRestTimerSeconds(0)
+    setIsResting(false)
+  }
+
+  const addRestTime = (seconds: number) => {
+    setRestTimerSeconds(prev => prev + seconds)
+  }
+
+  const resetRestTimer = () => {
+    setRestTimerSeconds(originalRestTime)
+  }
+
+  const getRestTimerColor = () => {
+    if (!originalRestTime) return 'text-[#fb923c]'
+    const percentage = (restTimerSeconds / originalRestTime) * 100
+    if (percentage > 50) return 'text-[#22c55e]'
+    if (percentage > 25) return 'text-[#fbbf24]'
+    return 'text-[#ef4444]'
   }
 
   if (loading) {
@@ -395,7 +445,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       {sessionId && (
         <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
           <CardContent className="pt-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <div className="text-center">
                 <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Tid</p>
                 <div className="flex items-center justify-center gap-2">
@@ -417,18 +467,93 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   {currentExerciseIndex + 1}/{workoutDay.exercises.length}
                 </p>
               </div>
-              {isResting && (
-                <div className="text-center">
-                  <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Vila</p>
-                  <div className="flex items-center justify-center gap-2">
-                    <Pause className="w-4 h-4 text-[#fb923c]" />
-                    <p className="text-2xl font-bold text-[#fb923c]">
-                      {formatTime(restTimerSeconds)}
-                    </p>
+              <div className="text-center">
+                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Kontroll</p>
+                <Button
+                  onClick={togglePause}
+                  size="sm"
+                  variant="outline"
+                  className="bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.2)]"
+                >
+                  {isRunning ? (
+                    <>
+                      <Pause className="w-4 h-4 mr-1" />
+                      Pausa
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4 mr-1" />
+                      Fortsätt
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            {/* Rest Timer Controls */}
+            {isResting && (
+              <div className="border-t border-[rgba(255,215,0,0.1)] pt-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Pause className={`w-5 h-5 ${getRestTimerColor()}`} />
+                    <div>
+                      <p className="text-sm text-[rgba(255,255,255,0.5)]">Vilotid</p>
+                      <p className={`text-3xl font-bold ${getRestTimerColor()}`}>
+                        {formatTime(restTimerSeconds)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => addRestTime(15)}
+                      size="sm"
+                      variant="outline"
+                      className="bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.2)]"
+                    >
+                      <Plus className="w-3 h-3 mr-1" />
+                      15s
+                    </Button>
+                    <Button
+                      onClick={() => addRestTime(30)}
+                      size="sm"
+                      variant="outline"
+                      className="bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.2)]"
+                    >
+                      <Plus className="w-3 h-3 mr-1" />
+                      30s
+                    </Button>
+                    <Button
+                      onClick={resetRestTimer}
+                      size="sm"
+                      variant="outline"
+                      className="bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.2)]"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      onClick={skipRest}
+                      size="sm"
+                      className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+                    >
+                      <SkipForward className="w-3 h-3 mr-1" />
+                      Hoppa över
+                    </Button>
                   </div>
                 </div>
-              )}
-            </div>
+                <div className="w-full bg-[rgba(255,255,255,0.1)] rounded-full h-2 overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-1000 ${
+                      getRestTimerColor().includes('22c55e') ? 'bg-[#22c55e]' :
+                      getRestTimerColor().includes('fbbf24') ? 'bg-[#fbbf24]' :
+                      'bg-[#ef4444]'
+                    }`}
+                    style={{
+                      width: `${originalRestTime > 0 ? (restTimerSeconds / originalRestTime) * 100 : 0}%`
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
