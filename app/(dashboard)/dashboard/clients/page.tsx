@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus, Mail, User, X, Trash2, Copy, CheckCircle2, Key } from 'lucide-react'
+import { Plus, Mail, User, X, Trash2, Copy, CheckCircle2, Key, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { Separator } from '@/components/ui/separator'
@@ -70,6 +70,7 @@ export default function ClientsPage() {
     inviteCodeExpiresAt: string
   } | null>(null)
   const [copiedCode, setCopiedCode] = useState(false)
+  const [generatingCodeFor, setGeneratingCodeFor] = useState<string | null>(null)
   const [newClient, setNewClient] = useState<NewClientForm>({
     firstName: '',
     lastName: '',
@@ -222,6 +223,39 @@ export default function ClientsPage() {
       month: 'long',
       day: 'numeric'
     })
+  }
+
+  const handleGenerateInviteCode = async (clientId: string) => {
+    setGeneratingCodeFor(clientId)
+    try {
+      const response = await fetch(`/api/clients/${clientId}/generate-invite-code`, {
+        method: 'POST',
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        // Show success dialog with the new code
+        setCreatedClientData({
+          name: data.client.name,
+          email: data.client.email,
+          inviteCode: data.inviteCode,
+          inviteCodeExpiresAt: data.inviteCodeExpiresAt,
+        })
+        setSuccessDialogOpen(true)
+
+        // Refresh client list
+        fetchClients()
+        toast.success('GOLD-kod genererad!')
+      } else {
+        toast.error(data.error || 'Kunde inte generera kod')
+      }
+    } catch (error) {
+      toast.error('Kunde inte generera kod')
+      console.error('Generate code error:', error)
+    } finally {
+      setGeneratingCodeFor(null)
+    }
   }
 
   const handleDeleteClient = async (clientId: string, clientEmail: string) => {
@@ -823,6 +857,21 @@ export default function ClientsPage() {
                         </div>
                       </Link>
                       <div className="flex items-center gap-2">
+                        {/* Generate/Regenerate GOLD Code Button */}
+                        {(!client.inviteCode || client.status === 'pending') && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleGenerateInviteCode(client.id)}
+                            disabled={generatingCodeFor === client.id}
+                            className="text-[#FFD700] hover:text-[#FFA500] hover:bg-[rgba(255,215,0,0.1)] gap-2"
+                          >
+                            <RefreshCw className={`w-4 h-4 ${generatingCodeFor === client.id ? 'animate-spin' : ''}`} />
+                            <span className="hidden sm:inline">
+                              {client.inviteCode ? 'Ny kod' : 'Generera kod'}
+                            </span>
+                          </Button>
+                        )}
                         <Button
                           variant="ghost"
                           size="icon"
