@@ -66,8 +66,8 @@ const navigation = [
       { name: 'Viktspårning', href: '/dashboard/weight-tracker', icon: Scale },
     ]
   },
-  { name: 'Check-in', href: '/dashboard/check-in', icon: Calendar },
-  { name: 'Progress', href: '/dashboard/progress', icon: TrendingUp },
+  { name: 'Check-in', href: '/dashboard/check-in', icon: Calendar, clientOnly: true },
+  { name: 'Progress', href: '/dashboard/progress', icon: TrendingUp, clientOnly: true },
   { name: 'Profile', href: '/dashboard/profile', icon: User },
 ]
 
