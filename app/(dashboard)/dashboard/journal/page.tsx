@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -124,7 +124,7 @@ type JournalData = {
   }
 }
 
-export default function ClientJournalPage() {
+function ClientJournalContent() {
   const { data: session } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -778,5 +778,19 @@ export default function ClientJournalPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function ClientJournalPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto p-6">
+        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] p-12 text-center">
+          <p className="text-[rgba(255,255,255,0.6)]">Laddar...</p>
+        </div>
+      </div>
+    }>
+      <ClientJournalContent />
+    </Suspense>
   )
 }
