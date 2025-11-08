@@ -87,6 +87,8 @@ model User {
   lessonProgress LessonProgress[]
   articleProgress ArticleProgress[]
   recipeFavorites RecipeFavorite[]
+  assignedWorkoutPrograms AssignedWorkoutProgram[]
+  workoutSessionLogs WorkoutSessionLog[]
 
   // Coach-Client relationship
   coach         User?     @relation("CoachClients", fields: [coachId], references: [id])
@@ -213,15 +215,22 @@ model MealIngredient {
 model Exercise {
   id              String   @id @default(cuid())
   name            String
-  category        String?
-  equipmentNeeded String[]
-  difficultyLevel String?
+  category        String?  // "strength", "cardio", "flexibility", etc.
+  muscleGroups    String[] // ["chest", "triceps", "shoulders"]
+  equipmentNeeded String[] // ["barbell", "bench", "dumbbells"]
+  difficultyLevel String?  // "beginner", "intermediate", "advanced"
   description     String?
-  videoUrl        String?
-  instructions    String[]
+  videoUrl        String?  // YouTube/Vimeo embed URL
+  instructions    String[] // Step-by-step instructions
+  thumbnailUrl    String?  // Exercise thumbnail image
 
-  sessionExercises SessionExercise[]
-  exerciseLogs     ExerciseLog[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  sessionExercises        SessionExercise[]
+  exerciseLogs            ExerciseLog[]
+  workoutProgramExercises WorkoutProgramExercise[]
+  workoutSetLogs          WorkoutSetLog[]          @relation("SetLogs")
 
   @@map("exercises")
 }
@@ -325,6 +334,143 @@ model ExerciseLog {
   exercise   Exercise   @relation(fields: [exerciseId], references: [id])
 
   @@map("exercise_logs")
+}
+
+// New Workout Program System (inspired by workout.cool)
+model WorkoutProgram {
+  id          String   @id @default(cuid())
+  coachId     String   // Coach who created this program
+  name        String   // "Upper/Lower Split", "Full Body Beginner", etc.
+  description String?  // Program description and goals
+  difficulty  String?  // "beginner", "intermediate", "advanced"
+  durationWeeks Int?   // Planned duration in weeks
+
+  // Program settings
+  published   Boolean  @default(false)
+  isTemplate  Boolean  @default(true) // True for reusable templates
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  days        WorkoutProgramDay[]
+  assignments AssignedWorkoutProgram[]
+
+  @@map("workout_programs")
+}
+
+model WorkoutProgramDay {
+  id                String   @id @default(cuid())
+  workoutProgramId  String
+  dayNumber         Int      // 1, 2, 3, etc. within the program
+  name              String   // "Push Day", "Leg Day", "Upper Body", etc.
+  description       String?  // Day description/focus
+  isRestDay         Boolean  @default(false)
+
+  orderIndex        Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  workoutProgram    WorkoutProgram @relation(fields: [workoutProgramId], references: [id], onDelete: Cascade)
+  exercises         WorkoutProgramExercise[]
+  sessionLogs       WorkoutSessionLog[]
+
+  @@map("workout_program_days")
+}
+
+model WorkoutProgramExercise {
+  id                    String   @id @default(cuid())
+  workoutProgramDayId   String
+  exerciseId            String
+
+  // Exercise configuration
+  sets                  Int      // Number of sets
+  repsMin               Int?     // Minimum reps (e.g., 8)
+  repsMax               Int?     // Maximum reps (e.g., 12) - displays as "8-12 reps"
+  restSeconds           Int      @default(60) // Rest between sets
+  tempo                 String?  // "3-0-1-0" tempo notation
+  notes                 String?  // "Drop set", "Superset with X", etc.
+
+  // Targeting (optional overrides)
+  targetWeight          Decimal? @db.Decimal(5, 2) // Suggested weight in kg
+  targetRPE             Int?     // Rate of Perceived Exertion (1-10)
+
+  orderIndex            Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  workoutProgramDay     WorkoutProgramDay @relation(fields: [workoutProgramDayId], references: [id], onDelete: Cascade)
+  exercise              Exercise @relation(fields: [exerciseId], references: [id])
+
+  @@map("workout_program_exercises")
+}
+
+model AssignedWorkoutProgram {
+  id                String    @id @default(cuid())
+  userId            String    // Client assigned to this program
+  workoutProgramId  String    // The program template
+  coachId           String    // Coach who assigned it
+
+  startDate         DateTime  @default(now())
+  endDate           DateTime? // Optional end date
+  active            Boolean   @default(true)
+
+  // Progress tracking
+  currentWeek       Int       @default(1)
+  currentDayNumber  Int       @default(1)
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutProgram    WorkoutProgram @relation(fields: [workoutProgramId], references: [id], onDelete: Cascade)
+
+  @@map("assigned_workout_programs")
+}
+
+model WorkoutSessionLog {
+  id                    String   @id @default(cuid())
+  userId                String   // Client who performed the workout
+  workoutProgramDayId   String   // Which day of the program
+  assignedProgramId     String?  // Link to assignment (optional)
+
+  startedAt             DateTime @default(now())
+  completedAt           DateTime?
+  durationMinutes       Int?     // Actual workout duration
+  completed             Boolean  @default(false)
+  notes                 String?  // Post-workout notes
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user                  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutProgramDay     WorkoutProgramDay @relation(fields: [workoutProgramDayId], references: [id])
+  sets                  WorkoutSetLog[]
+
+  @@map("workout_session_logs")
+}
+
+model WorkoutSetLog {
+  id                        String   @id @default(cuid())
+  workoutSessionLogId       String
+  workoutProgramExerciseId  String?  // Link to program exercise (optional)
+  exerciseId                String   // The exercise performed
+
+  setNumber                 Int      // 1, 2, 3, etc.
+  reps                      Int?     // Reps completed
+  weightKg                  Decimal? @db.Decimal(5, 2) // Weight used
+  timeSeconds               Int?     // For timed exercises (planks, etc.)
+  distance                  Decimal? @db.Decimal(7, 2) // For cardio (meters, km)
+  rpe                       Int?     // Rate of Perceived Exertion
+  completed                 Boolean  @default(true)
+  notes                     String?  // "Failed on last rep", "Too easy", etc.
+
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  workoutSessionLog         WorkoutSessionLog @relation(fields: [workoutSessionLogId], references: [id], onDelete: Cascade)
+  exercise                  Exercise @relation("SetLogs", fields: [exerciseId], references: [id])
+
+  @@map("workout_set_logs")
 }
 
 model KnowledgeModule {

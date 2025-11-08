@@ -53,6 +53,8 @@ const navigation = [
       { name: 'Skapa Artiklar', href: '/dashboard/content/articles', icon: Library },
       { name: 'Skapa Recept Kategorier', href: '/dashboard/content/recipe-categories', icon: FolderOpen },
       { name: 'Skapa Recept', href: '/dashboard/content/recipes', icon: ChefHat },
+      { name: 'Övningar', href: '/dashboard/content/exercises', icon: Activity },
+      { name: 'Träningsprogram', href: '/dashboard/content/workout-programs', icon: Zap },
     ]
   },
   { name: 'Kunskapsbanken', href: '/dashboard/articles', icon: Library },
