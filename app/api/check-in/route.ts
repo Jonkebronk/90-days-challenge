@@ -40,6 +40,67 @@ export async function POST(request: NextRequest) {
 
     console.log('Check-in created for user:', userId)
 
+    // Get user's coach to send check-in summary message
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { coachId: true, name: true }
+    })
+
+    if (user?.coachId) {
+      // Create check-in summary message
+      const summaryLines = []
+      summaryLines.push(`Veckorapport från ${user.name}`)
+      summaryLines.push('')
+
+      if (statusUpdate) {
+        summaryLines.push(`Status: ${statusUpdate}`)
+        summaryLines.push('')
+      }
+
+      if (weightKg) {
+        summaryLines.push(`Vikt: ${weightKg} kg`)
+      }
+
+      if (energyLevel) {
+        summaryLines.push(`Energinivå: ${'⭐'.repeat(energyLevel)} (${energyLevel}/5)`)
+      }
+
+      if (mood) {
+        const moodEmojis = ['😢', '😟', '😐', '🙂', '😊']
+        summaryLines.push(`Humör: ${moodEmojis[mood - 1]} (${mood}/5)`)
+      }
+
+      if (dietPlanAdherence) {
+        summaryLines.push(`Kostschema följsamhet: ${'⭐'.repeat(dietPlanAdherence)} (${dietPlanAdherence}/5)`)
+      }
+
+      if (workoutPlanAdherence) {
+        summaryLines.push(`Träningsschema följsamhet: ${'⭐'.repeat(workoutPlanAdherence)} (${workoutPlanAdherence}/5)`)
+      }
+
+      if (sleepNotes) {
+        summaryLines.push(``)
+        summaryLines.push(`Sömn: ${sleepNotes}`)
+      }
+
+      if (dailySteps) {
+        summaryLines.push(`Dagliga steg: ${dailySteps}`)
+      }
+
+      await prisma.message.create({
+        data: {
+          content: summaryLines.join('\n'),
+          senderId: userId,
+          receiverId: user.coachId,
+          isCheckInSummary: true,
+          checkInId: checkIn.id,
+          images: []
+        }
+      })
+
+      console.log('Check-in summary message sent to coach')
+    }
+
     return NextResponse.json({
       success: true,
       checkIn,

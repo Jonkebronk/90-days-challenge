@@ -28,7 +28,8 @@ import {
   ChefHat,
   ClipboardList,
   Bell,
-  Dumbbell
+  Dumbbell,
+  MessageSquare
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
@@ -76,6 +77,7 @@ const navigation = [
   },
   { name: 'Check-in', href: '/dashboard/check-in', icon: Calendar, clientOnly: true },
   { name: 'Progress', href: '/dashboard/progress', icon: TrendingUp, clientOnly: true },
+  { name: 'Meddelanden', href: '/dashboard/messages', icon: MessageSquare },
   { name: 'Profile', href: '/dashboard/profile', icon: User },
 ]
 
