@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import OnboardingFlow from './OnboardingFlow'
+import { signIn } from 'next-auth/react'
 
 // Simplified schema - GDPR validation handled manually
 const setupSchema = z.object({
@@ -36,10 +36,8 @@ function SetupAccountContent() {
   const [error, setError] = useState('')
   const [clientInfo, setClientInfo] = useState<{ firstName: string; lastName: string; email: string } | null>(null)
   const [verifying, setVerifying] = useState(true)
-  const [step, setStep] = useState(1) // 1 = basic info, 2 = GDPR consent, 3 = onboarding
+  const [step, setStep] = useState(1) // 1 = password, 2 = GDPR consent
   const [coachName, setCoachName] = useState('John Sund')
-  const [accountCreated, setAccountCreated] = useState(false)
-  const [userId, setUserId] = useState('')
 
   const { register, handleSubmit, formState: { errors }, setValue, watch, trigger } = useForm<SetupForm>({
     resolver: zodResolver(setupSchema),
@@ -117,10 +115,19 @@ function SetupAccountContent() {
         const result = await response.json()
 
         if (response.ok) {
-          // Save userId and show onboarding
-          setUserId(result.userId)
-          setAccountCreated(true)
-          setStep(3)
+          // Account created successfully, now sign in
+          const signInResult = await signIn('credentials', {
+            email: clientInfo?.email,
+            password: data.password,
+            redirect: false,
+          })
+
+          if (signInResult?.ok) {
+            // Successfully signed in, redirect to dashboard
+            router.push('/dashboard')
+          } else {
+            setError('Konto skapat men inloggning misslyckades. Försök logga in manuellt.')
+          }
         } else {
           setError(result.error || 'Misslyckades skapa konto')
         }
@@ -174,10 +181,6 @@ function SetupAccountContent() {
         </Card>
       </div>
     )
-  }
-
-  if (accountCreated && step === 3 && userId) {
-    return <OnboardingFlow userId={userId} userName={`${clientInfo?.firstName || ''} ${clientInfo?.lastName || ''}`.trim()} />
   }
 
   return (
