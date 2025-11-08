@@ -221,9 +221,10 @@ model Exercise {
   equipmentNeeded String[] // ["barbell", "bench", "dumbbells"]
   difficultyLevel String?  // "beginner", "intermediate", "advanced"
   description     String?
-  videoUrl        String?  // YouTube/Vimeo embed URL
+  videoUrl        String?  // YouTube/Vimeo embed URL or GIF URL from ExerciseDB
   instructions    String[] // Step-by-step instructions
   thumbnailUrl    String?  // Exercise thumbnail image
+  externalId      String?  @unique // ExerciseDB exerciseId for tracking imports
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
