@@ -16,7 +16,9 @@ import {
   Pause,
   ChevronDown,
   ChevronUp,
-  Trophy
+  Trophy,
+  Star,
+  X
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -47,8 +49,10 @@ interface WorkoutDay {
 interface SetLog {
   exerciseId: string
   setNumber: number
+  setType?: 'WEIGHT' | 'TIME' | 'BODYWEIGHT' | 'REPS'
   reps: number | null
   weightKg: number | null
+  timeSeconds: number | null
   completed: boolean
 }
 
@@ -76,13 +80,20 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [expandedExercises, setExpandedExercises] = useState<Set<number>>(new Set([0]))
 
   // Form state for current set
+  const [currentSetType, setCurrentSetType] = useState<'WEIGHT' | 'TIME' | 'BODYWEIGHT' | 'REPS'>('WEIGHT')
   const [currentReps, setCurrentReps] = useState<string>('')
   const [currentWeight, setCurrentWeight] = useState<string>('')
+  const [currentTimeSeconds, setCurrentTimeSeconds] = useState<string>('')
   const [workoutNotes, setWorkoutNotes] = useState<string>('')
 
   // PR tracking
   const [newPRs, setNewPRs] = useState<any[]>([])
   const [showPRCelebration, setShowPRCelebration] = useState(false)
+
+  // Session rating
+  const [showRatingModal, setShowRatingModal] = useState(false)
+  const [sessionRating, setSessionRating] = useState<number | null>(null)
+  const [sessionRatingComment, setSessionRatingComment] = useState('')
 
   const [isCompleting, setIsCompleting] = useState(false)
 
@@ -161,8 +172,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const logSet = async (exerciseId: string, programExerciseId: string, setNumber: number) => {
     if (!sessionId) return
 
-    const reps = parseInt(currentReps) || null
-    const weight = parseFloat(currentWeight) || null
+    const reps = currentSetType !== 'TIME' ? (parseInt(currentReps) || null) : null
+    const weight = currentSetType === 'WEIGHT' ? (parseFloat(currentWeight) || null) : null
+    const timeSeconds = currentSetType === 'TIME' ? (parseInt(currentTimeSeconds) || null) : null
 
     try {
       const response = await fetch(`/api/workout-sessions/${sessionId}/sets`, {
@@ -172,8 +184,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           exerciseId,
           workoutProgramExerciseId: programExerciseId,
           setNumber,
+          setType: currentSetType,
           reps,
           weightKg: weight,
+          timeSeconds,
           completed: true
         })
       })
@@ -194,13 +208,22 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           ...prev,
           [exerciseId]: [
             ...(prev[exerciseId] || []),
-            { exerciseId, setNumber, reps, weightKg: weight, completed: true }
+            {
+              exerciseId,
+              setNumber,
+              setType: currentSetType,
+              reps,
+              weightKg: weight,
+              timeSeconds,
+              completed: true
+            }
           ]
         }))
 
         // Clear form
         setCurrentReps('')
         setCurrentWeight('')
+        setCurrentTimeSeconds('')
 
         // Check if we should move to next exercise
         const exercise = workoutDay?.exercises[currentExerciseIndex]
@@ -227,7 +250,12 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     }
   }
 
-  const completeWorkout = async () => {
+  const completeWorkout = () => {
+    // Show rating modal instead of directly completing
+    setShowRatingModal(true)
+  }
+
+  const submitRating = async (skipRating = false) => {
     if (!sessionId) return
 
     setIsCompleting(true)
@@ -238,12 +266,15 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         body: JSON.stringify({
           completed: true,
           durationMinutes: Math.floor(elapsedSeconds / 60),
-          notes: workoutNotes || null
+          notes: workoutNotes || null,
+          rating: !skipRating && sessionRating ? sessionRating : null,
+          ratingComment: !skipRating && sessionRatingComment ? sessionRatingComment : null
         })
       })
 
       if (response.ok) {
         setIsRunning(false)
+        setShowRatingModal(false)
         // Show success and redirect
         setTimeout(() => {
           router.push('/dashboard/workout')
@@ -494,15 +525,26 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           <span className="text-sm text-[rgba(255,255,255,0.8)]">
                             Set {set.setNumber}:
                           </span>
-                          <span className="text-sm font-semibold text-[rgba(255,255,255,0.9)]">
-                            {set.reps || 0} reps
-                          </span>
-                          {set.weightKg && (
+                          {set.setType === 'TIME' ? (
+                            <span className="text-sm font-semibold text-[rgba(255,255,255,0.9)]">
+                              {set.timeSeconds}s
+                            </span>
+                          ) : (
                             <>
-                              <span className="text-sm text-[rgba(255,255,255,0.5)]">@</span>
                               <span className="text-sm font-semibold text-[rgba(255,255,255,0.9)]">
-                                {set.weightKg} kg
+                                {set.reps || 0} reps
                               </span>
+                              {set.setType === 'WEIGHT' && set.weightKg && (
+                                <>
+                                  <span className="text-sm text-[rgba(255,255,255,0.5)]">@</span>
+                                  <span className="text-sm font-semibold text-[rgba(255,255,255,0.9)]">
+                                    {set.weightKg} kg
+                                  </span>
+                                </>
+                              )}
+                              {set.setType === 'BODYWEIGHT' && (
+                                <span className="text-xs text-[rgba(255,255,255,0.5)] ml-1">(kroppsvikt)</span>
+                              )}
                             </>
                           )}
                         </div>
@@ -516,7 +558,82 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       <Label className="text-[rgba(255,255,255,0.8)]">
                         Logga set {exerciseSets.length + 1}:
                       </Label>
-                      <div className="grid grid-cols-2 gap-3">
+
+                      {/* Set Type Selector */}
+                      <div>
+                        <Label className="text-sm text-[rgba(255,255,255,0.6)] mb-2 block">Set-typ</Label>
+                        <div className="grid grid-cols-4 gap-2">
+                          <button
+                            onClick={() => setCurrentSetType('WEIGHT')}
+                            className={`px-3 py-2 rounded text-xs font-medium transition-all ${
+                              currentSetType === 'WEIGHT'
+                                ? 'bg-[#FFD700] text-black'
+                                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.1)]'
+                            }`}
+                          >
+                            Vikt
+                          </button>
+                          <button
+                            onClick={() => setCurrentSetType('BODYWEIGHT')}
+                            className={`px-3 py-2 rounded text-xs font-medium transition-all ${
+                              currentSetType === 'BODYWEIGHT'
+                                ? 'bg-[#FFD700] text-black'
+                                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.1)]'
+                            }`}
+                          >
+                            Kroppsvikt
+                          </button>
+                          <button
+                            onClick={() => setCurrentSetType('TIME')}
+                            className={`px-3 py-2 rounded text-xs font-medium transition-all ${
+                              currentSetType === 'TIME'
+                                ? 'bg-[#FFD700] text-black'
+                                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.1)]'
+                            }`}
+                          >
+                            Tid
+                          </button>
+                          <button
+                            onClick={() => setCurrentSetType('REPS')}
+                            className={`px-3 py-2 rounded text-xs font-medium transition-all ${
+                              currentSetType === 'REPS'
+                                ? 'bg-[#FFD700] text-black'
+                                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.1)]'
+                            }`}
+                          >
+                            Reps
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Conditional Inputs Based on Set Type */}
+                      {currentSetType === 'WEIGHT' && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label className="text-sm text-[rgba(255,255,255,0.6)]">Reps</Label>
+                            <Input
+                              type="number"
+                              value={currentReps}
+                              onChange={(e) => setCurrentReps(e.target.value)}
+                              placeholder={`${exercise.repsMin || 0}`}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white mt-1"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-sm text-[rgba(255,255,255,0.6)]">Vikt (kg)</Label>
+                            <Input
+                              type="number"
+                              step="0.5"
+                              value={currentWeight}
+                              onChange={(e) => setCurrentWeight(e.target.value)}
+                              placeholder="0"
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white mt-1"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {currentSetType === 'BODYWEIGHT' && (
                         <div>
                           <Label className="text-sm text-[rgba(255,255,255,0.6)]">Reps</Label>
                           <Input
@@ -527,21 +644,39 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white mt-1"
                           />
                         </div>
+                      )}
+
+                      {currentSetType === 'TIME' && (
                         <div>
-                          <Label className="text-sm text-[rgba(255,255,255,0.6)]">Vikt (kg)</Label>
+                          <Label className="text-sm text-[rgba(255,255,255,0.6)]">Tid (sekunder)</Label>
                           <Input
                             type="number"
-                            step="0.5"
-                            value={currentWeight}
-                            onChange={(e) => setCurrentWeight(e.target.value)}
-                            placeholder="0"
+                            value={currentTimeSeconds}
+                            onChange={(e) => setCurrentTimeSeconds(e.target.value)}
+                            placeholder="30"
                             className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white mt-1"
                           />
                         </div>
-                      </div>
+                      )}
+
+                      {currentSetType === 'REPS' && (
+                        <div>
+                          <Label className="text-sm text-[rgba(255,255,255,0.6)]">Reps</Label>
+                          <Input
+                            type="number"
+                            value={currentReps}
+                            onChange={(e) => setCurrentReps(e.target.value)}
+                            placeholder={`${exercise.repsMin || 0}`}
+                            className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white mt-1"
+                          />
+                        </div>
+                      )}
+
                       <Button
                         onClick={() => logSet(exercise.exercise.id, exercise.id, exerciseSets.length + 1)}
-                        disabled={!currentReps}
+                        disabled={
+                          currentSetType === 'TIME' ? !currentTimeSeconds : !currentReps
+                        }
                         className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
                       >
                         <Check className="w-4 h-4 mr-2" />
@@ -597,6 +732,95 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             </Button>
           </CardContent>
         </Card>
+      )}
+
+      {/* Rating Modal */}
+      {showRatingModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] w-full max-w-md">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-[rgba(255,255,255,0.95)] flex items-center gap-2">
+                  <Trophy className="w-6 h-6 text-[#FFD700]" />
+                  Hur var träningen?
+                </CardTitle>
+                <button
+                  onClick={() => submitRating(true)}
+                  className="text-[rgba(255,255,255,0.5)] hover:text-[rgba(255,255,255,0.8)]"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Star Rating */}
+              <div>
+                <Label className="text-[rgba(255,255,255,0.8)] mb-3 block">
+                  Betygsätt ditt pass
+                </Label>
+                <div className="flex gap-2 justify-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      onClick={() => setSessionRating(star)}
+                      className="transition-all hover:scale-110"
+                    >
+                      <Star
+                        className={`w-10 h-10 ${
+                          sessionRating && star <= sessionRating
+                            ? 'fill-[#FFD700] text-[#FFD700]'
+                            : 'text-[rgba(255,215,0,0.3)] hover:text-[rgba(255,215,0,0.5)]'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+                {sessionRating && (
+                  <p className="text-center text-sm text-[rgba(255,255,255,0.6)] mt-2">
+                    {sessionRating === 5 && '🔥 Fantastiskt!'}
+                    {sessionRating === 4 && '💪 Riktigt bra!'}
+                    {sessionRating === 3 && '👍 Bra jobbat!'}
+                    {sessionRating === 2 && '😊 Okej pass'}
+                    {sessionRating === 1 && '😔 Kunde varit bättre'}
+                  </p>
+                )}
+              </div>
+
+              {/* Optional Comment */}
+              <div>
+                <Label className="text-[rgba(255,255,255,0.8)]">
+                  Kommentar (valfritt)
+                </Label>
+                <textarea
+                  value={sessionRatingComment}
+                  onChange={(e) => setSessionRatingComment(e.target.value)}
+                  placeholder="Vad gjorde passet bra eller dåligt?"
+                  className="w-full mt-2 p-3 bg-[rgba(0,0,0,0.3)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl text-white placeholder-[rgba(255,255,255,0.4)] focus:border-[rgba(255,215,0,0.5)] outline-none min-h-[80px] resize-y"
+                  rows={3}
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => submitRating(true)}
+                  variant="outline"
+                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,255,255,0.1)]"
+                  disabled={isCompleting}
+                >
+                  Hoppa över
+                </Button>
+                <Button
+                  onClick={() => submitRating(false)}
+                  className="flex-1 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+                  disabled={isCompleting || !sessionRating}
+                >
+                  {isCompleting ? 'Sparar...' : 'Spara betyg'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   )

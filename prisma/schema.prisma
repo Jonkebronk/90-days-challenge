@@ -338,13 +338,20 @@ model ExerciseLog {
 }
 
 // New Workout Program System (inspired by workout.cool)
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
 model WorkoutProgram {
-  id          String   @id @default(cuid())
-  coachId     String   // Coach who created this program
-  name        String   // "Upper/Lower Split", "Full Body Beginner", etc.
-  description String?  // Program description and goals
-  difficulty  String?  // "beginner", "intermediate", "advanced"
-  durationWeeks Int?   // Planned duration in weeks
+  id          String      @id @default(cuid())
+  coachId     String      // Coach who created this program
+  name        String      // "Upper/Lower Split", "Full Body Beginner", etc.
+  description String?     // Program description and goals
+  difficulty  Difficulty? // Program difficulty level
+  durationWeeks Int?      // Planned duration in weeks
 
   // Program settings
   published   Boolean  @default(false)
@@ -353,15 +360,35 @@ model WorkoutProgram {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  weeks       WorkoutProgramWeek[]
   days        WorkoutProgramDay[]
   assignments AssignedWorkoutProgram[]
 
   @@map("workout_programs")
 }
 
+model WorkoutProgramWeek {
+  id                String   @id @default(cuid())
+  workoutProgramId  String
+  weekNumber        Int      // 1, 2, 3, etc.
+  title             String?  // "Foundation Week", "Progressive Overload", etc.
+  description       String?  // Week-specific goals/notes
+
+  orderIndex        Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  workoutProgram    WorkoutProgram @relation(fields: [workoutProgramId], references: [id], onDelete: Cascade)
+  days              WorkoutProgramDay[]
+
+  @@unique([workoutProgramId, weekNumber])
+  @@map("workout_program_weeks")
+}
+
 model WorkoutProgramDay {
   id                String   @id @default(cuid())
   workoutProgramId  String
+  weekId            String?  // Optional: for multi-week structure
   dayNumber         Int      // 1, 2, 3, etc. within the program
   name              String   // "Push Day", "Leg Day", "Upper Body", etc.
   description       String?  // Day description/focus
@@ -372,6 +399,7 @@ model WorkoutProgramDay {
   updatedAt         DateTime @updatedAt
 
   workoutProgram    WorkoutProgram @relation(fields: [workoutProgramId], references: [id], onDelete: Cascade)
+  week              WorkoutProgramWeek? @relation(fields: [weekId], references: [id], onDelete: Cascade)
   exercises         WorkoutProgramExercise[]
   sessionLogs       WorkoutSessionLog[]
 
@@ -440,6 +468,10 @@ model WorkoutSessionLog {
   completed             Boolean  @default(false)
   notes                 String?  // Post-workout notes
 
+  // Session Rating System
+  rating                Int?     // 1-5 stars
+  ratingComment         String?  // Optional feedback/comment
+
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
@@ -450,12 +482,20 @@ model WorkoutSessionLog {
   @@map("workout_session_logs")
 }
 
+enum SetType {
+  WEIGHT      // Traditional weight x reps
+  TIME        // Time-based (planks, etc.)
+  BODYWEIGHT  // Bodyweight only (push-ups, pull-ups)
+  REPS        // Reps only, no weight tracking
+}
+
 model WorkoutSetLog {
   id                        String   @id @default(cuid())
   workoutSessionLogId       String
   workoutProgramExerciseId  String?  // Link to program exercise (optional)
   exerciseId                String   // The exercise performed
 
+  setType                   SetType  @default(WEIGHT) // Type of set
   setNumber                 Int      // 1, 2, 3, etc.
   reps                      Int?     // Reps completed
   weightKg                  Decimal? @db.Decimal(5, 2) // Weight used
@@ -961,4 +1001,45 @@ model MealPlanSupplementItem {
   mealPlan              MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
 
   @@map("meal_plan_supplement_items")
+}
+
+// Workout Templates for Custom Workout Builder
+model WorkoutTemplate {
+  id                String   @id @default(cuid())
+  userId            String?  // User who created it (null = coach/system template)
+  coachId           String?  // Coach who created it (for coach templates)
+  name              String   // "Quick Upper Body", "Home Leg Blast", etc.
+  description       String?  // Template description
+  estimatedDuration Int?     // Estimated duration in minutes
+  isPublic          Boolean  @default(false) // Can other users see/use this
+  category          String?  // "Strength", "Cardio", "HIIT", "Stretching", etc.
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  exercises         WorkoutTemplateExercise[]
+  usageCount        Int      @default(0) // Track how many times it's been used
+
+  @@map("workout_templates")
+}
+
+model WorkoutTemplateExercise {
+  id                    String   @id @default(cuid())
+  workoutTemplateId     String
+  exerciseId            String
+
+  // Exercise configuration
+  sets                  Int      // Number of sets
+  repsMin               Int?     // Minimum reps
+  repsMax               Int?     // Maximum reps
+  restSeconds           Int      @default(60)
+  notes                 String?  // Exercise-specific notes
+
+  orderIndex            Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  workoutTemplate       WorkoutTemplate @relation(fields: [workoutTemplateId], references: [id], onDelete: Cascade)
+
+  @@map("workout_template_exercises")
 }

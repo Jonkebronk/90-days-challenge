@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calendar, Clock, Dumbbell, TrendingUp, ChevronRight } from 'lucide-react'
+import { Calendar, Clock, Dumbbell, TrendingUp, ChevronRight, Star } from 'lucide-react'
 
 interface Exercise {
   name: string
@@ -31,6 +31,8 @@ interface WorkoutSession {
   durationMinutes: number | null
   completed: boolean
   notes: string | null
+  rating: number | null
+  ratingComment: string | null
   workoutProgramDay: WorkoutProgramDay
   sets: WorkoutSet[]
 }
@@ -244,6 +246,20 @@ export default function WorkoutHistoryPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
+                    {session.rating && (
+                      <div className="flex items-center gap-1 px-3 py-1 bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded-full">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-3 h-3 ${
+                              i < session.rating!
+                                ? 'fill-[#FFD700] text-[#FFD700]'
+                                : 'text-[rgba(255,215,0,0.3)]'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    )}
                     {session.completed ? (
                       <div className="px-3 py-1 bg-[rgba(34,197,94,0.2)] border border-[rgba(34,197,94,0.4)] rounded-full text-[#22c55e] text-sm font-medium">
                         Genomfört
@@ -294,10 +310,23 @@ export default function WorkoutHistoryPage() {
                   )}
                 </div>
 
-                {session.notes && (
-                  <div className="mt-4 pt-4 border-t border-[rgba(255,255,255,0.1)]">
-                    <div className="text-[rgba(255,255,255,0.6)] text-sm mb-1">Anteckningar</div>
-                    <div className="text-[rgba(255,255,255,0.8)] text-sm">{session.notes}</div>
+                {(session.notes || session.ratingComment) && (
+                  <div className="mt-4 pt-4 border-t border-[rgba(255,255,255,0.1)] space-y-3">
+                    {session.notes && (
+                      <div>
+                        <div className="text-[rgba(255,255,255,0.6)] text-sm mb-1">Anteckningar</div>
+                        <div className="text-[rgba(255,255,255,0.8)] text-sm">{session.notes}</div>
+                      </div>
+                    )}
+                    {session.ratingComment && (
+                      <div>
+                        <div className="text-[rgba(255,255,255,0.6)] text-sm mb-1 flex items-center gap-1">
+                          <Star className="w-3 h-3 fill-[#FFD700] text-[#FFD700]" />
+                          Passkommentar
+                        </div>
+                        <div className="text-[rgba(255,255,255,0.8)] text-sm italic">{session.ratingComment}</div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

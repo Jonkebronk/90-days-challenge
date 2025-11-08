@@ -71,7 +71,7 @@ export async function PATCH(
 
     const { id } = await params
     const body = await request.json()
-    const { completed, notes, durationMinutes } = body
+    const { completed, notes, durationMinutes, rating, ratingComment } = body
 
     const workoutSession = await prisma.workoutSessionLog.update({
       where: { id },
@@ -79,7 +79,9 @@ export async function PATCH(
         completed: completed !== undefined ? completed : undefined,
         completedAt: completed ? new Date() : undefined,
         notes: notes !== undefined ? notes : undefined,
-        durationMinutes: durationMinutes !== undefined ? durationMinutes : undefined
+        durationMinutes: durationMinutes !== undefined ? durationMinutes : undefined,
+        rating: rating !== undefined ? rating : undefined,
+        ratingComment: ratingComment !== undefined ? ratingComment : undefined
       }
     })
 
