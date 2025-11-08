@@ -704,7 +704,34 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                     <span className="text-yellow-500 font-bold text-lg">⚠</span>
                     <div className="text-yellow-200/90 text-sm">
                       <p className="font-semibold mb-1">Observera!</p>
-                      <p>Det kan ta några minuter att ladda upp dina bilder beroende på anslutning. Om du får ett felmeddelande på nästa sida, gå tillbaka, åtgärda felet och försök skicka igen.</p>
+                      <p>Startbilder för att mäta framsteg kommer att krävas vid något tillfälle under de första 4 veckorna, sedan var 2:a vecka (de första 12 veckorna) följt av var 4:e vecka (efter 12 veckor). Dessa hjälper oss att bedöma dina framsteg. De kommer att laddas upp till ditt klientuppföljningsark.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Example images showing proper positioning */}
+                <div className="bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4 mb-4">
+                  <p className="text-[rgba(255,255,255,0.7)] text-sm mb-3 text-center">
+                    <strong className="text-[#FFD700]">Exempel på korrekt positionering:</strong>
+                  </p>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="text-center">
+                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-2 mb-2">
+                        <div className="text-4xl">🧍</div>
+                      </div>
+                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Framsida: Stå rakt framifrån</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-2 mb-2">
+                        <div className="text-4xl">🚶</div>
+                      </div>
+                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Sida: Profil från sidan</p>
+                    </div>
+                    <div className="text-center">
+                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-2 mb-2">
+                        <div className="text-4xl">🙋</div>
+                      </div>
+                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Baksida: Stå rakt bakifrån</p>
                     </div>
                   </div>
                 </div>
