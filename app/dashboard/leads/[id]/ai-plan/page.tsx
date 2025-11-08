@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ArrowLeft, User, Mail, Phone, MapPin, Calendar } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, MapPin, Calendar, Brain } from 'lucide-react';
 
 interface LeadData {
   id: string;
@@ -130,38 +130,50 @@ export default function LeadAIPlanPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
-      {/* Header med navigation */}
+    <div className="space-y-6">
+      {/* Header with Gold Gradient */}
+      <div className="text-center">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
+        <div className="flex items-center justify-center gap-3 mb-3">
+          <Brain className="w-10 h-10 text-[#FFD700]" />
+          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            AI-Genererad Plan
+          </h1>
+        </div>
+        <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+          Granska och godkänn automatiskt genererad plan
+        </p>
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
+      </div>
+
+      {/* Back Button */}
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => router.push('/dashboard/leads')}
+          className="text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div>
-          <h1 className="text-3xl font-bold">AI-Genererad Plan</h1>
-          <p className="text-muted-foreground">Granska och godkänn automatiskt genererad plan</p>
-        </div>
       </div>
 
       {/* Lead Information Card */}
-      <Card>
+      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-white">
+                <User className="h-5 w-5 text-[#FFD700]" />
                 {lead.fullName}
               </CardTitle>
-              <CardDescription>Lead ID: {lead.id}</CardDescription>
+              <CardDescription className="text-[rgba(255,255,255,0.5)]">Lead ID: {lead.id}</CardDescription>
             </div>
-            <Badge variant={
-              lead.status === 'NEW' ? 'default' :
-              lead.status === 'CONTACTED' ? 'secondary' :
-              lead.status === 'CONVERTED' ? 'outline' :
-              'outline'
+            <Badge className={
+              lead.status === 'NEW' ? 'bg-[#FFD700] text-[#0a0a0a]' :
+              lead.status === 'CONTACTED' ? 'bg-[#007bff] text-white' :
+              lead.status === 'CONVERTED' ? 'bg-[#28a745] text-white' :
+              'bg-[rgba(255,255,255,0.2)] text-white'
             }>
               {lead.status}
             </Badge>
@@ -170,34 +182,34 @@ export default function LeadAIPlanPage() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{lead.email}</span>
+              <Mail className="h-4 w-4 text-[#FFD700]" />
+              <span className="text-sm text-[rgba(255,255,255,0.8)]">{lead.email}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{lead.phone || 'Ej angivet'}</span>
+              <Phone className="h-4 w-4 text-[#FFD700]" />
+              <span className="text-sm text-[rgba(255,255,255,0.8)]">{lead.phone || 'Ej angivet'}</span>
             </div>
             <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{lead.city}, {lead.country}</span>
+              <MapPin className="h-4 w-4 text-[#FFD700]" />
+              <span className="text-sm text-[rgba(255,255,255,0.8)]">{lead.city}, {lead.country}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">
+              <Calendar className="h-4 w-4 text-[#FFD700]" />
+              <span className="text-sm text-[rgba(255,255,255,0.8)]">
                 Ansökt: {new Date(lead.createdAt).toLocaleDateString('sv-SE')}
               </span>
             </div>
-            <div className="text-sm">
-              <span className="text-muted-foreground">Ålder:</span> {lead.age} år
+            <div className="text-sm text-[rgba(255,255,255,0.8)]">
+              <span className="text-[rgba(255,255,255,0.5)]">Ålder:</span> {lead.age} år
             </div>
-            <div className="text-sm">
-              <span className="text-muted-foreground">Längd:</span> {lead.height} cm
+            <div className="text-sm text-[rgba(255,255,255,0.8)]">
+              <span className="text-[rgba(255,255,255,0.5)]">Längd:</span> {lead.height} cm
             </div>
-            <div className="text-sm">
-              <span className="text-muted-foreground">Vikt:</span> {lead.currentWeight} kg
+            <div className="text-sm text-[rgba(255,255,255,0.8)]">
+              <span className="text-[rgba(255,255,255,0.5)]">Vikt:</span> {lead.currentWeight} kg
             </div>
-            <div className="text-sm">
-              <span className="text-muted-foreground">Kön:</span> {lead.gender}
+            <div className="text-sm text-[rgba(255,255,255,0.8)]">
+              <span className="text-[rgba(255,255,255,0.5)]">Kön:</span> {lead.gender}
             </div>
           </div>
         </CardContent>
@@ -212,26 +224,37 @@ export default function LeadAIPlanPage() {
       />
 
       {/* Action Buttons */}
-      <Card>
+      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
         <CardHeader>
-          <CardTitle>Nästa Steg</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-white">Nästa Steg</CardTitle>
+          <CardDescription className="text-[rgba(255,255,255,0.5)]">
             Välj hur du vill fortsätta med denna lead
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">
-          <Button onClick={handleApprovePlan} variant="outline">
+          <Button
+            onClick={handleApprovePlan}
+            className="bg-gradient-to-r from-[#28a745] to-[#20c997] hover:from-[#28a745] hover:to-[#28a745] text-white font-bold"
+          >
             Godkänn Plan
           </Button>
-          <Button onClick={handleConvertToClient}>
+          <Button
+            onClick={handleConvertToClient}
+            className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-bold"
+          >
             Konvertera till Klient & Skicka Plan
           </Button>
-          <Button onClick={handleEditPlan} variant="secondary">
+          <Button
+            onClick={handleEditPlan}
+            variant="outline"
+            className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+          >
             Redigera Plan Manuellt
           </Button>
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={() => router.push(`/dashboard/leads/${leadId}`)}
+            className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
           >
             Visa Fullständig Ansökan
           </Button>
