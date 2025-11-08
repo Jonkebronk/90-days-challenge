@@ -25,14 +25,38 @@ export async function GET(
       include: {
         workoutProgram: {
           include: {
+            weeks: {
+              include: {
+                days: {
+                  include: {
+                    exercises: {
+                      include: {
+                        exercise: true
+                      },
+                      orderBy: {
+                        orderIndex: 'asc'
+                      }
+                    }
+                  },
+                  orderBy: {
+                    dayNumber: 'asc'
+                  }
+                }
+              },
+              orderBy: {
+                weekNumber: 'asc'
+              }
+            },
             days: {
-              select: {
-                id: true,
-                name: true,
-                dayNumber: true,
-                isRestDay: true,
-                description: true,
-                orderIndex: true
+              include: {
+                exercises: {
+                  include: {
+                    exercise: true
+                  },
+                  orderBy: {
+                    orderIndex: 'asc'
+                  }
+                }
               },
               orderBy: {
                 dayNumber: 'asc'

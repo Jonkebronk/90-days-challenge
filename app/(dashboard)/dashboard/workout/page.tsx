@@ -30,6 +30,14 @@ interface WorkoutExercise {
   }
 }
 
+interface WorkoutWeek {
+  id: string
+  weekNumber: number
+  title: string | null
+  description: string | null
+  days: WorkoutDay[]
+}
+
 interface AssignedWorkout {
   id: string
   startDate: string
@@ -41,6 +49,7 @@ interface AssignedWorkout {
     description: string | null
     difficulty: string | null
     durationWeeks: number | null
+    weeks?: WorkoutWeek[]
     days: WorkoutDay[]
   }
 }
@@ -116,6 +125,16 @@ export default function WorkoutPage() {
 
   const { workoutProgram } = assignment
 
+  // Determine which days to show based on program structure
+  const currentWeek = assignment.currentWeek || 1
+  const programHasWeeks = workoutProgram.weeks && workoutProgram.weeks.length > 0
+  const currentWeekData = programHasWeeks
+    ? workoutProgram.weeks?.find((w: any) => w.weekNumber === currentWeek)
+    : null
+  const daysToShow = programHasWeeks && currentWeekData
+    ? currentWeekData.days
+    : workoutProgram.days
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -124,6 +143,12 @@ export default function WorkoutPage() {
           <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
             {workoutProgram.name}
           </h1>
+          {programHasWeeks && currentWeekData && (
+            <p className="text-[#8b5cf6] font-semibold mt-1">
+              {currentWeekData.title || `Vecka ${currentWeek}`}
+              {currentWeekData.description && ` - ${currentWeekData.description}`}
+            </p>
+          )}
           {workoutProgram.description && (
             <p className="text-[rgba(255,255,255,0.6)] mt-1">
               {workoutProgram.description}
@@ -160,26 +185,36 @@ export default function WorkoutPage() {
               <div>
                 <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Nivå</p>
                 <Badge className={`${
-                  workoutProgram.difficulty === 'beginner'
+                  workoutProgram.difficulty === 'BEGINNER'
                     ? 'bg-[rgba(40,167,69,0.2)] text-[#28a745] border-[rgba(40,167,69,0.3)]'
-                    : workoutProgram.difficulty === 'intermediate'
+                    : workoutProgram.difficulty === 'INTERMEDIATE'
                     ? 'bg-[rgba(255,193,7,0.2)] text-[#ffc107] border-[rgba(255,193,7,0.3)]'
-                    : 'bg-[rgba(220,53,69,0.2)] text-[#dc3545] border-[rgba(220,53,69,0.3)]'
+                    : workoutProgram.difficulty === 'ADVANCED'
+                    ? 'bg-[rgba(220,53,69,0.2)] text-[#dc3545] border-[rgba(220,53,69,0.3)]'
+                    : 'bg-[rgba(139,92,246,0.2)] text-[#8b5cf6] border-[rgba(139,92,246,0.3)]'
                 }`}>
                   {workoutProgram.difficulty}
                 </Badge>
               </div>
             )}
+            {programHasWeeks && (
+              <div>
+                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Nuvarande vecka</p>
+                <p className="text-2xl font-bold text-[rgba(139,92,246,0.9)]">
+                  {currentWeek} / {workoutProgram.weeks?.length || 0}
+                </p>
+              </div>
+            )}
             <div>
-              <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Totalt dagar</p>
+              <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">{programHasWeeks ? 'Dagar denna vecka' : 'Totalt dagar'}</p>
               <p className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
-                {workoutProgram.days.length}
+                {daysToShow.length}
               </p>
             </div>
             <div>
               <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Träningsdagar</p>
               <p className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
-                {workoutProgram.days.filter(d => !d.isRestDay).length}
+                {daysToShow.filter(d => !d.isRestDay).length}
               </p>
             </div>
             <div>
@@ -196,10 +231,10 @@ export default function WorkoutPage() {
       <div className="space-y-3">
         <h2 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] flex items-center gap-2">
           <Calendar className="w-6 h-6 text-[#FFD700]" />
-          Träningsschema
+          {programHasWeeks ? 'Denna veckans schema' : 'Träningsschema'}
         </h2>
 
-        {workoutProgram.days.map((day) => (
+        {daysToShow.map((day) => (
           <Card
             key={day.id}
             className={`bg-[rgba(255,255,255,0.03)] border-2 backdrop-blur-[10px] transition-all ${
@@ -287,11 +322,13 @@ export default function WorkoutPage() {
         ))}
       </div>
 
-      {workoutProgram.days.length === 0 && (
+      {daysToShow.length === 0 && (
         <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="py-12 text-center">
             <p className="text-[rgba(255,255,255,0.6)]">
-              Det finns inga dagar i detta träningsprogram än.
+              {programHasWeeks
+                ? `Det finns inga dagar för vecka ${currentWeek} än.`
+                : 'Det finns inga dagar i detta träningsprogram än.'}
             </p>
           </CardContent>
         </Card>
