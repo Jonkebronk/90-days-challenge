@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { VideoPlayer } from '@/components/ui/video-player'
 import {
   Dialog,
   DialogContent,
@@ -566,6 +567,19 @@ export default function ExercisesPage() {
                 />
               </div>
             </div>
+
+            {/* Video Preview */}
+            {formData.videoUrl && (
+              <div>
+                <Label className="text-[rgba(255,255,255,0.7)] mb-2 block">Videoförhandsvisning:</Label>
+                <VideoPlayer
+                  videoUrl={formData.videoUrl}
+                  thumbnailUrl={formData.thumbnailUrl}
+                  title={formData.name || 'Exercise video'}
+                  className="w-full max-w-md"
+                />
+              </div>
+            )}
 
             <div>
               <Label className="text-[rgba(255,255,255,0.7)]">Instruktioner</Label>

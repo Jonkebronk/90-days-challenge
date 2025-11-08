@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
+import { VideoPlayer } from '@/components/ui/video-player'
 import {
   Dumbbell,
   Clock,
@@ -35,6 +36,8 @@ interface Exercise {
     name: string
     muscleGroups: string[]
     description: string | null
+    videoUrl: string | null
+    thumbnailUrl: string | null
   }
 }
 
@@ -682,6 +685,21 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         <Check className="w-4 h-4 mr-2" />
                         Logga set
                       </Button>
+                    </div>
+                  )}
+
+                  {/* Exercise Video */}
+                  {exercise.exercise.videoUrl && (
+                    <div className="mb-4">
+                      <Label className="text-sm text-[rgba(255,255,255,0.6)] mb-2 block">
+                        Övningsvideo:
+                      </Label>
+                      <VideoPlayer
+                        videoUrl={exercise.exercise.videoUrl}
+                        thumbnailUrl={exercise.exercise.thumbnailUrl}
+                        title={exercise.exercise.name}
+                        className="w-full"
+                      />
                     </div>
                   )}
 
