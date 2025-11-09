@@ -60,6 +60,15 @@ export async function PATCH(
 
     const { id } = await params
     const body = await request.json()
+
+    console.log('PATCH /api/articles/[id] - Received body:', {
+      id,
+      bodyKeys: Object.keys(body),
+      title: body.title,
+      contentLength: body.content?.length,
+      categoryId: body.categoryId
+    })
+
     const {
       title,
       content,
@@ -80,11 +89,17 @@ export async function PATCH(
     if (slug !== undefined) updateData.slug = slug
     if (categoryId !== undefined) updateData.categoryId = categoryId
     if (tags !== undefined) updateData.tags = tags
-    if (difficulty !== undefined) updateData.difficulty = difficulty
+    if (difficulty !== undefined) updateData.difficulty = difficulty || null
     if (phase !== undefined) updateData.phase = phase
     if (estimatedReadingMinutes !== undefined) updateData.estimatedReadingMinutes = estimatedReadingMinutes
-    if (coverImage !== undefined) updateData.coverImage = coverImage
+    if (coverImage !== undefined) updateData.coverImage = coverImage || null
     if (orderIndex !== undefined) updateData.orderIndex = orderIndex
+
+    console.log('PATCH /api/articles/[id] - Update data:', {
+      updateDataKeys: Object.keys(updateData),
+      titleChanged: updateData.title !== undefined,
+      contentChanged: updateData.content !== undefined
+    })
 
     if (published !== undefined) {
       updateData.published = published
