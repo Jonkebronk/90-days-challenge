@@ -162,9 +162,8 @@ export function AIClientPlanViewer({
         <div className="flex flex-wrap gap-2">
           {onEdit && (
             <Button
-              variant="outline"
               onClick={onEdit}
-              className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+              className="bg-transparent border-2 border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
             >
               Redigera Plan
             </Button>
@@ -179,9 +178,8 @@ export function AIClientPlanViewer({
             </Button>
           )}
           <Button
-            variant="outline"
             onClick={() => window.print()}
-            className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+            className="bg-transparent border-2 border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
           >
             <Download className="mr-2 h-4 w-4" />
             Exportera
