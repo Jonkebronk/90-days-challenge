@@ -130,7 +130,7 @@ export default function LeadAIPlanPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 -mx-4 -my-8 px-4 py-8 min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
       {/* Header with Gold Gradient */}
       <div className="text-center">
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
