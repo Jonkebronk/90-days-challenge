@@ -92,6 +92,7 @@ export async function PATCH(
       data: {
         name: body.name,
         description: body.description,
+        generalAdvice: body.generalAdvice,
         targetProtein: body.targetProtein
           ? parseFloat(body.targetProtein)
           : null,

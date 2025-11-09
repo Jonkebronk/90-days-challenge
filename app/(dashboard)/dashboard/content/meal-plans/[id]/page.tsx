@@ -91,6 +91,7 @@ type MealPlanTemplate = {
   id: string
   name: string
   description: string | null
+  generalAdvice: string | null
   targetProtein: number | null
   targetFat: number | null
   targetCarbs: number | null
@@ -118,6 +119,7 @@ export default function MealPlanTemplatePage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    generalAdvice: '',
     targetProtein: '',
     targetFat: '',
     targetCarbs: '',
@@ -144,6 +146,7 @@ export default function MealPlanTemplatePage() {
       setFormData({
         name: template.name,
         description: template.description || '',
+        generalAdvice: template.generalAdvice || '',
         targetProtein: template.targetProtein?.toString() || '',
         targetFat: template.targetFat?.toString() || '',
         targetCarbs: template.targetCarbs?.toString() || '',
@@ -185,6 +188,7 @@ export default function MealPlanTemplatePage() {
         body: JSON.stringify({
           name: formData.name,
           description: formData.description || null,
+          generalAdvice: formData.generalAdvice || null,
           targetProtein: formData.targetProtein ? parseFloat(formData.targetProtein) : null,
           targetFat: formData.targetFat ? parseFloat(formData.targetFat) : null,
           targetCarbs: formData.targetCarbs ? parseFloat(formData.targetCarbs) : null,
@@ -406,6 +410,19 @@ export default function MealPlanTemplatePage() {
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={3}
               className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+            />
+          </div>
+          <div>
+            <Label htmlFor="generalAdvice" className="text-[rgba(255,255,255,0.8)]">
+              Generella råd
+            </Label>
+            <Textarea
+              id="generalAdvice"
+              value={formData.generalAdvice}
+              onChange={(e) => setFormData({ ...formData, generalAdvice: e.target.value })}
+              rows={4}
+              placeholder="Skriv generella råd som visas för klienten..."
+              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
             />
           </div>
           <div className="grid grid-cols-3 gap-4">

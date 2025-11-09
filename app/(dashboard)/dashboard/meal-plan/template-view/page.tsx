@@ -56,6 +56,7 @@ type MealPlanTemplate = {
   id: string
   name: string
   description: string | null
+  generalAdvice: string | null
   targetProtein: number | null
   targetFat: number | null
   targetCarbs: number | null
@@ -295,13 +296,14 @@ export default function MealPlanTemplateViewPage() {
                     Ditt skräddarsydda kostschema för din period{' '}
                     <span className="text-[#FFD700]">{session?.user?.name || 'där'}</span>.
                   </h1>
-                  <p className="text-[rgba(255,255,255,0.6)]">
-                    Klicka{' '}
-                    <span className="text-[#FFD700] underline cursor-pointer hover:text-[#FFA500]">
-                      här
-                    </span>{' '}
-                    för lite generella råd.
-                  </p>
+                  {template.generalAdvice && (
+                    <div className="mt-3 p-4 bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.2)] rounded-lg">
+                      <h3 className="text-sm font-semibold text-[#FFD700] mb-2">Generella råd:</h3>
+                      <p className="text-sm text-[rgba(255,255,255,0.8)] whitespace-pre-wrap">
+                        {template.generalAdvice}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

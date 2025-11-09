@@ -1129,6 +1129,7 @@ model MealPlanTemplate {
   published             Boolean  @default(false)
   isArchived            Boolean  @default(false)
   tags                  String[] // ["viktnedgång", "vegan", "högprotein"]
+  generalAdvice         String?  @db.Text // General advice shown to clients
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
@@ -1231,6 +1232,43 @@ model ClientMealSelection {
 
   @@unique([userId, templateMealId])
   @@map("client_meal_selections")
+}
+
+// ========================================
+// FAQ System (Vanliga frågor)
+// ========================================
+
+// FAQ Category - Organizing questions by topic
+model FaqCategory {
+  id                    String   @id @default(cuid())
+  name                  String   // "Träning", "Kost", "Övrigt", "Tävling/Röstning"
+  slug                  String   @unique // "traning", "kost", "ovrigt", "tavling-rostning"
+  description           String?  @db.Text
+  orderIndex            Int      @default(0)
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  questions             FaqQuestion[]
+
+  @@map("faq_categories")
+}
+
+// FAQ Question - Individual questions with answers
+model FaqQuestion {
+  id                    String   @id @default(cuid())
+  categoryId            String
+  question              String   @db.Text // "Kan man byta powerwalk mot HIIT?"
+  answer                String   @db.Text // Full answer with formatting
+  orderIndex            Int      @default(0)
+  published             Boolean  @default(true)
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  category              FaqCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("faq_questions")
 }
 
 // Workout Templates for Custom Workout Builder
