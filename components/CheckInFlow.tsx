@@ -29,6 +29,22 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   const [formData, setFormData] = useState({
     statusUpdate: '',
     weightKg: '',
+    // Dagliga vikter
+    mondayWeight: '',
+    tuesdayWeight: '',
+    wednesdayWeight: '',
+    thursdayWeight: '',
+    fridayWeight: '',
+    saturdayWeight: '',
+    sundayWeight: '',
+    // Kroppsmått
+    chest: '',
+    waist: '',
+    hips: '',
+    butt: '',
+    arms: '',
+    thighs: '',
+    calves: '',
     energyLevel: 0,
     mood: 0,
     dietPlanAdherence: 0,
@@ -200,7 +216,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               <h1 className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">Check-in</h1>
             </div>
 
-            <ProgressBar current={1} total={11} />
+            <ProgressBar current={1} total={12} />
 
             <div className="flex items-start gap-4 mb-8">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -233,7 +249,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(1)} />
-            <ProgressBar current={2} total={11} />
+            <ProgressBar current={2} total={12} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -271,43 +287,57 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 3: Weight
+  // Step 3: Dagliga vikter
   if (step === 3) {
+    const weekDays = [
+      { name: 'Måndag', field: 'mondayWeight' },
+      { name: 'Tisdag', field: 'tuesdayWeight' },
+      { name: 'Onsdag', field: 'wednesdayWeight' },
+      { name: 'Torsdag', field: 'thursdayWeight' },
+      { name: 'Fredag', field: 'fridayWeight' },
+      { name: 'Lördag', field: 'saturdayWeight' },
+      { name: 'Söndag', field: 'sundayWeight' },
+    ]
+
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(2)} />
-            <ProgressBar current={3} total={11} />
+            <ProgressBar current={3} total={12} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2 text-white">Kroppsmått</h2>
+                <h2 className="text-xl font-bold mb-2 text-white">Vikter för veckan</h2>
                 <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                  Lägg till dina senaste mätningar
+                  Fyll i dina vikter för varje dag du mätt denna vecka
                 </p>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="weight" className="text-[rgba(255,215,0,0.8)]">Vikt</Label>
-              <div className="relative">
-                <Input
-                  id="weight"
-                  type="number"
-                  step="0.1"
-                  value={formData.weightKg}
-                  onChange={(e) => updateFormData('weightKg', e.target.value)}
-                  placeholder=""
-                  className="pr-12 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.6)]">
-                  kg
-                </span>
-              </div>
+            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+              {weekDays.map((day) => (
+                <div key={day.field} className="space-y-1">
+                  <Label htmlFor={day.field} className="text-[rgba(255,215,0,0.8)]">{day.name}</Label>
+                  <div className="relative">
+                    <Input
+                      id={day.field}
+                      type="number"
+                      step="0.1"
+                      value={formData[day.field as keyof typeof formData] as string}
+                      onChange={(e) => updateFormData(day.field, e.target.value)}
+                      placeholder="Valfritt"
+                      className="pr-12 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.6)]">
+                      kg
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
 
             <Button
@@ -322,14 +352,244 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 4: Energy Level
+  // Step 4: Kroppsmått
   if (step === 4) {
+    const measurements = [
+      { name: 'Bröst', field: 'chest', description: 'Mät i höjd med dina bröstvårtor.' },
+      { name: 'Midja', field: 'waist', description: 'Mät runt det bredaste stället på midjan, oftast precis under naveln.' },
+      { name: 'Höfter', field: 'hips', description: 'Mär runt det bredaste stället på dina höfter utan dra in magen.' },
+      { name: 'Rumpa', field: 'butt', description: 'Mät runt det bredaste stället på din rumpa.' },
+      { name: 'Armar', field: 'arms', description: 'Mät runt det bredaste stället på din arm. Mät båda armarna.' },
+      { name: 'Lår', field: 'thighs', description: 'Mät på det bredaste stället på låret. Mät båda låren.' },
+      { name: 'Vader', field: 'calves', description: 'Mät på det bredaste stället runt vaderna. Mät båda vaderna.' },
+    ]
+
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(3)} />
-            <ProgressBar current={4} total={11} />
+            <ProgressBar current={4} total={12} />
+
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
+                {userName.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h2 className="text-xl font-bold mb-2 text-white">Omkrets mätningar</h2>
+                <p className="text-sm text-[rgba(255,255,255,0.6)]">
+                  Mät på samma ställe varje gång. Mät det bredaste området på respektive kroppsdel och spänn inte bandet allt för hårt.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+              {measurements.map((measurement) => (
+                <div key={measurement.field} className="space-y-1">
+                  <Label htmlFor={measurement.field} className="text-[rgba(255,215,0,0.8)] font-semibold">{measurement.name}</Label>
+                  <p className="text-xs text-[rgba(255,255,255,0.5)] mb-1">{measurement.description}</p>
+                  <div className="relative">
+                    <Input
+                      id={measurement.field}
+                      type="number"
+                      step="0.1"
+                      value={formData[measurement.field as keyof typeof formData] as string}
+                      onChange={(e) => updateFormData(measurement.field, e.target.value)}
+                      placeholder="Valfritt"
+                      className="pr-12 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.6)]">
+                      cm
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Button
+              onClick={() => setStep(5)}
+              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
+            >
+              Fortsätt
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // Step 5: Formbilder
+  if (step === 5) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+          <CardContent className="pt-6">
+            <Header onBack={() => setStep(4)} />
+            <ProgressBar current={5} total={12} />
+
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
+                {userName.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h2 className="text-xl font-bold mb-2 text-white">Uppdatera bilder</h2>
+                <p className="text-sm text-[rgba(255,255,255,0.6)]">
+                  Använd self-timer på en telefon för lättare ta bild.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {/* Framsida */}
+              <div>
+                <Label className="text-[rgba(255,215,0,0.8)] mb-2 block">📸 Framsida</Label>
+                <div className="relative border-2 border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-6 text-center hover:border-[rgba(255,215,0,0.5)] transition-all">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) handleFileChange('front', file)
+                    }}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  {photoFiles.front ? (
+                    <div className="space-y-2">
+                      <img
+                        src={URL.createObjectURL(photoFiles.front)}
+                        alt="Front"
+                        className="w-32 h-32 object-cover rounded-lg mx-auto"
+                      />
+                      <p className="text-sm text-[rgba(255,255,255,0.8)]">{photoFiles.front.name}</p>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleFileChange('front', null)
+                        }}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        Ta bort
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="text-4xl">📷</div>
+                      <p className="text-[rgba(255,255,255,0.6)]">Klicka för att ladda upp</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Baksida */}
+              <div>
+                <Label className="text-[rgba(255,215,0,0.8)] mb-2 block">📸 Baksida</Label>
+                <div className="relative border-2 border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-6 text-center hover:border-[rgba(255,215,0,0.5)] transition-all">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) handleFileChange('back', file)
+                    }}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  {photoFiles.back ? (
+                    <div className="space-y-2">
+                      <img
+                        src={URL.createObjectURL(photoFiles.back)}
+                        alt="Back"
+                        className="w-32 h-32 object-cover rounded-lg mx-auto"
+                      />
+                      <p className="text-sm text-[rgba(255,255,255,0.8)]">{photoFiles.back.name}</p>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleFileChange('back', null)
+                        }}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        Ta bort
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="text-4xl">📷</div>
+                      <p className="text-[rgba(255,255,255,0.6)]">Klicka för att ladda upp</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Sida */}
+              <div>
+                <Label className="text-[rgba(255,215,0,0.8)] mb-2 block">📸 Sida</Label>
+                <div className="relative border-2 border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-6 text-center hover:border-[rgba(255,215,0,0.5)] transition-all">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) handleFileChange('side', file)
+                    }}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  {photoFiles.side ? (
+                    <div className="space-y-2">
+                      <img
+                        src={URL.createObjectURL(photoFiles.side)}
+                        alt="Side"
+                        className="w-32 h-32 object-cover rounded-lg mx-auto"
+                      />
+                      <p className="text-sm text-[rgba(255,255,255,0.8)]">{photoFiles.side.name}</p>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleFileChange('side', null)
+                        }}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        Ta bort
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="text-4xl">📷</div>
+                      <p className="text-[rgba(255,255,255,0.6)]">Klicka för att ladda upp</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => setStep(6)}
+              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
+            >
+              Fortsätt
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // Step 6: Energy Level
+  if (step === 6) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+          <CardContent className="pt-6">
+            <Header onBack={() => setStep(5)} />
+            <ProgressBar current={6} total={12} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -349,7 +609,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
             />
 
             <Button
-              onClick={() => setStep(5)}
+              onClick={() => setStep(7)}
               className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
@@ -360,14 +620,14 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 5: Mood
-  if (step === 5) {
+  // Step 7: Mood
+  if (step === 7) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
-            <Header onBack={() => setStep(4)} />
-            <ProgressBar current={5} total={11} />
+            <Header onBack={() => setStep(6)} />
+            <ProgressBar current={7} total={12} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -387,7 +647,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
             />
 
             <Button
-              onClick={() => setStep(6)}
+              onClick={() => setStep(8)}
               className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
@@ -398,14 +658,14 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 6: Diet Plan Adherence
-  if (step === 6) {
+  // Step 8: Diet Plan Adherence
+  if (step === 8) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
-            <Header onBack={() => setStep(5)} />
-            <ProgressBar current={6} total={11} />
+            <Header onBack={() => setStep(7)} />
+            <ProgressBar current={8} total={12} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -425,7 +685,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
             />
 
             <Button
-              onClick={() => setStep(7)}
+              onClick={() => setStep(9)}
               className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
@@ -436,14 +696,14 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 7: Workout Plan Adherence
-  if (step === 7) {
+  // Step 9: Workout Plan Adherence
+  if (step === 9) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
-            <Header onBack={() => setStep(6)} />
-            <ProgressBar current={7} total={11} />
+            <Header onBack={() => setStep(7)} />
+            <ProgressBar current={9} total={12} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -463,7 +723,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
             />
 
             <Button
-              onClick={() => setStep(8)}
+              onClick={() => setStep(10)}
               className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
@@ -474,14 +734,14 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 8: Sleep
-  if (step === 8) {
+  // Step 10: Sleep
+  if (step === 10) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
-            <Header onBack={() => setStep(7)} />
-            <ProgressBar current={8} total={11} />
+            <Header onBack={() => setStep(8)} />
+            <ProgressBar current={10} total={12} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -519,14 +779,14 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 9: Daily Steps
-  if (step === 9) {
+  // Step 11: Daily Steps
+  if (step === 11) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
-            <Header onBack={() => setStep(8)} />
-            <ProgressBar current={9} total={11} />
+            <Header onBack={() => setStep(9)} />
+            <ProgressBar current={11} total={12} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -564,14 +824,14 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 10: Progress Photos
-  if (step === 10) {
+  // Step 12: Final Submit
+  if (step === 12) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
-            <Header onBack={() => setStep(9)} />
-            <ProgressBar current={10} total={11} />
+            <Header onBack={() => setStep(10)} />
+            <ProgressBar current={12} total={12} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
