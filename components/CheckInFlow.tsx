@@ -147,56 +147,6 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     </div>
   )
 
-  // Star rating component
-  const StarRating = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => (
-    <div className="flex gap-2">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          type="button"
-          onClick={() => onChange(star)}
-          className={`w-16 h-16 rounded-lg border-2 flex items-center justify-center transition-all ${
-            star <= value ? 'border-[#FFD700] bg-[rgba(255,215,0,0.1)]' : 'border-[rgba(255,255,255,0.2)] hover:border-[rgba(255,215,0,0.5)]'
-          }`}
-        >
-          <Star
-            className={`w-8 h-8 transition-colors ${
-              star <= value ? 'fill-[#FFD700] text-[#FFD700]' : 'text-[rgba(255,255,255,0.3)]'
-            }`}
-          />
-        </button>
-      ))}
-    </div>
-  )
-
-  // Mood rating component
-  const MoodRating = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => {
-    const moods = [
-      { icon: '😡', value: 1 },
-      { icon: '😟', value: 2 },
-      { icon: '😐', value: 3 },
-      { icon: '🙂', value: 4 },
-      { icon: '😄', value: 5 },
-    ]
-
-    return (
-      <div className="flex gap-2">
-        {moods.map((mood) => (
-          <button
-            key={mood.value}
-            type="button"
-            onClick={() => onChange(mood.value)}
-            className={`w-16 h-16 rounded-lg border-2 flex items-center justify-center text-3xl transition-all ${
-              mood.value === value ? 'border-[#FFD700] bg-[rgba(255,215,0,0.1)]' : 'border-[rgba(255,255,255,0.2)] hover:border-[rgba(255,215,0,0.5)] bg-[rgba(255,255,255,0.03)]'
-            }`}
-          >
-            {mood.icon}
-          </button>
-        ))}
-      </div>
-    )
-  }
-
   // Step 1: Welcome
   if (step === 1) {
     return (
