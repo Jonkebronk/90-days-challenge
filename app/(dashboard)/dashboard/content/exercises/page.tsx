@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, Search, Edit, Trash2, Dumbbell, X, Download } from 'lucide-react'
+import { Plus, Search, Edit, Trash2, Dumbbell, X } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -75,11 +75,6 @@ export default function ExercisesPage() {
   })
 
   const [instructionInput, setInstructionInput] = useState('')
-
-  // Import state
-  const [importing, setImporting] = useState(false)
-  const [importDialogOpen, setImportDialogOpen] = useState(false)
-  const [importResults, setImportResults] = useState<any>(null)
 
   useEffect(() => {
     fetchExercises()
@@ -213,36 +208,6 @@ export default function ExercisesPage() {
     }
   }
 
-  const handleImportExerciseDB = async (testMode: boolean = false) => {
-    setImporting(true)
-    setImportResults(null)
-
-    try {
-      const response = await fetch('/api/exercises/import-exercisedb', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          limit: testMode ? 10 : null, // Test with 10, or import all
-          skipExisting: true
-        })
-      })
-
-      if (response.ok) {
-        const results = await response.json()
-        setImportResults(results)
-        await fetchExercises() // Refresh the list
-      } else {
-        const error = await response.json()
-        alert(`Import failed: ${error.error}`)
-      }
-    } catch (error) {
-      console.error('Error importing exercises:', error)
-      alert('Ett fel uppstod vid import')
-    } finally {
-      setImporting(false)
-    }
-  }
-
   const toggleMuscleGroup = (muscle: string) => {
     setFormData(prev => ({
       ...prev,
@@ -298,23 +263,13 @@ export default function ExercisesPage() {
             Hantera övningar för träningsprogram
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button
-            onClick={() => setImportDialogOpen(true)}
-            variant="outline"
-            className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,215,0,0.5)]"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Import från ExerciseDB
-          </Button>
-          <Button
-            onClick={() => handleOpenDialog()}
-            className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Lägg till övning
-          </Button>
-        </div>
+        <Button
+          onClick={() => handleOpenDialog()}
+          className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Lägg till övning
+        </Button>
       </div>
 
       {/* Filters */}
@@ -692,130 +647,6 @@ export default function ExercisesPage() {
             >
               {editingExercise ? 'Uppdatera' : 'Skapa'} övning
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Import Dialog */}
-      <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
-        <DialogContent className="bg-[#0a0a0a] border-2 border-[rgba(255,215,0,0.3)] text-white max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-[#FFD700]">
-              Import övningar från ExerciseDB
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <p className="text-[rgba(255,255,255,0.7)]">
-              Importera professionella övningar från ExerciseDB - en öppen databas med 1300+ övningar inklusive GIFs, instruktioner och muskelgrupper.
-            </p>
-
-            {!importing && !importResults && (
-              <div className="space-y-3">
-                <div className="p-4 bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded-lg">
-                  <h4 className="font-semibold text-[#FFD700] mb-2">ℹ️ Information</h4>
-                  <ul className="text-sm text-[rgba(255,255,255,0.7)] space-y-1">
-                    <li>• Befintliga övningar kommer inte skrivas över</li>
-                    <li>• Alla övningar får GIF-demonstrationer</li>
-                    <li>• Instruktioner och muskelgrupper inkluderas</li>
-                    <li>• Första gången kan ta 1-2 minuter</li>
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            {importing && (
-              <div className="text-center py-8">
-                <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin mx-auto mb-4" />
-                <p className="text-[rgba(255,255,255,0.7)]">
-                  Importerar övningar...
-                </p>
-              </div>
-            )}
-
-            {importResults && (
-              <div className="space-y-3">
-                <div className="p-4 bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.3)] rounded-lg">
-                  <h4 className="font-semibold text-[#22c55e] mb-2">✓ Import klar!</h4>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="text-[rgba(255,255,255,0.5)]">Totalt:</span>
-                      <span className="ml-2 text-[rgba(255,255,255,0.9)] font-semibold">
-                        {importResults.summary?.total || 0}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[rgba(255,255,255,0.5)]">Tillagda:</span>
-                      <span className="ml-2 text-[#22c55e] font-semibold">
-                        {importResults.summary?.added || 0}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[rgba(255,255,255,0.5)]">Hoppade över:</span>
-                      <span className="ml-2 text-[rgba(255,255,255,0.7)]">
-                        {importResults.summary?.skipped || 0}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[rgba(255,255,255,0.5)]">Fel:</span>
-                      <span className="ml-2 text-[#ef4444]">
-                        {importResults.summary?.errors || 0}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {importResults.errors && importResults.errors.length > 0 && (
-                  <div className="p-4 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] rounded-lg max-h-40 overflow-y-auto">
-                    <h4 className="font-semibold text-[#ef4444] mb-2">⚠️ Fel:</h4>
-                    <ul className="text-xs text-[rgba(255,255,255,0.6)] space-y-1">
-                      {importResults.errors.map((error: string, idx: number) => (
-                        <li key={idx}>• {error}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          <DialogFooter>
-            {!importing && !importResults && (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={() => setImportDialogOpen(false)}
-                  className="border-[rgba(255,215,0,0.2)] text-[rgba(255,255,255,0.7)] hover:bg-[rgba(255,215,0,0.1)]"
-                >
-                  Avbryt
-                </Button>
-                <Button
-                  onClick={() => handleImportExerciseDB(true)}
-                  variant="outline"
-                  className="border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
-                >
-                  Test (10 övningar)
-                </Button>
-                <Button
-                  onClick={() => handleImportExerciseDB(false)}
-                  className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Importera alla
-                </Button>
-              </>
-            )}
-            {importResults && (
-              <Button
-                onClick={() => {
-                  setImportDialogOpen(false)
-                  setImportResults(null)
-                }}
-                className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
-              >
-                Stäng
-              </Button>
-            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
