@@ -31,14 +31,132 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // For now, return an error since User model doesn't have enough data
-      return NextResponse.json(
-        {
-          error: 'Klienten saknar nödvändig data för AI-generering',
-          details: 'Klienten behöver ha ålder, vikt, längd, och träningsmål för att generera en plan. Vänligen komplettera klientens profil först.'
+      // Validate that client has required data
+      if (!client.age || !client.height || !client.currentWeight) {
+        return NextResponse.json(
+          {
+            error: 'Klienten saknar nödvändig data för AI-generering',
+            details: 'Klienten behöver ha ålder, vikt och längd för att generera en plan. Vänligen komplettera klientens profil först.'
+          },
+          { status: 400 }
+        );
+      }
+
+      // Convert client data to ApplicationData format
+      const applicationData: ApplicationData = {
+        fullName: client.name || 'Klient',
+        email: client.email,
+        phone: client.phone || '',
+        city: client.city || '',
+        country: client.country || '',
+        age: client.age,
+        gender: (client.gender as 'man' | 'kvinna') || 'man',
+        height: client.height,
+        currentWeight: parseFloat(client.currentWeight.toString()),
+        currentTraining: client.currentTraining || '',
+        trainingExperience: client.trainingExperience || '',
+        trainingGoal: client.trainingGoal || '',
+        injuries: client.injuries || '',
+        availableTime: client.availableTime || '',
+        preferredSchedule: client.preferredSchedule || '',
+        dietHistory: client.dietHistory || '',
+        macroExperience: client.macroExperience || '',
+        digestionIssues: client.digestionIssues || '',
+        allergies: client.allergies || '',
+        favoriteFood: client.favoriteFood || '',
+        dislikedFood: client.dislikedFood || '',
+        supplements: client.supplements || '',
+        previousCoaching: client.previousCoaching || '',
+        stressLevel: client.stressLevel || '',
+        sleepHours: client.sleepHours || '',
+        occupation: client.occupation || '',
+        lifestyle: client.lifestyle || '',
+        whyJoin: client.whyJoin || '',
+        canFollowPlan: client.canFollowPlan || '',
+        expectations: client.expectations || '',
+        biggestChallenges: client.biggestChallenges || '',
+        frontPhoto: client.frontPhoto || undefined,
+        sidePhoto: client.sidePhoto || undefined,
+        backPhoto: client.backPhoto || undefined,
+      };
+
+      // Process application and generate plan
+      const calculatedPlan: CalculatedPlan = await processClientApplication(applicationData);
+
+      // Generate AI recommendations
+      let aiRecommendations = '';
+      try {
+        aiRecommendations = await generateAIRecommendations(applicationData, calculatedPlan);
+      } catch (error) {
+        console.error('AI-rekommendationer misslyckades:', error);
+      }
+
+      // Create a lead with the AI plan (for tracking purposes)
+      const lead = await prisma.lead.create({
+        data: {
+          fullName: applicationData.fullName,
+          email: applicationData.email,
+          phone: applicationData.phone || '',
+          city: applicationData.city || '',
+          country: applicationData.country || '',
+          age: applicationData.age,
+          gender: applicationData.gender,
+          height: applicationData.height,
+          currentWeight: applicationData.currentWeight,
+          currentTraining: applicationData.currentTraining,
+          trainingExperience: applicationData.trainingExperience,
+          trainingGoal: applicationData.trainingGoal,
+          injuries: applicationData.injuries,
+          availableTime: applicationData.availableTime,
+          preferredSchedule: applicationData.preferredSchedule,
+          dietHistory: applicationData.dietHistory,
+          macroExperience: applicationData.macroExperience,
+          digestionIssues: applicationData.digestionIssues,
+          allergies: applicationData.allergies,
+          favoriteFood: applicationData.favoriteFood,
+          dislikedFood: applicationData.dislikedFood,
+          supplements: applicationData.supplements,
+          previousCoaching: applicationData.previousCoaching,
+          stressLevel: applicationData.stressLevel,
+          sleepHours: applicationData.sleepHours,
+          occupation: applicationData.occupation,
+          lifestyle: applicationData.lifestyle,
+          whyJoin: applicationData.whyJoin,
+          canFollowPlan: applicationData.canFollowPlan,
+          expectations: applicationData.expectations,
+          biggestChallenges: applicationData.biggestChallenges,
+          frontPhoto: applicationData.frontPhoto,
+          sidePhoto: applicationData.sidePhoto,
+          backPhoto: applicationData.backPhoto,
+          status: 'AI_PLAN_GENERATED',
+          tags: ['ai-generated', 'from-client'],
+          notes: `AI-plan genererad från befintlig klient: ${client.name} (${client.id})`,
+          aiGeneratedPlan: {
+            calories: calculatedPlan.calories,
+            macros: calculatedPlan.macros,
+            mealDistribution: calculatedPlan.mealDistribution,
+            activity: calculatedPlan.activity,
+            recommendations: calculatedPlan.recommendations,
+            aiRecommendations: aiRecommendations || undefined
+          },
+          aiProcessedAt: new Date(),
+          aiModelVersion: 'claude-sonnet-4-20250514'
+        }
+      });
+
+      return NextResponse.json({
+        success: true,
+        leadId: lead.id,
+        plan: {
+          calories: calculatedPlan.calories,
+          macros: calculatedPlan.macros,
+          mealDistribution: calculatedPlan.mealDistribution,
+          activity: calculatedPlan.activity,
+          recommendations: calculatedPlan.recommendations,
+          aiRecommendations: aiRecommendations
         },
-        { status: 400 }
-      );
+        message: 'AI-plan genererad från klientdata'
+      });
     }
 
     // 1. Validera inkommande data

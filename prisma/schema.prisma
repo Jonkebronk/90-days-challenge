@@ -62,6 +62,7 @@ model User {
   phone         String?
   countryCode   String?
   country       String?
+  city          String?
   language      String?
   tags          String[]
   membershipStartDate DateTime?
@@ -69,6 +70,46 @@ model User {
   checkInFrequency String?
   checkInPeriod String?
   checkInDay    String?
+
+  // Application/Profile Data (from Lead form)
+  age           Int?
+  height        Int?           // cm
+  currentWeight Decimal?       // kg
+
+  // Training
+  currentTraining     String?  @db.Text
+  trainingExperience  String?  @db.Text
+  trainingGoal        String?  @db.Text
+  injuries            String?  @db.Text
+  availableTime       String?  @db.Text
+  preferredSchedule   String?  @db.Text
+
+  // Nutrition
+  dietHistory         String?  @db.Text
+  macroExperience     String?  @db.Text
+  digestionIssues     String?  @db.Text
+  allergies           String?  @db.Text
+  favoriteFood        String?  @db.Text
+  dislikedFood        String?  @db.Text
+  supplements         String?  @db.Text
+  previousCoaching    String?  @db.Text
+
+  // Lifestyle
+  stressLevel         String?  @db.Text
+  sleepHours          String?  @db.Text
+  occupation          String?  @db.Text
+  lifestyle           String?  @db.Text
+
+  // Motivation
+  whyJoin             String?  @db.Text
+  canFollowPlan       String?  @db.Text
+  expectations        String?  @db.Text
+  biggestChallenges   String?  @db.Text
+
+  // Photos
+  frontPhoto          String?  @db.Text
+  sidePhoto           String?  @db.Text
+  backPhoto           String?  @db.Text
 
   createdAt     DateTime  @default(now())
 

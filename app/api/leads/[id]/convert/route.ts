@@ -74,7 +74,7 @@ export async function POST(
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + 30)
 
-    // Create the client user
+    // Create the client user with all application data
     const client = await prisma.user.create({
       data: {
         name: lead.fullName,
@@ -87,6 +87,49 @@ export async function POST(
         inviteCodeExpiresAt: expiresAt,
         tags: lead.tags,
         membershipStatus: 'pending',
+
+        // Copy all application data from lead
+        city: lead.city,
+        country: lead.country,
+        age: lead.age,
+        gender: lead.gender,
+        height: lead.height,
+        currentWeight: lead.currentWeight,
+
+        // Training
+        currentTraining: lead.currentTraining,
+        trainingExperience: lead.trainingExperience,
+        trainingGoal: lead.trainingGoal,
+        injuries: lead.injuries,
+        availableTime: lead.availableTime,
+        preferredSchedule: lead.preferredSchedule,
+
+        // Nutrition
+        dietHistory: lead.dietHistory,
+        macroExperience: lead.macroExperience,
+        digestionIssues: lead.digestionIssues,
+        allergies: lead.allergies,
+        favoriteFood: lead.favoriteFood,
+        dislikedFood: lead.dislikedFood,
+        supplements: lead.supplements,
+        previousCoaching: lead.previousCoaching,
+
+        // Lifestyle
+        stressLevel: lead.stressLevel,
+        sleepHours: lead.sleepHours,
+        occupation: lead.occupation,
+        lifestyle: lead.lifestyle,
+
+        // Motivation
+        whyJoin: lead.whyJoin,
+        canFollowPlan: lead.canFollowPlan,
+        expectations: lead.expectations,
+        biggestChallenges: lead.biggestChallenges,
+
+        // Photos
+        frontPhoto: lead.frontPhoto,
+        sidePhoto: lead.sidePhoto,
+        backPhoto: lead.backPhoto,
       }
     })
 
