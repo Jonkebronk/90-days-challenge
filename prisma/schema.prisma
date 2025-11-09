@@ -1387,3 +1387,16 @@ model OnboardingProgress {
 
   @@map("onboarding_progress")
 }
+
+// Guide Content - Editable introduction/guide content
+model GuideContent {
+  id                String   @id @default(cuid())
+  type              String   @unique // "meal_plan" or "workout"
+  title             String   // Page title
+  content           String   @db.Text // MDX content
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("guide_content")
+}

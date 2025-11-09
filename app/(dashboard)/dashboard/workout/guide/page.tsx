@@ -1,12 +1,13 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MDXPreview } from '@/components/mdx-preview'
 
-// Default guide content - this can later be made editable by coach via CMS
-const GUIDE_CONTENT = `# Välkommen till ditt Träningsprogram
+// Fallback content if database is empty
+const FALLBACK_CONTENT = `# Välkommen till ditt Träningsprogram
 
 Ditt personliga träningsprogram är utformat för att maximera dina resultat baserat på dina mål och erfarenhetsnivå.
 
@@ -101,6 +102,43 @@ Träning ska vara roligt! Sätt på bra musik, känn dig stark, njut av känslan
 
 export default function WorkoutGuidePage() {
   const router = useRouter()
+  const [guideData, setGuideData] = useState({
+    title: 'Träningsprogram Guide',
+    content: FALLBACK_CONTENT
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchGuideContent()
+  }, [])
+
+  const fetchGuideContent = async () => {
+    try {
+      const response = await fetch('/api/guide-content?type=workout')
+      if (response.ok) {
+        const data = await response.json()
+        setGuideData({
+          title: data.guide.title,
+          content: data.guide.content
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching guide content:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-[#FFD700] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-[rgba(255,255,255,0.8)]">Laddar guide...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-transparent">
@@ -124,7 +162,7 @@ export default function WorkoutGuidePage() {
           <div className="flex items-center justify-center gap-3 mb-4">
             <Info className="w-8 h-8 text-[#FFD700]" />
             <h1 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-              Träningsprogram Guide
+              {guideData.title}
             </h1>
           </div>
           <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
@@ -136,7 +174,7 @@ export default function WorkoutGuidePage() {
         {/* Content Card */}
         <div className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-8 backdrop-blur-[10px]">
           <div className="prose prose-invert prose-lg max-w-none prose-headings:text-[#FFD700] prose-headings:font-bold prose-p:text-[rgba(255,255,255,0.8)] prose-strong:text-[#FFD700] prose-li:text-[rgba(255,255,255,0.8)] prose-a:text-[#3b82f6] prose-a:no-underline hover:prose-a:underline">
-            <MDXPreview content={GUIDE_CONTENT} />
+            <MDXPreview content={guideData.content} />
           </div>
         </div>
 
