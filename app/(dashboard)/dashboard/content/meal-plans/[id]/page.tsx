@@ -682,6 +682,12 @@ export default function MealPlanTemplatePage() {
                   >
                     Mellanmål
                   </SelectItem>
+                  <SelectItem
+                    value="evening"
+                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                  >
+                    Kvällsmål
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
