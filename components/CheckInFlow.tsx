@@ -409,9 +409,9 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2 text-white">Uppdatera bilder</h2>
+                <h2 className="text-xl font-bold mb-2 text-white">Uppdatera formbilder</h2>
                 <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                  Ta bild där hela kroppen syns från huvud till fötter. Använd gärna self-timer på telefonen.
+                  Ta bild där hela kroppen syns från huvud till fötter, se exempelbilder. Använd gärna self-timer på telefonen.
                 </p>
               </div>
             </div>
