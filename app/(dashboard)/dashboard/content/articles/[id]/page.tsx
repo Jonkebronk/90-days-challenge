@@ -250,6 +250,9 @@ export default function ArticleEditorPage() {
           coverImage: data.article.coverImage || '',
           published: data.article.published
         })
+
+        // Refresh router cache to update article list when navigating back
+        router.refresh()
       } else {
         const data = await response.json()
         console.error('Failed to save article:', data)
