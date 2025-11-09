@@ -2,19 +2,18 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import {
   UtensilsCrossed,
   ChefHat,
-  Check,
   ChevronDown,
   ChevronUp,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import Image from 'next/image'
 
 type TemplateMealOption = {
   id: string
@@ -63,6 +62,11 @@ type MealPlanTemplate = {
   targetCalories: number | null
   published: boolean
   meals: TemplateMeal[]
+  coach?: {
+    id: string
+    name: string | null
+    image: string | null
+  }
 }
 
 type Selection = {
@@ -107,19 +111,19 @@ export default function MealPlanTemplateViewPage() {
 
   const toggleMealExpanded = (mealId: string) => {
     setExpandedMeals((prev) => {
-      const next = new Set(prev)
-      if (next.has(mealId)) {
-        next.delete(mealId)
+      const newSet = new Set(prev)
+      if (newSet.has(mealId)) {
+        newSet.delete(mealId)
       } else {
-        next.add(mealId)
+        newSet.add(mealId)
       }
-      return next
+      return newSet
     })
   }
 
-  const getSelectedOptionId = (mealId: string): string | null => {
-    const selection = selections.find((s) => s.templateMealId === mealId)
-    return selection?.selectedOptionId || null
+  const getSelectedOptionId = (templateMealId: string): string | null => {
+    const selection = selections.find((s) => s.templateMealId === templateMealId)
+    return selection ? selection.selectedOptionId : null
   }
 
   const handleOptionSelect = async (
@@ -162,6 +166,43 @@ export default function MealPlanTemplateViewPage() {
       toast.error('Ett fel uppstod')
     } finally {
       setSavingMeal(null)
+    }
+  }
+
+  const calculateFoodMacros = (template: MealPlanTemplate) => {
+    let totalProtein = 0
+    let totalFat = 0
+    let totalCarbs = 0
+    let totalCalories = 0
+
+    // Only non-training meals (all meals that are not explicitly training-related)
+    template.meals.forEach((meal) => {
+      // Skip if meal type is explicitly for training (you can adjust this logic)
+      if (meal.mealType?.toLowerCase() === 'training') return
+
+      const selectedOptionId = getSelectedOptionId(meal.id)
+      const option = selectedOptionId
+        ? meal.options.find((o) => o.id === selectedOptionId)
+        : meal.options.find((o) => o.isDefault) || meal.options[0]
+
+      if (option) {
+        totalProtein += option.calculatedProtein
+        totalFat += option.calculatedFat
+        totalCarbs += option.calculatedCarbs
+        totalCalories += option.calculatedCalories
+      }
+    })
+
+    return { totalProtein, totalFat, totalCarbs, totalCalories }
+  }
+
+  const calculateTrainingMacros = (template: MealPlanTemplate) => {
+    // For now, return zeros - you can add training meal logic later
+    return {
+      totalProtein: 0,
+      totalFat: 0,
+      totalCarbs: 0,
+      totalCalories: 0,
     }
   }
 
@@ -216,84 +257,160 @@ export default function MealPlanTemplateViewPage() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       {templates.map((template) => {
+        const foodMacros = calculateFoodMacros(template)
+        const trainingMacros = calculateTrainingMacros(template)
         const totals = calculateTotalMacros(template)
 
         return (
           <div key={template.id} className="space-y-6">
-            {/* Header */}
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
-                {template.name}
-              </h1>
-              {template.description && (
-                <p className="text-[rgba(255,255,255,0.6)] mt-2">
-                  {template.description}
-                </p>
-              )}
+            {/* Header with Coach Info */}
+            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] rounded-xl p-6">
+              <div className="flex items-start gap-6">
+                {/* Coach Avatar */}
+                <div className="flex-shrink-0">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-[rgba(255,215,0,0.3)]">
+                    {template.coach?.image ? (
+                      <Image
+                        src={template.coach.image}
+                        alt={template.coach.name || 'Coach'}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[rgba(255,215,0,0.1)] flex items-center justify-center">
+                        <span className="text-4xl text-[#FFD700]">
+                          {template.coach?.name?.charAt(0) || 'C'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-sm text-center mt-2 text-[rgba(255,255,255,0.6)]">
+                    {template.coach?.name || 'Din coach'}
+                  </p>
+                </div>
+
+                {/* Header Text */}
+                <div className="flex-1">
+                  <h1 className="text-2xl font-bold text-white mb-2">
+                    Ditt skräddarsydda kostschema för din period{' '}
+                    <span className="text-[#FFD700]">{session?.user?.name || 'där'}</span>.
+                  </h1>
+                  <p className="text-[rgba(255,255,255,0.6)]">
+                    Klicka{' '}
+                    <span className="text-[#FFD700] underline cursor-pointer hover:text-[#FFA500]">
+                      här
+                    </span>{' '}
+                    för lite generella råd.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* Macro Summary */}
-            <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
-              <CardHeader>
-                <CardTitle className="text-xl font-bold text-[#FFD700]">
-                  Dina makron
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-4 bg-[rgba(0,0,0,0.3)] rounded-lg border border-[rgba(255,215,0,0.2)]">
-                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">
-                      Kalorier
-                    </p>
+            {/* Macro Summary - Three Sections */}
+            <div className="space-y-4">
+              {/* Totalt för kost */}
+              <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] rounded-xl p-6">
+                <h3 className="text-lg font-bold text-center text-white mb-4">
+                  Totalt för kost
+                </h3>
+                <div className="grid grid-cols-4 gap-4 text-center">
+                  <div>
+                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Protein:</p>
                     <p className="text-2xl font-bold text-white">
-                      {Math.round(totals.totalCalories)}
+                      {Math.round(foodMacros.totalProtein * 10) / 10}
                     </p>
-                    {template.targetCalories && (
-                      <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">
-                        Mål: {template.targetCalories}
-                      </p>
-                    )}
                   </div>
-                  <div className="text-center p-4 bg-[rgba(0,0,0,0.3)] rounded-lg border border-[rgba(255,215,0,0.2)]">
-                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">
-                      Protein (g)
-                    </p>
+                  <div>
+                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Fett:</p>
                     <p className="text-2xl font-bold text-white">
-                      {Math.round(totals.totalProtein)}
+                      {Math.round(foodMacros.totalFat * 10) / 10}
                     </p>
-                    {template.targetProtein && (
-                      <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">
-                        Mål: {template.targetProtein}g
-                      </p>
-                    )}
                   </div>
-                  <div className="text-center p-4 bg-[rgba(0,0,0,0.3)] rounded-lg border border-[rgba(255,215,0,0.2)]">
-                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Fett (g)</p>
-                    <p className="text-2xl font-bold text-white">
-                      {Math.round(totals.totalFat)}
-                    </p>
-                    {template.targetFat && (
-                      <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">
-                        Mål: {template.targetFat}g
-                      </p>
-                    )}
-                  </div>
-                  <div className="text-center p-4 bg-[rgba(0,0,0,0.3)] rounded-lg border border-[rgba(255,215,0,0.2)]">
+                  <div>
                     <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">
-                      Kolhydrater (g)
+                      Kolhydrater:
                     </p>
                     <p className="text-2xl font-bold text-white">
-                      {Math.round(totals.totalCarbs)}
+                      {Math.round(foodMacros.totalCarbs * 10) / 10}
                     </p>
-                    {template.targetCarbs && (
-                      <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">
-                        Mål: {template.targetCarbs}g
-                      </p>
-                    )}
+                  </div>
+                  <div>
+                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Kcal:</p>
+                    <p className="text-2xl font-bold text-white">
+                      {Math.round(foodMacros.totalCalories * 10) / 10}
+                    </p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+
+              {/* Totalt för träning */}
+              <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] rounded-xl p-6">
+                <h3 className="text-lg font-bold text-center text-white mb-4">
+                  Totalt för träning
+                </h3>
+                <div className="grid grid-cols-4 gap-4 text-center">
+                  <div>
+                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Protein:</p>
+                    <p className="text-2xl font-bold text-white">
+                      {Math.round(trainingMacros.totalProtein * 10) / 10}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Fett:</p>
+                    <p className="text-2xl font-bold text-white">
+                      {Math.round(trainingMacros.totalFat * 10) / 10}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">
+                      Kolhydrater:
+                    </p>
+                    <p className="text-2xl font-bold text-white">
+                      {Math.round(trainingMacros.totalCarbs * 10) / 10}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Kcal:</p>
+                    <p className="text-2xl font-bold text-white">
+                      {Math.round(trainingMacros.totalCalories * 10) / 10}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Totalt dagsintag - Big Blue/Gold Box */}
+              <div className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-xl p-6">
+                <h3 className="text-lg font-bold text-center text-[#0a0a0a] mb-4">
+                  Totalt dagsintag
+                </h3>
+                <div className="grid grid-cols-4 gap-4 text-center">
+                  <div>
+                    <p className="text-3xl font-bold text-[#0a0a0a]">
+                      {Math.round(totals.totalProtein * 10) / 10}
+                    </p>
+                    <p className="text-sm text-[rgba(10,10,10,0.7)] mt-1">Protein</p>
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold text-[#0a0a0a]">
+                      {Math.round(totals.totalFat * 10) / 10}
+                    </p>
+                    <p className="text-sm text-[rgba(10,10,10,0.7)] mt-1">Fett</p>
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold text-[#0a0a0a]">
+                      {Math.round(totals.totalCarbs * 10) / 10}
+                    </p>
+                    <p className="text-sm text-[rgba(10,10,10,0.7)] mt-1">Kolhydrater</p>
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold text-[#0a0a0a]">
+                      {Math.round(totals.totalCalories * 10) / 10}
+                    </p>
+                    <p className="text-sm text-[rgba(10,10,10,0.7)] mt-1">Kcal</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Meals */}
             <div className="space-y-4">
@@ -311,20 +428,22 @@ export default function MealPlanTemplateViewPage() {
                       key={meal.id}
                       className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]"
                     >
-                      <CardHeader
-                        className="cursor-pointer"
-                        onClick={() => toggleMealExpanded(meal.id)}
+                      <div
+                        className="p-6 cursor-pointer"
+                        onClick={() =>
+                          meal.options.length > 1 && toggleMealExpanded(meal.id)
+                        }
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
-                            <CardTitle className="text-xl text-white flex items-center gap-2">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
                               {meal.name}
                               {meal.options.length > 1 && (
                                 <Badge className="bg-[rgba(100,100,255,0.1)] text-blue-300 border border-[rgba(100,100,255,0.3)]">
                                   {meal.options.length} alternativ
                                 </Badge>
                               )}
-                            </CardTitle>
+                            </h3>
                             {selectedOption && (
                               <p className="text-sm text-[rgba(255,255,255,0.6)] mt-2">
                                 {selectedOption.optionType === 'recipe'
@@ -339,23 +458,19 @@ export default function MealPlanTemplateViewPage() {
                             )}
                           </div>
                           {meal.options.length > 1 && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-[rgba(255,255,255,0.6)]"
-                            >
+                            <div className="text-[rgba(255,255,255,0.6)]">
                               {isExpanded ? (
                                 <ChevronUp className="h-5 w-5" />
                               ) : (
                                 <ChevronDown className="h-5 w-5" />
                               )}
-                            </Button>
+                            </div>
                           )}
                         </div>
-                      </CardHeader>
+                      </div>
 
                       {isExpanded && meal.options.length > 1 && (
-                        <CardContent>
+                        <CardContent className="pt-0">
                           <RadioGroup
                             value={selectedOptionId || ''}
                             onValueChange={(value) =>
@@ -385,62 +500,77 @@ export default function MealPlanTemplateViewPage() {
                                       className="flex-1 cursor-pointer"
                                     >
                                       <div className="flex items-start gap-3">
-                                        {option.optionType === 'recipe' ? (
-                                          <>
-                                            {option.recipe?.coverImage ? (
+                                        {/* Icon */}
+                                        <div className="flex-shrink-0 mt-1">
+                                          {option.optionType === 'recipe' ? (
+                                            option.recipe?.coverImage ? (
                                               <img
                                                 src={option.recipe.coverImage}
                                                 alt={option.recipe.title}
-                                                className="w-16 h-16 object-cover rounded-lg"
+                                                className="w-12 h-12 object-cover rounded-lg"
                                               />
                                             ) : (
-                                              <div className="w-16 h-16 bg-[rgba(255,215,0,0.1)] rounded-lg flex items-center justify-center">
-                                                <ChefHat className="h-8 w-8 text-[rgba(255,215,0,0.5)]" />
+                                              <div className="w-12 h-12 bg-[rgba(255,215,0,0.1)] rounded-lg flex items-center justify-center">
+                                                <ChefHat className="h-6 w-6 text-[rgba(255,215,0,0.5)]" />
                                               </div>
-                                            )}
-                                          </>
-                                        ) : (
-                                          <div className="w-16 h-16 bg-[rgba(255,215,0,0.1)] rounded-lg flex items-center justify-center">
-                                            <UtensilsCrossed className="h-8 w-8 text-[rgba(255,215,0,0.5)]" />
-                                          </div>
-                                        )}
+                                            )
+                                          ) : (
+                                            <div className="w-12 h-12 bg-[rgba(255,215,0,0.1)] rounded-lg flex items-center justify-center">
+                                              <UtensilsCrossed className="h-6 w-6 text-[rgba(255,215,0,0.5)]" />
+                                            </div>
+                                          )}
+                                        </div>
+
+                                        {/* Content */}
                                         <div className="flex-1">
-                                          <p className="text-white font-medium">
-                                            {option.optionType === 'recipe'
-                                              ? option.recipe?.title
-                                              : option.customName}
+                                          <div className="flex items-center gap-2">
+                                            <p className="font-medium text-white">
+                                              {option.optionType === 'recipe'
+                                                ? option.recipe?.title
+                                                : option.customName}
+                                            </p>
                                             {option.isDefault && (
-                                              <Badge className="ml-2 bg-[rgba(34,197,94,0.1)] text-green-400 border border-[rgba(34,197,94,0.3)] text-xs">
+                                              <Badge className="bg-[rgba(34,197,94,0.1)] text-green-400 border border-[rgba(34,197,94,0.3)] text-xs">
                                                 Rekommenderat
                                               </Badge>
                                             )}
-                                          </p>
-                                          <p className="text-sm text-[rgba(255,255,255,0.6)] mt-1">
-                                            {Math.round(option.calculatedCalories)} kcal
-                                            • P: {Math.round(option.calculatedProtein)}g
-                                            • F: {Math.round(option.calculatedFat)}g • K:{' '}
-                                            {Math.round(option.calculatedCarbs)}g
-                                          </p>
+                                          </div>
+                                          {option.customDescription && (
+                                            <p className="text-sm text-[rgba(255,255,255,0.5)] mt-1">
+                                              {option.customDescription}
+                                            </p>
+                                          )}
+                                          <div className="flex gap-4 mt-2 text-sm text-[rgba(255,255,255,0.6)]">
+                                            <span>
+                                              {Math.round(option.calculatedCalories)} kcal
+                                            </span>
+                                            <span>
+                                              P: {Math.round(option.calculatedProtein)}g
+                                            </span>
+                                            <span>
+                                              F: {Math.round(option.calculatedFat)}g
+                                            </span>
+                                            <span>
+                                              K: {Math.round(option.calculatedCarbs)}g
+                                            </span>
+                                          </div>
                                           {option.notes && (
-                                            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
+                                            <p className="text-sm text-[rgba(255,215,0,0.8)] mt-2 italic">
                                               {option.notes}
                                             </p>
                                           )}
                                         </div>
                                       </div>
                                     </Label>
-                                    {selectedOptionId === option.id && (
-                                      <Check className="h-5 w-5 text-[#FFD700]" />
-                                    )}
                                   </div>
                                 ))}
+                              {savingMeal === meal.id && (
+                                <p className="text-sm text-[rgba(255,215,0,0.8)] text-center">
+                                  Sparar...
+                                </p>
+                              )}
                             </div>
                           </RadioGroup>
-                          {savingMeal === meal.id && (
-                            <p className="text-sm text-[rgba(255,255,255,0.6)] text-center mt-3">
-                              Sparar...
-                            </p>
-                          )}
                         </CardContent>
                       )}
                     </Card>

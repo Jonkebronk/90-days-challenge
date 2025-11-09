@@ -28,6 +28,13 @@ export async function GET(request: Request) {
         active: true,
       },
       include: {
+        coach: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
         template: {
           include: {
             meals: {
@@ -66,7 +73,10 @@ export async function GET(request: Request) {
     })
 
     return NextResponse.json({
-      assignments: assignments.map(a => a.template),
+      assignments: assignments.map(a => ({
+        ...a.template,
+        coach: a.coach,
+      })),
       selections,
     })
   } catch (error) {
