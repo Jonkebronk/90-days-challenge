@@ -104,7 +104,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
         <div
           key={idx}
           className={`h-1 flex-1 rounded-full ${
-            idx < current ? 'bg-green-700' : 'bg-gray-300'
+            idx < current ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500]' : 'bg-[rgba(255,255,255,0.1)]'
           }`}
         />
       ))}
@@ -117,7 +117,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
         <Button
           variant="ghost"
           onClick={onBack}
-          className="absolute left-0 top-0 p-2"
+          className="absolute left-0 top-0 p-2 text-[#FFD700] hover:text-[#FFA500] hover:bg-[rgba(255,215,0,0.1)]"
         >
           ←
         </Button>
@@ -125,11 +125,11 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
       <Button
         variant="ghost"
         onClick={onClose}
-        className="absolute right-0 top-0 p-2"
+        className="absolute right-0 top-0 p-2 text-[#FFD700] hover:text-[#FFA500] hover:bg-[rgba(255,215,0,0.1)]"
       >
         ✕
       </Button>
-      <h1 className="text-2xl font-bold text-center pt-8">Check-in</h1>
+      <h1 className="text-2xl font-bold text-center pt-8 bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">Check-in</h1>
     </div>
   )
 
@@ -141,13 +141,13 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
           key={star}
           type="button"
           onClick={() => onChange(star)}
-          className={`w-16 h-16 rounded-lg border-2 flex items-center justify-center ${
-            star <= value ? 'border-yellow-500 bg-yellow-50' : 'border-gray-300'
+          className={`w-16 h-16 rounded-lg border-2 flex items-center justify-center transition-all ${
+            star <= value ? 'border-[#FFD700] bg-[rgba(255,215,0,0.1)]' : 'border-[rgba(255,255,255,0.2)] hover:border-[rgba(255,215,0,0.5)]'
           }`}
         >
           <Star
-            className={`w-8 h-8 ${
-              star <= value ? 'fill-yellow-500 text-yellow-500' : 'text-gray-300'
+            className={`w-8 h-8 transition-colors ${
+              star <= value ? 'fill-[#FFD700] text-[#FFD700]' : 'text-[rgba(255,255,255,0.3)]'
             }`}
           />
         </button>
@@ -172,8 +172,8 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
             key={mood.value}
             type="button"
             onClick={() => onChange(mood.value)}
-            className={`w-16 h-16 rounded-lg border-2 flex items-center justify-center text-3xl ${
-              mood.value === value ? 'border-green-600 bg-green-50' : 'border-gray-300 bg-gray-50'
+            className={`w-16 h-16 rounded-lg border-2 flex items-center justify-center text-3xl transition-all ${
+              mood.value === value ? 'border-[#FFD700] bg-[rgba(255,215,0,0.1)]' : 'border-[rgba(255,255,255,0.2)] hover:border-[rgba(255,215,0,0.5)] bg-[rgba(255,255,255,0.03)]'
             }`}
           >
             {mood.icon}
@@ -186,29 +186,29 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 1: Welcome
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg border-0 shadow-none">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <div className="relative mb-6">
               <Button
                 variant="ghost"
                 onClick={onClose}
-                className="absolute right-0 top-0 p-2"
+                className="absolute right-0 top-0 p-2 text-[#FFD700] hover:text-[#FFA500] hover:bg-[rgba(255,215,0,0.1)]"
               >
                 ✕
               </Button>
-              <h1 className="text-2xl font-bold">Check-in</h1>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">Check-in</h1>
             </div>
 
             <ProgressBar current={1} total={11} />
 
             <div className="flex items-start gap-4 mb-8">
-              <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center text-white font-semibold">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2">Hallå där! 👋</h2>
-                <p className="text-muted-foreground">
+                <h2 className="text-xl font-bold mb-2 text-white text-white">Hallå där! 👋</h2>
+                <p className="text-[rgba(255,255,255,0.6)]">
                   Det är dags för din check-in. Du kan uppdatera några mått och berätta hur din vecka har varit.
                 </p>
               </div>
@@ -216,7 +216,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
 
             <Button
               onClick={() => setStep(2)}
-              className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold h-12"
+              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12"
             >
               Fortsätt
             </Button>
@@ -229,19 +229,19 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 2: Status
   if (step === 2) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg border-0 shadow-none">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(1)} />
             <ProgressBar current={2} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center text-white font-semibold">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2">Status</h2>
-                <p className="text-sm text-muted-foreground">
+                <h2 className="text-xl font-bold mb-2 text-white">Status</h2>
+                <p className="text-sm text-[rgba(255,255,255,0.6)]">
                   Hur har du haft det sedan din senaste uppdatering?
                 </p>
               </div>
@@ -253,14 +253,15 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               placeholder="Lägg till ditt svar"
               rows={6}
               maxLength={500}
+              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
             />
-            <div className="text-right text-sm text-muted-foreground mt-1">
+            <div className="text-right text-sm text-[rgba(255,255,255,0.6)] mt-1">
               {formData.statusUpdate.length} / 500
             </div>
 
             <Button
               onClick={() => setStep(3)}
-              className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold h-12 mt-6"
+              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
             </Button>
@@ -273,26 +274,26 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 3: Weight
   if (step === 3) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg border-0 shadow-none">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(2)} />
             <ProgressBar current={3} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center text-white font-semibold">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2">Kroppsmått</h2>
-                <p className="text-sm text-muted-foreground">
+                <h2 className="text-xl font-bold mb-2 text-white">Kroppsmått</h2>
+                <p className="text-sm text-[rgba(255,255,255,0.6)]">
                   Lägg till dina senaste mätningar
                 </p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="weight">Vikt</Label>
+              <Label htmlFor="weight" className="text-[rgba(255,215,0,0.8)]">Vikt</Label>
               <div className="relative">
                 <Input
                   id="weight"
@@ -301,9 +302,9 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
                   value={formData.weightKg}
                   onChange={(e) => updateFormData('weightKg', e.target.value)}
                   placeholder=""
-                  className="pr-12"
+                  className="pr-12 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.6)]">
                   kg
                 </span>
               </div>
@@ -311,7 +312,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
 
             <Button
               onClick={() => setStep(4)}
-              className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold h-12 mt-6"
+              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
             </Button>
@@ -324,19 +325,19 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 4: Energy Level
   if (step === 4) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg border-0 shadow-none">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(3)} />
             <ProgressBar current={4} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center text-white font-semibold">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2">Energinivå</h2>
-                <p className="text-sm text-muted-foreground">
+                <h2 className="text-xl font-bold mb-2 text-white">Energinivå</h2>
+                <p className="text-sm text-[rgba(255,255,255,0.6)]">
                   1 = låg energi, 5 = mycket energisk
                 </p>
               </div>
@@ -349,7 +350,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
 
             <Button
               onClick={() => setStep(5)}
-              className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold h-12 mt-6"
+              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
             </Button>
@@ -362,19 +363,19 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 5: Mood
   if (step === 5) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg border-0 shadow-none">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(4)} />
             <ProgressBar current={5} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center text-white font-semibold">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2">Humör</h2>
-                <p className="text-sm text-muted-foreground">
+                <h2 className="text-xl font-bold mb-2 text-white">Humör</h2>
+                <p className="text-sm text-[rgba(255,255,255,0.6)]">
                   1 = dålig, 5 = mycket bra
                 </p>
               </div>
@@ -387,7 +388,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
 
             <Button
               onClick={() => setStep(6)}
-              className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold h-12 mt-6"
+              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
             </Button>
@@ -400,19 +401,19 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 6: Diet Plan Adherence
   if (step === 6) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg border-0 shadow-none">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(5)} />
             <ProgressBar current={6} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center text-white font-semibold">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2">Användning av kostschema</h2>
-                <p className="text-sm text-muted-foreground">
+                <h2 className="text-xl font-bold mb-2 text-white">Användning av kostschema</h2>
+                <p className="text-sm text-[rgba(255,255,255,0.6)]">
                   Hur väl tyckte du att kostschemat fungerade förra veckan? 1 = Väldigt dåligt, 5 = Mycket bra
                 </p>
               </div>
@@ -425,7 +426,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
 
             <Button
               onClick={() => setStep(7)}
-              className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold h-12 mt-6"
+              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
             </Button>
@@ -438,19 +439,19 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 7: Workout Plan Adherence
   if (step === 7) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg border-0 shadow-none">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(6)} />
             <ProgressBar current={7} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center text-white font-semibold">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2">Användning av träningsschema</h2>
-                <p className="text-sm text-muted-foreground">
+                <h2 className="text-xl font-bold mb-2 text-white">Användning av träningsschema</h2>
+                <p className="text-sm text-[rgba(255,255,255,0.6)]">
                   Använde du ditt träningsschema? 1 = inte alls, 5 = använde hela planen
                 </p>
               </div>
@@ -463,7 +464,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
 
             <Button
               onClick={() => setStep(8)}
-              className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold h-12 mt-6"
+              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
             </Button>
@@ -476,19 +477,19 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 8: Sleep
   if (step === 8) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg border-0 shadow-none">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(7)} />
             <ProgressBar current={8} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center text-white font-semibold">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2">Sömn</h2>
-                <p className="text-sm text-muted-foreground">
+                <h2 className="text-xl font-bold mb-2 text-white">Sömn</h2>
+                <p className="text-sm text-[rgba(255,255,255,0.6)]">
                   Hur mycket sover du i genomsnitt per natt?
                 </p>
               </div>
@@ -500,14 +501,15 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               placeholder="Lägg till ditt svar"
               rows={6}
               maxLength={500}
+              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
             />
-            <div className="text-right text-sm text-muted-foreground mt-1">
+            <div className="text-right text-sm text-[rgba(255,255,255,0.6)] mt-1">
               {formData.sleepNotes.length} / 500
             </div>
 
             <Button
               onClick={() => setStep(9)}
-              className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold h-12 mt-6"
+              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
             </Button>
@@ -520,19 +522,19 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 9: Daily Steps
   if (step === 9) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg border-0 shadow-none">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(8)} />
             <ProgressBar current={9} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center text-white font-semibold">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2">Steg</h2>
-                <p className="text-sm text-muted-foreground">
+                <h2 className="text-xl font-bold mb-2 text-white">Steg</h2>
+                <p className="text-sm text-[rgba(255,255,255,0.6)]">
                   Hur många steg tar du vanligtvis per dag?
                 </p>
               </div>
@@ -544,14 +546,15 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               placeholder="Lägg till ditt svar"
               rows={4}
               maxLength={300}
+              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
             />
-            <div className="text-right text-sm text-muted-foreground mt-1">
+            <div className="text-right text-sm text-[rgba(255,255,255,0.6)] mt-1">
               {formData.dailySteps.length} / 300
             </div>
 
             <Button
               onClick={() => setStep(10)}
-              className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold h-12 mt-6"
+              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
             </Button>
@@ -564,18 +567,18 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 10: Progress Photos
   if (step === 10) {
     return (
-      <div className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg border-0 shadow-none">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(9)} />
             <ProgressBar current={10} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center text-white font-semibold">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2">Framstegsbilder</h2>
+                <h2 className="text-xl font-bold mb-2 text-white">Framstegsbilder</h2>
               </div>
             </div>
 
@@ -629,7 +632,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
             <Button
               onClick={handleSubmit}
               disabled={isLoading}
-              className="w-full bg-green-700 hover:bg-green-800 text-white font-semibold h-12 mt-6"
+              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               {isLoading ? 'Skickar...' : 'Skicka in'}
             </Button>
