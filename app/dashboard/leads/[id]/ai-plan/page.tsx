@@ -65,16 +65,20 @@ export default function LeadAIPlanPage() {
         method: 'POST',
       });
 
-      if (!response.ok) throw new Error('Kunde inte godkänna plan');
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Kunde inte godkänna plan');
+      }
 
-      toast.success('Plan godkänd! Planen har markerats som godkänd och kan nu skickas till klient.');
+      const data = await response.json();
+      toast.success('Plan godkänd! Kaloriplan sparad i klientens journal.');
 
       // Uppdatera lead-status
       await fetchLeadData();
 
     } catch (error) {
       console.error('Fel vid godkännande:', error);
-      toast.error('Kunde inte godkänna planen');
+      toast.error(error instanceof Error ? error.message : 'Kunde inte godkänna planen');
     }
   }
 
