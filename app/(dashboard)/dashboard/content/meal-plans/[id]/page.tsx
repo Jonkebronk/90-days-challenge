@@ -340,8 +340,7 @@ export default function MealPlanTemplatePage() {
         <div className="flex items-center gap-2">
           <Button
             onClick={() => setIsAssignDialogOpen(true)}
-            variant="outline"
-            className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+            className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
           >
             <Users className="h-4 w-4 mr-2" />
             Tilldela klienter
@@ -582,12 +581,11 @@ export default function MealPlanTemplatePage() {
                               ))}
                           </div>
                           <Button
-                            variant="outline"
                             onClick={() => {
                               setSelectedMealForOption(meal.id)
                               setIsAddOptionDialogOpen(true)
                             }}
-                            className="w-full mt-3 border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+                            className="w-full mt-3 bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
                           >
                             <Plus className="h-4 w-4 mr-2" />
                             Lägg till alternativ
@@ -769,9 +767,8 @@ export default function MealPlanTemplatePage() {
           </div>
           <DialogFooter>
             <Button
-              variant="outline"
               onClick={() => setIsAddMealDialogOpen(false)}
-              className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+              className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
             >
               Avbryt
             </Button>
