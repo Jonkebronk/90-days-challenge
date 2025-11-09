@@ -139,6 +139,9 @@ model User {
   mealPlanTemplateAssignmentsByCoach MealPlanTemplateAssignment[] @relation("MealPlanTemplateAssignmentsByCoach")
   mealSelections   ClientMealSelection[]
 
+  // Onboarding
+  onboardingProgress OnboardingProgress?
+
   // Coach-Client relationship
   coach         User?     @relation("CoachClients", fields: [coachId], references: [id])
   clients       User[]    @relation("CoachClients")
@@ -1356,4 +1359,31 @@ model Message {
   @@index([senderId, receiverId])
   @@index([createdAt])
   @@map("messages")
+}
+
+// Onboarding Progress - Track client onboarding journey
+model OnboardingProgress {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+
+  // Checklist progress (bitwise flags or individual booleans)
+  profileCompleted      Boolean  @default(false)
+  profilePhotosUploaded Boolean  @default(false)
+  reviewedMealPlan      Boolean  @default(false)
+  reviewedWorkoutPlan   Boolean  @default(false)
+  firstCheckInDone      Boolean  @default(false)
+
+  // Guide/introduction views
+  mealPlanGuideViewed   Boolean  @default(false)
+  workoutGuideViewed    Boolean  @default(false)
+
+  // Completion state
+  dashboardOnboardingDismissed Boolean  @default(false)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("onboarding_progress")
 }

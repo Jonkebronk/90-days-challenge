@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Utensils, Dumbbell, Sparkles } from 'lucide-react'
+import { Utensils, Dumbbell, Sparkles, Info } from 'lucide-react'
 
 interface MealPlanItem {
   id: string
@@ -66,6 +68,7 @@ interface MealPlan {
 }
 
 export default function MealPlanPage() {
+  const router = useRouter()
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -141,7 +144,7 @@ export default function MealPlanPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="text-center">
+      <div className="text-center relative">
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
         <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
           {mealPlan.name}
@@ -150,6 +153,18 @@ export default function MealPlanPage() {
           Ditt skräddarsydda kostschema
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
+
+        {/* Introduction Button */}
+        <div className="mt-6">
+          <Button
+            onClick={() => router.push('/dashboard/meal-plan/guide')}
+            variant="outline"
+            className="bg-transparent border-2 border-[rgba(59,130,246,0.4)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(59,130,246,0.1)] hover:border-[rgba(59,130,246,0.6)] hover:text-white transition-all"
+          >
+            <Info className="w-4 h-4 mr-2" />
+            Introduktion till kostschema
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

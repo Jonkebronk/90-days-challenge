@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, BarChart3, Plus } from 'lucide-react'
+import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, BarChart3, Plus, Info } from 'lucide-react'
 import Link from 'next/link'
 
 interface WorkoutDay {
@@ -55,6 +56,7 @@ interface AssignedWorkout {
 }
 
 export default function WorkoutPage() {
+  const router = useRouter()
   const { data: session } = useSession()
   const [assignment, setAssignment] = useState<AssignedWorkout | null>(null)
   const [loading, setLoading] = useState(true)
@@ -146,6 +148,18 @@ export default function WorkoutPage() {
             {workoutProgram.description}
           </p>
         )}
+
+        {/* Introduction Button */}
+        <div className="mt-6">
+          <Button
+            onClick={() => router.push('/dashboard/workout/guide')}
+            variant="outline"
+            className="bg-transparent border-2 border-[rgba(59,130,246,0.4)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(59,130,246,0.1)] hover:border-[rgba(59,130,246,0.6)] hover:text-white transition-all"
+          >
+            <Info className="w-4 h-4 mr-2" />
+            Introduktion till träningsprogram
+          </Button>
+        </div>
       </div>
 
       {/* Action buttons row */}
