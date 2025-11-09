@@ -439,9 +439,8 @@ export default function MealPlansPage() {
           </div>
           <DialogFooter>
             <Button
-              variant="outline"
               onClick={() => setIsCreateDialogOpen(false)}
-              className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+              className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
             >
               Avbryt
             </Button>
