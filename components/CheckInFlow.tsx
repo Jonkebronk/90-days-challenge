@@ -287,6 +287,27 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               ))}
             </div>
 
+            {/* Average Weight Display */}
+            {(() => {
+              const weights = weekDays
+                .map(day => formData[day.field as keyof typeof formData] as string)
+                .filter(w => w && w.trim() !== '')
+                .map(w => parseFloat(w))
+
+              if (weights.length > 0) {
+                const average = weights.reduce((sum, w) => sum + w, 0) / weights.length
+                return (
+                  <div className="mt-4 p-3 bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[rgba(255,255,255,0.8)] text-sm">Genomsnittsvikt för veckan:</span>
+                      <span className="text-[#FFD700] font-bold text-lg">{average.toFixed(1)} kg</span>
+                    </div>
+                  </div>
+                )
+              }
+              return null
+            })()}
+
             <Button
               onClick={() => setStep(4)}
               className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
