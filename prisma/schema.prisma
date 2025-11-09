@@ -134,6 +134,10 @@ model User {
   sentMessages    Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
 
+  // Meal Plan Template System
+  mealPlanTemplateAssignments MealPlanTemplateAssignment[] @relation("MealPlanTemplateAssignments")
+  mealSelections   ClientMealSelection[]
+
   // Coach-Client relationship
   coach         User?     @relation("CoachClients", fields: [coachId], references: [id])
   clients       User[]    @relation("CoachClients")
@@ -948,6 +952,7 @@ model Recipe {
   ingredients         RecipeIngredient[]
   instructions        RecipeInstruction[]
   favorites           RecipeFavorite[]
+  templateMealOptions TemplateMealOption[] // NEW: Meal plan templates using this recipe
 
   @@map("recipes")
 }
@@ -1101,6 +1106,131 @@ model MealPlanSupplementItem {
   mealPlan              MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
 
   @@map("meal_plan_supplement_items")
+}
+
+// ========================================
+// NEW: Meal Plan Template System (Reusable Templates)
+// ========================================
+
+// Meal Plan Template - Reusable meal plan that can be assigned to multiple clients
+model MealPlanTemplate {
+  id                    String   @id @default(cuid())
+  coachId               String   // Coach who created this template
+  name                  String   // "2000 kcal Viktnedgång", "Vegan 1800 kcal"
+  description           String?  @db.Text
+
+  // Daily totals (target goals)
+  targetProtein         Decimal? @db.Decimal(6, 2)
+  targetFat             Decimal? @db.Decimal(6, 2)
+  targetCarbs           Decimal? @db.Decimal(6, 2)
+  targetCalories        Decimal? @db.Decimal(7, 2)
+
+  // Metadata
+  published             Boolean  @default(false)
+  isArchived            Boolean  @default(false)
+  tags                  String[] // ["viktnedgång", "vegan", "högprotein"]
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  meals                 TemplateMeal[]
+  assignments           MealPlanTemplateAssignment[]
+
+  @@map("meal_plan_templates")
+}
+
+// Assignment - Which clients have which meal plan templates
+model MealPlanTemplateAssignment {
+  id                    String   @id @default(cuid())
+  userId                String   // Client this template is assigned to
+  templateId            String   // The meal plan template
+  coachId               String   // Coach who made the assignment
+
+  active                Boolean  @default(true)
+  assignedAt            DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user                  User @relation("MealPlanTemplateAssignments", fields: [userId], references: [id], onDelete: Cascade)
+  template              MealPlanTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, templateId])
+  @@map("meal_plan_template_assignments")
+}
+
+// Template Meal - A meal time in the template (Breakfast, Lunch, etc.)
+model TemplateMeal {
+  id                    String   @id @default(cuid())
+  templateId            String
+  name                  String   // "Frukost", "Lunch", "Middag", "Mellanmål"
+  mealType              String?  // "breakfast", "lunch", "dinner", "snack"
+
+  // Target macros for this meal
+  targetProtein         Decimal? @db.Decimal(6, 2)
+  targetFat             Decimal? @db.Decimal(6, 2)
+  targetCarbs           Decimal? @db.Decimal(6, 2)
+  targetCalories        Decimal? @db.Decimal(7, 2)
+
+  orderIndex            Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  template              MealPlanTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  options               TemplateMealOption[]
+  clientSelections      ClientMealSelection[]
+
+  @@map("template_meals")
+}
+
+// Template Meal Option - An alternative for a meal (recipe OR custom food items)
+model TemplateMealOption {
+  id                    String   @id @default(cuid())
+  templateMealId        String
+  optionType            String   // "recipe" or "custom"
+
+  // For recipe-based options
+  recipeId              String?  // Link to Recipe from Recipe Bank
+  servingMultiplier     Decimal? @db.Decimal(4, 2) // e.g., 1.5 servings
+
+  // For custom food item options
+  customName            String?  // "High Protein Breakfast"
+  customDescription     String?  @db.Text
+  customFoodItems       Json?    // Array of {foodItemId, amountG, protein, fat, carbs, calories}
+
+  // Calculated macros (from recipe * servings OR sum of custom items)
+  calculatedProtein     Decimal  @db.Decimal(6, 2)
+  calculatedFat         Decimal  @db.Decimal(6, 2)
+  calculatedCarbs       Decimal  @db.Decimal(6, 2)
+  calculatedCalories    Decimal  @db.Decimal(7, 2)
+
+  isDefault             Boolean  @default(false) // Recommended/default option
+  orderIndex            Int      @default(0)
+  notes                 String?  @db.Text // Coach notes about this option
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  templateMeal          TemplateMeal @relation(fields: [templateMealId], references: [id], onDelete: Cascade)
+  recipe                Recipe? @relation(fields: [recipeId], references: [id])
+  clientSelections      ClientMealSelection[]
+
+  @@map("template_meal_options")
+}
+
+// Client Meal Selection - Which option did the client choose for each meal
+model ClientMealSelection {
+  id                    String   @id @default(cuid())
+  userId                String
+  templateMealId        String   // Which meal time (Breakfast, Lunch, etc.)
+  selectedOptionId      String   // Which option they chose
+  selectedAt            DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  templateMeal          TemplateMeal @relation(fields: [templateMealId], references: [id], onDelete: Cascade)
+  selectedOption        TemplateMealOption @relation(fields: [selectedOptionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, templateMealId])
+  @@map("client_meal_selections")
 }
 
 // Workout Templates for Custom Workout Builder
