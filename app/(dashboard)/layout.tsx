@@ -31,7 +31,8 @@ import {
   Bell,
   Dumbbell,
   MessageSquare,
-  Brain
+  Brain,
+  HelpCircle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
@@ -59,6 +60,7 @@ const navigation = [
       { name: 'Skapa Recept Kategorier', href: '/dashboard/content/recipe-categories', icon: FolderOpen },
       { name: 'Skapa Recept', href: '/dashboard/content/recipes', icon: ChefHat },
       { name: 'Måltidsplaner', href: '/dashboard/content/meal-plans', icon: UtensilsCrossed },
+      { name: 'Vanliga frågor', href: '/dashboard/content/faqs', icon: HelpCircle },
       { name: 'Övningar', href: '/dashboard/content/exercises', icon: Activity },
       { name: 'Träningsprogram', href: '/dashboard/content/workout-programs', icon: Zap },
     ]

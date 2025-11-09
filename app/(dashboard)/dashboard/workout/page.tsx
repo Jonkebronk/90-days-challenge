@@ -91,27 +91,35 @@ export default function WorkoutPage() {
   if (!assignment) {
     return (
       <div className="space-y-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
-              Träningsprogram
-            </h1>
-            <p className="text-[rgba(255,255,255,0.6)] mt-1">
-              Ditt personliga träningsprogram
-            </p>
+        {/* Header with gold gradient */}
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700] via-[#FFA500] to-[#FFD700] opacity-10 rounded-xl blur-xl" />
+          <div className="relative bg-gradient-to-br from-[rgba(255,215,0,0.1)] to-[rgba(255,165,0,0.05)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-8 backdrop-blur-[10px]">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="w-12 h-[2px] bg-gradient-to-r from-[#FFD700] to-transparent mb-4" />
+                <h1 className="text-4xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+                  TRÄNINGSPROGRAM
+                </h1>
+                <p className="text-[rgba(255,255,255,0.6)] mt-2">
+                  Ditt personliga träningsprogram
+                </p>
+                <div className="w-12 h-[2px] bg-gradient-to-r from-[#FFD700] to-transparent mt-4" />
+              </div>
+              <Link href="/dashboard/workout/history">
+                <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+                  <History className="w-4 h-4 mr-2" />
+                  Historik
+                </Button>
+              </Link>
+            </div>
           </div>
-          <Link href="/dashboard/workout/history">
-            <Button variant="outline" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,215,0,0.5)]">
-              <History className="w-4 h-4 mr-2" />
-              Historik
-            </Button>
-          </Link>
         </div>
 
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_20px_rgba(255,215,0,0.15)] transition-all">
           <CardContent className="py-12 text-center">
-            <Dumbbell className="w-16 h-16 text-[rgba(255,215,0,0.3)] mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-[rgba(255,255,255,0.9)] mb-2">
+            <Dumbbell className="w-16 h-16 text-[rgba(255,215,0,0.5)] mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-white mb-2">
               Inget träningsprogram tilldelat
             </h3>
             <p className="text-[rgba(255,255,255,0.6)] max-w-md mx-auto">
@@ -137,60 +145,67 @@ export default function WorkoutPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
-            {workoutProgram.name}
-          </h1>
-          {programHasWeeks && currentWeekData && (
-            <p className="text-[#8b5cf6] font-semibold mt-1">
-              {currentWeekData.title || `Vecka ${currentWeek}`}
-              {currentWeekData.description && ` - ${currentWeekData.description}`}
-            </p>
-          )}
-          {workoutProgram.description && (
-            <p className="text-[rgba(255,255,255,0.6)] mt-1">
-              {workoutProgram.description}
-            </p>
-          )}
-        </div>
-        <div className="flex gap-2">
-          <Link href="/dashboard/workout/builder">
-            <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90">
-              <Plus className="w-4 h-4 mr-2" />
-              Skapa pass
-            </Button>
-          </Link>
-          <Link href="/dashboard/workout/templates">
-            <Button variant="outline" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,215,0,0.5)]">
-              <Dumbbell className="w-4 h-4 mr-2" />
-              Mallar
-            </Button>
-          </Link>
-          <Link href="/dashboard/workout/records">
-            <Button variant="outline" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,215,0,0.5)]">
-              <Trophy className="w-4 h-4 mr-2" />
-              Rekord
-            </Button>
-          </Link>
-          <Link href="/dashboard/analytics">
-            <Button variant="outline" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,215,0,0.5)]">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Analytics
-            </Button>
-          </Link>
-          <Link href="/dashboard/workout/history">
-            <Button variant="outline" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,255,255,0.1)] hover:border-[rgba(255,215,0,0.5)]">
-              <History className="w-4 h-4 mr-2" />
-              Historik
-            </Button>
-          </Link>
+      {/* Header with gold gradient */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700] via-[#FFA500] to-[#FFD700] opacity-10 rounded-xl blur-xl" />
+        <div className="relative bg-gradient-to-br from-[rgba(255,215,0,0.1)] to-[rgba(255,165,0,0.05)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-8 backdrop-blur-[10px]">
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="w-12 h-[2px] bg-gradient-to-r from-[#FFD700] to-transparent mb-4" />
+              <h1 className="text-4xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+                {workoutProgram.name.toUpperCase()}
+              </h1>
+              {programHasWeeks && currentWeekData && (
+                <p className="text-[#8b5cf6] font-semibold mt-2">
+                  {currentWeekData.title || `Vecka ${currentWeek}`}
+                  {currentWeekData.description && ` - ${currentWeekData.description}`}
+                </p>
+              )}
+              {workoutProgram.description && (
+                <p className="text-[rgba(255,255,255,0.6)] mt-2">
+                  {workoutProgram.description}
+                </p>
+              )}
+              <div className="w-12 h-[2px] bg-gradient-to-r from-[#FFD700] to-transparent mt-4" />
+            </div>
+            <div className="flex flex-wrap gap-2 justify-end">
+              <Link href="/dashboard/workout/builder">
+                <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90 font-semibold">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Skapa pass
+                </Button>
+              </Link>
+              <Link href="/dashboard/workout/templates">
+                <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+                  <Dumbbell className="w-4 h-4 mr-2" />
+                  Mallar
+                </Button>
+              </Link>
+              <Link href="/dashboard/workout/records">
+                <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+                  <Trophy className="w-4 h-4 mr-2" />
+                  Rekord
+                </Button>
+              </Link>
+              <Link href="/dashboard/analytics">
+                <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Analytics
+                </Button>
+              </Link>
+              <Link href="/dashboard/workout/history">
+                <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+                  <History className="w-4 h-4 mr-2" />
+                  Historik
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Program Info Card */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+      <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_20px_rgba(255,215,0,0.15)] transition-all">
         <CardContent className="pt-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {workoutProgram.difficulty && (
@@ -212,26 +227,26 @@ export default function WorkoutPage() {
             {programHasWeeks && (
               <div>
                 <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Nuvarande vecka</p>
-                <p className="text-2xl font-bold text-[rgba(139,92,246,0.9)]">
+                <p className="text-2xl font-bold text-[#FFD700]">
                   {currentWeek} / {workoutProgram.weeks?.length || 0}
                 </p>
               </div>
             )}
             <div>
               <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">{programHasWeeks ? 'Dagar denna vecka' : 'Totalt dagar'}</p>
-              <p className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
+              <p className="text-2xl font-bold text-white">
                 {daysToShow.length}
               </p>
             </div>
             <div>
               <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Träningsdagar</p>
-              <p className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
+              <p className="text-2xl font-bold text-white">
                 {daysToShow.filter(d => !d.isRestDay).length}
               </p>
             </div>
             <div>
               <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Startdatum</p>
-              <p className="text-[rgba(255,255,255,0.9)]">
+              <p className="text-white">
                 {new Date(assignment.startDate).toLocaleDateString('sv-SE')}
               </p>
             </div>
@@ -241,7 +256,7 @@ export default function WorkoutPage() {
 
       {/* Days List */}
       <div className="space-y-3">
-        <h2 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] flex items-center gap-2">
+        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
           <Calendar className="w-6 h-6 text-[#FFD700]" />
           {programHasWeeks ? 'Denna veckans schema' : 'Träningsschema'}
         </h2>
@@ -249,10 +264,10 @@ export default function WorkoutPage() {
         {daysToShow.map((day) => (
           <Card
             key={day.id}
-            className={`bg-[rgba(255,255,255,0.03)] border-2 backdrop-blur-[10px] transition-all ${
+            className={`bg-[rgba(10,10,10,0.6)] border-2 backdrop-blur-[10px] transition-all ${
               day.isRestDay
-                ? 'border-[rgba(100,100,100,0.2)] hover:border-[rgba(100,100,100,0.3)]'
-                : 'border-[rgba(255,215,0,0.2)] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_20px_rgba(255,215,0,0.2)]'
+                ? 'border-[rgba(100,100,100,0.3)] hover:border-[rgba(100,100,100,0.4)]'
+                : 'border-[rgba(255,215,0,0.3)] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_20px_rgba(255,215,0,0.2)]'
             }`}
           >
             <CardHeader>
@@ -280,11 +295,11 @@ export default function WorkoutPage() {
                         </Badge>
                       )}
                     </div>
-                    <CardTitle className="text-lg text-[rgba(255,255,255,0.9)]">
+                    <CardTitle className="text-lg text-white">
                       {day.name}
                     </CardTitle>
                     {day.description && (
-                      <p className="text-sm text-[rgba(255,255,255,0.5)] mt-1">
+                      <p className="text-sm text-[rgba(255,255,255,0.6)] mt-1">
                         {day.description}
                       </p>
                     )}
@@ -335,7 +350,7 @@ export default function WorkoutPage() {
       </div>
 
       {daysToShow.length === 0 && (
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
           <CardContent className="py-12 text-center">
             <p className="text-[rgba(255,255,255,0.6)]">
               {programHasWeeks
