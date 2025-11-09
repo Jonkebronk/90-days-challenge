@@ -629,6 +629,25 @@ model CheckIn {
   // Check-in data
   statusUpdate          String?  // "Hur har du haft det sedan din senaste uppdatering?"
   weightKg              Decimal? @db.Decimal(5, 2)
+
+  // Daily weights (Monday-Sunday)
+  mondayWeight          Decimal? @db.Decimal(5, 2)
+  tuesdayWeight         Decimal? @db.Decimal(5, 2)
+  wednesdayWeight       Decimal? @db.Decimal(5, 2)
+  thursdayWeight        Decimal? @db.Decimal(5, 2)
+  fridayWeight          Decimal? @db.Decimal(5, 2)
+  saturdayWeight        Decimal? @db.Decimal(5, 2)
+  sundayWeight          Decimal? @db.Decimal(5, 2)
+
+  // Body measurements (cm)
+  chest                 Decimal? @db.Decimal(5, 2)
+  waist                 Decimal? @db.Decimal(5, 2)
+  hips                  Decimal? @db.Decimal(5, 2)
+  butt                  Decimal? @db.Decimal(5, 2)
+  arms                  Decimal? @db.Decimal(5, 2)
+  thighs                Decimal? @db.Decimal(5, 2)
+  calves                Decimal? @db.Decimal(5, 2)
+
   energyLevel           Int?     // 1-5 stars
   mood                  Int?     // 1-5 (sad to happy)
   dietPlanAdherence     Int?     // 1-5 stars (kostschema användning)
