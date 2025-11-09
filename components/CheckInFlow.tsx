@@ -411,7 +411,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               <div>
                 <h2 className="text-xl font-bold mb-2 text-white">Uppdatera bilder</h2>
                 <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                  Använd self-timer på en telefon för lättare ta bild.
+                  Ta bild där hela kroppen syns från huvud till fötter. Använd gärna self-timer på telefonen.
                 </p>
               </div>
             </div>
@@ -427,7 +427,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
                     <img
                       src="/images/Formbild/k_framsida.png"
                       alt="Exempel kvinna framsida"
-                      className="w-20 h-28 object-cover rounded border border-[rgba(255,215,0,0.3)]"
+                      className="w-24 h-40 object-contain rounded border border-[rgba(255,215,0,0.3)] bg-[rgba(0,0,0,0.2)]"
                     />
                     <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">Kvinna</p>
                   </div>
@@ -435,7 +435,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
                     <img
                       src="/images/Formbild/man_framsida.png"
                       alt="Exempel man framsida"
-                      className="w-20 h-28 object-cover rounded border border-[rgba(255,215,0,0.3)]"
+                      className="w-24 h-40 object-contain rounded border border-[rgba(255,215,0,0.3)] bg-[rgba(0,0,0,0.2)]"
                     />
                     <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">Man</p>
                   </div>
@@ -491,7 +491,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
                     <img
                       src="/images/Formbild/k_baksida.png"
                       alt="Exempel kvinna baksida"
-                      className="w-20 h-28 object-cover rounded border border-[rgba(255,215,0,0.3)]"
+                      className="w-24 h-40 object-contain rounded border border-[rgba(255,215,0,0.3)] bg-[rgba(0,0,0,0.2)]"
                     />
                     <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">Kvinna</p>
                   </div>
@@ -499,7 +499,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
                     <img
                       src="/images/Formbild/man_baksida.png"
                       alt="Exempel man baksida"
-                      className="w-20 h-28 object-cover rounded border border-[rgba(255,215,0,0.3)]"
+                      className="w-24 h-40 object-contain rounded border border-[rgba(255,215,0,0.3)] bg-[rgba(0,0,0,0.2)]"
                     />
                     <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">Man</p>
                   </div>
@@ -555,7 +555,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
                     <img
                       src="/images/Formbild/k_sida.png"
                       alt="Exempel kvinna sida"
-                      className="w-20 h-28 object-cover rounded border border-[rgba(255,215,0,0.3)]"
+                      className="w-24 h-40 object-contain rounded border border-[rgba(255,215,0,0.3)] bg-[rgba(0,0,0,0.2)]"
                     />
                     <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">Kvinna</p>
                   </div>
@@ -563,7 +563,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
                     <img
                       src="/images/Formbild/man_sida.png"
                       alt="Exempel man sida"
-                      className="w-20 h-28 object-cover rounded border border-[rgba(255,215,0,0.3)]"
+                      className="w-24 h-40 object-contain rounded border border-[rgba(255,215,0,0.3)] bg-[rgba(0,0,0,0.2)]"
                     />
                     <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">Man</p>
                   </div>
