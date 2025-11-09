@@ -86,13 +86,12 @@ export default function AIPlansPage() {
       <div className="text-center">
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
         <div className="flex items-center justify-center gap-3 mb-3">
-          <Brain className="w-10 h-10 text-[#FFD700]" />
           <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-            AI-Planer
+            Planer
           </h1>
         </div>
         <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
-          Automatiskt genererade tränings- och nutritionsplaner
+          Tränings- och nutritionsplaner
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
       </div>
@@ -106,7 +105,7 @@ export default function AIPlansPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">{stats.total}</div>
-            <p className="text-xs text-[rgba(255,255,255,0.5)]">AI-genererade planer</p>
+            <p className="text-xs text-[rgba(255,255,255,0.5)]">Genererade planer</p>
           </CardContent>
         </Card>
 
@@ -151,7 +150,7 @@ export default function AIPlansPage() {
             <CardContent className="pt-6">
               <div className="text-center py-12">
                 <Brain className="w-16 h-16 text-[rgba(255,215,0,0.3)] mx-auto mb-4" />
-                <p className="text-[rgba(255,255,255,0.6)] mb-4">Inga AI-planer än</p>
+                <p className="text-[rgba(255,255,255,0.6)] mb-4">Inga planer än</p>
                 <Button
                   onClick={() => router.push('/dashboard/ai-plans/create')}
                   className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-bold"

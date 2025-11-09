@@ -47,7 +47,7 @@ const navigation = [
   { name: 'Klienter', href: '/dashboard/clients', icon: Users, coachOnly: true },
   { name: 'Journal', href: '/dashboard/journal', icon: ClipboardList, coachOnly: true },
   { name: 'Ansökningar', href: '/dashboard/leads', icon: UserPlus, coachOnly: true },
-  { name: 'AI-Planer', href: '/dashboard/ai-plans', icon: Brain, coachOnly: true },
+  { name: 'Planer', href: '/dashboard/ai-plans', icon: Brain, coachOnly: true },
   {
     name: 'Innehåll',
     icon: BookOpen,
