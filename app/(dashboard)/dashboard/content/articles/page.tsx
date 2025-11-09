@@ -101,7 +101,12 @@ export default function ArticlesPage() {
   const fetchArticles = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/articles')
+      const response = await fetch('/api/articles', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      })
       if (response.ok) {
         const data = await response.json()
         setArticles(data.articles)
