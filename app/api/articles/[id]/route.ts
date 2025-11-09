@@ -127,13 +127,41 @@ export async function DELETE(
 
     const { id } = await params
 
-    await prisma.article.delete({
-      where: { id }
+    // Check if article exists
+    const article = await prisma.article.findUnique({
+      where: { id },
+      include: {
+        roadmapAssignments: true,
+        progress: true
+      }
     })
+
+    if (!article) {
+      return NextResponse.json({ error: 'Article not found' }, { status: 404 })
+    }
+
+    // Delete related records first (Prisma should cascade but let's be explicit)
+    await prisma.$transaction([
+      // Delete roadmap assignments
+      prisma.roadmapAssignment.deleteMany({
+        where: { articleId: id }
+      }),
+      // Delete article progress
+      prisma.articleProgress.deleteMany({
+        where: { articleId: id }
+      }),
+      // Delete the article
+      prisma.article.delete({
+        where: { id }
+      })
+    ])
 
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting article:', error)
-    return NextResponse.json({ error: 'Failed to delete article' }, { status: 500 })
+    return NextResponse.json({
+      error: 'Failed to delete article',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
   }
 }
