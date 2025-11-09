@@ -65,14 +65,32 @@ export async function GET(
       ).length,
     }
 
-    // Weight progression
+    // Weight progression - calculate average from weekly weights
     const weightData = client.checkIns
-      .filter((ci) => ci.weightKg)
-      .map((ci) => ({
-        date: ci.createdAt,
-        weight: ci.weightKg,
-        weekNumber: ci.weekNumber,
-      }))
+      .map((ci) => {
+        // Collect all weekly weights
+        const weights = [
+          ci.mondayWeight,
+          ci.tuesdayWeight,
+          ci.wednesdayWeight,
+          ci.thursdayWeight,
+          ci.fridayWeight,
+          ci.saturdayWeight,
+          ci.sundayWeight,
+        ].filter((w) => w !== null) as any[]
+
+        // Calculate average if any weights exist
+        if (weights.length > 0) {
+          const avgWeight = weights.reduce((sum, w) => sum + Number(w), 0) / weights.length
+          return {
+            date: ci.createdAt,
+            weight: avgWeight,
+            weekNumber: ci.weekNumber,
+          }
+        }
+        return null
+      })
+      .filter((data) => data !== null)
       .reverse() // Oldest first
 
     // Photos timeline
