@@ -114,13 +114,17 @@ export default function ExercisesPage() {
 
     if (filterMuscleGroup && filterMuscleGroup !== 'all') {
       filtered = filtered.filter(ex =>
-        ex.muscleGroups.includes(filterMuscleGroup)
+        ex.muscleGroups.some(muscle =>
+          muscle.toLowerCase() === filterMuscleGroup.toLowerCase()
+        )
       )
     }
 
     if (filterEquipment && filterEquipment !== 'all') {
       filtered = filtered.filter(ex =>
-        ex.equipmentNeeded.includes(filterEquipment)
+        ex.equipmentNeeded.some(equip =>
+          equip.toLowerCase() === filterEquipment.toLowerCase()
+        )
       )
     }
 
