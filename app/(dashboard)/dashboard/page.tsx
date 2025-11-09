@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 import {
   Calendar,
   TrendingUp,
@@ -18,7 +19,8 @@ import {
   Sparkles,
   MessageSquare,
   HelpCircle,
-  Clock
+  Clock,
+  Info
 } from 'lucide-react'
 
 export default function DashboardPage() {
@@ -277,9 +279,21 @@ export default function DashboardPage() {
 
       {/* Quick Tips Section */}
       <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] max-w-6xl mx-auto">
-        <div className="p-6 border-b border-[rgba(255,215,0,0.1)]">
-          <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">Kom Igång</h2>
-          <p className="text-[rgba(255,255,255,0.6)] text-sm mt-1">Tips för att få ut det mesta av programmet</p>
+        <div className="p-6 border-b border-[rgba(255,215,0,0.1)] flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">Kom Igång</h2>
+            <p className="text-[rgba(255,255,255,0.6)] text-sm mt-1">Tips för att få ut det mesta av programmet</p>
+          </div>
+          <Link href="/dashboard/onboarding/guide">
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-transparent border-2 border-[rgba(59,130,246,0.4)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(59,130,246,0.1)] hover:border-[rgba(59,130,246,0.6)] hover:text-white transition-all"
+            >
+              <Info className="w-4 h-4 mr-2" />
+              Läs mer
+            </Button>
+          </Link>
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

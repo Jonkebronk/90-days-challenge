@@ -145,6 +145,117 @@ Träning ska vara roligt! Sätt på bra musik, känn dig stark, njut av känslan
 
 **Nu kör vi! 💪**`
 
+const DEFAULT_ONBOARDING_CONTENT = `# Välkommen till 90-Dagars Challenge!
+
+Grattis till att du har tagit steget mot en hälsosammare livsstil! Detta är början på din transformation.
+
+## Vad du behöver göra innan uppstart
+
+### 1. Fyll i din profil
+Gå till **Min Profil** och fyll i all information:
+- Personuppgifter (ålder, längd, vikt)
+- Träningsmål och erfarenhet
+- Kostpreferenser och allergier
+- Livsstilsfaktorer (stress, sömn, aktivitetsnivå)
+
+Denna information hjälper mig som coach att skräddarsy ditt program perfekt för dig.
+
+### 2. Ta dina startbilder
+Under **Check-in** ska du ladda upp formbilder:
+- **Framsida**: Stå rakt framifrån
+- **Baksida**: Vänd ryggen mot kameran
+- **Sida**: Stå i profil
+
+**Tips för bra bilder:**
+- Bra belysning (dagsljus är bäst)
+- Neutral bakgrund
+- Samma kläder vid varje tillfälle
+- Samma tid på dagen (helst på morgonen)
+
+Dessa bilder är för dig och din coach - de kommer visa din fantastiska utveckling!
+
+### 3. Bekanta dig med ditt program
+- **Kostschema**: Gå igenom din måltidsplan och planera din första vecka
+- **Träningsprogram**: Läs igenom ditt träningsprogram och förstå upplägget
+- **Kunskapsbanken**: Börja läsa artiklar om träning och nutrition
+
+### 4. Planera din första vecka
+**Mat:**
+- Handla ingredienser för veckan
+- Förbered måltider i förväg om möjligt
+- Ha snacks tillgängliga
+
+**Träning:**
+- Boka in dina träningspass i kalendern
+- Packa din gymväska kvällen innan
+- Planera rutter för återhämtningspromenader
+
+## Under programmet
+
+### Veckocheckar
+Varje vecka gör du en check-in där du:
+- Väger dig dagligen måndag-söndag
+- Tar nya formbilder
+- Svarar på frågor om din vecka
+- Kommunicerar med din coach
+
+Detta hjälper oss att justera programmet efter dina behov.
+
+### Kommunikation
+- **Meddelanden**: Kontakta din coach när som helst
+- **Snabb respons**: Jag svarar oftast inom 24 timmar
+- **Ställ frågor**: Inga dumma frågor - jag är här för dig!
+
+### Konsistens är nyckeln
+- Följ programmet så gott du kan
+- En dålig dag förstör inte resultaten
+- Kommunicera om något känns fel
+- Ha tålamod - förändringar tar tid!
+
+## Tips för framgång
+
+**🎯 Sätt realistiska mål**
+- Fokusera på processen, inte bara resultatet
+- Fira små framsteg längs vägen
+- Jämför dig med dig själv, inte andra
+
+**📱 Använd plattformen dagligen**
+- Kolla ditt kostschema
+- Logga dina träningspass
+- Läs artiklar för att lära dig mer
+- Håll kontakten med din coach
+
+**💪 Ta hand om dig**
+- Sov 7-9 timmar per natt
+- Hantera stress (meditation, promenader)
+- Drick tillräckligt med vatten (2-3 liter/dag)
+- Lyssna på din kropp
+
+**🤝 Var ärlig**
+- Om något inte fungerar - säg till!
+- Om du behöver stöd - hör av dig!
+- Om du har en dålig vecka - vi löser det tillsammans!
+
+## Vanliga frågor
+
+**Vad händer om jag missar ett träningspass?**
+Inget stress! Livet händer. Fortsätt med nästa planerade pass. En missad träning här och där påverkar inte dina resultat på lång sikt.
+
+**Vad gör jag om jag blir sjuk?**
+Vila och återhämta dig. Kontakta din coach så justerar vi programmet. Din hälsa kommer alltid först!
+
+**Kan jag äta ute?**
+Absolut! Använd ditt omdöme - välj proteinrika rätter med grönsaker. En social måltid per vecka påverkar inte dina resultat.
+
+**Hur snabbt kommer jag se resultat?**
+De flesta ser förändringar inom 2-4 veckor. Men kom ihåg: detta är en 90-dagars resa. Tålamod ger resultat!
+
+---
+
+**Är du redo?** Då kör vi! Din transformation börjar nu. 🚀
+
+**Frågor?** Kontakta din coach via [Meddelanden](/dashboard/messages)!`
+
 // GET /api/guide-content - Get all guide content or specific type
 export async function GET(request: Request) {
   try {
@@ -161,10 +272,14 @@ export async function GET(request: Request) {
       if (!guide) {
         const defaultContent = type === 'meal_plan'
           ? DEFAULT_MEAL_PLAN_CONTENT
-          : DEFAULT_WORKOUT_CONTENT
+          : type === 'workout'
+          ? DEFAULT_WORKOUT_CONTENT
+          : DEFAULT_ONBOARDING_CONTENT
         const defaultTitle = type === 'meal_plan'
           ? 'Kostschema Guide'
-          : 'Träningsprogram Guide'
+          : type === 'workout'
+          ? 'Träningsprogram Guide'
+          : 'Kom Igång Guide'
 
         guide = await prisma.guideContent.create({
           data: {
@@ -187,6 +302,11 @@ export async function GET(request: Request) {
     if (guides.length === 0) {
       await prisma.guideContent.createMany({
         data: [
+          {
+            type: 'onboarding',
+            title: 'Kom Igång Guide',
+            content: DEFAULT_ONBOARDING_CONTENT
+          },
           {
             type: 'meal_plan',
             title: 'Kostschema Guide',

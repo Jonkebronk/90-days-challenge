@@ -24,7 +24,7 @@ export default function GuidesManagementPage() {
   const [guides, setGuides] = useState<GuideContent[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState<string | null>(null)
-  const [activePreview, setActivePreview] = useState<'meal_plan' | 'workout' | null>(null)
+  const [activePreview, setActivePreview] = useState<'meal_plan' | 'workout' | 'onboarding' | null>(null)
 
   const [mealPlanData, setMealPlanData] = useState({
     title: '',
@@ -32,6 +32,11 @@ export default function GuidesManagementPage() {
   })
 
   const [workoutData, setWorkoutData] = useState({
+    title: '',
+    content: ''
+  })
+
+  const [onboardingData, setOnboardingData] = useState({
     title: '',
     content: ''
   })
@@ -52,6 +57,7 @@ export default function GuidesManagementPage() {
         // Populate form data
         const mealPlan = data.guides.find((g: GuideContent) => g.type === 'meal_plan')
         const workout = data.guides.find((g: GuideContent) => g.type === 'workout')
+        const onboarding = data.guides.find((g: GuideContent) => g.type === 'onboarding')
 
         if (mealPlan) {
           setMealPlanData({
@@ -66,6 +72,13 @@ export default function GuidesManagementPage() {
             content: workout.content
           })
         }
+
+        if (onboarding) {
+          setOnboardingData({
+            title: onboarding.title,
+            content: onboarding.content
+          })
+        }
       }
     } catch (error) {
       console.error('Error fetching guides:', error)
@@ -75,10 +88,10 @@ export default function GuidesManagementPage() {
     }
   }
 
-  const handleSave = async (type: 'meal_plan' | 'workout') => {
+  const handleSave = async (type: 'meal_plan' | 'workout' | 'onboarding') => {
     try {
       setSaving(type)
-      const data = type === 'meal_plan' ? mealPlanData : workoutData
+      const data = type === 'meal_plan' ? mealPlanData : type === 'workout' ? workoutData : onboardingData
 
       const response = await fetch('/api/guide-content', {
         method: 'PATCH',
@@ -138,14 +151,20 @@ export default function GuidesManagementPage() {
           </h1>
         </div>
         <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
-          Redigera innehåll för kostschema och träningsprogram introduktioner
+          Redigera innehåll för kom igång, kostschema och träningsprogram introduktioner
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
       </div>
 
       {/* Tabs for different guides */}
-      <Tabs defaultValue="meal_plan" className="w-full">
-        <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.3)]">
+      <Tabs defaultValue="onboarding" className="w-full">
+        <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.3)]">
+          <TabsTrigger
+            value="onboarding"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a]"
+          >
+            Kom Igång Guide
+          </TabsTrigger>
           <TabsTrigger
             value="meal_plan"
             className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#fb923c] data-[state=active]:to-[#f97316] data-[state=active]:text-white"
@@ -159,6 +178,95 @@ export default function GuidesManagementPage() {
             Träningsprogram Guide
           </TabsTrigger>
         </TabsList>
+
+        {/* Onboarding / Kom Igång Guide */}
+        <TabsContent value="onboarding">
+          <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
+            <CardHeader>
+              <CardTitle className="text-[rgba(255,255,255,0.9)]">Kom Igång Guide</CardTitle>
+              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+                Denna text visas på /dashboard/onboarding/guide
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="onboarding-title" className="text-[rgba(255,255,255,0.8)]">
+                  Titel
+                </Label>
+                <Input
+                  id="onboarding-title"
+                  value={onboardingData.title}
+                  onChange={(e) => setOnboardingData({ ...onboardingData, title: e.target.value })}
+                  className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label htmlFor="onboarding-content" className="text-[rgba(255,255,255,0.8)]">
+                    Innehåll (MDX)
+                  </Label>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setActivePreview(activePreview === 'onboarding' ? null : 'onboarding')}
+                    className="bg-transparent border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)]"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    {activePreview === 'onboarding' ? 'Dölj' : 'Visa'} Förhandsvisning
+                  </Button>
+                </div>
+                <Textarea
+                  id="onboarding-content"
+                  value={onboardingData.content}
+                  onChange={(e) => setOnboardingData({ ...onboardingData, content: e.target.value })}
+                  className="min-h-[400px] font-mono bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white"
+                  placeholder="# Rubrik&#10;&#10;Din text här..."
+                />
+              </div>
+
+              {activePreview === 'onboarding' && (
+                <div className="border-2 border-[rgba(255,215,0,0.3)] rounded-lg p-6 bg-[rgba(0,0,0,0.3)]">
+                  <h3 className="text-lg font-bold text-[#FFD700] mb-4">Förhandsvisning:</h3>
+                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-[#FFD700] prose-headings:font-bold prose-p:text-[rgba(255,255,255,0.8)] prose-strong:text-[#FFD700] prose-li:text-[rgba(255,255,255,0.8)]">
+                    <MDXPreview content={onboardingData.content} />
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => handleSave('onboarding')}
+                  disabled={saving === 'onboarding'}
+                  className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:shadow-[0_0_20px_rgba(255,215,0,0.5)]"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {saving === 'onboarding' ? 'Sparar...' : 'Spara Ändringar'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => window.open('/dashboard/onboarding/guide', '_blank')}
+                  className="bg-transparent border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)]"
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  Öppna Live-sida
+                </Button>
+              </div>
+
+              <div className="mt-4 p-4 bg-[rgba(59,130,246,0.1)] border border-[rgba(59,130,246,0.3)] rounded-lg">
+                <p className="text-sm font-medium text-[#3b82f6] mb-2">MDX Formatering:</p>
+                <ul className="text-sm text-[rgba(255,255,255,0.7)] space-y-1 list-disc list-inside">
+                  <li># för huvudrubrik (H1)</li>
+                  <li>## för underrubrik (H2)</li>
+                  <li>**text** för fet text</li>
+                  <li>*text* för kursiv text</li>
+                  <li>[länktext](url) för länkar</li>
+                  <li>- för punktlistor</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         {/* Meal Plan Guide */}
         <TabsContent value="meal_plan">
