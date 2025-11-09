@@ -196,8 +196,8 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
         backPhotoBase64 = await convertFileToBase64(formData.backPhoto)
       }
 
-      // Send to AI endpoint for processing
-      const response = await fetch('/api/ai-coach/process-application', {
+      // Send application to backend
+      const response = await fetch('/api/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -209,10 +209,10 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
           country: formData.country,
 
           // Physical Stats
-          age: parseInt(formData.age) || 0,
+          age: formData.age,
           gender: formData.gender,
-          height: parseInt(formData.height) || 0,
-          currentWeight: parseFloat(formData.currentWeight) || 0,
+          height: formData.height,
+          currentWeight: formData.currentWeight,
 
           // Training
           currentTraining: formData.currentTraining,
@@ -254,8 +254,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
       if (response.ok) {
         const data = await response.json()
         setSubmitted(true)
-        toast.success('Ansökan mottagen! AI har genererat din personliga plan.')
-        console.log('Generated AI plan:', data.plan)
+        toast.success('Ansökan mottagen! Tack för din ansökan.')
       } else {
         const data = await response.json()
         toast.error(data.error || 'Något gick fel vid bearbetning av ansökan')

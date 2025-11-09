@@ -17,6 +17,30 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
+    // Check if this is a client ID request (generating plan for existing client)
+    if (body.clientId) {
+      // Fetch client data
+      const client = await prisma.user.findUnique({
+        where: { id: body.clientId },
+      });
+
+      if (!client) {
+        return NextResponse.json(
+          { error: 'Klient hittades inte' },
+          { status: 404 }
+        );
+      }
+
+      // For now, return an error since User model doesn't have enough data
+      return NextResponse.json(
+        {
+          error: 'Klienten saknar nödvändig data för AI-generering',
+          details: 'Klienten behöver ha ålder, vikt, längd, och träningsmål för att generera en plan. Vänligen komplettera klientens profil först.'
+        },
+        { status: 400 }
+      );
+    }
+
     // 1. Validera inkommande data
     const validation = validateApplicationData(body);
     if (!validation.valid) {

@@ -5,13 +5,9 @@ import { prisma } from '@/lib/prisma'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, fullName, email, phone, status, notes, tags } = body
-
-    // Use fullName if provided, otherwise use name for backwards compatibility
-    const applicantName = fullName || name
 
     // Validate required fields
-    if (!applicantName || !email || !phone) {
+    if (!body.fullName || !body.email || !body.phone) {
       return NextResponse.json(
         { error: 'Namn, e-post och telefon är obligatoriska' },
         { status: 400 }
@@ -20,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(body.email)) {
       return NextResponse.json(
         { error: 'Ogiltig e-postadress' },
         { status: 400 }
@@ -29,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     // Check if lead with this email already exists
     const existingLead = await prisma.lead.findFirst({
-      where: { email }
+      where: { email: body.email }
     })
 
     if (existingLead) {
@@ -39,15 +35,58 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create the lead
+    // Create the lead with all application data
     const lead = await prisma.lead.create({
       data: {
-        fullName: applicantName,
-        email,
-        phone,
-        status: status || 'NEW',
-        notes: notes || '',
-        tags: tags || ['web-ansokan'],
+        // Basic Info
+        fullName: body.fullName,
+        email: body.email,
+        phone: body.phone,
+        city: body.city,
+        country: body.country,
+        age: body.age ? parseInt(body.age) : null,
+        gender: body.gender,
+        height: body.height ? parseInt(body.height) : null,
+        currentWeight: body.currentWeight ? parseFloat(body.currentWeight) : null,
+
+        // Training
+        currentTraining: body.currentTraining,
+        trainingExperience: body.trainingExperience,
+        trainingGoal: body.trainingGoal,
+        injuries: body.injuries,
+        availableTime: body.availableTime,
+        preferredSchedule: body.preferredSchedule,
+
+        // Nutrition
+        dietHistory: body.dietHistory,
+        macroExperience: body.macroExperience,
+        digestionIssues: body.digestionIssues,
+        allergies: body.allergies,
+        favoriteFood: body.favoriteFood,
+        dislikedFood: body.dislikedFood,
+        supplements: body.supplements,
+        previousCoaching: body.previousCoaching,
+
+        // Lifestyle
+        stressLevel: body.stressLevel,
+        sleepHours: body.sleepHours,
+        occupation: body.occupation,
+        lifestyle: body.lifestyle,
+
+        // Motivation
+        whyJoin: body.whyJoin,
+        canFollowPlan: body.canFollowPlan,
+        expectations: body.expectations,
+        biggestChallenges: body.biggestChallenges,
+
+        // Photos
+        frontPhoto: body.frontPhoto,
+        sidePhoto: body.sidePhoto,
+        backPhoto: body.backPhoto,
+
+        // Status
+        status: 'NEW',
+        tags: ['web-ansokan'],
       },
     })
 
