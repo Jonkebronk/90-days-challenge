@@ -246,15 +246,13 @@ export default function LeadAIPlanPage() {
           </Button>
           <Button
             onClick={handleEditPlan}
-            variant="outline"
-            className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+            className="bg-transparent border-2 border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
           >
             Redigera Plan Manuellt
           </Button>
           <Button
-            variant="outline"
             onClick={() => router.push(`/dashboard/leads/${leadId}`)}
-            className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+            className="bg-transparent border-2 border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
           >
             Visa Fullständig Ansökan
           </Button>
