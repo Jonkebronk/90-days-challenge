@@ -272,6 +272,47 @@ export default function DashboardPage() {
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
       </div>
 
+      {/* Quick Tips Section */}
+      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] max-w-6xl mx-auto">
+        <div className="p-6 border-b border-[rgba(255,215,0,0.1)]">
+          <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">Kom Igång</h2>
+          <p className="text-[rgba(255,255,255,0.6)] text-sm mt-1">Tips för att få ut det mesta av programmet</p>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm">1</span>
+              </div>
+              <div>
+                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Gör din första check-in</h4>
+                <p className="text-[rgba(255,255,255,0.6)] text-xs">Dokumentera din startvikt och mål</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#a855f7] to-[#7c3aed] flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm">2</span>
+              </div>
+              <div>
+                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Utforska kunskapsbanken</h4>
+                <p className="text-[rgba(255,255,255,0.6)] text-xs">Lär dig grunderna för framgång</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FFA500] to-[#ff8800] flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-sm">3</span>
+              </div>
+              <div>
+                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Planera dina måltider</h4>
+                <p className="text-[rgba(255,255,255,0.6)] text-xs">Använd recepten för inspiration</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Action Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
 
@@ -444,47 +485,6 @@ export default function DashboardPage() {
           <p className="text-[rgba(255,255,255,0.4)] text-center text-sm relative z-10">
             Spännande funktioner på gång!
           </p>
-        </div>
-      </div>
-
-      {/* Quick Tips Section */}
-      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] max-w-6xl mx-auto">
-        <div className="p-6 border-b border-[rgba(255,215,0,0.1)]">
-          <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">Kom Igång</h2>
-          <p className="text-[rgba(255,255,255,0.6)] text-sm mt-1">Tips för att få ut det mesta av programmet</p>
-        </div>
-        <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-sm">1</span>
-              </div>
-              <div>
-                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Gör din första check-in</h4>
-                <p className="text-[rgba(255,255,255,0.6)] text-xs">Dokumentera din startvikt och mål</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#a855f7] to-[#7c3aed] flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-sm">2</span>
-              </div>
-              <div>
-                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Utforska kunskapsbanken</h4>
-                <p className="text-[rgba(255,255,255,0.6)] text-xs">Lär dig grunderna för framgång</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FFA500] to-[#ff8800] flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-sm">3</span>
-              </div>
-              <div>
-                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Planera dina måltider</h4>
-                <p className="text-[rgba(255,255,255,0.6)] text-xs">Använd recepten för inspiration</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
