@@ -207,27 +207,52 @@ export default function ArticleEditorPage() {
   const handleSave = async () => {
     try {
       setIsSaving(true)
+
+      const payload = {
+        ...formData,
+        phase: formData.phase ? parseInt(formData.phase) : null,
+        estimatedReadingMinutes: formData.estimatedReadingMinutes
+          ? parseInt(formData.estimatedReadingMinutes)
+          : null
+      }
+
+      console.log('Saving article with payload:', payload)
+
       const response = await fetch(`/api/articles/${articleId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          phase: formData.phase ? parseInt(formData.phase) : null,
-          estimatedReadingMinutes: formData.estimatedReadingMinutes
-            ? parseInt(formData.estimatedReadingMinutes)
-            : null
-        })
+        body: JSON.stringify(payload)
       })
 
       if (response.ok) {
+        const data = await response.json()
+        console.log('Article saved successfully:', data)
+
         // Clear draft from localStorage after successful save
         const draftKey = `article-draft-${articleId}`
         localStorage.removeItem(draftKey)
 
         toast.success('Artikel sparad')
-        fetchArticle()
+
+        // Update local state directly instead of fetching
+        setArticle(data.article)
+        setFormData({
+          title: data.article.title,
+          content: data.article.content,
+          slug: data.article.slug,
+          categoryId: data.article.categoryId,
+          tags: data.article.tags,
+          difficulty: data.article.difficulty || '',
+          phase: data.article.phase ? String(data.article.phase) : '',
+          estimatedReadingMinutes: data.article.estimatedReadingMinutes
+            ? String(data.article.estimatedReadingMinutes)
+            : '',
+          coverImage: data.article.coverImage || '',
+          published: data.article.published
+        })
       } else {
         const data = await response.json()
+        console.error('Failed to save article:', data)
         toast.error(data.error || 'Kunde inte spara artikel')
       }
     } catch (error) {
