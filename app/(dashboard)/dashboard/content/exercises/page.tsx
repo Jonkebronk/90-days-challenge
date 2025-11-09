@@ -55,9 +55,9 @@ export default function ExercisesPage() {
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [filterMuscleGroup, setFilterMuscleGroup] = useState('')
-  const [filterEquipment, setFilterEquipment] = useState('')
-  const [filterDifficulty, setFilterDifficulty] = useState('')
+  const [filterMuscleGroup, setFilterMuscleGroup] = useState<string>('all')
+  const [filterEquipment, setFilterEquipment] = useState<string>('all')
+  const [filterDifficulty, setFilterDifficulty] = useState<string>('all')
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -112,19 +112,19 @@ export default function ExercisesPage() {
       )
     }
 
-    if (filterMuscleGroup) {
+    if (filterMuscleGroup && filterMuscleGroup !== 'all') {
       filtered = filtered.filter(ex =>
         ex.muscleGroups.includes(filterMuscleGroup)
       )
     }
 
-    if (filterEquipment) {
+    if (filterEquipment && filterEquipment !== 'all') {
       filtered = filtered.filter(ex =>
         ex.equipmentNeeded.includes(filterEquipment)
       )
     }
 
-    if (filterDifficulty) {
+    if (filterDifficulty && filterDifficulty !== 'all') {
       filtered = filtered.filter(ex =>
         ex.difficultyLevel?.toLowerCase() === filterDifficulty.toLowerCase()
       )
@@ -337,7 +337,7 @@ export default function ExercisesPage() {
                   <SelectValue placeholder="Alla muskelgrupper" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Alla muskelgrupper</SelectItem>
+                  <SelectItem value="all">Alla muskelgrupper</SelectItem>
                   {MUSCLE_GROUPS.map(muscle => (
                     <SelectItem key={muscle} value={muscle}>{muscle}</SelectItem>
                   ))}
@@ -352,7 +352,7 @@ export default function ExercisesPage() {
                   <SelectValue placeholder="All utrustning" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All utrustning</SelectItem>
+                  <SelectItem value="all">All utrustning</SelectItem>
                   {EQUIPMENT_OPTIONS.map(equip => (
                     <SelectItem key={equip} value={equip}>{equip}</SelectItem>
                   ))}
@@ -367,7 +367,7 @@ export default function ExercisesPage() {
                   <SelectValue placeholder="Alla nivåer" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Alla nivåer</SelectItem>
+                  <SelectItem value="all">Alla nivåer</SelectItem>
                   {DIFFICULTY_LEVELS.map(level => (
                     <SelectItem key={level} value={level.toLowerCase()}>{level}</SelectItem>
                   ))}
