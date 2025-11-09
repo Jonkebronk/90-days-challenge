@@ -136,6 +136,7 @@ model User {
 
   // Meal Plan Template System
   mealPlanTemplateAssignments MealPlanTemplateAssignment[] @relation("MealPlanTemplateAssignments")
+  mealPlanTemplateAssignmentsByCoach MealPlanTemplateAssignment[] @relation("MealPlanTemplateAssignmentsByCoach")
   mealSelections   ClientMealSelection[]
 
   // Coach-Client relationship
@@ -1153,6 +1154,7 @@ model MealPlanTemplateAssignment {
 
   user                  User @relation("MealPlanTemplateAssignments", fields: [userId], references: [id], onDelete: Cascade)
   template              MealPlanTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  coach                 User @relation("MealPlanTemplateAssignmentsByCoach", fields: [coachId], references: [id], onDelete: Cascade)
 
   @@unique([userId, templateId])
   @@map("meal_plan_template_assignments")
