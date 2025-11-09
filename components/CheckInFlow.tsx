@@ -90,7 +90,6 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
         body: JSON.stringify({
           userId,
           ...formData,
-          weightKg: formData.weightKg ? parseFloat(formData.weightKg) : null,
           photoFront: photoUrls.front,
           photoSide: photoUrls.side,
           photoBack: photoUrls.back,
