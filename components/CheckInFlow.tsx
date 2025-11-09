@@ -313,7 +313,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               <div>
                 <h2 className="text-xl font-bold mb-2 text-white">Vikter för veckan</h2>
                 <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                  Fyll i dina vikter för varje dag du mätt denna vecka
+                  Fyll i dina vikter för varje dag du vägt dig denna vecka
                 </p>
               </div>
             </div>
@@ -355,13 +355,13 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 4: Kroppsmått
   if (step === 4) {
     const measurements = [
-      { name: 'Bröst', field: 'chest', description: 'Mät i höjd med dina bröstvårtor.' },
-      { name: 'Midja', field: 'waist', description: 'Mät runt det bredaste stället på midjan, oftast precis under naveln.' },
-      { name: 'Höfter', field: 'hips', description: 'Mär runt det bredaste stället på dina höfter utan dra in magen.' },
-      { name: 'Rumpa', field: 'butt', description: 'Mät runt det bredaste stället på din rumpa.' },
-      { name: 'Armar', field: 'arms', description: 'Mät runt det bredaste stället på din arm. Mät båda armarna.' },
-      { name: 'Lår', field: 'thighs', description: 'Mät på det bredaste stället på låret. Mät båda låren.' },
-      { name: 'Vader', field: 'calves', description: 'Mät på det bredaste stället runt vaderna. Mät båda vaderna.' },
+      { name: 'Bröst', field: 'chest', description: 'Mät i höjd med dina bröstvårtor.', image: '/images/measurements/chest.png' },
+      { name: 'Midja', field: 'waist', description: 'Mät runt det bredaste stället på midjan, oftast precis under naveln. Dra ej in magen när du tar måttet utan var avslappnad', image: '/images/measurements/waist.png' },
+      { name: 'Höfter', field: 'hips', description: 'Mär runt det bredaste stället på dina höfter utan dra in magen.', image: '/images/measurements/hips.png' },
+      { name: 'Rumpa', field: 'butt', description: 'Mät runt det bredaste stället på din rumpa.', image: '/images/measurements/butt.png' },
+      { name: 'Armar', field: 'arms', description: 'Mät runt det bredaste stället på din arm. Mät båda armarna.', image: '/images/measurements/arms.png' },
+      { name: 'Lår', field: 'thighs', description: 'Mät på det bredaste stället på låret. Mät båda låren.', image: '/images/measurements/thighs.png' },
+      { name: 'Vader', field: 'calves', description: 'Mät på det bredaste stället runt vaderna. Mät båda vaderna.', image: '/images/measurements/calfs.png' },
     ]
 
     return (
@@ -383,12 +383,21 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               </div>
             </div>
 
-            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
               {measurements.map((measurement) => (
-                <div key={measurement.field} className="space-y-1">
-                  <Label htmlFor={measurement.field} className="text-[rgba(255,215,0,0.8)] font-semibold">{measurement.name}</Label>
-                  <p className="text-xs text-[rgba(255,255,255,0.5)] mb-1">{measurement.description}</p>
-                  <div className="relative">
+                <div key={measurement.field} className="space-y-2">
+                  <div className="flex items-start gap-3">
+                    <img
+                      src={measurement.image}
+                      alt={measurement.name}
+                      className="w-16 h-16 object-cover rounded-lg border-2 border-[rgba(255,215,0,0.3)]"
+                    />
+                    <div className="flex-1">
+                      <Label htmlFor={measurement.field} className="text-[rgba(255,215,0,0.8)] font-semibold text-base">{measurement.name}</Label>
+                      <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">{measurement.description}</p>
+                    </div>
+                  </div>
+                  <div className="relative ml-[76px]">
                     <Input
                       id={measurement.field}
                       type="number"
