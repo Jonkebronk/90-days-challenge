@@ -130,7 +130,26 @@ export async function GET(
       checkIns: client.checkIns,
       stats: {
         checkIns: checkInStats,
-        currentWeight: client.checkIns[0]?.weightKg || client.userProfile?.currentWeightKg,
+        currentWeight: (() => {
+          // Get most recent check-in's average weight or fall back to profile weight
+          const latestCheckIn = client.checkIns[0]
+          if (latestCheckIn) {
+            const weights = [
+              latestCheckIn.mondayWeight,
+              latestCheckIn.tuesdayWeight,
+              latestCheckIn.wednesdayWeight,
+              latestCheckIn.thursdayWeight,
+              latestCheckIn.fridayWeight,
+              latestCheckIn.saturdayWeight,
+              latestCheckIn.sundayWeight,
+            ].filter((w) => w !== null) as any[]
+
+            if (weights.length > 0) {
+              return weights.reduce((sum, w) => sum + Number(w), 0) / weights.length
+            }
+          }
+          return client.userProfile?.currentWeightKg
+        })(),
         startWeight: client.userProfile?.currentWeightKg,
       },
       progression: {
