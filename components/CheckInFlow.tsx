@@ -223,9 +223,9 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2 text-white text-white">Hallå där! 👋</h2>
+                <h2 className="text-xl font-bold mb-2 text-white">Hallå där! 👋</h2>
                 <p className="text-[rgba(255,255,255,0.6)]">
-                  Det är dags för din check-in. Du kan uppdatera några mått och berätta hur din vecka har varit.
+                  Det är dags för din avstämning. Uppdatera dina mätpunkter och berätta hur veckan har gått.
                 </p>
               </div>
             </div>
@@ -234,7 +234,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               onClick={() => setStep(2)}
               className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12"
             >
-              Fortsätt
+              Starta
             </Button>
           </CardContent>
         </Card>
