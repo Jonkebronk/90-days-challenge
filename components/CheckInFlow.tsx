@@ -450,6 +450,27 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               {/* Framsida */}
               <div>
                 <Label className="text-[rgba(255,215,0,0.8)] mb-2 block">📸 Framsida</Label>
+
+                {/* Exempel bilder */}
+                <div className="flex gap-4 mb-3 justify-center">
+                  <div className="text-center">
+                    <img
+                      src="/images/Formbild/k_framsida.png"
+                      alt="Exempel kvinna framsida"
+                      className="w-20 h-28 object-cover rounded border border-[rgba(255,215,0,0.3)]"
+                    />
+                    <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">Kvinna</p>
+                  </div>
+                  <div className="text-center">
+                    <img
+                      src="/images/Formbild/man_framsida.png"
+                      alt="Exempel man framsida"
+                      className="w-20 h-28 object-cover rounded border border-[rgba(255,215,0,0.3)]"
+                    />
+                    <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">Man</p>
+                  </div>
+                </div>
+
                 <div className="relative border-2 border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-6 text-center hover:border-[rgba(255,215,0,0.5)] transition-all">
                   <input
                     type="file"
@@ -493,6 +514,27 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               {/* Baksida */}
               <div>
                 <Label className="text-[rgba(255,215,0,0.8)] mb-2 block">📸 Baksida</Label>
+
+                {/* Exempel bilder */}
+                <div className="flex gap-4 mb-3 justify-center">
+                  <div className="text-center">
+                    <img
+                      src="/images/Formbild/k_baksida.png"
+                      alt="Exempel kvinna baksida"
+                      className="w-20 h-28 object-cover rounded border border-[rgba(255,215,0,0.3)]"
+                    />
+                    <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">Kvinna</p>
+                  </div>
+                  <div className="text-center">
+                    <img
+                      src="/images/Formbild/man_baksida.png"
+                      alt="Exempel man baksida"
+                      className="w-20 h-28 object-cover rounded border border-[rgba(255,215,0,0.3)]"
+                    />
+                    <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">Man</p>
+                  </div>
+                </div>
+
                 <div className="relative border-2 border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-6 text-center hover:border-[rgba(255,215,0,0.5)] transition-all">
                   <input
                     type="file"
@@ -536,6 +578,27 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               {/* Sida */}
               <div>
                 <Label className="text-[rgba(255,215,0,0.8)] mb-2 block">📸 Sida</Label>
+
+                {/* Exempel bilder */}
+                <div className="flex gap-4 mb-3 justify-center">
+                  <div className="text-center">
+                    <img
+                      src="/images/Formbild/k_sida.png"
+                      alt="Exempel kvinna sida"
+                      className="w-20 h-28 object-cover rounded border border-[rgba(255,215,0,0.3)]"
+                    />
+                    <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">Kvinna</p>
+                  </div>
+                  <div className="text-center">
+                    <img
+                      src="/images/Formbild/man_sida.png"
+                      alt="Exempel man sida"
+                      className="w-20 h-28 object-cover rounded border border-[rgba(255,215,0,0.3)]"
+                    />
+                    <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">Man</p>
+                  </div>
+                </div>
+
                 <div className="relative border-2 border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-6 text-center hover:border-[rgba(255,215,0,0.5)] transition-all">
                   <input
                     type="file"
