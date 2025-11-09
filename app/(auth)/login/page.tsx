@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
+import { ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -65,7 +67,15 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+    <div className="space-y-4">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-2 text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span>Tillbaka till startsidan</span>
+      </Link>
+      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
           Sign In
@@ -116,5 +126,6 @@ export default function LoginPage() {
         </CardFooter>
       </form>
     </Card>
+    </div>
   )
 }

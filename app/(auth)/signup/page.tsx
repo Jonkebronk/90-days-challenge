@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
+import { ArrowLeft } from 'lucide-react'
 
 const signupSchema = z.object({
   fullName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -93,80 +94,93 @@ export default function SignupPage() {
   }
 
   return (
-    <Card>
+    <div className="space-y-4">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-2 text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span>Tillbaka till startsidan</span>
+      </Link>
+      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">Create Account</CardTitle>
+        <CardDescription className="text-[rgba(255,255,255,0.6)]">
           Fill in the details below to start your 90-day journey
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name</Label>
+            <Label htmlFor="fullName" className="text-[rgba(255,215,0,0.8)]">Full Name</Label>
             <Input
               id="fullName"
               type="text"
               placeholder="Your name"
               {...register('fullName')}
               disabled={isLoading}
+              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
             />
             {errors.fullName && (
-              <p className="text-sm text-destructive">{errors.fullName.message}</p>
+              <p className="text-sm text-[#ff4444]">{errors.fullName.message}</p>
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-[rgba(255,215,0,0.8)]">Email</Label>
             <Input
               id="email"
               type="email"
               placeholder="your@email.com"
               {...register('email')}
               disabled={isLoading}
+              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
             />
             {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
+              <p className="text-sm text-[#ff4444]">{errors.email.message}</p>
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-[rgba(255,215,0,0.8)]">Password</Label>
             <Input
               id="password"
               type="password"
               placeholder="••••••••"
               {...register('password')}
               disabled={isLoading}
+              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
             />
             {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
+              <p className="text-sm text-[#ff4444]">{errors.password.message}</p>
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Label htmlFor="confirmPassword" className="text-[rgba(255,215,0,0.8)]">Confirm Password</Label>
             <Input
               id="confirmPassword"
               type="password"
               placeholder="••••••••"
               {...register('confirmPassword')}
               disabled={isLoading}
+              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
             />
             {errors.confirmPassword && (
-              <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+              <p className="text-sm text-[#ff4444]">{errors.confirmPassword.message}</p>
             )}
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold" disabled={isLoading}>
             {isLoading ? 'Creating account...' : 'Create Account'}
           </Button>
-          <p className="text-sm text-muted-foreground text-center">
+          <p className="text-sm text-[rgba(255,255,255,0.6)] text-center">
             Already have an account?{' '}
-            <Link href="/login" className="text-primary hover:underline">
+            <Link href="/login" className="text-[#FFD700] hover:text-[#FFA500] hover:underline">
               Sign in
             </Link>
           </p>
         </CardFooter>
       </form>
     </Card>
+    </div>
   )
 }
