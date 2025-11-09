@@ -154,8 +154,7 @@ export default function AIPlansPage() {
                 <p className="text-[rgba(255,255,255,0.6)] mb-4">Inga AI-planer än</p>
                 <Button
                   onClick={() => router.push('/dashboard/ai-plans/create')}
-                  variant="outline"
-                  className="border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+                  className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-bold"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Skapa din första plan
