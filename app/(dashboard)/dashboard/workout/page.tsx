@@ -91,29 +91,14 @@ export default function WorkoutPage() {
   if (!assignment) {
     return (
       <div className="space-y-6">
-        {/* Header with gold gradient */}
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700] via-[#FFA500] to-[#FFD700] opacity-10 rounded-xl blur-xl" />
-          <div className="relative bg-gradient-to-br from-[rgba(255,215,0,0.1)] to-[rgba(255,165,0,0.05)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-8 backdrop-blur-[10px]">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="w-12 h-[2px] bg-gradient-to-r from-[#FFD700] to-transparent mb-4" />
-                <h1 className="text-4xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
-                  TRÄNINGSPROGRAM
-                </h1>
-                <p className="text-[rgba(255,255,255,0.6)] mt-2">
-                  Ditt personliga träningsprogram
-                </p>
-                <div className="w-12 h-[2px] bg-gradient-to-r from-[#FFD700] to-transparent mt-4" />
-              </div>
-              <Link href="/dashboard/workout/history">
-                <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
-                  <History className="w-4 h-4 mr-2" />
-                  Historik
-                </Button>
-              </Link>
-            </div>
-          </div>
+        {/* Header - Centrerad som Kostschema */}
+        <div className="relative text-center py-8 bg-gradient-to-br from-[rgba(255,215,0,0.05)] to-transparent border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px]">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+            TRÄNINGSPROGRAM
+          </h1>
+          <p className="text-[rgba(255,255,255,0.6)] mt-2">
+            Ditt personliga träningsprogram
+          </p>
         </div>
 
         <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_20px_rgba(255,215,0,0.15)] transition-all">
@@ -145,63 +130,56 @@ export default function WorkoutPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header with gold gradient */}
-      <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700] via-[#FFA500] to-[#FFD700] opacity-10 rounded-xl blur-xl" />
-        <div className="relative bg-gradient-to-br from-[rgba(255,215,0,0.1)] to-[rgba(255,165,0,0.05)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-8 backdrop-blur-[10px]">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="w-12 h-[2px] bg-gradient-to-r from-[#FFD700] to-transparent mb-4" />
-              <h1 className="text-4xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
-                {workoutProgram.name.toUpperCase()}
-              </h1>
-              {programHasWeeks && currentWeekData && (
-                <p className="text-[#8b5cf6] font-semibold mt-2">
-                  {currentWeekData.title || `Vecka ${currentWeek}`}
-                  {currentWeekData.description && ` - ${currentWeekData.description}`}
-                </p>
-              )}
-              {workoutProgram.description && (
-                <p className="text-[rgba(255,255,255,0.6)] mt-2">
-                  {workoutProgram.description}
-                </p>
-              )}
-              <div className="w-12 h-[2px] bg-gradient-to-r from-[#FFD700] to-transparent mt-4" />
-            </div>
-            <div className="flex flex-wrap gap-2 justify-end">
-              <Link href="/dashboard/workout/builder">
-                <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90 font-semibold">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Skapa pass
-                </Button>
-              </Link>
-              <Link href="/dashboard/workout/templates">
-                <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
-                  <Dumbbell className="w-4 h-4 mr-2" />
-                  Mallar
-                </Button>
-              </Link>
-              <Link href="/dashboard/workout/records">
-                <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
-                  <Trophy className="w-4 h-4 mr-2" />
-                  Rekord
-                </Button>
-              </Link>
-              <Link href="/dashboard/analytics">
-                <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
-                  <BarChart3 className="w-4 h-4 mr-2" />
-                  Analytics
-                </Button>
-              </Link>
-              <Link href="/dashboard/workout/history">
-                <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
-                  <History className="w-4 h-4 mr-2" />
-                  Historik
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
+      {/* Header - Centrerad som Kostschema */}
+      <div className="relative text-center py-8 bg-gradient-to-br from-[rgba(255,215,0,0.05)] to-transparent border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px]">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+          {workoutProgram.name.toUpperCase()}
+        </h1>
+        {programHasWeeks && currentWeekData && (
+          <p className="text-[#8b5cf6] font-semibold mt-2">
+            {currentWeekData.title || `Vecka ${currentWeek}`}
+            {currentWeekData.description && ` - ${currentWeekData.description}`}
+          </p>
+        )}
+        {workoutProgram.description && (
+          <p className="text-[rgba(255,255,255,0.6)] mt-2">
+            {workoutProgram.description}
+          </p>
+        )}
+      </div>
+
+      {/* Action buttons row */}
+      <div className="flex flex-wrap gap-2 justify-center">
+        <Link href="/dashboard/workout/builder">
+          <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90 font-semibold">
+            <Plus className="w-4 h-4 mr-2" />
+            Skapa pass
+          </Button>
+        </Link>
+        <Link href="/dashboard/workout/templates">
+          <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+            <Dumbbell className="w-4 h-4 mr-2" />
+            Mallar
+          </Button>
+        </Link>
+        <Link href="/dashboard/workout/records">
+          <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+            <Trophy className="w-4 h-4 mr-2" />
+            Rekord
+          </Button>
+        </Link>
+        <Link href="/dashboard/analytics">
+          <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Analytics
+          </Button>
+        </Link>
+        <Link href="/dashboard/workout/history">
+          <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+            <History className="w-4 h-4 mr-2" />
+            Historik
+          </Button>
+        </Link>
       </div>
 
       {/* Program Info Card */}

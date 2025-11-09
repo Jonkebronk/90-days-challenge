@@ -102,12 +102,12 @@ export default function ClientFaqsPage() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+      {/* Header - Centrerad som Kostschema */}
+      <div className="relative text-center py-8 bg-gradient-to-br from-[rgba(255,215,0,0.05)] to-transparent border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px]">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
           VANLIGA FRÅGOR
         </h1>
-        <p className="text-[rgba(255,255,255,0.6)] mt-1">
+        <p className="text-[rgba(255,255,255,0.6)] mt-2">
           Svar på vanliga frågor om träning, kost och mer
         </p>
       </div>
