@@ -7,13 +7,25 @@ export async function POST(request: NextRequest) {
     const {
       userId,
       statusUpdate,
-      weightKg,
-      energyLevel,
-      mood,
-      dietPlanAdherence,
-      workoutPlanAdherence,
-      sleepNotes,
-      dailySteps,
+      mondayWeight,
+      tuesdayWeight,
+      wednesdayWeight,
+      thursdayWeight,
+      fridayWeight,
+      saturdayWeight,
+      sundayWeight,
+      chest,
+      waist,
+      hips,
+      butt,
+      arms,
+      thighs,
+      calves,
+      trainedAllSessions,
+      trainingComments,
+      hadDietDeviations,
+      dietComments,
+      otherComments,
       photoFront,
       photoSide,
       photoBack,
@@ -31,13 +43,29 @@ export async function POST(request: NextRequest) {
       data: {
         userId,
         statusUpdate,
-        weightKg: weightKg ? parseFloat(weightKg) : null,
-        energyLevel,
-        mood,
-        dietPlanAdherence,
-        workoutPlanAdherence,
-        sleepNotes,
-        dailySteps,
+        // Daily weights
+        mondayWeight: mondayWeight ? parseFloat(mondayWeight) : null,
+        tuesdayWeight: tuesdayWeight ? parseFloat(tuesdayWeight) : null,
+        wednesdayWeight: wednesdayWeight ? parseFloat(wednesdayWeight) : null,
+        thursdayWeight: thursdayWeight ? parseFloat(thursdayWeight) : null,
+        fridayWeight: fridayWeight ? parseFloat(fridayWeight) : null,
+        saturdayWeight: saturdayWeight ? parseFloat(saturdayWeight) : null,
+        sundayWeight: sundayWeight ? parseFloat(sundayWeight) : null,
+        // Body measurements
+        chest: chest ? parseFloat(chest) : null,
+        waist: waist ? parseFloat(waist) : null,
+        hips: hips ? parseFloat(hips) : null,
+        butt: butt ? parseFloat(butt) : null,
+        arms: arms ? parseFloat(arms) : null,
+        thighs: thighs ? parseFloat(thighs) : null,
+        calves: calves ? parseFloat(calves) : null,
+        // Training and diet adherence
+        trainedAllSessions,
+        trainingComments,
+        hadDietDeviations,
+        dietComments,
+        otherComments,
+        // Photos
         photoFront,
         photoSide,
         photoBack,
@@ -55,42 +83,73 @@ export async function POST(request: NextRequest) {
     if (user?.coachId) {
       // Create check-in summary message
       const summaryLines = []
-      summaryLines.push(`Veckorapport från ${user.name}`)
+      summaryLines.push(`📋 Veckorapport från ${user.name}`)
       summaryLines.push('')
 
       if (statusUpdate) {
-        summaryLines.push(`Status: ${statusUpdate}`)
+        summaryLines.push(`💬 Status:`)
+        summaryLines.push(statusUpdate)
         summaryLines.push('')
       }
 
-      if (weightKg) {
-        summaryLines.push(`Vikt: ${weightKg} kg`)
+      // Weekly weights summary
+      const weights = []
+      if (mondayWeight) weights.push(`Mån: ${mondayWeight} kg`)
+      if (tuesdayWeight) weights.push(`Tis: ${tuesdayWeight} kg`)
+      if (wednesdayWeight) weights.push(`Ons: ${wednesdayWeight} kg`)
+      if (thursdayWeight) weights.push(`Tor: ${thursdayWeight} kg`)
+      if (fridayWeight) weights.push(`Fre: ${fridayWeight} kg`)
+      if (saturdayWeight) weights.push(`Lör: ${saturdayWeight} kg`)
+      if (sundayWeight) weights.push(`Sön: ${sundayWeight} kg`)
+
+      if (weights.length > 0) {
+        summaryLines.push(`⚖️ Vikter för veckan:`)
+        weights.forEach(w => summaryLines.push(w))
+        summaryLines.push('')
       }
 
-      if (energyLevel) {
-        summaryLines.push(`Energinivå: ${'⭐'.repeat(energyLevel)} (${energyLevel}/5)`)
+      // Body measurements summary
+      const measurements = []
+      if (chest) measurements.push(`Bröst: ${chest} cm`)
+      if (waist) measurements.push(`Midja: ${waist} cm`)
+      if (hips) measurements.push(`Höfter: ${hips} cm`)
+      if (butt) measurements.push(`Rumpa: ${butt} cm`)
+      if (arms) measurements.push(`Armar: ${arms} cm`)
+      if (thighs) measurements.push(`Lår: ${thighs} cm`)
+      if (calves) measurements.push(`Vader: ${calves} cm`)
+
+      if (measurements.length > 0) {
+        summaryLines.push(`📏 Kroppsmått:`)
+        measurements.forEach(m => summaryLines.push(m))
+        summaryLines.push('')
       }
 
-      if (mood) {
-        const moodEmojis = ['😢', '😟', '😐', '🙂', '😊']
-        summaryLines.push(`Humör: ${moodEmojis[mood - 1]} (${mood}/5)`)
+      // Training adherence
+      if (trainedAllSessions !== null) {
+        summaryLines.push(`💪 Tränat alla pass: ${trainedAllSessions ? 'Ja ✅' : 'Nej ❌'}`)
       }
 
-      if (dietPlanAdherence) {
-        summaryLines.push(`Kostschema följsamhet: ${'⭐'.repeat(dietPlanAdherence)} (${dietPlanAdherence}/5)`)
+      if (trainingComments) {
+        summaryLines.push(`Träning denna vecka:`)
+        summaryLines.push(trainingComments)
+        summaryLines.push('')
       }
 
-      if (workoutPlanAdherence) {
-        summaryLines.push(`Träningsschema följsamhet: ${'⭐'.repeat(workoutPlanAdherence)} (${workoutPlanAdherence}/5)`)
+      // Diet adherence
+      if (hadDietDeviations !== null) {
+        summaryLines.push(`🥗 Avsteg i kosten: ${hadDietDeviations ? 'Ja ⚠️' : 'Nej ✅'}`)
       }
 
-      if (sleepNotes) {
-        summaryLines.push(``)
-        summaryLines.push(`Sömn: ${sleepNotes}`)
+      if (dietComments) {
+        summaryLines.push(`Kost denna vecka:`)
+        summaryLines.push(dietComments)
+        summaryLines.push('')
       }
 
-      if (dailySteps) {
-        summaryLines.push(`Dagliga steg: ${dailySteps}`)
+      if (otherComments) {
+        summaryLines.push(`📝 Övriga kommentarer:`)
+        summaryLines.push(otherComments)
+        summaryLines.push('')
       }
 
       // Collect progress photos for message
@@ -100,7 +159,6 @@ export async function POST(request: NextRequest) {
       if (photoBack) progressPhotos.push(photoBack)
 
       if (progressPhotos.length > 0) {
-        summaryLines.push('')
         summaryLines.push(`📸 ${progressPhotos.length} framstegsbilder bifogade`)
       }
 

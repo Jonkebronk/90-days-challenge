@@ -627,8 +627,7 @@ model CheckIn {
   weekNumber            Int?     // Week number in the program
 
   // Check-in data
-  statusUpdate          String?  // "Hur har du haft det sedan din senaste uppdatering?"
-  weightKg              Decimal? @db.Decimal(5, 2)
+  statusUpdate          String?  @db.Text // "Hur har du haft det sedan din senaste uppdatering?"
 
   // Daily weights (Monday-Sunday)
   mondayWeight          Decimal? @db.Decimal(5, 2)
@@ -648,12 +647,12 @@ model CheckIn {
   thighs                Decimal? @db.Decimal(5, 2)
   calves                Decimal? @db.Decimal(5, 2)
 
-  energyLevel           Int?     // 1-5 stars
-  mood                  Int?     // 1-5 (sad to happy)
-  dietPlanAdherence     Int?     // 1-5 stars (kostschema användning)
-  workoutPlanAdherence  Int?     // 1-5 stars (träningsschema användning)
-  sleepNotes            String?  // "Hur mycket sover du i genomsnitt per natt?"
-  dailySteps            String?  // "Hur många steg tar du vanligtvis per dag?"
+  // Training and diet adherence
+  trainedAllSessions    Boolean? // "Tränat alla pass?"
+  trainingComments      String?  @db.Text // "Hur gick träning denna vecka?"
+  hadDietDeviations     Boolean? // "Avsteg i kosten?"
+  dietComments          String?  @db.Text // "Hur gick kosten denna vecka?"
+  otherComments         String?  @db.Text // "Övrig kommentar?"
 
   // Progress photos
   photoFront            String?  // URL to front photo

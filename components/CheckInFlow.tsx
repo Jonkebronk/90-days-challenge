@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
-import { Star, Frown, Meh, Smile } from 'lucide-react'
 
 interface CheckInFlowProps {
   userId: string
@@ -28,7 +27,6 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
 
   const [formData, setFormData] = useState({
     statusUpdate: '',
-    weightKg: '',
     // Dagliga vikter
     mondayWeight: '',
     tuesdayWeight: '',
@@ -45,12 +43,12 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     arms: '',
     thighs: '',
     calves: '',
-    energyLevel: 0,
-    mood: 0,
-    dietPlanAdherence: 0,
-    workoutPlanAdherence: 0,
-    sleepNotes: '',
-    dailySteps: '',
+    // Träning och kost
+    trainedAllSessions: null as boolean | null,
+    trainingComments: '',
+    hadDietDeviations: null as boolean | null,
+    dietComments: '',
+    otherComments: '',
   })
 
   const updateFormData = (field: string, value: any) => {
@@ -216,7 +214,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               <h1 className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">Check-in</h1>
             </div>
 
-            <ProgressBar current={1} total={12} />
+            <ProgressBar current={1} total={10} />
 
             <div className="flex items-start gap-4 mb-8">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -249,7 +247,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(1)} />
-            <ProgressBar current={2} total={12} />
+            <ProgressBar current={2} total={10} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -304,7 +302,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(2)} />
-            <ProgressBar current={3} total={12} />
+            <ProgressBar current={3} total={10} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -369,7 +367,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(3)} />
-            <ProgressBar current={4} total={12} />
+            <ProgressBar current={4} total={10} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -434,7 +432,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(4)} />
-            <ProgressBar current={5} total={12} />
+            <ProgressBar current={5} total={10} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -591,31 +589,46 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 6: Energy Level
+  // Step 6: Training Adherence
   if (step === 6) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(5)} />
-            <ProgressBar current={6} total={12} />
+            <ProgressBar current={6} total={10} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2 text-white">Energinivå</h2>
-                <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                  1 = låg energi, 5 = mycket energisk
-                </p>
+                <h2 className="text-xl font-bold mb-2 text-white">Tränat alla pass?</h2>
               </div>
             </div>
 
-            <StarRating
-              value={formData.energyLevel}
-              onChange={(v) => updateFormData('energyLevel', v)}
-            />
+            <div className="flex gap-4">
+              <button
+                onClick={() => updateFormData('trainedAllSessions', true)}
+                className={`flex-1 h-16 rounded-lg border-2 transition-all ${
+                  formData.trainedAllSessions === true
+                    ? 'border-[#FFD700] bg-[rgba(255,215,0,0.1)]'
+                    : 'border-[rgba(255,255,255,0.2)]'
+                }`}
+              >
+                <span className="text-lg text-white">Ja</span>
+              </button>
+              <button
+                onClick={() => updateFormData('trainedAllSessions', false)}
+                className={`flex-1 h-16 rounded-lg border-2 transition-all ${
+                  formData.trainedAllSessions === false
+                    ? 'border-[#FFD700] bg-[rgba(255,215,0,0.1)]'
+                    : 'border-[rgba(255,255,255,0.2)]'
+                }`}
+              >
+                <span className="text-lg text-white">Nej</span>
+              </button>
+            </div>
 
             <Button
               onClick={() => setStep(7)}
@@ -629,31 +642,38 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 7: Mood
+  // Step 7: Training Comments
   if (step === 7) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(6)} />
-            <ProgressBar current={7} total={12} />
+            <ProgressBar current={7} total={10} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2 text-white">Humör</h2>
+                <h2 className="text-xl font-bold mb-2 text-white">Träning</h2>
                 <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                  1 = dålig, 5 = mycket bra
+                  Hur gick träning denna vecka?
                 </p>
               </div>
             </div>
 
-            <MoodRating
-              value={formData.mood}
-              onChange={(v) => updateFormData('mood', v)}
+            <Textarea
+              value={formData.trainingComments}
+              onChange={(e) => updateFormData('trainingComments', e.target.value)}
+              placeholder="Lägg till ditt svar"
+              rows={6}
+              maxLength={500}
+              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
             />
+            <div className="text-right text-sm text-[rgba(255,255,255,0.6)] mt-1">
+              {formData.trainingComments.length} / 500
+            </div>
 
             <Button
               onClick={() => setStep(8)}
@@ -667,31 +687,46 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 8: Diet Plan Adherence
+  // Step 8: Diet Adherence
   if (step === 8) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(7)} />
-            <ProgressBar current={8} total={12} />
+            <ProgressBar current={8} total={10} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2 text-white">Användning av kostschema</h2>
-                <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                  Hur väl tyckte du att kostschemat fungerade förra veckan? 1 = Väldigt dåligt, 5 = Mycket bra
-                </p>
+                <h2 className="text-xl font-bold mb-2 text-white">Avsteg i kosten?</h2>
               </div>
             </div>
 
-            <StarRating
-              value={formData.dietPlanAdherence}
-              onChange={(v) => updateFormData('dietPlanAdherence', v)}
-            />
+            <div className="flex gap-4">
+              <button
+                onClick={() => updateFormData('hadDietDeviations', true)}
+                className={`flex-1 h-16 rounded-lg border-2 transition-all ${
+                  formData.hadDietDeviations === true
+                    ? 'border-[#FFD700] bg-[rgba(255,215,0,0.1)]'
+                    : 'border-[rgba(255,255,255,0.2)]'
+                }`}
+              >
+                <span className="text-lg text-white">Ja</span>
+              </button>
+              <button
+                onClick={() => updateFormData('hadDietDeviations', false)}
+                className={`flex-1 h-16 rounded-lg border-2 transition-all ${
+                  formData.hadDietDeviations === false
+                    ? 'border-[#FFD700] bg-[rgba(255,215,0,0.1)]'
+                    : 'border-[rgba(255,255,255,0.2)]'
+                }`}
+              >
+                <span className="text-lg text-white">Nej</span>
+              </button>
+            </div>
 
             <Button
               onClick={() => setStep(9)}
@@ -705,120 +740,37 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 9: Workout Plan Adherence
+  // Step 9: Diet Comments
   if (step === 9) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
-            <Header onBack={() => setStep(7)} />
-            <ProgressBar current={9} total={12} />
-
-            <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
-                {userName.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <h2 className="text-xl font-bold mb-2 text-white">Användning av träningsschema</h2>
-                <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                  Använde du ditt träningsschema? 1 = inte alls, 5 = använde hela planen
-                </p>
-              </div>
-            </div>
-
-            <StarRating
-              value={formData.workoutPlanAdherence}
-              onChange={(v) => updateFormData('workoutPlanAdherence', v)}
-            />
-
-            <Button
-              onClick={() => setStep(10)}
-              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
-            >
-              Fortsätt
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  // Step 10: Sleep
-  if (step === 10) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
-          <CardContent className="pt-6">
             <Header onBack={() => setStep(8)} />
-            <ProgressBar current={10} total={12} />
+            <ProgressBar current={9} total={10} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2 text-white">Sömn</h2>
+                <h2 className="text-xl font-bold mb-2 text-white">Kost</h2>
                 <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                  Hur mycket sover du i genomsnitt per natt?
+                  Hur gick kosten denna vecka?
                 </p>
               </div>
             </div>
 
             <Textarea
-              value={formData.sleepNotes}
-              onChange={(e) => updateFormData('sleepNotes', e.target.value)}
+              value={formData.dietComments}
+              onChange={(e) => updateFormData('dietComments', e.target.value)}
               placeholder="Lägg till ditt svar"
               rows={6}
               maxLength={500}
               className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
             />
             <div className="text-right text-sm text-[rgba(255,255,255,0.6)] mt-1">
-              {formData.sleepNotes.length} / 500
-            </div>
-
-            <Button
-              onClick={() => setStep(9)}
-              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
-            >
-              Fortsätt
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  // Step 11: Daily Steps
-  if (step === 11) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
-          <CardContent className="pt-6">
-            <Header onBack={() => setStep(9)} />
-            <ProgressBar current={11} total={12} />
-
-            <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
-                {userName.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <h2 className="text-xl font-bold mb-2 text-white">Steg</h2>
-                <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                  Hur många steg tar du vanligtvis per dag?
-                </p>
-              </div>
-            </div>
-
-            <Textarea
-              value={formData.dailySteps}
-              onChange={(e) => updateFormData('dailySteps', e.target.value)}
-              placeholder="Lägg till ditt svar"
-              rows={4}
-              maxLength={300}
-              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
-            />
-            <div className="text-right text-sm text-[rgba(255,255,255,0.6)] mt-1">
-              {formData.dailySteps.length} / 300
+              {formData.dietComments.length} / 500
             </div>
 
             <Button
@@ -833,69 +785,37 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 12: Final Submit
-  if (step === 12) {
+  // Step 10: Other Comments & Submit
+  if (step === 10) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
-            <Header onBack={() => setStep(10)} />
-            <ProgressBar current={12} total={12} />
+            <Header onBack={() => setStep(9)} />
+            <ProgressBar current={10} total={10} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
                 {userName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2 text-white">Framstegsbilder</h2>
+                <h2 className="text-xl font-bold mb-2 text-white">Övrigt</h2>
+                <p className="text-sm text-[rgba(255,255,255,0.6)]">
+                  Har du någon övrig kommentar?
+                </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              {['front', 'side', 'back'].map((type) => {
-                const file = photoFiles[type as keyof typeof photoFiles]
-                const preview = file ? URL.createObjectURL(file) : null
-
-                return (
-                  <div key={type} className="space-y-2">
-                    <label className="block">
-                      <div className="w-full aspect-[3/4] border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 overflow-hidden relative">
-                        {preview ? (
-                          <>
-                            <img src={preview} alt={type} className="w-full h-full object-cover" />
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault()
-                                handleFileChange(type as 'front' | 'side' | 'back', null)
-                              }}
-                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
-                            >
-                              ✕
-                            </button>
-                          </>
-                        ) : (
-                          <div className="text-4xl mb-2">↑</div>
-                        )}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0]
-                            if (file) {
-                              handleFileChange(type as 'front' | 'side' | 'back', file)
-                            }
-                          }}
-                        />
-                      </div>
-                    </label>
-                    <p className="text-sm text-center capitalize">
-                      {type === 'front' ? 'Framsida' : type === 'side' ? 'Sidan' : 'Bakifrån'}
-                    </p>
-                  </div>
-                )
-              })}
+            <Textarea
+              value={formData.otherComments}
+              onChange={(e) => updateFormData('otherComments', e.target.value)}
+              placeholder="Lägg till ditt svar"
+              rows={6}
+              maxLength={500}
+              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
+            />
+            <div className="text-right text-sm text-[rgba(255,255,255,0.6)] mt-1">
+              {formData.otherComments.length} / 500
             </div>
 
             <Button
