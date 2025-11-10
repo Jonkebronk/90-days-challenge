@@ -142,7 +142,7 @@ export default function HomePage() {
                       Har du en inbjudningskod?
                     </DialogTitle>
                     <DialogDescription className="text-[rgba(255,255,255,0.7)] text-sm text-center">
-                      Om du har fått en exklusiv GOLD-kod av din coach, ange den här för att komma igång direkt
+                      Om du har fått en inbjudningskod av din coach, ange den här för att komma igång direkt
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 pt-4">
