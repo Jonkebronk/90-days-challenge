@@ -157,19 +157,29 @@ function ClientJournalContent() {
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingClients, setIsLoadingClients] = useState(true)
 
-  useEffect(() => {
-    if (session?.user) {
-      fetchClients()
-    }
-  }, [session])
+  const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
+  const isClient = (session?.user as any)?.role?.toUpperCase() === 'CLIENT'
 
   useEffect(() => {
-    const clientId = searchParams.get('client')
-    if (clientId) {
-      setSelectedClientId(clientId)
-      fetchJournal(clientId)
+    if (session?.user) {
+      if (isCoach) {
+        fetchClients()
+      } else if (isClient) {
+        // For clients, automatically load their own journal
+        fetchJournal(session.user.id!)
+      }
     }
-  }, [searchParams])
+  }, [session, isCoach, isClient])
+
+  useEffect(() => {
+    if (isCoach) {
+      const clientId = searchParams.get('client')
+      if (clientId) {
+        setSelectedClientId(clientId)
+        fetchJournal(clientId)
+      }
+    }
+  }, [searchParams, isCoach])
 
   const fetchClients = async () => {
     try {
@@ -212,63 +222,55 @@ function ClientJournalContent() {
     router.push(`/dashboard/journal?client=${clientId}`)
   }
 
-  if (!session?.user || (session.user as any).role !== 'coach') {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-[rgba(255,255,255,0.7)]">
-            Du har inte behörighet att se denna sida.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px] flex items-center gap-2">
           <FileText className="h-8 w-8 text-[#FFD700]" />
-          Klientjournal
+          {isCoach ? 'Klientjournal' : 'Min Journal'}
         </h1>
         <p className="text-[rgba(255,255,255,0.6)] mt-1">
-          Komplett översikt över klientens resa och framsteg
+          {isCoach
+            ? 'Komplett översikt över klientens resa och framsteg'
+            : 'Din resa och framsteg i 90-Dagars Challenge'}
         </p>
       </div>
 
-      {/* Client Selector */}
-      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] p-6">
-        <Label className="text-[rgba(255,255,255,0.8)] mb-2 block">
-          Välj klient
-        </Label>
-        <Select value={selectedClientId} onValueChange={handleClientChange}>
-          <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-            <SelectValue placeholder="Välj en klient..." />
-          </SelectTrigger>
-          <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
-            {isLoadingClients ? (
-              <SelectItem value="loading" disabled className="text-white">
-                Laddar...
-              </SelectItem>
-            ) : clients.length === 0 ? (
-              <SelectItem value="none" disabled className="text-white">
-                Inga klienter
-              </SelectItem>
-            ) : (
-              clients.map((client) => (
-                <SelectItem
-                  key={client.id}
-                  value={client.id}
-                  className="text-white hover:bg-[rgba(255,215,0,0.1)]"
-                >
-                  {client.name || client.email}
+      {/* Client Selector - Only for coaches */}
+      {isCoach && (
+        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] p-6">
+          <Label className="text-[rgba(255,255,255,0.8)] mb-2 block">
+            Välj klient
+          </Label>
+          <Select value={selectedClientId} onValueChange={handleClientChange}>
+            <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+              <SelectValue placeholder="Välj en klient..." />
+            </SelectTrigger>
+            <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+              {isLoadingClients ? (
+                <SelectItem value="loading" disabled className="text-white">
+                  Laddar...
                 </SelectItem>
-              ))
-            )}
-          </SelectContent>
-        </Select>
-      </div>
+              ) : clients.length === 0 ? (
+                <SelectItem value="none" disabled className="text-white">
+                  Inga klienter
+                </SelectItem>
+              ) : (
+                clients.map((client) => (
+                  <SelectItem
+                    key={client.id}
+                    value={client.id}
+                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                  >
+                    {client.name || client.email}
+                  </SelectItem>
+                ))
+              )}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* Loading State */}
       {isLoading && (
