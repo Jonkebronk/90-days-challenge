@@ -173,9 +173,6 @@ export default function HomePage() {
                         </>
                       )}
                     </button>
-                    <p className="text-[rgba(255,215,0,0.6)] text-xs text-center tracking-[1px]">
-                      💎 Exklusivt för godkända klienter
-                    </p>
                   </div>
                 </DialogContent>
               </Dialog>
