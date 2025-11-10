@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Utensils, Dumbbell, Sparkles, Info } from 'lucide-react'
+import { Utensils, Dumbbell, Sparkles, Info, Apple } from 'lucide-react'
 
 interface MealPlanItem {
   id: string
@@ -154,8 +154,8 @@ export default function MealPlanPage() {
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
 
-        {/* Introduction Button */}
-        <div className="mt-6">
+        {/* Introduction Buttons */}
+        <div className="mt-6 flex flex-wrap gap-3 justify-center">
           <Button
             onClick={() => router.push('/dashboard/meal-plan/guide')}
             variant="outline"
@@ -163,6 +163,14 @@ export default function MealPlanPage() {
           >
             <Info className="w-4 h-4 mr-2" />
             Introduktion till kostschema
+          </Button>
+          <Button
+            onClick={() => router.push('/dashboard/meal-plan/food-guide')}
+            variant="outline"
+            className="bg-transparent border-2 border-[rgba(34,197,94,0.4)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(34,197,94,0.1)] hover:border-[rgba(34,197,94,0.6)] hover:text-white transition-all"
+          >
+            <Apple className="w-4 h-4 mr-2" />
+            Livsmedelsguide
           </Button>
         </div>
       </div>
