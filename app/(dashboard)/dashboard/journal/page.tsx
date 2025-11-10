@@ -81,14 +81,37 @@ type Lead = {
 type CheckIn = {
   id: string
   weekNumber: number | null
+  isStartCheckIn: boolean
   statusUpdate: string | null
   weightKg: number | null
+  // Daily weights
+  mondayWeight: number | null
+  tuesdayWeight: number | null
+  wednesdayWeight: number | null
+  thursdayWeight: number | null
+  fridayWeight: number | null
+  saturdayWeight: number | null
+  sundayWeight: number | null
+  // Body measurements
+  chest: number | null
+  waist: number | null
+  hips: number | null
+  butt: number | null
+  arms: number | null
+  thighs: number | null
+  calves: number | null
   energyLevel: number | null
   mood: number | null
   dietPlanAdherence: number | null
   workoutPlanAdherence: number | null
   sleepNotes: string | null
   dailySteps: string | null
+  // Training and diet adherence
+  trainedAllSessions: boolean | null
+  trainingComments: string | null
+  hadDietDeviations: boolean | null
+  dietComments: string | null
+  otherComments: string | null
   photoFront: string | null
   photoSide: string | null
   photoBack: string | null
@@ -534,7 +557,150 @@ function ClientJournalContent() {
                 <p className="text-[rgba(255,255,255,0.6)]">Inga check-ins ännu</p>
               </div>
             ) : (
-              journalData.checkIns.map((checkIn) => (
+              <>
+                {/* Separate start check-in and show it first with badge */}
+                {(() => {
+                  const startCheckIn = journalData.checkIns.find((ci: any) => ci.isStartCheckIn === true)
+                  const regularCheckIns = journalData.checkIns.filter((ci: any) => !ci.isStartCheckIn)
+
+                  return (
+                    <>
+                      {startCheckIn && (
+                        <div
+                          key={startCheckIn.id}
+                          className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.5)] rounded-xl backdrop-blur-[10px] overflow-hidden shadow-[0_0_20px_rgba(255,215,0,0.3)]"
+                        >
+                          <div className="p-6 border-b border-[rgba(255,215,0,0.2)] flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-xl">
+                                🎯
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="font-bold text-[#FFD700] text-lg">
+                                    START CHECK-IN
+                                  </h3>
+                                  <span className="px-2 py-1 rounded text-xs font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a]">
+                                    UTGÅNGSPUNKT
+                                  </span>
+                                </div>
+                                <p className="text-sm text-[rgba(255,255,255,0.6)]">
+                                  {format(new Date(startCheckIn.createdAt), 'PPP', { locale: sv })}
+                                </p>
+                              </div>
+                            </div>
+                            {startCheckIn.mondayWeight && (
+                              <div className="text-right">
+                                <p className="text-2xl font-bold text-[#FFD700]">
+                                  {startCheckIn.mondayWeight} kg
+                                </p>
+                                <p className="text-xs text-[rgba(255,255,255,0.6)]">Startvikt</p>
+                              </div>
+                            )}
+                          </div>
+                          <div className="p-6 space-y-4">
+                            {startCheckIn.statusUpdate && (
+                              <div>
+                                <Label className="text-[rgba(255,255,255,0.6)] text-sm">Berättelse</Label>
+                                <p className="text-white mt-1">{startCheckIn.statusUpdate}</p>
+                              </div>
+                            )}
+
+                            {/* Body measurements for start check-in */}
+                            {(startCheckIn.chest || startCheckIn.waist || startCheckIn.hips || startCheckIn.butt || startCheckIn.arms || startCheckIn.thighs || startCheckIn.calves) && (
+                              <div>
+                                <Label className="text-[rgba(255,255,255,0.6)] text-sm mb-2 block">Startmått</Label>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                  {startCheckIn.chest && (
+                                    <div>
+                                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Bröst</p>
+                                      <p className="text-white font-medium">{startCheckIn.chest} cm</p>
+                                    </div>
+                                  )}
+                                  {startCheckIn.waist && (
+                                    <div>
+                                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Midja</p>
+                                      <p className="text-white font-medium">{startCheckIn.waist} cm</p>
+                                    </div>
+                                  )}
+                                  {startCheckIn.hips && (
+                                    <div>
+                                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Höfter</p>
+                                      <p className="text-white font-medium">{startCheckIn.hips} cm</p>
+                                    </div>
+                                  )}
+                                  {startCheckIn.butt && (
+                                    <div>
+                                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Rumpa</p>
+                                      <p className="text-white font-medium">{startCheckIn.butt} cm</p>
+                                    </div>
+                                  )}
+                                  {startCheckIn.arms && (
+                                    <div>
+                                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Armar</p>
+                                      <p className="text-white font-medium">{startCheckIn.arms} cm</p>
+                                    </div>
+                                  )}
+                                  {startCheckIn.thighs && (
+                                    <div>
+                                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Lår</p>
+                                      <p className="text-white font-medium">{startCheckIn.thighs} cm</p>
+                                    </div>
+                                  )}
+                                  {startCheckIn.calves && (
+                                    <div>
+                                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Vader</p>
+                                      <p className="text-white font-medium">{startCheckIn.calves} cm</p>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Photos */}
+                            {(startCheckIn.photoFront || startCheckIn.photoSide || startCheckIn.photoBack) && (
+                              <div>
+                                <Label className="text-[rgba(255,255,255,0.6)] text-sm mb-2 block">Startbilder</Label>
+                                <div className="grid grid-cols-3 gap-4">
+                                  {startCheckIn.photoFront && (
+                                    <div>
+                                      <img
+                                        src={startCheckIn.photoFront}
+                                        alt="Front"
+                                        className="w-full h-auto rounded border-2 border-[rgba(255,215,0,0.3)]"
+                                      />
+                                      <p className="text-center text-xs text-[rgba(255,255,255,0.6)] mt-1">Framsida</p>
+                                    </div>
+                                  )}
+                                  {startCheckIn.photoSide && (
+                                    <div>
+                                      <img
+                                        src={startCheckIn.photoSide}
+                                        alt="Side"
+                                        className="w-full h-auto rounded border-2 border-[rgba(255,215,0,0.3)]"
+                                      />
+                                      <p className="text-center text-xs text-[rgba(255,255,255,0.6)] mt-1">Sida</p>
+                                    </div>
+                                  )}
+                                  {startCheckIn.photoBack && (
+                                    <div>
+                                      <img
+                                        src={startCheckIn.photoBack}
+                                        alt="Back"
+                                        className="w-full h-auto rounded border-2 border-[rgba(255,215,0,0.3)]"
+                                      />
+                                      <p className="text-center text-xs text-[rgba(255,255,255,0.6)] mt-1">Baksida</p>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Regular check-ins */}
+                      {regularCheckIns.map((checkIn: any) => (
                 <div
                   key={checkIn.id}
                   className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] overflow-hidden"
@@ -654,7 +820,12 @@ function ClientJournalContent() {
                     )}
                   </div>
                 </div>
-              ))
+                      ))
+                    }
+                    </>
+                  )
+                })()}
+              </>
             )}
           </TabsContent>
 

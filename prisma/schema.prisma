@@ -628,6 +628,7 @@ model CheckIn {
   id                    String   @id @default(cuid())
   userId                String
   weekNumber            Int?     // Week number in the program
+  isStartCheckIn        Boolean  @default(false) // Marks the initial/start check-in
 
   // Check-in data
   statusUpdate          String?  @db.Text // "Hur har du haft det sedan din senaste uppdatering?"

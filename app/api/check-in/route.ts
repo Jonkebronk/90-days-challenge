@@ -29,6 +29,8 @@ export async function POST(request: NextRequest) {
       photoFront,
       photoSide,
       photoBack,
+      isStartCheckIn,
+      weekNumber,
     } = body
 
     if (!userId) {
@@ -43,6 +45,8 @@ export async function POST(request: NextRequest) {
       data: {
         userId,
         statusUpdate,
+        weekNumber: weekNumber !== undefined ? weekNumber : null,
+        isStartCheckIn: isStartCheckIn || false,
         // Daily weights
         mondayWeight: mondayWeight ? parseFloat(mondayWeight) : null,
         tuesdayWeight: tuesdayWeight ? parseFloat(tuesdayWeight) : null,
@@ -83,16 +87,25 @@ export async function POST(request: NextRequest) {
     if (user?.coachId) {
       // Create check-in summary message
       const summaryLines = []
-      summaryLines.push(`📋 Veckorapport från ${user.name}`)
+      if (isStartCheckIn) {
+        summaryLines.push(`🎯 START CHECK-IN från ${user.name}`)
+        summaryLines.push(`${user.name} har nu påbörjat sin 90-dagars resa!`)
+      } else {
+        summaryLines.push(`📋 Veckorapport från ${user.name}`)
+      }
       summaryLines.push('')
 
       if (statusUpdate) {
-        summaryLines.push(`💬 Status:`)
+        if (isStartCheckIn) {
+          summaryLines.push(`💬 Berättelse om utgångspunkten:`)
+        } else {
+          summaryLines.push(`💬 Status:`)
+        }
         summaryLines.push(statusUpdate)
         summaryLines.push('')
       }
 
-      // Weekly weights summary
+      // Weekly weights summary (or starting weight for start check-in)
       const weights = []
       if (mondayWeight) weights.push(`Mån: ${mondayWeight} kg`)
       if (tuesdayWeight) weights.push(`Tis: ${tuesdayWeight} kg`)
@@ -103,8 +116,12 @@ export async function POST(request: NextRequest) {
       if (sundayWeight) weights.push(`Sön: ${sundayWeight} kg`)
 
       if (weights.length > 0) {
-        summaryLines.push(`⚖️ Vikter för veckan:`)
-        weights.forEach(w => summaryLines.push(w))
+        if (isStartCheckIn) {
+          summaryLines.push(`⚖️ Startvikt: ${mondayWeight} kg`)
+        } else {
+          summaryLines.push(`⚖️ Vikter för veckan:`)
+          weights.forEach(w => summaryLines.push(w))
+        }
         summaryLines.push('')
       }
 
