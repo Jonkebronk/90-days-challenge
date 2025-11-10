@@ -306,35 +306,35 @@ export default function DashboardPage() {
               </div>
             </Link>
 
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center flex-shrink-0">
+            <Link href="/dashboard/check-in" className="flex items-start gap-3 group">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                 <span className="text-white font-bold text-sm">2</span>
               </div>
               <div>
-                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Gör din start-check in</h4>
+                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1 group-hover:text-[#3b82f6] transition-colors">Gör din start-check in</h4>
                 <p className="text-[rgba(255,255,255,0.6)] text-xs">Dokumentera din startvikt och mål</p>
               </div>
-            </div>
+            </Link>
 
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#a855f7] to-[#7c3aed] flex items-center justify-center flex-shrink-0">
+            <Link href="/dashboard/articles" className="flex items-start gap-3 group">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#a855f7] to-[#7c3aed] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                 <span className="text-white font-bold text-sm">3</span>
               </div>
               <div>
-                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Utforska kunskapsbanken</h4>
+                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1 group-hover:text-[#a855f7] transition-colors">Utforska kunskapsbanken</h4>
                 <p className="text-[rgba(255,255,255,0.6)] text-xs">Lär dig grunderna för framgång</p>
               </div>
-            </div>
+            </Link>
 
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FFA500] to-[#ff8800] flex items-center justify-center flex-shrink-0">
+            <Link href="/dashboard/meal-plan" className="flex items-start gap-3 group">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FFA500] to-[#ff8800] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                 <span className="text-white font-bold text-sm">4</span>
               </div>
               <div>
-                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Gå igenom dina planer</h4>
+                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1 group-hover:text-[#FFA500] transition-colors">Gå igenom dina planer</h4>
                 <p className="text-[rgba(255,255,255,0.6)] text-xs">Titta igenom ditt kostschema och din träningsplan</p>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </div>
