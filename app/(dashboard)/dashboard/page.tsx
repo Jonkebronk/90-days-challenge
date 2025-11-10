@@ -311,7 +311,7 @@ export default function DashboardPage() {
                 <span className="text-white font-bold text-sm">2</span>
               </div>
               <div>
-                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Gör din första check-in</h4>
+                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Gör din start-check in</h4>
                 <p className="text-[rgba(255,255,255,0.6)] text-xs">Dokumentera din startvikt och mål</p>
               </div>
             </div>
@@ -331,8 +331,8 @@ export default function DashboardPage() {
                 <span className="text-white font-bold text-sm">4</span>
               </div>
               <div>
-                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Planera dina måltider</h4>
-                <p className="text-[rgba(255,255,255,0.6)] text-xs">Använd recepten för inspiration</p>
+                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Gå igenom dina planer</h4>
+                <p className="text-[rgba(255,255,255,0.6)] text-xs">Titta igenom ditt kostschema och din träningsplan</p>
               </div>
             </div>
           </div>
