@@ -353,12 +353,12 @@ export async function PATCH(request: Request) {
     const guide = await prisma.guideContent.upsert({
       where: { type },
       update: {
-        title: title || undefined,
-        content: content || undefined
+        title: title,
+        content: content
       },
       create: {
         type,
-        title: title || (type === 'meal_plan' ? 'Kostschema Guide' : 'Träningsprogram Guide'),
+        title: title || (type === 'meal_plan' ? 'Kostschema Guide' : type === 'workout' ? 'Träningsprogram Guide' : 'Kom Igång Guide'),
         content: content || ''
       }
     })
