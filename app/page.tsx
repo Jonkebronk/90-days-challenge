@@ -32,6 +32,7 @@ export default function HomePage() {
   const navItems = [
     { name: 'Start', href: '#start' },
     { name: 'Om Programmet', href: '#program' },
+    { name: 'Om mig', href: '/om-mig' },
     { name: 'Ansök', href: '/apply' },
   ]
 
