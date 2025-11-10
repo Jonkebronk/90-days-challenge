@@ -326,15 +326,24 @@ export default function DashboardPage() {
               </div>
             </Link>
 
-            <Link href="/dashboard/meal-plan" className="flex items-start gap-3 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FFA500] to-[#ff8800] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                <span className="text-white font-bold text-sm">4</span>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FFA500] to-[#ff8800] flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold text-sm">4</span>
+                </div>
+                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm">Gå igenom dina planer</h4>
               </div>
-              <div>
-                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1 group-hover:text-[#FFA500] transition-colors">Gå igenom dina planer</h4>
-                <p className="text-[rgba(255,255,255,0.6)] text-xs">Titta igenom ditt kostschema och din träningsplan</p>
+              <div className="flex flex-col gap-2 ml-10">
+                <Link href="/dashboard/meal-plan" className="group flex items-center gap-2">
+                  <Utensils className="w-3.5 h-3.5 text-[#FFA500] group-hover:scale-110 transition-transform" />
+                  <span className="text-xs text-[rgba(255,255,255,0.7)] group-hover:text-[#FFA500] transition-colors">Kostschema</span>
+                </Link>
+                <Link href="/dashboard/workout" className="group flex items-center gap-2">
+                  <Dumbbell className="w-3.5 h-3.5 text-[#FFA500] group-hover:scale-110 transition-transform" />
+                  <span className="text-xs text-[rgba(255,255,255,0.7)] group-hover:text-[#FFA500] transition-colors">Träningsplan</span>
+                </Link>
               </div>
-            </Link>
+            </div>
           </div>
         </div>
       </div>
