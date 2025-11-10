@@ -85,9 +85,9 @@ export default function HomePage() {
       {/* Header Navigation */}
       <header className="relative z-50 bg-[rgba(10,10,10,0.8)] backdrop-blur-lg border-b border-[rgba(255,215,0,0.2)]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-24">
+          <div className="flex items-center justify-between h-20 lg:h-24">
             {/* Logo */}
-            <Link href="/" className="flex flex-row items-center gap-3 lg:gap-4 group">
+            <Link href="/" className="flex flex-row items-center gap-2 lg:gap-4 group flex-shrink-0">
               <div className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center">
                 <Image
                   src="/images/compass-gold.png"
@@ -98,15 +98,15 @@ export default function HomePage() {
                   priority
                 />
               </div>
-              <div className="flex items-center border-l-2 border-[rgba(255,215,0,0.3)] pl-3 lg:pl-4">
-                <span className="font-['Orbitron',sans-serif] text-[10px] lg:text-sm font-semibold tracking-[1.5px] lg:tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent whitespace-nowrap">
+              <div className="hidden xl:flex items-center border-l-2 border-[rgba(255,215,0,0.3)] pl-4">
+                <span className="font-['Orbitron',sans-serif] text-sm font-semibold tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent whitespace-nowrap">
                   DIN VÄGVISARE TILL BÄTTRE HÄLSA
                 </span>
               </div>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
+            <nav className="hidden lg:flex items-center space-x-8">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
@@ -119,16 +119,16 @@ export default function HomePage() {
             </nav>
 
             {/* Login Buttons */}
-            <div className="hidden md:flex items-center space-x-3">
+            <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
               <Link
                 href="/login"
-                className="px-5 py-2.5 text-xs font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]"
+                className="px-4 py-2.5 text-xs font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]"
               >
                 Client Login
               </Link>
               <Link
                 href="/login"
-                className="px-5 py-2.5 text-xs font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]"
+                className="px-4 py-2.5 text-xs font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]"
               >
                 Coach Login
               </Link>
@@ -137,7 +137,7 @@ export default function HomePage() {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-[#FFD700] hover:text-[#FFA500] transition-colors"
+              className="lg:hidden p-2 text-[#FFD700] hover:text-[#FFA500] transition-colors"
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" />
