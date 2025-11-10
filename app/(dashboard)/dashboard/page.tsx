@@ -286,20 +286,29 @@ export default function DashboardPage() {
           </div>
           <Link href="/dashboard/onboarding/guide">
             <Button
-              variant="outline"
-              size="sm"
-              className="bg-transparent border-2 border-[rgba(59,130,246,0.4)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(59,130,246,0.1)] hover:border-[rgba(59,130,246,0.6)] hover:text-white transition-all"
+              size="lg"
+              className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold px-6 py-3 hover:shadow-[0_0_30px_rgba(255,215,0,0.6)] transition-all animate-pulse hover:animate-none"
             >
-              <Info className="w-4 h-4 mr-2" />
-              Läs mer
+              <Info className="w-5 h-5 mr-2" />
+              Läs Introduktion
             </Button>
           </Link>
         </div>
         <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Link href="/dashboard/onboarding/guide" className="flex items-start gap-3 hover:bg-[rgba(255,215,0,0.05)] p-3 rounded-lg transition-all group">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                <span className="text-[#0a0a0a] font-bold text-sm">1</span>
+              </div>
+              <div>
+                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1 group-hover:text-[#FFD700] transition-colors">Läs introduktionen</h4>
+                <p className="text-[rgba(255,255,255,0.6)] text-xs">Viktigt - börja här!</p>
+              </div>
+            </Link>
+
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-sm">1</span>
+                <span className="text-white font-bold text-sm">2</span>
               </div>
               <div>
                 <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Gör din första check-in</h4>
@@ -309,7 +318,7 @@ export default function DashboardPage() {
 
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#a855f7] to-[#7c3aed] flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-sm">2</span>
+                <span className="text-white font-bold text-sm">3</span>
               </div>
               <div>
                 <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Utforska kunskapsbanken</h4>
@@ -319,7 +328,7 @@ export default function DashboardPage() {
 
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FFA500] to-[#ff8800] flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-sm">3</span>
+                <span className="text-white font-bold text-sm">4</span>
               </div>
               <div>
                 <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1">Planera dina måltider</h4>
