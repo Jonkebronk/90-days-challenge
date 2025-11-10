@@ -296,7 +296,7 @@ export default function DashboardPage() {
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Link href="/dashboard/onboarding/guide" className="flex items-start gap-3 hover:bg-[rgba(255,215,0,0.05)] p-3 rounded-lg transition-all group">
+            <Link href="/dashboard/onboarding/guide" className="flex items-start gap-3 group">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                 <span className="text-[#0a0a0a] font-bold text-sm">1</span>
               </div>
