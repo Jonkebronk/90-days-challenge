@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { CountdownTimer } from '@/components/countdown-timer'
-import { Menu, X, Sparkles, ArrowRight } from 'lucide-react'
+import { Menu, X, Sparkles, ArrowRight, Key } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {
@@ -13,10 +13,19 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 export default function HomePage() {
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
   const [inviteCode, setInviteCode] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
 
@@ -47,6 +56,7 @@ export default function HomePage() {
         toast.success('Inbjudningskod verifierad!', {
           description: 'Du omdirigeras till kontoskapande...'
         })
+        setInviteDialogOpen(false)
         // Navigate to setup account with invitation token
         setTimeout(() => {
           router.push(`/setup-account?token=${data.invitationToken}`)
@@ -118,13 +128,62 @@ export default function HomePage() {
               ))}
             </nav>
 
-            {/* Login Buttons */}
+            {/* Login Buttons + Invite Code */}
             <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
+              <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+                <DialogTrigger asChild>
+                  <button className="p-2.5 text-xs font-semibold bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]">
+                    <Key className="w-4 h-4" />
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
+                  <DialogHeader>
+                    <DialogTitle className="font-['Orbitron',sans-serif] text-xl font-bold tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent text-center">
+                      Har du en inbjudningskod?
+                    </DialogTitle>
+                    <DialogDescription className="text-[rgba(255,255,255,0.7)] text-sm text-center">
+                      Om du har fått en exklusiv GOLD-kod av din coach, ange den här för att komma igång direkt
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 pt-4">
+                    <input
+                      type="text"
+                      value={inviteCode}
+                      onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                      onKeyDown={(e) => e.key === 'Enter' && handleVerifyInviteCode()}
+                      placeholder="GOLD-XXXX-XXXX-XXXX"
+                      disabled={isVerifying}
+                      className="w-full px-4 py-3 bg-[rgba(0,0,0,0.5)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg text-[#FFD700] placeholder:text-[rgba(255,215,0,0.3)] text-center font-mono text-sm tracking-[2px] uppercase focus:outline-none focus:border-[#FFD700] focus:shadow-[0_0_20px_rgba(255,215,0,0.3)] transition-all disabled:opacity-50"
+                      maxLength={19}
+                    />
+                    <button
+                      onClick={handleVerifyInviteCode}
+                      disabled={isVerifying || !inviteCode}
+                      className="w-full px-6 py-3 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] rounded-lg font-bold tracking-[1px] uppercase text-sm transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+                    >
+                      {isVerifying ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-[#0a0a0a] border-t-transparent rounded-full animate-spin" />
+                          <span>Verifierar...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Aktivera</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
+                    </button>
+                    <p className="text-[rgba(255,215,0,0.6)] text-xs text-center tracking-[1px]">
+                      💎 Exklusivt för godkända klienter
+                    </p>
+                  </div>
+                </DialogContent>
+              </Dialog>
               <Link
                 href="/login"
                 className="px-4 py-2.5 text-xs font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]"
               >
-                Client Login
+                Klient Login
               </Link>
               <Link
                 href="/login"
@@ -162,13 +221,23 @@ export default function HomePage() {
                   {item.name}
                 </Link>
               ))}
+              <button
+                onClick={() => {
+                  setInviteDialogOpen(true)
+                  setMobileMenuOpen(false)
+                }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-xs font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg"
+              >
+                <Key className="w-4 h-4" />
+                <span>Inbjudningskod</span>
+              </button>
               <div className="grid grid-cols-2 gap-3">
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
                   className="block px-4 py-3 text-center text-xs font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg"
                 >
-                  Client Login
+                  Klient Login
                 </Link>
                 <Link
                   href="/login"
@@ -303,65 +372,6 @@ export default function HomePage() {
             <p className="text-base md:text-lg text-[#FFD700] tracking-[2px] uppercase font-semibold animate-pulse">
               ⚠️ Begränsat antal platser
             </p>
-          </div>
-        </div>
-
-        {/* Invite Code Section */}
-        <div className="mt-16 animate-fadeIn">
-          <div className="relative">
-            {/* Decorative glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.1)] to-transparent blur-xl" />
-
-            <div className="relative bg-[rgba(255,255,255,0.02)] border-2 border-[rgba(255,215,0,0.3)] rounded-2xl p-8 backdrop-blur-[10px] transition-all duration-500 hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.2)]">
-              {/* Icon and title */}
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <Sparkles className="w-6 h-6 text-[#FFD700] animate-pulse" />
-                <h3 className="font-['Orbitron',sans-serif] text-xl md:text-2xl font-bold tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-                  Har du en inbjudningskod?
-                </h3>
-                <Sparkles className="w-6 h-6 text-[#FFD700] animate-pulse" />
-              </div>
-
-              <p className="text-[rgba(255,255,255,0.7)] text-sm md:text-base text-center mb-6 tracking-[1px]">
-                Om du har fått en exklusiv GOLD-kod av din coach, ange den här för att komma igång direkt
-              </p>
-
-              {/* Input and button */}
-              <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                <input
-                  type="text"
-                  value={inviteCode}
-                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                  onKeyDown={(e) => e.key === 'Enter' && handleVerifyInviteCode()}
-                  placeholder="GOLD-XXXX-XXXX-XXXX"
-                  disabled={isVerifying}
-                  className="flex-1 px-4 py-3 bg-[rgba(0,0,0,0.5)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg text-[#FFD700] placeholder:text-[rgba(255,215,0,0.3)] text-center font-mono text-sm tracking-[2px] uppercase focus:outline-none focus:border-[#FFD700] focus:shadow-[0_0_20px_rgba(255,215,0,0.3)] transition-all disabled:opacity-50"
-                  maxLength={19}
-                />
-                <button
-                  onClick={handleVerifyInviteCode}
-                  disabled={isVerifying || !inviteCode}
-                  className="px-6 py-3 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] rounded-lg font-bold tracking-[1px] uppercase text-sm transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 whitespace-nowrap"
-                >
-                  {isVerifying ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-[#0a0a0a] border-t-transparent rounded-full animate-spin" />
-                      <span>Verifierar...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Aktivera</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* Helper text */}
-              <p className="text-[rgba(255,215,0,0.6)] text-xs text-center mt-4 tracking-[1px]">
-                💎 Exklusivt för godkända klienter
-              </p>
-            </div>
           </div>
         </div>
 
