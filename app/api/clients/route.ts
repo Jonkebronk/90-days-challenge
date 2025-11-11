@@ -14,13 +14,30 @@ export async function GET() {
     // Get the current user
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
+      include: {
+        coach: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          }
+        }
+      }
     })
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // Fetch all clients for this coach
+    // If user is a client, return their coach
+    if (user.role === 'client') {
+      return NextResponse.json({
+        clients: [],
+        coach: user.coach
+      })
+    }
+
+    // If user is a coach, fetch all their clients
     const clients = await prisma.user.findMany({
       where: {
         coachId: user.id,
@@ -38,7 +55,7 @@ export async function GET() {
       },
     })
 
-    return NextResponse.json({ clients })
+    return NextResponse.json({ clients, coach: null })
   } catch (error) {
     console.error('Failed to fetch clients:', error)
     return NextResponse.json(
