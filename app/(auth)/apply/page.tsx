@@ -23,7 +23,6 @@ export default function ApplyPage() {
   const [submitted, setSubmitted] = useState(false)
   const [expandedSections, setExpandedSections] = useState({
     personal: true,
-    photos: false,
     training: false,
     nutrition: false,
     lifestyle: false,
@@ -45,11 +44,6 @@ export default function ApplyPage() {
     gender: '',
     height: '',
     currentWeight: '',
-
-    // Current Photos
-    frontPhoto: null as File | null,
-    backPhoto: null as File | null,
-    sidePhoto: null as File | null,
 
     // Training
     currentTraining: '',
@@ -122,18 +116,13 @@ Land: ${formData.country || 'Ej angivet'}
 Längd: ${formData.height || 'Ej angivet'} cm
 Nuvarande vikt: ${formData.currentWeight || 'Ej angivet'} kg
 
-=== AKTUELLA BILDER ===
-Framsida: ${formData.frontPhoto ? formData.frontPhoto.name : 'Ej bifogad'}
-Baksida: ${formData.backPhoto ? formData.backPhoto.name : 'Ej bifogad'}
-Sida: ${formData.sidePhoto ? formData.sidePhoto.name : 'Ej bifogad'}
-
 === TRÄNING ===
 Tränar du idag: ${formData.currentTraining || 'Ej angivet'}
 Träningserfarenhet historiskt: ${formData.trainingBackground || 'Ej angivet'}
 Erfarenhetsnivå: ${formData.trainingExperience || 'Ej angivet'}
 Skador/Begränsningar: ${formData.injuries || 'Ej angivet'}
 
-=== KOSTHÅLLNING ===
+=== KOSTBAKGRUND ===
 Hur äter du idag: ${formData.dietHistory || 'Ej angivet'}
 Matpreferenser: ${formData.foodPreferences || 'Ej angivet'}
 Allergier: ${formData.allergies || 'Ej angivet'}
@@ -165,30 +154,6 @@ Villkor accepterade: ${formData.termsAccepted ? 'Ja' : 'Nej'}
 Signatur: ${formData.signature}
 Datum: ${new Date().toLocaleDateString('sv-SE')}
       `.trim()
-
-      // Convert photos to base64 if uploaded
-      const convertFileToBase64 = (file: File): Promise<string> => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader()
-          reader.readAsDataURL(file)
-          reader.onload = () => resolve(reader.result as string)
-          reader.onerror = (error) => reject(error)
-        })
-      }
-
-      let frontPhotoBase64 = undefined
-      let sidePhotoBase64 = undefined
-      let backPhotoBase64 = undefined
-
-      if (formData.frontPhoto) {
-        frontPhotoBase64 = await convertFileToBase64(formData.frontPhoto)
-      }
-      if (formData.sidePhoto) {
-        sidePhotoBase64 = await convertFileToBase64(formData.sidePhoto)
-      }
-      if (formData.backPhoto) {
-        backPhotoBase64 = await convertFileToBase64(formData.backPhoto)
-      }
 
       // Send application to backend
       const response = await fetch('/api/apply', {
@@ -234,11 +199,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
           whyJoin: formData.whyApply,
           biggestChallenges: formData.challenges,
           previousCoaching: formData.previousCoaching,
-
-          // Photos
-          frontPhoto: frontPhotoBase64,
-          sidePhoto: sidePhotoBase64,
-          backPhoto: backPhotoBase64,
         })
       })
 
@@ -558,7 +518,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
 
           {/* 4. Nutrition */}
           <div className="space-y-4">
-            <SectionHeader title="Kosthållning" section="nutrition" isExpanded={expandedSections.nutrition} />
+            <SectionHeader title="Kostbakgrund" section="nutrition" isExpanded={expandedSections.nutrition} />
 
             {expandedSections.nutrition && (
               <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
@@ -678,241 +638,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                     className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
                     placeholder="Har du något att tillägga?"
                   />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* 7. Current Photos */}
-          <div className="space-y-4">
-            <SectionHeader
-              title="Aktuella Bilder"
-              section="photos"
-              isExpanded={expandedSections.photos}
-            />
-            {expandedSections.photos && (
-              <div className="space-y-6 bg-[rgba(0,0,0,0.2)] p-6 rounded-lg border border-[rgba(255,215,0,0.2)]">
-                {/* Header with info */}
-                <div className="flex items-start gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold flex-shrink-0">
-                    📸
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold mb-2 text-white">Uppdatera formbilder</h3>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                      Ta bild där hela kroppen syns från huvud till fötter, se exempelbilder. Använd gärna self-timer på telefonen.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Front Photo */}
-                <div className="space-y-4">
-                  <Label className="text-[#FFD700] flex items-center gap-2">
-                    <span>🏃</span> Framsida
-                  </Label>
-
-                  {/* Example images */}
-                  <div className="flex justify-center gap-4 mb-4">
-                    <div className="text-center">
-                      <div className="w-24 h-32 bg-[rgba(0,0,0,0.3)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg overflow-hidden">
-                        <div className="w-full h-full flex items-center justify-center text-[rgba(255,255,255,0.3)]">
-                          <span className="text-4xl">👤</span>
-                        </div>
-                      </div>
-                      <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">Kvinna</p>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-24 h-32 bg-[rgba(0,0,0,0.3)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg overflow-hidden">
-                        <div className="w-full h-full flex items-center justify-center text-[rgba(255,255,255,0.3)]">
-                          <span className="text-4xl">👤</span>
-                        </div>
-                      </div>
-                      <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">Man</p>
-                    </div>
-                  </div>
-
-                  {/* Upload box */}
-                  <div className="border-2 border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-6 text-center hover:border-[rgba(255,215,0,0.5)] transition-colors">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) {
-                          setFormData({ ...formData, frontPhoto: file })
-                        }
-                      }}
-                      className="hidden"
-                      id="frontPhoto"
-                    />
-                    <label htmlFor="frontPhoto" className="cursor-pointer block">
-                      {formData.frontPhoto ? (
-                        <div className="space-y-2">
-                          <img
-                            src={URL.createObjectURL(formData.frontPhoto)}
-                            alt="Front"
-                            className="w-full max-h-48 object-contain rounded-lg mx-auto"
-                          />
-                          <p className="text-xs text-[rgba(255,255,255,0.6)]">{formData.frontPhoto.name}</p>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setFormData({ ...formData, frontPhoto: null })
-                            }}
-                            className="text-xs text-red-400 hover:text-red-300"
-                          >
-                            Ta bort
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="py-4">
-                          <Camera className="w-10 h-10 mx-auto mb-2 text-[rgba(255,215,0,0.5)]" />
-                          <p className="text-sm text-[rgba(255,255,255,0.6)]">Klicka för att ladda upp</p>
-                        </div>
-                      )}
-                    </label>
-                  </div>
-                </div>
-
-                {/* Back Photo */}
-                <div className="space-y-4">
-                  <Label className="text-[#FFD700] flex items-center gap-2">
-                    <span>🔄</span> Baksida
-                  </Label>
-
-                  {/* Example images */}
-                  <div className="flex justify-center gap-4 mb-4">
-                    <div className="text-center">
-                      <div className="w-24 h-32 bg-[rgba(0,0,0,0.3)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg overflow-hidden">
-                        <div className="w-full h-full flex items-center justify-center text-[rgba(255,255,255,0.3)]">
-                          <span className="text-4xl">👤</span>
-                        </div>
-                      </div>
-                      <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">Kvinna</p>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-24 h-32 bg-[rgba(0,0,0,0.3)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg overflow-hidden">
-                        <div className="w-full h-full flex items-center justify-center text-[rgba(255,255,255,0.3)]">
-                          <span className="text-4xl">👤</span>
-                        </div>
-                      </div>
-                      <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">Man</p>
-                    </div>
-                  </div>
-
-                  {/* Upload box */}
-                  <div className="border-2 border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-6 text-center hover:border-[rgba(255,215,0,0.5)] transition-colors">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) {
-                          setFormData({ ...formData, backPhoto: file })
-                        }
-                      }}
-                      className="hidden"
-                      id="backPhoto"
-                    />
-                    <label htmlFor="backPhoto" className="cursor-pointer block">
-                      {formData.backPhoto ? (
-                        <div className="space-y-2">
-                          <img
-                            src={URL.createObjectURL(formData.backPhoto)}
-                            alt="Back"
-                            className="w-full max-h-48 object-contain rounded-lg mx-auto"
-                          />
-                          <p className="text-xs text-[rgba(255,255,255,0.6)]">{formData.backPhoto.name}</p>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setFormData({ ...formData, backPhoto: null })
-                            }}
-                            className="text-xs text-red-400 hover:text-red-300"
-                          >
-                            Ta bort
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="py-4">
-                          <Camera className="w-10 h-10 mx-auto mb-2 text-[rgba(255,215,0,0.5)]" />
-                          <p className="text-sm text-[rgba(255,255,255,0.6)]">Klicka för att ladda upp</p>
-                        </div>
-                      )}
-                    </label>
-                  </div>
-                </div>
-
-                {/* Side Photo */}
-                <div className="space-y-4">
-                  <Label className="text-[#FFD700] flex items-center gap-2">
-                    <span>➡️</span> Sida
-                  </Label>
-
-                  {/* Example images */}
-                  <div className="flex justify-center gap-4 mb-4">
-                    <div className="text-center">
-                      <div className="w-24 h-32 bg-[rgba(0,0,0,0.3)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg overflow-hidden">
-                        <div className="w-full h-full flex items-center justify-center text-[rgba(255,255,255,0.3)]">
-                          <span className="text-4xl">👤</span>
-                        </div>
-                      </div>
-                      <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">Kvinna</p>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-24 h-32 bg-[rgba(0,0,0,0.3)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg overflow-hidden">
-                        <div className="w-full h-full flex items-center justify-center text-[rgba(255,255,255,0.3)]">
-                          <span className="text-4xl">👤</span>
-                        </div>
-                      </div>
-                      <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">Man</p>
-                    </div>
-                  </div>
-
-                  {/* Upload box */}
-                  <div className="border-2 border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-6 text-center hover:border-[rgba(255,215,0,0.5)] transition-colors">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) {
-                          setFormData({ ...formData, sidePhoto: file })
-                        }
-                      }}
-                      className="hidden"
-                      id="sidePhoto"
-                    />
-                    <label htmlFor="sidePhoto" className="cursor-pointer block">
-                      {formData.sidePhoto ? (
-                        <div className="space-y-2">
-                          <img
-                            src={URL.createObjectURL(formData.sidePhoto)}
-                            alt="Side"
-                            className="w-full max-h-48 object-contain rounded-lg mx-auto"
-                          />
-                          <p className="text-xs text-[rgba(255,255,255,0.6)]">{formData.sidePhoto.name}</p>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setFormData({ ...formData, sidePhoto: null })
-                            }}
-                            className="text-xs text-red-400 hover:text-red-300"
-                          >
-                            Ta bort
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="py-4">
-                          <Camera className="w-10 h-10 mx-auto mb-2 text-[rgba(255,215,0,0.5)]" />
-                          <p className="text-sm text-[rgba(255,255,255,0.6)]">Klicka för att ladda upp</p>
-                        </div>
-                      )}
-                    </label>
-                  </div>
                 </div>
               </div>
             )}
