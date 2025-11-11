@@ -13,7 +13,50 @@ export async function GET() {
 
     const userId = (session.user as any).id
 
-    // Fetch meal plan for the user
+    // First, check for assigned meal plan template
+    const assignment = await prisma.mealPlanTemplateAssignment.findFirst({
+      where: {
+        userId,
+        active: true
+      },
+      include: {
+        template: {
+          include: {
+            meals: {
+              include: {
+                options: {
+                  include: {
+                    recipe: {
+                      select: {
+                        id: true,
+                        title: true,
+                        coverImage: true,
+                        caloriesPerServing: true,
+                        proteinPerServing: true,
+                        carbsPerServing: true,
+                        fatPerServing: true,
+                      }
+                    }
+                  },
+                  orderBy: { orderIndex: 'asc' }
+                }
+              },
+              orderBy: { orderIndex: 'asc' }
+            }
+          }
+        }
+      }
+    })
+
+    // If user has an assigned template, return it in meal plan format
+    if (assignment) {
+      return NextResponse.json({
+        mealPlan: assignment.template,
+        isTemplate: true
+      })
+    }
+
+    // Otherwise, fetch the old-style meal plan for the user
     const mealPlan = await prisma.mealPlan.findUnique({
       where: { userId },
       include: {
@@ -40,7 +83,7 @@ export async function GET() {
       }
     })
 
-    return NextResponse.json({ mealPlan })
+    return NextResponse.json({ mealPlan, isTemplate: false })
   } catch (error) {
     console.error('Error fetching meal plan:', error)
     return NextResponse.json(
