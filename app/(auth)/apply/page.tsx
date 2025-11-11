@@ -121,7 +121,7 @@ Baksida: ${formData.backPhoto ? formData.backPhoto.name : 'Ej bifogad'}
 Sida: ${formData.sidePhoto ? formData.sidePhoto.name : 'Ej bifogad'}
 
 === TRÄNING ===
-Nuvarande träning: ${formData.currentTraining || 'Ej angivet'}
+Träningshistorik: ${formData.currentTraining || 'Ej angivet'}
 Erfarenhet: ${formData.trainingExperience || 'Ej angivet'}
 Skador/Begränsningar: ${formData.injuries || 'Ej angivet'}
 
@@ -506,12 +506,12 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
             {expandedSections.training && (
               <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
                 <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Nuvarande träning</Label>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Träningshistorik och om du tränar nu?</Label>
                   <Textarea
                     value={formData.currentTraining}
                     onChange={(e) => setFormData({ ...formData, currentTraining: e.target.value })}
                     className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
-                    placeholder="Beskriv din nuvarande träningsrutin (t.ex. 'Gym 3x/vecka, fokus på styrketräning')"
+                    placeholder="Berätta om din träningshistorik och om du tränar just nu..."
                   />
                 </div>
 
@@ -613,7 +613,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                     value={formData.lifestyle}
                     onChange={(e) => setFormData({ ...formData, lifestyle: e.target.value })}
                     className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
-                    placeholder="Beskriv din vardag, fritidsintressen, sociala liv, etc."
+                    placeholder="Ta mig igenom en dag, från när du vaknar till när du går och lägger dig. Hur ser den ut för dig?"
                   />
                 </div>
               </div>
