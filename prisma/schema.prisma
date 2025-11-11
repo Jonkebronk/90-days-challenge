@@ -686,6 +686,7 @@ model Lead {
 
   // Training
   currentTraining     String?  @db.Text
+  trainingBackground  String?  @db.Text
   trainingExperience  String?  @db.Text
   trainingGoal        String?  @db.Text
   injuries            String?  @db.Text
@@ -694,6 +695,7 @@ model Lead {
 
   // Nutrition
   dietHistory         String?  @db.Text
+  foodPreferences     String?  @db.Text
   macroExperience     String?  @db.Text
   digestionIssues     String?  @db.Text
   allergies           String?  @db.Text
@@ -707,6 +709,12 @@ model Lead {
   sleepHours          String?  @db.Text
   occupation          String?  @db.Text
   lifestyle           String?  @db.Text
+
+  // Medical
+  medicalConditions   String?  @db.Text
+  surgeries           String?  @db.Text
+  medications         String?  @db.Text
+  other               String?  @db.Text
 
   // Motivation
   whyJoin             String?  @db.Text

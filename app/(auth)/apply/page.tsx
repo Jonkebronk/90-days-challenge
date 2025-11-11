@@ -27,6 +27,7 @@ export default function ApplyPage() {
     training: false,
     nutrition: false,
     lifestyle: false,
+    medical: false,
     motivation: false,
     agreement: false
   })
@@ -53,10 +54,12 @@ export default function ApplyPage() {
     // Training
     currentTraining: '',
     trainingExperience: '',
+    trainingBackground: '',
     injuries: '',
 
     // Nutrition
     dietHistory: '',
+    foodPreferences: '',
     allergies: '',
     supplements: '',
     previousCoaching: '',
@@ -64,6 +67,12 @@ export default function ApplyPage() {
     // Lifestyle
     occupation: '',
     lifestyle: '',
+
+    // Medical
+    medicalConditions: '',
+    surgeries: '',
+    medications: '',
+    other: '',
 
     // Motivation
     whyApply: '',
@@ -121,12 +130,14 @@ Baksida: ${formData.backPhoto ? formData.backPhoto.name : 'Ej bifogad'}
 Sida: ${formData.sidePhoto ? formData.sidePhoto.name : 'Ej bifogad'}
 
 === TRÄNING ===
-Träningshistorik: ${formData.currentTraining || 'Ej angivet'}
-Erfarenhet: ${formData.trainingExperience || 'Ej angivet'}
+Tränar du idag: ${formData.currentTraining || 'Ej angivet'}
+Träningserfarenhet historiskt: ${formData.trainingBackground || 'Ej angivet'}
+Erfarenhetsnivå: ${formData.trainingExperience || 'Ej angivet'}
 Skador/Begränsningar: ${formData.injuries || 'Ej angivet'}
 
-=== NÄRING ===
-Kost historik: ${formData.dietHistory || 'Ej angivet'}
+=== KOSTHÅLLNING ===
+Hur äter du idag: ${formData.dietHistory || 'Ej angivet'}
+Matpreferenser: ${formData.foodPreferences || 'Ej angivet'}
 Allergier: ${formData.allergies || 'Ej angivet'}
 Kosttillskott: ${formData.supplements || 'Ej angivet'}
 Tidigare coaching: ${formData.previousCoaching || 'Ej angivet'}
@@ -134,6 +145,12 @@ Tidigare coaching: ${formData.previousCoaching || 'Ej angivet'}
 === LIVSSTIL ===
 Yrke: ${formData.occupation || 'Ej angivet'}
 Livsstil: ${formData.lifestyle || 'Ej angivet'}
+
+=== MEDICINSK BAKGRUND ===
+Sjukdomar/problem: ${formData.medicalConditions || 'Ej angivet'}
+Operationer: ${formData.surgeries || 'Ej angivet'}
+Mediciner: ${formData.medications || 'Ej angivet'}
+Övrigt: ${formData.other || 'Ej angivet'}
 
 === MOTIVATION ===
 Varför ansöker du?
@@ -198,11 +215,13 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
 
           // Training
           currentTraining: formData.currentTraining,
+          trainingBackground: formData.trainingBackground,
           trainingExperience: formData.trainingExperience,
           injuries: formData.injuries,
 
           // Nutrition
           dietHistory: formData.dietHistory,
+          foodPreferences: formData.foodPreferences,
           allergies: formData.allergies,
           supplements: formData.supplements,
           previousCoaching: formData.previousCoaching,
@@ -210,6 +229,12 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
           // Lifestyle
           occupation: formData.occupation,
           lifestyle: formData.lifestyle,
+
+          // Medical
+          medicalConditions: formData.medicalConditions,
+          surgeries: formData.surgeries,
+          medications: formData.medications,
+          other: formData.other,
 
           // Motivation
           whyJoin: formData.whyApply,
@@ -501,22 +526,32 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
 
           {/* 3. Training */}
           <div className="space-y-4">
-            <SectionHeader title="Träningsprogram" section="training" isExpanded={expandedSections.training} />
+            <SectionHeader title="Träningsbakgrund" section="training" isExpanded={expandedSections.training} />
 
             {expandedSections.training && (
               <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
                 <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Träningshistorik och om du tränar nu?</Label>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Tränar du idag?</Label>
                   <Textarea
                     value={formData.currentTraining}
                     onChange={(e) => setFormData({ ...formData, currentTraining: e.target.value })}
                     className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
-                    placeholder="Berätta om din träningshistorik och om du tränar just nu..."
+                    placeholder="Om du gör det, beskriv vad du gör, gärna så detaljerat som möjligt"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Träningserfarenhet</Label>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Träningserfarenhet historiskt</Label>
+                  <Textarea
+                    value={formData.trainingBackground}
+                    onChange={(e) => setFormData({ ...formData, trainingBackground: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
+                    placeholder="Vad har du för träningserfarenhet historiskt?"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Träningserfarenhetsnivå</Label>
                   <Select value={formData.trainingExperience} onValueChange={(value) => setFormData({ ...formData, trainingExperience: value })}>
                     <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
                       <SelectValue placeholder="Välj din erfarenhetsnivå" />
@@ -544,17 +579,27 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
 
           {/* 4. Nutrition */}
           <div className="space-y-4">
-            <SectionHeader title="Näring" section="nutrition" isExpanded={expandedSections.nutrition} />
+            <SectionHeader title="Kosthållning" section="nutrition" isExpanded={expandedSections.nutrition} />
 
             {expandedSections.nutrition && (
               <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
                 <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Kost historik</Label>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Hur äter du idag?</Label>
                   <Textarea
                     value={formData.dietHistory}
                     onChange={(e) => setFormData({ ...formData, dietHistory: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[120px]"
+                    placeholder="Beskriv en vanlig dag i ditt liv i matväg, gärna så detaljerat som möjligt"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Matpreferenser</Label>
+                  <Textarea
+                    value={formData.foodPreferences}
+                    onChange={(e) => setFormData({ ...formData, foodPreferences: e.target.value })}
                     className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
-                    placeholder="Beskriv dina tidigare erfarenheter av kostförändringar, dieter du provat, etc."
+                    placeholder="Har du några särskilda matpreferenser? Till exempelvis mat som du gillar mer eller mindre?"
                   />
                 </div>
 
@@ -574,7 +619,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                     value={formData.supplements}
                     onChange={(e) => setFormData({ ...formData, supplements: e.target.value })}
                     className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Vilka kosttillskott tar du för närvarande?"
+                    placeholder="Vill du ta kosttillskott? Proteinpulver främst, vi går igenom tillskott mer vid uppstart."
                   />
                 </div>
 
@@ -620,7 +665,56 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
             )}
           </div>
 
-          {/* 6. Current Photos */}
+          {/* 6. Medical Background */}
+          <div className="space-y-4">
+            <SectionHeader title="Medicinsk bakgrund" section="medical" isExpanded={expandedSections.medical} />
+
+            {expandedSections.medical && (
+              <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Sjukdomar eller hälsoproblem</Label>
+                  <Textarea
+                    value={formData.medicalConditions}
+                    onChange={(e) => setFormData({ ...formData, medicalConditions: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                    placeholder="Har du några sjukdomar eller andra problem jag behöver känna till?"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Operationer</Label>
+                  <Textarea
+                    value={formData.surgeries}
+                    onChange={(e) => setFormData({ ...formData, surgeries: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                    placeholder="Har du genomgått några operationer som jag bör känna till?"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Mediciner</Label>
+                  <Textarea
+                    value={formData.medications}
+                    onChange={(e) => setFormData({ ...formData, medications: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                    placeholder="Använder du några mediciner jag bör känna till?"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Övrigt</Label>
+                  <Textarea
+                    value={formData.other}
+                    onChange={(e) => setFormData({ ...formData, other: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                    placeholder="Har du något att tillägga?"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 7. Current Photos */}
           <div className="space-y-4">
             <SectionHeader
               title="Aktuella Bilder"
