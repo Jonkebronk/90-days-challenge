@@ -397,7 +397,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
 
           {/* 2. Motivation & Commitment */}
           <div className="space-y-4">
-            <SectionHeader title="Motivation & Åtagande" section="motivation" isExpanded={expandedSections.motivation} />
+            <SectionHeader title="Målsättning" section="motivation" isExpanded={expandedSections.motivation} />
 
             {expandedSections.motivation && (
               <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
