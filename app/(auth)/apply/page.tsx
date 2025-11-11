@@ -26,7 +26,6 @@ export default function ApplyPage() {
     training: false,
     nutrition: false,
     lifestyle: false,
-    medical: false,
     motivation: false,
     agreement: false
   })
@@ -58,12 +57,6 @@ export default function ApplyPage() {
 
     // Lifestyle
     lifestyle: '',
-
-    // Medical
-    medicalConditions: '',
-    surgeries: '',
-    medications: '',
-    other: '',
 
     // Motivation
     whyApply: '',
@@ -126,12 +119,6 @@ Allergier: ${formData.allergies || 'Ej angivet'}
 === LIVSSTIL ===
 Livsstil: ${formData.lifestyle || 'Ej angivet'}
 
-=== MEDICINSK BAKGRUND ===
-Sjukdomar/problem: ${formData.medicalConditions || 'Ej angivet'}
-Operationer: ${formData.surgeries || 'Ej angivet'}
-Mediciner: ${formData.medications || 'Ej angivet'}
-Övrigt: ${formData.other || 'Ej angivet'}
-
 === MOTIVATION ===
 Målsättningar:
 ${formData.whyApply || 'Ej angivet'}
@@ -178,12 +165,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
 
           // Lifestyle
           lifestyle: formData.lifestyle,
-
-          // Medical
-          medicalConditions: formData.medicalConditions,
-          surgeries: formData.surgeries,
-          medications: formData.medications,
-          other: formData.other,
 
           // Motivation
           whyJoin: formData.whyApply,
@@ -480,12 +461,12 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                 </div>
 
                 <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Skador eller begränsningar</Label>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Skador/Begränsningar</Label>
                   <Textarea
                     value={formData.injuries}
                     onChange={(e) => setFormData({ ...formData, injuries: e.target.value })}
                     className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Eventuella skador, smärtor eller fysiska begränsningar vi bör veta om"
+                    placeholder="Eventuella skador, smärtor eller andra begränsningar vi bör veta om"
                   />
                 </div>
               </div>
@@ -550,56 +531,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
             )}
           </div>
 
-          {/* 6. Medical Background */}
-          <div className="space-y-4">
-            <SectionHeader title="Medicinsk bakgrund" section="medical" isExpanded={expandedSections.medical} />
-
-            {expandedSections.medical && (
-              <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Sjukdomar eller hälsoproblem</Label>
-                  <Textarea
-                    value={formData.medicalConditions}
-                    onChange={(e) => setFormData({ ...formData, medicalConditions: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Har du några sjukdomar eller andra problem jag behöver känna till?"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Operationer</Label>
-                  <Textarea
-                    value={formData.surgeries}
-                    onChange={(e) => setFormData({ ...formData, surgeries: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Har du genomgått några operationer som jag bör känna till?"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Mediciner</Label>
-                  <Textarea
-                    value={formData.medications}
-                    onChange={(e) => setFormData({ ...formData, medications: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Använder du några mediciner jag bör känna till?"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Övrigt</Label>
-                  <Textarea
-                    value={formData.other}
-                    onChange={(e) => setFormData({ ...formData, other: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Har du något att tillägga?"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* 7. Customer Agreement */}
+          {/* 6. Customer Agreement */}
           <div className="space-y-4">
             <SectionHeader
               title="Kundavtal & Villkor"
