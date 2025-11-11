@@ -284,31 +284,31 @@ export default function HomePage() {
               <ul className="space-y-3 text-left">
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
-                  <span>Du som vill gå ner 5-15 kg på 90 dagar med beprövade metoder</span>
+                  <span>Du som vill gå ner i vikt under 90 dagar med beprövade metoder</span>
                 </li>
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
-                  <span>Du som är redo att följa en strukturerad plan och lyssna på coaching</span>
+                  <span>Du som är redo att följa en strukturerad plan och lyssna på professionell coachning</span>
                 </li>
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
-                  <span>Du som vill ha personlig coaching och stöd genom hela resan</span>
+                  <span>Du som vill ha personlig coaching och stöd genom hela resan med en dedikerad coach</span>
                 </li>
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
-                  <span>Du som är villig att investera i din hälsa och transformation</span>
+                  <span>Du kan träna 4 gånger i veckan på gym</span>
                 </li>
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
-                  <span>Du som vill lära dig hållbara vanor för livet, inte bara en quick fix</span>
+                  <span>Du som vill lära dig hållbara vanor för livet</span>
                 </li>
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
-                  <span>Du som är motiverad att checka in varje vecka och följa upp din progress</span>
+                  <span>Du som är motiverad att checka in varje vecka och följa upp din progress systematiskt</span>
                 </li>
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
-                  <span>Du som vill ha tillgång till träningsprogram, recept och kostplaner</span>
+                  <span>Du som vill ha tillgång till träningsprogram, kostschemat, verktyg och kunskap i en och samma plattform</span>
                 </li>
               </ul>
             </div>
@@ -321,27 +321,19 @@ export default function HomePage() {
               <ul className="space-y-3 text-left">
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
-                  <span>Du som letar efter en &ldquo;magisk piller&rdquo; utan att lägga in arbetet</span>
+                  <span>Du som inte är redo att göra livsstilsförändringar och följa ett strukturerat upplägg</span>
                 </li>
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
-                  <span>Du som inte är redo att göra förändringar i din livsstil</span>
+                  <span>Du som inte är villig att investera tid, energi och pengar i din hälsotransformation</span>
                 </li>
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
-                  <span>Du som inte kan följa en plan och vill &ldquo;göra på ditt sätt&rdquo;</span>
+                  <span>Du som söker extrema dieter eller andra ohållbara metoder för snabba resultat</span>
                 </li>
                 <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
                   <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
-                  <span>Du som inte är villig att investera tid och pengar i din hälsa</span>
-                </li>
-                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
-                  <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
-                  <span>Du som söker extrema crash-dieter eller ohållbara metoder</span>
-                </li>
-                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
-                  <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
-                  <span>Du som har allvarliga medicinska tillstånd utan läkarkonsultation</span>
+                  <span>De som &ldquo;vet bäst själv&rdquo;</span>
                 </li>
               </ul>
             </div>
