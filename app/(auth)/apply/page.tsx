@@ -47,7 +47,6 @@ export default function ApplyPage() {
 
     // Training
     currentTraining: '',
-    trainingExperience: '',
     trainingBackground: '',
     injuries: '',
 
@@ -55,7 +54,6 @@ export default function ApplyPage() {
     dietHistory: '',
     foodPreferences: '',
     allergies: '',
-    supplements: '',
     previousCoaching: '',
 
     // Lifestyle
@@ -118,15 +116,12 @@ Nuvarande vikt: ${formData.currentWeight || 'Ej angivet'} kg
 === TRÄNING ===
 Tränar du idag: ${formData.currentTraining || 'Ej angivet'}
 Träningserfarenhet historiskt: ${formData.trainingBackground || 'Ej angivet'}
-Erfarenhetsnivå: ${formData.trainingExperience || 'Ej angivet'}
 Skador/Begränsningar: ${formData.injuries || 'Ej angivet'}
 
 === KOSTBAKGRUND ===
 Hur äter du idag: ${formData.dietHistory || 'Ej angivet'}
 Matpreferenser: ${formData.foodPreferences || 'Ej angivet'}
 Allergier: ${formData.allergies || 'Ej angivet'}
-Kosttillskott: ${formData.supplements || 'Ej angivet'}
-Tidigare coaching: ${formData.previousCoaching || 'Ej angivet'}
 
 === LIVSSTIL ===
 Livsstil: ${formData.lifestyle || 'Ej angivet'}
@@ -174,14 +169,12 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
           // Training
           currentTraining: formData.currentTraining,
           trainingBackground: formData.trainingBackground,
-          trainingExperience: formData.trainingExperience,
           injuries: formData.injuries,
 
           // Nutrition
           dietHistory: formData.dietHistory,
           foodPreferences: formData.foodPreferences,
           allergies: formData.allergies,
-          supplements: formData.supplements,
 
           // Lifestyle
           lifestyle: formData.lifestyle,
@@ -487,20 +480,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                 </div>
 
                 <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Träningserfarenhetsnivå</Label>
-                  <Select value={formData.trainingExperience} onValueChange={(value) => setFormData({ ...formData, trainingExperience: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                      <SelectValue placeholder="Välj din erfarenhetsnivå" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="beginner">Nybörjare, mindre än ett år</SelectItem>
-                      <SelectItem value="intermediate">Intermediate 1-3 års styrketräning</SelectItem>
-                      <SelectItem value="advanced">Advanced 4+ år</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
                   <Label className="text-[rgba(255,255,255,0.8)]">Skador eller begränsningar</Label>
                   <Textarea
                     value={formData.injuries}
@@ -546,16 +525,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                     onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
                     className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
                     placeholder="T.ex. gluten, laktos, nötter"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Kosttillskott</Label>
-                  <Textarea
-                    value={formData.supplements}
-                    onChange={(e) => setFormData({ ...formData, supplements: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Vill du ta kosttillskott? Proteinpulver främst, vi går igenom tillskott mer vid uppstart."
                   />
                 </div>
               </div>
