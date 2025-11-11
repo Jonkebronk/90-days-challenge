@@ -48,10 +48,56 @@ export async function GET() {
       }
     })
 
-    // If user has an assigned template, return it in meal plan format
+    // If user has an assigned template, transform it to meal plan format
     if (assignment) {
+      const template = assignment.template
+
+      // Transform template structure to match old MealPlan structure
+      const transformedMealPlan = {
+        id: template.id,
+        name: template.name,
+        totalProtein: template.targetProtein,
+        totalFat: template.targetFat,
+        totalCarbs: template.targetCarbs,
+        totalCalories: template.targetCalories,
+        preWorkoutProtein: null,
+        preWorkoutFat: null,
+        preWorkoutCarbs: null,
+        preWorkoutCalories: null,
+        postWorkoutProtein: null,
+        postWorkoutFat: null,
+        postWorkoutCarbs: null,
+        postWorkoutCalories: null,
+        // Transform template meals to old meal structure
+        meals: template.meals.map((meal, index) => ({
+          id: meal.id,
+          mealNumber: index + 1,
+          name: meal.name,
+          totalProtein: meal.targetProtein,
+          totalFat: meal.targetFat,
+          totalCarbs: meal.targetCarbs,
+          totalCalories: meal.targetCalories,
+          // Transform options to items
+          items: meal.options.map((option, optIndex) => ({
+            id: option.id,
+            customName: option.recipe?.title || option.customName || 'Alternativ',
+            amountG: 0,
+            protein: option.recipe?.proteinPerServing || null,
+            fat: option.recipe?.fatPerServing || null,
+            carbs: option.recipe?.carbsPerServing || null,
+            calories: option.recipe?.caloriesPerServing || null,
+            isSupplement: false,
+            supplementBadge: null,
+            notes: option.notes,
+            orderIndex: optIndex,
+            foodItem: null
+          }))
+        })),
+        supplementItems: [] // Templates don't have supplements
+      }
+
       return NextResponse.json({
-        mealPlan: assignment.template,
+        mealPlan: transformedMealPlan,
         isTemplate: true
       })
     }
