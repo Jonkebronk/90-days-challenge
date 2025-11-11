@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Utensils, Dumbbell, Sparkles, Info, Apple } from 'lucide-react'
+import { Utensils, Dumbbell, Sparkles, Info, Apple, Lightbulb } from 'lucide-react'
 
 interface MealPlanItem {
   id: string
@@ -171,6 +171,14 @@ export default function MealPlanPage() {
           >
             <Apple className="w-4 h-4 mr-2" />
             Livsmedelsguide
+          </Button>
+          <Button
+            onClick={() => router.push('/dashboard/meal-plan/nutrition-tips')}
+            variant="outline"
+            className="bg-transparent border-2 border-[rgba(245,158,11,0.4)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(245,158,11,0.1)] hover:border-[rgba(245,158,11,0.6)] hover:text-white transition-all"
+          >
+            <Lightbulb className="w-4 h-4 mr-2" />
+            Generella råd för kosten
           </Button>
         </div>
       </div>

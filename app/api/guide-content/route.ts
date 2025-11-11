@@ -174,6 +174,43 @@ En omfattande guide för att hjälpa dig göra smarta matval och förstå närin
 - Långvarig mättnadskänsla
 - Perfekt till frukost`
 
+const DEFAULT_NUTRITION_TIPS_CONTENT = `# Generella råd för kosten
+
+Här hittar du viktiga tips och råd för att lyckas med ditt kostschema.
+
+## Grundläggande principer
+
+### Konsistens är nyckeln
+- Följ ditt kostschema så gott du kan
+- En dålig måltid förstör inte dina resultat
+- Fokusera på veckoresultatet, inte enskilda dagar
+
+### Förberedelse är allt
+- Planera dina måltider i förväg
+- Handla för hela veckan
+- Meal prep 2-3 dagar i taget
+- Ha alltid snacks tillgängliga
+
+## Praktiska tips
+
+### Vid hungerkänslor
+- Drick ett stort glas vatten först
+- Vänta 15-20 minuter
+- Om du fortfarande är hungrig - ät extra grönsaker
+- Hungerkänslor är normala under en diet
+
+### Vid social eating
+- Planera för restaurangbesök
+- Välj proteinkälla + grönsaker + kolhydrater
+- Skatta portioner så gott du kan
+- Njut av måltiden utan dåligt samvete
+
+### Vätskeintag
+- Drick 2-3 liter vatten per dag
+- Mer vid träning och varmt väder
+- Kaffe och te räknas
+- Begränsa sötade drycker`
+
 const DEFAULT_ONBOARDING_CONTENT = `# Välkommen till 90-Dagars Challenge!
 
 Grattis till att du har tagit steget mot en hälsosammare livsstil! Detta är början på din transformation.
@@ -305,6 +342,8 @@ export async function GET(request: Request) {
           ? DEFAULT_WORKOUT_CONTENT
           : type === 'food_guide'
           ? DEFAULT_FOOD_GUIDE_CONTENT
+          : type === 'nutrition_tips'
+          ? DEFAULT_NUTRITION_TIPS_CONTENT
           : DEFAULT_ONBOARDING_CONTENT
         const defaultTitle = type === 'meal_plan'
           ? 'Kostschema Guide'
@@ -312,6 +351,8 @@ export async function GET(request: Request) {
           ? 'Träningsprogram Guide'
           : type === 'food_guide'
           ? 'Livsmedelsguide'
+          : type === 'nutrition_tips'
+          ? 'Generella råd för kosten'
           : 'Kom Igång Guide'
 
         guide = await prisma.guideContent.create({
@@ -354,6 +395,11 @@ export async function GET(request: Request) {
             type: 'food_guide',
             title: 'Livsmedelsguide',
             content: DEFAULT_FOOD_GUIDE_CONTENT
+          },
+          {
+            type: 'nutrition_tips',
+            title: 'Generella råd för kosten',
+            content: DEFAULT_NUTRITION_TIPS_CONTENT
           }
         ]
       })
@@ -396,7 +442,7 @@ export async function PATCH(request: Request) {
       },
       create: {
         type,
-        title: title || (type === 'meal_plan' ? 'Kostschema Guide' : type === 'workout' ? 'Träningsprogram Guide' : type === 'food_guide' ? 'Livsmedelsguide' : 'Kom Igång Guide'),
+        title: title || (type === 'meal_plan' ? 'Kostschema Guide' : type === 'workout' ? 'Träningsprogram Guide' : type === 'food_guide' ? 'Livsmedelsguide' : type === 'nutrition_tips' ? 'Generella råd för kosten' : 'Kom Igång Guide'),
         content: content || ''
       }
     })

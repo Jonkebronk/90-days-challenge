@@ -24,7 +24,7 @@ export default function GuidesManagementPage() {
   const [guides, setGuides] = useState<GuideContent[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState<string | null>(null)
-  const [activePreview, setActivePreview] = useState<'meal_plan' | 'workout' | 'onboarding' | 'food_guide' | null>(null)
+  const [activePreview, setActivePreview] = useState<'meal_plan' | 'workout' | 'onboarding' | 'food_guide' | 'nutrition_tips' | null>(null)
 
   const [mealPlanData, setMealPlanData] = useState({
     title: '',
@@ -42,6 +42,11 @@ export default function GuidesManagementPage() {
   })
 
   const [foodGuideData, setFoodGuideData] = useState({
+    title: '',
+    content: ''
+  })
+
+  const [nutritionTipsData, setNutritionTipsData] = useState({
     title: '',
     content: ''
   })
@@ -64,6 +69,7 @@ export default function GuidesManagementPage() {
         const workout = data.guides.find((g: GuideContent) => g.type === 'workout')
         const onboarding = data.guides.find((g: GuideContent) => g.type === 'onboarding')
         const foodGuide = data.guides.find((g: GuideContent) => g.type === 'food_guide')
+        const nutritionTips = data.guides.find((g: GuideContent) => g.type === 'nutrition_tips')
 
         if (mealPlan) {
           setMealPlanData({
@@ -92,6 +98,13 @@ export default function GuidesManagementPage() {
             content: foodGuide.content
           })
         }
+
+        if (nutritionTips) {
+          setNutritionTipsData({
+            title: nutritionTips.title,
+            content: nutritionTips.content
+          })
+        }
       }
     } catch (error) {
       console.error('Error fetching guides:', error)
@@ -101,10 +114,10 @@ export default function GuidesManagementPage() {
     }
   }
 
-  const handleSave = async (type: 'meal_plan' | 'workout' | 'onboarding' | 'food_guide') => {
+  const handleSave = async (type: 'meal_plan' | 'workout' | 'onboarding' | 'food_guide' | 'nutrition_tips') => {
     try {
       setSaving(type)
-      const data = type === 'meal_plan' ? mealPlanData : type === 'workout' ? workoutData : type === 'food_guide' ? foodGuideData : onboardingData
+      const data = type === 'meal_plan' ? mealPlanData : type === 'workout' ? workoutData : type === 'food_guide' ? foodGuideData : type === 'nutrition_tips' ? nutritionTipsData : onboardingData
 
       const response = await fetch('/api/guide-content', {
         method: 'PATCH',
@@ -164,14 +177,14 @@ export default function GuidesManagementPage() {
           </h1>
         </div>
         <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
-          Redigera innehåll för kom igång, kostschema, träningsprogram och livsmedelsguide
+          Redigera innehåll för kom igång, kostschema, träningsprogram, livsmedelsguide och generella kosttips
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
       </div>
 
       {/* Tabs for different guides */}
       <Tabs defaultValue="onboarding" className="w-full">
-        <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-2 md:grid-cols-4 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.3)]">
+        <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-2 md:grid-cols-5 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.3)]">
           <TabsTrigger
             value="onboarding"
             className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a]"
@@ -195,6 +208,12 @@ export default function GuidesManagementPage() {
             className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#10b981] data-[state=active]:to-[#059669] data-[state=active]:text-white"
           >
             Livsmedelsguide
+          </TabsTrigger>
+          <TabsTrigger
+            value="nutrition_tips"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#f59e0b] data-[state=active]:to-[#d97706] data-[state=active]:text-white"
+          >
+            Kosttips
           </TabsTrigger>
         </TabsList>
 
@@ -541,6 +560,87 @@ export default function GuidesManagementPage() {
 
               <div className="mt-4 p-4 bg-[rgba(16,185,129,0.1)] border border-[rgba(16,185,129,0.3)] rounded-lg">
                 <p className="text-sm font-medium text-[#10b981] mb-2">MDX Formatering:</p>
+                <ul className="text-sm text-[rgba(255,255,255,0.7)] space-y-1 list-disc list-inside">
+                  <li># för huvudrubrik (H1)</li>
+                  <li>## för underrubrik (H2)</li>
+                  <li>**text** för fet text</li>
+                  <li>*text* för kursiv text</li>
+                  <li>[länktext](url) för länkar</li>
+                  <li>- för punktlistor</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Nutrition Tips / Generella råd för kosten */}
+        <TabsContent value="nutrition_tips">
+          <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(245,158,11,0.3)] backdrop-blur-[10px]">
+            <CardHeader>
+              <CardTitle className="text-[rgba(255,255,255,0.9)]">Generella råd för kosten</CardTitle>
+              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+                Denna text visas på klientens kostschema-sida
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="nutrition-tips-title" className="text-[rgba(255,255,255,0.8)]">
+                  Titel
+                </Label>
+                <Input
+                  id="nutrition-tips-title"
+                  value={nutritionTipsData.title}
+                  onChange={(e) => setNutritionTipsData({ ...nutritionTipsData, title: e.target.value })}
+                  className="bg-[rgba(255,255,255,0.05)] border-[rgba(245,158,11,0.3)] text-white"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label htmlFor="nutrition-tips-content" className="text-[rgba(255,255,255,0.8)]">
+                    Innehåll (MDX)
+                  </Label>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setActivePreview(activePreview === 'nutrition_tips' ? null : 'nutrition_tips')}
+                    className="bg-transparent border-[rgba(245,158,11,0.3)] text-[rgba(255,255,255,0.8)]"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    {activePreview === 'nutrition_tips' ? 'Dölj' : 'Visa'} Förhandsvisning
+                  </Button>
+                </div>
+                <Textarea
+                  id="nutrition-tips-content"
+                  value={nutritionTipsData.content}
+                  onChange={(e) => setNutritionTipsData({ ...nutritionTipsData, content: e.target.value })}
+                  className="min-h-[400px] font-mono bg-[rgba(255,255,255,0.05)] border-[rgba(245,158,11,0.3)] text-white"
+                  placeholder="# Generella råd&#10;&#10;## Grundläggande principer&#10;&#10;Dina tips här..."
+                />
+              </div>
+
+              {activePreview === 'nutrition_tips' && (
+                <div className="border-2 border-[rgba(245,158,11,0.3)] rounded-lg p-6 bg-[rgba(0,0,0,0.3)]">
+                  <h3 className="text-lg font-bold text-[#f59e0b] mb-4">Förhandsvisning:</h3>
+                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-[#f59e0b] prose-headings:font-bold prose-p:text-[rgba(255,255,255,0.8)] prose-strong:text-[#f59e0b] prose-li:text-[rgba(255,255,255,0.8)]">
+                    <MDXPreview content={nutritionTipsData.content} />
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => handleSave('nutrition_tips')}
+                  disabled={saving === 'nutrition_tips'}
+                  className="bg-gradient-to-r from-[#f59e0b] to-[#d97706] text-white font-bold hover:shadow-[0_0_20px_rgba(245,158,11,0.5)]"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {saving === 'nutrition_tips' ? 'Sparar...' : 'Spara Ändringar'}
+                </Button>
+              </div>
+
+              <div className="mt-4 p-4 bg-[rgba(245,158,11,0.1)] border border-[rgba(245,158,11,0.3)] rounded-lg">
+                <p className="text-sm font-medium text-[#f59e0b] mb-2">MDX Formatering:</p>
                 <ul className="text-sm text-[rgba(255,255,255,0.7)] space-y-1 list-disc list-inside">
                   <li># för huvudrubrik (H1)</li>
                   <li>## för underrubrik (H2)</li>
