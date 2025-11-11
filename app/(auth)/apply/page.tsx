@@ -76,8 +76,6 @@ export default function ApplyPage() {
 
     // Motivation
     whyApply: '',
-    commitment: '',
-    expectations: '',
     challenges: '',
 
     // Agreement
@@ -153,17 +151,14 @@ Mediciner: ${formData.medications || 'Ej angivet'}
 Övrigt: ${formData.other || 'Ej angivet'}
 
 === MOTIVATION ===
-Varför ansöker du?
+Målsättningar:
 ${formData.whyApply || 'Ej angivet'}
 
-Åtagande:
-${formData.commitment || 'Ej angivet'}
-
-Förväntningar:
-${formData.expectations || 'Ej angivet'}
-
-Utmaningar:
+Största utmaningar:
 ${formData.challenges || 'Ej angivet'}
+
+Tidigare coaching:
+${formData.previousCoaching || 'Ej angivet'}
 
 === AVTAL & SIGNATUR ===
 Villkor accepterade: ${formData.termsAccepted ? 'Ja' : 'Nej'}
@@ -224,7 +219,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
           foodPreferences: formData.foodPreferences,
           allergies: formData.allergies,
           supplements: formData.supplements,
-          previousCoaching: formData.previousCoaching,
 
           // Lifestyle
           occupation: formData.occupation,
@@ -238,9 +232,8 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
 
           // Motivation
           whyJoin: formData.whyApply,
-          canFollowPlan: formData.commitment,
-          expectations: formData.expectations,
           biggestChallenges: formData.challenges,
+          previousCoaching: formData.previousCoaching,
 
           // Photos
           frontPhoto: frontPhotoBase64,
