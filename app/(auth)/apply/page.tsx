@@ -488,36 +488,22 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                 </div>
 
                 <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Kan du följa en strukturerad plan i 90 dagar?</Label>
-                  <Select value={formData.commitment} onValueChange={(value) => setFormData({ ...formData, commitment: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                      <SelectValue placeholder="Välj ditt svar" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="yes-100">Ja, 100% committed</SelectItem>
-                      <SelectItem value="yes-mostly">Ja, men behöver lite flexibilitet</SelectItem>
-                      <SelectItem value="unsure">Osäker, vill veta mer först</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Vad förväntar du dig av programmet?</Label>
-                  <Textarea
-                    value={formData.expectations}
-                    onChange={(e) => setFormData({ ...formData, expectations: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
-                    placeholder="Vad hoppas du uppnå efter 90 dagar?"
-                  />
-                </div>
-
-                <div>
                   <Label className="text-[rgba(255,255,255,0.8)]">Största utmaningar</Label>
                   <Textarea
                     value={formData.challenges}
                     onChange={(e) => setFormData({ ...formData, challenges: e.target.value })}
                     className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[100px]"
                     placeholder="Vad har hindrat dig från att nå dina mål tidigare?"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-[rgba(255,255,255,0.8)]">Tidigare coaching eller PT</Label>
+                  <Textarea
+                    value={formData.previousCoaching}
+                    onChange={(e) => setFormData({ ...formData, previousCoaching: e.target.value })}
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
+                    placeholder="Har du haft personlig tränare eller coach tidigare? Vad funkade/funkade inte?"
                   />
                 </div>
               </div>
@@ -620,16 +606,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                     onChange={(e) => setFormData({ ...formData, supplements: e.target.value })}
                     className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
                     placeholder="Vill du ta kosttillskott? Proteinpulver främst, vi går igenom tillskott mer vid uppstart."
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Tidigare coaching eller PT</Label>
-                  <Textarea
-                    value={formData.previousCoaching}
-                    onChange={(e) => setFormData({ ...formData, previousCoaching: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Har du haft personlig tränare eller coach tidigare? Vad funkade/funkade inte?"
                   />
                 </div>
               </div>
