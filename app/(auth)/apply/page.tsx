@@ -57,8 +57,6 @@ export default function ApplyPage() {
 
     // Nutrition
     dietHistory: '',
-    macroTracking: '',
-    digestion: '',
     allergies: '',
     supplements: '',
     previousCoaching: '',
@@ -129,8 +127,6 @@ Skador/Begränsningar: ${formData.injuries || 'Ej angivet'}
 
 === NÄRING ===
 Kost historik: ${formData.dietHistory || 'Ej angivet'}
-Makro tracking: ${formData.macroTracking || 'Ej angivet'}
-Matsmältning: ${formData.digestion || 'Ej angivet'}
 Allergier: ${formData.allergies || 'Ej angivet'}
 Kosttillskott: ${formData.supplements || 'Ej angivet'}
 Tidigare coaching: ${formData.previousCoaching || 'Ej angivet'}
@@ -207,8 +203,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
 
           // Nutrition
           dietHistory: formData.dietHistory,
-          macroExperience: formData.macroTracking,
-          digestionIssues: formData.digestion,
           allergies: formData.allergies,
           supplements: formData.supplements,
           previousCoaching: formData.previousCoaching,
@@ -565,30 +559,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                 </div>
 
                 <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Erfarenhet av makroräkning</Label>
-                  <Select value={formData.macroTracking} onValueChange={(value) => setFormData({ ...formData, macroTracking: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                      <SelectValue placeholder="Har du räknat makron tidigare?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="never">Aldrig</SelectItem>
-                      <SelectItem value="some">Lite erfarenhet</SelectItem>
-                      <SelectItem value="experienced">Mycket erfarenhet</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Matsmältning</Label>
-                  <Textarea
-                    value={formData.digestion}
-                    onChange={(e) => setFormData({ ...formData, digestion: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Eventuella problem med matsmältningen? (t.ex. IBS, laktosintolerans)"
-                  />
-                </div>
-
-                <div>
                   <Label className="text-[rgba(255,255,255,0.8)]">Allergier och intoleranser</Label>
                   <Input
                     value={formData.allergies}
@@ -659,6 +629,21 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
             />
             {expandedSections.photos && (
               <div className="space-y-6 bg-[rgba(0,0,0,0.2)] p-6 rounded-lg border border-[rgba(255,215,0,0.2)]">
+                {/* Warning Box */}
+                <div className="bg-yellow-500/10 border-2 border-yellow-500/30 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-yellow-500 font-bold text-lg flex-shrink-0">⚠</span>
+                    <div className="text-yellow-200/90 text-sm">
+                      <p className="font-semibold mb-2">Observera!</p>
+                      <p className="leading-relaxed">
+                        Startbilder för att mäta framsteg kommer att krävas vid något tillfälle under de första 4 veckorna,
+                        sedan var 2:a vecka (de första 12 veckorna) följt av var 4:e vecka (efter 12 veckor).
+                        Dessa hjälper oss att bedöma dina framsteg. De kommer att laddas upp till ditt klientuppföljningsark.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Example images showing proper positioning */}
                 <div className="bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4 mb-4">
                   <p className="text-[rgba(255,255,255,0.7)] text-sm mb-3 text-center">
@@ -666,22 +651,22 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                   </p>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="text-center">
-                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-2 mb-2 flex items-center justify-center h-16">
-                        <span className="text-xs text-[rgba(255,255,255,0.5)]">Framifrån</span>
+                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-4 mb-2 flex items-center justify-center h-20">
+                        <span className="text-sm text-[rgba(255,255,255,0.6)]">🧍<br />Stå rakt framifrån</span>
                       </div>
-                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Framsida: Stå rakt framifrån</p>
+                      <p className="text-xs text-[rgba(255,255,255,0.6)] font-medium">Framsida</p>
                     </div>
                     <div className="text-center">
-                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-2 mb-2 flex items-center justify-center h-16">
-                        <span className="text-xs text-[rgba(255,255,255,0.5)]">Profil från sidan</span>
+                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-4 mb-2 flex items-center justify-center h-20">
+                        <span className="text-sm text-[rgba(255,255,255,0.6)]">🏃<br />Profil från sidan</span>
                       </div>
-                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Sida: Profil från sidan</p>
+                      <p className="text-xs text-[rgba(255,255,255,0.6)] font-medium">Sida</p>
                     </div>
                     <div className="text-center">
-                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-2 mb-2 flex items-center justify-center h-16">
-                        <span className="text-xs text-[rgba(255,255,255,0.5)]">Bakifrån</span>
+                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-4 mb-2 flex items-center justify-center h-20">
+                        <span className="text-sm text-[rgba(255,255,255,0.6)]">🙋<br />Stå rakt bakifrån</span>
                       </div>
-                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Baksida: Stå rakt bakifrån</p>
+                      <p className="text-xs text-[rgba(255,255,255,0.6)] font-medium">Baksida</p>
                     </div>
                   </div>
                 </div>
