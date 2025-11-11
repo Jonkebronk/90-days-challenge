@@ -59,7 +59,6 @@ export default function ApplyPage() {
     previousCoaching: '',
 
     // Lifestyle
-    occupation: '',
     lifestyle: '',
 
     // Medical
@@ -130,7 +129,6 @@ Kosttillskott: ${formData.supplements || 'Ej angivet'}
 Tidigare coaching: ${formData.previousCoaching || 'Ej angivet'}
 
 === LIVSSTIL ===
-Yrke: ${formData.occupation || 'Ej angivet'}
 Livsstil: ${formData.lifestyle || 'Ej angivet'}
 
 === MEDICINSK BAKGRUND ===
@@ -186,7 +184,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
           supplements: formData.supplements,
 
           // Lifestyle
-          occupation: formData.occupation,
           lifestyle: formData.lifestyle,
 
           // Medical
@@ -571,16 +568,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
 
             {expandedSections.lifestyle && (
               <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Yrke</Label>
-                  <Input
-                    value={formData.occupation}
-                    onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                    placeholder="Vad arbetar du med?"
-                  />
-                </div>
-
                 <div>
                   <Label className="text-[rgba(255,255,255,0.8)]">Livsstil</Label>
                   <Textarea
