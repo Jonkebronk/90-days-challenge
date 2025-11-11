@@ -14,22 +14,43 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get the current coach
-    const coach = await prisma.user.findUnique({
+    // Get the current user
+    const currentUser = await prisma.user.findUnique({
       where: { email: session.user.email },
     })
 
-    if (!coach || coach.role !== 'coach') {
+    if (!currentUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { clientId } = await params
 
+    // Check authorization:
+    // - If CLIENT: can only view their own journal
+    // - If COACH: can view their clients' journals
+    if (currentUser.role === 'client') {
+      if (currentUser.id !== clientId) {
+        return NextResponse.json({ error: 'Unauthorized - can only view own journal' }, { status: 403 })
+      }
+    } else if (currentUser.role === 'coach') {
+      // Coach can only view their own clients
+      const isOwnClient = await prisma.user.findFirst({
+        where: {
+          id: clientId,
+          coachId: currentUser.id,
+        },
+      })
+      if (!isOwnClient) {
+        return NextResponse.json({ error: 'Unauthorized - not your client' }, { status: 403 })
+      }
+    } else {
+      return NextResponse.json({ error: 'Unauthorized role' }, { status: 401 })
+    }
+
     // Fetch complete client data
     const client = await prisma.user.findUnique({
       where: {
         id: clientId,
-        coachId: coach.id, // Ensure this is the coach's client
       },
       include: {
         userProfile: true,
