@@ -43,7 +43,11 @@ export default function CheckInPage() {
   const checkForStartCheckIn = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/check-in')
+      if (!session?.user?.id) {
+        setIsLoading(false)
+        return
+      }
+      const response = await fetch(`/api/check-in?userId=${session.user.id}`)
       if (response.ok) {
         const data = await response.json()
         // Check if user has a start check-in
