@@ -145,6 +145,35 @@ Träning ska vara roligt! Sätt på bra musik, känn dig stark, njut av känslan
 
 **Nu kör vi! 💪**`
 
+const DEFAULT_FOOD_GUIDE_CONTENT = `# Livsmedelsguide
+
+En omfattande guide för att hjälpa dig göra smarta matval och förstå näringsvärden.
+
+## Proteinkällor
+
+### Magert Kött & Fågel
+**Kyckling (bröst)** - 165 kcal, 31g protein per 100g
+- Låg fetthalt, högt proteininnehåll
+- Perfekt för meal prep
+- Versatil - passar de flesta rätter
+
+**Kalkonfläskfilé** - 135 kcal, 30g protein per 100g
+- Mager och proteinrik
+- God järnkälla
+- Bra alternativ till kyckling
+
+## Kolhydratkällor
+
+**Fullkornsris** - 111 kcal, 2.6g protein, 23g kolhydrater per 100g
+- Långsam energifrisättning
+- Rik på fiber
+- Mättande
+
+**Havregryn** - 389 kcal, 17g protein, 66g kolhydrater per 100g
+- Sänker kolesterol
+- Långvarig mättnadskänsla
+- Perfekt till frukost`
+
 const DEFAULT_ONBOARDING_CONTENT = `# Välkommen till 90-Dagars Challenge!
 
 Grattis till att du har tagit steget mot en hälsosammare livsstil! Detta är början på din transformation.
@@ -274,11 +303,15 @@ export async function GET(request: Request) {
           ? DEFAULT_MEAL_PLAN_CONTENT
           : type === 'workout'
           ? DEFAULT_WORKOUT_CONTENT
+          : type === 'food_guide'
+          ? DEFAULT_FOOD_GUIDE_CONTENT
           : DEFAULT_ONBOARDING_CONTENT
         const defaultTitle = type === 'meal_plan'
           ? 'Kostschema Guide'
           : type === 'workout'
           ? 'Träningsprogram Guide'
+          : type === 'food_guide'
+          ? 'Livsmedelsguide'
           : 'Kom Igång Guide'
 
         guide = await prisma.guideContent.create({
@@ -316,6 +349,11 @@ export async function GET(request: Request) {
             type: 'workout',
             title: 'Träningsprogram Guide',
             content: DEFAULT_WORKOUT_CONTENT
+          },
+          {
+            type: 'food_guide',
+            title: 'Livsmedelsguide',
+            content: DEFAULT_FOOD_GUIDE_CONTENT
           }
         ]
       })
@@ -358,7 +396,7 @@ export async function PATCH(request: Request) {
       },
       create: {
         type,
-        title: title || (type === 'meal_plan' ? 'Kostschema Guide' : type === 'workout' ? 'Träningsprogram Guide' : 'Kom Igång Guide'),
+        title: title || (type === 'meal_plan' ? 'Kostschema Guide' : type === 'workout' ? 'Träningsprogram Guide' : type === 'food_guide' ? 'Livsmedelsguide' : 'Kom Igång Guide'),
         content: content || ''
       }
     })
