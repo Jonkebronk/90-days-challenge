@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { ArrowLeft, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import { ArrowLeft, CheckCircle, ChevronDown, ChevronUp, Camera } from 'lucide-react'
 
 export default function ApplyPage() {
   const router = useRouter()
@@ -53,24 +53,17 @@ export default function ApplyPage() {
     // Training
     currentTraining: '',
     trainingExperience: '',
-    trainingGoals: '',
     injuries: '',
-    availableTime: '',
-    workoutSchedule: '',
 
     // Nutrition
     dietHistory: '',
     macroTracking: '',
     digestion: '',
     allergies: '',
-    favoriteFoods: '',
-    foodsDislikes: '',
     supplements: '',
     previousCoaching: '',
 
     // Lifestyle
-    stressLevel: '',
-    sleepHours: '',
     occupation: '',
     lifestyle: '',
 
@@ -132,24 +125,17 @@ Sida: ${formData.sidePhoto ? formData.sidePhoto.name : 'Ej bifogad'}
 === TRÄNING ===
 Nuvarande träning: ${formData.currentTraining || 'Ej angivet'}
 Erfarenhet: ${formData.trainingExperience || 'Ej angivet'}
-Mål: ${formData.trainingGoals || 'Ej angivet'}
 Skador/Begränsningar: ${formData.injuries || 'Ej angivet'}
-Tillgänglig tid: ${formData.availableTime || 'Ej angivet'}
-Träningsschema: ${formData.workoutSchedule || 'Ej angivet'}
 
 === NÄRING ===
 Kost historik: ${formData.dietHistory || 'Ej angivet'}
 Makro tracking: ${formData.macroTracking || 'Ej angivet'}
 Matsmältning: ${formData.digestion || 'Ej angivet'}
 Allergier: ${formData.allergies || 'Ej angivet'}
-Favoritmat: ${formData.favoriteFoods || 'Ej angivet'}
-Mat ogillar: ${formData.foodsDislikes || 'Ej angivet'}
 Kosttillskott: ${formData.supplements || 'Ej angivet'}
 Tidigare coaching: ${formData.previousCoaching || 'Ej angivet'}
 
 === LIVSSTIL ===
-Stressnivå: ${formData.stressLevel || 'Ej angivet'}
-Sömn: ${formData.sleepHours || 'Ej angivet'} timmar
 Yrke: ${formData.occupation || 'Ej angivet'}
 Livsstil: ${formData.lifestyle || 'Ej angivet'}
 
@@ -217,24 +203,17 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
           // Training
           currentTraining: formData.currentTraining,
           trainingExperience: formData.trainingExperience,
-          trainingGoal: formData.trainingGoals,
           injuries: formData.injuries,
-          availableTime: formData.availableTime,
-          preferredSchedule: formData.workoutSchedule,
 
           // Nutrition
           dietHistory: formData.dietHistory,
           macroExperience: formData.macroTracking,
           digestionIssues: formData.digestion,
           allergies: formData.allergies,
-          favoriteFood: formData.favoriteFoods,
-          dislikedFood: formData.foodsDislikes,
           supplements: formData.supplements,
           previousCoaching: formData.previousCoaching,
 
           // Lifestyle
-          stressLevel: formData.stressLevel,
-          sleepHours: formData.sleepHours,
           occupation: formData.occupation,
           lifestyle: formData.lifestyle,
 
@@ -496,21 +475,11 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                       <SelectValue placeholder="Välj din erfarenhetsnivå" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="beginner">Nybörjare (0-6 månader)</SelectItem>
-                      <SelectItem value="intermediate">Medel (6 månader - 2 år)</SelectItem>
-                      <SelectItem value="advanced">Avancerad (2+ år)</SelectItem>
+                      <SelectItem value="beginner">Nybörjare, mindre än ett år</SelectItem>
+                      <SelectItem value="intermediate">Intermediate 1-3 års styrketräning</SelectItem>
+                      <SelectItem value="advanced">Advanced 4+ år</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Träningsmål</Label>
-                  <Textarea
-                    value={formData.trainingGoals}
-                    onChange={(e) => setFormData({ ...formData, trainingGoals: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
-                    placeholder="Vad vill du uppnå? (t.ex. bygga muskler, öka styrka, förbättra kondition)"
-                  />
                 </div>
 
                 <div>
@@ -520,31 +489,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                     onChange={(e) => setFormData({ ...formData, injuries: e.target.value })}
                     className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[80px]"
                     placeholder="Eventuella skador, smärtor eller fysiska begränsningar vi bör veta om"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Tillgänglig tid för träning</Label>
-                  <Select value={formData.availableTime} onValueChange={(value) => setFormData({ ...formData, availableTime: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                      <SelectValue placeholder="Hur många dagar per vecka?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1-2">1-2 dagar/vecka</SelectItem>
-                      <SelectItem value="3-4">3-4 dagar/vecka</SelectItem>
-                      <SelectItem value="5-6">5-6 dagar/vecka</SelectItem>
-                      <SelectItem value="7">7 dagar/vecka</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Föredraget träningsschema</Label>
-                  <Input
-                    value={formData.workoutSchedule}
-                    onChange={(e) => setFormData({ ...formData, workoutSchedule: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                    placeholder="T.ex. 'Morgon 06:00' eller 'Kväll efter jobbet'"
                   />
                 </div>
               </div>
@@ -602,26 +546,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                 </div>
 
                 <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Favoritmat</Label>
-                  <Input
-                    value={formData.favoriteFoods}
-                    onChange={(e) => setFormData({ ...formData, favoriteFoods: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                    placeholder="Mat du älskar och gärna äter"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Mat du inte gillar</Label>
-                  <Input
-                    value={formData.foodsDislikes}
-                    onChange={(e) => setFormData({ ...formData, foodsDislikes: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                    placeholder="Mat vi bör undvika i din plan"
-                  />
-                </div>
-
-                <div>
                   <Label className="text-[rgba(255,255,255,0.8)]">Kosttillskott</Label>
                   <Textarea
                     value={formData.supplements}
@@ -650,37 +574,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
 
             {expandedSections.lifestyle && (
               <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] space-y-4">
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Stressnivå</Label>
-                  <Select value={formData.stressLevel} onValueChange={(value) => setFormData({ ...formData, stressLevel: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                      <SelectValue placeholder="Hur stressad känner du dig?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Låg stress</SelectItem>
-                      <SelectItem value="medium">Måttlig stress</SelectItem>
-                      <SelectItem value="high">Hög stress</SelectItem>
-                      <SelectItem value="very-high">Mycket hög stress</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-[rgba(255,255,255,0.8)]">Sömn per natt</Label>
-                  <Select value={formData.sleepHours} onValueChange={(value) => setFormData({ ...formData, sleepHours: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                      <SelectValue placeholder="Hur många timmar sover du?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="<5">Mindre än 5 timmar</SelectItem>
-                      <SelectItem value="5-6">5-6 timmar</SelectItem>
-                      <SelectItem value="6-7">6-7 timmar</SelectItem>
-                      <SelectItem value="7-8">7-8 timmar</SelectItem>
-                      <SelectItem value=">8">Mer än 8 timmar</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
                 <div>
                   <Label className="text-[rgba(255,255,255,0.8)]">Yrke</Label>
                   <Input
@@ -766,16 +659,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
             />
             {expandedSections.photos && (
               <div className="space-y-6 bg-[rgba(0,0,0,0.2)] p-6 rounded-lg border border-[rgba(255,215,0,0.2)]">
-                <div className="bg-yellow-500/10 border-2 border-yellow-500/30 rounded-lg p-4 mb-6">
-                  <div className="flex items-start gap-3">
-                    <span className="text-yellow-500 font-bold text-lg">⚠</span>
-                    <div className="text-yellow-200/90 text-sm">
-                      <p className="font-semibold mb-1">Observera!</p>
-                      <p>Startbilder för att mäta framsteg kommer att krävas vid något tillfälle under de första 4 veckorna, sedan var 2:a vecka (de första 12 veckorna) följt av var 4:e vecka (efter 12 veckor). Dessa hjälper oss att bedöma dina framsteg. De kommer att laddas upp till ditt klientuppföljningsark.</p>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Example images showing proper positioning */}
                 <div className="bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4 mb-4">
                   <p className="text-[rgba(255,255,255,0.7)] text-sm mb-3 text-center">
@@ -783,20 +666,20 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                   </p>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="text-center">
-                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-2 mb-2">
-                        <div className="text-4xl">🧍</div>
+                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-2 mb-2 flex items-center justify-center h-16">
+                        <span className="text-xs text-[rgba(255,255,255,0.5)]">Framifrån</span>
                       </div>
                       <p className="text-xs text-[rgba(255,255,255,0.6)]">Framsida: Stå rakt framifrån</p>
                     </div>
                     <div className="text-center">
-                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-2 mb-2">
-                        <div className="text-4xl">🚶</div>
+                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-2 mb-2 flex items-center justify-center h-16">
+                        <span className="text-xs text-[rgba(255,255,255,0.5)]">Profil från sidan</span>
                       </div>
                       <p className="text-xs text-[rgba(255,255,255,0.6)]">Sida: Profil från sidan</p>
                     </div>
                     <div className="text-center">
-                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-2 mb-2">
-                        <div className="text-4xl">🙋</div>
+                      <div className="bg-[rgba(0,0,0,0.3)] rounded-lg p-2 mb-2 flex items-center justify-center h-16">
+                        <span className="text-xs text-[rgba(255,255,255,0.5)]">Bakifrån</span>
                       </div>
                       <p className="text-xs text-[rgba(255,255,255,0.6)]">Baksida: Stå rakt bakifrån</p>
                     </div>
@@ -832,7 +715,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                           </div>
                         ) : (
                           <div className="py-8">
-                            <div className="text-4xl mb-2">📷</div>
+                            <Camera className="w-12 h-12 mx-auto mb-3 text-[rgba(255,215,0,0.5)]" />
                             <p className="text-sm text-[rgba(255,255,255,0.6)]">Klicka för att välja</p>
                             <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">eller dra och släpp</p>
                           </div>
@@ -878,7 +761,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                           </div>
                         ) : (
                           <div className="py-8">
-                            <div className="text-4xl mb-2">📷</div>
+                            <Camera className="w-12 h-12 mx-auto mb-3 text-[rgba(255,215,0,0.5)]" />
                             <p className="text-sm text-[rgba(255,255,255,0.6)]">Klicka för att välja</p>
                             <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">eller dra och släpp</p>
                           </div>
@@ -924,7 +807,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                           </div>
                         ) : (
                           <div className="py-8">
-                            <div className="text-4xl mb-2">📷</div>
+                            <Camera className="w-12 h-12 mx-auto mb-3 text-[rgba(255,215,0,0.5)]" />
                             <p className="text-sm text-[rgba(255,255,255,0.6)]">Klicka för att välja</p>
                             <p className="text-xs text-[rgba(255,255,255,0.4)] mt-1">eller dra och släpp</p>
                           </div>
@@ -955,61 +838,160 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
             />
             {expandedSections.agreement && (
               <div className="space-y-6 bg-[rgba(0,0,0,0.2)] p-6 rounded-lg border border-[rgba(255,215,0,0.2)]">
-                {/* Release of Liability */}
+                {/* Header */}
+                <div className="text-center mb-4">
+                  <h3 className="text-[#FFD700] font-bold text-xl mb-2">Allmänna villkor och avtal för Friskvårdskompassen</h3>
+                  <p className="text-[rgba(255,255,255,0.5)] text-xs">Läs igenom villkoren noggrant innan du accepterar</p>
+                </div>
+
+                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
+
+                {/* 1. Tjänstens omfattning och hälsodeklaration */}
                 <div className="space-y-3">
-                  <h3 className="text-[#FFD700] font-semibold text-lg">Ansvarsfriskrivning</h3>
+                  <h3 className="text-[#FFD700] font-semibold text-lg">1. Tjänstens omfattning och hälsodeklaration</h3>
                   <div className="text-[rgba(255,255,255,0.7)] text-sm space-y-2 leading-relaxed">
                     <p>
-                      Detta är ett program för fysisk träning som inkluderar, men är inte begränsat till, styrketräning,
-                      viktträning och olika konditionsövningar. Jag bekräftar härmed att jag är fullt fysiskt kapabel
-                      och att jag inte lider av någon funktionsnedsättning eller sjukdom som skulle hindra mig från att
-                      delta i detta program på ett säkert sätt.
+                      Friskvårdskompassen erbjuder onlinebaserad coachning inom fysisk träning, kost och hälsa.
+                      Tjänsten kan inkludera, men är inte begränsad till, styrketräning, konditionsträning, kostråd och livsstilscoachning.
                     </p>
+                    <p className="font-medium text-[rgba(255,255,255,0.8)]">Genom att acceptera dessa villkor bekräftar du att:</p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>Du är fullt fysiskt kapabel att delta i programmet</li>
+                      <li>Du inte lider av någon sjukdom, skada eller funktionsnedsättning som utgör hinder för säker träning</li>
+                      <li>Du vid osäkerhet om din hälsa konsulterat läkare innan programmets start</li>
+                      <li>Du informerat din coach om eventuella hälsotillstånd som kan påverka din träning</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
+
+                {/* 2. Ansvar och säkerhet */}
+                <div className="space-y-3">
+                  <h3 className="text-[#FFD700] font-semibold text-lg">2. Ansvar och säkerhet</h3>
+                  <div className="text-[rgba(255,255,255,0.7)] text-sm space-y-2 leading-relaxed">
+                    <p className="font-medium text-[rgba(255,255,255,0.8)]">Eget ansvar:</p>
                     <p>
-                      Vid bekräftelse av mitt deltagande i detta program upphäver jag allt ansvar för Maximum Performance
-                      Training för eventuella skador som kan uppstå som en följd av min deltagning i detta program eller
-                      när jag använder konditionerings- och träningsutrustning. Jag bekräftar att jag, på eget ansvar,
-                      deltar i alla konditionerings- och träningsaktiviteter och faciliteter, oavsett skada.
+                      Du deltar i programmet och utför alla tränings- och kostaktiviteter på eget ansvar.
+                      Du ansvarar själv för att utföra övningar korrekt och anpassa träningen efter din individuella förmåga.
                     </p>
-                    <p>
-                      Jag avsäger härmed Maximum Performance Training, även dess anställda och ägare av allt ansvar,
-                      inklusive men inte begränsat till medicinsk exponering, smärta och lidande som kan uppstå av någon
-                      anledning under eller efter mitt deltagande i programmet eller från vår användning av
-                      konditionerings- och träningsutrustning och faciliteter, oavsett fel, försumlighet eller ansvar.
+                    <p className="font-medium text-[rgba(255,255,255,0.8)]">Ansvarsfriskrivning:</p>
+                    <p>Friskvårdskompassen, inklusive dess ägare, coacher och samarbetspartners, ansvarar inte för:</p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>Skador som uppstår under eller efter träning</li>
+                      <li>Negativa hälsoeffekter till följd av programmet</li>
+                      <li>Skador vid användning av träningsutrustning</li>
+                      <li>Medicinska komplikationer relaterade till träning eller kosthållning</li>
+                    </ul>
+                    <p>Detta gäller oavsett orsak, inklusive eventuella fel, försummelser eller rådgivning från Friskvårdskompassen.</p>
+                    <p className="font-semibold text-yellow-400 bg-yellow-500/10 p-2 rounded border border-yellow-500/30">
+                      ⚠ Viktigt: Vid minsta tveksamhet om din hälsa rekommenderar vi starkt att du konsulterar läkare innan du påbörjar programmet.
                     </p>
                   </div>
                 </div>
 
                 <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
 
-                {/* Payment & Cancellation */}
+                {/* 3. Betalningsvillkor */}
                 <div className="space-y-3">
-                  <h3 className="text-[#FFD700] font-semibold text-lg">Betalning & Avbokning</h3>
+                  <h3 className="text-[#FFD700] font-semibold text-lg">3. Betalningsvillkor</h3>
+                  <div className="text-[rgba(255,255,255,0.7)] text-sm space-y-2 leading-relaxed">
+                    <p className="font-medium text-[rgba(255,255,255,0.8)]">Förskottsbetalning:</p>
+                    <p>Full betalning för minimum 4 veckors coachning krävs i förskott för att säkra din plats i programmet.</p>
+                    <p className="font-medium text-[rgba(255,255,255,0.8)]">Fortsatt betalning:</p>
+                    <p>Efter de första 4 veckorna kan betalning ske via:</p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>Banköverföring</li>
+                      <li>Swish</li>
+                      <li>Annan överenskommen betalningsmetod</li>
+                    </ul>
+                    <p>Betalning ska erläggas senast samma veckodag som avtalets start, 2 veckor i förskott.</p>
+                    <p className="font-medium text-[rgba(255,255,255,0.8)]">Försenad betalning:</p>
+                    <p>Utebliven betalning inom överenskommen tid kan leda till att tjänsten pausas eller avslutas.</p>
+                  </div>
+                </div>
+
+                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
+
+                {/* 4. Uppsägning och återbetalning */}
+                <div className="space-y-3">
+                  <h3 className="text-[#FFD700] font-semibold text-lg">4. Uppsägning och återbetalning</h3>
+                  <div className="text-[rgba(255,255,255,0.7)] text-sm space-y-2 leading-relaxed">
+                    <p className="font-medium text-[rgba(255,255,255,0.8)]">Bindningstid:</p>
+                    <p>Avtalet löper på 4 veckor i taget från förskottsbetalningen. Du förbinder dig att fullfölja den betalade perioden.</p>
+                    <p className="font-medium text-[rgba(255,255,255,0.8)]">Uppsägning från klient:</p>
+                    <p>Du kan säga upp tjänsten när som helst genom att meddela din coach minst 2 veckor i förskott. Uppsägningen träder i kraft vid nästa betalningsperiods utgång.</p>
+                    <p className="font-medium text-[rgba(255,255,255,0.8)]">Ingen återbetalning:</p>
+                    <p className="font-semibold text-[rgba(255,255,255,0.9)]">
+                      Betalning som redan erlagts återbetalas inte, oavsett orsak till uppsägning. Detta gäller även om du väljer att avbryta programmet i förtid.
+                    </p>
+                    <p className="font-medium text-[rgba(255,255,255,0.8)]">Uppsägning från Friskvårdskompassen:</p>
+                    <p>Vi förbehåller oss rätten att omedelbart avsluta avtalet utan återbetalning om du:</p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>Inte följer överenskommet träningsschema och rapportering</li>
+                      <li>Inte svarar på meddelanden och uppföljning inom skälig tid</li>
+                      <li>Inte lämnar in krävda uppgifter (träningslogg, kostdagbok etc.) senast överenskommet datum</li>
+                      <li>Uppvisar ett beteende som är olämpligt eller respektlöst mot coacher</li>
+                      <li>Bryter mot dessa villkor på annat sätt</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
+
+                {/* 5. Klientens åtaganden */}
+                <div className="space-y-3">
+                  <h3 className="text-[#FFD700] font-semibold text-lg">5. Klientens åtaganden</h3>
+                  <div className="text-[rgba(255,255,255,0.7)] text-sm space-y-2 leading-relaxed">
+                    <p>För att tjänsten ska fungera optimalt förbinder du dig att:</p>
+                    <ul className="list-disc list-inside space-y-1 ml-4">
+                      <li>Kommunicera regelbundet med din coach</li>
+                      <li>Följa överenskommet upplägg för träning och rapportering</li>
+                      <li>Svara på meddelanden inom 48 timmar</li>
+                      <li>Skicka in träningslogg och kostdagbok enligt överenskomna tider</li>
+                      <li>Vara ärlig om din situation, framsteg och eventuella svårigheter</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
+
+                {/* 6. Personuppgifter och sekretess */}
+                <div className="space-y-3">
+                  <h3 className="text-[#FFD700] font-semibold text-lg">6. Personuppgifter och sekretess</h3>
                   <div className="text-[rgba(255,255,255,0.7)] text-sm space-y-2 leading-relaxed">
                     <p>
-                      Jag förstår att om jag blir accepterad till programmet krävs full betalning för minimum 4 veckors
-                      coaching i förskott för att säkra min plats. Efter detta kan jag välja att fortsätta genom
-                      PayPal, banköverföring eller kontant, men betalning ska göras senast vid andra veckans avtalsdag,
-                      eller avbrytas.
+                      Friskvårdskompassen behandlar dina personuppgifter i enlighet med GDPR. Den information du delar med din coach
+                      hanteras konfidentiellt och används endast för att leverera tjänsten. Läs vår integritetspolicy för mer information.
                     </p>
+                  </div>
+                </div>
+
+                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
+
+                {/* 7. Ändringar av villkor */}
+                <div className="space-y-3">
+                  <h3 className="text-[#FFD700] font-semibold text-lg">7. Ändringar av villkor</h3>
+                  <div className="text-[rgba(255,255,255,0.7)] text-sm space-y-2 leading-relaxed">
                     <p>
-                      Jag förstår att den här kontraktet är omedelbart uppsägbart och inte kan återbetalas. Om min
-                      coach rapporterar att jag saknar överenskommelse om vad som utgör regelbundet uppträdande i form
-                      av, men inte begränsat till:
+                      Friskvårdskompassen förbehåller sig rätten att ändra dessa villkor. Du kommer att informeras om
+                      väsentliga ändringar via e-post eller i plattformen.
                     </p>
+                  </div>
+                </div>
+
+                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
+
+                {/* 8. Godkännande */}
+                <div className="space-y-3">
+                  <h3 className="text-[#FFD700] font-semibold text-lg">8. Godkännande</h3>
+                  <div className="text-[rgba(255,255,255,0.7)] text-sm space-y-2 leading-relaxed">
+                    <p>Genom att registrera dig och betala för tjänsten bekräftar du att du:</p>
                     <ul className="list-disc list-inside space-y-1 ml-4">
-                      <li>Ej svarar på mitt schema när jag ombeds</li>
-                      <li>Ej skickar in mitt schema och mina kosttillskott regelbundet senast angivet datum</li>
+                      <li>Läst och förstått dessa villkor</li>
+                      <li>Accepterar villkoren i sin helhet</li>
+                      <li>Är minst 18 år gammal (alternativt har vårdnadshavares godkännande)</li>
                     </ul>
-                    <p className="font-semibold text-[rgba(255,255,255,0.9)]">
-                      Jag bekräftar att återbetalning inte kan ske av dessa skäl och jag är enligt avtal åtagande att
-                      fullfölja denna 12-veckors avtalad period eller längre om avtalet förnyas.
-                    </p>
-                    <p>
-                      Klient kan avsluta tjänsterna efter avtalad period när som helst så länge återbetalning inte söks
-                      och ett varsel på 2 veckor lämnas. Fortsatt betalning efter uppsägningsdatumet kan inte
-                      återbetalas.
-                    </p>
                   </div>
                 </div>
 
