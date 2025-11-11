@@ -433,7 +433,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                     value={formData.whyApply}
                     onChange={(e) => setFormData({ ...formData, whyApply: e.target.value })}
                     className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white min-h-[120px]"
-                    placeholder="Beskriv dina stora mål (t.ex. gå ner 10 kg) och små delmål (t.ex. träna 3 ggr/vecka)..."
+                    placeholder="Beskriv dina stora mål och små delmål..."
                   />
                 </div>
 
