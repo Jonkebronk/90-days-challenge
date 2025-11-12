@@ -731,15 +731,6 @@ model Lead {
   status      String   @default("NEW") // "NEW", "CONTACTED", "IN_DIALOG", "PAUSED", "CONVERTED", "LOST"
   notes       String?  @db.Text
   tags        String[]
-
-  // AI-Generated Plan
-  aiGeneratedPlan   Json?
-  aiProcessedAt     DateTime?
-  aiModelVersion    String?
-  planApproved      Boolean   @default(false)
-  planApprovedAt    DateTime?
-  planApprovedBy    String?
-
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

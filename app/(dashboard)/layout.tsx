@@ -31,7 +31,6 @@ import {
   Bell,
   Dumbbell,
   MessageSquare,
-  Brain,
   HelpCircle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -49,7 +48,6 @@ const navigation = [
   { name: 'Klienter', href: '/dashboard/clients', icon: Users, coachOnly: true },
   { name: 'Journal', href: '/dashboard/journal', icon: ClipboardList },
   { name: 'Ansökningar', href: '/dashboard/leads', icon: UserPlus, coachOnly: true },
-  { name: 'Planer', href: '/dashboard/ai-plans', icon: Brain, coachOnly: true },
   {
     name: 'Innehåll',
     icon: BookOpen,
