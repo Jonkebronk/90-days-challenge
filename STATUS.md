@@ -1,6 +1,6 @@
 # Projektstatus - 90-Dagars Challenge
 
-**Senast uppdaterad**: 2025-01-06
+**Senast uppdaterad**: 2025-01-12
 
 ## ✅ Färdigt (Klart att använda)
 
@@ -115,6 +115,42 @@
   - Detailed recipe view with nutrition info
   - Servings calculator
   - Print-friendly layout
+
+#### Workout Program System
+- [x] **Complete 6-Program System:**
+  - Phase 1 (BEGINNER): Första fasen - fokus underkropp & överkropp
+    - 3-4 sets × 12-15 reps, 75s rest
+    - 5 days (lower) / 4 days (upper)
+    - 41 unique exercises in Swedish
+  - Phase 2 (INTERMEDIATE): Andra fasen - fokus underkropp & överkropp
+    - 4-5 sets × 9-12 reps, 60s rest
+    - Dropsets introduced
+    - Progressive volume and intensity
+  - Phase 3 (ADVANCED): Tredje fasen - fokus underkropp & överkropp
+    - 3-5 sets × 9-12 reps, 60s rest
+    - Advanced techniques: Compound Sets (CS), Rest-Pause Sets (RPS), Dropsets
+    - Combined intensity methods
+
+- [x] **Exercise Database:**
+  - 41 exercises with Swedish names
+  - Muscle group categorization
+  - Equipment requirements
+  - Proper form instructions
+  - All exercises reusable across programs
+
+- [x] **Program Features:**
+  - Template-based (isTemplate: true)
+  - Coach assignment to clients
+  - Multi-day workout splits
+  - Progressive difficulty levels
+  - Intensity technique tracking (notes field)
+  - Published/unpublished status
+
+- [x] **Seed Scripts:**
+  - Automated program population
+  - Verification scripts for data integrity
+  - All 6 programs seeded to database
+  - Complete progression pathway for clients
 
 #### 90-Day Roadmap System
 - [x] **Roadmap Management (Coach):**
@@ -313,18 +349,38 @@
   - Tillbaka till lessons list
 
 ### 7. Landing Page
-- [x] Hero section med value proposition
-- [x] Countdown timer for applications
-- [x] Animated particle effects (dark theme with gold accents)
-- [x] CTA buttons (Ansök nu / Har du invite-kod?)
-- [x] Features showcase
-- [x] Program benefits
-- [x] "Passar för dig" / "Passar INTE" comparison section
-- [x] FAQ accordion section
+- [x] **Hero Section:**
+  - Title: "90 DAGARS UTMANINGEN" (updated from "90-DAGARS CHALLENGE")
+  - Value proposition
+  - Animated particle effects (dark theme with gold accents)
+  - Shimmer dividers with gold gradient
+  - Orbitron font with tracking effects
+
+- [x] **"Hur det fungerar" Section:**
+  - 3-step process explanation (vertically stacked)
+  - Steg 1: Ansök och berätta om dina mål
+  - Steg 2: Vi går igenom din plan tillsammans
+  - Steg 3: Säg ja till utmaningen
+  - Large transparent background numbers (01, 02, 03)
+  - Glass-morphism cards with gold borders
+  - Hover effects with glow and scale
+  - Max-width 700px for optimal readability
+
+- [x] **Program Section:**
+  - Countdown timer for applications
+  - "Passar för dig" / "Passar INTE" comparison cards
+  - Green/red color-coded sections
+  - CTA button: "Ansök Nu"
+
+- [x] **FAQ Section:**
+  - Accordion with 7 common questions
+  - Expandable cards
+
 - [x] **Invite Code Section:**
   - Exclusive GOLD-code entry
   - Code verification before signup
   - Premium feel with gold styling
+
 - [x] **Application Form (`/apply`):**
   - Multi-step comprehensive form
   - Current photos upload (required)
@@ -332,9 +388,12 @@
   - Lifestyle assessment
   - Customer agreement
   - Creates lead in system
-- [x] PWA support (manifest.json)
-- [x] Responsiv design
-- [x] Clean, modern dark UI
+
+- [x] **Technical:**
+  - PWA support (manifest.json)
+  - Fully responsive design
+  - Clean, modern dark UI with gold accents
+  - Animations and transitions
 
 ### 8. Calculations & Logic
 - [x] BMR (Basal Metabolic Rate) - Mifflin-St Jeor
@@ -654,8 +713,11 @@ await prisma.lesson.update({
 - ✅ Coach client management och lead generation
 - ✅ **Article Bank (Kunskapsbanken)** - Komplett content management system
 - ✅ **Recipe Bank (Receptbanken)** - Recept med näringsberäkning
+- ✅ **Workout Program System** - 6 kompletta träningsprogram (3 faser × 2 fokusområden)
+- ✅ **Exercise Database** - 41 övningar med svenska namn
 - ✅ **90-Day Roadmap** - Dag-för-dag artikel-tilldelningar
 - ✅ **Application System** - Omfattande ansökningsformulär
+- ✅ **Landing Page** - "Hur det fungerar" sektion med 3-stegs process
 - ✅ File sharing system
 - ✅ Lessons/presentation system (legacy)
 - ✅ Weekly check-in med progress-foton

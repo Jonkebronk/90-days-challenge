@@ -115,7 +115,7 @@ En komplett coaching-plattform för personlig träning och kost, med interaktiva
   - Kodverifiering och utgångsdatum
   - Lead-to-client konvertering
 
-#### 🎓 Lessons/Presentation System
+#### 🎓 Lessons/Presentation System (Legacy)
 - [x] **Coach - Lessons List:**
   - Skapa, redigera, ta bort lektioner
   - Filtrera efter fas (1/2/3) och status (publicerad/utkast)
@@ -140,6 +140,30 @@ En komplett coaching-plattform för personlig träning och kost, med interaktiva
   - Auto-sparar progress
   - "Slutför lektion" funktionalitet
 
+#### 💪 Workout Program System
+- [x] **Complete 6-Program System:**
+  - Fas 1 (BEGINNER): Första fasen - fokus underkropp & överkropp
+    - 3-4 set × 12-15 reps, 75s vila
+    - 5 dagar (underkropp) / 4 dagar (överkropp)
+  - Fas 2 (INTERMEDIATE): Andra fasen - fokus underkropp & överkropp
+    - 4-5 set × 9-12 reps, 60s vila
+    - Dropsets introducerade
+  - Fas 3 (ADVANCED): Tredje fasen - fokus underkropp & överkropp
+    - 3-5 set × 9-12 reps, 60s vila
+    - Avancerade tekniker: Compound Sets, Rest-Pause Sets, Dropsets
+- [x] **Exercise Database:**
+  - 41 övningar med svenska namn
+  - Muskelgruppsindelning
+  - Utrustningskrav
+  - Alla övningar återanvändbara mellan program
+- [x] **Program Features:**
+  - Mallbaserade program (isTemplate: true)
+  - Coach kan tilldela program till klienter
+  - Fleradagars träningspass
+  - Progressiva svårighetsgrader
+  - Intensitetsteknik-spårning
+  - Publicera/avpublicera status
+
 #### 🛠️ Tools (Client)
 - [x] **Calorie Calculator:**
   - BMR och TDEE beräkningar
@@ -157,12 +181,29 @@ En komplett coaching-plattform för personlig träning och kost, med interaktiva
   - Real-time uppdatering
 
 #### 🎨 Landing Page
-- [x] Hero section med CTA
-- [x] Features showcase
-- [x] Program benefits
-- [x] "Vem passar programmet för?" sektion
-- [x] Lead capture form
-- [x] Responsiv design
+- [x] **Hero Section:**
+  - Titel: "90 DAGARS UTMANINGEN"
+  - Animated particle effects med gold accents
+  - Shimmer dividers
+- [x] **"Hur det fungerar" Section:**
+  - 3-stegs process (vertikalt staplade kort)
+  - Large transparent background numbers
+  - Glass-morphism design med gold borders
+  - Steg 1: Ansök och berätta om dina mål
+  - Steg 2: Vi går igenom din plan tillsammans
+  - Steg 3: Säg ja till utmaningen
+- [x] **Program Section:**
+  - "Passar för dig" / "Passar INTE" comparison
+  - Countdown timer
+  - CTA: "Ansök Nu"
+- [x] **FAQ Section:**
+  - Expandable accordion med 7 frågor
+- [x] **Invite Code Section:**
+  - Exclusive GOLD-code entry
+- [x] **Application Form:**
+  - Multi-step comprehensive form
+  - Photo uploads (required)
+- [x] PWA support & responsiv design
 
 #### 📐 Calculations
 - [x] BMR (Basal Metabolic Rate)
