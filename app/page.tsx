@@ -256,9 +256,9 @@ export default function HomePage() {
         <div id="start" className="mb-[50px] scroll-mt-24">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-5 animate-shimmer" />
           <h1 className="font-['Orbitron',sans-serif] text-5xl font-black tracking-[6px] leading-[1.2] uppercase animate-titleGlow bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-            90-DAGARS
+            90 DAGARS
             <br />
-            CHALLENGE
+            UTMANINGEN
           </h1>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-5 animate-shimmer" />
         </div>
@@ -274,10 +274,10 @@ export default function HomePage() {
             <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 animate-shimmer" />
           </div>
 
-          {/* 3-column grid */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-[1200px] mx-auto">
+          {/* Vertical stack layout */}
+          <div className="flex flex-col gap-6 max-w-[700px] mx-auto">
             {/* Step 1 */}
-            <div className="relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-8 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.6)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:-translate-y-1 overflow-hidden">
+            <div className="relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-10 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.6)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:-translate-y-1 overflow-hidden">
               {/* Large background number */}
               <div className="absolute top-0 left-0 font-['Orbitron',sans-serif] text-[140px] font-black text-[rgba(255,255,255,0.05)] leading-none select-none pointer-events-none">
                 01
@@ -285,20 +285,20 @@ export default function HomePage() {
 
               {/* Content */}
               <div className="relative z-10">
-                <div className="text-lg font-bold text-white mb-3 tracking-[2px] font-['Orbitron',sans-serif]">
+                <div className="text-xl font-bold text-white mb-3 tracking-[2px] font-['Orbitron',sans-serif]">
                   Steg 1.
                 </div>
-                <h3 className="text-xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
+                <h3 className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
                   Ansök och berätta om dina mål
                 </h3>
-                <p className="text-[rgba(255,255,255,0.8)] text-sm leading-relaxed">
+                <p className="text-[rgba(255,255,255,0.8)] text-base leading-relaxed">
                   Fyll i ett kort formulär där du delar dina ambitioner, var du är idag och vart du vill komma. Det tar 5 minuter och är första steget mot förändring.
                 </p>
               </div>
             </div>
 
             {/* Step 2 */}
-            <div className="relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-8 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.6)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:-translate-y-1 overflow-hidden">
+            <div className="relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-10 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.6)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:-translate-y-1 overflow-hidden">
               {/* Large background number */}
               <div className="absolute top-0 left-0 font-['Orbitron',sans-serif] text-[140px] font-black text-[rgba(255,255,255,0.05)] leading-none select-none pointer-events-none">
                 02
@@ -306,20 +306,20 @@ export default function HomePage() {
 
               {/* Content */}
               <div className="relative z-10">
-                <div className="text-lg font-bold text-white mb-3 tracking-[2px] font-['Orbitron',sans-serif]">
+                <div className="text-xl font-bold text-white mb-3 tracking-[2px] font-['Orbitron',sans-serif]">
                   Steg 2.
                 </div>
-                <h3 className="text-xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
+                <h3 className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
                   Vi går igenom din plan tillsammans
                 </h3>
-                <p className="text-[rgba(255,255,255,0.8)] text-sm leading-relaxed">
+                <p className="text-[rgba(255,255,255,0.8)] text-base leading-relaxed">
                   Jag går igenom din ansökan och visar exakt hur vi ska nå dina mål. Du får full insyn i upplägget innan du bestämmer dig.
                 </p>
               </div>
             </div>
 
             {/* Step 3 */}
-            <div className="relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-8 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.6)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:-translate-y-1 overflow-hidden">
+            <div className="relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-10 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.6)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:-translate-y-1 overflow-hidden">
               {/* Large background number */}
               <div className="absolute top-0 left-0 font-['Orbitron',sans-serif] text-[140px] font-black text-[rgba(255,255,255,0.05)] leading-none select-none pointer-events-none">
                 03
@@ -327,13 +327,13 @@ export default function HomePage() {
 
               {/* Content */}
               <div className="relative z-10">
-                <div className="text-lg font-bold text-white mb-3 tracking-[2px] font-['Orbitron',sans-serif]">
+                <div className="text-xl font-bold text-white mb-3 tracking-[2px] font-['Orbitron',sans-serif]">
                   Steg 3.
                 </div>
-                <h3 className="text-xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
+                <h3 className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
                   Säg ja till utmaningen
                 </h3>
-                <p className="text-[rgba(255,255,255,0.8)] text-sm leading-relaxed">
+                <p className="text-[rgba(255,255,255,0.8)] text-base leading-relaxed">
                   Om det känns rätt tar du steget och vi sätter igång. Ingen press, bara en möjlighet att äntligen få ordning på träning och kost.
                 </p>
               </div>
