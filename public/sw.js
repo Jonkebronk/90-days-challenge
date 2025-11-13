@@ -1,5 +1,5 @@
 // Service Worker for 90 Days Challenge PWA
-const CACHE_NAME = '90-days-v2'
+const CACHE_NAME = '90-days-v3'
 const urlsToCache = [
   '/',
   '/dashboard',
@@ -34,6 +34,12 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   // Skip chrome extensions and non-http requests
   if (!event.request.url.startsWith('http')) {
+    return
+  }
+
+  // Skip caching for non-GET requests (POST, PUT, DELETE, etc.)
+  if (event.request.method !== 'GET') {
+    event.respondWith(fetch(event.request))
     return
   }
 
