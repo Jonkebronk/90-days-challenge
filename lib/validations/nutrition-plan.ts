@@ -46,43 +46,43 @@ export const nutritionSchemaSchema = z.object({
 // Phase 1 schema (Base calculations)
 export const phase1DataSchema = z.object({
   weight: z
-    .number()
+    .coerce.number()
     .positive('Weight must be positive')
     .min(30, 'Weight must be at least 30 kg')
     .max(300, 'Weight must be less than 300 kg'),
   activity: activityLevelSchema,
   weightLoss: z
-    .number()
+    .coerce.number()
     .min(0, 'Weight loss cannot be negative')
     .max(1000, 'Weight loss deficit too high'),
   steps: z
-    .number()
+    .coerce.number()
     .int('Steps must be a whole number')
     .positive('Steps must be positive')
     .min(1000, 'Minimum 1000 steps')
     .max(30000, 'Maximum 30000 steps'),
-  calories: z.number().int().positive(),
-  protein: z.number().int().positive(),
-  fat: z.number().int().positive(),
-  carbs: z.number().int(),
+  calories: z.coerce.number().int().positive(),
+  protein: z.coerce.number().int().positive(),
+  fat: z.coerce.number().int().positive(),
+  carbs: z.coerce.number().int(),
   schema: nutritionSchemaSchema.optional(),
 });
 
 // Phase 2 schema (Ramp up 1)
 export const phase2DataSchema = z.object({
   weight: z
-    .number()
+    .coerce.number()
     .positive()
     .min(30)
     .max(300),
   activity: activityLevelSchema,
-  weightLoss: z.number().min(0).max(1000),
-  steps: z.number().int().positive().min(1000).max(30000),
-  calories: z.number().int().positive(),
-  protein: z.number().int().positive(),
-  fat: z.number().int().positive(),
-  carbs: z.number().int(),
-  cardioMinutes: z.number().int().default(10),
+  weightLoss: z.coerce.number().min(0).max(1000),
+  steps: z.coerce.number().int().positive().min(1000).max(30000),
+  calories: z.coerce.number().int().positive(),
+  protein: z.coerce.number().int().positive(),
+  fat: z.coerce.number().int().positive(),
+  carbs: z.coerce.number().int(),
+  cardioMinutes: z.coerce.number().int().default(10),
   cardioDescription: z.string(),
   schema: nutritionSchemaSchema.optional(),
 });
@@ -90,18 +90,18 @@ export const phase2DataSchema = z.object({
 // Phase 3 schema (Ramp up 2)
 export const phase3DataSchema = z.object({
   weight: z
-    .number()
+    .coerce.number()
     .positive()
     .min(30)
     .max(300),
   activity: activityLevelSchema,
-  weightLoss: z.number().min(0).max(1000),
-  steps: z.number().int().positive().min(1000).max(30000),
-  calories: z.number().int().positive(),
-  protein: z.number().int().positive(),
-  fat: z.number().int().positive(),
-  carbs: z.number().int(),
-  cardioMinutes: z.number().int().default(20),
+  weightLoss: z.coerce.number().min(0).max(1000),
+  steps: z.coerce.number().int().positive().min(1000).max(30000),
+  calories: z.coerce.number().int().positive(),
+  protein: z.coerce.number().int().positive(),
+  fat: z.coerce.number().int().positive(),
+  carbs: z.coerce.number().int(),
+  cardioMinutes: z.coerce.number().int().default(20),
   cardioDescription: z.string(),
   schema: nutritionSchemaSchema.optional(),
 });
@@ -109,23 +109,23 @@ export const phase3DataSchema = z.object({
 // Phase 4 schema (Maintenance)
 export const phase4DataSchema = z.object({
   weight: z
-    .number()
+    .coerce.number()
     .positive()
     .min(30)
     .max(300),
   activity: activityLevelSchema,
   activityAdjustment: z
-    .number()
+    .coerce.number()
     .min(-10, 'Activity adjustment too low')
     .max(10, 'Activity adjustment too high')
     .default(0),
   cardioOption: cardioOptionSchema,
-  steps: z.number().int().positive().min(1000).max(30000),
-  calories: z.number().int().positive(),
-  protein: z.number().int().positive(),
-  fat: z.number().int().positive(),
-  carbs: z.number().int(),
-  cardioMinutes: z.number().int().optional(),
+  steps: z.coerce.number().int().positive().min(1000).max(30000),
+  calories: z.coerce.number().int().positive(),
+  protein: z.coerce.number().int().positive(),
+  fat: z.coerce.number().int().positive(),
+  carbs: z.coerce.number().int(),
+  cardioMinutes: z.coerce.number().int().optional(),
   cardioDescription: z.string(),
   schema: nutritionSchemaSchema.optional(),
 });
