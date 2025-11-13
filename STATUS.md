@@ -1,6 +1,6 @@
 # Projektstatus - 90-Dagars Challenge
 
-**Senast uppdaterad**: 2025-01-12
+**Senast uppdaterad**: 2025-11-13
 
 ## ✅ Färdigt (Klart att använda)
 
@@ -187,6 +187,47 @@
   - Usage tracking
   - Setup account flow with invite code
 
+#### Meal Plan Template System
+- [x] **Meal Plan Management (Coach):**
+  - Create reusable meal plan templates
+  - Set target macros (protein, fat, carbs, calories)
+  - Multiple meals per day with recipe options
+  - Meal timing och pre/post-workout nutrition
+  - Tilldela templates till specifika klienter
+  - View alla tilldelade meal plans
+  - Published/draft status
+
+- [x] **Meal Plan View (Client):**
+  - Se tilldelad meal plan från coach
+  - Dagliga måltider med recept-alternativ
+  - Total makro-översikt per dag
+  - Meal timing och rekommendationer
+  - Integration med receptbanken
+
+#### FAQ Management System
+- [x] **FAQ Management (Coach):**
+  - Create, edit, delete FAQs
+  - Kategorisera FAQs (allmänt, träning, nutrition, etc.)
+  - Publicera/avpublicera FAQs
+  - Order management
+
+- [x] **FAQ View (Client):**
+  - Expandable FAQ cards med blå gradient design
+  - Kategoriserad vy
+  - Sökfunktion
+  - Responsive accordion layout
+  - Tillgänglig via dashboard card (ej navigation)
+
+#### Messages System
+- [x] **In-App Messaging:**
+  - Real-time chat mellan coach och client
+  - Message history
+  - Unread message indicators
+  - Auto-scroll to latest message
+  - Timestamp tracking
+  - Coach kan se alla client conversations
+  - Client kan endast chatta med sin coach
+
 #### Lessons/Content Management (Legacy)
 - [x] **Lessons List:**
   - Create, edit, delete lessons
@@ -255,6 +296,18 @@
   - Target calories baserat på mål
   - Macro distribution (protein, carbs, fat)
   - Export plan funktionalitet
+
+- [x] **4-Phase Nutrition Calculator (Coach Tool):**
+  - **Phase 1**: Basberäkningar med grundkalori och stegmål
+  - **Phase 2**: Stegökning (500/dag) och kardio-rekommendationer
+  - **Phase 3**: Fortsatt stegökning (500/dag) och kardio-planering
+  - **Phase 4**: Aktivitetsjustering och valbart kardio-alternativ
+  - React Hook Form med Controller för smooth UX
+  - Real-time makroberäkningar (protein, fett, kolhydrater)
+  - Export till PDF-funktionalitet
+  - Klient-tilldelning och planspårning
+  - Validering med Zod schemas
+  - Zustand state management för formulärdata
 
 - [x] **Meal Distribution Calculator:**
   - Calculate protein/carbs/fat per måltid
@@ -475,6 +528,11 @@
 - ✅ Prisma schema synkad till Railway databas
 - ✅ MDX rendering TypeScript errors - FIXAT
 - ✅ Build errors - Alla lösta, clean build
+- ✅ React Hook Form Controller infinite loop - FIXAT (2025-11-13)
+  - Removed setValue and calculatePhaseXData from useEffect dependencies
+  - Implemented Controller component for all Select and RadioGroup inputs
+  - Eliminated "Maximum update depth exceeded" error in nutrition calculator
+  - All 4 phases now use consistent Controller pattern
 
 ### Måste Fixas
 - Inga kritiska buggar just nu! 🎉

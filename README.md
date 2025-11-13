@@ -164,11 +164,19 @@ En komplett coaching-plattform för personlig träning och kost, med interaktiva
   - Intensitetsteknik-spårning
   - Publicera/avpublicera status
 
-#### 🛠️ Tools (Client)
+#### 🛠️ Tools (Client & Coach)
 - [x] **Calorie Calculator:**
   - BMR och TDEE beräkningar
   - Anpassad kaloriplanering
   - Exportera plan
+- [x] **4-Phase Nutrition Calculator (Coach Tool):**
+  - 4-stegs progressiv nutritionsplanering
+  - Fas 1: Basberäkningar och stegmål
+  - Fas 2-3: Stegökning och kardio
+  - Fas 4: Aktivitetsjustering och kardio-val
+  - Real-time makroberäkningar
+  - Export till PDF
+  - Klient-tilldelning
 - [x] **Meal Distribution Calculator:**
   - Beräkna protein/carbs/fat per måltid
   - Antal måltider per dag
@@ -377,10 +385,24 @@ UPDATE "User" SET role = 'coach' WHERE email = 'din@email.com';
 4. **Receptbanken**: Skapa och dela recept
    - Lägg till ingredienser och instruktioner
    - Beräkna näringsvärden automatiskt
-5. **90-Dagars Roadmap**: Tilldela artiklar till specifika dagar (1-90)
-6. **Files**: Ladda upp och dela filer med klienter
-7. **Lessons** (Legacy): Skapa interaktiva presentationer med MDX, video och quiz
-8. **Workspace**: Använd coach-verktyg för att skapa client-planer
+5. **Meal Plan Templates**: Skapa återanvändbara måltidsplaner
+   - Sätt målmakron per dag
+   - Lägg till flera måltider med recept-alternativ
+   - Tilldela till specifika klienter
+6. **90-Dagars Roadmap**: Tilldela artiklar till specifika dagar (1-90)
+7. **FAQ Management**: Skapa och hantera vanliga frågor
+   - Kategorisera FAQs
+   - Publicera/avpublicera
+8. **Messages**: Chatta med klienter i real-time
+   - Se alla conversations
+   - Unread message indicators
+9. **Files**: Ladda upp och dela filer med klienter
+10. **4-Phase Nutrition Calculator**: Skapa detaljerade nutritionsplaner
+    - Progressiv planering över 4 faser
+    - Automatiska makroberäkningar
+    - Export till PDF
+11. **Lessons** (Legacy): Skapa interaktiva presentationer med MDX, video och quiz
+12. **Workspace**: Använd coach-verktyg för att skapa client-planer
 
 ### Som Client
 1. **Dashboard**: Se dagens övergripande status och nästa steg
@@ -390,13 +412,24 @@ UPDATE "User" SET role = 'coach' WHERE email = 'din@email.com';
 3. **Receptbanken**: Bläddra recept och markera favoriter
    - Filtrera efter måltidstyp och svårighetsgrad
    - Se näringsinfo och tillagningstid
-4. **90-Dagars Roadmap**: Följ dag-för-dag artikeltilldelningar
-5. **Check-in**: Veckovis check-in med vikt, foton, och metrics
+4. **Kostschema**: Se din tilldelade meal plan från coach
+   - Dagliga måltider med recept-alternativ
+   - Total makro-översikt
+5. **Vanliga frågor (FAQ)**: Läs svar på vanliga frågor
+   - Expandable FAQ cards med sökfunktion
+   - Kategoriserad vy
+6. **Messages**: Chatta med din coach
+   - Real-time messaging
+   - Message history
+7. **90-Dagars Roadmap**: Följ dag-för-dag artikeltilldelningar
+8. **Check-in**: Veckovis check-in med vikt, foton, och metrics
    - Energi, mood, diet/workout adherence
    - Progress-foton (fram/sida/bak)
-6. **Weight Tracker**: Se viktutveckling i graf över tid
-7. **Tools**: Använd kaloriräknare, måltidsfördelning, stegräknare
-8. **Lessons** (Legacy): Gå igenom interaktiva presentationer
+   - Dagliga vikter (måndag-söndag)
+   - Kroppsmått (bröst, midja, höfter, rumpa, armar, lår, vader)
+9. **Weight Tracker**: Se viktutveckling i graf över tid
+10. **Tools**: Använd kaloriräknare, måltidsfördelning, stegräknare
+11. **Lessons** (Legacy): Gå igenom interaktiva presentationer
    - Följ fas-baserad progression
    - Ta quiz för att testa kunskap
 
