@@ -16,7 +16,7 @@ import {
 interface NutritionCalculatorState {
   // Plan metadata
   planId: string | null;
-  clientId: string | null;
+  clientId: string;
   clientName: string;
   status: PlanStatus;
   currentPhase: 1 | 2 | 3 | 4;
@@ -68,7 +68,7 @@ interface NutritionCalculatorState {
 
 const initialState = {
   planId: null,
-  clientId: null,
+  clientId: '',
   clientName: '',
   status: 'DRAFT' as PlanStatus,
   currentPhase: 1 as 1 | 2 | 3 | 4,
