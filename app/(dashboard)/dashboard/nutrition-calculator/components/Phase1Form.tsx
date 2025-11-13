@@ -54,11 +54,11 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
         stepsNum
       );
 
-      // Update calculated fields
-      setValue('calories', calculated.calories);
-      setValue('protein', calculated.protein);
-      setValue('fat', calculated.fat);
-      setValue('carbs', calculated.carbs);
+      // Update calculated fields - convert to strings for consistency
+      setValue('calories', calculated.calories.toString());
+      setValue('protein', calculated.protein.toString());
+      setValue('fat', calculated.fat.toString());
+      setValue('carbs', calculated.carbs.toString());
     }
   }, [weight, activity, weightLoss, steps, calculatePhase1Data, setValue]);
 
