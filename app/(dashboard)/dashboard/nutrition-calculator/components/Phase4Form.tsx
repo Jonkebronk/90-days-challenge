@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { Controller } from 'react-hook-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,6 +35,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
     handleSubmit,
     watch,
     setValue,
+    control,
     formState: { errors },
   } = usePhase4Form() as any;
 
@@ -143,25 +145,26 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
               <Label htmlFor="activity" className="text-white">
                 Aktivitetsnivå
               </Label>
-              <Select
-                value={String(activity || 30)}
-                onValueChange={(value) => {
-                  const numValue = Number(value) as ActivityLevel;
-                  if (numValue !== activity) {
-                    setValue('activity', numValue);
-                  }
-                }}
-              >
-                <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">
-                  <SelectValue placeholder="Välj nivå" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="25">25 - Låg aktivitet</SelectItem>
-                  <SelectItem value="30">30 - Måttlig aktivitet</SelectItem>
-                  <SelectItem value="35">35 - Hög aktivitet</SelectItem>
-                  <SelectItem value="40">40 - Mycket hög aktivitet</SelectItem>
-                </SelectContent>
-              </Select>
+              <Controller
+                name="activity"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={String(field.value || 30)}
+                    onValueChange={(value) => field.onChange(Number(value) as ActivityLevel)}
+                  >
+                    <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectValue placeholder="Välj nivå" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="25">25 - Låg aktivitet</SelectItem>
+                      <SelectItem value="30">30 - Måttlig aktivitet</SelectItem>
+                      <SelectItem value="35">35 - Hög aktivitet</SelectItem>
+                      <SelectItem value="40">40 - Mycket hög aktivitet</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
               {errors.activity && (
                 <p className="text-sm text-red-400">{errors.activity.message}</p>
               )}
@@ -187,36 +190,37 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
           {/* Cardio Options */}
           <div className="border border-[rgba(255,215,0,0.3)] bg-black/40 p-4 rounded-lg">
             <Label className="text-white text-lg mb-3 block">Välj Cardio-alternativ</Label>
-            <RadioGroup
-              value={String(cardioOption || 1)}
-              onValueChange={(value) => {
-                const numValue = Number(value) as CardioOption;
-                if (numValue !== cardioOption) {
-                  setValue('cardioOption', numValue);
-                }
-              }}
-            >
-              <div className="space-y-3">
-                <div className="flex items-start space-x-3 p-3 rounded-lg border border-[rgba(255,215,0,0.2)] hover:bg-[rgba(255,215,0,0.05)]">
-                  <RadioGroupItem value="1" id="option-1" className="mt-1" />
-                  <Label htmlFor="option-1" className="flex-1 cursor-pointer">
-                    <div className="font-semibold text-white">Alternativ 1: Med Cardio</div>
-                    <div className="text-gray-400 text-sm">
-                      12 intervallvarv efter styrketräning, minska steg med 30%
+            <Controller
+              name="cardioOption"
+              control={control}
+              render={({ field }) => (
+                <RadioGroup
+                  value={String(field.value || 1)}
+                  onValueChange={(value) => field.onChange(Number(value) as CardioOption)}
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-start space-x-3 p-3 rounded-lg border border-[rgba(255,215,0,0.2)] hover:bg-[rgba(255,215,0,0.05)]">
+                      <RadioGroupItem value="1" id="option-1" className="mt-1" />
+                      <Label htmlFor="option-1" className="flex-1 cursor-pointer">
+                        <div className="font-semibold text-white">Alternativ 1: Med Cardio</div>
+                        <div className="text-gray-400 text-sm">
+                          12 intervallvarv efter styrketräning, minska steg med 30%
+                        </div>
+                      </Label>
                     </div>
-                  </Label>
-                </div>
-                <div className="flex items-start space-x-3 p-3 rounded-lg border border-[rgba(255,215,0,0.2)] hover:bg-[rgba(255,215,0,0.05)]">
-                  <RadioGroupItem value="2" id="option-2" className="mt-1" />
-                  <Label htmlFor="option-2" className="flex-1 cursor-pointer">
-                    <div className="font-semibold text-white">Alternativ 2: Utan Cardio</div>
-                    <div className="text-gray-400 text-sm">
-                      Ingen cardio, behåll stegmålet från Fas 3
+                    <div className="flex items-start space-x-3 p-3 rounded-lg border border-[rgba(255,215,0,0.2)] hover:bg-[rgba(255,215,0,0.05)]">
+                      <RadioGroupItem value="2" id="option-2" className="mt-1" />
+                      <Label htmlFor="option-2" className="flex-1 cursor-pointer">
+                        <div className="font-semibold text-white">Alternativ 2: Utan Cardio</div>
+                        <div className="text-gray-400 text-sm">
+                          Ingen cardio, behåll stegmålet från Fas 3
+                        </div>
+                      </Label>
                     </div>
-                  </Label>
-                </div>
-              </div>
-            </RadioGroup>
+                  </div>
+                </RadioGroup>
+              )}
+            />
             {errors.cardioOption && (
               <p className="text-sm text-red-400 mt-2">{errors.cardioOption.message}</p>
             )}
