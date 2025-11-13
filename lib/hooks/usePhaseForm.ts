@@ -63,48 +63,48 @@ export function usePhaseForm<T extends PhaseNumber>(
     switch (phase) {
       case 1:
         return {
-          weight: '' as any,
-          activity: 30 as any,
-          weightLoss: '' as any,
-          steps: '' as any,
-          calories: '' as any,
-          protein: '' as any,
-          fat: '' as any,
-          carbs: '' as any,
+          weight: undefined,
+          activity: 30,
+          weightLoss: undefined,
+          steps: undefined,
+          calories: undefined,
+          protein: undefined,
+          fat: undefined,
+          carbs: undefined,
         };
       case 2:
         return {
-          weight: '' as any,
-          steps: '' as any,
-          calories: '' as any,
-          protein: '' as any,
-          fat: '' as any,
-          carbs: '' as any,
-          cardioMinutes: 10 as any,
-          cardioDescription: '' as any,
+          weight: undefined,
+          steps: undefined,
+          calories: undefined,
+          protein: undefined,
+          fat: undefined,
+          carbs: undefined,
+          cardioMinutes: 10,
+          cardioDescription: '',
         };
       case 3:
         return {
-          weight: '' as any,
-          steps: '' as any,
-          calories: '' as any,
-          protein: '' as any,
-          fat: '' as any,
-          carbs: '' as any,
-          cardioMinutes: 20 as any,
-          cardioDescription: '' as any,
+          weight: undefined,
+          steps: undefined,
+          calories: undefined,
+          protein: undefined,
+          fat: undefined,
+          carbs: undefined,
+          cardioMinutes: 20,
+          cardioDescription: '',
         };
       case 4:
         return {
-          weight: '' as any,
-          steps: '' as any,
-          calories: '' as any,
-          protein: '' as any,
-          fat: '' as any,
-          carbs: '' as any,
-          cardioOption: 1 as any,
-          cardioMinutes: '' as any,
-          cardioDescription: '' as any,
+          weight: undefined,
+          steps: undefined,
+          calories: undefined,
+          protein: undefined,
+          fat: undefined,
+          carbs: undefined,
+          cardioOption: 1,
+          cardioMinutes: undefined,
+          cardioDescription: '',
         };
       default:
         return {};
@@ -148,7 +148,7 @@ export function usePhaseForm<T extends PhaseNumber>(
   // Initialize form with schema validation
   const form = useForm({
     resolver: zodResolver(schema as any),
-    defaultValues: data || getDefaultValues(),
+    defaultValues: (data || getDefaultValues()) as any,
     mode: 'onChange',
   }) as any;
 
