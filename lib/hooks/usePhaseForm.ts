@@ -154,9 +154,22 @@ export function usePhaseForm<T extends PhaseNumber>(
   }) as any;
 
   // Sync form values with store when data changes
+  // Convert all numbers to strings to maintain consistent controlled state
   useEffect(() => {
     if (data) {
-      form.reset(data);
+      const convertToStrings = (obj: any): any => {
+        if (typeof obj === 'number') return obj.toString();
+        if (typeof obj !== 'object' || obj === null) return obj;
+        if (Array.isArray(obj)) return obj.map(convertToStrings);
+
+        return Object.entries(obj).reduce((acc, [key, value]) => {
+          acc[key] = convertToStrings(value);
+          return acc;
+        }, {} as any);
+      };
+
+      const stringifiedData = convertToStrings(data);
+      form.reset(stringifiedData);
     }
   }, [data, form]);
 
