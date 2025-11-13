@@ -75,6 +75,7 @@ const navigation = [
     dropdown: [
       { name: 'Klientplan Workspace', href: '/dashboard/tools/workspace', icon: Zap },
       { name: 'Kaloriverktyg', href: '/dashboard/tools', icon: Calculator },
+      { name: 'Kostschema Kalkylator', href: '/dashboard/nutrition-calculator', icon: Utensils },
       { name: 'Måltidsfördelning', href: '/dashboard/tools/meal-distribution', icon: Utensils },
       { name: 'Stegkalkylator', href: '/dashboard/tools/steps', icon: Activity },
       { name: 'Viktspårning', href: '/dashboard/weight-tracker', icon: Scale },

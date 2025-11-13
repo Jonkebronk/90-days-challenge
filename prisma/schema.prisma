@@ -39,112 +39,116 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  password      String?
-  image         String?
-  role          String    @default("client") // "coach" or "client"
-  status        String    @default("pending") // "pending", "active", "inactive"
-  coachId       String?
-  invitationToken String?  @unique
-  invitationSentAt DateTime?
-  inviteCode    String?   @unique // Golden ticket code (e.g., "GOLD-A7K9-2M4P")
+  id                  String    @id @default(cuid())
+  name                String?
+  email               String    @unique
+  emailVerified       DateTime?
+  password            String?
+  image               String?
+  role                String    @default("client") // "coach" or "client"
+  status              String    @default("pending") // "pending", "active", "inactive"
+  coachId             String?
+  invitationToken     String?   @unique
+  invitationSentAt    DateTime?
+  inviteCode          String?   @unique // Golden ticket code (e.g., "GOLD-A7K9-2M4P")
   inviteCodeExpiresAt DateTime? // Code expiration date
-  inviteCodeUsedAt DateTime? // When the code was used
+  inviteCodeUsedAt    DateTime? // When the code was used
 
   // Extended client info
-  firstName     String?
-  lastName      String?
-  birthdate     DateTime?
-  gender        String?
-  phone         String?
-  countryCode   String?
-  country       String?
-  city          String?
-  language      String?
-  tags          String[]
+  firstName           String?
+  lastName            String?
+  birthdate           DateTime?
+  gender              String?
+  phone               String?
+  countryCode         String?
+  country             String?
+  city                String?
+  language            String?
+  tags                String[]
   membershipStartDate DateTime?
-  membershipStatus String?
-  checkInFrequency String?
-  checkInPeriod String?
-  checkInDay    String?
+  membershipStatus    String?
+  checkInFrequency    String?
+  checkInPeriod       String?
+  checkInDay          String?
 
   // Application/Profile Data (from Lead form)
   age           Int?
-  height        Int?           // cm
-  currentWeight Decimal?       // kg
+  height        Int? // cm
+  currentWeight Decimal? // kg
 
   // Training
-  currentTraining     String?  @db.Text
-  trainingExperience  String?  @db.Text
-  trainingGoal        String?  @db.Text
-  injuries            String?  @db.Text
-  availableTime       String?  @db.Text
-  preferredSchedule   String?  @db.Text
+  currentTraining    String? @db.Text
+  trainingExperience String? @db.Text
+  trainingGoal       String? @db.Text
+  injuries           String? @db.Text
+  availableTime      String? @db.Text
+  preferredSchedule  String? @db.Text
 
   // Nutrition
-  dietHistory         String?  @db.Text
-  macroExperience     String?  @db.Text
-  digestionIssues     String?  @db.Text
-  allergies           String?  @db.Text
-  favoriteFood        String?  @db.Text
-  dislikedFood        String?  @db.Text
-  supplements         String?  @db.Text
-  previousCoaching    String?  @db.Text
+  dietHistory      String? @db.Text
+  macroExperience  String? @db.Text
+  digestionIssues  String? @db.Text
+  allergies        String? @db.Text
+  favoriteFood     String? @db.Text
+  dislikedFood     String? @db.Text
+  supplements      String? @db.Text
+  previousCoaching String? @db.Text
 
   // Lifestyle
-  stressLevel         String?  @db.Text
-  sleepHours          String?  @db.Text
-  occupation          String?  @db.Text
-  lifestyle           String?  @db.Text
+  stressLevel String? @db.Text
+  sleepHours  String? @db.Text
+  occupation  String? @db.Text
+  lifestyle   String? @db.Text
 
   // Motivation
-  whyJoin             String?  @db.Text
-  canFollowPlan       String?  @db.Text
-  expectations        String?  @db.Text
-  biggestChallenges   String?  @db.Text
+  whyJoin           String? @db.Text
+  canFollowPlan     String? @db.Text
+  expectations      String? @db.Text
+  biggestChallenges String? @db.Text
 
   // Photos
-  frontPhoto          String?  @db.Text
-  sidePhoto           String?  @db.Text
-  backPhoto           String?  @db.Text
+  frontPhoto String? @db.Text
+  sidePhoto  String? @db.Text
+  backPhoto  String? @db.Text
 
-  createdAt     DateTime  @default(now())
+  createdAt DateTime @default(now())
 
-  accounts      Account[]
-  sessions      Session[]
-  userProfile   UserProfile?
-  nutritionPlan NutritionPlan?
-  caloriePlan   CaloriePlan?
-  mealPlan      MealPlan?   @relation("AssignedMealPlan")
-  meals         Meal[]
-  workoutPlan   WorkoutPlan?
-  dailyLogs     DailyLog[]
-  workoutLogs   WorkoutLog[]
-  knowledgeProgress UserKnowledgeProgress[]
-  checkIns      CheckIn[]
-  lessonProgress LessonProgress[]
-  articleProgress ArticleProgress[]
-  recipeFavorites RecipeFavorite[]
+  accounts                Account[]
+  sessions                Session[]
+  userProfile             UserProfile?
+  nutritionPlan           NutritionPlan?
+  caloriePlan             CaloriePlan?
+  mealPlan                MealPlan?                @relation("AssignedMealPlan")
+  meals                   Meal[]
+  workoutPlan             WorkoutPlan?
+  dailyLogs               DailyLog[]
+  workoutLogs             WorkoutLog[]
+  knowledgeProgress       UserKnowledgeProgress[]
+  checkIns                CheckIn[]
+  lessonProgress          LessonProgress[]
+  articleProgress         ArticleProgress[]
+  recipeFavorites         RecipeFavorite[]
   assignedWorkoutPrograms AssignedWorkoutProgram[]
-  workoutSessionLogs WorkoutSessionLog[]
-  personalRecords PersonalRecord[]
-  sentMessages    Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
+  workoutSessionLogs      WorkoutSessionLog[]
+  personalRecords         PersonalRecord[]
+  sentMessages            Message[]                @relation("SentMessages")
+  receivedMessages        Message[]                @relation("ReceivedMessages")
 
   // Meal Plan Template System
-  mealPlanTemplateAssignments MealPlanTemplateAssignment[] @relation("MealPlanTemplateAssignments")
+  mealPlanTemplateAssignments        MealPlanTemplateAssignment[] @relation("MealPlanTemplateAssignments")
   mealPlanTemplateAssignmentsByCoach MealPlanTemplateAssignment[] @relation("MealPlanTemplateAssignmentsByCoach")
-  mealSelections   ClientMealSelection[]
+  mealSelections                     ClientMealSelection[]
+
+  // Coach Nutrition Plans (4-Phase Calculator)
+  coachNutritionPlansAsClient CoachNutritionPlan[] @relation("ClientCoachNutritionPlans")
+  coachNutritionPlansAsCoach  CoachNutritionPlan[] @relation("CoachCoachNutritionPlans")
 
   // Onboarding
   onboardingProgress OnboardingProgress?
 
   // Coach-Client relationship
-  coach         User?     @relation("CoachClients", fields: [coachId], references: [id])
-  clients       User[]    @relation("CoachClients")
+  coach   User?  @relation("CoachClients", fields: [coachId], references: [id])
+  clients User[] @relation("CoachClients")
 
   @@map("users")
 }
@@ -160,37 +164,37 @@ model VerificationToken {
 
 // App models
 model UserProfile {
-  id                 String   @id @default(cuid())
-  userId             String   @unique
+  id     String @id @default(cuid())
+  userId String @unique
 
   // Goals
-  primaryGoal        String?  // "build_muscle", "get_fit", "healthy_habits"
+  primaryGoal String? // "build_muscle", "get_fit", "healthy_habits"
 
   // Physiology
-  heightCm           Decimal? @db.Decimal(5, 2)
-  currentWeightKg    Decimal? @db.Decimal(5, 2)
-  genderAtBirth      String?  // "male", "female", "other"
-  activityLevelFree  String?  // "very_low", "low", "medium", "active", "very_active"
-  activityLevelWork  String?  // "very_low", "low", "medium", "high"
+  heightCm          Decimal? @db.Decimal(5, 2)
+  currentWeightKg   Decimal? @db.Decimal(5, 2)
+  genderAtBirth     String? // "male", "female", "other"
+  activityLevelFree String? // "very_low", "low", "medium", "active", "very_active"
+  activityLevelWork String? // "very_low", "low", "medium", "high"
 
   // Nutrition
-  nutritionNotes     String?  // Free text about food preferences
-  allergies          String[] // Array of allergies
-  dietaryPreferences String[] // "pescetarian", "vegan", "vegetarian", "halal", "kosher", "no_supplements"
+  nutritionNotes      String? // Free text about food preferences
+  allergies           String[] // Array of allergies
+  dietaryPreferences  String[] // "pescetarian", "vegan", "vegetarian", "halal", "kosher", "no_supplements"
   excludedIngredients String[] // Array of ingredients to exclude
-  nutritionMissing   String?  // Additional nutrition info
+  nutritionMissing    String? // Additional nutrition info
 
   // Activity
   trainingDays       String[] // ["MON", "TUE", etc]
-  trainingExperience String?  // "beginner", "experienced", "very_experienced"
-  trainingDetails    String?  // Details about training experience
+  trainingExperience String? // "beginner", "experienced", "very_experienced"
+  trainingDetails    String? // Details about training experience
 
   // Lifestyle
-  lifestyleNotes     String?  // Final comments before finishing
+  lifestyleNotes String? // Final comments before finishing
 
   onboardingCompleted Boolean  @default(false)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -214,16 +218,47 @@ model NutritionPlan {
   @@map("nutrition_plans")
 }
 
+// Coach 4-Phase Nutrition Calculator
+model CoachNutritionPlan {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  clientId String
+  client   User   @relation("ClientCoachNutritionPlans", fields: [clientId], references: [id], onDelete: Cascade)
+
+  coachId String
+  coach   User   @relation("CoachCoachNutritionPlans", fields: [coachId], references: [id], onDelete: Cascade)
+
+  // Metadata
+  clientName String
+  status     String @default("DRAFT") // DRAFT, ACTIVE, COMPLETED, ARCHIVED
+
+  // Phase data stored as JSON for flexibility
+  phase1Data Json // Always required - base calculations
+  phase2Data Json? // Optional - ramp up 1
+  phase3Data Json? // Optional - ramp up 2
+  phase4Data Json? // Optional - maintenance
+
+  // Indexes for fast queries
+  @@index([clientId])
+  @@index([coachId])
+  @@index([clientId, status])
+  @@index([createdAt])
+  @@map("coach_nutrition_plans")
+}
+
 model FoodItem {
-  id                String   @id @default(cuid())
+  id                String  @id @default(cuid())
   name              String
   category          String?
-  calories          Decimal  @db.Decimal(6, 2)
-  proteinG          Decimal  @db.Decimal(5, 2)
-  carbsG            Decimal  @db.Decimal(5, 2)
-  fatG              Decimal  @db.Decimal(5, 2)
-  isVegetarian      Boolean  @default(true)
-  isVegan           Boolean  @default(false)
+  calories          Decimal @db.Decimal(6, 2)
+  proteinG          Decimal @db.Decimal(5, 2)
+  carbsG            Decimal @db.Decimal(5, 2)
+  fatG              Decimal @db.Decimal(5, 2)
+  isVegetarian      Boolean @default(true)
+  isVegan           Boolean @default(false)
   commonServingSize String?
 
   mealIngredients   MealIngredient[]
@@ -234,16 +269,16 @@ model FoodItem {
 }
 
 model Meal {
-  id             String   @id @default(cuid())
-  userId         String
-  name           String
-  mealType       String?
-  totalCalories  Decimal? @db.Decimal(7, 2)
-  totalProteinG  Decimal? @db.Decimal(6, 2)
-  totalCarbsG    Decimal? @db.Decimal(6, 2)
-  totalFatG      Decimal? @db.Decimal(6, 2)
-  isFavorite     Boolean  @default(false)
-  createdAt      DateTime @default(now())
+  id            String   @id @default(cuid())
+  userId        String
+  name          String
+  mealType      String?
+  totalCalories Decimal? @db.Decimal(7, 2)
+  totalProteinG Decimal? @db.Decimal(6, 2)
+  totalCarbsG   Decimal? @db.Decimal(6, 2)
+  totalFatG     Decimal? @db.Decimal(6, 2)
+  isFavorite    Boolean  @default(false)
+  createdAt     DateTime @default(now())
 
   user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   ingredients MealIngredient[]
@@ -267,36 +302,36 @@ model MealIngredient {
 model Exercise {
   id              String   @id @default(cuid())
   name            String
-  category        String?  // "strength", "cardio", "flexibility", etc.
+  category        String? // "strength", "cardio", "flexibility", etc.
   muscleGroups    String[] // ["chest", "triceps", "shoulders"]
   equipmentNeeded String[] // ["barbell", "bench", "dumbbells"]
-  difficultyLevel String?  // "beginner", "intermediate", "advanced"
+  difficultyLevel String? // "beginner", "intermediate", "advanced"
   description     String?
-  videoUrl        String?  // YouTube/Vimeo embed URL or GIF URL from ExerciseDB
+  videoUrl        String? // YouTube/Vimeo embed URL or GIF URL from ExerciseDB
   instructions    String[] // Step-by-step instructions
-  thumbnailUrl    String?  // Exercise thumbnail image
+  thumbnailUrl    String? // Exercise thumbnail image
   externalId      String?  @unique // ExerciseDB exerciseId for tracking imports
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  sessionExercises        SessionExercise[]
-  exerciseLogs            ExerciseLog[]
-  workoutProgramExercises WorkoutProgramExercise[]
-  workoutSetLogs          WorkoutSetLog[]          @relation("SetLogs")
+  sessionExercises         SessionExercise[]
+  exerciseLogs             ExerciseLog[]
+  workoutProgramExercises  WorkoutProgramExercise[]
+  workoutSetLogs           WorkoutSetLog[]           @relation("SetLogs")
   workoutTemplateExercises WorkoutTemplateExercise[]
 
   @@map("exercises")
 }
 
 model WorkoutPlan {
-  id           String   @id @default(cuid())
-  userId       String   @unique
-  currentPhase Int      @default(1)
-  currentWeek  Int      @default(1)
+  id           String @id @default(cuid())
+  userId       String @unique
+  currentPhase Int    @default(1)
+  currentWeek  Int    @default(1)
 
-  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workoutSessions  WorkoutSession[]
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutSessions WorkoutSession[]
 
   @@map("workout_plans")
 }
@@ -317,13 +352,13 @@ model WorkoutSession {
 }
 
 model SessionExercise {
-  id                String @id @default(cuid())
-  workoutSessionId  String
-  exerciseId        String
-  orderIndex        Int
-  sets              Int
-  reps              Int?
-  restSeconds       Int    @default(60)
+  id               String @id @default(cuid())
+  workoutSessionId String
+  exerciseId       String
+  orderIndex       Int
+  sets             Int
+  reps             Int?
+  restSeconds      Int    @default(60)
 
   workoutSession WorkoutSession @relation(fields: [workoutSessionId], references: [id], onDelete: Cascade)
   exercise       Exercise       @relation(fields: [exerciseId], references: [id])
@@ -349,10 +384,10 @@ model DailyLog {
 }
 
 model MealLog {
-  id          String   @id @default(cuid())
-  dailyLogId  String
-  mealId      String
-  mealTime    DateTime @default(now())
+  id         String   @id @default(cuid())
+  dailyLogId String
+  mealId     String
+  mealTime   DateTime @default(now())
 
   dailyLog DailyLog @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
   meal     Meal     @relation(fields: [mealId], references: [id])
@@ -361,28 +396,28 @@ model MealLog {
 }
 
 model WorkoutLog {
-  id                String   @id @default(cuid())
-  userId            String
-  workoutSessionId  String?
-  completedAt       DateTime @default(now())
-  durationMinutes   Int?
-  notes             String?
+  id               String   @id @default(cuid())
+  userId           String
+  workoutSessionId String?
+  completedAt      DateTime @default(now())
+  durationMinutes  Int?
+  notes            String?
 
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workoutSession  WorkoutSession? @relation(fields: [workoutSessionId], references: [id])
-  exerciseLogs    ExerciseLog[]
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutSession WorkoutSession? @relation(fields: [workoutSessionId], references: [id])
+  exerciseLogs   ExerciseLog[]
 
   @@map("workout_logs")
 }
 
 model ExerciseLog {
-  id            String  @id @default(cuid())
-  workoutLogId  String
-  exerciseId    String
-  setNumber     Int
-  reps          Int?
-  weightKg      Decimal? @db.Decimal(5, 2)
-  completed     Boolean @default(true)
+  id           String   @id @default(cuid())
+  workoutLogId String
+  exerciseId   String
+  setNumber    Int
+  reps         Int?
+  weightKg     Decimal? @db.Decimal(5, 2)
+  completed    Boolean  @default(true)
 
   workoutLog WorkoutLog @relation(fields: [workoutLogId], references: [id], onDelete: Cascade)
   exercise   Exercise   @relation(fields: [exerciseId], references: [id])
@@ -399,19 +434,19 @@ enum Difficulty {
 }
 
 model WorkoutProgram {
-  id          String      @id @default(cuid())
-  coachId     String      // Coach who created this program
-  name        String      // "Upper/Lower Split", "Full Body Beginner", etc.
-  description String?     // Program description and goals
-  difficulty  Difficulty? // Program difficulty level
-  durationWeeks Int?      // Planned duration in weeks
+  id            String      @id @default(cuid())
+  coachId       String // Coach who created this program
+  name          String // "Upper/Lower Split", "Full Body Beginner", etc.
+  description   String? // Program description and goals
+  difficulty    Difficulty? // Program difficulty level
+  durationWeeks Int? // Planned duration in weeks
 
   // Program settings
-  published   Boolean  @default(false)
-  isTemplate  Boolean  @default(true) // True for reusable templates
+  published  Boolean @default(false)
+  isTemplate Boolean @default(true) // True for reusable templates
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   weeks       WorkoutProgramWeek[]
   days        WorkoutProgramDay[]
@@ -421,182 +456,182 @@ model WorkoutProgram {
 }
 
 model WorkoutProgramWeek {
-  id                String   @id @default(cuid())
-  workoutProgramId  String
-  weekNumber        Int      // 1, 2, 3, etc.
-  title             String?  // "Foundation Week", "Progressive Overload", etc.
-  description       String?  // Week-specific goals/notes
+  id               String  @id @default(cuid())
+  workoutProgramId String
+  weekNumber       Int // 1, 2, 3, etc.
+  title            String? // "Foundation Week", "Progressive Overload", etc.
+  description      String? // Week-specific goals/notes
 
-  orderIndex        Int      @default(0)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  orderIndex Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  workoutProgram    WorkoutProgram @relation(fields: [workoutProgramId], references: [id], onDelete: Cascade)
-  days              WorkoutProgramDay[]
+  workoutProgram WorkoutProgram      @relation(fields: [workoutProgramId], references: [id], onDelete: Cascade)
+  days           WorkoutProgramDay[]
 
   @@unique([workoutProgramId, weekNumber])
   @@map("workout_program_weeks")
 }
 
 model WorkoutProgramDay {
-  id                String   @id @default(cuid())
-  workoutProgramId  String
-  weekId            String?  // Optional: for multi-week structure
-  dayNumber         Int      // 1, 2, 3, etc. within the program
-  name              String   // "Push Day", "Leg Day", "Upper Body", etc.
-  description       String?  // Day description/focus
-  isRestDay         Boolean  @default(false)
+  id               String  @id @default(cuid())
+  workoutProgramId String
+  weekId           String? // Optional: for multi-week structure
+  dayNumber        Int // 1, 2, 3, etc. within the program
+  name             String // "Push Day", "Leg Day", "Upper Body", etc.
+  description      String? // Day description/focus
+  isRestDay        Boolean @default(false)
 
-  orderIndex        Int      @default(0)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  orderIndex Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  workoutProgram    WorkoutProgram @relation(fields: [workoutProgramId], references: [id], onDelete: Cascade)
-  week              WorkoutProgramWeek? @relation(fields: [weekId], references: [id], onDelete: Cascade)
-  exercises         WorkoutProgramExercise[]
-  sessionLogs       WorkoutSessionLog[]
+  workoutProgram WorkoutProgram           @relation(fields: [workoutProgramId], references: [id], onDelete: Cascade)
+  week           WorkoutProgramWeek?      @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  exercises      WorkoutProgramExercise[]
+  sessionLogs    WorkoutSessionLog[]
 
   @@map("workout_program_days")
 }
 
 model WorkoutProgramExercise {
-  id                    String   @id @default(cuid())
-  workoutProgramDayId   String
-  exerciseId            String
+  id                  String @id @default(cuid())
+  workoutProgramDayId String
+  exerciseId          String
 
   // Exercise configuration
-  sets                  Int      // Number of sets
-  repsMin               Int?     // Minimum reps (e.g., 8)
-  repsMax               Int?     // Maximum reps (e.g., 12) - displays as "8-12 reps"
-  restSeconds           Int      @default(60) // Rest between sets
-  tempo                 String?  // "3-0-1-0" tempo notation
-  notes                 String?  // "Drop set", "Superset with X", etc.
+  sets        Int // Number of sets
+  repsMin     Int? // Minimum reps (e.g., 8)
+  repsMax     Int? // Maximum reps (e.g., 12) - displays as "8-12 reps"
+  restSeconds Int     @default(60) // Rest between sets
+  tempo       String? // "3-0-1-0" tempo notation
+  notes       String? // "Drop set", "Superset with X", etc.
 
   // Targeting (optional overrides)
-  targetWeight          Decimal? @db.Decimal(5, 2) // Suggested weight in kg
-  targetRPE             Int?     // Rate of Perceived Exertion (1-10)
+  targetWeight Decimal? @db.Decimal(5, 2) // Suggested weight in kg
+  targetRPE    Int? // Rate of Perceived Exertion (1-10)
 
-  orderIndex            Int      @default(0)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  orderIndex Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  workoutProgramDay     WorkoutProgramDay @relation(fields: [workoutProgramDayId], references: [id], onDelete: Cascade)
-  exercise              Exercise @relation(fields: [exerciseId], references: [id])
+  workoutProgramDay WorkoutProgramDay @relation(fields: [workoutProgramDayId], references: [id], onDelete: Cascade)
+  exercise          Exercise          @relation(fields: [exerciseId], references: [id])
 
   @@map("workout_program_exercises")
 }
 
 model AssignedWorkoutProgram {
-  id                String    @id @default(cuid())
-  userId            String    // Client assigned to this program
-  workoutProgramId  String    // The program template
-  coachId           String    // Coach who assigned it
+  id               String @id @default(cuid())
+  userId           String // Client assigned to this program
+  workoutProgramId String // The program template
+  coachId          String // Coach who assigned it
 
-  startDate         DateTime  @default(now())
-  endDate           DateTime? // Optional end date
-  active            Boolean   @default(true)
+  startDate DateTime  @default(now())
+  endDate   DateTime? // Optional end date
+  active    Boolean   @default(true)
 
   // Progress tracking
-  currentWeek       Int       @default(1)
-  currentDayNumber  Int       @default(1)
+  currentWeek      Int @default(1)
+  currentDayNumber Int @default(1)
 
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workoutProgram    WorkoutProgram @relation(fields: [workoutProgramId], references: [id], onDelete: Cascade)
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutProgram WorkoutProgram @relation(fields: [workoutProgramId], references: [id], onDelete: Cascade)
 
   @@map("assigned_workout_programs")
 }
 
 model WorkoutSessionLog {
-  id                    String   @id @default(cuid())
-  userId                String   // Client who performed the workout
-  workoutProgramDayId   String?  // Which day of the program (optional for template workouts)
-  assignedProgramId     String?  // Link to assignment (optional)
-  templateName          String?  // Name of template used (for custom workouts)
+  id                  String  @id @default(cuid())
+  userId              String // Client who performed the workout
+  workoutProgramDayId String? // Which day of the program (optional for template workouts)
+  assignedProgramId   String? // Link to assignment (optional)
+  templateName        String? // Name of template used (for custom workouts)
 
-  startedAt             DateTime @default(now())
-  completedAt           DateTime?
-  durationMinutes       Int?     // Actual workout duration
-  completed             Boolean  @default(false)
-  notes                 String?  // Post-workout notes
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+  durationMinutes Int? // Actual workout duration
+  completed       Boolean   @default(false)
+  notes           String? // Post-workout notes
 
   // Session Rating System
-  rating                Int?     // 1-5 stars
-  ratingComment         String?  // Optional feedback/comment
+  rating        Int? // 1-5 stars
+  ratingComment String? // Optional feedback/comment
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workoutProgramDay     WorkoutProgramDay?     @relation(fields: [workoutProgramDayId], references: [id])
-  sets                  WorkoutSetLog[]
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutProgramDay WorkoutProgramDay? @relation(fields: [workoutProgramDayId], references: [id])
+  sets              WorkoutSetLog[]
 
   @@map("workout_session_logs")
 }
 
 enum SetType {
-  WEIGHT      // Traditional weight x reps
-  TIME        // Time-based (planks, etc.)
-  BODYWEIGHT  // Bodyweight only (push-ups, pull-ups)
-  REPS        // Reps only, no weight tracking
+  WEIGHT // Traditional weight x reps
+  TIME // Time-based (planks, etc.)
+  BODYWEIGHT // Bodyweight only (push-ups, pull-ups)
+  REPS // Reps only, no weight tracking
 }
 
 model WorkoutSetLog {
-  id                        String   @id @default(cuid())
-  workoutSessionLogId       String
-  workoutProgramExerciseId  String?  // Link to program exercise (optional)
-  exerciseId                String   // The exercise performed
+  id                       String  @id @default(cuid())
+  workoutSessionLogId      String
+  workoutProgramExerciseId String? // Link to program exercise (optional)
+  exerciseId               String // The exercise performed
 
-  setType                   SetType  @default(WEIGHT) // Type of set
-  setNumber                 Int      // 1, 2, 3, etc.
-  reps                      Int?     // Reps completed
-  weightKg                  Decimal? @db.Decimal(5, 2) // Weight used
-  timeSeconds               Int?     // For timed exercises (planks, etc.)
-  distance                  Decimal? @db.Decimal(7, 2) // For cardio (meters, km)
-  rpe                       Int?     // Rate of Perceived Exertion
-  completed                 Boolean  @default(true)
-  notes                     String?  // "Failed on last rep", "Too easy", etc.
+  setType     SetType  @default(WEIGHT) // Type of set
+  setNumber   Int // 1, 2, 3, etc.
+  reps        Int? // Reps completed
+  weightKg    Decimal? @db.Decimal(5, 2) // Weight used
+  timeSeconds Int? // For timed exercises (planks, etc.)
+  distance    Decimal? @db.Decimal(7, 2) // For cardio (meters, km)
+  rpe         Int? // Rate of Perceived Exertion
+  completed   Boolean  @default(true)
+  notes       String? // "Failed on last rep", "Too easy", etc.
 
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  workoutSessionLog         WorkoutSessionLog @relation(fields: [workoutSessionLogId], references: [id], onDelete: Cascade)
-  exercise                  Exercise @relation("SetLogs", fields: [exerciseId], references: [id])
+  workoutSessionLog WorkoutSessionLog @relation(fields: [workoutSessionLogId], references: [id], onDelete: Cascade)
+  exercise          Exercise          @relation("SetLogs", fields: [exerciseId], references: [id])
 
   @@map("workout_set_logs")
 }
 
 model PersonalRecord {
-  id          String   @id @default(cuid())
-  userId      String
-  exerciseId  String
+  id         String @id @default(cuid())
+  userId     String
+  exerciseId String
 
   // Record type and value
-  recordType  String   // "max_weight", "max_reps", "max_volume", "max_one_rep_max"
-  weightKg    Decimal? @db.Decimal(5, 2) // For max_weight
-  reps        Int?     // For max_reps or used in 1RM calculation
-  volume      Decimal? @db.Decimal(8, 2) // For max_volume (weight × reps)
-  oneRepMax   Decimal? @db.Decimal(5, 2) // Estimated 1RM
+  recordType String // "max_weight", "max_reps", "max_volume", "max_one_rep_max"
+  weightKg   Decimal? @db.Decimal(5, 2) // For max_weight
+  reps       Int? // For max_reps or used in 1RM calculation
+  volume     Decimal? @db.Decimal(8, 2) // For max_volume (weight × reps)
+  oneRepMax  Decimal? @db.Decimal(5, 2) // Estimated 1RM
 
   // Achievement details
-  achievedAt  DateTime
-  setLogId    String?  // Link to the set where this was achieved
+  achievedAt DateTime
+  setLogId   String? // Link to the set where this was achieved
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, exerciseId, recordType])
   @@map("personal_records")
 }
 
 model KnowledgeModule {
-  id                String   @id @default(cuid())
+  id                String  @id @default(cuid())
   title             String
-  slug              String   @unique
+  slug              String  @unique
   phase             Int?
   weekNumber        Int?
   contentType       String?
@@ -625,45 +660,45 @@ model UserKnowledgeProgress {
 }
 
 model CheckIn {
-  id                    String   @id @default(cuid())
-  userId                String
-  weekNumber            Int?     // Week number in the program
-  isStartCheckIn        Boolean  @default(false) // Marks the initial/start check-in
+  id             String  @id @default(cuid())
+  userId         String
+  weekNumber     Int? // Week number in the program
+  isStartCheckIn Boolean @default(false) // Marks the initial/start check-in
 
   // Check-in data
-  statusUpdate          String?  @db.Text // "Hur har du haft det sedan din senaste uppdatering?"
+  statusUpdate String? @db.Text // "Hur har du haft det sedan din senaste uppdatering?"
 
   // Daily weights (Monday-Sunday)
-  mondayWeight          Decimal? @db.Decimal(5, 2)
-  tuesdayWeight         Decimal? @db.Decimal(5, 2)
-  wednesdayWeight       Decimal? @db.Decimal(5, 2)
-  thursdayWeight        Decimal? @db.Decimal(5, 2)
-  fridayWeight          Decimal? @db.Decimal(5, 2)
-  saturdayWeight        Decimal? @db.Decimal(5, 2)
-  sundayWeight          Decimal? @db.Decimal(5, 2)
+  mondayWeight    Decimal? @db.Decimal(5, 2)
+  tuesdayWeight   Decimal? @db.Decimal(5, 2)
+  wednesdayWeight Decimal? @db.Decimal(5, 2)
+  thursdayWeight  Decimal? @db.Decimal(5, 2)
+  fridayWeight    Decimal? @db.Decimal(5, 2)
+  saturdayWeight  Decimal? @db.Decimal(5, 2)
+  sundayWeight    Decimal? @db.Decimal(5, 2)
 
   // Body measurements (cm)
-  chest                 Decimal? @db.Decimal(5, 2)
-  waist                 Decimal? @db.Decimal(5, 2)
-  hips                  Decimal? @db.Decimal(5, 2)
-  butt                  Decimal? @db.Decimal(5, 2)
-  arms                  Decimal? @db.Decimal(5, 2)
-  thighs                Decimal? @db.Decimal(5, 2)
-  calves                Decimal? @db.Decimal(5, 2)
+  chest  Decimal? @db.Decimal(5, 2)
+  waist  Decimal? @db.Decimal(5, 2)
+  hips   Decimal? @db.Decimal(5, 2)
+  butt   Decimal? @db.Decimal(5, 2)
+  arms   Decimal? @db.Decimal(5, 2)
+  thighs Decimal? @db.Decimal(5, 2)
+  calves Decimal? @db.Decimal(5, 2)
 
   // Training and diet adherence
-  trainedAllSessions    Boolean? // "Tränat alla pass?"
-  trainingComments      String?  @db.Text // "Hur gick träning denna vecka?"
-  hadDietDeviations     Boolean? // "Avsteg i kosten?"
-  dietComments          String?  @db.Text // "Hur gick kosten denna vecka?"
-  otherComments         String?  @db.Text // "Övrig kommentar?"
+  trainedAllSessions Boolean? // "Tränat alla pass?"
+  trainingComments   String?  @db.Text // "Hur gick träning denna vecka?"
+  hadDietDeviations  Boolean? // "Avsteg i kosten?"
+  dietComments       String?  @db.Text // "Hur gick kosten denna vecka?"
+  otherComments      String?  @db.Text // "Övrig kommentar?"
 
   // Progress photos
-  photoFront            String?  // URL to front photo
-  photoSide             String?  // URL to side photo
-  photoBack             String?  // URL to back photo
+  photoFront String? // URL to front photo
+  photoSide  String? // URL to side photo
+  photoBack  String? // URL to back photo
 
-  createdAt             DateTime @default(now())
+  createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -671,68 +706,68 @@ model CheckIn {
 }
 
 model Lead {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
 
   // Basic Info
-  fullName    String?
-  email       String?
-  phone       String?
-  city        String?
-  country     String?
-  age         Int?
-  gender      String?
-  height      Int?           // cm
-  currentWeight Decimal?     // kg @db.Decimal(5, 2)
+  fullName      String?
+  email         String?
+  phone         String?
+  city          String?
+  country       String?
+  age           Int?
+  gender        String?
+  height        Int? // cm
+  currentWeight Decimal? // kg @db.Decimal(5, 2)
 
   // Training
-  currentTraining     String?  @db.Text
-  trainingBackground  String?  @db.Text
-  trainingExperience  String?  @db.Text
-  trainingGoal        String?  @db.Text
-  injuries            String?  @db.Text
-  availableTime       String?  @db.Text
-  preferredSchedule   String?  @db.Text
+  currentTraining    String? @db.Text
+  trainingBackground String? @db.Text
+  trainingExperience String? @db.Text
+  trainingGoal       String? @db.Text
+  injuries           String? @db.Text
+  availableTime      String? @db.Text
+  preferredSchedule  String? @db.Text
 
   // Nutrition
-  dietHistory         String?  @db.Text
-  foodPreferences     String?  @db.Text
-  macroExperience     String?  @db.Text
-  digestionIssues     String?  @db.Text
-  allergies           String?  @db.Text
-  favoriteFood        String?  @db.Text
-  dislikedFood        String?  @db.Text
-  supplements         String?  @db.Text
-  previousCoaching    String?  @db.Text
+  dietHistory      String? @db.Text
+  foodPreferences  String? @db.Text
+  macroExperience  String? @db.Text
+  digestionIssues  String? @db.Text
+  allergies        String? @db.Text
+  favoriteFood     String? @db.Text
+  dislikedFood     String? @db.Text
+  supplements      String? @db.Text
+  previousCoaching String? @db.Text
 
   // Lifestyle
-  stressLevel         String?  @db.Text
-  sleepHours          String?  @db.Text
-  occupation          String?  @db.Text
-  lifestyle           String?  @db.Text
+  stressLevel String? @db.Text
+  sleepHours  String? @db.Text
+  occupation  String? @db.Text
+  lifestyle   String? @db.Text
 
   // Medical
-  medicalConditions   String?  @db.Text
-  surgeries           String?  @db.Text
-  medications         String?  @db.Text
-  other               String?  @db.Text
+  medicalConditions String? @db.Text
+  surgeries         String? @db.Text
+  medications       String? @db.Text
+  other             String? @db.Text
 
   // Motivation
-  whyJoin             String?  @db.Text
-  canFollowPlan       String?  @db.Text
-  expectations        String?  @db.Text
-  biggestChallenges   String?  @db.Text
+  whyJoin           String? @db.Text
+  canFollowPlan     String? @db.Text
+  expectations      String? @db.Text
+  biggestChallenges String? @db.Text
 
   // Photos
-  frontPhoto          String?  @db.Text
-  sidePhoto           String?  @db.Text
-  backPhoto           String?  @db.Text
+  frontPhoto String? @db.Text
+  sidePhoto  String? @db.Text
+  backPhoto  String? @db.Text
 
   // Status
-  status      String   @default("NEW") // "NEW", "CONTACTED", "IN_DIALOG", "PAUSED", "CONVERTED", "LOST"
-  notes       String?  @db.Text
-  tags        String[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status    String   @default("NEW") // "NEW", "CONTACTED", "IN_DIALOG", "PAUSED", "CONVERTED", "LOST"
+  notes     String?  @db.Text
+  tags      String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("leads")
 }
@@ -742,9 +777,9 @@ model File {
   name        String
   description String?
   fileUrl     String
-  fileType    String?  // "pdf", "image", "video", etc
-  fileSize    Int?     // in bytes
-  uploadedBy  String?  // coach id or name
+  fileType    String? // "pdf", "image", "video", etc
+  fileSize    Int? // in bytes
+  uploadedBy  String? // coach id or name
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -752,92 +787,92 @@ model File {
 }
 
 model Lesson {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   title       String
   description String?
-  phase       Int?     // 1, 2, or 3 (Fas 1: 1-30, Fas 2: 31-60, Fas 3: 61-90)
-  orderIndex  Int      @default(0) // Order within phase
-  coverImage  String?  // URL to cover image
+  phase       Int? // 1, 2, or 3 (Fas 1: 1-30, Fas 2: 31-60, Fas 3: 61-90)
+  orderIndex  Int     @default(0) // Order within phase
+  coverImage  String? // URL to cover image
 
   // Publishing
-  published   Boolean  @default(false)
+  published   Boolean   @default(false)
   publishedAt DateTime?
 
   // Prerequisites (lessons that must be completed first)
   prerequisiteIds String[] // Array of lesson IDs
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  slides      Slide[]
-  progress    LessonProgress[]
+  slides   Slide[]
+  progress LessonProgress[]
 
   @@map("lessons")
 }
 
 model Slide {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   lessonId    String
-  type        String   // "MDX_SLIDE", "VIDEO", "QUIZ", "DOCUMENT"
+  type        String // "MDX_SLIDE", "VIDEO", "QUIZ", "DOCUMENT"
   title       String?
-  content     String?  // MDX content for slides, question for quiz
-  videoUrl    String?  // YouTube/Vimeo embed URL
-  documentUrl String?  // URL to Word/PDF document
-  orderIndex  Int      @default(0)
+  content     String? // MDX content for slides, question for quiz
+  videoUrl    String? // YouTube/Vimeo embed URL
+  documentUrl String? // URL to Word/PDF document
+  orderIndex  Int     @default(0)
 
   // Quiz-specific fields (not saved in database)
-  quizOptions Json?    // Quiz options if type is QUIZ
+  quizOptions Json? // Quiz options if type is QUIZ
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@map("slides")
 }
 
 model LessonProgress {
-  id              String    @id @default(cuid())
-  userId          String
-  lessonId        String
-  completed       Boolean   @default(false)
-  completedAt     DateTime?
-  lastSlideIndex  Int       @default(0) // Last slide viewed
+  id             String    @id @default(cuid())
+  userId         String
+  lessonId       String
+  completed      Boolean   @default(false)
+  completedAt    DateTime?
+  lastSlideIndex Int       @default(0) // Last slide viewed
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lesson          Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
   @@map("lesson_progress")
 }
 
 model CaloriePlan {
-  id                    String   @id @default(cuid())
-  userId                String   @unique
+  id     String @id @default(cuid())
+  userId String @unique
 
   // Basic calculations
-  weight                Decimal? @db.Decimal(5, 2)
-  activityLevel         String?  // "25", "30", "35"
-  deficit               Int?     // Calorie deficit per day
-  dailySteps            Int?     // Number of steps per day
+  weight        Decimal? @db.Decimal(5, 2)
+  activityLevel String? // "25", "30", "35"
+  deficit       Int? // Calorie deficit per day
+  dailySteps    Int? // Number of steps per day
 
   // Macro settings
-  proteinPerKg          Decimal? @db.Decimal(3, 1) // e.g., 2.0
-  fatPerKg              Decimal? @db.Decimal(3, 1) // e.g., 0.7
+  proteinPerKg Decimal? @db.Decimal(3, 1) // e.g., 2.0
+  fatPerKg     Decimal? @db.Decimal(3, 1) // e.g., 0.7
 
   // Meal distribution
-  numMeals              Int?     // Number of meals per day
-  customDistribution    Boolean  @default(false)
-  mealCalories          Int[]    // Array of calories per meal
+  numMeals           Int? // Number of meals per day
+  customDistribution Boolean @default(false)
+  mealCalories       Int[] // Array of calories per meal
 
   // Custom macros per meal (stored as JSON)
-  customMacros          Json?    // [{protein: 50, fat: 20, carbs: 100}, ...]
+  customMacros Json? // [{protein: 50, fat: 20, carbs: 100}, ...]
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -846,18 +881,18 @@ model CaloriePlan {
 
 // Article Bank and 90-Day Roadmap Models
 model ArticleCategory {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
-  slug        String   @unique
-  color       String   @default("#FFD700") // Hex color for category accent
-  section     String?  // Section/group name for organizing categories (e.g., "INNAN DU BÖRJAR", "GENOMGÅNG AV 90 DAGARS CHALLENGEN")
-  orderIndex  Int      @default(0) // For sorting categories
+  slug        String  @unique
+  color       String  @default("#FFD700") // Hex color for category accent
+  section     String? // Section/group name for organizing categories (e.g., "INNAN DU BÖRJAR", "GENOMGÅNG AV 90 DAGARS CHALLENGEN")
+  orderIndex  Int     @default(0) // For sorting categories
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  articles    Article[]
+  articles Article[]
 
   @@map("article_categories")
 }
@@ -865,42 +900,42 @@ model ArticleCategory {
 model Article {
   id                      String   @id @default(cuid())
   title                   String
-  content                 String   // Rich text/MDX content
+  content                 String // Rich text/MDX content
   slug                    String   @unique
   categoryId              String
   tags                    String[] // Additional tags for filtering
-  difficulty              String?  // "beginner", "intermediate", "advanced"
-  phase                   Int?     // 1 (days 1-30), 2 (days 31-60), 3 (days 61-90)
-  estimatedReadingMinutes Int?     // How long it takes to read
-  coverImage              String?  // URL to cover image
+  difficulty              String? // "beginner", "intermediate", "advanced"
+  phase                   Int? // 1 (days 1-30), 2 (days 31-60), 3 (days 61-90)
+  estimatedReadingMinutes Int? // How long it takes to read
+  coverImage              String? // URL to cover image
   orderIndex              Int      @default(0) // For sorting articles within category
 
   // Publishing
-  published               Boolean  @default(false)
-  publishedAt             DateTime?
+  published   Boolean   @default(false)
+  publishedAt DateTime?
 
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  category                ArticleCategory      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  roadmapAssignments      RoadmapAssignment[]
-  progress                ArticleProgress[]
+  category           ArticleCategory     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  roadmapAssignments RoadmapAssignment[]
+  progress           ArticleProgress[]
 
   @@map("articles")
 }
 
 model RoadmapAssignment {
-  id                    String   @id @default(cuid())
-  articleId             String
-  dayNumber             Int      // 1-90 (which day of the journey)
-  phase                 Int      // 1, 2, or 3 (calculated from dayNumber)
-  orderIndex            Int      @default(0) // Order within the day (if multiple articles per day)
+  id                     String   @id @default(cuid())
+  articleId              String
+  dayNumber              Int // 1-90 (which day of the journey)
+  phase                  Int // 1, 2, or 3 (calculated from dayNumber)
+  orderIndex             Int      @default(0) // Order within the day (if multiple articles per day)
   prerequisiteArticleIds String[] // Article IDs that must be completed first
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  article               Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   @@unique([articleId, dayNumber]) // Each article can only be assigned once per day
   @@map("roadmap_assignments")
@@ -914,11 +949,11 @@ model ArticleProgress {
   completedAt DateTime?
   lastReadAt  DateTime?
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  article     Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   @@unique([userId, articleId])
   @@map("article_progress")
@@ -926,49 +961,49 @@ model ArticleProgress {
 
 // Recipe Bank Models
 model RecipeCategory {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
-  slug        String   @unique
-  orderIndex  Int      @default(0)
+  slug        String  @unique
+  orderIndex  Int     @default(0)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  recipes     Recipe[]
+  recipes Recipe[]
 
   @@map("recipe_categories")
 }
 
 model Recipe {
-  id                  String   @id @default(cuid())
-  title               String
-  description         String?
-  categoryId          String
-  servings            Int      @default(1)
-  prepTimeMinutes     Int?     // Preparation time
-  cookTimeMinutes     Int?     // Cooking time
-  difficulty          String?  // "easy", "medium", "hard"
-  cuisineType         String?  // "Italian", "Mexican", "Asian", etc.
-  mealType            String?  // "breakfast", "lunch", "dinner", "snack", "dessert"
-  coverImage          String?  // URL to recipe image
-  videoUrl            String?  // Optional cooking video
+  id              String  @id @default(cuid())
+  title           String
+  description     String?
+  categoryId      String
+  servings        Int     @default(1)
+  prepTimeMinutes Int? // Preparation time
+  cookTimeMinutes Int? // Cooking time
+  difficulty      String? // "easy", "medium", "hard"
+  cuisineType     String? // "Italian", "Mexican", "Asian", etc.
+  mealType        String? // "breakfast", "lunch", "dinner", "snack", "dessert"
+  coverImage      String? // URL to recipe image
+  videoUrl        String? // Optional cooking video
 
   // Dietary tags (stored as array)
-  dietaryTags         String[] // "vegan", "vegetarian", "gluten-free", "dairy-free", "keto", "paleo", etc.
+  dietaryTags String[] // "vegan", "vegetarian", "gluten-free", "dairy-free", "keto", "paleo", etc.
 
   // Nutrition per serving (can be auto-calculated from ingredients)
-  caloriesPerServing  Decimal? @db.Decimal(7, 2)
-  proteinPerServing   Decimal? @db.Decimal(6, 2)
-  carbsPerServing     Decimal? @db.Decimal(6, 2)
-  fatPerServing       Decimal? @db.Decimal(6, 2)
+  caloriesPerServing Decimal? @db.Decimal(7, 2)
+  proteinPerServing  Decimal? @db.Decimal(6, 2)
+  carbsPerServing    Decimal? @db.Decimal(6, 2)
+  fatPerServing      Decimal? @db.Decimal(6, 2)
 
   // Publishing
-  published           Boolean  @default(false)
-  publishedAt         DateTime?
+  published   Boolean   @default(false)
+  publishedAt DateTime?
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   category            RecipeCategory       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   ingredients         RecipeIngredient[]
@@ -980,31 +1015,31 @@ model Recipe {
 }
 
 model RecipeIngredient {
-  id              String  @id @default(cuid())
-  recipeId        String
-  foodItemId      String
-  amount          Decimal @db.Decimal(7, 2) // Amount in grams
-  displayUnit     String? // "cups", "tbsp", "tsp", "pieces", etc. for display
-  displayAmount   String? // "1/2", "2", "3", etc. for display
-  orderIndex      Int     @default(0)
-  optional        Boolean @default(false)
-  notes           String? // "chopped", "diced", "melted", etc.
+  id            String  @id @default(cuid())
+  recipeId      String
+  foodItemId    String
+  amount        Decimal @db.Decimal(7, 2) // Amount in grams
+  displayUnit   String? // "cups", "tbsp", "tsp", "pieces", etc. for display
+  displayAmount String? // "1/2", "2", "3", etc. for display
+  orderIndex    Int     @default(0)
+  optional      Boolean @default(false)
+  notes         String? // "chopped", "diced", "melted", etc.
 
-  recipe          Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  foodItem        FoodItem @relation(fields: [foodItemId], references: [id])
+  recipe   Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  foodItem FoodItem @relation(fields: [foodItemId], references: [id])
 
   @@map("recipe_ingredients")
 }
 
 model RecipeInstruction {
-  id          String @id @default(cuid())
+  id          String  @id @default(cuid())
   recipeId    String
   stepNumber  Int
   instruction String // Step instruction text
-  duration    Int?   // Optional time for this step in minutes
+  duration    Int? // Optional time for this step in minutes
   imageUrl    String? // Optional image for this step
 
-  recipe      Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   @@map("recipe_instructions")
 }
@@ -1015,8 +1050,8 @@ model RecipeFavorite {
   recipeId  String
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   @@unique([userId, recipeId])
   @@map("recipe_favorites")
@@ -1024,108 +1059,108 @@ model RecipeFavorite {
 
 // Meal Plan (Kostschema) Models
 model MealPlan {
-  id                    String   @id @default(cuid())
-  userId                String   @unique // Client this plan is for
-  coachId               String?  // Coach who created the plan
-  name                  String   @default("Kostschema")
+  id      String  @id @default(cuid())
+  userId  String  @unique // Client this plan is for
+  coachId String? // Coach who created the plan
+  name    String  @default("Kostschema")
 
   // Daily totals
-  totalProtein          Decimal? @db.Decimal(6, 2)
-  totalFat              Decimal? @db.Decimal(6, 2)
-  totalCarbs            Decimal? @db.Decimal(6, 2)
-  totalCalories         Decimal? @db.Decimal(7, 2)
+  totalProtein  Decimal? @db.Decimal(6, 2)
+  totalFat      Decimal? @db.Decimal(6, 2)
+  totalCarbs    Decimal? @db.Decimal(6, 2)
+  totalCalories Decimal? @db.Decimal(7, 2)
 
   // Training supplements
-  preWorkoutProtein     Decimal? @db.Decimal(5, 2)
-  preWorkoutFat         Decimal? @db.Decimal(5, 2)
-  preWorkoutCarbs       Decimal? @db.Decimal(5, 2)
-  preWorkoutCalories    Decimal? @db.Decimal(6, 2)
+  preWorkoutProtein  Decimal? @db.Decimal(5, 2)
+  preWorkoutFat      Decimal? @db.Decimal(5, 2)
+  preWorkoutCarbs    Decimal? @db.Decimal(5, 2)
+  preWorkoutCalories Decimal? @db.Decimal(6, 2)
 
-  postWorkoutProtein    Decimal? @db.Decimal(5, 2)
-  postWorkoutFat        Decimal? @db.Decimal(5, 2)
-  postWorkoutCarbs      Decimal? @db.Decimal(5, 2)
-  postWorkoutCalories   Decimal? @db.Decimal(6, 2)
+  postWorkoutProtein  Decimal? @db.Decimal(5, 2)
+  postWorkoutFat      Decimal? @db.Decimal(5, 2)
+  postWorkoutCarbs    Decimal? @db.Decimal(5, 2)
+  postWorkoutCalories Decimal? @db.Decimal(6, 2)
 
-  active                Boolean  @default(true)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user                  User     @relation("AssignedMealPlan", fields: [userId], references: [id], onDelete: Cascade)
-  meals                 MealPlanMeal[]
-  supplementItems       MealPlanSupplementItem[]
+  user            User                     @relation("AssignedMealPlan", fields: [userId], references: [id], onDelete: Cascade)
+  meals           MealPlanMeal[]
+  supplementItems MealPlanSupplementItem[]
 
   @@map("meal_plans")
 }
 
 model MealPlanMeal {
-  id                    String   @id @default(cuid())
-  mealPlanId            String
-  mealNumber            Int      // 1, 2, 3, etc.
-  name                  String?  // Optional name like "Frukost", "Lunch"
+  id         String  @id @default(cuid())
+  mealPlanId String
+  mealNumber Int // 1, 2, 3, etc.
+  name       String? // Optional name like "Frukost", "Lunch"
 
   // Meal totals
-  totalProtein          Decimal? @db.Decimal(6, 2)
-  totalFat              Decimal? @db.Decimal(6, 2)
-  totalCarbs            Decimal? @db.Decimal(6, 2)
-  totalCalories         Decimal? @db.Decimal(7, 2)
+  totalProtein  Decimal? @db.Decimal(6, 2)
+  totalFat      Decimal? @db.Decimal(6, 2)
+  totalCarbs    Decimal? @db.Decimal(6, 2)
+  totalCalories Decimal? @db.Decimal(7, 2)
 
-  orderIndex            Int      @default(0)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  orderIndex Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  mealPlan              MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
-  items                 MealPlanItem[]
+  mealPlan MealPlan       @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  items    MealPlanItem[]
 
   @@map("meal_plan_meals")
 }
 
 model MealPlanItem {
-  id                    String   @id @default(cuid())
-  mealPlanMealId        String
-  foodItemId            String?  // Can be null for custom items
-  customName            String?  // For custom food items not in database
-  amountG               Decimal  @db.Decimal(7, 2) // Amount in grams
+  id             String  @id @default(cuid())
+  mealPlanMealId String
+  foodItemId     String? // Can be null for custom items
+  customName     String? // For custom food items not in database
+  amountG        Decimal @db.Decimal(7, 2) // Amount in grams
 
   // Macros for this item (portion)
-  protein               Decimal? @db.Decimal(6, 2)
-  fat                   Decimal? @db.Decimal(6, 2)
-  carbs                 Decimal? @db.Decimal(6, 2)
-  calories              Decimal? @db.Decimal(7, 2)
+  protein  Decimal? @db.Decimal(6, 2)
+  fat      Decimal? @db.Decimal(6, 2)
+  carbs    Decimal? @db.Decimal(6, 2)
+  calories Decimal? @db.Decimal(7, 2)
 
-  isSupplement          Boolean  @default(false) // True for Omega-3, Multivitamin, etc.
-  supplementBadge       String?  // "KÖP" badge text if applicable
-  notes                 String?  // "eller 37.5g naturell yoghurt 3.5% fett"
+  isSupplement    Boolean @default(false) // True for Omega-3, Multivitamin, etc.
+  supplementBadge String? // "KÖP" badge text if applicable
+  notes           String? // "eller 37.5g naturell yoghurt 3.5% fett"
 
-  orderIndex            Int      @default(0)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  orderIndex Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  meal                  MealPlanMeal @relation(fields: [mealPlanMealId], references: [id], onDelete: Cascade)
-  foodItem              FoodItem? @relation(fields: [foodItemId], references: [id])
+  meal     MealPlanMeal @relation(fields: [mealPlanMealId], references: [id], onDelete: Cascade)
+  foodItem FoodItem?    @relation(fields: [foodItemId], references: [id])
 
   @@map("meal_plan_items")
 }
 
 model MealPlanSupplementItem {
-  id                    String   @id @default(cuid())
-  mealPlanId            String
-  timing                String   // "pre_workout" or "post_workout"
-  name                  String   // "BCAA/ EAA", "Carbs(maltodextrin)", etc.
-  amountG               Decimal? @db.Decimal(7, 2) // Amount in grams
-  amountUnit            String?  // "st", "g", etc.
+  id         String   @id @default(cuid())
+  mealPlanId String
+  timing     String // "pre_workout" or "post_workout"
+  name       String // "BCAA/ EAA", "Carbs(maltodextrin)", etc.
+  amountG    Decimal? @db.Decimal(7, 2) // Amount in grams
+  amountUnit String? // "st", "g", etc.
 
   // Macros
-  protein               Decimal? @db.Decimal(6, 2)
-  fat                   Decimal? @db.Decimal(6, 2)
-  carbs                 Decimal? @db.Decimal(6, 2)
-  calories              Decimal? @db.Decimal(6, 2)
+  protein  Decimal? @db.Decimal(6, 2)
+  fat      Decimal? @db.Decimal(6, 2)
+  carbs    Decimal? @db.Decimal(6, 2)
+  calories Decimal? @db.Decimal(6, 2)
 
-  supplementBadge       String?  // "KÖP" badge
-  orderIndex            Int      @default(0)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  supplementBadge String? // "KÖP" badge
+  orderIndex      Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  mealPlan              MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  mealPlan MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
 
   @@map("meal_plan_supplement_items")
 }
@@ -1136,46 +1171,46 @@ model MealPlanSupplementItem {
 
 // Meal Plan Template - Reusable meal plan that can be assigned to multiple clients
 model MealPlanTemplate {
-  id                    String   @id @default(cuid())
-  coachId               String   // Coach who created this template
-  name                  String   // "2000 kcal Viktnedgång", "Vegan 1800 kcal"
-  description           String?  @db.Text
+  id          String  @id @default(cuid())
+  coachId     String // Coach who created this template
+  name        String // "2000 kcal Viktnedgång", "Vegan 1800 kcal"
+  description String? @db.Text
 
   // Daily totals (target goals)
-  targetProtein         Decimal? @db.Decimal(6, 2)
-  targetFat             Decimal? @db.Decimal(6, 2)
-  targetCarbs           Decimal? @db.Decimal(6, 2)
-  targetCalories        Decimal? @db.Decimal(7, 2)
+  targetProtein  Decimal? @db.Decimal(6, 2)
+  targetFat      Decimal? @db.Decimal(6, 2)
+  targetCarbs    Decimal? @db.Decimal(6, 2)
+  targetCalories Decimal? @db.Decimal(7, 2)
 
   // Metadata
-  published             Boolean  @default(false)
-  isArchived            Boolean  @default(false)
-  tags                  String[] // ["viktnedgång", "vegan", "högprotein"]
-  generalAdvice         String?  @db.Text // General advice shown to clients
+  published     Boolean  @default(false)
+  isArchived    Boolean  @default(false)
+  tags          String[] // ["viktnedgång", "vegan", "högprotein"]
+  generalAdvice String?  @db.Text // General advice shown to clients
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  meals                 TemplateMeal[]
-  assignments           MealPlanTemplateAssignment[]
+  meals       TemplateMeal[]
+  assignments MealPlanTemplateAssignment[]
 
   @@map("meal_plan_templates")
 }
 
 // Assignment - Which clients have which meal plan templates
 model MealPlanTemplateAssignment {
-  id                    String   @id @default(cuid())
-  userId                String   // Client this template is assigned to
-  templateId            String   // The meal plan template
-  coachId               String   // Coach who made the assignment
+  id         String @id @default(cuid())
+  userId     String // Client this template is assigned to
+  templateId String // The meal plan template
+  coachId    String // Coach who made the assignment
 
-  active                Boolean  @default(true)
-  assignedAt            DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  active     Boolean  @default(true)
+  assignedAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  user                  User @relation("MealPlanTemplateAssignments", fields: [userId], references: [id], onDelete: Cascade)
-  template              MealPlanTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  coach                 User @relation("MealPlanTemplateAssignmentsByCoach", fields: [coachId], references: [id], onDelete: Cascade)
+  user     User             @relation("MealPlanTemplateAssignments", fields: [userId], references: [id], onDelete: Cascade)
+  template MealPlanTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  coach    User             @relation("MealPlanTemplateAssignmentsByCoach", fields: [coachId], references: [id], onDelete: Cascade)
 
   @@unique([userId, templateId])
   @@map("meal_plan_template_assignments")
@@ -1183,75 +1218,75 @@ model MealPlanTemplateAssignment {
 
 // Template Meal - A meal time in the template (Breakfast, Lunch, etc.)
 model TemplateMeal {
-  id                    String   @id @default(cuid())
-  templateId            String
-  name                  String   // "Frukost", "Lunch", "Middag", "Mellanmål"
-  mealType              String?  // "breakfast", "lunch", "dinner", "snack"
+  id         String  @id @default(cuid())
+  templateId String
+  name       String // "Frukost", "Lunch", "Middag", "Mellanmål"
+  mealType   String? // "breakfast", "lunch", "dinner", "snack"
 
   // Target macros for this meal
-  targetProtein         Decimal? @db.Decimal(6, 2)
-  targetFat             Decimal? @db.Decimal(6, 2)
-  targetCarbs           Decimal? @db.Decimal(6, 2)
-  targetCalories        Decimal? @db.Decimal(7, 2)
+  targetProtein  Decimal? @db.Decimal(6, 2)
+  targetFat      Decimal? @db.Decimal(6, 2)
+  targetCarbs    Decimal? @db.Decimal(6, 2)
+  targetCalories Decimal? @db.Decimal(7, 2)
 
-  orderIndex            Int      @default(0)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  orderIndex Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  template              MealPlanTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  options               TemplateMealOption[]
-  clientSelections      ClientMealSelection[]
+  template         MealPlanTemplate      @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  options          TemplateMealOption[]
+  clientSelections ClientMealSelection[]
 
   @@map("template_meals")
 }
 
 // Template Meal Option - An alternative for a meal (recipe OR custom food items)
 model TemplateMealOption {
-  id                    String   @id @default(cuid())
-  templateMealId        String
-  optionType            String   // "recipe" or "custom"
+  id             String @id @default(cuid())
+  templateMealId String
+  optionType     String // "recipe" or "custom"
 
   // For recipe-based options
-  recipeId              String?  // Link to Recipe from Recipe Bank
-  servingMultiplier     Decimal? @db.Decimal(4, 2) // e.g., 1.5 servings
+  recipeId          String? // Link to Recipe from Recipe Bank
+  servingMultiplier Decimal? @db.Decimal(4, 2) // e.g., 1.5 servings
 
   // For custom food item options
-  customName            String?  // "High Protein Breakfast"
-  customDescription     String?  @db.Text
-  customFoodItems       Json?    // Array of {foodItemId, amountG, protein, fat, carbs, calories}
+  customName        String? // "High Protein Breakfast"
+  customDescription String? @db.Text
+  customFoodItems   Json? // Array of {foodItemId, amountG, protein, fat, carbs, calories}
 
   // Calculated macros (from recipe * servings OR sum of custom items)
-  calculatedProtein     Decimal  @db.Decimal(6, 2)
-  calculatedFat         Decimal  @db.Decimal(6, 2)
-  calculatedCarbs       Decimal  @db.Decimal(6, 2)
-  calculatedCalories    Decimal  @db.Decimal(7, 2)
+  calculatedProtein  Decimal @db.Decimal(6, 2)
+  calculatedFat      Decimal @db.Decimal(6, 2)
+  calculatedCarbs    Decimal @db.Decimal(6, 2)
+  calculatedCalories Decimal @db.Decimal(7, 2)
 
-  isDefault             Boolean  @default(false) // Recommended/default option
-  orderIndex            Int      @default(0)
-  notes                 String?  @db.Text // Coach notes about this option
+  isDefault  Boolean @default(false) // Recommended/default option
+  orderIndex Int     @default(0)
+  notes      String? @db.Text // Coach notes about this option
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  templateMeal          TemplateMeal @relation(fields: [templateMealId], references: [id], onDelete: Cascade)
-  recipe                Recipe? @relation(fields: [recipeId], references: [id])
-  clientSelections      ClientMealSelection[]
+  templateMeal     TemplateMeal          @relation(fields: [templateMealId], references: [id], onDelete: Cascade)
+  recipe           Recipe?               @relation(fields: [recipeId], references: [id])
+  clientSelections ClientMealSelection[]
 
   @@map("template_meal_options")
 }
 
 // Client Meal Selection - Which option did the client choose for each meal
 model ClientMealSelection {
-  id                    String   @id @default(cuid())
-  userId                String
-  templateMealId        String   // Which meal time (Breakfast, Lunch, etc.)
-  selectedOptionId      String   // Which option they chose
-  selectedAt            DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  id               String   @id @default(cuid())
+  userId           String
+  templateMealId   String // Which meal time (Breakfast, Lunch, etc.)
+  selectedOptionId String // Which option they chose
+  selectedAt       DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  user                  User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  templateMeal          TemplateMeal @relation(fields: [templateMealId], references: [id], onDelete: Cascade)
-  selectedOption        TemplateMealOption @relation(fields: [selectedOptionId], references: [id], onDelete: Cascade)
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  templateMeal   TemplateMeal       @relation(fields: [templateMealId], references: [id], onDelete: Cascade)
+  selectedOption TemplateMealOption @relation(fields: [selectedOptionId], references: [id], onDelete: Cascade)
 
   @@unique([userId, templateMealId])
   @@map("client_meal_selections")
@@ -1263,98 +1298,98 @@ model ClientMealSelection {
 
 // FAQ Category - Organizing questions by topic
 model FaqCategory {
-  id                    String   @id @default(cuid())
-  name                  String   // "Träning", "Kost", "Övrigt", "Tävling/Röstning"
-  slug                  String   @unique // "traning", "kost", "ovrigt", "tavling-rostning"
-  description           String?  @db.Text
-  orderIndex            Int      @default(0)
+  id          String  @id @default(cuid())
+  name        String // "Träning", "Kost", "Övrigt", "Tävling/Röstning"
+  slug        String  @unique // "traning", "kost", "ovrigt", "tavling-rostning"
+  description String? @db.Text
+  orderIndex  Int     @default(0)
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  questions             FaqQuestion[]
+  questions FaqQuestion[]
 
   @@map("faq_categories")
 }
 
 // FAQ Question - Individual questions with answers
 model FaqQuestion {
-  id                    String   @id @default(cuid())
-  categoryId            String
-  question              String   @db.Text // "Kan man byta powerwalk mot HIIT?"
-  answer                String   @db.Text // Full answer with formatting
-  orderIndex            Int      @default(0)
-  published             Boolean  @default(true)
+  id         String  @id @default(cuid())
+  categoryId String
+  question   String  @db.Text // "Kan man byta powerwalk mot HIIT?"
+  answer     String  @db.Text // Full answer with formatting
+  orderIndex Int     @default(0)
+  published  Boolean @default(true)
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  category              FaqCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category FaqCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@map("faq_questions")
 }
 
 // Workout Templates for Custom Workout Builder
 model WorkoutTemplate {
-  id                String   @id @default(cuid())
-  userId            String?  // User who created it (null = coach/system template)
-  coachId           String?  // Coach who created it (for coach templates)
-  name              String   // "Quick Upper Body", "Home Leg Blast", etc.
-  description       String?  // Template description
-  estimatedDuration Int?     // Estimated duration in minutes
-  isPublic          Boolean  @default(false) // Can other users see/use this
-  category          String?  // "Strength", "Cardio", "HIIT", "Stretching", etc.
+  id                String  @id @default(cuid())
+  userId            String? // User who created it (null = coach/system template)
+  coachId           String? // Coach who created it (for coach templates)
+  name              String // "Quick Upper Body", "Home Leg Blast", etc.
+  description       String? // Template description
+  estimatedDuration Int? // Estimated duration in minutes
+  isPublic          Boolean @default(false) // Can other users see/use this
+  category          String? // "Strength", "Cardio", "HIIT", "Stretching", etc.
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  exercises         WorkoutTemplateExercise[]
-  usageCount        Int      @default(0) // Track how many times it's been used
+  exercises  WorkoutTemplateExercise[]
+  usageCount Int                       @default(0) // Track how many times it's been used
 
   @@map("workout_templates")
 }
 
 model WorkoutTemplateExercise {
-  id                    String   @id @default(cuid())
-  workoutTemplateId     String
-  exerciseId            String
+  id                String @id @default(cuid())
+  workoutTemplateId String
+  exerciseId        String
 
   // Exercise configuration
-  sets                  Int      // Number of sets
-  repsMin               Int?     // Minimum reps
-  repsMax               Int?     // Maximum reps
-  restSeconds           Int      @default(60)
-  notes                 String?  // Exercise-specific notes
+  sets        Int // Number of sets
+  repsMin     Int? // Minimum reps
+  repsMax     Int? // Maximum reps
+  restSeconds Int     @default(60)
+  notes       String? // Exercise-specific notes
 
-  orderIndex            Int      @default(0)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  orderIndex Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  workoutTemplate       WorkoutTemplate @relation(fields: [workoutTemplateId], references: [id], onDelete: Cascade)
-  exercise              Exercise @relation(fields: [exerciseId], references: [id])
+  workoutTemplate WorkoutTemplate @relation(fields: [workoutTemplateId], references: [id], onDelete: Cascade)
+  exercise        Exercise        @relation(fields: [exerciseId], references: [id])
 
   @@map("workout_template_exercises")
 }
 
 // Messages and Check-in Summaries
 model Message {
-  id                String   @id @default(cuid())
-  content           String   @db.Text
-  senderId          String
-  receiverId        String
+  id         String @id @default(cuid())
+  content    String @db.Text
+  senderId   String
+  receiverId String
 
   // If this is a weekly check-in summary
-  isCheckInSummary  Boolean  @default(false)
-  checkInId         String?  // Reference to the check-in if summary
+  isCheckInSummary Boolean @default(false)
+  checkInId        String? // Reference to the check-in if summary
 
   // Images attached to message
-  images            String[] // Array of image URLs
+  images String[] // Array of image URLs
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  sender            User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver          User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender   User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
 
   @@index([senderId, receiverId])
   @@index([createdAt])
@@ -1363,40 +1398,40 @@ model Message {
 
 // Onboarding Progress - Track client onboarding journey
 model OnboardingProgress {
-  id                String   @id @default(cuid())
-  userId            String   @unique
+  id     String @id @default(cuid())
+  userId String @unique
 
   // Checklist progress (bitwise flags or individual booleans)
-  profileCompleted      Boolean  @default(false)
-  profilePhotosUploaded Boolean  @default(false)
-  reviewedMealPlan      Boolean  @default(false)
-  reviewedWorkoutPlan   Boolean  @default(false)
-  firstCheckInDone      Boolean  @default(false)
+  profileCompleted      Boolean @default(false)
+  profilePhotosUploaded Boolean @default(false)
+  reviewedMealPlan      Boolean @default(false)
+  reviewedWorkoutPlan   Boolean @default(false)
+  firstCheckInDone      Boolean @default(false)
 
   // Guide/introduction views
-  mealPlanGuideViewed   Boolean  @default(false)
-  workoutGuideViewed    Boolean  @default(false)
+  mealPlanGuideViewed Boolean @default(false)
+  workoutGuideViewed  Boolean @default(false)
 
   // Completion state
-  dashboardOnboardingDismissed Boolean  @default(false)
+  dashboardOnboardingDismissed Boolean @default(false)
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("onboarding_progress")
 }
 
 // Guide Content - Editable introduction/guide content
 model GuideContent {
-  id                String   @id @default(cuid())
-  type              String   @unique // "meal_plan" or "workout"
-  title             String   // Page title
-  content           String   @db.Text // MDX content
+  id      String @id @default(cuid())
+  type    String @unique // "meal_plan" or "workout"
+  title   String // Page title
+  content String @db.Text // MDX content
 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("guide_content")
 }
