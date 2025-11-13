@@ -65,7 +65,7 @@ export function usePhaseForm<T extends PhaseNumber>(
       case 1:
         return {
           weight: '',
-          activity: 30,
+          activity: '30',  // String to prevent controlled/uncontrolled switch
           weightLoss: '',
           steps: '',
           calories: '',
@@ -81,7 +81,7 @@ export function usePhaseForm<T extends PhaseNumber>(
           protein: '',
           fat: '',
           carbs: '',
-          cardioMinutes: 10,
+          cardioMinutes: '10',  // String to prevent controlled/uncontrolled switch
           cardioDescription: '',
         };
       case 3:
@@ -92,7 +92,7 @@ export function usePhaseForm<T extends PhaseNumber>(
           protein: '',
           fat: '',
           carbs: '',
-          cardioMinutes: 20,
+          cardioMinutes: '20',  // String to prevent controlled/uncontrolled switch
           cardioDescription: '',
         };
       case 4:
@@ -103,7 +103,7 @@ export function usePhaseForm<T extends PhaseNumber>(
           protein: '',
           fat: '',
           carbs: '',
-          cardioOption: 1,
+          cardioOption: '1',  // String to prevent controlled/uncontrolled switch
           cardioMinutes: '',
           cardioDescription: '',
         };

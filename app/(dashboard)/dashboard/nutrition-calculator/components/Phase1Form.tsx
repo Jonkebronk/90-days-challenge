@@ -43,13 +43,14 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
   useEffect(() => {
     // Convert to numbers and check if all required values are present
     const weightNum = Number(weight);
+    const activityNum = Number(activity);
     const weightLossNum = Number(weightLoss);
     const stepsNum = Number(steps);
 
-    if (weightNum > 0 && activity && weightLossNum >= 0 && stepsNum > 0) {
+    if (weightNum > 0 && activityNum && weightLossNum >= 0 && stepsNum > 0) {
       const calculated = calculatePhase1Data(
         weightNum,
-        activity as ActivityLevel,
+        activityNum as ActivityLevel,
         weightLossNum,
         stepsNum
       );
@@ -117,8 +118,8 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
                 Aktivitetsnivå
               </Label>
               <Select
-                value={activity ? activity.toString() : undefined}
-                onValueChange={(value) => setValue('activity', Number(value) as ActivityLevel)}
+                value={activity || '30'}
+                onValueChange={(value) => setValue('activity', value)}
               >
                 <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">
                   <SelectValue placeholder="Välj nivå" />

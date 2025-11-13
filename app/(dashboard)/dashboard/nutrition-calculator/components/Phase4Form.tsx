@@ -45,22 +45,29 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
 
   // Auto-calculate when inputs change
   useEffect(() => {
-    if (weight && activity && cardioOption !== undefined && phase3Data) {
+    const weightNum = Number(weight);
+    const activityNum = Number(activity);
+    const activityAdjustmentNum = Number(activityAdjustment);
+    const cardioOptionNum = Number(cardioOption);
+
+    if (weightNum > 0 && activityNum && cardioOptionNum && phase3Data) {
       const calculated = calculatePhase4Data(
         phase3Data.steps,
-        Number(weight),
-        activity as ActivityLevel,
-        Number(activityAdjustment),
-        cardioOption as CardioOption
+        weightNum,
+        activityNum as ActivityLevel,
+        activityAdjustmentNum,
+        cardioOptionNum as CardioOption
       );
 
-      // Update calculated fields
-      setValue('steps', calculated.steps);
-      setValue('calories', calculated.calories);
-      setValue('protein', calculated.protein);
-      setValue('fat', calculated.fat);
-      setValue('carbs', calculated.carbs);
-      setValue('cardioMinutes', calculated.cardioMinutes);
+      // Update calculated fields - convert to strings for consistency
+      setValue('steps', calculated.steps.toString());
+      setValue('calories', calculated.calories.toString());
+      setValue('protein', calculated.protein.toString());
+      setValue('fat', calculated.fat.toString());
+      setValue('carbs', calculated.carbs.toString());
+      if (calculated.cardioMinutes) {
+        setValue('cardioMinutes', calculated.cardioMinutes.toString());
+      }
       setValue('cardioDescription', calculated.cardioDescription);
     }
   }, [weight, activity, activityAdjustment, cardioOption, phase3Data, calculatePhase4Data, setValue]);
@@ -68,13 +75,13 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
   const onSubmit = handleSubmit((data: any) => {
     if (!phase3Data) return;
 
-    // Calculate with schema
+    // Calculate with schema - convert strings to numbers
     const fullData = calculatePhase4Data(
       phase3Data.steps,
-      data.weight,
-      data.activity,
-      data.activityAdjustment,
-      data.cardioOption
+      Number(data.weight),
+      Number(data.activity) as ActivityLevel,
+      Number(data.activityAdjustment),
+      Number(data.cardioOption) as CardioOption
     );
     setPhase4Data(fullData);
 
@@ -122,7 +129,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
                 id="weight"
                 type="number"
                 step="0.1"
-                {...register('weight', { valueAsNumber: true })}
+                {...register('weight')}
                 className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white"
               />
               {errors.weight && (
@@ -136,8 +143,8 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
                 Aktivitetsnivå
               </Label>
               <Select
-                value={activity?.toString()}
-                onValueChange={(value) => setValue('activity', Number(value) as ActivityLevel)}
+                value={activity || '30'}
+                onValueChange={(value) => setValue('activity', value)}
               >
                 <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">
                   <SelectValue placeholder="Välj nivå" />
@@ -162,7 +169,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
               <Input
                 id="activityAdjustment"
                 type="number"
-                {...register('activityAdjustment', { valueAsNumber: true })}
+                {...register('activityAdjustment')}
                 className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white"
               />
               {errors.activityAdjustment && (
@@ -175,8 +182,8 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
           <div className="border border-[rgba(255,215,0,0.3)] bg-black/40 p-4 rounded-lg">
             <Label className="text-white text-lg mb-3 block">Välj Cardio-alternativ</Label>
             <RadioGroup
-              value={cardioOption?.toString()}
-              onValueChange={(value) => setValue('cardioOption', Number(value) as CardioOption)}
+              value={cardioOption || '1'}
+              onValueChange={(value) => setValue('cardioOption', value)}
             >
               <div className="space-y-3">
                 <div className="flex items-start space-x-3 p-3 rounded-lg border border-[rgba(255,215,0,0.2)] hover:bg-[rgba(255,215,0,0.05)]">

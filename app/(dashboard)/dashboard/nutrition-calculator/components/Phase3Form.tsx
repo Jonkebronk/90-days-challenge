@@ -43,21 +43,25 @@ export function Phase3Form({ onNext, onBack }: Phase3FormProps) {
 
   // Auto-calculate when inputs change
   useEffect(() => {
-    if (weight && activity && weightLoss !== undefined && phase2Data) {
+    const weightNum = Number(weight);
+    const activityNum = Number(activity);
+    const weightLossNum = Number(weightLoss);
+
+    if (weightNum > 0 && activityNum && weightLossNum >= 0 && phase2Data) {
       const calculated = calculatePhase3Data(
         phase2Data.steps,
-        Number(weight),
-        activity as ActivityLevel,
-        Number(weightLoss)
+        weightNum,
+        activityNum as ActivityLevel,
+        weightLossNum
       );
 
-      // Update calculated fields
-      setValue('steps', calculated.steps);
-      setValue('calories', calculated.calories);
-      setValue('protein', calculated.protein);
-      setValue('fat', calculated.fat);
-      setValue('carbs', calculated.carbs);
-      setValue('cardioMinutes', calculated.cardioMinutes);
+      // Update calculated fields - convert to strings for consistency
+      setValue('steps', calculated.steps.toString());
+      setValue('calories', calculated.calories.toString());
+      setValue('protein', calculated.protein.toString());
+      setValue('fat', calculated.fat.toString());
+      setValue('carbs', calculated.carbs.toString());
+      setValue('cardioMinutes', calculated.cardioMinutes.toString());
       setValue('cardioDescription', calculated.cardioDescription);
     }
   }, [weight, activity, weightLoss, phase2Data, calculatePhase3Data, setValue]);
@@ -65,12 +69,12 @@ export function Phase3Form({ onNext, onBack }: Phase3FormProps) {
   const onSubmit = handleSubmit((data: any) => {
     if (!phase2Data) return;
 
-    // Calculate with schema
+    // Calculate with schema - convert strings to numbers
     const fullData = calculatePhase3Data(
       phase2Data.steps,
-      data.weight,
-      data.activity,
-      data.weightLoss
+      Number(data.weight),
+      Number(data.activity) as ActivityLevel,
+      Number(data.weightLoss)
     );
     setPhase3Data(fullData);
 
@@ -118,7 +122,7 @@ export function Phase3Form({ onNext, onBack }: Phase3FormProps) {
                 id="weight"
                 type="number"
                 step="0.1"
-                {...register('weight', { valueAsNumber: true })}
+                {...register('weight')}
                 className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white"
               />
               {errors.weight && (
@@ -132,8 +136,8 @@ export function Phase3Form({ onNext, onBack }: Phase3FormProps) {
                 Aktivitetsnivå
               </Label>
               <Select
-                value={activity?.toString()}
-                onValueChange={(value) => setValue('activity', Number(value) as ActivityLevel)}
+                value={activity || '30'}
+                onValueChange={(value) => setValue('activity', value)}
               >
                 <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">
                   <SelectValue placeholder="Välj nivå" />
@@ -158,7 +162,7 @@ export function Phase3Form({ onNext, onBack }: Phase3FormProps) {
               <Input
                 id="weightLoss"
                 type="number"
-                {...register('weightLoss', { valueAsNumber: true })}
+                {...register('weightLoss')}
                 className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white"
               />
               {errors.weightLoss && (
