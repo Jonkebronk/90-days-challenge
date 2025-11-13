@@ -215,7 +215,7 @@ export function NutritionCalculatorClient({ clients }: NutritionCalculatorClient
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <Select value={clientId || undefined} onValueChange={handleClientSelect}>
+                <Select value={clientId || ''} onValueChange={handleClientSelect}>
                   <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">
                     <SelectValue placeholder="Välj en klient..." />
                   </SelectTrigger>
