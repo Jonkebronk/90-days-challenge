@@ -64,7 +64,8 @@ export function Phase2Form({ onNext, onBack }: Phase2FormProps) {
       setValue('cardioMinutes', calculated.cardioMinutes.toString());
       setValue('cardioDescription', calculated.cardioDescription);
     }
-  }, [weight, activity, weightLoss, phase1Data, calculatePhase2Data, setValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weight, activity, weightLoss, phase1Data]);
 
   const onSubmit = handleSubmit((data: any) => {
     if (!phase1Data) return;

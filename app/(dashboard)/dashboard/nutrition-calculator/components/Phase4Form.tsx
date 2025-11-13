@@ -70,7 +70,8 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
       }
       setValue('cardioDescription', calculated.cardioDescription);
     }
-  }, [weight, activity, activityAdjustment, cardioOption, phase3Data, calculatePhase4Data, setValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weight, activity, activityAdjustment, cardioOption, phase3Data]);
 
   const onSubmit = handleSubmit((data: any) => {
     if (!phase3Data) return;

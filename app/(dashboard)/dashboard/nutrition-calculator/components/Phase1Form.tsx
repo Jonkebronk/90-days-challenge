@@ -63,7 +63,8 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
       setValue('fat', calculated.fat.toString());
       setValue('carbs', calculated.carbs.toString());
     }
-  }, [weight, activity, weightLoss, steps, calculatePhase1Data, setValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weight, activity, weightLoss, steps]);
 
   const onSubmit = handleSubmit((data: any) => {
     // Calculate with schema - convert strings to numbers
