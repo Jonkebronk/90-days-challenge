@@ -19,10 +19,12 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Missing email or password')
         }
 
-        console.log('Attempting to authorize user:', credentials.email)
+        // Normalize email to lowercase for case-insensitive lookup
+        const normalizedEmail = credentials.email.toLowerCase()
+        console.log('Attempting to authorize user:', normalizedEmail)
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: { email: normalizedEmail },
         })
 
         if (!user || !user.password) {
