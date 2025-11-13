@@ -59,51 +59,52 @@ export function usePhaseForm<T extends PhaseNumber>(
   const setPhase4Data = useNutritionStore((state) => state.setPhase4Data);
 
   // Default values for each phase when no data exists
+  // Using empty strings for all number inputs to avoid controlled/uncontrolled issues
   const getDefaultValues = () => {
     switch (phase) {
       case 1:
         return {
-          weight: undefined,
+          weight: '',
           activity: 30,
-          weightLoss: undefined,
-          steps: undefined,
-          calories: undefined,
-          protein: undefined,
-          fat: undefined,
-          carbs: undefined,
+          weightLoss: '',
+          steps: '',
+          calories: '',
+          protein: '',
+          fat: '',
+          carbs: '',
         };
       case 2:
         return {
-          weight: undefined,
-          steps: undefined,
-          calories: undefined,
-          protein: undefined,
-          fat: undefined,
-          carbs: undefined,
+          weight: '',
+          steps: '',
+          calories: '',
+          protein: '',
+          fat: '',
+          carbs: '',
           cardioMinutes: 10,
           cardioDescription: '',
         };
       case 3:
         return {
-          weight: undefined,
-          steps: undefined,
-          calories: undefined,
-          protein: undefined,
-          fat: undefined,
-          carbs: undefined,
+          weight: '',
+          steps: '',
+          calories: '',
+          protein: '',
+          fat: '',
+          carbs: '',
           cardioMinutes: 20,
           cardioDescription: '',
         };
       case 4:
         return {
-          weight: undefined,
-          steps: undefined,
-          calories: undefined,
-          protein: undefined,
-          fat: undefined,
-          carbs: undefined,
+          weight: '',
+          steps: '',
+          calories: '',
+          protein: '',
+          fat: '',
+          carbs: '',
           cardioOption: 1,
-          cardioMinutes: undefined,
+          cardioMinutes: '',
           cardioDescription: '',
         };
       default:

@@ -41,12 +41,17 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
 
   // Auto-calculate when inputs change
   useEffect(() => {
-    if (weight && activity && weightLoss !== undefined && steps) {
+    // Convert to numbers and check if all required values are present
+    const weightNum = Number(weight);
+    const weightLossNum = Number(weightLoss);
+    const stepsNum = Number(steps);
+
+    if (weightNum > 0 && activity && weightLossNum >= 0 && stepsNum > 0) {
       const calculated = calculatePhase1Data(
-        Number(weight),
+        weightNum,
         activity as ActivityLevel,
-        Number(weightLoss),
-        Number(steps)
+        weightLossNum,
+        stepsNum
       );
 
       // Update calculated fields
@@ -58,12 +63,12 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
   }, [weight, activity, weightLoss, steps, calculatePhase1Data, setValue]);
 
   const onSubmit = handleSubmit((data: any) => {
-    // Calculate with schema
+    // Calculate with schema - convert strings to numbers
     const fullData = calculatePhase1Data(
-      data.weight,
+      Number(data.weight),
       data.activity,
-      data.weightLoss,
-      data.steps
+      Number(data.weightLoss),
+      Number(data.steps)
     );
     setPhase1Data(fullData);
 
@@ -98,7 +103,7 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
                 id="weight"
                 type="number"
                 step="0.1"
-                {...register('weight', { valueAsNumber: true })}
+                {...register('weight')}
                 className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white"
               />
               {errors.weight && (
@@ -138,7 +143,7 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
               <Input
                 id="weightLoss"
                 type="number"
-                {...register('weightLoss', { valueAsNumber: true })}
+                {...register('weightLoss')}
                 className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white"
               />
               {errors.weightLoss && (
@@ -154,7 +159,7 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
               <Input
                 id="steps"
                 type="number"
-                {...register('steps', { valueAsNumber: true })}
+                {...register('steps')}
                 className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white"
               />
               {errors.steps && (
