@@ -143,8 +143,13 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
                 Aktivitetsnivå
               </Label>
               <Select
-                value={activity || '30'}
-                onValueChange={(value) => setValue('activity', value)}
+                value={String(activity || 30)}
+                onValueChange={(value) => {
+                  const numValue = Number(value) as ActivityLevel;
+                  if (numValue !== activity) {
+                    setValue('activity', numValue);
+                  }
+                }}
               >
                 <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">
                   <SelectValue placeholder="Välj nivå" />
@@ -182,8 +187,13 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
           <div className="border border-[rgba(255,215,0,0.3)] bg-black/40 p-4 rounded-lg">
             <Label className="text-white text-lg mb-3 block">Välj Cardio-alternativ</Label>
             <RadioGroup
-              value={cardioOption || '1'}
-              onValueChange={(value) => setValue('cardioOption', value)}
+              value={String(cardioOption || 1)}
+              onValueChange={(value) => {
+                const numValue = Number(value) as CardioOption;
+                if (numValue !== cardioOption) {
+                  setValue('cardioOption', numValue);
+                }
+              }}
             >
               <div className="space-y-3">
                 <div className="flex items-start space-x-3 p-3 rounded-lg border border-[rgba(255,215,0,0.2)] hover:bg-[rgba(255,215,0,0.05)]">

@@ -65,7 +65,7 @@ export function usePhaseForm<T extends PhaseNumber>(
       case 1:
         return {
           weight: '',
-          activity: '30',  // String to prevent controlled/uncontrolled switch
+          activity: 30,  // Number - Zod schema expects number literal
           weightLoss: '',
           steps: '',
           calories: '',
@@ -81,7 +81,7 @@ export function usePhaseForm<T extends PhaseNumber>(
           protein: '',
           fat: '',
           carbs: '',
-          cardioMinutes: '10',  // String to prevent controlled/uncontrolled switch
+          cardioMinutes: 10,  // Number - Zod schema expects number literal
           cardioDescription: '',
         };
       case 3:
@@ -92,7 +92,7 @@ export function usePhaseForm<T extends PhaseNumber>(
           protein: '',
           fat: '',
           carbs: '',
-          cardioMinutes: '20',  // String to prevent controlled/uncontrolled switch
+          cardioMinutes: 20,  // Number - Zod schema expects number literal
           cardioDescription: '',
         };
       case 4:
@@ -103,7 +103,7 @@ export function usePhaseForm<T extends PhaseNumber>(
           protein: '',
           fat: '',
           carbs: '',
-          cardioOption: '1',  // String to prevent controlled/uncontrolled switch
+          cardioOption: 1,  // Number - Zod schema expects number literal
           cardioMinutes: '',
           cardioDescription: '',
         };
@@ -154,16 +154,24 @@ export function usePhaseForm<T extends PhaseNumber>(
   }) as any;
 
   // Sync form values with store when data changes
-  // Convert all numbers to strings to maintain consistent controlled state
+  // Convert numbers to strings EXCEPT for fields that Zod expects as number literals
   useEffect(() => {
     if (data) {
-      const convertToStrings = (obj: any): any => {
-        if (typeof obj === 'number') return obj.toString();
+      const fieldsToKeepAsNumbers = ['activity', 'cardioOption', 'cardioMinutes'];
+
+      const convertToStrings = (obj: any, parentKey: string = ''): any => {
+        if (typeof obj === 'number') {
+          // Keep certain fields as numbers for Zod literal validation
+          if (fieldsToKeepAsNumbers.includes(parentKey)) {
+            return obj;
+          }
+          return obj.toString();
+        }
         if (typeof obj !== 'object' || obj === null) return obj;
-        if (Array.isArray(obj)) return obj.map(convertToStrings);
+        if (Array.isArray(obj)) return obj.map((item) => convertToStrings(item, parentKey));
 
         return Object.entries(obj).reduce((acc, [key, value]) => {
-          acc[key] = convertToStrings(value);
+          acc[key] = convertToStrings(value, key);
           return acc;
         }, {} as any);
       };

@@ -136,8 +136,13 @@ export function Phase3Form({ onNext, onBack }: Phase3FormProps) {
                 Aktivitetsnivå
               </Label>
               <Select
-                value={activity || '30'}
-                onValueChange={(value) => setValue('activity', value)}
+                value={String(activity || 30)}
+                onValueChange={(value) => {
+                  const numValue = Number(value) as ActivityLevel;
+                  if (numValue !== activity) {
+                    setValue('activity', numValue);
+                  }
+                }}
               >
                 <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">
                   <SelectValue placeholder="Välj nivå" />

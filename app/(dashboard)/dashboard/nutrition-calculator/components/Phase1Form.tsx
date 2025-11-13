@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { Controller } from 'react-hook-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +31,7 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
     handleSubmit,
     watch,
     setValue,
+    control,
     formState: { errors },
   } = usePhase1Form() as any;
 
@@ -117,20 +119,26 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
               <Label htmlFor="activity" className="text-white">
                 Aktivitetsnivå
               </Label>
-              <Select
-                value={activity || '30'}
-                onValueChange={(value) => setValue('activity', value)}
-              >
-                <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">
-                  <SelectValue placeholder="Välj nivå" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="25">25 - Låg aktivitet</SelectItem>
-                  <SelectItem value="30">30 - Måttlig aktivitet</SelectItem>
-                  <SelectItem value="35">35 - Hög aktivitet</SelectItem>
-                  <SelectItem value="40">40 - Mycket hög aktivitet</SelectItem>
-                </SelectContent>
-              </Select>
+              <Controller
+                name="activity"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={String(field.value || 30)}
+                    onValueChange={(value) => field.onChange(Number(value) as ActivityLevel)}
+                  >
+                    <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectValue placeholder="Välj nivå" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="25">25 - Låg aktivitet</SelectItem>
+                      <SelectItem value="30">30 - Måttlig aktivitet</SelectItem>
+                      <SelectItem value="35">35 - Hög aktivitet</SelectItem>
+                      <SelectItem value="40">40 - Mycket hög aktivitet</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
               {errors.activity && (
                 <p className="text-sm text-red-400">{errors.activity.message}</p>
               )}
