@@ -112,7 +112,7 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
                 Aktivitetsnivå
               </Label>
               <Select
-                value={activity?.toString()}
+                value={activity ? activity.toString() : undefined}
                 onValueChange={(value) => setValue('activity', Number(value) as ActivityLevel)}
               >
                 <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">

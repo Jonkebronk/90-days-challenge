@@ -58,6 +58,59 @@ export function usePhaseForm<T extends PhaseNumber>(
   const setPhase3Data = useNutritionStore((state) => state.setPhase3Data);
   const setPhase4Data = useNutritionStore((state) => state.setPhase4Data);
 
+  // Default values for each phase when no data exists
+  const getDefaultValues = () => {
+    switch (phase) {
+      case 1:
+        return {
+          weight: '' as any,
+          activity: 30 as any,
+          weightLoss: '' as any,
+          steps: '' as any,
+          calories: '' as any,
+          protein: '' as any,
+          fat: '' as any,
+          carbs: '' as any,
+        };
+      case 2:
+        return {
+          weight: '' as any,
+          steps: '' as any,
+          calories: '' as any,
+          protein: '' as any,
+          fat: '' as any,
+          carbs: '' as any,
+          cardioMinutes: 10 as any,
+          cardioDescription: '' as any,
+        };
+      case 3:
+        return {
+          weight: '' as any,
+          steps: '' as any,
+          calories: '' as any,
+          protein: '' as any,
+          fat: '' as any,
+          carbs: '' as any,
+          cardioMinutes: 20 as any,
+          cardioDescription: '' as any,
+        };
+      case 4:
+        return {
+          weight: '' as any,
+          steps: '' as any,
+          calories: '' as any,
+          protein: '' as any,
+          fat: '' as any,
+          carbs: '' as any,
+          cardioOption: 1 as any,
+          cardioMinutes: '' as any,
+          cardioDescription: '' as any,
+        };
+      default:
+        return {};
+    }
+  };
+
   // Select appropriate schema and data based on phase
   const getSchemaAndData = () => {
     switch (phase) {
@@ -95,7 +148,7 @@ export function usePhaseForm<T extends PhaseNumber>(
   // Initialize form with schema validation
   const form = useForm({
     resolver: zodResolver(schema as any),
-    defaultValues: data || {},
+    defaultValues: data || getDefaultValues(),
     mode: 'onChange',
   }) as any;
 
