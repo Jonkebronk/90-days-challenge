@@ -1,5 +1,5 @@
 // Service Worker for 90 Days Challenge PWA
-const CACHE_NAME = '90-days-v3'
+const CACHE_NAME = '90-days-v4'
 const urlsToCache = [
   '/',
   '/dashboard',
@@ -37,9 +37,23 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
+  // Skip service worker entirely for API routes (especially NextAuth)
+  if (event.request.url.includes('/api/')) {
+    event.respondWith(
+      fetch(event.request, {
+        redirect: 'follow'
+      })
+    )
+    return
+  }
+
   // Skip caching for non-GET requests (POST, PUT, DELETE, etc.)
   if (event.request.method !== 'GET') {
-    event.respondWith(fetch(event.request))
+    event.respondWith(
+      fetch(event.request, {
+        redirect: 'follow'
+      })
+    )
     return
   }
 
