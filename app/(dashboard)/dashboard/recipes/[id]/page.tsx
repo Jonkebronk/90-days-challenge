@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useParams } from 'next/navigation'
+import { useReactToPrint } from 'react-to-print'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -16,7 +17,9 @@ import {
   Plus,
   Minus,
   ChefHat,
-  Play
+  Play,
+  Printer,
+  Download
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -79,6 +82,12 @@ export default function RecipeDetailPage() {
   const [recipe, setRecipe] = useState<Recipe | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [servings, setServings] = useState(1)
+  const printRef = useRef<HTMLDivElement>(null)
+
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: recipe?.title || 'Recept',
+  })
 
   useEffect(() => {
     if (session?.user) {
@@ -191,7 +200,7 @@ export default function RecipeDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10">
+      <div className="bg-white border-b sticky top-0 z-10 no-print">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Button
@@ -202,18 +211,36 @@ export default function RecipeDetailPage() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Tillbaka till recept
             </Button>
-            <Button
-              variant={isFavorited() ? 'default' : 'outline'}
-              onClick={handleToggleFavorite}
-            >
-              <Heart className={`h-4 w-4 mr-2 ${isFavorited() ? 'fill-current' : ''}`} />
-              {isFavorited() ? 'Favorit' : 'Lägg till favorit'}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrint}
+              >
+                <Printer className="h-4 w-4 mr-2" />
+                Skriv ut
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrint}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Spara som PDF
+              </Button>
+              <Button
+                variant={isFavorited() ? 'default' : 'outline'}
+                onClick={handleToggleFavorite}
+              >
+                <Heart className={`h-4 w-4 mr-2 ${isFavorited() ? 'fill-current' : ''}`} />
+                {isFavorited() ? 'Favorit' : 'Lägg till favorit'}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-6 py-8" ref={printRef}>
         <div className="max-w-6xl mx-auto space-y-6">
           {/* Recipe Header */}
           <div>
@@ -422,6 +449,66 @@ export default function RecipeDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Print Styles */}
+      <style jsx global>{`
+        @media print {
+          /* Hide elements that shouldn't be printed */
+          .no-print {
+            display: none !important;
+          }
+
+          /* Reset page styles */
+          body {
+            background: white !important;
+          }
+
+          /* Optimize layout for printing */
+          .container {
+            max-width: 100% !important;
+            padding: 0 !important;
+          }
+
+          /* Ensure images fit */
+          img {
+            max-height: 300px !important;
+            page-break-inside: avoid;
+          }
+
+          /* Improve readability */
+          .text-muted-foreground {
+            color: #666 !important;
+          }
+
+          /* Ensure cards don't have backgrounds */
+          .bg-white,
+          .bg-gray-50 {
+            background: white !important;
+          }
+
+          /* Remove shadows and borders for cleaner print */
+          .shadow,
+          .shadow-lg,
+          .shadow-md {
+            box-shadow: none !important;
+          }
+
+          /* Ensure proper page breaks */
+          .space-y-6 > * {
+            page-break-inside: avoid;
+          }
+
+          /* Make sure ingredient and instruction lists are readable */
+          ul,
+          ol {
+            page-break-inside: avoid;
+          }
+
+          li {
+            page-break-inside: avoid;
+          }
+        }
+      `}</style>
     </div>
   )
 }
