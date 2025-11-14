@@ -23,7 +23,6 @@ import {
   RecipeIngredient,
   RecipeInstruction,
   DIETARY_TAGS,
-  MEAL_TYPES,
   DIFFICULTY_LEVELS
 } from '@/components/recipe-editor/types'
 
@@ -51,7 +50,6 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
   const [prepTimeMinutes, setPrepTimeMinutes] = useState<number | null>(null)
   const [cookTimeMinutes, setCookTimeMinutes] = useState<number | null>(null)
   const [difficulty, setDifficulty] = useState('')
-  const [mealType, setMealType] = useState('')
   const [coverImage, setCoverImage] = useState('')
   const [videoUrl, setVideoUrl] = useState('')
   const [dietaryTags, setDietaryTags] = useState<string[]>([])
@@ -90,7 +88,6 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
         setPrepTimeMinutes(recipe.prepTimeMinutes)
         setCookTimeMinutes(recipe.cookTimeMinutes)
         setDifficulty(recipe.difficulty || '')
-        setMealType(recipe.mealType || '')
         setCoverImage(recipe.coverImage || '')
         setVideoUrl(recipe.videoUrl || '')
         setDietaryTags(recipe.dietaryTags || [])
@@ -272,7 +269,6 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
           prepTimeMinutes,
           cookTimeMinutes,
           difficulty,
-          mealType,
           coverImage,
           videoUrl,
           dietaryTags,
@@ -400,19 +396,6 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
               </Select>
             </div>
 
-            <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Måltidstyp</Label>
-              <Select value={mealType} onValueChange={setMealType}>
-                <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
-                  <SelectValue placeholder="Välj typ" />
-                </SelectTrigger>
-                <SelectContent>
-                  {MEAL_TYPES.map(type => (
-                    <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           <div className="grid grid-cols-4 gap-4">
