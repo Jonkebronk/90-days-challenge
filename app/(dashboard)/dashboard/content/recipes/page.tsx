@@ -22,22 +22,11 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import {
   Plus,
   ChefHat,
-  Pencil,
   Trash2,
-  Eye,
-  EyeOff,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -49,11 +38,14 @@ type RecipeCategory = {
 type Recipe = {
   id: string
   title: string
+  description?: string | null
   categoryId: string
   servings: number
   difficulty?: string | null
   mealType?: string | null
   published: boolean
+  caloriesPerServing?: number | null
+  coverImage?: string | null
   category: RecipeCategory
 }
 
@@ -220,108 +212,102 @@ export default function CoachRecipesPage() {
         </Button>
       </div>
 
-      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] overflow-hidden">
-        <div className="p-6 border-b border-[rgba(255,215,0,0.2)]">
-          <h2 className="text-xl font-bold text-[#FFD700] tracking-[1px]">Alla recept ({recipes.length})</h2>
+      {isLoading ? (
+        <div className="text-center py-12">
+          <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin mx-auto" />
         </div>
-        <div className="p-6">
-          {isLoading ? (
-            <p className="text-[rgba(255,255,255,0.6)] text-center py-8">Laddar...</p>
-          ) : recipes.length === 0 ? (
-            <div className="text-center py-8">
-              <ChefHat className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-              <p className="text-[rgba(255,255,255,0.6)]">Inga recept ännu.</p>
-              <p className="text-sm text-[rgba(255,255,255,0.4)] mt-1">
-                Skapa ditt första recept för att komma igång.
-              </p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-b border-[rgba(255,215,0,0.2)] hover:bg-[rgba(255,215,0,0.05)]">
-                    <TableHead className="text-[rgba(255,215,0,0.8)]">Titel</TableHead>
-                    <TableHead className="text-[rgba(255,215,0,0.8)]">Kategori</TableHead>
-                    <TableHead className="text-[rgba(255,215,0,0.8)]">Portioner</TableHead>
-                    <TableHead className="text-[rgba(255,215,0,0.8)]">Svårighetsgrad</TableHead>
-                    <TableHead className="text-[rgba(255,215,0,0.8)]">Måltidstyp</TableHead>
-                    <TableHead className="text-[rgba(255,215,0,0.8)]">Status</TableHead>
-                    <TableHead className="text-right text-[rgba(255,215,0,0.8)]">Åtgärder</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recipes.map((recipe) => (
-                    <TableRow key={recipe.id} className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.05)] transition-colors">
-                      <TableCell className="font-medium text-white">{recipe.title}</TableCell>
-                      <TableCell>
-                        <Badge className="bg-[rgba(255,215,0,0.1)] text-[#FFD700] border border-[rgba(255,215,0,0.3)] hover:bg-[rgba(255,215,0,0.2)]">
-                          {recipe.category.name}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-white">{recipe.servings}</TableCell>
-                      <TableCell>
-                        {recipe.difficulty ? (
-                          <Badge className="bg-[rgba(100,100,255,0.1)] text-blue-300 border border-[rgba(100,100,255,0.3)]">
-                            {recipe.difficulty}
-                          </Badge>
-                        ) : <span className="text-[rgba(255,255,255,0.4)]">-</span>}
-                      </TableCell>
-                      <TableCell className="text-[rgba(255,255,255,0.6)]">
-                        {recipe.mealType || '-'}
-                      </TableCell>
-                      <TableCell>
-                        {recipe.published ? (
-                          <Badge className="bg-[rgba(34,197,94,0.1)] text-green-400 border border-[rgba(34,197,94,0.3)]">
-                            Publicerad
-                          </Badge>
-                        ) : (
-                          <Badge className="bg-[rgba(150,150,150,0.1)] text-gray-400 border border-[rgba(150,150,150,0.3)]">
-                            Utkast
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleTogglePublished(recipe)}
-                            title={recipe.published ? 'Avpublicera' : 'Publicera'}
-                            className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
-                          >
-                            {recipe.published ? (
-                              <EyeOff className="h-4 w-4" />
-                            ) : (
-                              <Eye className="h-4 w-4" />
-                            )}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => router.push(`/dashboard/content/recipes/${recipe.id}/edit`)}
-                            title="Redigera recept"
-                            className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteRecipe(recipe)}
-                            className="hover:bg-[rgba(255,0,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-red-400"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+      ) : recipes.length === 0 ? (
+        <div className="text-center py-12">
+          <ChefHat className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
+          <p className="text-[rgba(255,255,255,0.6)] text-lg">Inga recept ännu.</p>
+          <p className="text-sm text-[rgba(255,255,255,0.4)] mt-2">
+            Skapa ditt första recept för att komma igång.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-8">
+          {categories.map((category) => {
+            const categoryRecipes = recipes.filter(r => r.categoryId === category.id)
+            if (categoryRecipes.length === 0) return null
+
+            return (
+              <div key={category.id}>
+                {/* Category Header */}
+                <div className="flex items-center gap-3 mb-4">
+                  <ChefHat className="h-5 w-5 text-[#FFD700]" />
+                  <h2 className="text-xl font-bold text-[#FFD700]">{category.name}</h2>
+                  <Badge className="bg-[rgba(255,215,0,0.1)] text-[#FFD700] border border-[rgba(255,215,0,0.3)]">
+                    {categoryRecipes.length} recept
+                  </Badge>
+                </div>
+
+                {/* Recipe Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {categoryRecipes.map((recipe) => (
+                    <div
+                      key={recipe.id}
+                      onClick={() => router.push(`/dashboard/content/recipes/${recipe.id}/edit`)}
+                      className="group relative bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg overflow-hidden cursor-pointer hover:border-[rgba(255,215,0,0.5)] transition-all hover:scale-[1.02]"
+                    >
+                      {/* Image */}
+                      {recipe.coverImage ? (
+                        <div className="h-32 w-full bg-[rgba(255,255,255,0.05)] overflow-hidden">
+                          <img
+                            src={recipe.coverImage}
+                            alt={recipe.title}
+                            className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
                         </div>
-                      </TableCell>
-                    </TableRow>
+                      ) : (
+                        <div className="h-32 w-full bg-[rgba(255,255,255,0.05)] flex items-center justify-center">
+                          <ChefHat className="h-12 w-12 text-[rgba(255,215,0,0.3)]" />
+                        </div>
+                      )}
+
+                      {/* Content */}
+                      <div className="p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <h3 className="text-base font-semibold text-[rgba(255,255,255,0.9)] line-clamp-1 flex-1">
+                            {recipe.title}
+                          </h3>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDeleteRecipe(recipe)
+                            }}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity ml-2"
+                          >
+                            <Trash2 className="h-4 w-4 text-[rgba(255,255,255,0.4)] hover:text-red-400" />
+                          </button>
+                        </div>
+
+                        {recipe.description && (
+                          <p className="text-sm text-[rgba(255,255,255,0.6)] mb-3 line-clamp-2">
+                            {recipe.description}
+                          </p>
+                        )}
+
+                        <div className="flex items-center gap-4 text-xs text-[rgba(255,255,255,0.6)]">
+                          {recipe.caloriesPerServing && (
+                            <div className="flex items-center gap-1">
+                              <span className="text-[#FFA500]">🔥</span>
+                              <span>{Math.round(recipe.caloriesPerServing)} kcal</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1">
+                            <span>👤</span>
+                            <span>{recipe.servings} {recipe.servings === 1 ? 'portion' : 'portioner'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+                </div>
+              </div>
+            )
+          })}
         </div>
-      </div>
+      )}
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
