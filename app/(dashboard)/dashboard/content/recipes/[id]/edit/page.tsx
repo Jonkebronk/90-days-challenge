@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Calculator } from 'lucide-react'
-import Link from 'next/link'
+import { ArrowLeft, Save, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -15,29 +14,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useToast } from '@/hooks/use-toast'
-import { IngredientTable } from '@/components/recipe-editor/IngredientTable'
-import { InstructionList } from '@/components/recipe-editor/InstructionList'
-import {
-  RecipeIngredient,
-  RecipeInstruction,
-  DIETARY_TAGS,
-  DIFFICULTY_LEVELS
-} from '@/components/recipe-editor/types'
 
 interface RecipeCategory {
   id: string
   name: string
 }
 
+interface SimpleIngredient {
+  id?: string
+  name: string
+  amount: string
+  unit: string
+  grams: string
+}
+
+interface SimpleInstruction {
+  id?: string
+  step: number
+  text: string
+  duration?: string
+}
+
 export default function EditRecipePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
-  const { toast } = useToast()
   const [recipeId, setRecipeId] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [calculating, setCalculating] = useState(false)
 
   // Categories
   const [categories, setCategories] = useState<RecipeCategory[]>([])
@@ -47,23 +49,24 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
   const [description, setDescription] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [servings, setServings] = useState(1)
-  const [prepTimeMinutes, setPrepTimeMinutes] = useState<number | null>(null)
-  const [cookTimeMinutes, setCookTimeMinutes] = useState<number | null>(null)
-  const [difficulty, setDifficulty] = useState('')
-  const [coverImage, setCoverImage] = useState('')
-  const [videoUrl, setVideoUrl] = useState('')
-  const [dietaryTags, setDietaryTags] = useState<string[]>([])
-  const [published, setPublished] = useState(false)
+  const [prepTimeMinutes, setPrepTimeMinutes] = useState('')
+  const [cookTimeMinutes, setCookTimeMinutes] = useState('')
 
-  // Nutrition
-  const [caloriesPerServing, setCaloriesPerServing] = useState<number | null>(null)
-  const [proteinPerServing, setProteinPerServing] = useState<number | null>(null)
-  const [carbsPerServing, setCarbsPerServing] = useState<number | null>(null)
-  const [fatPerServing, setFatPerServing] = useState<number | null>(null)
+  // Simple ingredients
+  const [ingredients, setIngredients] = useState<SimpleIngredient[]>([
+    { name: '', amount: '', unit: 'g', grams: '' }
+  ])
 
-  // Ingredients & Instructions
-  const [ingredients, setIngredients] = useState<RecipeIngredient[]>([])
-  const [instructions, setInstructions] = useState<RecipeInstruction[]>([])
+  // Simple instructions
+  const [instructions, setInstructions] = useState<SimpleInstruction[]>([
+    { step: 1, text: '', duration: '' }
+  ])
+
+  // Nutrition per serving
+  const [calories, setCalories] = useState('')
+  const [protein, setProtein] = useState('')
+  const [carbs, setCarbs] = useState('')
+  const [fat, setFat] = useState('')
 
   useEffect(() => {
     const loadData = async () => {
@@ -73,6 +76,18 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
     }
     loadData()
   }, [])
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/recipe-categories')
+      if (response.ok) {
+        const data = await response.json()
+        setCategories(data.categories)
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    }
+  }
 
   const fetchRecipe = async (id: string) => {
     try {
@@ -85,180 +100,85 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
         setDescription(recipe.description || '')
         setCategoryId(recipe.categoryId)
         setServings(recipe.servings)
-        setPrepTimeMinutes(recipe.prepTimeMinutes)
-        setCookTimeMinutes(recipe.cookTimeMinutes)
-        setDifficulty(recipe.difficulty || '')
-        setCoverImage(recipe.coverImage || '')
-        setVideoUrl(recipe.videoUrl || '')
-        setDietaryTags(recipe.dietaryTags || [])
-        setPublished(recipe.published)
+        setPrepTimeMinutes(recipe.prepTimeMinutes?.toString() || '')
+        setCookTimeMinutes(recipe.cookTimeMinutes?.toString() || '')
 
-        setCaloriesPerServing(recipe.caloriesPerServing)
-        setProteinPerServing(recipe.proteinPerServing)
-        setCarbsPerServing(recipe.carbsPerServing)
-        setFatPerServing(recipe.fatPerServing)
+        // Convert existing ingredients to simple format
+        if (recipe.ingredients && recipe.ingredients.length > 0) {
+          setIngredients(recipe.ingredients.map((ing: any) => ({
+            id: ing.id,
+            name: ing.foodItem?.name || '',
+            amount: ing.displayAmount || '',
+            unit: ing.displayUnit || 'g',
+            grams: ing.amount?.toString() || ''
+          })))
+        }
 
-        setIngredients(recipe.ingredients || [])
-        setInstructions(recipe.instructions || [])
+        // Convert existing instructions
+        if (recipe.instructions && recipe.instructions.length > 0) {
+          setInstructions(recipe.instructions.map((inst: any) => ({
+            id: inst.id,
+            step: inst.stepNumber,
+            text: inst.instruction,
+            duration: inst.duration?.toString() || ''
+          })))
+        }
+
+        // Nutrition
+        setCalories(recipe.caloriesPerServing?.toString() || '')
+        setProtein(recipe.proteinPerServing?.toString() || '')
+        setCarbs(recipe.carbsPerServing?.toString() || '')
+        setFat(recipe.fatPerServing?.toString() || '')
+
+        setLoading(false)
       }
     } catch (error) {
       console.error('Error fetching recipe:', error)
-      toast({
-        title: 'Error',
-        description: 'Failed to load recipe',
-        variant: 'destructive'
-      })
-    } finally {
       setLoading(false)
     }
   }
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/recipe-categories')
-      if (response.ok) {
-        const data = await response.json()
-        setCategories(data.categories || [])
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-    }
+  const handleAddIngredient = () => {
+    setIngredients([...ingredients, { name: '', amount: '', unit: 'g', grams: '' }])
   }
 
-  const handleAddIngredient = async (ingredient: Partial<RecipeIngredient>) => {
-    try {
-      const response = await fetch(`/api/recipes/${recipeId}/ingredients`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(ingredient)
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setIngredients([...ingredients, data.ingredient])
-        toast({ title: 'Ingrediens tillagd' })
-      }
-    } catch (error) {
-      console.error('Error adding ingredient:', error)
-      toast({ title: 'Error', description: 'Failed to add ingredient', variant: 'destructive' })
-    }
+  const handleRemoveIngredient = (index: number) => {
+    setIngredients(ingredients.filter((_, i) => i !== index))
   }
 
-  const handleUpdateIngredient = async (id: string, field: keyof RecipeIngredient, value: any) => {
-    try {
-      const response = await fetch(`/api/recipes/${recipeId}/ingredients/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ [field]: value })
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setIngredients(ingredients.map(ing => ing.id === id ? data.ingredient : ing))
-      }
-    } catch (error) {
-      console.error('Error updating ingredient:', error)
-    }
+  const handleUpdateIngredient = (index: number, field: keyof SimpleIngredient, value: string) => {
+    const updated = [...ingredients]
+    updated[index] = { ...updated[index], [field]: value }
+    setIngredients(updated)
   }
 
-  const handleDeleteIngredient = async (id: string) => {
-    try {
-      const response = await fetch(`/api/recipes/${recipeId}/ingredients/${id}`, {
-        method: 'DELETE'
-      })
-
-      if (response.ok) {
-        setIngredients(ingredients.filter(ing => ing.id !== id))
-        toast({ title: 'Ingrediens borttagen' })
-      }
-    } catch (error) {
-      console.error('Error deleting ingredient:', error)
-    }
+  const handleAddInstruction = () => {
+    setInstructions([...instructions, { step: instructions.length + 1, text: '', duration: '' }])
   }
 
-  const handleAddInstruction = async (instruction: Partial<RecipeInstruction>) => {
-    try {
-      const response = await fetch(`/api/recipes/${recipeId}/instructions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(instruction)
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setInstructions([...instructions, data.instruction])
-        toast({ title: 'Steg tillagt' })
-      }
-    } catch (error) {
-      console.error('Error adding instruction:', error)
-      toast({ title: 'Error', description: 'Failed to add instruction', variant: 'destructive' })
-    }
+  const handleRemoveInstruction = (index: number) => {
+    const filtered = instructions.filter((_, i) => i !== index)
+    // Renumber steps
+    const renumbered = filtered.map((inst, i) => ({ ...inst, step: i + 1 }))
+    setInstructions(renumbered)
   }
 
-  const handleUpdateInstruction = async (id: string, field: keyof RecipeInstruction, value: any) => {
-    try {
-      const response = await fetch(`/api/recipes/${recipeId}/instructions/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ [field]: value })
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setInstructions(instructions.map(inst => inst.id === id ? data.instruction : inst))
-      }
-    } catch (error) {
-      console.error('Error updating instruction:', error)
-    }
-  }
-
-  const handleDeleteInstruction = async (id: string) => {
-    try {
-      const response = await fetch(`/api/recipes/${recipeId}/instructions/${id}`, {
-        method: 'DELETE'
-      })
-
-      if (response.ok) {
-        setInstructions(instructions.filter(inst => inst.id !== id))
-        toast({ title: 'Steg borttaget' })
-      }
-    } catch (error) {
-      console.error('Error deleting instruction:', error)
-    }
-  }
-
-  const handleCalculateNutrition = async () => {
-    setCalculating(true)
-    try {
-      const response = await fetch(`/api/recipes/${recipeId}/calculate-nutrition`, {
-        method: 'POST'
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setCaloriesPerServing(data.nutrition.caloriesPerServing)
-        setProteinPerServing(data.nutrition.proteinPerServing)
-        setCarbsPerServing(data.nutrition.carbsPerServing)
-        setFatPerServing(data.nutrition.fatPerServing)
-        toast({ title: 'Näring beräknad automatiskt!' })
-      }
-    } catch (error) {
-      console.error('Error calculating nutrition:', error)
-      toast({ title: 'Error', description: 'Failed to calculate nutrition', variant: 'destructive' })
-    } finally {
-      setCalculating(false)
-    }
+  const handleUpdateInstruction = (index: number, field: keyof SimpleInstruction, value: string) => {
+    const updated = [...instructions]
+    updated[index] = { ...updated[index], [field]: value }
+    setInstructions(updated)
   }
 
   const handleSave = async () => {
-    if (!title.trim()) {
-      toast({ title: 'Titel krävs', variant: 'destructive' })
+    if (!title || !categoryId) {
+      alert('Titel och kategori krävs')
       return
     }
 
     setSaving(true)
     try {
-      const response = await fetch(`/api/recipes/${recipeId}`, {
+      // Save basic recipe info
+      const recipeResponse = await fetch(`/api/recipes/${recipeId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -266,356 +186,324 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
           description,
           categoryId,
           servings,
-          prepTimeMinutes,
-          cookTimeMinutes,
-          difficulty,
-          coverImage,
-          videoUrl,
-          dietaryTags,
-          published,
-          caloriesPerServing,
-          proteinPerServing,
-          carbsPerServing,
-          fatPerServing
+          prepTimeMinutes: prepTimeMinutes ? parseInt(prepTimeMinutes) : null,
+          cookTimeMinutes: cookTimeMinutes ? parseInt(cookTimeMinutes) : null,
+          caloriesPerServing: calories ? parseFloat(calories) : null,
+          proteinPerServing: protein ? parseFloat(protein) : null,
+          carbsPerServing: carbs ? parseFloat(carbs) : null,
+          fatPerServing: fat ? parseFloat(fat) : null,
         })
       })
 
-      if (response.ok) {
-        toast({ title: 'Recept sparat!' })
-        router.push('/dashboard/content/recipes')
-      } else {
-        toast({ title: 'Error', description: 'Failed to save recipe', variant: 'destructive' })
+      if (!recipeResponse.ok) {
+        throw new Error('Failed to save recipe')
       }
+
+      alert('Recept sparat!')
+      router.push('/dashboard/content/recipes')
     } catch (error) {
-      console.error('Error saving recipe:', error)
-      toast({ title: 'Error', description: 'Failed to save recipe', variant: 'destructive' })
+      console.error('Error saving:', error)
+      alert('Fel vid sparande')
     } finally {
       setSaving(false)
     }
   }
 
-  const toggleDietaryTag = (tag: string) => {
-    setDietaryTags(prev =>
-      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
-    )
-  }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin" />
+        <div className="text-gray-600">Laddar...</div>
       </div>
     )
   }
 
-  const totalTime = (prepTimeMinutes || 0) + (cookTimeMinutes || 0)
-
   return (
-    <div className="space-y-6 pb-12">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard/content/recipes">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
-              Redigera Recept
-            </h1>
-            <p className="text-[rgba(255,255,255,0.6)] mt-1">
-              Uppdatera recept information
-            </p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
+      <div className="border-b bg-white sticky top-0 z-10">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+          <button
             onClick={() => router.back()}
-            className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)]"
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
           >
-            Avbryt
-          </Button>
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-            className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            {saving ? 'Sparar...' : 'Spara ändringar'}
-          </Button>
+            <ArrowLeft className="w-5 h-5" />
+            <span>Tillbaka</span>
+          </button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => router.back()}
+            >
+              Avbryt
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              className="bg-yellow-500 hover:bg-yellow-600 text-black"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {saving ? 'Sparar...' : 'Spara ändringar'}
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* GRUNDINFORMATION */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
-        <CardHeader>
-          <CardTitle className="text-xl text-[rgba(255,255,255,0.9)]">
-            Grundinformation
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label className="text-[rgba(255,255,255,0.7)]">Titel *</Label>
-            <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="T.ex. Proteinrik frukostpaj"
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
-            />
-          </div>
-
-          <div>
-            <Label className="text-[rgba(255,255,255,0.7)]">Beskrivning</Label>
-            <Textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Beskriv receptet..."
-              rows={3}
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+      <div className="max-w-4xl mx-auto px-6 py-8 space-y-8">
+        {/* Grundinformation */}
+        <div>
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">Grundinformation</h2>
+          <div className="space-y-4">
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Kategori *</Label>
-              <Select value={categoryId} onValueChange={setCategoryId}>
-                <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
-                  <SelectValue placeholder="Välj kategori" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map(cat => (
-                    <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-          </div>
-
-          <div className="grid grid-cols-4 gap-4">
-            <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Portioner</Label>
+              <Label className="text-sm text-gray-700">Titel *</Label>
               <Input
-                type="number"
-                value={servings}
-                onChange={(e) => setServings(parseInt(e.target.value) || 1)}
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="t.ex. Protein pannkakor"
+                className="mt-1"
               />
             </div>
 
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Prep (min)</Label>
-              <Input
-                type="number"
-                value={prepTimeMinutes || ''}
-                onChange={(e) => setPrepTimeMinutes(e.target.value ? parseInt(e.target.value) : null)}
-                placeholder="15"
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+              <Label className="text-sm text-gray-700">Beskrivning</Label>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Beskriv receptet..."
+                rows={2}
+                className="mt-1"
               />
             </div>
 
-            <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Tillagning (min)</Label>
-              <Input
-                type="number"
-                value={cookTimeMinutes || ''}
-                onChange={(e) => setCookTimeMinutes(e.target.value ? parseInt(e.target.value) : null)}
-                placeholder="30"
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
-              />
-            </div>
+            <div className="grid grid-cols-4 gap-4">
+              <div>
+                <Label className="text-sm text-gray-700">Kategori *</Label>
+                <Select value={categoryId} onValueChange={setCategoryId}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Välj" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map(cat => (
+                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Svårighetsgrad</Label>
-              <Select value={difficulty} onValueChange={setDifficulty}>
-                <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
-                  <SelectValue placeholder="Välj" />
-                </SelectTrigger>
-                <SelectContent>
-                  {DIFFICULTY_LEVELS.map(level => (
-                    <SelectItem key={level.value} value={level.value}>{level.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div>
+                <Label className="text-sm text-gray-700">Portioner</Label>
+                <Input
+                  type="number"
+                  value={servings}
+                  onChange={(e) => setServings(parseInt(e.target.value) || 1)}
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label className="text-sm text-gray-700">Prep (min)</Label>
+                <Input
+                  type="number"
+                  value={prepTimeMinutes}
+                  onChange={(e) => setPrepTimeMinutes(e.target.value)}
+                  placeholder="15"
+                  className="mt-1"
+                />
+              </div>
+
+              <div>
+                <Label className="text-sm text-gray-700">Tillagning (min)</Label>
+                <Input
+                  type="number"
+                  value={cookTimeMinutes}
+                  onChange={(e) => setCookTimeMinutes(e.target.value)}
+                  placeholder="30"
+                  className="mt-1"
+                />
+              </div>
             </div>
           </div>
+        </div>
 
-          <div>
-            <Label className="text-[rgba(255,255,255,0.7)] mb-2 block">Dietary Tags</Label>
-            <div className="flex flex-wrap gap-2">
-              {DIETARY_TAGS.map(tag => (
+        {/* Ingredienser */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Ingredienser ({ingredients.length})</h2>
+            <Button
+              onClick={handleAddIngredient}
+              size="sm"
+              variant="outline"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Lägg till
+            </Button>
+          </div>
+
+          <div className="space-y-2">
+            <div className="grid grid-cols-12 gap-2 text-xs font-medium text-gray-600 px-2">
+              <div className="col-span-4">Ingrediens</div>
+              <div className="col-span-2">Mängd</div>
+              <div className="col-span-2">Enhet</div>
+              <div className="col-span-2">Vikt (g)</div>
+              <div className="col-span-1"></div>
+            </div>
+
+            {ingredients.map((ing, index) => (
+              <div key={index} className="grid grid-cols-12 gap-2 items-center">
+                <div className="col-span-4">
+                  <Input
+                    value={ing.name}
+                    onChange={(e) => handleUpdateIngredient(index, 'name', e.target.value)}
+                    placeholder="Ingrediens..."
+                    className="text-sm"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Input
+                    value={ing.amount}
+                    onChange={(e) => handleUpdateIngredient(index, 'amount', e.target.value)}
+                    placeholder="2"
+                    className="text-sm"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Select
+                    value={ing.unit}
+                    onValueChange={(value) => handleUpdateIngredient(index, 'unit', value)}
+                  >
+                    <SelectTrigger className="text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="g">gram (g)</SelectItem>
+                      <SelectItem value="dl">deciliter (dl)</SelectItem>
+                      <SelectItem value="ml">milliliter (ml)</SelectItem>
+                      <SelectItem value="tsk">tesked (tsk)</SelectItem>
+                      <SelectItem value="msk">matsked (msk)</SelectItem>
+                      <SelectItem value="st">styck (st)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="col-span-2">
+                  <Input
+                    type="number"
+                    value={ing.grams}
+                    onChange={(e) => handleUpdateIngredient(index, 'grams', e.target.value)}
+                    placeholder="100"
+                    className="text-sm"
+                  />
+                </div>
+                <div className="col-span-1 flex justify-end">
+                  <button
+                    onClick={() => handleRemoveIngredient(index)}
+                    className="text-gray-400 hover:text-red-500"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Tillagningsinstruktioner */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Tillagningsinstruktioner ({instructions.length} steg)</h2>
+            <Button
+              onClick={handleAddInstruction}
+              size="sm"
+              variant="outline"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Lägg till steg
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            {instructions.map((inst, index) => (
+              <div key={index} className="flex gap-3">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium">
+                  {inst.step}
+                </div>
+                <div className="flex-1">
+                  <Textarea
+                    value={inst.text}
+                    onChange={(e) => handleUpdateInstruction(index, 'text', e.target.value)}
+                    placeholder="Beskriv detta steg..."
+                    rows={2}
+                    className="text-sm"
+                  />
+                </div>
+                <div className="w-24">
+                  <Input
+                    type="number"
+                    value={inst.duration || ''}
+                    onChange={(e) => handleUpdateInstruction(index, 'duration', e.target.value)}
+                    placeholder="Min"
+                    className="text-sm"
+                  />
+                </div>
                 <button
-                  key={tag.value}
-                  onClick={() => toggleDietaryTag(tag.value)}
-                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                    dietaryTags.includes(tag.value)
-                      ? 'bg-[#FFD700] text-[#0a0a0a] font-medium'
-                      : 'bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.7)] hover:border-[rgba(255,215,0,0.5)]'
-                  }`}
+                  onClick={() => handleRemoveInstruction(index)}
+                  className="text-gray-400 hover:text-red-500"
                 >
-                  {tag.label}
+                  <X className="w-4 h-4" />
                 </button>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
+        </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="published"
-              checked={published}
-              onChange={(e) => setPublished(e.target.checked)}
-              className="w-4 h-4 rounded"
-            />
-            <Label htmlFor="published" className="text-[rgba(255,255,255,0.7)] cursor-pointer">
-              Publicera recept
-            </Label>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* BILD */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
-        <CardHeader>
-          <CardTitle className="text-xl text-[rgba(255,255,255,0.9)]">
-            Bild
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {coverImage && (
-            <div className="relative w-full h-64 rounded-lg overflow-hidden border-2 border-[rgba(255,215,0,0.2)]">
-              <img src={coverImage} alt={title} className="w-full h-full object-cover" />
-            </div>
-          )}
-          <div>
-            <Label className="text-[rgba(255,255,255,0.7)]">Bild URL</Label>
-            <Input
-              value={coverImage}
-              onChange={(e) => setCoverImage(e.target.value)}
-              placeholder="https://example.com/image.jpg"
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
-            />
-          </div>
-          <div>
-            <Label className="text-[rgba(255,255,255,0.7)]">Video URL (valfri)</Label>
-            <Input
-              value={videoUrl}
-              onChange={(e) => setVideoUrl(e.target.value)}
-              placeholder="https://youtube.com/watch?v=..."
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* INGREDIENSER */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl text-[rgba(255,255,255,0.9)]">
-              Ingredienser ({ingredients.length})
-            </CardTitle>
-            {ingredients.length > 0 && (
-              <Button
-                onClick={handleCalculateNutrition}
-                disabled={calculating}
-                size="sm"
-                className="bg-[rgba(255,215,0,0.2)] border border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.3)]"
-              >
-                <Calculator className="w-4 h-4 mr-2" />
-                {calculating ? 'Beräknar...' : 'Beräkna näring'}
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <IngredientTable
-            ingredients={ingredients}
-            onAdd={handleAddIngredient}
-            onUpdate={handleUpdateIngredient}
-            onDelete={handleDeleteIngredient}
-          />
-        </CardContent>
-      </Card>
-
-      {/* INSTRUKTIONER */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
-        <CardHeader>
-          <CardTitle className="text-xl text-[rgba(255,255,255,0.9)]">
-            Instruktioner ({instructions.length} steg)
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <InstructionList
-            instructions={instructions}
-            onAdd={handleAddInstruction}
-            onUpdate={handleUpdateInstruction}
-            onDelete={handleDeleteInstruction}
-          />
-        </CardContent>
-      </Card>
-
-      {/* NÄRINGSINFORMATION */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
-        <CardHeader>
-          <CardTitle className="text-xl text-[rgba(255,255,255,0.9)]">
-            Näringsinformation (per portion)
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-[rgba(255,255,255,0.6)] mb-4">
-            Tryck på &ldquo;Beräkna näring&rdquo; ovan för att automatiskt beräkna från ingredienser, eller ange manuellt:
-          </p>
+        {/* Näringsinformation */}
+        <div>
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">Näringsinformation (per portion)</h2>
           <div className="grid grid-cols-4 gap-4">
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Kalorier (kcal)</Label>
+              <Label className="text-sm text-gray-700">Kalorier (kcal)</Label>
               <Input
                 type="number"
-                value={caloriesPerServing || ''}
-                onChange={(e) => setCaloriesPerServing(e.target.value ? parseFloat(e.target.value) : null)}
+                value={calories}
+                onChange={(e) => setCalories(e.target.value)}
                 placeholder="400"
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+                className="mt-1"
               />
             </div>
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Protein (g)</Label>
+              <Label className="text-sm text-gray-700">Protein (g)</Label>
               <Input
                 type="number"
-                value={proteinPerServing || ''}
-                onChange={(e) => setProteinPerServing(e.target.value ? parseFloat(e.target.value) : null)}
+                step="0.1"
+                value={protein}
+                onChange={(e) => setProtein(e.target.value)}
                 placeholder="25"
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+                className="mt-1"
               />
             </div>
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Kolhydrater (g)</Label>
+              <Label className="text-sm text-gray-700">Kolhydrater (g)</Label>
               <Input
                 type="number"
-                value={carbsPerServing || ''}
-                onChange={(e) => setCarbsPerServing(e.target.value ? parseFloat(e.target.value) : null)}
+                step="0.1"
+                value={carbs}
+                onChange={(e) => setCarbs(e.target.value)}
                 placeholder="50"
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+                className="mt-1"
               />
             </div>
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Fett (g)</Label>
+              <Label className="text-sm text-gray-700">Fett (g)</Label>
               <Input
                 type="number"
-                value={fatPerServing || ''}
-                onChange={(e) => setFatPerServing(e.target.value ? parseFloat(e.target.value) : null)}
+                step="0.1"
+                value={fat}
+                onChange={(e) => setFat(e.target.value)}
                 placeholder="10"
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+                className="mt-1"
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }
