@@ -133,8 +133,8 @@ export default function CoachRecipesPage() {
         toast.success('Recept skapat')
         setIsCreateDialogOpen(false)
         setFormData({ title: '', categoryId: '', servings: '4' })
-        // Navigate to recipe detail page to add ingredients and instructions
-        router.push(`/dashboard/recipes/${data.recipe.id}`)
+        // Navigate to edit page to add ingredients and instructions
+        router.push(`/dashboard/content/recipes/${data.recipe.id}/edit`)
       } else {
         const data = await response.json()
         toast.error(data.error || 'Kunde inte skapa recept')
@@ -298,7 +298,8 @@ export default function CoachRecipesPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => router.push(`/dashboard/recipes/${recipe.id}`)}
+                            onClick={() => router.push(`/dashboard/content/recipes/${recipe.id}/edit`)}
+                            title="Redigera recept"
                             className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
                           >
                             <Pencil className="h-4 w-4" />
