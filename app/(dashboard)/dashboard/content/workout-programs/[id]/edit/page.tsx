@@ -244,7 +244,7 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
           <Button
             variant="outline"
             onClick={() => router.back()}
-            className="border-[rgba(255,215,0,0.2)] text-[rgba(255,255,255,0.7)]"
+            className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,215,0,0.1)] hover:border-[rgba(255,215,0,0.5)]"
           >
             Avbryt
           </Button>
