@@ -379,7 +379,7 @@ export default function CoachRecipesPage() {
             <Button
               variant="outline"
               onClick={() => setIsCreateDialogOpen(false)}
-              className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,215,0,0.1)]"
             >
               Avbryt
             </Button>
