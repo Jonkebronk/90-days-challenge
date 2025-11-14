@@ -61,7 +61,6 @@ export function RecipeSelectionDialog({
   const [isLoading, setIsLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [selectedMealType, setSelectedMealType] = useState('all')
   const [servingMultipliers, setServingMultipliers] = useState<Record<string, number>>({})
 
   useEffect(() => {
@@ -105,11 +104,8 @@ export function RecipeSelectionDialog({
     const matchesSearch = recipe.title.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory =
       selectedCategory === 'all' || recipe.category.id === selectedCategory
-    const matchesMealType =
-      selectedMealType === 'all' ||
-      recipe.mealType?.toLowerCase() === selectedMealType.toLowerCase()
 
-    return matchesSearch && matchesCategory && matchesMealType
+    return matchesSearch && matchesCategory
   })
 
   const handleSelectRecipe = (recipe: Recipe) => {
@@ -119,7 +115,6 @@ export function RecipeSelectionDialog({
     // Reset state
     setSearchTerm('')
     setSelectedCategory('all')
-    setSelectedMealType('all')
     setServingMultipliers({})
   }
 
@@ -144,7 +139,7 @@ export function RecipeSelectionDialog({
         </DialogHeader>
 
         {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="search" className="text-[rgba(255,255,255,0.8)]">
               Sök recept
@@ -184,54 +179,6 @@ export function RecipeSelectionDialog({
                     {cat.name}
                   </SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="mealType" className="text-[rgba(255,255,255,0.8)]">
-              Måltidstyp
-            </Label>
-            <Select value={selectedMealType} onValueChange={setSelectedMealType}>
-              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
-                <SelectItem
-                  value="all"
-                  className="text-white hover:bg-[rgba(255,215,0,0.1)]"
-                >
-                  Alla måltider
-                </SelectItem>
-                <SelectItem
-                  value="breakfast"
-                  className="text-white hover:bg-[rgba(255,215,0,0.1)]"
-                >
-                  Frukost
-                </SelectItem>
-                <SelectItem
-                  value="lunch"
-                  className="text-white hover:bg-[rgba(255,215,0,0.1)]"
-                >
-                  Lunch
-                </SelectItem>
-                <SelectItem
-                  value="dinner"
-                  className="text-white hover:bg-[rgba(255,215,0,0.1)]"
-                >
-                  Middag
-                </SelectItem>
-                <SelectItem
-                  value="snack"
-                  className="text-white hover:bg-[rgba(255,215,0,0.1)]"
-                >
-                  Mellanmål
-                </SelectItem>
-                <SelectItem
-                  value="evening"
-                  className="text-white hover:bg-[rgba(255,215,0,0.1)]"
-                >
-                  Kvällsmål
-                </SelectItem>
               </SelectContent>
             </Select>
           </div>
