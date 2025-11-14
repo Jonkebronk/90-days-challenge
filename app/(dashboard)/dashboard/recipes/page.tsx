@@ -62,8 +62,6 @@ export default function RecipeBankPage() {
   // Filters
   const [searchQuery, setSearchQuery] = useState('')
   const [filterCategory, setFilterCategory] = useState<string>('all')
-  const [filterMealType, setFilterMealType] = useState<string>('all')
-  const [filterDifficulty, setFilterDifficulty] = useState<string>('all')
 
   useEffect(() => {
     if (session?.user) {
@@ -126,8 +124,6 @@ export default function RecipeBankPage() {
       return false
     }
     if (filterCategory !== 'all' && recipe.category.id !== filterCategory) return false
-    if (filterMealType !== 'all' && recipe.mealType !== filterMealType) return false
-    if (filterDifficulty !== 'all' && recipe.difficulty !== filterDifficulty) return false
     return true
   })
 
@@ -202,53 +198,21 @@ export default function RecipeBankPage() {
 
         <div className="flex items-center gap-4">
           <Filter className="h-5 w-5 text-[rgba(255,215,0,0.6)]" />
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label className="text-xs text-[rgba(255,255,255,0.7)]">Kategori</Label>
-              <Select value={filterCategory} onValueChange={setFilterCategory}>
-                <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
-                  <SelectItem value="all" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Alla kategorier</SelectItem>
-                  {categories.map(cat => (
-                    <SelectItem key={cat.id} value={cat.id} className="text-white hover:bg-[rgba(255,215,0,0.1)]">
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className="text-xs text-[rgba(255,255,255,0.7)]">Måltidstyp</Label>
-              <Select value={filterMealType} onValueChange={setFilterMealType}>
-                <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
-                  <SelectItem value="all" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Alla måltider</SelectItem>
-                  <SelectItem value="breakfast" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Frukost</SelectItem>
-                  <SelectItem value="lunch" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Lunch</SelectItem>
-                  <SelectItem value="dinner" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Middag</SelectItem>
-                  <SelectItem value="snack" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Mellanmål</SelectItem>
-                  <SelectItem value="dessert" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Dessert</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className="text-xs text-[rgba(255,255,255,0.7)]">Svårighetsgrad</Label>
-              <Select value={filterDifficulty} onValueChange={setFilterDifficulty}>
-                <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
-                  <SelectItem value="all" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Alla nivåer</SelectItem>
-                  <SelectItem value="easy" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Lätt</SelectItem>
-                  <SelectItem value="medium" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Medel</SelectItem>
-                  <SelectItem value="hard" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Svår</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="flex-1">
+            <Label className="text-xs text-[rgba(255,255,255,0.7)]">Kategori</Label>
+            <Select value={filterCategory} onValueChange={setFilterCategory}>
+              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+                <SelectItem value="all" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Alla kategorier</SelectItem>
+                {categories.map(cat => (
+                  <SelectItem key={cat.id} value={cat.id} className="text-white hover:bg-[rgba(255,215,0,0.1)]">
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
