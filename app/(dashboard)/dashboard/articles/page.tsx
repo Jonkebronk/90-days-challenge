@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,6 +17,12 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { BookOpen, Clock, Search, CheckCircle, Circle, Filter } from 'lucide-react'
 import { toast } from 'sonner'
+import { getCategoryIcon } from '@/lib/icons/category-icons'
+import { getPhaseColors, getPhaseShortName, type Phase } from '@/lib/utils/phase-colors'
+import { ArticleSearch } from '@/components/article-search'
+import { ArticleFilters } from '@/components/article-filters'
+import { ArticleSort, type SortOption } from '@/components/article-sort'
+import { ReadingProgressDashboard } from '@/components/reading-progress-dashboard'
 
 type ArticleCategory = {
   id: string
@@ -24,6 +30,7 @@ type ArticleCategory = {
   description?: string | null
   section?: string | null
   color?: string
+  icon?: string
   orderIndex?: number
 }
 
@@ -41,6 +48,7 @@ type Article = {
   estimatedReadingMinutes?: number | null
   coverImage?: string | null
   orderIndex?: number
+  updatedAt?: string
   category: ArticleCategory
   progress?: ArticleProgress[]
 }
@@ -48,24 +56,35 @@ type Article = {
 export default function ArticleBankPage() {
   const { data: session } = useSession()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [articles, setArticles] = useState<Article[]>([])
   const [categories, setCategories] = useState<ArticleCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({})
 
   // Filters
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filterCategory, setFilterCategory] = useState<string>('all')
-  const [filterPhase, setFilterPhase] = useState<string>('all')
-  const [filterDifficulty, setFilterDifficulty] = useState<string>('all')
-  const [filterCompleted, setFilterCompleted] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState(searchParams?.get('q') || '')
+  const [filters, setFilters] = useState({
+    category: 'all',
+    phase: 'all',
+    difficulty: 'all',
+    completed: 'all',
+    tags: [] as string[]
+  })
+  const [sortBy, setSortBy] = useState<SortOption>('newest')
 
   useEffect(() => {
     if (session?.user) {
-      fetchArticles()
+      const query = searchParams?.get('q')
+      if (query) {
+        setSearchQuery(query)
+        fetchSearchResults(query)
+      } else {
+        fetchArticles()
+      }
       fetchCategories()
     }
-  }, [session])
+  }, [session, searchParams])
 
   const fetchArticles = async () => {
     try {
@@ -97,6 +116,43 @@ export default function ArticleBankPage() {
     }
   }
 
+  const fetchSearchResults = async (query: string) => {
+    try {
+      setIsLoading(true)
+      const response = await fetch(`/api/articles/search?q=${encodeURIComponent(query)}&limit=50`)
+      if (response.ok) {
+        const data = await response.json()
+        // Transform search results to match Article type
+        const transformedArticles = data.articles.map((result: any) => ({
+          id: result.id,
+          title: result.title,
+          slug: result.slug,
+          difficulty: result.difficulty,
+          phase: result.phase,
+          estimatedReadingMinutes: result.estimatedReadingMinutes,
+          coverImage: result.coverImage,
+          orderIndex: 0,
+          updatedAt: result.updatedAt,
+          category: {
+            id: result.categoryId || '',
+            name: result.categoryName,
+            color: result.categoryColor,
+            icon: result.categoryIcon
+          },
+          progress: result.isRead ? [{ completed: true }] : []
+        }))
+        setArticles(transformedArticles)
+      } else {
+        toast.error('Kunde inte söka artiklar')
+      }
+    } catch (error) {
+      console.error('Error searching articles:', error)
+      toast.error('Ett fel uppstod vid sökning')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const isArticleCompleted = (article: Article) => {
     return article.progress && article.progress.length > 0 && article.progress[0].completed
   }
@@ -108,32 +164,52 @@ export default function ArticleBankPage() {
     }
 
     // Category filter
-    if (filterCategory !== 'all' && article.category.id !== filterCategory) return false
+    if (filters.category !== 'all' && article.category.id !== filters.category) return false
 
     // Phase filter
-    if (filterPhase !== 'all') {
-      if (filterPhase === 'none' && article.phase !== null) return false
-      if (filterPhase !== 'none' && article.phase?.toString() !== filterPhase) return false
+    if (filters.phase !== 'all') {
+      if (filters.phase === 'none' && article.phase !== null) return false
+      if (filters.phase !== 'none' && article.phase?.toString() !== filters.phase) return false
     }
 
     // Difficulty filter
-    if (filterDifficulty !== 'all') {
-      if (filterDifficulty === 'none' && article.difficulty !== null) return false
-      if (filterDifficulty !== 'none' && article.difficulty !== filterDifficulty) return false
+    if (filters.difficulty !== 'all') {
+      if (filters.difficulty === 'none' && article.difficulty !== null) return false
+      if (filters.difficulty !== 'none' && article.difficulty !== filters.difficulty) return false
     }
 
     // Completed filter
-    if (filterCompleted !== 'all') {
+    if (filters.completed !== 'all') {
       const completed = isArticleCompleted(article)
-      if (filterCompleted === 'true' && !completed) return false
-      if (filterCompleted === 'false' && completed) return false
+      if (filters.completed === 'true' && !completed) return false
+      if (filters.completed === 'false' && completed) return false
     }
 
     return true
   })
 
+  // Sort articles
+  const sortedArticles = [...filteredArticles].sort((a, b) => {
+    switch (sortBy) {
+      case 'newest':
+        return new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime()
+      case 'oldest':
+        return new Date(a.updatedAt || 0).getTime() - new Date(b.updatedAt || 0).getTime()
+      case 'title-asc':
+        return a.title.localeCompare(b.title, 'sv')
+      case 'title-desc':
+        return b.title.localeCompare(a.title, 'sv')
+      case 'reading-time-asc':
+        return (a.estimatedReadingMinutes || 0) - (b.estimatedReadingMinutes || 0)
+      case 'reading-time-desc':
+        return (b.estimatedReadingMinutes || 0) - (a.estimatedReadingMinutes || 0)
+      default:
+        return 0
+    }
+  })
+
   // Group by category
-  const articlesByCategory = filteredArticles.reduce((acc, article) => {
+  const articlesByCategory = sortedArticles.reduce((acc, article) => {
     const categoryName = article.category.name
     if (!acc[categoryName]) {
       acc[categoryName] = []
@@ -184,6 +260,33 @@ export default function ArticleBankPage() {
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
         </div>
 
+        {/* Reading Progress Dashboard */}
+        <ReadingProgressDashboard className="mb-8" />
+
+        {/* Search Bar */}
+        <div className="max-w-2xl mx-auto mb-8">
+          <ArticleSearch />
+        </div>
+
+        {/* Filters and Sorting */}
+        <div className="mb-8 space-y-4">
+          <ArticleFilters
+            categories={categories}
+            filters={filters}
+            onFilterChange={setFilters}
+            totalResults={sortedArticles.length}
+          />
+          {!searchQuery && (
+            <div className="flex justify-end">
+              <ArticleSort
+                value={sortBy}
+                onChange={setSortBy}
+                showRelevance={!!searchQuery}
+              />
+            </div>
+          )}
+        </div>
+
         {/* Compact Stats Bar */}
         <div className="flex items-center justify-center gap-8 mb-8 text-sm">
           <div className="flex items-center gap-2">
@@ -200,13 +303,97 @@ export default function ArticleBankPage() {
           </div>
         </div>
 
-        {/* Categories Grid */}
-        {isLoading ? (
-          <div className="text-center py-12">
-            <p className="text-[rgba(255,255,255,0.5)]">Laddar artiklar...</p>
+        {/* Search Results */}
+        {searchQuery && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-white">
+                Sökresultat för &quot;{searchQuery}&quot;
+                <span className="text-[rgba(255,255,255,0.5)] ml-2">({articles.length})</span>
+              </h2>
+              <Button
+                onClick={() => {
+                  router.push('/dashboard/articles')
+                  setSearchQuery('')
+                  fetchArticles()
+                }}
+                variant="ghost"
+                className="text-[#FFD700] hover:text-[#FFA500]"
+              >
+                Rensa sökning
+              </Button>
+            </div>
+
+            {/* Search Results Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {articles.map(article => {
+                const Icon = getCategoryIcon(article.category.icon, article.category.name)
+                const phaseColors = getPhaseColors(article.phase as Phase)
+                const isCompleted = isArticleCompleted(article)
+
+                return (
+                  <Card
+                    key={article.id}
+                    onClick={() => router.push(`/dashboard/articles/${article.id}`)}
+                    className="cursor-pointer hover:border-[rgba(255,215,0,0.5)] transition-all bg-[rgba(10,10,10,0.5)] backdrop-blur-sm border-[rgba(255,215,0,0.2)]"
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className={`h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${phaseColors.bg}`}>
+                          <Icon className={`h-5 w-5 ${phaseColors.text}`} />
+                        </div>
+
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <h3 className="font-semibold text-white line-clamp-2">{article.title}</h3>
+
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge className="text-xs bg-[rgba(255,215,0,0.2)] text-[#FFD700] border-[rgba(255,215,0,0.3)]">
+                              {article.category.name}
+                            </Badge>
+                            {article.phase && (
+                              <Badge className={`text-xs ${phaseColors.badge}`}>
+                                Fas {article.phase}
+                              </Badge>
+                            )}
+                            {article.estimatedReadingMinutes && (
+                              <div className="flex items-center gap-1 text-xs text-[rgba(255,255,255,0.5)]">
+                                <Clock className="h-3 w-3" />
+                                {article.estimatedReadingMinutes} min
+                              </div>
+                            )}
+                            {isCompleted && (
+                              <Badge className="text-xs bg-[rgba(34,197,94,0.2)] text-[#22c55e] border-[#22c55e]">
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                Läst
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
+
+            {articles.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-[rgba(255,255,255,0.5)]">
+                  Inga artiklar hittades för &quot;{searchQuery}&quot;
+                </p>
+              </div>
+            )}
           </div>
-        ) : (
-          <>
+        )}
+
+        {/* Categories Grid */}
+        {!searchQuery && (
+          isLoading ? (
+            <div className="text-center py-12">
+              <p className="text-[rgba(255,255,255,0.5)]">Laddar artiklar...</p>
+            </div>
+          ) : (
+            <>
             {/* Group categories by section */}
             {(() => {
               // Group categories by section
@@ -250,13 +437,23 @@ export default function ArticleBankPage() {
 
               return (
                 <div key={category.id} className="flex flex-col bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-xl overflow-hidden shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/50 hover:border-[rgba(255,215,0,0.35)] transition-all duration-300">
-                  {/* Category Header with Image/Gradient */}
+                  {/* Category Header with Icon */}
                   <div
-                    className="relative h-28 flex items-center justify-center px-4"
+                    className="relative h-28 flex items-center justify-center gap-3 px-4"
                     style={{
                       background: `linear-gradient(135deg, ${categoryColor}33, ${categoryColor}15)`
                     }}
                   >
+                    {/* Category Icon */}
+                    {(() => {
+                      const CategoryIcon = getCategoryIcon(category.icon, category.name)
+                      return (
+                        <div className="flex-shrink-0">
+                          <CategoryIcon className="h-10 w-10" style={{ color: categoryColor }} />
+                        </div>
+                      )
+                    })()}
+
                     <h2
                       className="text-xl font-black tracking-wider uppercase z-10 text-center leading-tight"
                       style={{ color: categoryColor }}
@@ -275,6 +472,7 @@ export default function ArticleBankPage() {
                   <div className="flex-1 p-4 space-y-3">
                     {displayedArticles.map(article => {
                       const completed = isArticleCompleted(article)
+                      const phaseColors = getPhaseColors(article.phase as Phase)
 
                       return (
                         <button
@@ -282,6 +480,11 @@ export default function ArticleBankPage() {
                           onClick={() => router.push(`/dashboard/articles/${article.id}`)}
                           className="w-full text-left bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.15)] rounded-lg p-3.5 hover:border-[rgba(255,215,0,0.5)] hover:bg-[rgba(255,215,0,0.08)] hover:scale-[1.02] transition-all duration-200 group relative overflow-hidden"
                         >
+                          {/* Phase indicator stripe */}
+                          {article.phase && (
+                            <div className={`absolute top-0 left-0 right-0 h-1 ${phaseColors.bg} opacity-60`} />
+                          )}
+
                           {/* Subtle glow on hover */}
                           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.1)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -306,15 +509,28 @@ export default function ArticleBankPage() {
 
                             {/* Content */}
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-sm font-medium text-white group-hover:text-[#FFD700] transition-colors line-clamp-2 mb-2 leading-snug">
-                                {article.title}
-                              </h3>
+                              <div className="flex items-start justify-between gap-2 mb-2">
+                                <h3 className="text-sm font-medium text-white group-hover:text-[#FFD700] transition-colors line-clamp-2 leading-snug flex-1">
+                                  {article.title}
+                                </h3>
+                                {/* Phase badge */}
+                                {article.phase && (
+                                  <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${phaseColors.badge}`}>
+                                    {getPhaseShortName(article.phase as Phase)}
+                                  </span>
+                                )}
+                              </div>
                               <div className="flex items-center gap-3 text-xs text-[rgba(255,255,255,0.5)]">
                                 {article.estimatedReadingMinutes && (
                                   <div className="flex items-center gap-1.5">
                                     <Clock className="h-3.5 w-3.5" />
                                     <span>{article.estimatedReadingMinutes} min</span>
                                   </div>
+                                )}
+                                {article.difficulty && (
+                                  <span className="px-2 py-0.5 rounded-full bg-[rgba(255,255,255,0.1)] text-xs">
+                                    {getDifficultyLabel(article.difficulty)}
+                                  </span>
                                 )}
                               </div>
                             </div>
@@ -348,7 +564,8 @@ export default function ArticleBankPage() {
                 </div>
               ))
             })()}
-          </>
+            </>
+          )
         )}
 
         {/* Empty State */}

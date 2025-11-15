@@ -10,6 +10,10 @@ import { ArrowLeft, ArrowRight, Clock, CheckCircle, Circle } from 'lucide-react'
 import { toast } from 'sonner'
 import { MDXPreview } from '@/components/mdx-preview'
 import { Progress } from '@/components/ui/progress'
+import { ArticleMetadata } from '@/components/article-metadata'
+import { ArticleFeedback } from '@/components/article-feedback'
+import { RelatedArticles } from '@/components/related-articles'
+import { NextArticleCTA } from '@/components/next-article-cta'
 
 type ArticleCategory = {
   id: string
@@ -33,8 +37,15 @@ type Article = {
   phase?: number | null
   estimatedReadingMinutes?: number | null
   coverImage?: string | null
+  updatedAt: string
+  lastReviewed?: string | null
+  version?: number | null
   category: ArticleCategory
   progress?: ArticleProgress[]
+  feedback?: Array<{
+    isHelpful: boolean
+    comment?: string | null
+  }>
 }
 
 export default function ArticleReaderPage() {
@@ -47,10 +58,13 @@ export default function ArticleReaderPage() {
   const [categoryArticles, setCategoryArticles] = useState<Article[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isMarkingComplete, setIsMarkingComplete] = useState(false)
+  const [relatedArticles, setRelatedArticles] = useState<any[]>([])
+  const [nextArticle, setNextArticle] = useState<any | null>(null)
 
   useEffect(() => {
     if (session?.user) {
       fetchArticle()
+      fetchRelatedArticles()
     }
   }, [session, articleId])
 
@@ -95,6 +109,19 @@ export default function ArticleReaderPage() {
       }
     } catch (error) {
       console.error('Error fetching category articles:', error)
+    }
+  }
+
+  const fetchRelatedArticles = async () => {
+    try {
+      const response = await fetch(`/api/articles/related?articleId=${articleId}&limit=3`)
+      if (response.ok) {
+        const data = await response.json()
+        setRelatedArticles(data.related || [])
+        setNextArticle(data.next || null)
+      }
+    } catch (error) {
+      console.error('Error fetching related articles:', error)
     }
   }
 
@@ -246,6 +273,15 @@ export default function ArticleReaderPage() {
               )}
             </div>
             <h1 className="text-4xl font-bold mb-4 text-white">{article.title}</h1>
+
+            {/* Article Metadata */}
+            <ArticleMetadata
+              readingTime={article.estimatedReadingMinutes}
+              updatedAt={new Date(article.updatedAt)}
+              lastReviewed={article.lastReviewed ? new Date(article.lastReviewed) : null}
+              version={article.version}
+              className="mb-6"
+            />
           </div>
 
           {/* Article Content */}
@@ -256,6 +292,28 @@ export default function ArticleReaderPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Article Feedback */}
+          <div className="mt-8">
+            <ArticleFeedback
+              articleId={article.id}
+              initialFeedback={article.feedback?.[0]}
+            />
+          </div>
+
+          {/* Next Article CTA */}
+          {nextArticle && (
+            <div className="mt-8">
+              <NextArticleCTA article={nextArticle} />
+            </div>
+          )}
+
+          {/* Related Articles */}
+          {relatedArticles.length > 0 && (
+            <div className="mt-8">
+              <RelatedArticles articles={relatedArticles} />
+            </div>
+          )}
 
           {/* Bottom Actions */}
           <div className="mt-8">

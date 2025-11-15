@@ -26,6 +26,9 @@ export async function GET(
         },
         progress: {
           where: { userId: session.user.id as string }
+        },
+        feedback: {
+          where: { userId: session.user.id as string }
         }
       }
     })

@@ -127,7 +127,13 @@ model User {
   checkIns                CheckIn[]
   lessonProgress          LessonProgress[]
   articleProgress         ArticleProgress[]
+  articleFeedback         ArticleFeedback[]       @relation("ArticleFeedback")
   recipeFavorites         RecipeFavorite[]
+  readingStreak           ReadingStreak?
+  weeklyGoals             WeeklyGoal[]
+  readingSessions         ReadingSession[]
+  pathProgress            PathProgress[]
+  pathAssignments         PathAssignment[]
   assignedWorkoutPrograms AssignedWorkoutProgram[]
   workoutSessionLogs      WorkoutSessionLog[]
   personalRecords         PersonalRecord[]
@@ -886,6 +892,7 @@ model ArticleCategory {
   description String?
   slug        String  @unique
   color       String  @default("#FFD700") // Hex color for category accent
+  icon        String  @default("BookOpen") // Lucide icon name
   section     String? // Section/group name for organizing categories (e.g., "INNAN DU BÖRJAR", "GENOMGÅNG AV 90 DAGARS CHALLENGEN")
   orderIndex  Int     @default(0) // For sorting categories
 
@@ -908,11 +915,18 @@ model Article {
   phase                   Int? // 1 (days 1-30), 2 (days 31-60), 3 (days 61-90)
   estimatedReadingMinutes Int? // How long it takes to read
   coverImage              String? // URL to cover image
+  videoUrl                String? // YouTube/Vimeo embed URL
+  videoProvider           String? // "youtube", "vimeo", "other"
+  gallery                 String[] // Array of image URLs for gallery
   orderIndex              Int      @default(0) // For sorting articles within category
 
   // Publishing
   published   Boolean   @default(false)
   publishedAt DateTime?
+
+  // Versioning & Content Management
+  lastReviewed DateTime @default(now()) // When content was last reviewed
+  version      Int      @default(1) // Version number
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -920,6 +934,8 @@ model Article {
   category           ArticleCategory     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   roadmapAssignments RoadmapAssignment[]
   progress           ArticleProgress[]
+  feedback           ArticleFeedback[] // User feedback
+  pathArticles       PathArticle[] // Learning path associations
 
   @@map("articles")
 }
@@ -948,6 +964,7 @@ model ArticleProgress {
   completed   Boolean   @default(false)
   completedAt DateTime?
   lastReadAt  DateTime?
+  readingTimeMinutes Int? // Time spent reading this article
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -956,7 +973,166 @@ model ArticleProgress {
   article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   @@unique([userId, articleId])
+  @@index([userId, completedAt])
   @@map("article_progress")
+}
+
+model ArticleFeedback {
+  id        String  @id @default(cuid())
+  articleId String
+  userId    String
+  isHelpful Boolean
+  comment   String? @db.Text
+
+  createdAt DateTime @default(now())
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user    User    @relation("ArticleFeedback", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, userId])
+  @@index([articleId])
+  @@map("article_feedback")
+}
+
+// Learning Paths Models
+model LearningPath {
+  id          String  @id @default(cuid())
+  title       String
+  description String? @db.Text
+  slug        String  @unique
+  coverImage  String? // URL to cover image
+  difficulty  String? // "beginner", "intermediate", "advanced"
+
+  // Ordering and organization
+  orderIndex  Int     @default(0)
+
+  // Prerequisites
+  prerequisitePathIds String[] // Path IDs that must be completed first
+
+  // Metadata
+  estimatedDuration Int? // Total estimated time in minutes
+  published         Boolean   @default(false)
+  publishedAt       DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pathArticles     PathArticle[]
+  pathProgress     PathProgress[]
+  pathAssignments  PathAssignment[]
+
+  @@map("learning_paths")
+}
+
+model PathArticle {
+  id           String  @id @default(cuid())
+  pathId       String
+  articleId    String
+  orderIndex   Int     @default(0)
+  isOptional   Boolean @default(false) // If true, not required for path completion
+
+  // Prerequisites within the path
+  prerequisiteArticleIds String[] // Article IDs that must be completed first
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  path    LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  article Article      @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([pathId, articleId])
+  @@index([pathId, orderIndex])
+  @@map("path_articles")
+}
+
+model PathProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  pathId      String
+  started     Boolean   @default(false)
+  completed   Boolean   @default(false)
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  path LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pathId])
+  @@index([userId, completed])
+  @@map("path_progress")
+}
+
+model PathAssignment {
+  id        String   @id @default(cuid())
+  userId    String
+  pathId    String
+  coachId   String // Coach who made the assignment
+  dueDate   DateTime?
+  completed Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  path LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pathId])
+  @@index([userId, completed])
+  @@map("path_assignments")
+}
+
+// Reading Streak and Goals Models
+model ReadingStreak {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  currentStreak  Int      @default(0) // Current consecutive days
+  longestStreak  Int      @default(0) // Personal record
+  lastReadDate   DateTime? // Last day user read an article
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("reading_streaks")
+}
+
+model WeeklyGoal {
+  id              String   @id @default(cuid())
+  userId          String
+  weekStartDate   DateTime // Monday of the week
+  targetArticles  Int      @default(3) // Target number of articles to read
+  articlesRead    Int      @default(0) // Actual articles read
+  completed       Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStartDate])
+  @@index([userId, weekStartDate])
+  @@map("weekly_goals")
+}
+
+model ReadingSession {
+  id             String   @id @default(cuid())
+  userId         String
+  articleId      String
+  startedAt      DateTime @default(now())
+  endedAt        DateTime?
+  durationMinutes Int?    // Calculated on end
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startedAt])
+  @@map("reading_sessions")
 }
 
 // Recipe Bank Models
