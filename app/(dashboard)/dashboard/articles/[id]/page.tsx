@@ -174,10 +174,10 @@ export default function ArticleReaderPage() {
 
   // Find next and previous articles
   const currentIndex = categoryArticles.findIndex(a => a.id === articleId)
-  const nextArticle = currentIndex >= 0 && currentIndex < categoryArticles.length - 1
+  const nextCategoryArticle = currentIndex >= 0 && currentIndex < categoryArticles.length - 1
     ? categoryArticles[currentIndex + 1]
     : null
-  const previousArticle = currentIndex > 0
+  const previousCategoryArticle = currentIndex > 0
     ? categoryArticles[currentIndex - 1]
     : null
 
@@ -344,9 +344,9 @@ export default function ArticleReaderPage() {
 
             {/* Navigation */}
             <div className="flex items-center justify-between pt-6 border-t border-[rgba(255,215,0,0.2)]">
-              {previousArticle ? (
+              {previousCategoryArticle ? (
                 <Button
-                  onClick={() => router.push(`/dashboard/articles/${previousArticle.id}`)}
+                  onClick={() => router.push(`/dashboard/articles/${previousCategoryArticle.id}`)}
                   className="bg-[#FFD700] text-black hover:bg-[#FFA500]"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
@@ -362,9 +362,9 @@ export default function ArticleReaderPage() {
                 </Button>
               )}
 
-              {nextArticle ? (
+              {nextCategoryArticle ? (
                 <Button
-                  onClick={() => router.push(`/dashboard/articles/${nextArticle.id}`)}
+                  onClick={() => router.push(`/dashboard/articles/${nextCategoryArticle.id}`)}
                   className="bg-[#FFD700] text-black hover:bg-[#FFA500]"
                 >
                   Nästa artikel
