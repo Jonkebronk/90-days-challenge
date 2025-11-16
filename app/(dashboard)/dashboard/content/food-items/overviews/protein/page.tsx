@@ -1,21 +1,28 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { ArrowLeft, Edit, Save, X } from 'lucide-react'
 
 export default function ProteinOverviewPage() {
+  const { data: session } = useSession()
   const router = useRouter()
+  const [isEditMode, setIsEditMode] = useState(false)
+  const isCoach = (session?.user as any)?.role === 'coach'
 
   // Portion sizes
   const portions = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
 
-  // Food items organized by category
-  const categories = {
+  // Food items organized by category - initial data
+  const initialCategories = {
     'egg-dairy': {
       name: 'Ägg & Mejeri',
+      order: 0,
       items: [
         { name: 'Kaseinpulver (0%)', proteinPer100g: 80 },
         { name: 'Mjölkproteinpulver (0%)', proteinPer100g: 80 },

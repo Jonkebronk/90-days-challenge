@@ -1731,3 +1731,35 @@ model ShoppingListShare {
   @@index([sharedWith])
   @@map("shopping_list_shares")
 }
+
+// Nutrition Reference Tables (Admin-managed)
+model NutritionCategory {
+  id          String   @id @default(cuid())
+  type        String // "protein", "fat", "carbs"
+  key         String // Unique key like "egg-dairy", "nuts", etc.
+  name        String // Display name like "Ägg & Mejeri"
+  order       Int      @default(0) // Display order in tabs
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items NutritionItem[]
+
+  @@unique([type, key])
+  @@index([type, order])
+  @@map("nutrition_categories")
+}
+
+model NutritionItem {
+  id           String   @id @default(cuid())
+  categoryId   String
+  name         String // Food item name
+  valuePer100g Decimal  @db.Decimal(6, 2) // Nutrition value per 100g
+  order        Int      @default(0) // Display order within category
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  category NutritionCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId, order])
+  @@map("nutrition_items")
+}
