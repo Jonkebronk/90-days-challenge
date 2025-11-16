@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { ChefHat, UtensilsCrossed } from 'lucide-react'
+import { ChefHat, UtensilsCrossed, Apple, Plus, Trash2, Search } from 'lucide-react'
 import { RecipeSelectionDialog } from './RecipeSelectionDialog'
 import { toast } from 'sonner'
 
@@ -34,6 +34,26 @@ type Recipe = {
     id: string
     name: string
   }
+}
+
+type FoodItem = {
+  id: string
+  name: string
+  calories: number
+  proteinG: number
+  carbsG: number
+  fatG: number
+  commonServingSize: string | null
+}
+
+type SelectedFoodItem = {
+  foodItemId: string
+  name: string
+  amountG: number
+  protein: number
+  fat: number
+  carbs: number
+  calories: number
 }
 
 type AddMealOptionDialogProps = {
@@ -70,6 +90,15 @@ export function AddMealOptionDialog({
   const [customCalories, setCustomCalories] = useState('')
   const [customIsDefault, setCustomIsDefault] = useState(false)
   const [customNotes, setCustomNotes] = useState('')
+
+  // Food items option state
+  const [foodItemsName, setFoodItemsName] = useState('')
+  const [selectedFoodItems, setSelectedFoodItems] = useState<SelectedFoodItem[]>([])
+  const [foodItemSearch, setFoodItemSearch] = useState('')
+  const [availableFoodItems, setAvailableFoodItems] = useState<FoodItem[]>([])
+  const [isLoadingFoodItems, setIsLoadingFoodItems] = useState(false)
+  const [foodItemsIsDefault, setFoodItemsIsDefault] = useState(false)
+  const [foodItemsNotes, setFoodItemsNotes] = useState('')
 
   const handleRecipeSelect = (recipe: Recipe, multiplier: number) => {
     setSelectedRecipe(recipe)
@@ -178,6 +207,142 @@ export function AddMealOptionDialog({
     }
   }
 
+  // Fetch food items based on search
+  useEffect(() => {
+    const fetchFoodItems = async () => {
+      if (!foodItemSearch || foodItemSearch.length < 2) {
+        setAvailableFoodItems([])
+        return
+      }
+
+      try {
+        setIsLoadingFoodItems(true)
+        const response = await fetch(`/api/food-items?search=${encodeURIComponent(foodItemSearch)}&limit=10`)
+        if (response.ok) {
+          const data = await response.json()
+          setAvailableFoodItems(data.items || [])
+        }
+      } catch (error) {
+        console.error('Error fetching food items:', error)
+      } finally {
+        setIsLoadingFoodItems(false)
+      }
+    }
+
+    const debounce = setTimeout(fetchFoodItems, 300)
+    return () => clearTimeout(debounce)
+  }, [foodItemSearch])
+
+  const handleAddFoodItem = (foodItem: FoodItem, amountG: number) => {
+    // Calculate macros based on amount (foodItem values are per 100g)
+    const multiplier = amountG / 100
+    const newItem: SelectedFoodItem = {
+      foodItemId: foodItem.id,
+      name: foodItem.name,
+      amountG,
+      protein: Number(foodItem.proteinG) * multiplier,
+      fat: Number(foodItem.fatG) * multiplier,
+      carbs: Number(foodItem.carbsG) * multiplier,
+      calories: Number(foodItem.calories) * multiplier,
+    }
+
+    setSelectedFoodItems([...selectedFoodItems, newItem])
+    setFoodItemSearch('')
+    setAvailableFoodItems([])
+  }
+
+  const handleRemoveFoodItem = (index: number) => {
+    setSelectedFoodItems(selectedFoodItems.filter((_, i) => i !== index))
+  }
+
+  const handleUpdateFoodItemAmount = (index: number, newAmountG: number) => {
+    const updatedItems = [...selectedFoodItems]
+    const item = updatedItems[index]
+
+    // Recalculate macros based on original food item values
+    const multiplier = newAmountG / 100
+
+    // Find the original food item to get base values
+    // For now, we'll scale proportionally from current values
+    const currentMultiplier = item.amountG / 100
+    const scaleFactor = newAmountG / item.amountG
+
+    updatedItems[index] = {
+      ...item,
+      amountG: newAmountG,
+      protein: item.protein * scaleFactor,
+      fat: item.fat * scaleFactor,
+      carbs: item.carbs * scaleFactor,
+      calories: item.calories * scaleFactor,
+    }
+
+    setSelectedFoodItems(updatedItems)
+  }
+
+  const calculateTotalMacros = () => {
+    return selectedFoodItems.reduce(
+      (acc, item) => ({
+        protein: acc.protein + item.protein,
+        fat: acc.fat + item.fat,
+        carbs: acc.carbs + item.carbs,
+        calories: acc.calories + item.calories,
+      }),
+      { protein: 0, fat: 0, carbs: 0, calories: 0 }
+    )
+  }
+
+  const handleAddFoodItemsOption = async () => {
+    if (!foodItemsName) {
+      toast.error('Namn krävs')
+      return
+    }
+
+    if (selectedFoodItems.length === 0) {
+      toast.error('Lägg till minst ett livsmedel')
+      return
+    }
+
+    const totals = calculateTotalMacros()
+
+    try {
+      setIsSaving(true)
+      const response = await fetch(
+        `/api/meal-plan-templates/${templateId}/meals/${mealId}/options`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            optionType: 'ingredients',
+            customName: foodItemsName,
+            customDescription: null,
+            customFoodItems: selectedFoodItems,
+            calculatedProtein: totals.protein,
+            calculatedFat: totals.fat,
+            calculatedCarbs: totals.carbs,
+            calculatedCalories: totals.calories,
+            isDefault: foodItemsIsDefault,
+            notes: foodItemsNotes || null,
+          }),
+        }
+      )
+
+      if (response.ok) {
+        toast.success('Råvaror tillagda')
+        resetForm()
+        onSuccess()
+        onOpenChange(false)
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Kunde inte lägga till råvaror')
+      }
+    } catch (error) {
+      console.error('Error adding food items option:', error)
+      toast.error('Ett fel uppstod')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   const resetForm = () => {
     setActiveTab('recipe')
     setSelectedRecipe(null)
@@ -192,6 +357,12 @@ export function AddMealOptionDialog({
     setCustomCalories('')
     setCustomIsDefault(false)
     setCustomNotes('')
+    setFoodItemsName('')
+    setSelectedFoodItems([])
+    setFoodItemSearch('')
+    setAvailableFoodItems([])
+    setFoodItemsIsDefault(false)
+    setFoodItemsNotes('')
   }
 
   return (
@@ -214,13 +385,20 @@ export function AddMealOptionDialog({
           </DialogHeader>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.3)]">
+            <TabsList className="grid w-full grid-cols-3 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.3)]">
               <TabsTrigger
                 value="recipe"
                 className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-[rgba(255,255,255,0.6)]"
               >
                 <ChefHat className="h-4 w-4 mr-2" />
                 Recept
+              </TabsTrigger>
+              <TabsTrigger
+                value="ingredients"
+                className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-[rgba(255,255,255,0.6)]"
+              >
+                <Apple className="h-4 w-4 mr-2" />
+                Råvaror
               </TabsTrigger>
               <TabsTrigger
                 value="custom"
@@ -311,6 +489,148 @@ export function AddMealOptionDialog({
                 />
                 <Label
                   htmlFor="recipeDefault"
+                  className="text-sm text-[rgba(255,255,255,0.8)] cursor-pointer"
+                >
+                  Markera som standardalternativ
+                </Label>
+              </div>
+            </TabsContent>
+
+            {/* Ingredients Tab */}
+            <TabsContent value="ingredients" className="space-y-4 mt-4">
+              <div>
+                <Label htmlFor="ingredientsName" className="text-[rgba(255,255,255,0.8)]">
+                  Namn *
+                </Label>
+                <Input
+                  id="ingredientsName"
+                  value={foodItemsName}
+                  onChange={(e) => setFoodItemsName(e.target.value)}
+                  placeholder="T.ex. 'Frukost råvaror'"
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                />
+              </div>
+
+              {/* Food Item Search */}
+              <div>
+                <Label htmlFor="foodSearch" className="text-[rgba(255,255,255,0.8)]">
+                  Sök livsmedel
+                </Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[rgba(255,255,255,0.4)]" />
+                  <Input
+                    id="foodSearch"
+                    value={foodItemSearch}
+                    onChange={(e) => setFoodItemSearch(e.target.value)}
+                    placeholder="Sök efter livsmedel..."
+                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white pl-10"
+                  />
+                </div>
+
+                {/* Search Results */}
+                {availableFoodItems.length > 0 && (
+                  <div className="mt-2 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.2)] rounded-lg max-h-48 overflow-y-auto">
+                    {availableFoodItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className="p-3 hover:bg-[rgba(255,215,0,0.1)] border-b border-[rgba(255,215,0,0.1)] last:border-0 cursor-pointer"
+                        onClick={() => {
+                          const amount = prompt(`Ange mängd för ${item.name} (gram):`, '100')
+                          if (amount && !isNaN(parseFloat(amount))) {
+                            handleAddFoodItem(item, parseFloat(amount))
+                          }
+                        }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-white text-sm font-medium">{item.name}</p>
+                            <p className="text-xs text-[rgba(255,255,255,0.5)]">
+                              Per 100g: {Math.round(Number(item.calories))} kcal • P: {Number(item.proteinG).toFixed(1)}g • F: {Number(item.fatG).toFixed(1)}g • K: {Number(item.carbsG).toFixed(1)}g
+                            </p>
+                          </div>
+                          <Plus className="h-4 w-4 text-[#FFD700]" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Selected Food Items */}
+              {selectedFoodItems.length > 0 && (
+                <div className="space-y-2">
+                  <Label className="text-[rgba(255,255,255,0.8)]">Valda livsmedel</Label>
+                  {selectedFoodItems.map((item, index) => (
+                    <div
+                      key={index}
+                      className="p-3 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.2)] rounded-lg"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex-1">
+                          <p className="text-white text-sm font-medium">{item.name}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Input
+                              type="number"
+                              value={item.amountG}
+                              onChange={(e) => handleUpdateFoodItemAmount(index, parseFloat(e.target.value) || 0)}
+                              className="w-20 h-8 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white text-xs"
+                            />
+                            <span className="text-xs text-[rgba(255,255,255,0.6)]">g</span>
+                          </div>
+                          <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
+                            {Math.round(item.calories)} kcal • P: {item.protein.toFixed(1)}g • F: {item.fat.toFixed(1)}g • K: {item.carbs.toFixed(1)}g
+                          </p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemoveFoodItem(index)}
+                          className="hover:bg-[rgba(255,0,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-red-400"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Total Macros */}
+                  <div className="p-3 bg-gradient-to-br from-[rgba(255,215,0,0.1)] to-[rgba(255,165,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded-lg">
+                    <p className="text-sm font-bold text-[#FFD700] mb-2">Totalt</p>
+                    {(() => {
+                      const totals = calculateTotalMacros()
+                      return (
+                        <p className="text-sm text-white">
+                          {Math.round(totals.calories)} kcal • P: {totals.protein.toFixed(1)}g • F: {totals.fat.toFixed(1)}g • K: {totals.carbs.toFixed(1)}g
+                        </p>
+                      )
+                    })()}
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <Label htmlFor="ingredientsNotes" className="text-[rgba(255,255,255,0.8)]">
+                  Anteckningar (valfritt)
+                </Label>
+                <Textarea
+                  id="ingredientsNotes"
+                  value={foodItemsNotes}
+                  onChange={(e) => setFoodItemsNotes(e.target.value)}
+                  placeholder="T.ex. 'Kan bytas mot laktosfria alternativ'"
+                  rows={2}
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                />
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="ingredientsDefault"
+                  checked={foodItemsIsDefault}
+                  onCheckedChange={(checked) => setFoodItemsIsDefault(checked as boolean)}
+                  className="border-[rgba(255,215,0,0.3)]"
+                />
+                <Label
+                  htmlFor="ingredientsDefault"
                   className="text-sm text-[rgba(255,255,255,0.8)] cursor-pointer"
                 >
                   Markera som standardalternativ
@@ -452,8 +772,18 @@ export function AddMealOptionDialog({
               Avbryt
             </Button>
             <Button
-              onClick={activeTab === 'recipe' ? handleAddRecipeOption : handleAddCustomOption}
-              disabled={isSaving || (activeTab === 'recipe' && !selectedRecipe)}
+              onClick={
+                activeTab === 'recipe'
+                  ? handleAddRecipeOption
+                  : activeTab === 'ingredients'
+                  ? handleAddFoodItemsOption
+                  : handleAddCustomOption
+              }
+              disabled={
+                isSaving ||
+                (activeTab === 'recipe' && !selectedRecipe) ||
+                (activeTab === 'ingredients' && selectedFoodItems.length === 0)
+              }
               className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             >
               {isSaving ? 'Lägger till...' : 'Lägg till alternativ'}
