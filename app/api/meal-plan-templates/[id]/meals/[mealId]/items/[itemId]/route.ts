@@ -3,10 +3,10 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-// PATCH /api/meal-plan-templates/[templateId]/meals/[mealId]/items/[itemId] - Update ingredient
+// PATCH /api/meal-plan-templates/[id]/meals/[mealId]/items/[itemId] - Update ingredient
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ templateId: string; mealId: string; itemId: string }> }
+  { params }: { params: Promise<{ id: string; mealId: string; itemId: string }> }
 ) {
   try {
     const { itemId } = await params
@@ -48,10 +48,10 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/meal-plan-templates/[templateId]/meals/[mealId]/items/[itemId] - Delete ingredient
+// DELETE /api/meal-plan-templates/[id]/meals/[mealId]/items/[itemId] - Delete ingredient
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ templateId: string; mealId: string; itemId: string }> }
+  { params }: { params: Promise<{ id: string; mealId: string; itemId: string }> }
 ) {
   try {
     const { itemId } = await params

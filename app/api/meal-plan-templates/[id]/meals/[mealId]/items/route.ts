@@ -3,13 +3,13 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-// POST /api/meal-plan-templates/[templateId]/meals/[mealId]/items - Add ingredient to meal
+// POST /api/meal-plan-templates/[id]/meals/[mealId]/items - Add ingredient to meal
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ templateId: string; mealId: string }> }
+  { params }: { params: Promise<{ id: string; mealId: string }> }
 ) {
   try {
-    const { templateId, mealId } = await params
+    const { id: templateId, mealId } = await params
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
