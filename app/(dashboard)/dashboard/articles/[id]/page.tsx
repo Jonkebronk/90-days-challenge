@@ -11,9 +11,6 @@ import { toast } from 'sonner'
 import { MDXPreview } from '@/components/mdx-preview'
 import { Progress } from '@/components/ui/progress'
 import { ArticleMetadata } from '@/components/article-metadata'
-import { ArticleFeedback } from '@/components/article-feedback'
-import { RelatedArticles } from '@/components/related-articles'
-import { NextArticleCTA } from '@/components/next-article-cta'
 
 type ArticleCategory = {
   id: string
@@ -292,28 +289,6 @@ export default function ArticleReaderPage() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Article Feedback */}
-          <div className="mt-8">
-            <ArticleFeedback
-              articleId={article.id}
-              initialFeedback={article.feedback?.[0]}
-            />
-          </div>
-
-          {/* Next Article CTA */}
-          {nextArticle && (
-            <div className="mt-8">
-              <NextArticleCTA article={nextArticle} />
-            </div>
-          )}
-
-          {/* Related Articles */}
-          {relatedArticles.length > 0 && (
-            <div className="mt-8">
-              <RelatedArticles articles={relatedArticles} />
-            </div>
-          )}
 
           {/* Bottom Actions */}
           <div className="mt-8">

@@ -19,7 +19,6 @@ import { BookOpen, Clock, Search, CheckCircle, Circle, Filter } from 'lucide-rea
 import { toast } from 'sonner'
 import { getCategoryIcon } from '@/lib/icons/category-icons'
 import { getPhaseColors, getPhaseShortName, type Phase } from '@/lib/utils/phase-colors'
-import { ArticleSearch } from '@/components/article-search'
 
 type ArticleCategory = {
   id: string
@@ -195,11 +194,6 @@ function ArticleBankContent() {
             Din kunskapsresa genom de 90 dagarna
           </p>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
-        </div>
-
-        {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-8">
-          <ArticleSearch />
         </div>
 
         {/* Search Results */}
