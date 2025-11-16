@@ -179,13 +179,15 @@ export default function NutritionAdminPage() {
       // Process each category separately to maintain correct order within category
       for (const cat of categories) {
         // Update existing items with reassigned order based on current position
+        // Map with index FIRST to preserve original position, then filter
         const existingItems = cat.items
-          .filter(item => !item.id.startsWith('temp-'))
-          .map((item, index) => ({
+          .map((item, index) => ({ item, index }))
+          .filter(({ item }) => !item.id.startsWith('temp-'))
+          .map(({ item, index }) => ({
             id: item.id,
             name: item.name,
             valuePer100g: item.valuePer100g,
-            order: index, // Use current array index as order within category
+            order: index, // Use original array index as order within category
           }))
 
         if (existingItems.length > 0) {
