@@ -36,6 +36,11 @@ export default function NutritionAdminPage() {
   const [isSaving, setIsSaving] = useState(false)
 
   const isCoach = (session?.user as any)?.role === 'coach'
+  const portions = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
+
+  const calculateValue = (valuePer100g: number, portion: number) => {
+    return ((valuePer100g * portion) / 100).toFixed(1)
+  }
 
   useEffect(() => {
     if (session?.user) {
@@ -261,72 +266,101 @@ export default function NutritionAdminPage() {
                 <CardTitle className="text-xl text-[#FFD700]">{category.name}</CardTitle>
                 <div className="flex items-center gap-2">
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
                     onClick={() => moveCategory(category.id, 'up')}
                     disabled={categoryIndex === 0}
-                    className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+                    className="border border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
                   >
                     <ChevronUp className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
                     onClick={() => moveCategory(category.id, 'down')}
                     disabled={categoryIndex === categories.length - 1}
-                    className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+                    className="border border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
                   >
                     <ChevronDown className="h-4 w-4" />
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-[rgba(255,215,0,0.2)] hover:bg-transparent">
-                      <TableHead className="text-[rgba(255,255,255,0.8)]">Livsmedel</TableHead>
-                      <TableHead className="text-[rgba(255,255,255,0.8)]">Värde per 100g</TableHead>
-                      <TableHead className="text-right text-[rgba(255,255,255,0.8)]">Åtgärder</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {category.items.map((item) => (
-                      <TableRow key={item.id} className="border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                        <TableCell className="w-1/2">
-                          <Input
-                            value={item.name}
-                            onChange={(e) => updateItemValue(category.id, item.id, 'name', e.target.value)}
-                            className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Input
-                            type="number"
-                            step="0.1"
-                            value={item.valuePer100g}
-                            onChange={(e) => updateItemValue(category.id, item.id, 'valuePer100g', parseFloat(e.target.value) || 0)}
-                            className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white max-w-[150px]"
-                          />
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeItem(category.id, item.id)}
-                            className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse text-xs">
+                    <thead className="bg-[rgba(255,215,0,0.05)]">
+                      <tr>
+                        <th className="px-2 py-2 text-left text-xs font-semibold text-[rgba(255,255,255,0.8)] border border-[rgba(255,215,0,0.2)] sticky left-0 bg-[rgba(10,10,10,0.95)] z-10">
+                          Livsmedel
+                        </th>
+                        <th className="px-2 py-2 text-center text-xs font-semibold text-[#FFD700] border border-[rgba(255,215,0,0.2)] min-w-[80px]">
+                          Per 100g
+                        </th>
+                        {portions.map((portion) => (
+                          <th
+                            key={portion}
+                            className="px-2 py-2 text-center text-xs font-semibold text-[rgba(255,215,0,0.7)] border border-[rgba(255,215,0,0.2)] min-w-[60px]"
                           >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                            {portion}g
+                          </th>
+                        ))}
+                        <th className="px-2 py-2 text-center text-xs font-semibold text-[rgba(255,255,255,0.8)] border border-[rgba(255,215,0,0.2)] min-w-[80px]">
+                          Åtgärder
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {category.items.map((item, idx) => (
+                        <tr
+                          key={item.id}
+                          className={`border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)] ${
+                            idx % 2 === 0 ? 'bg-[rgba(255,255,255,0.01)]' : ''
+                          }`}
+                        >
+                          <td className="px-2 py-2 border border-[rgba(255,215,0,0.1)] sticky left-0 bg-[rgba(10,10,10,0.95)] z-10">
+                            <Input
+                              value={item.name}
+                              onChange={(e) => updateItemValue(category.id, item.id, 'name', e.target.value)}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white h-8 text-xs"
+                            />
+                          </td>
+                          <td className="px-2 py-2 border border-[rgba(255,215,0,0.1)]">
+                            <Input
+                              type="number"
+                              step="0.1"
+                              value={item.valuePer100g}
+                              onChange={(e) => updateItemValue(category.id, item.id, 'valuePer100g', parseFloat(e.target.value) || 0)}
+                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white h-8 text-xs text-center"
+                            />
+                          </td>
+                          {portions.map((portion) => (
+                            <td
+                              key={portion}
+                              className="px-2 py-2 text-center text-[rgba(255,255,255,0.8)] border border-[rgba(255,215,0,0.1)] text-xs"
+                            >
+                              {calculateValue(item.valuePer100g, portion)}
+                            </td>
+                          ))}
+                          <td className="px-2 py-2 text-center border border-[rgba(255,215,0,0.1)]">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeItem(category.id, item.id)}
+                              className="text-red-400 hover:text-red-300 hover:bg-red-900/20 h-7"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
                 <Button
                   onClick={() => addItem(category.id)}
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="mt-4 border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+                  className="mt-4 border border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Lägg till livsmedel
