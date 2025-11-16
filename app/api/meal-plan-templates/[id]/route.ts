@@ -21,6 +21,9 @@ export async function GET(
       include: {
         meals: {
           include: {
+            items: {
+              orderBy: { orderIndex: 'asc' },
+            },
             options: {
               include: {
                 recipe: {
