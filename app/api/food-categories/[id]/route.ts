@@ -3,15 +3,13 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-type Params = {
-  params: {
-    id: string
-  }
-}
-
 // GET /api/food-categories/[id] - Get single food category
-export async function GET(req: NextRequest, { params }: Params) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
@@ -19,7 +17,7 @@ export async function GET(req: NextRequest, { params }: Params) {
     }
 
     const category = await prisma.foodCategory.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: { foodItems: true },
@@ -42,8 +40,12 @@ export async function GET(req: NextRequest, { params }: Params) {
 }
 
 // PATCH /api/food-categories/[id] - Update food category (coach only)
-export async function PATCH(req: NextRequest, { params }: Params) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
@@ -65,7 +67,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
     // Check if category exists
     const existing = await prisma.foodCategory.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existing) {
@@ -87,7 +89,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     }
 
     const category = await prisma.foodCategory.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: name !== undefined ? name : undefined,
         description: description !== undefined ? description : undefined,
@@ -114,8 +116,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 // DELETE /api/food-categories/[id] - Delete food category (coach only)
-export async function DELETE(req: NextRequest, { params }: Params) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
@@ -134,7 +140,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
 
     // Check if category exists
     const existing = await prisma.foodCategory.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: { foodItems: true },
@@ -157,7 +163,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     }
 
     await prisma.foodCategory.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ message: 'Category deleted successfully' })

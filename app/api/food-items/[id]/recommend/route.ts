@@ -3,15 +3,13 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-type Params = {
-  params: {
-    id: string
-  }
-}
-
 // PATCH /api/food-items/[id]/recommend - Toggle recommended status (coach only)
-export async function PATCH(req: NextRequest, { params }: Params) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
@@ -30,7 +28,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
     // Check if food item exists
     const existing = await prisma.foodItem.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existing) {
@@ -41,7 +39,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     const isRecommended = !existing.isRecommended
 
     const foodItem = await prisma.foodItem.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         isRecommended,
       },

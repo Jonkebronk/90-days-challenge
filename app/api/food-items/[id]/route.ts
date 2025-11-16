@@ -3,15 +3,13 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-type Params = {
-  params: {
-    id: string
-  }
-}
-
 // GET /api/food-items/[id] - Get single food item
-export async function GET(req: NextRequest, { params }: Params) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
@@ -19,7 +17,7 @@ export async function GET(req: NextRequest, { params }: Params) {
     }
 
     const foodItem = await prisma.foodItem.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         foodCategory: {
           select: {
@@ -55,8 +53,12 @@ export async function GET(req: NextRequest, { params }: Params) {
 }
 
 // PATCH /api/food-items/[id] - Update food item (coach only)
-export async function PATCH(req: NextRequest, { params }: Params) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
@@ -90,7 +92,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
     // Check if food item exists
     const existing = await prisma.foodItem.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existing) {
@@ -98,7 +100,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     }
 
     const foodItem = await prisma.foodItem.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: name !== undefined ? name : undefined,
         categoryId: categoryId !== undefined ? categoryId : undefined,
@@ -133,8 +135,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 // DELETE /api/food-items/[id] - Delete food item (coach only)
-export async function DELETE(req: NextRequest, { params }: Params) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
@@ -153,7 +159,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
 
     // Check if food item exists
     const existing = await prisma.foodItem.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: {
@@ -185,7 +191,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     }
 
     await prisma.foodItem.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ message: 'Food item deleted successfully' })
