@@ -33,7 +33,7 @@ export default function HomePage() {
     { name: 'Start', href: '#start' },
     { name: 'Om Programmet', href: '#program' },
     { name: 'Om mig', href: '/om-mig' },
-    { name: 'Ansök', href: '/apply' },
+    { name: 'Intresseanmälan', href: '/apply' },
   ]
 
   const handleVerifyInviteCode = async () => {
@@ -290,7 +290,7 @@ export default function HomePage() {
                   href="/apply"
                   className="inline-block w-full px-6 py-3 bg-gradient-to-r from-gold-primary to-gold-secondary text-white rounded-lg font-bold tracking-[1px] uppercase text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg text-center"
                 >
-                  Ansök nu
+                  Intresseanmälan
                 </Link>
               </div>
             </div>
@@ -337,7 +337,7 @@ export default function HomePage() {
                   href="/apply"
                   className="inline-block w-full px-6 py-3 bg-gradient-to-r from-gold-primary to-gold-secondary text-white rounded-lg font-bold tracking-[1px] uppercase text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg text-center"
                 >
-                  Ansök nu
+                  Intresseanmälan
                 </Link>
               </div>
             </div>

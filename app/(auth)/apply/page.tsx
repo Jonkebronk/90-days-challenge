@@ -22,7 +22,8 @@ export default function ApplyPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [expandedSections, setExpandedSections] = useState({
-    personal: true,
+    service: true,
+    personal: false,
     training: false,
     nutrition: false,
     lifestyle: false,
@@ -31,6 +32,9 @@ export default function ApplyPage() {
   })
 
   const [formData, setFormData] = useState({
+    // Service Selection
+    serviceType: '',
+
     // Personal Information
     name: '',
     email: '',
@@ -74,6 +78,11 @@ export default function ApplyPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    if (!formData.serviceType) {
+      toast.error('Vänligen välj vilken tjänst du är intresserad av')
+      return
+    }
+
     if (!formData.name || !formData.email || !formData.phone) {
       toast.error('Vänligen fyll i alla obligatoriska fält')
       return
@@ -94,7 +103,10 @@ export default function ApplyPage() {
     try {
       // Create detailed lead notes
       const leadNotes = `
-ANSÖKAN - 90-Dagars Challenge
+INTRESSEANMÄLAN - ${formData.serviceType}
+
+=== VALD TJÄNST ===
+${formData.serviceType}
 
 === PERSONUPPGIFTER ===
 Ålder: ${formData.age || 'Ej angivet'}
@@ -140,6 +152,9 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          // Service Selection
+          serviceType: formData.serviceType,
+
           // Personal Information
           fullName: formData.name,
           email: formData.email,
@@ -176,10 +191,10 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
       if (response.ok) {
         const data = await response.json()
         setSubmitted(true)
-        toast.success('Ansökan mottagen! Tack för din ansökan.')
+        toast.success('Intresseanmälan mottagen! Tack för din anmälan.')
       } else {
         const data = await response.json()
-        toast.error(data.error || 'Något gick fel vid bearbetning av ansökan')
+        toast.error(data.error || 'Något gick fel vid bearbetning av intresseanmälan')
       }
     } catch (error) {
       console.error('Error submitting application:', error)
@@ -224,12 +239,12 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
             </div>
 
             <h1 className="font-['Orbitron',sans-serif] text-3xl font-black tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4">
-              Tack för din ansökan!
+              Tack för din intresseanmälan!
             </h1>
 
             <p className="text-gray-300 mb-8 leading-relaxed">
-              Vi har tagit emot din ansökan till 90-Dagars Challenge.<br />
-              Vår coach kommer att granska din ansökan och höra av sig inom 1-2 vardagar.
+              Vi har tagit emot din intresseanmälan för {formData.serviceType}.<br />
+              Vår coach kommer att granska din anmälan och höra av sig inom 1-2 vardagar.
             </p>
 
             <div className="space-y-4">
@@ -266,16 +281,107 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
         <div className="text-center mb-10">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
           <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3">
-            Ansök till 90-Dagars Challenge
+            Intresseanmälan
           </h1>
           <p className="text-gray-400 text-sm tracking-[1px] max-w-3xl mx-auto leading-relaxed">
-            Även om vårt program har en specifik, beprövad metodik och struktur, anpassas detaljerna helt efter dig — din kropp, din livsstil, dina förutsättningar. Detta formulär är en viktig startpunkt för oss båda att se var du är idag och bestämma den bästa vägen framåt för dig.
+            Välj vilken tjänst du är intresserad av och fyll i formuläret. Vi anpassar våra program helt efter dig — din kropp, din livsstil, dina förutsättningar. Detta formulär är en viktig startpunkt för oss båda att se var du är idag och bestämma den bästa vägen framåt för dig.
           </p>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Service Selection */}
+          <div>
+            <SectionHeader
+              title="Välj Tjänst"
+              section="service"
+              isExpanded={expandedSections.service}
+            />
+
+            {expandedSections.service && (
+              <div className="mt-4 p-6 bg-white/5 border border-gold-primary/20 rounded-lg backdrop-blur-[10px] space-y-6">
+                <p className="text-gray-300 text-sm mb-6">
+                  Välj vilken tjänst du är intresserad av. Vi kommer att kontakta dig för en personlig genomgång.
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Online Coachning */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, serviceType: 'Online Coachning' })
+                      setExpandedSections({ ...expandedSections, service: false, personal: true })
+                    }}
+                    className={`relative p-6 rounded-xl border-2 transition-all text-left ${
+                      formData.serviceType === 'Online Coachning'
+                        ? 'border-gold-primary bg-gold-primary/10'
+                        : 'border-gold-primary/30 bg-white/5 hover:border-gold-primary/50'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
+                        <span className="text-2xl">💪</span>
+                      </div>
+                      {formData.serviceType === 'Online Coachning' && (
+                        <CheckCircle className="w-6 h-6 text-gold-primary" />
+                      )}
+                    </div>
+                    <h3 className="text-xl font-bold text-gold-light mb-2 tracking-[1px] font-['Orbitron',sans-serif]">
+                      Online Coachning
+                    </h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">
+                      Flexibel coaching anpassad efter dina mål och livsstil med kontinuerlig uppföljning.
+                    </p>
+                  </button>
+
+                  {/* 90 Dagars Utmaningen */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData({ ...formData, serviceType: '90 Dagars Utmaningen' })
+                      setExpandedSections({ ...expandedSections, service: false, personal: true })
+                    }}
+                    className={`relative p-6 rounded-xl border-2 transition-all text-left ${
+                      formData.serviceType === '90 Dagars Utmaningen'
+                        ? 'border-gold-primary bg-gold-primary/10'
+                        : 'border-gold-primary/30 bg-white/5 hover:border-gold-primary/50'
+                    }`}
+                  >
+                    <div className="absolute top-4 right-4 bg-gradient-to-r from-gold-primary to-gold-secondary text-white text-xs font-bold px-2 py-1 rounded-full uppercase">
+                      Populär
+                    </div>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
+                        <span className="text-2xl">🎯</span>
+                      </div>
+                      {formData.serviceType === '90 Dagars Utmaningen' && (
+                        <CheckCircle className="w-6 h-6 text-gold-primary" />
+                      )}
+                    </div>
+                    <h3 className="text-xl font-bold text-gold-light mb-2 tracking-[1px] font-['Orbitron',sans-serif]">
+                      90 Dagars Utmaningen
+                    </h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">
+                      Intensivt program för total transformation på 90 dagar med garanterade resultat.
+                    </p>
+                  </button>
+                </div>
+
+                {formData.serviceType && (
+                  <div className="mt-6 p-4 bg-gold-primary/10 border border-gold-primary/30 rounded-lg">
+                    <p className="text-gold-light text-sm">
+                      ✓ Du har valt: <span className="font-bold">{formData.serviceType}</span>
+                    </p>
+                    <p className="text-gray-400 text-xs mt-2">
+                      Fortsätt fylla i formuläret för att gå vidare med din intresseanmälan.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Personal Information */}
           <div className="space-y-4">
             <SectionHeader title="Personuppgifter" section="personal" isExpanded={expandedSections.personal} />
