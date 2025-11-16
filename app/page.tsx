@@ -74,27 +74,12 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]" />
-
-      {/* Animated particles */}
-      <div className="particles absolute inset-0 pointer-events-none">
-        {Array.from({ length: 50 }).map((_, i) => (
-          <div
-            key={i}
-            className="particle absolute w-[2px] h-[2px] bg-[rgba(255,215,0,0.3)] rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 15}s`,
-              animationDuration: `${Math.random() * 10 + 10}s`,
-            }}
-          />
-        ))}
-      </div>
+    <div className="min-h-screen relative overflow-hidden bg-white">
+      {/* Clean gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white" />
 
       {/* Header Navigation */}
-      <header className="relative z-50 bg-[rgba(10,10,10,0.8)] backdrop-blur-lg border-b border-[rgba(255,215,0,0.2)]">
+      <header className="relative z-50 bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20 lg:h-24">
             {/* Logo */}
@@ -122,7 +107,7 @@ export default function HomePage() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] transition-colors text-sm font-medium tracking-[1px] uppercase"
+                  className="text-gray-900 hover:text-gold-primary transition-colors text-sm font-medium tracking-[1px] uppercase"
                 >
                   {item.name}
                 </Link>
@@ -179,13 +164,13 @@ export default function HomePage() {
               </Dialog>
               <Link
                 href="/login"
-                className="px-4 py-2.5 text-xs font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]"
+                className="px-4 py-2.5 text-xs font-semibold tracking-[1px] uppercase bg-white border-2 border-gray-300 text-gray-900 rounded-lg transition-all duration-300 hover:scale-105 hover:border-gold-primary hover:text-gold-primary hover:shadow-md"
               >
                 Klient Login
               </Link>
               <Link
                 href="/login"
-                className="px-4 py-2.5 text-xs font-semibold tracking-[1px] uppercase bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]"
+                className="px-4 py-2.5 text-xs font-semibold tracking-[1px] uppercase bg-gradient-to-r from-gold-primary to-gold-secondary border-2 border-gold-primary text-white rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-gold-primary/30"
               >
                 Coach Login
               </Link>
@@ -277,21 +262,21 @@ export default function HomePage() {
           {/* Vertical stack layout */}
           <div className="flex flex-col gap-6 max-w-[700px] mx-auto">
             {/* Step 1 */}
-            <div className="relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-10 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.6)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:-translate-y-1 overflow-hidden">
+            <div className="relative bg-white border-2 border-gray-200 rounded-xl p-10 shadow-md transition-all duration-300 hover:border-gold-primary hover:shadow-lg hover:-translate-y-1 overflow-hidden">
               {/* Large background number */}
-              <div className="absolute top-0 left-0 font-['Orbitron',sans-serif] text-[140px] font-black text-[rgba(255,255,255,0.05)] leading-none select-none pointer-events-none">
+              <div className="absolute top-0 left-0 font-['Orbitron',sans-serif] text-[140px] font-black text-gray-100 leading-none select-none pointer-events-none">
                 01
               </div>
 
               {/* Content */}
               <div className="relative z-10">
-                <div className="text-xl font-bold text-white mb-3 tracking-[2px] font-['Orbitron',sans-serif]">
+                <div className="text-xl font-bold text-gray-900 mb-3 tracking-[2px] font-['Orbitron',sans-serif]">
                   Steg 1.
                 </div>
-                <h3 className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
+                <h3 className="text-2xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
                   Ansök och berätta om dina mål
                 </h3>
-                <p className="text-[rgba(255,255,255,0.8)] text-base leading-relaxed">
+                <p className="text-gray-700 text-base leading-relaxed">
                   Fyll i ett kort formulär där du delar dina ambitioner, var du är idag och vart du vill komma. Det tar 5 minuter och är första steget mot förändring.
                 </p>
               </div>

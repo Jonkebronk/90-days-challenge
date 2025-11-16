@@ -49,6 +49,12 @@ const config: Config = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
+  			},
+  			gold: {
+  				primary: '#D4AF37',
+  				secondary: '#B8860B',
+  				light: '#FFD700',
+  				DEFAULT: '#D4AF37'
   			}
   		},
   		borderRadius: {
