@@ -79,10 +79,10 @@ export default function NutritionAdminPage() {
       const response = await fetch(`/api/nutrition-categories?type=${activeType}`)
       if (response.ok) {
         const data = await response.json()
-        console.log('Loaded categories:', data.categories.map((cat: any) => ({
-          name: cat.name,
-          items: cat.items.map((item: any) => ({ name: item.name, order: item.order }))
-        })))
+        data.categories.forEach((cat: any) => {
+          const orderInfo = cat.items.map((item: any) => `${item.name}:${item.order}`).join(', ')
+          console.log(`${cat.name} LOADED ORDER:`, orderInfo)
+        })
         setCategories(data.categories || [])
       }
     } catch (error) {
@@ -239,7 +239,8 @@ export default function NutritionAdminPage() {
             order: index, // Use original array index as order within category
           }))
 
-        console.log(`Category ${cat.name} - Saving items with order:`, existingItems.map(i => ({ name: i.name, order: i.order })))
+        const orderInfo = existingItems.map(i => `${i.name}:${i.order}`).join(', ')
+        console.log(`${cat.name} SAVE ORDER:`, orderInfo)
 
         if (existingItems.length > 0) {
           const updateResponse = await fetch('/api/nutrition-items', {
@@ -331,7 +332,7 @@ export default function NutritionAdminPage() {
               Hantera Näringstabeller
             </h1>
             <p className="text-gray-400 mt-1">
-              Fyll i hur många gram mat som ger 20g protein - resten räknas ut automatiskt
+              Fyll i varje cell manuellt med dina egna beräkningar - sparas automatiskt efter 2 sekunder
             </p>
           </div>
         </div>
