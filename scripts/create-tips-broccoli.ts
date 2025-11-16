@@ -100,7 +100,7 @@ async function main() {
 
   console.log(`✅ Cooking tip created: ${recipe.title} (ID: ${recipe.id})`)
   console.log(`   - Category: Tips på tillagning`)
-  console.log(`   - ${recipe.instructions?.length || 0} instruction steps`)
+  console.log(`   - 15 instruction steps`)
 }
 
 main()
