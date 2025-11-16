@@ -40,35 +40,6 @@ export default function NutritionAdminPage() {
   const isCoach = (session?.user as any)?.role === 'coach'
   const proteinTargets = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
 
-  // Auto-save when categories change (debounced)
-  useEffect(() => {
-    console.log('⏰ useEffect triggered:', { hasUnsavedChanges, isLoading, isSaving })
-
-    if (!hasUnsavedChanges) {
-      console.log('  ❌ Skipping: no unsaved changes')
-      return
-    }
-    if (isLoading) {
-      console.log('  ❌ Skipping: is loading')
-      return
-    }
-    if (isSaving) {
-      console.log('  ❌ Skipping: is saving')
-      return
-    }
-
-    console.log('  ⏱️ Starting 2-second timer...')
-    const saveTimer = setTimeout(() => {
-      console.log('  💾 Timer expired - calling saveChanges()')
-      saveChanges()
-    }, 2000) // Auto-save after 2 seconds of no changes
-
-    return () => {
-      console.log('  🧹 Cleaning up timer')
-      clearTimeout(saveTimer)
-    }
-  }, [categories, hasUnsavedChanges, isLoading, isSaving, saveChanges])
-
   // Calculate food weight needed to get target protein/fat/carbs
   const calculateFoodWeight = (valuePer100g: number, targetValue: number) => {
     if (valuePer100g === 0) return 0
@@ -316,6 +287,35 @@ export default function NutritionAdminPage() {
       setIsSaving(false)
     }
   }, [categories, activeType])
+
+  // Auto-save when categories change (debounced)
+  useEffect(() => {
+    console.log('⏰ useEffect triggered:', { hasUnsavedChanges, isLoading, isSaving })
+
+    if (!hasUnsavedChanges) {
+      console.log('  ❌ Skipping: no unsaved changes')
+      return
+    }
+    if (isLoading) {
+      console.log('  ❌ Skipping: is loading')
+      return
+    }
+    if (isSaving) {
+      console.log('  ❌ Skipping: is saving')
+      return
+    }
+
+    console.log('  ⏱️ Starting 2-second timer...')
+    const saveTimer = setTimeout(() => {
+      console.log('  💾 Timer expired - calling saveChanges()')
+      saveChanges()
+    }, 2000) // Auto-save after 2 seconds of no changes
+
+    return () => {
+      console.log('  🧹 Cleaning up timer')
+      clearTimeout(saveTimer)
+    }
+  }, [categories, hasUnsavedChanges, isLoading, isSaving, saveChanges])
 
   if (!session?.user || !isCoach) {
     return (
