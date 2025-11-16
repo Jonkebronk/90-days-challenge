@@ -244,7 +244,7 @@ export default function NutritionAdminPage() {
               Hantera Näringstabeller
             </h1>
             <p className="text-[rgba(255,255,255,0.6)] mt-1">
-              Redigera näringsvärden, lägg till eller ta bort livsmedel
+              Fyll i hur många gram mat som ger 20g - resten räknas ut automatiskt
             </p>
           </div>
         </div>
@@ -335,15 +335,21 @@ export default function NutritionAdminPage() {
                               className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white h-8 text-xs"
                             />
                           </td>
-                          {proteinTargets.map((target) => (
+                          {proteinTargets.map((target, targetIndex) => (
                             <td key={target} className="px-2 py-2 border border-[rgba(255,215,0,0.1)]">
-                              <Input
-                                type="number"
-                                value={calculateFoodWeight(item.valuePer100g, target)}
-                                onChange={(e) => updateItemByWeight(category.id, item.id, target, parseInt(e.target.value) || 0)}
-                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white h-8 text-xs text-center"
-                                placeholder="0"
-                              />
+                              {targetIndex === 0 ? (
+                                <Input
+                                  type="number"
+                                  value={calculateFoodWeight(item.valuePer100g, target)}
+                                  onChange={(e) => updateItemByWeight(category.id, item.id, target, parseInt(e.target.value) || 0)}
+                                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white h-8 text-xs text-center"
+                                  placeholder="0"
+                                />
+                              ) : (
+                                <div className="px-2 py-1 text-center text-[rgba(255,255,255,0.8)]">
+                                  {calculateFoodWeight(item.valuePer100g, target)}
+                                </div>
+                              )}
                             </td>
                           ))}
                           <td className="px-2 py-2 text-center border border-[rgba(255,215,0,0.1)]">
