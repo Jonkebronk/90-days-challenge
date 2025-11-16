@@ -180,8 +180,8 @@ export default function CategoryFoodItemsPage({
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-[rgba(255,255,255,0.7)]">
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
+          <p className="text-gray-300">
             Du har inte behörighet att se denna sida.
           </p>
         </div>
@@ -192,7 +192,7 @@ export default function CategoryFoodItemsPage({
   if (isLoading && !category) {
     return (
       <div className="container mx-auto p-6">
-        <p className="text-[rgba(255,255,255,0.6)] text-center py-8">Laddar...</p>
+        <p className="text-gray-400 text-center py-8">Laddar...</p>
       </div>
     )
   }
@@ -211,7 +211,7 @@ export default function CategoryFoodItemsPage({
           variant="ghost"
           size="icon"
           onClick={() => router.push('/dashboard/content/food-items')}
-          className="text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
+          className="text-gray-400 hover:text-gold-light"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
@@ -223,17 +223,17 @@ export default function CategoryFoodItemsPage({
             <Icon className="h-6 w-6" style={{ color: category.color }} />
           </div>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+            <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
               {category.name}
             </h1>
-            <p className="text-[rgba(255,255,255,0.6)] mt-0.5">
+            <p className="text-gray-400 mt-0.5">
               {total} livsmedel
             </p>
           </div>
         </div>
         <Button
           onClick={() => router.push('/dashboard/content/food-items/create')}
-          className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+          className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nytt livsmedel
@@ -242,23 +242,23 @@ export default function CategoryFoodItemsPage({
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(255,255,255,0.5)]" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Sök livsmedel..."
-          className="pl-10 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+          className="pl-10 bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
         />
       </div>
 
       {/* Food Items Grid */}
       {isLoading ? (
-        <p className="text-[rgba(255,255,255,0.6)] text-center py-8">Laddar...</p>
+        <p className="text-gray-400 text-center py-8">Laddar...</p>
       ) : foodItems.length === 0 ? (
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardContent className="text-center py-16">
             <Apple className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-            <p className="text-[rgba(255,255,255,0.6)] text-lg mb-2">
+            <p className="text-gray-400 text-lg mb-2">
               Inga livsmedel i denna kategori
             </p>
             <p className="text-sm text-[rgba(255,255,255,0.4)] mb-6">
@@ -266,7 +266,7 @@ export default function CategoryFoodItemsPage({
             </p>
             <Button
               onClick={() => router.push('/dashboard/content/food-items/create')}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
             >
               <Plus className="h-4 w-4 mr-2" />
               Lägg till livsmedel
@@ -278,14 +278,14 @@ export default function CategoryFoodItemsPage({
           {foodItems.map((item) => (
             <Card
               key={item.id}
-              className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-all backdrop-blur-[10px]"
+              className="bg-white/5 border border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)] transition-all backdrop-blur-[10px]"
             >
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <h3 className="font-semibold text-white text-lg mb-1">{item.name}</h3>
                     {item.commonServingSize && (
-                      <p className="text-xs text-[rgba(255,255,255,0.5)]">
+                      <p className="text-xs text-gray-500">
                         Per {item.commonServingSize}
                       </p>
                     )}
@@ -296,8 +296,8 @@ export default function CategoryFoodItemsPage({
                       size="icon"
                       className={`h-7 w-7 ${
                         item.isRecommended
-                          ? 'text-[#FFD700] hover:text-[#FFA500]'
-                          : 'text-[rgba(255,255,255,0.3)] hover:text-[#FFD700]'
+                          ? 'text-gold-light hover:text-orange-500'
+                          : 'text-[rgba(255,255,255,0.3)] hover:text-gold-light'
                       }`}
                       onClick={() => handleToggleRecommended(item.id, item.isRecommended)}
                     >
@@ -319,20 +319,20 @@ export default function CategoryFoodItemsPage({
                 </div>
 
                 <div className="grid grid-cols-4 gap-2 mb-3">
-                  <div className="text-center p-2 rounded bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.1)]">
-                    <p className="text-xs text-[rgba(255,255,255,0.5)]">Kcal</p>
+                  <div className="text-center p-2 rounded bg-[rgba(255,215,0,0.05)] border border-gold-primary/10">
+                    <p className="text-xs text-gray-500">Kcal</p>
                     <p className="font-semibold text-white">{item.calories}</p>
                   </div>
                   <div className="text-center p-2 rounded bg-[rgba(100,100,255,0.05)] border border-[rgba(100,100,255,0.1)]">
-                    <p className="text-xs text-[rgba(255,255,255,0.5)]">Protein</p>
+                    <p className="text-xs text-gray-500">Protein</p>
                     <p className="font-semibold text-blue-300">{item.proteinG}g</p>
                   </div>
                   <div className="text-center p-2 rounded bg-[rgba(255,165,0,0.05)] border border-[rgba(255,165,0,0.1)]">
-                    <p className="text-xs text-[rgba(255,255,255,0.5)]">Kolh.</p>
+                    <p className="text-xs text-gray-500">Kolh.</p>
                     <p className="font-semibold text-orange-300">{item.carbsG}g</p>
                   </div>
-                  <div className="text-center p-2 rounded bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.1)]">
-                    <p className="text-xs text-[rgba(255,255,255,0.5)]">Fett</p>
+                  <div className="text-center p-2 rounded bg-[rgba(255,215,0,0.05)] border border-gold-primary/10">
+                    <p className="text-xs text-gray-500">Fett</p>
                     <p className="font-semibold text-yellow-300">{item.fatG}g</p>
                   </div>
                 </div>
@@ -354,7 +354,7 @@ export default function CategoryFoodItemsPage({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-7 w-7 text-[rgba(255,255,255,0.5)] hover:text-[#FFD700]"
+                      className="h-7 w-7 text-gray-500 hover:text-gold-light"
                       onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit`)}
                     >
                       <Pencil className="h-3 w-3" />
@@ -362,7 +362,7 @@ export default function CategoryFoodItemsPage({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-7 w-7 text-[rgba(255,255,255,0.5)] hover:text-red-400"
+                      className="h-7 w-7 text-gray-500 hover:text-red-400"
                       onClick={() => handleDelete(item.id, item.name)}
                     >
                       <Trash2 className="h-3 w-3" />

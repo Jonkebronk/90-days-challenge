@@ -65,8 +65,8 @@ export default function FoodItemsCategoriesPage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-[rgba(255,255,255,0.7)]">
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
+          <p className="text-gray-300">
             Du har inte behörighet att se denna sida.
           </p>
         </div>
@@ -77,7 +77,7 @@ export default function FoodItemsCategoriesPage() {
   if (isLoading) {
     return (
       <div className="container mx-auto p-6">
-        <p className="text-[rgba(255,255,255,0.6)] text-center py-8">Laddar...</p>
+        <p className="text-gray-400 text-center py-8">Laddar...</p>
       </div>
     )
   }
@@ -86,20 +86,20 @@ export default function FoodItemsCategoriesPage() {
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+        <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
           Livsmedelbanken
         </h1>
-        <p className="text-[rgba(255,255,255,0.6)] mt-1">
+        <p className="text-gray-400 mt-1">
           Välj en kategori för att se livsmedel
         </p>
       </div>
 
       {/* Categories Grid */}
       {categories.length === 0 ? (
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardContent className="text-center py-16">
             <Apple className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-            <p className="text-[rgba(255,255,255,0.6)] text-lg mb-2">
+            <p className="text-gray-400 text-lg mb-2">
               Inga kategorier ännu
             </p>
             <p className="text-sm text-[rgba(255,255,255,0.4)] mb-6">
@@ -107,7 +107,7 @@ export default function FoodItemsCategoriesPage() {
             </p>
             <Button
               onClick={() => router.push('/dashboard/content/categories')}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
             >
               Skapa kategorier
             </Button>
@@ -120,7 +120,7 @@ export default function FoodItemsCategoriesPage() {
             return (
               <Card
                 key={category.id}
-                className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] hover:border-[rgba(255,215,0,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
+                className="bg-white/5 border-2 border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
                 onClick={() => router.push(`/dashboard/content/food-items/category/${category.slug}`)}
               >
                 <CardContent className="p-6">
@@ -161,10 +161,10 @@ export default function FoodItemsCategoriesPage() {
       {/* Nutrition Overviews Section */}
       <div className="mt-8 space-y-4">
         <div>
-          <h2 className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+          <h2 className="text-2xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
             Näringsöversikter
           </h2>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-400 mt-1">
             Detaljerade tabeller med näringsinnehåll
           </p>
         </div>
@@ -172,7 +172,7 @@ export default function FoodItemsCategoriesPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Protein Overview Card */}
           <Card
-            className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(59,130,246,0.2)] hover:border-[rgba(59,130,246,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
+            className="bg-white/5 border-2 border-[rgba(59,130,246,0.2)] hover:border-[rgba(59,130,246,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
             onClick={() => router.push('/dashboard/content/food-items/overviews/protein')}
           >
             <CardContent className="p-6">
@@ -188,7 +188,7 @@ export default function FoodItemsCategoriesPage() {
               <h3 className="text-xl font-bold text-white mb-2">
                 Protein källor
               </h3>
-              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+              <p className="text-sm text-gray-400">
                 Komplett översikt med näringsinnehåll för olika portioner
               </p>
             </CardContent>
@@ -196,7 +196,7 @@ export default function FoodItemsCategoriesPage() {
 
           {/* Fat Overview Card */}
           <Card
-            className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(234,179,8,0.2)] hover:border-[rgba(234,179,8,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
+            className="bg-white/5 border-2 border-[rgba(234,179,8,0.2)] hover:border-[rgba(234,179,8,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
             onClick={() => router.push('/dashboard/content/food-items/overviews/fett')}
           >
             <CardContent className="p-6">
@@ -212,7 +212,7 @@ export default function FoodItemsCategoriesPage() {
               <h3 className="text-xl font-bold text-white mb-2">
                 Fett källor
               </h3>
-              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+              <p className="text-sm text-gray-400">
                 Komplett översikt med näringsinnehåll för olika portioner
               </p>
             </CardContent>
@@ -220,7 +220,7 @@ export default function FoodItemsCategoriesPage() {
 
           {/* Carbs Overview Card */}
           <Card
-            className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(249,115,22,0.2)] hover:border-[rgba(249,115,22,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
+            className="bg-white/5 border-2 border-[rgba(249,115,22,0.2)] hover:border-[rgba(249,115,22,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
             onClick={() => router.push('/dashboard/content/food-items/overviews/kolhydrater')}
           >
             <CardContent className="p-6">
@@ -236,7 +236,7 @@ export default function FoodItemsCategoriesPage() {
               <h3 className="text-xl font-bold text-white mb-2">
                 Kolhydrat källor
               </h3>
-              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+              <p className="text-sm text-gray-400">
                 Komplett översikt med näringsinnehåll för olika portioner
               </p>
             </CardContent>

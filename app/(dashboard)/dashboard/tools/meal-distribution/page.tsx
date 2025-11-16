@@ -243,11 +243,11 @@ export default function MealDistributionTool() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px]">
+      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-8 backdrop-blur-[10px]">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <Utensils className="text-[#FFD700]" size={32} />
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <Utensils className="text-gold-light" size={32} />
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-gold-light to-orange-500 bg-clip-text text-transparent">
               Måltidsfördelning & Makronutrienter
             </h1>
           </div>
@@ -258,7 +258,7 @@ export default function MealDistributionTool() {
               <select
                 value={selectedClient}
                 onChange={(e) => setSelectedClient(e.target.value)}
-                className="w-full px-4 py-2 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.3)] rounded-lg text-white focus:outline-none focus:border-[#FFD700]"
+                className="w-full px-4 py-2 bg-black/30 border border-gold-primary/30 rounded-lg text-white focus:outline-none focus:border-gold-light"
                 disabled={isLoading}
               >
                 <option value="">Välj klient...</option>
@@ -272,7 +272,7 @@ export default function MealDistributionTool() {
             <button
               onClick={handleSave}
               disabled={!selectedClient || isSaving}
-              className="px-6 py-2 bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-6 py-2 bg-gradient-to-r from-gold-light to-orange-500 hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               <Save size={18} />
               {isSaving ? 'Sparar...' : 'Spara'}
@@ -290,7 +290,7 @@ export default function MealDistributionTool() {
         {!weight && selectedClient && !isLoading && (
           <div className="mb-6 p-4 bg-[rgba(249,115,22,0.1)] border-l-4 border-orange-400 rounded-lg">
             <p className="text-white font-semibold mb-1">Ingen kaloriplan hittades</p>
-            <p className="text-sm text-[rgba(255,255,255,0.7)]">
+            <p className="text-sm text-gray-300">
               Du måste först skapa en kaloriplan i Kaloriverktyget innan du kan fördela måltider.
             </p>
           </div>
@@ -302,13 +302,13 @@ export default function MealDistributionTool() {
             <h2 className="text-xl font-semibold text-white mb-4">Makronutrientfördelning</h2>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-[rgba(255,255,255,0.8)] mb-2">
+              <label className="block text-sm font-medium text-gray-200 mb-2">
                 Protein per kg kroppsvikt
               </label>
               <select
                 value={proteinPerKg}
                 onChange={(e) => setProteinPerKg(e.target.value)}
-                className="w-full px-4 py-2 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.3)] rounded-lg text-white focus:outline-none focus:border-[#FFD700]"
+                className="w-full px-4 py-2 bg-black/30 border border-gold-primary/30 rounded-lg text-white focus:outline-none focus:border-gold-light"
               >
                 <option value="1.6">1.6 g/kg</option>
                 <option value="1.8">1.8 g/kg</option>
@@ -321,31 +321,31 @@ export default function MealDistributionTool() {
             <div className="grid md:grid-cols-3 gap-4">
               <div className="bg-[rgba(239,68,68,0.1)] p-4 rounded-lg border-2 border-red-400">
                 <div className="flex justify-between items-start mb-2">
-                  <span className="text-sm font-medium text-[rgba(255,255,255,0.8)]">Protein</span>
-                  <span className="text-xs text-[rgba(255,255,255,0.5)]">4 kcal/g</span>
+                  <span className="text-sm font-medium text-gray-200">Protein</span>
+                  <span className="text-xs text-gray-500">4 kcal/g</span>
                 </div>
                 <p className="text-2xl font-bold text-red-400">{macros.protein}g</p>
-                <p className="text-sm text-[rgba(255,255,255,0.6)] mt-1">{macros.proteinCal} kcal</p>
+                <p className="text-sm text-gray-400 mt-1">{macros.proteinCal} kcal</p>
               </div>
 
               <div className="bg-[rgba(234,179,8,0.1)] p-4 rounded-lg border-2 border-yellow-400">
                 <div className="flex justify-between items-start mb-2">
-                  <span className="text-sm font-medium text-[rgba(255,255,255,0.8)]">Fett</span>
-                  <span className="text-xs text-[rgba(255,255,255,0.5)]">9 kcal/g</span>
+                  <span className="text-sm font-medium text-gray-200">Fett</span>
+                  <span className="text-xs text-gray-500">9 kcal/g</span>
                 </div>
                 <p className="text-2xl font-bold text-yellow-400">{macros.fat}g</p>
-                <p className="text-sm text-[rgba(255,255,255,0.6)] mt-1">{macros.fatCal} kcal</p>
-                <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">0.7 g/kg</p>
+                <p className="text-sm text-gray-400 mt-1">{macros.fatCal} kcal</p>
+                <p className="text-xs text-gray-500 mt-1">0.7 g/kg</p>
               </div>
 
               <div className="bg-[rgba(59,130,246,0.1)] p-4 rounded-lg border-2 border-blue-400">
                 <div className="flex justify-between items-start mb-2">
-                  <span className="text-sm font-medium text-[rgba(255,255,255,0.8)]">Kolhydrater</span>
-                  <span className="text-xs text-[rgba(255,255,255,0.5)]">4 kcal/g</span>
+                  <span className="text-sm font-medium text-gray-200">Kolhydrater</span>
+                  <span className="text-xs text-gray-500">4 kcal/g</span>
                 </div>
                 <p className="text-2xl font-bold text-blue-400">{macros.carbs}g</p>
-                <p className="text-sm text-[rgba(255,255,255,0.6)] mt-1">{macros.carbsCal} kcal</p>
-                <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">Resterande kcal</p>
+                <p className="text-sm text-gray-400 mt-1">{macros.carbsCal} kcal</p>
+                <p className="text-xs text-gray-500 mt-1">Resterande kcal</p>
               </div>
             </div>
           </div>
@@ -357,13 +357,13 @@ export default function MealDistributionTool() {
             <h2 className="text-xl font-semibold text-white mb-4">Måltidsfördelning</h2>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-[rgba(255,255,255,0.8)] mb-2">
+              <label className="block text-sm font-medium text-gray-200 mb-2">
                 Antal måltider
               </label>
               <select
                 value={numMeals}
                 onChange={(e) => handleNumMealsChange(e.target.value)}
-                className="w-full px-4 py-2 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.3)] rounded-lg text-white focus:outline-none focus:border-[#FFD700]"
+                className="w-full px-4 py-2 bg-black/30 border border-gold-primary/30 rounded-lg text-white focus:outline-none focus:border-gold-light"
               >
                 {[2, 3, 4, 5, 6].map(num => (
                   <option key={num} value={num}>{num} måltider</option>
@@ -388,17 +388,17 @@ export default function MealDistributionTool() {
               {meals.map((calories, index) => {
                 const mealMacro = mealMacros[index]
                 return (
-                  <div key={index} className="p-4 bg-[rgba(255,255,255,0.05)] border-2 border-[rgba(255,215,0,0.2)] rounded-lg">
+                  <div key={index} className="p-4 bg-[rgba(255,255,255,0.05)] border-2 border-gold-primary/20 rounded-lg">
                     <div className="flex items-center gap-3 mb-3">
                       <span className="font-semibold text-white min-w-[80px]">Måltid {index + 1}</span>
                       {customDistribution ? (
                         <div className="flex-1">
-                          <label className="text-xs text-[rgba(255,255,255,0.6)]">Kalorier</label>
+                          <label className="text-xs text-gray-400">Kalorier</label>
                           <input
                             type="number"
                             value={mealDistribution[index] || 0}
                             onChange={(e) => handleCustomMealChange(index, e.target.value)}
-                            className="w-full px-3 py-2 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.3)] rounded-lg text-white focus:outline-none focus:border-[#FFD700]"
+                            className="w-full px-3 py-2 bg-black/30 border border-gold-primary/30 rounded-lg text-white focus:outline-none focus:border-gold-light"
                           />
                         </div>
                       ) : (
@@ -411,45 +411,45 @@ export default function MealDistributionTool() {
                     {customDistribution ? (
                       <div className="grid grid-cols-3 gap-2 mt-3">
                         <div>
-                          <label className="text-xs text-[rgba(255,255,255,0.6)]">Protein (g)</label>
+                          <label className="text-xs text-gray-400">Protein (g)</label>
                           <input
                             type="number"
                             value={mealMacro?.protein || 0}
                             onChange={(e) => handleMacroChange(index, 'protein', e.target.value)}
-                            className="w-full px-2 py-1 text-sm bg-[rgba(0,0,0,0.3)] border border-red-400 rounded text-white focus:outline-none focus:border-red-300"
+                            className="w-full px-2 py-1 text-sm bg-black/30 border border-red-400 rounded text-white focus:outline-none focus:border-red-300"
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-[rgba(255,255,255,0.6)]">Fett (g)</label>
+                          <label className="text-xs text-gray-400">Fett (g)</label>
                           <input
                             type="number"
                             value={mealMacro?.fat || 0}
                             onChange={(e) => handleMacroChange(index, 'fat', e.target.value)}
-                            className="w-full px-2 py-1 text-sm bg-[rgba(0,0,0,0.3)] border border-yellow-400 rounded text-white focus:outline-none focus:border-yellow-300"
+                            className="w-full px-2 py-1 text-sm bg-black/30 border border-yellow-400 rounded text-white focus:outline-none focus:border-yellow-300"
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-[rgba(255,255,255,0.6)]">Kolh. (g)</label>
+                          <label className="text-xs text-gray-400">Kolh. (g)</label>
                           <input
                             type="number"
                             value={mealMacro?.carbs || 0}
                             onChange={(e) => handleMacroChange(index, 'carbs', e.target.value)}
-                            className="w-full px-2 py-1 text-sm bg-[rgba(0,0,0,0.3)] border border-blue-400 rounded text-white focus:outline-none focus:border-blue-300"
+                            className="w-full px-2 py-1 text-sm bg-black/30 border border-blue-400 rounded text-white focus:outline-none focus:border-blue-300"
                           />
                         </div>
                       </div>
                     ) : (
                       <div className="grid grid-cols-3 gap-2 mt-3 text-sm">
                         <div className="bg-[rgba(239,68,68,0.1)] p-2 rounded border border-red-400">
-                          <span className="text-[rgba(255,255,255,0.6)]">Protein: </span>
+                          <span className="text-gray-400">Protein: </span>
                           <span className="font-semibold text-red-400">{mealMacro?.protein}g</span>
                         </div>
                         <div className="bg-[rgba(234,179,8,0.1)] p-2 rounded border border-yellow-400">
-                          <span className="text-[rgba(255,255,255,0.6)]">Fett: </span>
+                          <span className="text-gray-400">Fett: </span>
                           <span className="font-semibold text-yellow-400">{mealMacro?.fat}g</span>
                         </div>
                         <div className="bg-[rgba(59,130,246,0.1)] p-2 rounded border border-blue-400">
-                          <span className="text-[rgba(255,255,255,0.6)]">Kolh.: </span>
+                          <span className="text-gray-400">Kolh.: </span>
                           <span className="font-semibold text-blue-400">{mealMacro?.carbs}g</span>
                         </div>
                       </div>
@@ -479,15 +479,15 @@ export default function MealDistributionTool() {
                     {totalCustomMacros && (
                       <div className="space-y-1 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-[rgba(255,255,255,0.6)]">Protein:</span>
+                          <span className="text-gray-400">Protein:</span>
                           <span className="font-semibold text-red-400">{totalCustomMacros.protein}g</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-[rgba(255,255,255,0.6)]">Fett:</span>
+                          <span className="text-gray-400">Fett:</span>
                           <span className="font-semibold text-yellow-400">{totalCustomMacros.fat}g</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-[rgba(255,255,255,0.6)]">Kolhydrater:</span>
+                          <span className="text-gray-400">Kolhydrater:</span>
                           <span className="font-semibold text-blue-400">{totalCustomMacros.carbs}g</span>
                         </div>
                       </div>
@@ -505,15 +505,15 @@ export default function MealDistributionTool() {
             <h3 className="text-lg font-semibold text-white mb-3">Sammanfattning</h3>
             <div className="grid md:grid-cols-3 gap-4 text-sm">
               <div className="bg-[rgba(255,255,255,0.05)] p-3 rounded-lg">
-                <p className="text-[rgba(255,255,255,0.6)] mb-1">Totalt kaloriintag</p>
+                <p className="text-gray-400 mb-1">Totalt kaloriintag</p>
                 <p className="text-xl font-bold text-purple-400">{targetWithSteps.toFixed(0)} kcal</p>
               </div>
               <div className="bg-[rgba(255,255,255,0.05)] p-3 rounded-lg">
-                <p className="text-[rgba(255,255,255,0.6)] mb-1">Antal måltider</p>
+                <p className="text-gray-400 mb-1">Antal måltider</p>
                 <p className="text-xl font-bold text-green-400">{numMeals}</p>
               </div>
               <div className="bg-[rgba(255,255,255,0.05)] p-3 rounded-lg">
-                <p className="text-[rgba(255,255,255,0.6)] mb-1">Makros (P/F/K)</p>
+                <p className="text-gray-400 mb-1">Makros (P/F/K)</p>
                 <p className="text-lg font-bold text-white">{macros.protein}g / {macros.fat}g / {macros.carbs}g</p>
               </div>
             </div>

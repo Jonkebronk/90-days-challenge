@@ -223,7 +223,7 @@ export default function MealPlanTool() {
   if (!selectedClient) {
     return (
       <div className="text-center py-12">
-        <p className="text-[rgba(255,255,255,0.6)]">Välj en klient för att skapa kostschema</p>
+        <p className="text-gray-400">Välj en klient för att skapa kostschema</p>
       </div>
     )
   }
@@ -232,7 +232,7 @@ export default function MealPlanTool() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-4">Skapa Kostschema</h2>
+        <h2 className="text-2xl font-bold text-gray-100 mb-4">Skapa Kostschema</h2>
         <div className="space-y-4">
           <div>
             <Label className="text-[rgba(255,215,0,0.8)]">Namn på kostschema</Label>
@@ -240,7 +240,7 @@ export default function MealPlanTool() {
               value={mealPlanName}
               onChange={(e) => setMealPlanName(e.target.value)}
               placeholder="T.ex. Viktnedgång 2000 kcal"
-              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+              className="bg-black/30 border-gold-primary/30 text-white"
             />
           </div>
         </div>
@@ -253,9 +253,9 @@ export default function MealPlanTool() {
             const mealTotals = calculateMealTotals(meal)
 
             return (
-              <Card key={meal.mealNumber} className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] p-4">
+              <Card key={meal.mealNumber} className="bg-white/5 border-2 border-gold-primary/20 p-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-[rgba(255,255,255,0.9)]">{meal.name}</h3>
+                  <h3 className="text-lg font-bold text-gray-100">{meal.name}</h3>
                   {meals.length > 1 && (
                     <Button
                       size="sm"
@@ -273,8 +273,8 @@ export default function MealPlanTool() {
                   {meal.items.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-2 bg-[rgba(0,0,0,0.2)] p-2 rounded">
                       <div className="flex-1">
-                        <p className="text-sm text-[rgba(255,255,255,0.9)]">{item.name}</p>
-                        <p className="text-xs text-[rgba(255,255,255,0.5)]">
+                        <p className="text-sm text-gray-100">{item.name}</p>
+                        <p className="text-xs text-gray-500">
                           P: {item.protein.toFixed(1)}g | F: {item.fat.toFixed(1)}g | K: {item.carbs.toFixed(1)}g
                         </p>
                       </div>
@@ -282,10 +282,10 @@ export default function MealPlanTool() {
                         type="number"
                         value={item.amountG}
                         onChange={(e) => updateFoodAmount(meal.mealNumber, idx, parseFloat(e.target.value) || 0)}
-                        className="w-20 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white text-sm"
+                        className="w-20 bg-black/30 border-gold-primary/30 text-white text-sm"
                       />
-                      <span className="text-xs text-[rgba(255,255,255,0.6)]">g</span>
-                      <span className="text-sm font-semibold text-[rgba(255,255,255,0.9)] w-16 text-right">
+                      <span className="text-xs text-gray-400">g</span>
+                      <span className="text-sm font-semibold text-gray-100 w-16 text-right">
                         {item.calories.toFixed(0)} kcal
                       </span>
                       <Button
@@ -304,20 +304,20 @@ export default function MealPlanTool() {
                 <div className="bg-[rgba(255,215,0,0.05)] rounded p-3 text-sm">
                   <div className="grid grid-cols-4 gap-2">
                     <div>
-                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Protein</p>
-                      <p className="font-bold text-[rgba(255,255,255,0.9)]">{mealTotals.protein.toFixed(1)}g</p>
+                      <p className="text-xs text-gray-400">Protein</p>
+                      <p className="font-bold text-gray-100">{mealTotals.protein.toFixed(1)}g</p>
                     </div>
                     <div>
-                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Fett</p>
-                      <p className="font-bold text-[rgba(255,255,255,0.9)]">{mealTotals.fat.toFixed(1)}g</p>
+                      <p className="text-xs text-gray-400">Fett</p>
+                      <p className="font-bold text-gray-100">{mealTotals.fat.toFixed(1)}g</p>
                     </div>
                     <div>
-                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Kolhydrater</p>
-                      <p className="font-bold text-[rgba(255,255,255,0.9)]">{mealTotals.carbs.toFixed(1)}g</p>
+                      <p className="text-xs text-gray-400">Kolhydrater</p>
+                      <p className="font-bold text-gray-100">{mealTotals.carbs.toFixed(1)}g</p>
                     </div>
                     <div>
-                      <p className="text-xs text-[rgba(255,255,255,0.6)]">Kalorier</p>
-                      <p className="font-bold text-[rgba(255,255,255,0.9)]">{mealTotals.calories.toFixed(0)}</p>
+                      <p className="text-xs text-gray-400">Kalorier</p>
+                      <p className="font-bold text-gray-100">{mealTotals.calories.toFixed(0)}</p>
                     </div>
                   </div>
                 </div>
@@ -328,7 +328,7 @@ export default function MealPlanTool() {
           <Button
             onClick={addMeal}
             variant="outline"
-            className="w-full border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,215,0,0.1)]"
+            className="w-full border-gold-primary/30 text-gray-100 hover:bg-gold-50"
           >
             <Plus className="w-4 h-4 mr-2" />
             Lägg till måltid
@@ -338,7 +338,7 @@ export default function MealPlanTool() {
         {/* Right - Food Search & Totals */}
         <div className="space-y-4">
           {/* Day Totals */}
-          <div className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-xl p-6">
+          <div className="bg-gradient-to-br from-gold-light to-orange-500 rounded-xl p-6">
             <h3 className="text-[#0a0a0a] font-bold text-lg mb-4">Totalt per dag</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
@@ -361,16 +361,16 @@ export default function MealPlanTool() {
           </div>
 
           {/* Food Search */}
-          <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] p-4">
-            <h3 className="text-lg font-bold text-[rgba(255,255,255,0.9)] mb-4">Livsmedel</h3>
+          <Card className="bg-white/5 border-2 border-gold-primary/20 p-4">
+            <h3 className="text-lg font-bold text-gray-100 mb-4">Livsmedel</h3>
 
             <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[rgba(255,255,255,0.5)]" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Sök livsmedel..."
-                className="pl-10 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                className="pl-10 bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
 
@@ -378,10 +378,10 @@ export default function MealPlanTool() {
               {filteredFoods.map((food, idx) => (
                 <div
                   key={idx}
-                  className="text-sm text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] p-2 rounded cursor-pointer"
+                  className="text-sm text-gray-200 hover:bg-gold-50 p-2 rounded cursor-pointer"
                 >
                   <div className="font-medium mb-1">{food.name}</div>
-                  <div className="text-xs text-[rgba(255,255,255,0.5)] mb-2">
+                  <div className="text-xs text-gray-500 mb-2">
                     Per 100g: {food.calories} kcal | P: {food.protein}g | F: {food.fat}g | K: {food.carbs}g
                   </div>
                   <div className="flex gap-1 flex-wrap">
@@ -391,7 +391,7 @@ export default function MealPlanTool() {
                         size="sm"
                         variant="ghost"
                         onClick={() => addFoodItem(meal.mealNumber, food)}
-                        className="h-6 text-xs bg-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.2)] text-[rgba(255,255,255,0.9)]"
+                        className="h-6 text-xs bg-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.2)] text-gray-100"
                       >
                         + {meal.name}
                       </Button>

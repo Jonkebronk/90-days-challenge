@@ -147,10 +147,10 @@ function SetupAccountContent() {
   if (verifying) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="w-full max-w-md bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardContent className="pt-6 flex flex-col items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-[#FFD700] mb-4" />
-            <p className="text-[rgba(255,255,255,0.6)]">Verifierar inbjudan...</p>
+            <Loader2 className="w-8 h-8 animate-spin text-gold-light mb-4" />
+            <p className="text-gray-400">Verifierar inbjudan...</p>
           </CardContent>
         </Card>
       </div>
@@ -160,19 +160,19 @@ function SetupAccountContent() {
   if (error && !clientInfo) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="w-full max-w-md bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-[#ef4444]">
+            <CardTitle className="flex items-center gap-2 text-red-500">
               <AlertCircle className="w-5 h-5" />
               Ogiltig inbjudan
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Alert variant="destructive" className="bg-[rgba(239,68,68,0.1)] border-[rgba(239,68,68,0.3)] text-[#ef4444]">
+            <Alert variant="destructive" className="bg-[rgba(239,68,68,0.1)] border-[rgba(239,68,68,0.3)] text-red-500">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
             <Button
-              className="w-full mt-4 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-semibold hover:opacity-90"
+              className="w-full mt-4 bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] font-semibold hover:opacity-90"
               onClick={() => router.push('/')}
             >
               Gå till startsidan
@@ -185,18 +185,18 @@ function SetupAccountContent() {
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+      <Card className="w-full max-w-lg bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
         <CardHeader className="text-center pb-8">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
-          <CardTitle className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+          <CardTitle className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
             Hallå där - låt oss komma igång!
           </CardTitle>
-          <CardDescription className="text-base mt-3 text-[rgba(255,255,255,0.7)]">
+          <CardDescription className="text-base mt-3 text-gray-300">
             Skapa ditt konto för {clientInfo?.firstName} {clientInfo?.lastName}
           </CardDescription>
           {clientInfo?.email && (
-            <p className="text-sm text-[rgba(255,255,255,0.6)] mt-2">
-              Användarnamn: <span className="font-medium text-[#FFD700]">{clientInfo.email}</span>
+            <p className="text-sm text-gray-400 mt-2">
+              Användarnamn: <span className="font-medium text-gold-light">{clientInfo.email}</span>
             </p>
           )}
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
@@ -207,8 +207,8 @@ function SetupAccountContent() {
               <>
                 {/* Step 1: Password Only */}
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-[rgba(255,255,255,0.8)]">
-                    Skapa lösenord <span className="text-[#ef4444]">*</span>
+                  <Label htmlFor="password" className="text-gray-200">
+                    Skapa lösenord <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="password"
@@ -216,16 +216,16 @@ function SetupAccountContent() {
                     {...register('password')}
                     disabled={isLoading}
                     placeholder="Minst 8 tecken"
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                    className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                   />
                   {errors.password && (
-                    <p className="text-sm text-[#ef4444]">{errors.password.message}</p>
+                    <p className="text-sm text-red-500">{errors.password.message}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-[rgba(255,255,255,0.8)]">
-                    Bekräfta lösenord <span className="text-[#ef4444]">*</span>
+                  <Label htmlFor="confirmPassword" className="text-gray-200">
+                    Bekräfta lösenord <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="confirmPassword"
@@ -233,22 +233,22 @@ function SetupAccountContent() {
                     {...register('confirmPassword')}
                     disabled={isLoading}
                     placeholder="Skriv lösenordet igen"
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                    className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                   />
                   {errors.confirmPassword && (
-                    <p className="text-sm text-[#ef4444]">{errors.confirmPassword.message}</p>
+                    <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
                   )}
                 </div>
 
                 {error && (
-                  <Alert variant="destructive" className="bg-[rgba(239,68,68,0.1)] border-[rgba(239,68,68,0.3)] text-[#ef4444]">
+                  <Alert variant="destructive" className="bg-[rgba(239,68,68,0.1)] border-[rgba(239,68,68,0.3)] text-red-500">
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 )}
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold h-12 text-base hover:opacity-90 transition-opacity"
+                  className="w-full bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] font-bold h-12 text-base hover:opacity-90 transition-opacity"
                   disabled={isLoading}
                 >
                   Nästa
@@ -258,38 +258,38 @@ function SetupAccountContent() {
               <>
                 {/* Step 2: GDPR Consent */}
                 <div className="space-y-6 py-4">
-                  <div className="flex items-start space-x-3 bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4">
+                  <div className="flex items-start space-x-3 bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-4">
                     <Checkbox
                       id="gdprConsent"
                       checked={gdprConsent}
                       onCheckedChange={(checked) => setValue('gdprConsent', checked as boolean)}
                       className="mt-1 border-[rgba(255,215,0,0.5)] data-[state=checked]:bg-[#FFD700] data-[state=checked]:text-[#0a0a0a]"
                     />
-                    <Label htmlFor="gdprConsent" className="text-sm leading-relaxed cursor-pointer text-[rgba(255,255,255,0.8)]">
+                    <Label htmlFor="gdprConsent" className="text-sm leading-relaxed cursor-pointer text-gray-200">
                       Jag samtycker härmed till att &quot;{coachName}&quot; som personuppgiftsansvarig, behandlar mina angivna hälsouppgifter, såsom information om allergier, information som indikerar fetma eller skador, eller annan relevant information som rör min fysiska eller psykiska hälsa som jag väljer att dela med mig av under online-coachningsprogrammet.
                     </Label>
                   </div>
                   {errors.gdprConsent && (
-                    <p className="text-sm text-[#ef4444]">{errors.gdprConsent.message}</p>
+                    <p className="text-sm text-red-500">{errors.gdprConsent.message}</p>
                   )}
                 </div>
 
                 {error && (
-                  <Alert variant="destructive" className="bg-[rgba(239,68,68,0.1)] border-[rgba(239,68,68,0.3)] text-[#ef4444]">
+                  <Alert variant="destructive" className="bg-[rgba(239,68,68,0.1)] border-[rgba(239,68,68,0.3)] text-red-500">
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 )}
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold h-12 text-base hover:opacity-90 transition-opacity"
+                  className="w-full bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] font-bold h-12 text-base hover:opacity-90 transition-opacity"
                   disabled={!gdprConsent || isLoading}
                 >
                   {isLoading ? 'Skapar konto...' : 'Registrera dig'}
                 </Button>
 
                 <div className="text-center">
-                  <Link href="/datapolicy" className="text-sm underline text-[rgba(255,215,0,0.8)] hover:text-[#FFD700]">
+                  <Link href="/datapolicy" className="text-sm underline text-[rgba(255,215,0,0.8)] hover:text-gold-light">
                     Datapolicy
                   </Link>
                 </div>
@@ -306,7 +306,7 @@ export default function SetupAccountPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#FFD700]" />
+        <Loader2 className="w-8 h-8 animate-spin text-gold-light" />
       </div>
     }>
       <SetupAccountContent />

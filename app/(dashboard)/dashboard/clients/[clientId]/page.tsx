@@ -314,20 +314,20 @@ export default function ClientDetailPage({ params }: PageProps) {
 
       {/* Calorie Plan Summary */}
       {caloriePlan && (
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Calculator className="text-[#FFD700]" size={24} />
-                <CardTitle className="text-[#FFD700]">Kaloriplan</CardTitle>
+                <Calculator className="text-gold-light" size={24} />
+                <CardTitle className="text-gold-light">Kaloriplan</CardTitle>
               </div>
               <Link href="/dashboard/tools">
-                <Button variant="outline" size="sm" className="border-[#FFD700] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]">
+                <Button variant="outline" size="sm" className="border-gold-light text-gold-light hover:bg-gold-50">
                   Redigera i verktyg
                 </Button>
               </Link>
             </div>
-            <CardDescription className="text-[rgba(255,255,255,0.6)]">
+            <CardDescription className="text-gray-400">
               Sparad kaloriinformation för klienten
             </CardDescription>
           </CardHeader>
@@ -335,52 +335,52 @@ export default function ClientDetailPage({ params }: PageProps) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {caloriePlan.weight && (
                 <div className="bg-[rgba(59,130,246,0.1)] p-4 rounded-lg border border-[rgba(59,130,246,0.3)]">
-                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Vikt</p>
+                  <p className="text-sm text-gray-400">Vikt</p>
                   <p className="text-2xl font-bold text-blue-400">{caloriePlan.weight} kg</p>
                 </div>
               )}
               {caloriePlan.activityLevel && (
                 <div className="bg-[rgba(34,197,94,0.1)] p-4 rounded-lg border border-[rgba(34,197,94,0.3)]">
-                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Aktivitetsnivå</p>
+                  <p className="text-sm text-gray-400">Aktivitetsnivå</p>
                   <p className="text-2xl font-bold text-green-400">x{caloriePlan.activityLevel}</p>
                 </div>
               )}
               {caloriePlan.deficit !== null && (
                 <div className="bg-[rgba(249,115,22,0.1)] p-4 rounded-lg border border-[rgba(249,115,22,0.3)]">
-                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Underskott</p>
+                  <p className="text-sm text-gray-400">Underskott</p>
                   <p className="text-2xl font-bold text-orange-400">{caloriePlan.deficit} kcal</p>
                 </div>
               )}
               {caloriePlan.dailySteps && (
                 <div className="bg-[rgba(168,85,247,0.1)] p-4 rounded-lg border border-[rgba(168,85,247,0.3)]">
-                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Steg/dag</p>
+                  <p className="text-sm text-gray-400">Steg/dag</p>
                   <p className="text-2xl font-bold text-purple-400">{caloriePlan.dailySteps.toLocaleString()}</p>
                 </div>
               )}
               {caloriePlan.proteinPerKg && (
                 <div className="bg-[rgba(239,68,68,0.1)] p-4 rounded-lg border border-[rgba(239,68,68,0.3)]">
-                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Protein</p>
+                  <p className="text-sm text-gray-400">Protein</p>
                   <p className="text-2xl font-bold text-red-400">{caloriePlan.proteinPerKg} g/kg</p>
                 </div>
               )}
               {caloriePlan.numMeals && (
                 <div className="bg-[rgba(34,197,94,0.1)] p-4 rounded-lg border border-[rgba(34,197,94,0.3)]">
-                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Antal måltider</p>
+                  <p className="text-sm text-gray-400">Antal måltider</p>
                   <p className="text-2xl font-bold text-green-400">{caloriePlan.numMeals}</p>
                 </div>
               )}
               {caloriePlan.weight && caloriePlan.activityLevel && (
-                <div className="bg-[rgba(255,215,0,0.1)] p-4 rounded-lg border border-[rgba(255,215,0,0.3)]">
-                  <p className="text-sm text-[rgba(255,255,255,0.6)]">BMR</p>
-                  <p className="text-2xl font-bold text-[#FFD700]">
+                <div className="bg-[rgba(255,215,0,0.1)] p-4 rounded-lg border border-gold-primary/30">
+                  <p className="text-sm text-gray-400">BMR</p>
+                  <p className="text-2xl font-bold text-gold-light">
                     {Math.round(caloriePlan.weight * parseFloat(caloriePlan.activityLevel))} kcal
                   </p>
                 </div>
               )}
               {caloriePlan.weight && caloriePlan.activityLevel && caloriePlan.deficit !== null && (
-                <div className="bg-[rgba(255,215,0,0.1)] p-4 rounded-lg border border-[rgba(255,215,0,0.3)]">
-                  <p className="text-sm text-[rgba(255,255,255,0.6)]">Målintag</p>
-                  <p className="text-2xl font-bold text-[#FFD700]">
+                <div className="bg-[rgba(255,215,0,0.1)] p-4 rounded-lg border border-gold-primary/30">
+                  <p className="text-sm text-gray-400">Målintag</p>
+                  <p className="text-2xl font-bold text-gold-light">
                     {Math.round(caloriePlan.weight * parseFloat(caloriePlan.activityLevel) - caloriePlan.deficit)} kcal
                   </p>
                 </div>
@@ -391,39 +391,39 @@ export default function ClientDetailPage({ params }: PageProps) {
       )}
 
       {/* Workout Assignment Section */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+      <Card className="bg-white/5 border-2 border-gold-primary/20">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Dumbbell className="text-[#FFD700]" size={24} />
-              <CardTitle className="text-[#FFD700]">Träningsprogram</CardTitle>
+              <Dumbbell className="text-gold-light" size={24} />
+              <CardTitle className="text-gold-light">Träningsprogram</CardTitle>
             </div>
             {!assignedWorkout && !showWorkoutAssign && (
               <Button
                 onClick={() => setShowWorkoutAssign(true)}
                 variant="outline"
                 size="sm"
-                className="border-[#FFD700] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+                className="border-gold-light text-gold-light hover:bg-gold-50"
               >
                 Tilldela program
               </Button>
             )}
           </div>
-          <CardDescription className="text-[rgba(255,255,255,0.6)]">
+          <CardDescription className="text-gray-400">
             Tilldelade träningsprogram för klienten
           </CardDescription>
         </CardHeader>
         <CardContent>
           {assignedWorkout ? (
             <div className="space-y-4">
-              <div className="bg-[rgba(255,215,0,0.05)] p-4 rounded-lg border border-[rgba(255,215,0,0.3)]">
+              <div className="bg-[rgba(255,215,0,0.05)] p-4 rounded-lg border border-gold-primary/30">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">
+                    <h3 className="text-lg font-semibold text-gray-100">
                       {assignedWorkout.workoutProgram.name}
                     </h3>
                     {assignedWorkout.workoutProgram.description && (
-                      <p className="text-sm text-[rgba(255,255,255,0.6)] mt-1">
+                      <p className="text-sm text-gray-400 mt-1">
                         {assignedWorkout.workoutProgram.description}
                       </p>
                     )}
@@ -442,17 +442,17 @@ export default function ClientDetailPage({ params }: PageProps) {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  <div className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.7)]">
-                    <Calendar className="w-4 h-4 text-[#FFD700]" />
+                  <div className="flex items-center gap-2 text-sm text-gray-300">
+                    <Calendar className="w-4 h-4 text-gold-light" />
                     <span>{assignedWorkout.workoutProgram.days.length} dagar</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.7)]">
-                    <Dumbbell className="w-4 h-4 text-[#FFD700]" />
+                  <div className="flex items-center gap-2 text-sm text-gray-300">
+                    <Dumbbell className="w-4 h-4 text-gold-light" />
                     <span>
                       {assignedWorkout.workoutProgram.days.filter(d => !d.isRestDay).length} träningsdagar
                     </span>
                   </div>
-                  <div className="text-sm text-[rgba(255,255,255,0.7)]">
+                  <div className="text-sm text-gray-300">
                     Startdatum: {new Date(assignedWorkout.startDate).toLocaleDateString('sv-SE')}
                   </div>
                 </div>
@@ -461,7 +461,7 @@ export default function ClientDetailPage({ params }: PageProps) {
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className="flex-1 border-[rgba(255,215,0,0.3)] text-[rgba(255,215,0,0.9)] hover:bg-[rgba(255,215,0,0.1)]"
+                  className="flex-1 border-gold-primary/30 text-[rgba(255,215,0,0.9)] hover:bg-gold-50"
                   onClick={() => setShowWorkoutAssign(true)}
                 >
                   Ändra program
@@ -479,9 +479,9 @@ export default function ClientDetailPage({ params }: PageProps) {
           ) : showWorkoutAssign ? (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-[rgba(255,255,255,0.8)]">Välj träningsprogram</Label>
+                <Label className="text-gray-200">Välj träningsprogram</Label>
                 <Select value={selectedProgramId} onValueChange={setSelectedProgramId}>
-                  <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                  <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                     <SelectValue placeholder="Välj ett program" />
                   </SelectTrigger>
                   <SelectContent>
@@ -503,7 +503,7 @@ export default function ClientDetailPage({ params }: PageProps) {
                 <Button
                   onClick={handleAssignWorkout}
                   disabled={isAssigning || !selectedProgramId}
-                  className="flex-1 bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+                  className="flex-1 bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
                 >
                   {isAssigning ? 'Tilldelar...' : 'Tilldela program'}
                 </Button>
@@ -513,20 +513,20 @@ export default function ClientDetailPage({ params }: PageProps) {
                     setShowWorkoutAssign(false)
                     setSelectedProgramId('')
                   }}
-                  className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+                  className="border-gold-primary/30 text-gray-200 hover:bg-gold-50"
                 >
                   Avbryt
                 </Button>
               </div>
             </div>
           ) : (
-            <div className="text-center py-8 text-[rgba(255,255,255,0.5)]">
+            <div className="text-center py-8 text-gray-500">
               <Dumbbell className="w-12 h-12 mx-auto mb-3 opacity-30" />
               <p>Inget träningsprogram tilldelat ännu</p>
               <Button
                 onClick={() => setShowWorkoutAssign(true)}
                 variant="outline"
-                className="mt-4 border-[#FFD700] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+                className="mt-4 border-gold-light text-gold-light hover:bg-gold-50"
               >
                 Tilldela program
               </Button>
@@ -537,37 +537,37 @@ export default function ClientDetailPage({ params }: PageProps) {
 
       <form onSubmit={onSubmit} className="space-y-6">
         {/* Profile Information */}
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle className="text-[#FFD700]">Basic Information</CardTitle>
-            <CardDescription className="text-[rgba(255,255,255,0.6)]">Physical measurements and demographics</CardDescription>
+            <CardTitle className="text-gold-light">Basic Information</CardTitle>
+            <CardDescription className="text-gray-400">Physical measurements and demographics</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="birthdate" className="text-[rgba(255,255,255,0.8)]">Födelsedatum</Label>
+                <Label htmlFor="birthdate" className="text-gray-200">Födelsedatum</Label>
                 <Input
                   id="birthdate"
                   type="date"
                   {...register('birthdate')}
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[rgba(255,255,255,0.8)]">Kön</Label>
+                <Label className="text-gray-200">Kön</Label>
                 <Controller
                   name="gender"
                   control={control}
                   render={({ field }) => (
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                         <SelectValue placeholder="Välj kön" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
-                        <SelectItem value="male" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Man</SelectItem>
-                        <SelectItem value="female" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Kvinna</SelectItem>
-                        <SelectItem value="other" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Annat</SelectItem>
+                      <SelectContent className="bg-gray-900/95 border-gold-primary/30">
+                        <SelectItem value="male" className="text-white hover:bg-gold-50">Man</SelectItem>
+                        <SelectItem value="female" className="text-white hover:bg-gold-50">Kvinna</SelectItem>
+                        <SelectItem value="other" className="text-white hover:bg-gold-50">Annat</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -575,24 +575,24 @@ export default function ClientDetailPage({ params }: PageProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="heightCm" className="text-[rgba(255,255,255,0.8)]">Längd (cm)</Label>
+                <Label htmlFor="heightCm" className="text-gray-200">Längd (cm)</Label>
                 <Input
                   id="heightCm"
                   type="number"
                   placeholder="175"
                   {...register('heightCm')}
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="currentWeightKg" className="text-[rgba(255,255,255,0.8)]">Vikt (kg)</Label>
+                <Label htmlFor="currentWeightKg" className="text-gray-200">Vikt (kg)</Label>
                 <Input
                   id="currentWeightKg"
                   type="number"
                   placeholder="75"
                   {...register('currentWeightKg')}
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
             </div>
@@ -600,32 +600,32 @@ export default function ClientDetailPage({ params }: PageProps) {
         </Card>
 
         {/* Goals */}
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle className="text-[#FFD700]">Mål</CardTitle>
-            <CardDescription className="text-[rgba(255,255,255,0.6)]">Vad vill klienten uppnå?</CardDescription>
+            <CardTitle className="text-gold-light">Mål</CardTitle>
+            <CardDescription className="text-gray-400">Vad vill klienten uppnå?</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
-              <Label className="text-[rgba(255,255,255,0.8)]">Primärt Mål</Label>
+              <Label className="text-gray-200">Primärt Mål</Label>
               <Controller
                 name="primaryGoal"
                 control={control}
                 render={({ field }) => (
                   <RadioGroup onValueChange={field.onChange} value={field.value}>
-                    <div className="flex items-center space-x-2 p-3 border-2 border-[rgba(255,215,0,0.2)] rounded-lg bg-[rgba(0,0,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors">
+                    <div className="flex items-center space-x-2 p-3 border-2 border-gold-primary/20 rounded-lg bg-[rgba(0,0,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors">
                       <RadioGroupItem value="build_muscle" id="build_muscle" />
                       <Label htmlFor="build_muscle" className="cursor-pointer flex-1 text-white">
                         Bygga muskler
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-2 p-3 border-2 border-[rgba(255,215,0,0.2)] rounded-lg bg-[rgba(0,0,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors">
+                    <div className="flex items-center space-x-2 p-3 border-2 border-gold-primary/20 rounded-lg bg-[rgba(0,0,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors">
                       <RadioGroupItem value="get_fit" id="get_fit" />
                       <Label htmlFor="get_fit" className="cursor-pointer flex-1 text-white">
                         Bli mer fit
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-2 p-3 border-2 border-[rgba(255,215,0,0.2)] rounded-lg bg-[rgba(0,0,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors">
+                    <div className="flex items-center space-x-2 p-3 border-2 border-gold-primary/20 rounded-lg bg-[rgba(0,0,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors">
                       <RadioGroupItem value="healthy_habits" id="healthy_habits" />
                       <Label htmlFor="healthy_habits" className="cursor-pointer flex-1 text-white">
                         Utveckla hälsosamma vanor
@@ -639,29 +639,29 @@ export default function ClientDetailPage({ params }: PageProps) {
         </Card>
 
         {/* Activity & Training */}
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle className="text-[#FFD700]">Aktivitet & Träning</CardTitle>
-            <CardDescription className="text-[rgba(255,255,255,0.6)]">Daglig aktivitet och träningserfarenhet</CardDescription>
+            <CardTitle className="text-gold-light">Aktivitet & Träning</CardTitle>
+            <CardDescription className="text-gray-400">Daglig aktivitet och träningserfarenhet</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[rgba(255,255,255,0.8)]">Aktivitetsnivå (Fritid)</Label>
+                <Label className="text-gray-200">Aktivitetsnivå (Fritid)</Label>
                 <Controller
                   name="activityLevelFree"
                   control={control}
                   render={({ field }) => (
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                         <SelectValue placeholder="Välj nivå" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
-                        <SelectItem value="very_low" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Mycket låg</SelectItem>
-                        <SelectItem value="low" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Låg</SelectItem>
-                        <SelectItem value="medium" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Medium</SelectItem>
-                        <SelectItem value="active" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Aktiv</SelectItem>
-                        <SelectItem value="very_active" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Mycket aktiv</SelectItem>
+                      <SelectContent className="bg-gray-900/95 border-gold-primary/30">
+                        <SelectItem value="very_low" className="text-white hover:bg-gold-50">Mycket låg</SelectItem>
+                        <SelectItem value="low" className="text-white hover:bg-gold-50">Låg</SelectItem>
+                        <SelectItem value="medium" className="text-white hover:bg-gold-50">Medium</SelectItem>
+                        <SelectItem value="active" className="text-white hover:bg-gold-50">Aktiv</SelectItem>
+                        <SelectItem value="very_active" className="text-white hover:bg-gold-50">Mycket aktiv</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -669,20 +669,20 @@ export default function ClientDetailPage({ params }: PageProps) {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[rgba(255,255,255,0.8)]">Aktivitetsnivå (Jobb)</Label>
+                <Label className="text-gray-200">Aktivitetsnivå (Jobb)</Label>
                 <Controller
                   name="activityLevelWork"
                   control={control}
                   render={({ field }) => (
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                         <SelectValue placeholder="Välj nivå" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
-                        <SelectItem value="very_low" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Sittande</SelectItem>
-                        <SelectItem value="low" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Lätt aktivitet</SelectItem>
-                        <SelectItem value="medium" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Måttlig aktivitet</SelectItem>
-                        <SelectItem value="high" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Hög aktivitet</SelectItem>
+                      <SelectContent className="bg-gray-900/95 border-gold-primary/30">
+                        <SelectItem value="very_low" className="text-white hover:bg-gold-50">Sittande</SelectItem>
+                        <SelectItem value="low" className="text-white hover:bg-gold-50">Lätt aktivitet</SelectItem>
+                        <SelectItem value="medium" className="text-white hover:bg-gold-50">Måttlig aktivitet</SelectItem>
+                        <SelectItem value="high" className="text-white hover:bg-gold-50">Hög aktivitet</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -690,19 +690,19 @@ export default function ClientDetailPage({ params }: PageProps) {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[rgba(255,255,255,0.8)]">Träningserfarenhet</Label>
+                <Label className="text-gray-200">Träningserfarenhet</Label>
                 <Controller
                   name="trainingExperience"
                   control={control}
                   render={({ field }) => (
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                      <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                         <SelectValue placeholder="Välj erfarenhet" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
-                        <SelectItem value="beginner" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Nybörjare</SelectItem>
-                        <SelectItem value="experienced" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Erfaren</SelectItem>
-                        <SelectItem value="very_experienced" className="text-white hover:bg-[rgba(255,215,0,0.1)]">Mycket erfaren</SelectItem>
+                      <SelectContent className="bg-gray-900/95 border-gold-primary/30">
+                        <SelectItem value="beginner" className="text-white hover:bg-gold-50">Nybörjare</SelectItem>
+                        <SelectItem value="experienced" className="text-white hover:bg-gold-50">Erfaren</SelectItem>
+                        <SelectItem value="very_experienced" className="text-white hover:bg-gold-50">Mycket erfaren</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -711,7 +711,7 @@ export default function ClientDetailPage({ params }: PageProps) {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[rgba(255,255,255,0.8)]">Träningsdagar</Label>
+              <Label className="text-gray-200">Träningsdagar</Label>
               <div className="flex flex-wrap gap-2">
                 {weekDays.map(day => (
                   <Button
@@ -727,7 +727,7 @@ export default function ClientDetailPage({ params }: PageProps) {
                         setValue('trainingDays', [...currentDays, day])
                       }
                     }}
-                    className={control._formValues.trainingDays?.includes(day) ? 'bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold border-0' : 'bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white hover:border-[rgba(255,215,0,0.5)]'}
+                    className={control._formValues.trainingDays?.includes(day) ? 'bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold border-0' : 'bg-black/30 border-gold-primary/30 text-white hover:border-[rgba(255,215,0,0.5)]'}
                   >
                     {day}
                   </Button>
@@ -736,27 +736,27 @@ export default function ClientDetailPage({ params }: PageProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="trainingDetails" className="text-[rgba(255,255,255,0.8)]">Träningsdetaljer</Label>
+              <Label htmlFor="trainingDetails" className="text-gray-200">Träningsdetaljer</Label>
               <Textarea
                 id="trainingDetails"
                 placeholder="Beskriv klientens träningserfarenhet..."
                 {...register('trainingDetails')}
                 rows={3}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Nutrition */}
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle className="text-[#FFD700]">Näring</CardTitle>
-            <CardDescription className="text-[rgba(255,255,255,0.6)]">Kostpreferenser och allergier</CardDescription>
+            <CardTitle className="text-gold-light">Näring</CardTitle>
+            <CardDescription className="text-gray-400">Kostpreferenser och allergier</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-[rgba(255,255,255,0.8)]">Allergier</Label>
+              <Label className="text-gray-200">Allergier</Label>
               <div className="flex flex-wrap gap-2">
                 {commonAllergies.map(allergy => (
                   <Button
@@ -772,7 +772,7 @@ export default function ClientDetailPage({ params }: PageProps) {
                         setValue('allergies', [...currentAllergies, allergy])
                       }
                     }}
-                    className={control._formValues.allergies?.includes(allergy) ? 'bg-[rgba(239,68,68,0.2)] border-red-400 text-red-300 font-medium' : 'bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white hover:border-[rgba(255,215,0,0.5)]'}
+                    className={control._formValues.allergies?.includes(allergy) ? 'bg-[rgba(239,68,68,0.2)] border-red-400 text-red-300 font-medium' : 'bg-black/30 border-gold-primary/30 text-white hover:border-[rgba(255,215,0,0.5)]'}
                   >
                     {allergy}
                   </Button>
@@ -781,7 +781,7 @@ export default function ClientDetailPage({ params }: PageProps) {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[rgba(255,255,255,0.8)]">Kostpreferenser</Label>
+              <Label className="text-gray-200">Kostpreferenser</Label>
               <div className="flex flex-wrap gap-2">
                 {dietaryOptions.map(option => (
                   <Button
@@ -797,7 +797,7 @@ export default function ClientDetailPage({ params }: PageProps) {
                         setValue('dietaryPreferences', [...currentPrefs, option])
                       }
                     }}
-                    className={control._formValues.dietaryPreferences?.includes(option) ? 'bg-[rgba(34,197,94,0.2)] border-green-400 text-green-300 font-medium' : 'bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white hover:border-[rgba(255,215,0,0.5)]'}
+                    className={control._formValues.dietaryPreferences?.includes(option) ? 'bg-[rgba(34,197,94,0.2)] border-green-400 text-green-300 font-medium' : 'bg-black/30 border-gold-primary/30 text-white hover:border-[rgba(255,215,0,0.5)]'}
                   >
                     {option}
                   </Button>
@@ -806,44 +806,44 @@ export default function ClientDetailPage({ params }: PageProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="nutritionNotes" className="text-[rgba(255,255,255,0.8)]">Kostanteckningar</Label>
+              <Label htmlFor="nutritionNotes" className="text-gray-200">Kostanteckningar</Label>
               <Textarea
                 id="nutritionNotes"
                 placeholder="Matpreferenser, matvanor, etc..."
                 {...register('nutritionNotes')}
                 rows={3}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="nutritionMissing" className="text-[rgba(255,255,255,0.8)]">Övrig information</Label>
+              <Label htmlFor="nutritionMissing" className="text-gray-200">Övrig information</Label>
               <Textarea
                 id="nutritionMissing"
                 placeholder="Annan viktig näringsinformation..."
                 {...register('nutritionMissing')}
                 rows={2}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Lifestyle */}
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle className="text-[#FFD700]">Livsstil</CardTitle>
-            <CardDescription className="text-[rgba(255,255,255,0.6)]">Övriga kommentarer och anteckningar</CardDescription>
+            <CardTitle className="text-gold-light">Livsstil</CardTitle>
+            <CardDescription className="text-gray-400">Övriga kommentarer och anteckningar</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="lifestyleNotes" className="text-[rgba(255,255,255,0.8)]">Livsstilsanteckningar</Label>
+              <Label htmlFor="lifestyleNotes" className="text-gray-200">Livsstilsanteckningar</Label>
               <Textarea
                 id="lifestyleNotes"
                 placeholder="Sömn, stress, arbetsschema, etc..."
                 {...register('lifestyleNotes')}
                 rows={4}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
           </CardContent>
@@ -853,13 +853,13 @@ export default function ClientDetailPage({ params }: PageProps) {
           <Button
             type="submit"
             disabled={isSaving}
-            className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+            className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
           >
             <Save className="w-4 h-4 mr-2" />
             {isSaving ? 'Sparar...' : 'Spara Profil'}
           </Button>
           <Link href="/dashboard/clients">
-            <Button type="button" variant="outline" className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]">
+            <Button type="button" variant="outline" className="border-gold-primary/30 text-gray-200 hover:bg-gold-50">
               Avbryt
             </Button>
           </Link>

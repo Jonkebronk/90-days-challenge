@@ -166,9 +166,9 @@ export default function RecipeDetailPage() {
   if (!session?.user) {
     return (
       <div className="container mx-auto p-6 min-h-screen bg-gray-900">
-        <Card className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)]">
+        <Card className="bg-gray-900/95 border-2 border-gold-primary/30">
           <CardContent className="p-6">
-            <p className="text-[rgba(255,255,255,0.6)]">Du måste vara inloggad för att se denna sida.</p>
+            <p className="text-gray-400">Du måste vara inloggad för att se denna sida.</p>
           </CardContent>
         </Card>
       </div>
@@ -178,7 +178,7 @@ export default function RecipeDetailPage() {
   if (isLoading) {
     return (
       <div className="container mx-auto p-6 min-h-screen bg-gray-900">
-        <p className="text-[rgba(255,255,255,0.6)]">Laddar...</p>
+        <p className="text-gray-400">Laddar...</p>
       </div>
     )
   }
@@ -186,9 +186,9 @@ export default function RecipeDetailPage() {
   if (!recipe) {
     return (
       <div className="container mx-auto p-6 min-h-screen bg-gray-900">
-        <Card className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)]">
+        <Card className="bg-gray-900/95 border-2 border-gold-primary/30">
           <CardContent className="p-6">
-            <p className="text-[rgba(255,255,255,0.6)]">Recept hittades inte.</p>
+            <p className="text-gray-400">Recept hittades inte.</p>
           </CardContent>
         </Card>
       </div>
@@ -200,14 +200,14 @@ export default function RecipeDetailPage() {
   return (
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-[rgba(10,10,10,0.95)] border-b border-[rgba(255,215,0,0.3)] sticky top-0 z-10 no-print backdrop-blur-[10px]">
+      <div className="bg-gray-900/95 border-b border-gold-primary/30 sticky top-0 z-10 no-print backdrop-blur-[10px]">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => router.push('/dashboard/recipes')}
-              className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+              className="text-white hover:bg-gold-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Tillbaka
@@ -217,7 +217,7 @@ export default function RecipeDetailPage() {
                 variant="ghost"
                 size="sm"
                 onClick={handlePrint}
-                className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                className="text-white hover:bg-gold-50"
               >
                 <Printer className="h-4 w-4 mr-2" />
                 Skriv ut
@@ -226,7 +226,7 @@ export default function RecipeDetailPage() {
                 variant="ghost"
                 size="sm"
                 onClick={handlePrint}
-                className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                className="text-white hover:bg-gold-50"
               >
                 <Download className="h-4 w-4 mr-2" />
                 PDF
@@ -235,7 +235,7 @@ export default function RecipeDetailPage() {
                 variant="ghost"
                 size="sm"
                 onClick={handleToggleFavorite}
-                className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                className="text-white hover:bg-gold-50"
               >
                 <Heart className={`h-4 w-4 mr-2 ${isFavorited() ? 'fill-red-500 text-red-500' : ''}`} />
                 Favorit
@@ -258,12 +258,12 @@ export default function RecipeDetailPage() {
         )}
 
         {/* Recipe Title */}
-        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">{recipe.title}</h1>
-        <p className="text-base text-[rgba(255,255,255,0.6)] mb-8">{servings} {servings === 1 ? 'portion' : 'portioner'}</p>
+        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">{recipe.title}</h1>
+        <p className="text-base text-gray-400 mb-8">{servings} {servings === 1 ? 'portion' : 'portioner'}</p>
 
         {/* Ingredients Section */}
         <div className="mb-10">
-          <h2 className="text-xl font-bold mb-4 bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">Ingredienser</h2>
+          <h2 className="text-xl font-bold mb-4 bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">Ingredienser</h2>
           <ul className="space-y-2">
             {recipe.ingredients.map((ingredient) => (
               <li key={ingredient.id} className="text-base text-white">
@@ -281,9 +281,9 @@ export default function RecipeDetailPage() {
         {/* Instructions Section */}
         {recipe.instructions.length > 0 && (
           <div className="mb-10">
-            <h2 className="text-xl font-bold mb-4 bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">Tillagningsinstruktioner</h2>
+            <h2 className="text-xl font-bold mb-4 bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">Tillagningsinstruktioner</h2>
             {recipe.description && (
-              <p className="text-sm text-[rgba(255,255,255,0.6)] mb-4 italic">({recipe.description})</p>
+              <p className="text-sm text-gray-400 mb-4 italic">({recipe.description})</p>
             )}
             <ol className="space-y-3 list-decimal list-inside">
               {recipe.instructions.map((instruction) => (
@@ -313,11 +313,11 @@ export default function RecipeDetailPage() {
           const totalCarbs = (recipe.carbsPerServing || 0) * recipe.servings
 
           return (
-            <div className="border-t border-[rgba(255,215,0,0.3)] pt-8">
+            <div className="border-t border-gold-primary/30 pt-8">
               <div className="grid grid-cols-2 gap-8">
                 {/* Per 100g */}
                 <div>
-                  <h3 className="font-bold text-sm uppercase mb-4 text-[#FFD700]">NÄRING PER 100 G</h3>
+                  <h3 className="font-bold text-sm uppercase mb-4 text-gold-light">NÄRING PER 100 G</h3>
                   <div className="space-y-1 text-sm">
                     <div>
                       <span className="text-white">{Math.round((totalCalories * 100) / totalWeight)} kcal</span>
@@ -342,7 +342,7 @@ export default function RecipeDetailPage() {
 
                 {/* Per Portion */}
                 <div>
-                  <h3 className="font-bold text-sm uppercase mb-4 text-[#FFD700]">NÄRING PER PORTION</h3>
+                  <h3 className="font-bold text-sm uppercase mb-4 text-gold-light">NÄRING PER PORTION</h3>
                   <div className="space-y-1 text-sm">
                     <div>
                       <span className="text-white">{Math.round(scaleNutrition(recipe.caloriesPerServing))} kcal</span>
@@ -370,15 +370,15 @@ export default function RecipeDetailPage() {
         })()}
 
         {/* Portion Adjuster - Floating */}
-        <div className="no-print fixed bottom-8 right-8 bg-[rgba(10,10,10,0.95)] shadow-lg rounded-lg border-2 border-[rgba(255,215,0,0.3)] p-4 backdrop-blur-[10px]">
-          <p className="text-sm font-medium mb-2 text-[#FFD700]">Antal portioner</p>
+        <div className="no-print fixed bottom-8 right-8 bg-gray-900/95 shadow-lg rounded-lg border-2 border-gold-primary/30 p-4 backdrop-blur-[10px]">
+          <p className="text-sm font-medium mb-2 text-gold-light">Antal portioner</p>
           <div className="flex items-center gap-3">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setServings(Math.max(1, servings - 1))}
               disabled={servings <= 1}
-              className="border-[rgba(255,215,0,0.3)] text-white hover:bg-[rgba(255,215,0,0.1)]"
+              className="border-gold-primary/30 text-white hover:bg-gold-50"
             >
               <Minus className="h-4 w-4" />
             </Button>
@@ -387,7 +387,7 @@ export default function RecipeDetailPage() {
               variant="outline"
               size="sm"
               onClick={() => setServings(servings + 1)}
-              className="border-[rgba(255,215,0,0.3)] text-white hover:bg-[rgba(255,215,0,0.1)]"
+              className="border-gold-primary/30 text-white hover:bg-gold-50"
             >
               <Plus className="h-4 w-4" />
             </Button>

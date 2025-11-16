@@ -210,7 +210,7 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-gold-primary/30 border-t-[#FFD700] rounded-full animate-spin" />
       </div>
     )
   }
@@ -223,16 +223,16 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
           <Button
             variant="ghost"
             size="icon"
-            className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+            className="text-gray-300 hover:text-gold-light hover:bg-gold-50"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
+          <h1 className="text-3xl font-bold text-gray-100">
             Redigera träningsprogram
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-400 mt-1">
             {currentStep === 1 ? 'Steg 1: Programinformation' : 'Steg 2: Bygg träningsdagar'}
           </p>
         </div>
@@ -241,14 +241,14 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
             <Button
               variant="outline"
               onClick={() => router.back()}
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,215,0,0.1)] hover:border-[rgba(255,215,0,0.5)]"
+              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-gray-100 hover:bg-gold-50 hover:border-[rgba(255,215,0,0.5)]"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleSave}
               disabled={saving}
-              className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+              className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
             >
               {saving ? 'Sparar...' : 'Spara ändringar'}
             </Button>

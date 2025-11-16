@@ -197,8 +197,8 @@ export default function FoodItemsPage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-[rgba(255,255,255,0.7)]">Du har inte behörighet att se denna sida.</p>
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
+          <p className="text-gray-300">Du har inte behörighet att se denna sida.</p>
         </div>
       </div>
     )
@@ -209,10 +209,10 @@ export default function FoodItemsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+          <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
             Livsmedel
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-400 mt-1">
             Skapa och hantera livsmedel
           </p>
         </div>
@@ -220,14 +220,14 @@ export default function FoodItemsPage() {
           <Button
             onClick={() => setIsImportDialogOpen(true)}
             variant="outline"
-            className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+            className="border-gold-primary/30 text-gray-200 hover:bg-gold-50"
           >
             <Upload className="h-4 w-4 mr-2" />
             Importera CSV
           </Button>
           <Button
             onClick={() => router.push('/dashboard/content/food-items/create')}
-            className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+            className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
           >
             <Plus className="h-4 w-4 mr-2" />
             Nytt livsmedel
@@ -236,15 +236,15 @@ export default function FoodItemsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
+      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
         <div className="flex items-center gap-2 mb-4">
-          <Filter className="h-5 w-5 text-[#FFD700]" />
-          <h2 className="text-lg font-bold text-[#FFD700]">Filter</h2>
+          <Filter className="h-5 w-5 text-gold-light" />
+          <h2 className="text-lg font-bold text-gold-light">Filter</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Search */}
           <div>
-            <Label htmlFor="search" className="text-[rgba(255,255,255,0.8)] text-sm mb-2">Sök</Label>
+            <Label htmlFor="search" className="text-gray-200 text-sm mb-2">Sök</Label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(255,255,255,0.4)]" />
               <Input
@@ -252,19 +252,19 @@ export default function FoodItemsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Sök livsmedel..."
-                className="pl-10 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="pl-10 bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
           </div>
 
           {/* Category */}
           <div>
-            <Label htmlFor="category" className="text-[rgba(255,255,255,0.8)] text-sm mb-2">Kategori</Label>
+            <Label htmlFor="category" className="text-gray-200 text-sm mb-2">Kategori</Label>
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+              <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+              <SelectContent className="bg-gray-900/95 border-gold-primary/30">
                 <SelectItem value="all" className="text-white">Alla kategorier</SelectItem>
                 {categories.map((cat) => {
                   const Icon = getIconComponent(cat.icon)
@@ -283,12 +283,12 @@ export default function FoodItemsPage() {
 
           {/* Recommended */}
           <div>
-            <Label htmlFor="recommended" className="text-[rgba(255,255,255,0.8)] text-sm mb-2">Rekommenderad</Label>
+            <Label htmlFor="recommended" className="text-gray-200 text-sm mb-2">Rekommenderad</Label>
             <Select value={recommendedFilter} onValueChange={setRecommendedFilter}>
-              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+              <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+              <SelectContent className="bg-gray-900/95 border-gold-primary/30">
                 <SelectItem value="all" className="text-white">Alla</SelectItem>
                 <SelectItem value="true" className="text-white">Rekommenderade</SelectItem>
                 <SelectItem value="false" className="text-white">Ej rekommenderade</SelectItem>
@@ -298,12 +298,12 @@ export default function FoodItemsPage() {
 
           {/* Approved */}
           <div>
-            <Label htmlFor="approved" className="text-[rgba(255,255,255,0.8)] text-sm mb-2">Godkännande</Label>
+            <Label htmlFor="approved" className="text-gray-200 text-sm mb-2">Godkännande</Label>
             <Select value={approvedFilter} onValueChange={setApprovedFilter}>
-              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+              <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+              <SelectContent className="bg-gray-900/95 border-gold-primary/30">
                 <SelectItem value="all" className="text-white">Alla</SelectItem>
                 <SelectItem value="true" className="text-white">Godkända</SelectItem>
                 <SelectItem value="false" className="text-white">Ej godkända</SelectItem>
@@ -313,14 +313,14 @@ export default function FoodItemsPage() {
         </div>
 
         <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm text-[rgba(255,255,255,0.6)]">
+          <p className="text-sm text-gray-400">
             Visar {foodItems.length} av {total} livsmedel
           </p>
           <Button
             onClick={resetFilters}
             variant="ghost"
             size="sm"
-            className="text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
+            className="text-gray-400 hover:text-gold-light"
           >
             Återställ filter
           </Button>
@@ -328,15 +328,15 @@ export default function FoodItemsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] overflow-hidden">
+      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden">
         {isLoading ? (
           <div className="text-center py-12">
-            <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin mx-auto" />
+            <div className="w-12 h-12 border-4 border-gold-primary/30 border-t-[#FFD700] rounded-full animate-spin mx-auto" />
           </div>
         ) : foodItems.length === 0 ? (
           <div className="text-center py-12">
             <Apple className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-            <p className="text-[rgba(255,255,255,0.6)] text-lg">
+            <p className="text-gray-400 text-lg">
               {search || categoryFilter !== 'all' || recommendedFilter !== 'all' || approvedFilter !== 'all'
                 ? 'Inga livsmedel matchar filtren.'
                 : 'Inga livsmedel ännu.'}
@@ -351,7 +351,7 @@ export default function FoodItemsPage() {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="border-b border-[rgba(255,215,0,0.2)] hover:bg-[rgba(255,215,0,0.05)]">
+                <TableRow className="border-b border-gold-primary/20 hover:bg-[rgba(255,215,0,0.05)]">
                   <TableHead className="text-[rgba(255,215,0,0.8)]">Namn</TableHead>
                   <TableHead className="text-[rgba(255,215,0,0.8)]">Kategori</TableHead>
                   <TableHead className="text-right text-[rgba(255,215,0,0.8)]">Kcal</TableHead>
@@ -369,12 +369,12 @@ export default function FoodItemsPage() {
                   const Icon = category ? getIconComponent(category.icon) : Apple
 
                   return (
-                    <TableRow key={item.id} className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.05)] transition-colors">
+                    <TableRow key={item.id} className="border-b border-gold-primary/10 hover:bg-[rgba(255,215,0,0.05)] transition-colors">
                       <TableCell>
                         <div>
                           <div className="font-medium text-white">{item.name}</div>
                           {item.notes && (
-                            <div className="text-xs text-[rgba(255,255,255,0.5)] mt-1 line-clamp-1">
+                            <div className="text-xs text-gray-500 mt-1 line-clamp-1">
                               {item.notes}
                             </div>
                           )}
@@ -389,7 +389,7 @@ export default function FoodItemsPage() {
                             >
                               <Icon className="h-4 w-4" style={{ color: category.color }} />
                             </div>
-                            <span className="text-sm text-[rgba(255,255,255,0.7)]">{category.name}</span>
+                            <span className="text-sm text-gray-300">{category.name}</span>
                           </div>
                         ) : (
                           <span className="text-sm text-[rgba(255,255,255,0.4)]">-</span>
@@ -399,7 +399,7 @@ export default function FoodItemsPage() {
                       <TableCell className="text-right text-white">{Number(item.proteinG).toFixed(1)}g</TableCell>
                       <TableCell className="text-right text-white">{Number(item.carbsG).toFixed(1)}g</TableCell>
                       <TableCell className="text-right text-white">{Number(item.fatG).toFixed(1)}g</TableCell>
-                      <TableCell className="text-sm text-[rgba(255,255,255,0.6)]">
+                      <TableCell className="text-sm text-gray-400">
                         {item.commonServingSize || '100g'}
                       </TableCell>
                       <TableCell>
@@ -414,7 +414,7 @@ export default function FoodItemsPage() {
                             {item.isApproved ? 'Godkänd' : 'Väntar'}
                           </Badge>
                           {item.isRecommended && (
-                            <Badge className="bg-[#FFD700]/20 text-[#FFD700] border-[#FFD700]/30">
+                            <Badge className="bg-[#FFD700]/20 text-gold-light border-gold-light/30">
                               <ThumbsUp className="h-3 w-3" />
                             </Badge>
                           )}
@@ -428,8 +428,8 @@ export default function FoodItemsPage() {
                             onClick={() => handleToggleRecommended(item)}
                             className={
                               item.isRecommended
-                                ? 'text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]'
-                                : 'text-[rgba(255,255,255,0.4)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]'
+                                ? 'text-gold-light hover:bg-gold-50'
+                                : 'text-[rgba(255,255,255,0.4)] hover:bg-gold-50 hover:text-gold-light'
                             }
                             title="Toggle rekommenderad"
                           >
@@ -452,7 +452,7 @@ export default function FoodItemsPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit`)}
-                            className="text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+                            className="text-gray-400 hover:bg-gold-50 hover:text-gold-light"
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -460,7 +460,7 @@ export default function FoodItemsPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDeleteItem(item)}
-                            className="text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,0,0,0.1)] hover:text-red-400"
+                            className="text-gray-400 hover:bg-[rgba(255,0,0,0.1)] hover:text-red-400"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

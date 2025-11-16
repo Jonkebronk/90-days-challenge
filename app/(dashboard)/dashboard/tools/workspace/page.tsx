@@ -26,7 +26,7 @@ export default function WorkspacePage() {
 
           {/* Center - Active Tool */}
           <div className="flex-1 overflow-y-auto">
-            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px]">
+            <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-8 backdrop-blur-[10px]">
               {activeTool === 'calories' && <CalorieTool />}
               {activeTool === 'meals' && <MealDistributionTool />}
               {activeTool === 'steps' && <StepsTool />}

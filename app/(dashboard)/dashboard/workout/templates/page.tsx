@@ -110,7 +110,7 @@ export default function WorkoutTemplatesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-gold-primary/30 border-t-[#FFD700] rounded-full animate-spin" />
       </div>
     )
   }
@@ -123,21 +123,21 @@ export default function WorkoutTemplatesPage() {
           <Button
             variant="ghost"
             size="icon"
-            className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+            className="text-gray-300 hover:text-gold-light hover:bg-gold-50"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
+          <h1 className="text-3xl font-bold text-gray-100">
             Träningsmallar
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-400 mt-1">
             Dina sparade träningspass och publika mallar
           </p>
         </div>
         <Link href="/dashboard/workout/builder">
-          <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90">
+          <Button className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90">
             <Plus className="w-4 h-4 mr-2" />
             Skapa ny mall
           </Button>
@@ -146,17 +146,17 @@ export default function WorkoutTemplatesPage() {
 
       {/* Templates Grid */}
       {templates.length === 0 ? (
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardContent className="py-12 text-center">
             <Dumbbell className="w-16 h-16 text-[rgba(255,215,0,0.3)] mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-[rgba(255,255,255,0.9)] mb-2">
+            <h3 className="text-xl font-semibold text-gray-100 mb-2">
               Inga träningsmallar ännu
             </h3>
-            <p className="text-[rgba(255,255,255,0.6)] max-w-md mx-auto mb-4">
+            <p className="text-gray-400 max-w-md mx-auto mb-4">
               Skapa din första anpassade träningspass för snabb tillgång när som helst
             </p>
             <Link href="/dashboard/workout/builder">
-              <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90">
+              <Button className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90">
                 <Plus className="w-4 h-4 mr-2" />
                 Skapa första mallen
               </Button>
@@ -168,16 +168,16 @@ export default function WorkoutTemplatesPage() {
           {templates.map((template) => (
             <Card
               key={template.id}
-              className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] transition-all"
+              className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] transition-all"
             >
               <CardHeader>
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
-                    <CardTitle className="text-lg text-[rgba(255,255,255,0.9)]">
+                    <CardTitle className="text-lg text-gray-100">
                       {template.name}
                     </CardTitle>
                     {template.description && (
-                      <p className="text-sm text-[rgba(255,255,255,0.6)] mt-1 line-clamp-2">
+                      <p className="text-sm text-gray-400 mt-1 line-clamp-2">
                         {template.description}
                       </p>
                     )}
@@ -201,12 +201,12 @@ export default function WorkoutTemplatesPage() {
 
               <CardContent className="space-y-3">
                 <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="flex items-center gap-2 text-[rgba(255,255,255,0.7)]">
+                  <div className="flex items-center gap-2 text-gray-300">
                     <Dumbbell className="w-4 h-4 text-[rgba(255,215,0,0.7)]" />
                     <span>{template.exercises.length} övningar</span>
                   </div>
                   {template.estimatedDuration && (
-                    <div className="flex items-center gap-2 text-[rgba(255,255,255,0.7)]">
+                    <div className="flex items-center gap-2 text-gray-300">
                       <Clock className="w-4 h-4 text-[rgba(255,215,0,0.7)]" />
                       <span>{template.estimatedDuration} min</span>
                     </div>
@@ -218,7 +218,7 @@ export default function WorkoutTemplatesPage() {
                     {template.exercises.slice(0, 4).map((ex, idx) => (
                       <div
                         key={idx}
-                        className="text-xs text-[rgba(255,255,255,0.6)] truncate"
+                        className="text-xs text-gray-400 truncate"
                       >
                         • {ex.exercise.name} - {ex.sets} x {ex.repsMin}{ex.repsMax && ex.repsMax !== ex.repsMin ? `-${ex.repsMax}` : ''}
                       </div>
@@ -231,10 +231,10 @@ export default function WorkoutTemplatesPage() {
                   </div>
                 )}
 
-                <div className="pt-3 border-t border-[rgba(255,215,0,0.1)] flex gap-2">
+                <div className="pt-3 border-t border-gold-primary/10 flex gap-2">
                   <Button
                     onClick={() => handleStartWorkout(template.id)}
-                    className="flex-1 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+                    className="flex-1 bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
                   >
                     <Play className="w-4 h-4 mr-2" />
                     Starta

@@ -130,7 +130,7 @@ export default function WorkoutHistoryPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-[rgba(255,255,255,0.6)]">Laddar träningshistorik...</div>
+        <div className="text-gray-400">Laddar träningshistorik...</div>
       </div>
     )
   }
@@ -140,60 +140,60 @@ export default function WorkoutHistoryPage() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[rgba(255,255,255,0.95)] mb-2">
+          <h1 className="text-4xl font-bold text-white mb-2">
             Träningshistorik
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)]">
+          <p className="text-gray-400">
             Följ din utveckling och se dina tidigare pass
           </p>
         </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-6 backdrop-blur-[10px]">
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
                 <Dumbbell className="w-5 h-5 text-black" />
               </div>
-              <div className="text-[rgba(255,255,255,0.6)] text-sm">Totalt Pass</div>
+              <div className="text-gray-400 text-sm">Totalt Pass</div>
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.95)]">
+            <div className="text-3xl font-bold text-white">
               {stats.totalWorkouts}
             </div>
           </div>
 
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-6 backdrop-blur-[10px]">
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
-              <div className="text-[rgba(255,255,255,0.6)] text-sm">Totala Set</div>
+              <div className="text-gray-400 text-sm">Totala Set</div>
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.95)]">
+            <div className="text-3xl font-bold text-white">
               {stats.totalSets}
             </div>
           </div>
 
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-6 backdrop-blur-[10px]">
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
-              <div className="text-[rgba(255,255,255,0.6)] text-sm">Total Volym (kg)</div>
+              <div className="text-gray-400 text-sm">Total Volym (kg)</div>
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.95)]">
+            <div className="text-3xl font-bold text-white">
               {stats.totalVolume.toLocaleString('sv-SE')}
             </div>
           </div>
 
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-6 backdrop-blur-[10px]">
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center">
                 <Clock className="w-5 h-5 text-white" />
               </div>
-              <div className="text-[rgba(255,255,255,0.6)] text-sm">Snitt Tid (min)</div>
+              <div className="text-gray-400 text-sm">Snitt Tid (min)</div>
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.95)]">
+            <div className="text-3xl font-bold text-white">
               {stats.avgDuration}
             </div>
           </div>
@@ -202,17 +202,17 @@ export default function WorkoutHistoryPage() {
         {/* Session List */}
         <div className="space-y-4">
           {sessions.length === 0 ? (
-            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-12 backdrop-blur-[10px] text-center">
+            <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-12 backdrop-blur-[10px] text-center">
               <Dumbbell className="w-16 h-16 text-[rgba(255,255,255,0.3)] mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-[rgba(255,255,255,0.9)] mb-2">
+              <h3 className="text-xl font-semibold text-gray-100 mb-2">
                 Ingen träningshistorik ännu
               </h3>
-              <p className="text-[rgba(255,255,255,0.6)] mb-6">
+              <p className="text-gray-400 mb-6">
                 Starta ditt första träningspass för att börja spåra din utveckling
               </p>
               <button
                 onClick={() => router.push('/dashboard/workout')}
-                className="px-6 py-3 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black font-semibold rounded-xl hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] transition-all"
+                className="px-6 py-3 bg-gradient-to-r from-gold-light to-orange-500 text-black font-semibold rounded-xl hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] transition-all"
               >
                 Gå till Träningsprogram
               </button>
@@ -221,15 +221,15 @@ export default function WorkoutHistoryPage() {
             sessions.map((session) => (
               <div
                 key={session.id}
-                className="group bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all cursor-pointer"
+                className="group bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all cursor-pointer"
                 onClick={() => router.push(`/dashboard/workout/session/completed/${session.id}`)}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-xl font-semibold text-[rgba(255,255,255,0.95)] mb-1">
+                    <h3 className="text-xl font-semibold text-white mb-1">
                       {session.workoutProgramDay.name}
                     </h3>
-                    <div className="flex items-center gap-4 text-sm text-[rgba(255,255,255,0.6)]">
+                    <div className="flex items-center gap-4 text-sm text-gray-400">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
                         {formatDate(session.startedAt)}
@@ -247,13 +247,13 @@ export default function WorkoutHistoryPage() {
                   </div>
                   <div className="flex items-center gap-4">
                     {session.rating && (
-                      <div className="flex items-center gap-1 px-3 py-1 bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] rounded-full">
+                      <div className="flex items-center gap-1 px-3 py-1 bg-[rgba(255,215,0,0.1)] border border-gold-primary/30 rounded-full">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
                             className={`w-3 h-3 ${
                               i < session.rating!
-                                ? 'fill-[#FFD700] text-[#FFD700]'
+                                ? 'fill-[#FFD700] text-gold-light'
                                 : 'text-[rgba(255,215,0,0.3)]'
                             }`}
                           />
@@ -261,7 +261,7 @@ export default function WorkoutHistoryPage() {
                       </div>
                     )}
                     {session.completed ? (
-                      <div className="px-3 py-1 bg-[rgba(34,197,94,0.2)] border border-[rgba(34,197,94,0.4)] rounded-full text-[#22c55e] text-sm font-medium">
+                      <div className="px-3 py-1 bg-[rgba(34,197,94,0.2)] border border-[rgba(34,197,94,0.4)] rounded-full text-green-500 text-sm font-medium">
                         Genomfört
                       </div>
                     ) : (
@@ -269,26 +269,26 @@ export default function WorkoutHistoryPage() {
                         Påbörjat
                       </div>
                     )}
-                    <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.5)] group-hover:translate-x-1 group-hover:text-[#FFD700] transition-all" />
+                    <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.5)] group-hover:translate-x-1 group-hover:text-gold-light transition-all" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <div className="bg-[rgba(255,255,255,0.02)] rounded-xl p-4">
-                    <div className="text-[rgba(255,255,255,0.6)] text-sm mb-1">Övningar</div>
-                    <div className="text-lg font-semibold text-[rgba(255,255,255,0.95)]">
+                  <div className="bg-white/5 rounded-xl p-4">
+                    <div className="text-gray-400 text-sm mb-1">Övningar</div>
+                    <div className="text-lg font-semibold text-white">
                       {getUniqueExercises(session.sets).length}
                     </div>
                   </div>
-                  <div className="bg-[rgba(255,255,255,0.02)] rounded-xl p-4">
-                    <div className="text-[rgba(255,255,255,0.6)] text-sm mb-1">Totala Set</div>
-                    <div className="text-lg font-semibold text-[rgba(255,255,255,0.95)]">
+                  <div className="bg-white/5 rounded-xl p-4">
+                    <div className="text-gray-400 text-sm mb-1">Totala Set</div>
+                    <div className="text-lg font-semibold text-white">
                       {session.sets.filter(s => s.completed).length}
                     </div>
                   </div>
-                  <div className="bg-[rgba(255,255,255,0.02)] rounded-xl p-4">
-                    <div className="text-[rgba(255,255,255,0.6)] text-sm mb-1">Volym (kg)</div>
-                    <div className="text-lg font-semibold text-[rgba(255,255,255,0.95)]">
+                  <div className="bg-white/5 rounded-xl p-4">
+                    <div className="text-gray-400 text-sm mb-1">Volym (kg)</div>
+                    <div className="text-lg font-semibold text-white">
                       {calculateSessionVolume(session.sets).toLocaleString('sv-SE')}
                     </div>
                   </div>
@@ -304,7 +304,7 @@ export default function WorkoutHistoryPage() {
                     </div>
                   ))}
                   {getUniqueExercises(session.sets).length > 5 && (
-                    <div className="px-3 py-1 bg-[rgba(255,255,255,0.05)] rounded-full text-[rgba(255,255,255,0.6)] text-sm">
+                    <div className="px-3 py-1 bg-[rgba(255,255,255,0.05)] rounded-full text-gray-400 text-sm">
                       +{getUniqueExercises(session.sets).length - 5} till
                     </div>
                   )}
@@ -314,17 +314,17 @@ export default function WorkoutHistoryPage() {
                   <div className="mt-4 pt-4 border-t border-[rgba(255,255,255,0.1)] space-y-3">
                     {session.notes && (
                       <div>
-                        <div className="text-[rgba(255,255,255,0.6)] text-sm mb-1">Anteckningar</div>
-                        <div className="text-[rgba(255,255,255,0.8)] text-sm">{session.notes}</div>
+                        <div className="text-gray-400 text-sm mb-1">Anteckningar</div>
+                        <div className="text-gray-200 text-sm">{session.notes}</div>
                       </div>
                     )}
                     {session.ratingComment && (
                       <div>
-                        <div className="text-[rgba(255,255,255,0.6)] text-sm mb-1 flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-[#FFD700] text-[#FFD700]" />
+                        <div className="text-gray-400 text-sm mb-1 flex items-center gap-1">
+                          <Star className="w-3 h-3 fill-[#FFD700] text-gold-light" />
                           Passkommentar
                         </div>
-                        <div className="text-[rgba(255,255,255,0.8)] text-sm italic">{session.ratingComment}</div>
+                        <div className="text-gray-200 text-sm italic">{session.ratingComment}</div>
                       </div>
                     )}
                   </div>

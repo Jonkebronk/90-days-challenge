@@ -76,8 +76,8 @@ export default function NutritionTipsPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-[#FFD700] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[rgba(255,255,255,0.8)]">Laddar guide...</p>
+          <div className="w-12 h-12 border-4 border-gold-light border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-200">Laddar guide...</p>
         </div>
       </div>
     )
@@ -92,7 +92,7 @@ export default function NutritionTipsPage() {
             variant="ghost"
             size="sm"
             onClick={() => router.push('/dashboard/meal-plan')}
-            className="text-[rgba(255,255,255,0.7)] hover:text-white hover:bg-[rgba(255,215,0,0.1)]"
+            className="text-gray-300 hover:text-white hover:bg-gold-50"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Tillbaka till kostschema
@@ -108,7 +108,7 @@ export default function NutritionTipsPage() {
               {guideData.title}
             </h1>
           </div>
-          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+          <p className="text-gray-400 text-sm tracking-[1px]">
             Tips och råd för att lyckas med din kost
           </p>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#f59e0b] to-transparent mt-6 opacity-30" />
@@ -122,11 +122,11 @@ export default function NutritionTipsPage() {
             prose-h1:text-3xl
             prose-h2:text-2xl
             prose-h3:text-xl
-            prose-p:text-[rgba(255,255,255,0.8)]
+            prose-p:text-gray-200
             prose-p:leading-relaxed
             prose-strong:text-[#f59e0b]
             prose-strong:font-semibold
-            prose-li:text-[rgba(255,255,255,0.8)]
+            prose-li:text-gray-200
             prose-ul:space-y-2
             prose-a:text-[#f59e0b]
             prose-a:no-underline

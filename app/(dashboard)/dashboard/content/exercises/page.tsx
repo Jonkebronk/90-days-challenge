@@ -347,15 +347,15 @@ export default function ExercisesPage() {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3 flex-1">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center shrink-0">
                     <Dumbbell className="w-5 h-5 text-[#0a0a0a]" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="text-lg text-[rgba(255,255,255,0.9)] break-words">
+                    <CardTitle className="text-lg text-gray-100 break-words">
                       {exercise.name}
                     </CardTitle>
                     {exercise.category && (
-                      <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
+                      <p className="text-xs text-gray-500 mt-1">
                         {exercise.category}
                       </p>
                     )}
@@ -366,7 +366,7 @@ export default function ExercisesPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleOpenDialog(exercise)}
-                    className="h-8 w-8 text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+                    className="h-8 w-8 text-[rgba(255,215,0,0.8)] hover:text-gold-light hover:bg-gold-50"
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
@@ -384,13 +384,13 @@ export default function ExercisesPage() {
             <CardContent className="space-y-3">
               {exercise.muscleGroups.length > 0 && (
                 <div>
-                  <p className="text-xs text-[rgba(255,255,255,0.5)] mb-1">Muskelgrupper:</p>
+                  <p className="text-xs text-gray-500 mb-1">Muskelgrupper:</p>
                   <div className="flex flex-wrap gap-1">
                     {exercise.muscleGroups.map(muscle => (
                       <Badge
                         key={muscle}
                         variant="outline"
-                        className="text-xs bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.3)] text-[#FFD700]"
+                        className="text-xs bg-[rgba(255,215,0,0.1)] border-gold-primary/30 text-gold-light"
                       >
                         {muscle}
                       </Badge>
@@ -401,7 +401,7 @@ export default function ExercisesPage() {
 
               {exercise.equipmentNeeded.length > 0 && (
                 <div>
-                  <p className="text-xs text-[rgba(255,255,255,0.5)] mb-1">Utrustning:</p>
+                  <p className="text-xs text-gray-500 mb-1">Utrustning:</p>
                   <div className="flex flex-wrap gap-1">
                     {exercise.equipmentNeeded.map(equipment => (
                       <Badge
@@ -431,7 +431,7 @@ export default function ExercisesPage() {
               )}
 
               {exercise.description && (
-                <p className="text-sm text-[rgba(255,255,255,0.6)] line-clamp-2">
+                <p className="text-sm text-gray-400 line-clamp-2">
                   {exercise.description}
                 </p>
               )}
@@ -444,7 +444,7 @@ export default function ExercisesPage() {
         <Card className="bg-white border border-gray-200">
           <CardContent className="py-12 text-center">
             <Dumbbell className="w-12 h-12 text-[rgba(255,215,0,0.3)] mx-auto mb-4" />
-            <p className="text-[rgba(255,255,255,0.6)]">
+            <p className="text-gray-400">
               Inga övningar hittades. Skapa din första övning!
             </p>
           </CardContent>
@@ -453,9 +453,9 @@ export default function ExercisesPage() {
 
       {/* Exercise Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gray-900/95 border-gold-primary/30">
           <DialogHeader>
-            <DialogTitle className="text-[rgba(255,255,255,0.9)]">
+            <DialogTitle className="text-gray-100">
               {editingExercise ? 'Redigera övning' : 'Lägg till övning'}
             </DialogTitle>
           </DialogHeader>
@@ -510,8 +510,8 @@ export default function ExercisesPage() {
                     onClick={() => toggleMuscleGroup(muscle)}
                     className={`cursor-pointer transition-all ${
                       formData.muscleGroups.includes(muscle)
-                        ? 'bg-[rgba(255,215,0,0.3)] border-[rgba(255,215,0,0.5)] text-[#FFD700]'
-                        : 'bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-[rgba(255,255,255,0.5)] hover:bg-[rgba(255,215,0,0.1)]'
+                        ? 'bg-[rgba(255,215,0,0.3)] border-[rgba(255,215,0,0.5)] text-gold-light'
+                        : 'bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-gray-500 hover:bg-gold-50'
                     }`}
                   >
                     {muscle}
@@ -530,7 +530,7 @@ export default function ExercisesPage() {
                     className={`cursor-pointer transition-all ${
                       formData.equipmentNeeded.includes(equipment)
                         ? 'bg-[rgba(100,150,255,0.3)] border-[rgba(100,150,255,0.5)] text-[#6496ff]'
-                        : 'bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-[rgba(255,255,255,0.5)] hover:bg-[rgba(255,215,0,0.1)]'
+                        : 'bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-gray-500 hover:bg-gold-50'
                     }`}
                   >
                     {equipment}
@@ -598,7 +598,7 @@ export default function ExercisesPage() {
                 <Button
                   type="button"
                   onClick={addInstruction}
-                  className="bg-[rgba(255,215,0,0.2)] border border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.3)]"
+                  className="bg-[rgba(255,215,0,0.2)] border border-gold-primary/30 text-gold-light hover:bg-[rgba(255,215,0,0.3)]"
                 >
                   <Plus className="w-4 h-4" />
                 </Button>
@@ -608,12 +608,12 @@ export default function ExercisesPage() {
                   {formData.instructions.map((instruction, index) => (
                     <div
                       key={index}
-                      className="flex items-start gap-2 bg-[rgba(255,255,255,0.05)] p-2 rounded border border-[rgba(255,215,0,0.2)]"
+                      className="flex items-start gap-2 bg-[rgba(255,255,255,0.05)] p-2 rounded border border-gold-primary/20"
                     >
                       <span className="text-[rgba(255,215,0,0.7)] text-sm font-medium">
                         {index + 1}.
                       </span>
-                      <p className="text-[rgba(255,255,255,0.8)] text-sm flex-1">
+                      <p className="text-gray-200 text-sm flex-1">
                         {instruction}
                       </p>
                       <Button
@@ -636,14 +636,14 @@ export default function ExercisesPage() {
             <Button
               variant="outline"
               onClick={handleCloseDialog}
-              className="border-[rgba(255,215,0,0.2)] text-gray-700 hover:bg-[rgba(255,215,0,0.1)]"
+              className="border-gold-primary/20 text-gray-700 hover:bg-gold-50"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={!formData.name}
-              className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+              className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
             >
               {editingExercise ? 'Uppdatera' : 'Skapa'} övning
             </Button>

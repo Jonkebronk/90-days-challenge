@@ -97,8 +97,8 @@ export default function FoodGuidePage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-[#FFD700] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[rgba(255,255,255,0.8)]">Laddar livsmedelsguide...</p>
+          <div className="w-12 h-12 border-4 border-gold-light border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-200">Laddar livsmedelsguide...</p>
         </div>
       </div>
     )
@@ -113,7 +113,7 @@ export default function FoodGuidePage() {
             variant="ghost"
             size="sm"
             onClick={() => router.back()}
-            className="text-[rgba(255,255,255,0.8)] hover:text-[#FFD700]"
+            className="text-gray-200 hover:text-gold-light"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Tillbaka
@@ -124,12 +124,12 @@ export default function FoodGuidePage() {
         <div className="text-center mb-8">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Apple className="w-8 h-8 text-[#FFD700]" />
-            <h1 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <Apple className="w-8 h-8 text-gold-light" />
+            <h1 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               Livsmedelsguide
             </h1>
           </div>
-          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+          <p className="text-gray-400 text-sm tracking-[1px]">
             Godkända livsmedel med näringsinformation
           </p>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
@@ -143,7 +143,7 @@ export default function FoodGuidePage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Sök livsmedel..."
-              className="pl-10 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+              className="pl-10 bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
             />
           </div>
         </div>
@@ -152,7 +152,7 @@ export default function FoodGuidePage() {
         {groupedByCategory.length === 0 ? (
           <div className="text-center py-12">
             <Apple className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-            <p className="text-[rgba(255,255,255,0.6)] text-lg">
+            <p className="text-gray-400 text-lg">
               {search ? 'Inga livsmedel matchar din sökning.' : 'Inga godkända livsmedel ännu.'}
             </p>
           </div>
@@ -178,7 +178,7 @@ export default function FoodGuidePage() {
                       <h2 className="text-2xl font-bold" style={{ color: category.color }}>
                         {category.name}
                       </h2>
-                      <p className="text-sm text-[rgba(255,255,255,0.5)]">
+                      <p className="text-sm text-gray-500">
                         {items.length} {items.length === 1 ? 'livsmedel' : 'livsmedel'}
                       </p>
                     </div>
@@ -191,7 +191,7 @@ export default function FoodGuidePage() {
                       .map((item) => (
                         <div
                           key={item.id}
-                          className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg p-4 hover:border-[rgba(255,215,0,0.4)] transition-all"
+                          className="bg-white/5 border border-gold-primary/20 rounded-lg p-4 hover:border-[rgba(255,215,0,0.4)] transition-all"
                         >
                           {/* Item Header */}
                           <div className="flex items-start justify-between mb-3">
@@ -199,7 +199,7 @@ export default function FoodGuidePage() {
                               {item.name}
                             </h3>
                             {item.isRecommended && (
-                              <Badge className="bg-[#FFD700]/20 text-[#FFD700] border-[#FFD700]/30 ml-2">
+                              <Badge className="bg-[#FFD700]/20 text-gold-light border-gold-light/30 ml-2">
                                 <ThumbsUp className="h-3 w-3" />
                               </Badge>
                             )}
@@ -207,33 +207,33 @@ export default function FoodGuidePage() {
 
                           {/* Serving Size */}
                           {item.commonServingSize && (
-                            <p className="text-xs text-[rgba(255,255,255,0.5)] mb-3">
+                            <p className="text-xs text-gray-500 mb-3">
                               Per {item.commonServingSize}
                             </p>
                           )}
 
                           {/* Nutrition Grid */}
                           <div className="grid grid-cols-2 gap-2 mb-3">
-                            <div className="bg-[rgba(0,0,0,0.3)] rounded p-2">
-                              <p className="text-xs text-[rgba(255,255,255,0.5)]">Kalorier</p>
+                            <div className="bg-black/30 rounded p-2">
+                              <p className="text-xs text-gray-500">Kalorier</p>
                               <p className="text-sm font-semibold text-white">
                                 {Math.round(Number(item.calories))} kcal
                               </p>
                             </div>
-                            <div className="bg-[rgba(0,0,0,0.3)] rounded p-2">
-                              <p className="text-xs text-[rgba(255,255,255,0.5)]">Protein</p>
+                            <div className="bg-black/30 rounded p-2">
+                              <p className="text-xs text-gray-500">Protein</p>
                               <p className="text-sm font-semibold text-white">
                                 {Number(item.proteinG).toFixed(1)}g
                               </p>
                             </div>
-                            <div className="bg-[rgba(0,0,0,0.3)] rounded p-2">
-                              <p className="text-xs text-[rgba(255,255,255,0.5)]">Kolhydr.</p>
+                            <div className="bg-black/30 rounded p-2">
+                              <p className="text-xs text-gray-500">Kolhydr.</p>
                               <p className="text-sm font-semibold text-white">
                                 {Number(item.carbsG).toFixed(1)}g
                               </p>
                             </div>
-                            <div className="bg-[rgba(0,0,0,0.3)] rounded p-2">
-                              <p className="text-xs text-[rgba(255,255,255,0.5)]">Fett</p>
+                            <div className="bg-black/30 rounded p-2">
+                              <p className="text-xs text-gray-500">Fett</p>
                               <p className="text-sm font-semibold text-white">
                                 {Number(item.fatG).toFixed(1)}g
                               </p>
@@ -256,8 +256,8 @@ export default function FoodGuidePage() {
 
                           {/* Notes */}
                           {item.notes && (
-                            <div className="border-t border-[rgba(255,215,0,0.1)] pt-3">
-                              <p className="text-xs text-[rgba(255,255,255,0.6)] italic">
+                            <div className="border-t border-gold-primary/10 pt-3">
+                              <p className="text-xs text-gray-400 italic">
                                 {item.notes}
                               </p>
                             </div>
@@ -275,7 +275,7 @@ export default function FoodGuidePage() {
         <div className="text-center pt-6">
           <Button
             onClick={() => router.push('/dashboard/meal-plan')}
-            className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold px-8 py-6 text-lg hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] transition-all"
+            className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] font-bold px-8 py-6 text-lg hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] transition-all"
           >
             Till Mitt Kostschema
           </Button>

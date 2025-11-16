@@ -262,8 +262,8 @@ export default function FoodCategoriesPage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-[rgba(255,255,255,0.7)]">Du har inte behörighet att se denna sida.</p>
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
+          <p className="text-gray-300">Du har inte behörighet att se denna sida.</p>
         </div>
       </div>
     )
@@ -273,33 +273,33 @@ export default function FoodCategoriesPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+          <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
             Livsmedelskategorier
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-400 mt-1">
             Skapa och hantera kategorier för livsmedel
           </p>
         </div>
         <Button
           onClick={() => setIsCreateDialogOpen(true)}
-          className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+          className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
         >
           <Plus className="h-4 w-4 mr-2" />
           Ny kategori
         </Button>
       </div>
 
-      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] overflow-hidden">
-        <div className="p-6 border-b border-[rgba(255,215,0,0.2)]">
-          <h2 className="text-xl font-bold text-[#FFD700] tracking-[1px]">Alla kategorier</h2>
+      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden">
+        <div className="p-6 border-b border-gold-primary/20">
+          <h2 className="text-xl font-bold text-gold-light tracking-[1px]">Alla kategorier</h2>
         </div>
         <div className="p-6">
           {isLoading ? (
-            <p className="text-[rgba(255,255,255,0.6)] text-center py-8">Laddar...</p>
+            <p className="text-gray-400 text-center py-8">Laddar...</p>
           ) : categories.length === 0 ? (
             <div className="text-center py-8">
               <Apple className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-              <p className="text-[rgba(255,255,255,0.6)]">Inga kategorier ännu.</p>
+              <p className="text-gray-400">Inga kategorier ännu.</p>
               <p className="text-sm text-[rgba(255,255,255,0.4)] mt-1">
                 Skapa din första kategori för att komma igång.
               </p>
@@ -308,7 +308,7 @@ export default function FoodCategoriesPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-b border-[rgba(255,215,0,0.2)] hover:bg-[rgba(255,215,0,0.05)]">
+                  <TableRow className="border-b border-gold-primary/20 hover:bg-[rgba(255,215,0,0.05)]">
                     <TableHead className="text-[rgba(255,215,0,0.8)]">Ikon</TableHead>
                     <TableHead className="text-[rgba(255,215,0,0.8)]">Namn</TableHead>
                     <TableHead className="text-[rgba(255,215,0,0.8)]">Beskrivning</TableHead>
@@ -322,7 +322,7 @@ export default function FoodCategoriesPage() {
                   {categories.map((category, index) => {
                     const Icon = getIconComponent(category.icon)
                     return (
-                      <TableRow key={category.id} className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.05)] transition-colors">
+                      <TableRow key={category.id} className="border-b border-gold-primary/10 hover:bg-[rgba(255,215,0,0.05)] transition-colors">
                         <TableCell>
                           <div
                             className="w-10 h-10 rounded-lg flex items-center justify-center"
@@ -332,11 +332,11 @@ export default function FoodCategoriesPage() {
                           </div>
                         </TableCell>
                         <TableCell className="font-medium text-white">{category.name}</TableCell>
-                        <TableCell className="text-[rgba(255,255,255,0.6)]">
+                        <TableCell className="text-gray-400">
                           {category.description || '-'}
                         </TableCell>
                         <TableCell>
-                          <code className="text-xs bg-[rgba(255,215,0,0.1)] text-[#FFD700] px-2 py-1 rounded border border-[rgba(255,215,0,0.2)]">
+                          <code className="text-xs bg-[rgba(255,215,0,0.1)] text-gold-light px-2 py-1 rounded border border-gold-primary/20">
                             {category.slug}
                           </code>
                         </TableCell>
@@ -346,7 +346,7 @@ export default function FoodCategoriesPage() {
                               className="w-6 h-6 rounded border border-[rgba(255,255,255,0.2)]"
                               style={{ backgroundColor: category.color }}
                             />
-                            <code className="text-xs text-[rgba(255,255,255,0.6)]">{category.color}</code>
+                            <code className="text-xs text-gray-400">{category.color}</code>
                           </div>
                         </TableCell>
                         <TableCell className="text-center text-white">
@@ -359,7 +359,7 @@ export default function FoodCategoriesPage() {
                               size="icon"
                               onClick={() => handleReorder(category.id, 'up')}
                               disabled={index === 0}
-                              className="hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700] text-[rgba(255,255,255,0.6)]"
+                              className="hover:bg-gold-50 hover:text-gold-light text-gray-400"
                             >
                               <ArrowUp className="h-4 w-4" />
                             </Button>
@@ -368,7 +368,7 @@ export default function FoodCategoriesPage() {
                               size="icon"
                               onClick={() => handleReorder(category.id, 'down')}
                               disabled={index === categories.length - 1}
-                              className="hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700] text-[rgba(255,255,255,0.6)]"
+                              className="hover:bg-gold-50 hover:text-gold-light text-gray-400"
                             >
                               <ArrowDown className="h-4 w-4" />
                             </Button>
@@ -376,7 +376,7 @@ export default function FoodCategoriesPage() {
                               variant="ghost"
                               size="icon"
                               onClick={() => openEditDialog(category)}
-                              className="hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700] text-[rgba(255,255,255,0.6)]"
+                              className="hover:bg-gold-50 hover:text-gold-light text-gray-400"
                             >
                               <Pencil className="h-4 w-4" />
                             </Button>
@@ -385,7 +385,7 @@ export default function FoodCategoriesPage() {
                               size="icon"
                               onClick={() => handleDeleteCategory(category)}
                               disabled={category._count.foodItems > 0}
-                              className="hover:bg-[rgba(255,0,0,0.1)] hover:text-red-400 text-[rgba(255,255,255,0.6)]"
+                              className="hover:bg-[rgba(255,0,0,0.1)] hover:text-red-400 text-gray-400"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -403,55 +403,55 @@ export default function FoodCategoriesPage() {
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
+        <DialogContent className="bg-gray-900/95 border-2 border-gold-primary/30 backdrop-blur-[10px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               Skapa ny kategori
             </DialogTitle>
-            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+            <DialogDescription className="text-gray-400">
               Lägg till en ny kategori för att organisera livsmedel.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name" className="text-[rgba(255,255,255,0.8)]">Namn *</Label>
+              <Label htmlFor="name" className="text-gray-200">Namn *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleNameChange(e.target.value)}
                 placeholder="t.ex. Proteinkälla, Kolhydratkälla"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div>
-              <Label htmlFor="slug" className="text-[rgba(255,255,255,0.8)]">Slug *</Label>
+              <Label htmlFor="slug" className="text-gray-200">Slug *</Label>
               <Input
                 id="slug"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                 placeholder="t.ex. proteinkalla, kolhydratkalla"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div>
-              <Label htmlFor="description" className="text-[rgba(255,255,255,0.8)]">Beskrivning</Label>
+              <Label htmlFor="description" className="text-gray-200">Beskrivning</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Kort beskrivning av kategorin..."
                 rows={3}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="icon" className="text-[rgba(255,255,255,0.8)]">Ikon *</Label>
+                <Label htmlFor="icon" className="text-gray-200">Ikon *</Label>
                 <Select value={formData.icon} onValueChange={(value) => setFormData({ ...formData, icon: value })}>
-                  <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                  <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+                  <SelectContent className="bg-gray-900/95 border-gold-primary/30">
                     {COMMON_ICONS.map((icon) => {
                       const IconComponent = getIconComponent(icon.name)
                       return (
@@ -467,20 +467,20 @@ export default function FoodCategoriesPage() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="color" className="text-[rgba(255,255,255,0.8)]">Färg *</Label>
+                <Label htmlFor="color" className="text-gray-200">Färg *</Label>
                 <div className="flex gap-2">
                   <Input
                     id="color"
                     type="color"
                     value={formData.color}
                     onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                    className="w-16 h-10 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] cursor-pointer"
+                    className="w-16 h-10 bg-black/30 border-gold-primary/30 cursor-pointer"
                   />
                   <Input
                     value={formData.color}
                     onChange={(e) => setFormData({ ...formData, color: e.target.value })}
                     placeholder="#FFD700"
-                    className="flex-1 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                    className="flex-1 bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                   />
                 </div>
               </div>
@@ -493,14 +493,14 @@ export default function FoodCategoriesPage() {
                 setIsCreateDialogOpen(false)
                 setFormData({ name: '', description: '', slug: '', color: '#FFD700', icon: 'Apple' })
               }}
-              className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+              className="border-gold-primary/30 text-gray-200 hover:bg-gold-50"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleCreateCategory}
               disabled={isSaving}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             >
               {isSaving ? 'Skapar...' : 'Skapa kategori'}
             </Button>
@@ -510,55 +510,55 @@ export default function FoodCategoriesPage() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
+        <DialogContent className="bg-gray-900/95 border-2 border-gold-primary/30 backdrop-blur-[10px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               Redigera kategori
             </DialogTitle>
-            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+            <DialogDescription className="text-gray-400">
               Uppdatera kategorins information.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="edit-name" className="text-[rgba(255,255,255,0.8)]">Namn *</Label>
+              <Label htmlFor="edit-name" className="text-gray-200">Namn *</Label>
               <Input
                 id="edit-name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="t.ex. Proteinkälla, Kolhydratkälla"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div>
-              <Label htmlFor="edit-slug" className="text-[rgba(255,255,255,0.8)]">Slug *</Label>
+              <Label htmlFor="edit-slug" className="text-gray-200">Slug *</Label>
               <Input
                 id="edit-slug"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                 placeholder="t.ex. proteinkalla, kolhydratkalla"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div>
-              <Label htmlFor="edit-description" className="text-[rgba(255,255,255,0.8)]">Beskrivning</Label>
+              <Label htmlFor="edit-description" className="text-gray-200">Beskrivning</Label>
               <Textarea
                 id="edit-description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Kort beskrivning av kategorin..."
                 rows={3}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="edit-icon" className="text-[rgba(255,255,255,0.8)]">Ikon *</Label>
+                <Label htmlFor="edit-icon" className="text-gray-200">Ikon *</Label>
                 <Select value={formData.icon} onValueChange={(value) => setFormData({ ...formData, icon: value })}>
-                  <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                  <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+                  <SelectContent className="bg-gray-900/95 border-gold-primary/30">
                     {COMMON_ICONS.map((icon) => {
                       const IconComponent = getIconComponent(icon.name)
                       return (
@@ -574,20 +574,20 @@ export default function FoodCategoriesPage() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="edit-color" className="text-[rgba(255,255,255,0.8)]">Färg *</Label>
+                <Label htmlFor="edit-color" className="text-gray-200">Färg *</Label>
                 <div className="flex gap-2">
                   <Input
                     id="edit-color"
                     type="color"
                     value={formData.color}
                     onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                    className="w-16 h-10 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] cursor-pointer"
+                    className="w-16 h-10 bg-black/30 border-gold-primary/30 cursor-pointer"
                   />
                   <Input
                     value={formData.color}
                     onChange={(e) => setFormData({ ...formData, color: e.target.value })}
                     placeholder="#FFD700"
-                    className="flex-1 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                    className="flex-1 bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                   />
                 </div>
               </div>
@@ -601,14 +601,14 @@ export default function FoodCategoriesPage() {
                 setSelectedCategory(null)
                 setFormData({ name: '', description: '', slug: '', color: '#FFD700', icon: 'Apple' })
               }}
-              className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+              className="border-gold-primary/30 text-gray-200 hover:bg-gold-50"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleEditCategory}
               disabled={isSaving}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             >
               {isSaving ? 'Sparar...' : 'Spara ändringar'}
             </Button>

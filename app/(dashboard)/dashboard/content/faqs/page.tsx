@@ -335,10 +335,10 @@ export default function FaqsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+          <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
             VANLIGA FRÅGOR
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-400 mt-1">
             Hantera FAQ-kategorier och frågor
           </p>
         </div>
@@ -349,7 +349,7 @@ export default function FaqsPage() {
               setCategoryFormData({ name: '', description: '', orderIndex: '' })
               setIsCategoryDialogOpen(true)
             }}
-            className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+            className="bg-transparent border border-gold-primary/30 text-gray-200 hover:bg-gold-50 hover:text-gold-light"
           >
             <FolderPlus className="h-4 w-4 mr-2" />
             Ny kategori
@@ -366,7 +366,7 @@ export default function FaqsPage() {
               })
               setIsQuestionDialogOpen(true)
             }}
-            className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+            className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             disabled={categories.length === 0}
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -376,22 +376,22 @@ export default function FaqsPage() {
       </div>
 
       {/* Categories Overview */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+      <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
         <CardHeader>
-          <CardTitle className="text-xl font-bold text-[#FFD700]">Kategorier</CardTitle>
+          <CardTitle className="text-xl font-bold text-gold-light">Kategorier</CardTitle>
         </CardHeader>
         <CardContent>
           {categories.length === 0 ? (
             <div className="text-center py-8">
               <FolderPlus className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-              <p className="text-[rgba(255,255,255,0.6)]">Inga kategorier än. Skapa din första kategori!</p>
+              <p className="text-gray-400">Inga kategorier än. Skapa din första kategori!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {categories.map((category) => (
                 <div
                   key={category.id}
-                  className="p-4 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.2)] rounded-lg hover:border-[rgba(255,215,0,0.4)] transition-colors"
+                  className="p-4 bg-black/30 border border-gold-primary/20 rounded-lg hover:border-[rgba(255,215,0,0.4)] transition-colors"
                 >
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="font-bold text-white">{category.name}</h3>
@@ -400,7 +400,7 @@ export default function FaqsPage() {
                         variant="ghost"
                         size="icon"
                         onClick={() => openEditCategoryDialog(category)}
-                        className="h-8 w-8 text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
+                        className="h-8 w-8 text-gray-400 hover:text-gold-light"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -408,16 +408,16 @@ export default function FaqsPage() {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDeleteCategory(category)}
-                        className="h-8 w-8 text-[rgba(255,255,255,0.6)] hover:text-red-400"
+                        className="h-8 w-8 text-gray-400 hover:text-red-400"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
                   {category.description && (
-                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-2">{category.description}</p>
+                    <p className="text-sm text-gray-400 mb-2">{category.description}</p>
                   )}
-                  <Badge className="bg-[rgba(255,215,0,0.1)] text-[#FFD700] border border-[rgba(255,215,0,0.3)]">
+                  <Badge className="bg-[rgba(255,215,0,0.1)] text-gold-light border border-gold-primary/30">
                     {category._count?.questions || 0} frågor
                   </Badge>
                 </div>
@@ -428,23 +428,23 @@ export default function FaqsPage() {
       </Card>
 
       {/* Questions List */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+      <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xl font-bold text-[#FFD700]">Frågor</CardTitle>
+            <CardTitle className="text-xl font-bold text-gold-light">Frågor</CardTitle>
             <Select value={selectedCategoryFilter} onValueChange={setSelectedCategoryFilter}>
-              <SelectTrigger className="w-48 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+              <SelectTrigger className="w-48 bg-black/30 border-gold-primary/30 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
-                <SelectItem value="all" className="text-white hover:bg-[rgba(255,215,0,0.1)]">
+              <SelectContent className="bg-gray-900/95 border-gold-primary/30">
+                <SelectItem value="all" className="text-white hover:bg-gold-50">
                   Alla kategorier
                 </SelectItem>
                 {categories.map((cat) => (
                   <SelectItem
                     key={cat.id}
                     value={cat.id}
-                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                    className="text-white hover:bg-gold-50"
                   >
                     {cat.name}
                   </SelectItem>
@@ -455,11 +455,11 @@ export default function FaqsPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <p className="text-center text-[rgba(255,255,255,0.6)] py-8">Laddar...</p>
+            <p className="text-center text-gray-400 py-8">Laddar...</p>
           ) : filteredQuestions.length === 0 ? (
             <div className="text-center py-8">
               <HelpCircle className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-              <p className="text-[rgba(255,255,255,0.6)]">
+              <p className="text-gray-400">
                 {selectedCategoryFilter === 'all'
                   ? 'Inga frågor än. Skapa din första fråga!'
                   : 'Inga frågor i denna kategori än.'}
@@ -470,7 +470,7 @@ export default function FaqsPage() {
               {filteredQuestions.map((question) => (
                 <div
                   key={question.id}
-                  className="p-4 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.2)] rounded-lg hover:border-[rgba(255,215,0,0.4)] transition-colors"
+                  className="p-4 bg-black/30 border border-gold-primary/20 rounded-lg hover:border-[rgba(255,215,0,0.4)] transition-colors"
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
@@ -485,7 +485,7 @@ export default function FaqsPage() {
                         )}
                       </div>
                       <h4 className="font-bold text-white mb-2">{question.question}</h4>
-                      <p className="text-sm text-[rgba(255,255,255,0.6)] line-clamp-2">
+                      <p className="text-sm text-gray-400 line-clamp-2">
                         {question.answer}
                       </p>
                     </div>
@@ -494,7 +494,7 @@ export default function FaqsPage() {
                         variant="ghost"
                         size="icon"
                         onClick={() => openEditQuestionDialog(question)}
-                        className="h-8 w-8 text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
+                        className="h-8 w-8 text-gray-400 hover:text-gold-light"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -502,7 +502,7 @@ export default function FaqsPage() {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDeleteQuestion(question)}
-                        className="h-8 w-8 text-[rgba(255,255,255,0.6)] hover:text-red-400"
+                        className="h-8 w-8 text-gray-400 hover:text-red-400"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -517,18 +517,18 @@ export default function FaqsPage() {
 
       {/* Category Dialog */}
       <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
+        <DialogContent className="bg-gray-900/95 border-2 border-gold-primary/30 backdrop-blur-[10px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               {editingCategory ? 'Redigera kategori' : 'Skapa kategori'}
             </DialogTitle>
-            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+            <DialogDescription className="text-gray-400">
               Kategorier hjälper till att organisera vanliga frågor
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="catName" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="catName" className="text-gray-200">
                 Namn *
               </Label>
               <Input
@@ -536,11 +536,11 @@ export default function FaqsPage() {
                 value={categoryFormData.name}
                 onChange={(e) => setCategoryFormData({ ...categoryFormData, name: e.target.value })}
                 placeholder="t.ex. Träning, Kost, Övrigt"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
             <div>
-              <Label htmlFor="catDesc" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="catDesc" className="text-gray-200">
                 Beskrivning
               </Label>
               <Textarea
@@ -548,11 +548,11 @@ export default function FaqsPage() {
                 value={categoryFormData.description}
                 onChange={(e) => setCategoryFormData({ ...categoryFormData, description: e.target.value })}
                 rows={2}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
             <div>
-              <Label htmlFor="catOrder" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="catOrder" className="text-gray-200">
                 Sorteringsordning
               </Label>
               <Input
@@ -561,20 +561,20 @@ export default function FaqsPage() {
                 value={categoryFormData.orderIndex}
                 onChange={(e) => setCategoryFormData({ ...categoryFormData, orderIndex: e.target.value })}
                 placeholder="0"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
           </div>
           <DialogFooter>
             <Button
               onClick={() => setIsCategoryDialogOpen(false)}
-              className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+              className="bg-transparent border border-gold-primary/30 text-gray-200 hover:bg-gold-50 hover:text-gold-light"
             >
               Avbryt
             </Button>
             <Button
               onClick={editingCategory ? handleUpdateCategory : handleCreateCategory}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             >
               {editingCategory ? 'Uppdatera' : 'Skapa'}
             </Button>
@@ -584,33 +584,33 @@ export default function FaqsPage() {
 
       {/* Question Dialog */}
       <Dialog open={isQuestionDialogOpen} onOpenChange={setIsQuestionDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] max-w-2xl">
+        <DialogContent className="bg-gray-900/95 border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               {editingQuestion ? 'Redigera fråga' : 'Skapa fråga'}
             </DialogTitle>
-            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+            <DialogDescription className="text-gray-400">
               Lägg till en vanlig fråga med svar
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="qCategory" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="qCategory" className="text-gray-200">
                 Kategori *
               </Label>
               <Select
                 value={questionFormData.categoryId}
                 onValueChange={(value) => setQuestionFormData({ ...questionFormData, categoryId: value })}
               >
-                <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                   <SelectValue placeholder="Välj kategori" />
                 </SelectTrigger>
-                <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+                <SelectContent className="bg-gray-900/95 border-gold-primary/30">
                   {categories.map((cat) => (
                     <SelectItem
                       key={cat.id}
                       value={cat.id}
-                      className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                      className="text-white hover:bg-gold-50"
                     >
                       {cat.name}
                     </SelectItem>
@@ -619,7 +619,7 @@ export default function FaqsPage() {
               </Select>
             </div>
             <div>
-              <Label htmlFor="qQuestion" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="qQuestion" className="text-gray-200">
                 Fråga *
               </Label>
               <Textarea
@@ -628,11 +628,11 @@ export default function FaqsPage() {
                 onChange={(e) => setQuestionFormData({ ...questionFormData, question: e.target.value })}
                 rows={2}
                 placeholder="Kan man byta powerwalk mot HIIT?"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
             <div>
-              <Label htmlFor="qAnswer" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="qAnswer" className="text-gray-200">
                 Svar *
               </Label>
               <Textarea
@@ -641,12 +641,12 @@ export default function FaqsPage() {
                 onChange={(e) => setQuestionFormData({ ...questionFormData, answer: e.target.value })}
                 rows={5}
                 placeholder="Skriv ett detaljerat svar..."
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="qOrder" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="qOrder" className="text-gray-200">
                   Sorteringsordning
                 </Label>
                 <Input
@@ -655,7 +655,7 @@ export default function FaqsPage() {
                   value={questionFormData.orderIndex}
                   onChange={(e) => setQuestionFormData({ ...questionFormData, orderIndex: e.target.value })}
                   placeholder="0"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
               <div className="flex items-center gap-2 pt-6">
@@ -666,7 +666,7 @@ export default function FaqsPage() {
                   onChange={(e) => setQuestionFormData({ ...questionFormData, published: e.target.checked })}
                   className="w-4 h-4"
                 />
-                <Label htmlFor="qPublished" className="text-[rgba(255,255,255,0.8)] cursor-pointer">
+                <Label htmlFor="qPublished" className="text-gray-200 cursor-pointer">
                   Publicerad
                 </Label>
               </div>
@@ -675,13 +675,13 @@ export default function FaqsPage() {
           <DialogFooter>
             <Button
               onClick={() => setIsQuestionDialogOpen(false)}
-              className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+              className="bg-transparent border border-gold-primary/30 text-gray-200 hover:bg-gold-50 hover:text-gold-light"
             >
               Avbryt
             </Button>
             <Button
               onClick={editingQuestion ? handleUpdateQuestion : handleCreateQuestion}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             >
               {editingQuestion ? 'Uppdatera' : 'Skapa'}
             </Button>

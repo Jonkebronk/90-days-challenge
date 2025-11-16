@@ -239,8 +239,8 @@ export default function MealPlanTemplateViewPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-[#FFD700] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[rgba(255,255,255,0.8)]">Laddar måltidsplan...</p>
+          <div className="w-12 h-12 border-4 border-gold-light border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-200">Laddar måltidsplan...</p>
         </div>
       </div>
     )
@@ -249,10 +249,10 @@ export default function MealPlanTemplateViewPage() {
   if (templates.length === 0) {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-12 backdrop-blur-[10px] text-center">
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-12 backdrop-blur-[10px] text-center">
           <UtensilsCrossed className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
           <h2 className="text-2xl font-bold text-white mb-2">Ingen måltidsplan ännu</h2>
-          <p className="text-[rgba(255,255,255,0.6)]">
+          <p className="text-gray-400">
             Din coach har inte tilldelat dig en måltidsplan än.
           </p>
         </div>
@@ -270,11 +270,11 @@ export default function MealPlanTemplateViewPage() {
         return (
           <div key={template.id} className="space-y-6">
             {/* Header with Coach Info */}
-            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] rounded-xl p-6">
+            <div className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-6">
               <div className="flex items-start gap-6">
                 {/* Coach Avatar */}
                 <div className="flex-shrink-0">
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-[rgba(255,215,0,0.3)]">
+                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-gold-primary/30">
                     {template.coach?.image ? (
                       <Image
                         src={template.coach.image}
@@ -284,13 +284,13 @@ export default function MealPlanTemplateViewPage() {
                       />
                     ) : (
                       <div className="w-full h-full bg-[rgba(255,215,0,0.1)] flex items-center justify-center">
-                        <span className="text-4xl text-[#FFD700]">
+                        <span className="text-4xl text-gold-light">
                           {template.coach?.name?.charAt(0) || 'C'}
                         </span>
                       </div>
                     )}
                   </div>
-                  <p className="text-sm text-center mt-2 text-[rgba(255,255,255,0.6)]">
+                  <p className="text-sm text-center mt-2 text-gray-400">
                     {template.coach?.name || 'Din coach'}
                   </p>
                 </div>
@@ -299,12 +299,12 @@ export default function MealPlanTemplateViewPage() {
                 <div className="flex-1">
                   <h1 className="text-2xl font-bold text-white mb-2">
                     Ditt skräddarsydda kostschema för din period{' '}
-                    <span className="text-[#FFD700]">{session?.user?.name || 'där'}</span>.
+                    <span className="text-gold-light">{session?.user?.name || 'där'}</span>.
                   </h1>
                   {template.generalAdvice && (
-                    <div className="mt-3 p-4 bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.2)] rounded-lg">
-                      <h3 className="text-sm font-semibold text-[#FFD700] mb-2">Generella råd:</h3>
-                      <p className="text-sm text-[rgba(255,255,255,0.8)] whitespace-pre-wrap">
+                    <div className="mt-3 p-4 bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg">
+                      <h3 className="text-sm font-semibold text-gold-light mb-2">Generella råd:</h3>
+                      <p className="text-sm text-gray-200 whitespace-pre-wrap">
                         {template.generalAdvice}
                       </p>
                     </div>
@@ -316,25 +316,25 @@ export default function MealPlanTemplateViewPage() {
             {/* Macro Summary - Three Sections */}
             <div className="space-y-4">
               {/* Totalt för kost */}
-              <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] rounded-xl p-6">
+              <div className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-6">
                 <h3 className="text-lg font-bold text-center text-white mb-4">
                   Totalt för kost
                 </h3>
                 <div className="grid grid-cols-4 gap-4 text-center">
                   <div>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Protein:</p>
+                    <p className="text-sm text-gray-400 mb-1">Protein:</p>
                     <p className="text-2xl font-bold text-white">
                       {Math.round(foodMacros.totalProtein * 10) / 10}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Fett:</p>
+                    <p className="text-sm text-gray-400 mb-1">Fett:</p>
                     <p className="text-2xl font-bold text-white">
                       {Math.round(foodMacros.totalFat * 10) / 10}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">
+                    <p className="text-sm text-gray-400 mb-1">
                       Kolhydrater:
                     </p>
                     <p className="text-2xl font-bold text-white">
@@ -342,7 +342,7 @@ export default function MealPlanTemplateViewPage() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Kcal:</p>
+                    <p className="text-sm text-gray-400 mb-1">Kcal:</p>
                     <p className="text-2xl font-bold text-white">
                       {Math.round(foodMacros.totalCalories * 10) / 10}
                     </p>
@@ -351,25 +351,25 @@ export default function MealPlanTemplateViewPage() {
               </div>
 
               {/* Totalt för träning */}
-              <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] rounded-xl p-6">
+              <div className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-6">
                 <h3 className="text-lg font-bold text-center text-white mb-4">
                   Totalt för träning
                 </h3>
                 <div className="grid grid-cols-4 gap-4 text-center">
                   <div>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Protein:</p>
+                    <p className="text-sm text-gray-400 mb-1">Protein:</p>
                     <p className="text-2xl font-bold text-white">
                       {Math.round(trainingMacros.totalProtein * 10) / 10}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Fett:</p>
+                    <p className="text-sm text-gray-400 mb-1">Fett:</p>
                     <p className="text-2xl font-bold text-white">
                       {Math.round(trainingMacros.totalFat * 10) / 10}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">
+                    <p className="text-sm text-gray-400 mb-1">
                       Kolhydrater:
                     </p>
                     <p className="text-2xl font-bold text-white">
@@ -377,7 +377,7 @@ export default function MealPlanTemplateViewPage() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Kcal:</p>
+                    <p className="text-sm text-gray-400 mb-1">Kcal:</p>
                     <p className="text-2xl font-bold text-white">
                       {Math.round(trainingMacros.totalCalories * 10) / 10}
                     </p>
@@ -386,7 +386,7 @@ export default function MealPlanTemplateViewPage() {
               </div>
 
               {/* Totalt dagsintag - Big Blue/Gold Box */}
-              <div className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-xl p-6">
+              <div className="bg-gradient-to-br from-gold-light to-orange-500 rounded-xl p-6">
                 <h3 className="text-lg font-bold text-center text-[#0a0a0a] mb-4">
                   Totalt dagsintag
                 </h3>
@@ -433,7 +433,7 @@ export default function MealPlanTemplateViewPage() {
                   return (
                     <Card
                       key={meal.id}
-                      className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]"
+                      className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]"
                     >
                       <div
                         className="p-6 cursor-pointer"
@@ -452,12 +452,12 @@ export default function MealPlanTemplateViewPage() {
                               )}
                             </h3>
                             {meal.description && (
-                              <p className="text-sm text-[rgba(255,255,255,0.5)] mt-1 italic">
+                              <p className="text-sm text-gray-500 mt-1 italic">
                                 {meal.description}
                               </p>
                             )}
                             {selectedOption && (
-                              <p className="text-sm text-[rgba(255,255,255,0.6)] mt-2">
+                              <p className="text-sm text-gray-400 mt-2">
                                 {selectedOption.optionType === 'recipe'
                                   ? selectedOption.recipe?.title
                                   : selectedOption.customName}{' '}
@@ -470,7 +470,7 @@ export default function MealPlanTemplateViewPage() {
                             )}
                           </div>
                           {meal.options.length > 1 && (
-                            <div className="text-[rgba(255,255,255,0.6)]">
+                            <div className="text-gray-400">
                               {isExpanded ? (
                                 <ChevronUp className="h-5 w-5" />
                               ) : (
@@ -499,7 +499,7 @@ export default function MealPlanTemplateViewPage() {
                                     className={`flex items-center space-x-3 p-4 rounded-lg border transition-all ${
                                       selectedOptionId === option.id
                                         ? 'bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.4)]'
-                                        : 'bg-[rgba(0,0,0,0.2)] border-[rgba(255,215,0,0.1)] hover:border-[rgba(255,215,0,0.3)]'
+                                        : 'bg-[rgba(0,0,0,0.2)] border-gold-primary/10 hover:border-gold-primary/30'
                                     }`}
                                   >
                                     <RadioGroupItem
@@ -552,11 +552,11 @@ export default function MealPlanTemplateViewPage() {
                                             )}
                                           </div>
                                           {option.customDescription && (
-                                            <p className="text-sm text-[rgba(255,255,255,0.5)] mt-1">
+                                            <p className="text-sm text-gray-500 mt-1">
                                               {option.customDescription}
                                             </p>
                                           )}
-                                          <div className="flex gap-4 mt-2 text-sm text-[rgba(255,255,255,0.6)]">
+                                          <div className="flex gap-4 mt-2 text-sm text-gray-400">
                                             <span>
                                               {Math.round(option.calculatedCalories)} kcal
                                             </span>
@@ -573,18 +573,18 @@ export default function MealPlanTemplateViewPage() {
 
                                           {/* Show food items if this is an ingredients option */}
                                           {option.optionType === 'ingredients' && option.customFoodItems && (
-                                            <div className="mt-3 border-t border-[rgba(255,215,0,0.1)] pt-2">
-                                              <p className="text-xs text-[rgba(255,255,255,0.5)] mb-2">Råvaror:</p>
+                                            <div className="mt-3 border-t border-gold-primary/10 pt-2">
+                                              <p className="text-xs text-gray-500 mb-2">Råvaror:</p>
                                               <div className="space-y-1">
                                                 {(option.customFoodItems as any[]).map((item, idx) => (
                                                   <div
                                                     key={idx}
                                                     className="flex items-center justify-between text-xs"
                                                   >
-                                                    <span className="text-[rgba(255,255,255,0.7)]">
+                                                    <span className="text-gray-300">
                                                       {item.name}
                                                     </span>
-                                                    <div className="flex items-center gap-2 text-[rgba(255,255,255,0.5)]">
+                                                    <div className="flex items-center gap-2 text-gray-500">
                                                       <span>{item.amountG}g</span>
                                                       <span className="hidden sm:inline">
                                                         P: {item.protein.toFixed(1)}g • F: {item.fat.toFixed(1)}g • K: {item.carbs.toFixed(1)}g

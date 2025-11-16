@@ -209,14 +209,14 @@ export function NutritionCalculatorClient({ clients }: NutritionCalculatorClient
       {/* Header Actions */}
       <div className="flex justify-between items-start">
         <div className="flex-1">
-          <Card className="bg-gray-900/40 border-[rgba(255,215,0,0.3)]">
+          <Card className="bg-gray-900/40 border-gold-primary/30">
             <CardHeader>
               <CardTitle className="text-white text-lg">Välj Klient</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <Select value={clientId || ''} onValueChange={handleClientSelect}>
-                  <SelectTrigger className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white">
+                  <SelectTrigger className="bg-gray-900/60 border-gold-primary/30 text-white">
                     <SelectValue placeholder="Välj en klient..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -229,7 +229,7 @@ export function NutritionCalculatorClient({ clients }: NutritionCalculatorClient
                 </Select>
                 {clientName && (
                   <p className="text-sm text-gray-400">
-                    Skapar plan för: <span className="text-[#FFD700]">{clientName}</span>
+                    Skapar plan för: <span className="text-gold-light">{clientName}</span>
                   </p>
                 )}
               </div>
@@ -241,7 +241,7 @@ export function NutritionCalculatorClient({ clients }: NutritionCalculatorClient
           <Button
             onClick={handleSave}
             disabled={isSaving || !clientId || !phase1Data}
-            className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFA500] hover:to-[#FFD700] text-black"
+            className="bg-gradient-to-r from-gold-light to-orange-500 hover:from-[#FFA500] hover:to-[#FFD700] text-black"
           >
             <Save className="w-4 h-4 mr-2" />
             {isSaving ? 'Sparar...' : 'Spara Plan'}
@@ -257,7 +257,7 @@ export function NutritionCalculatorClient({ clients }: NutritionCalculatorClient
           <Button
             onClick={handleReset}
             variant="outline"
-            className="bg-transparent border-[rgba(255,215,0,0.3)] text-white hover:bg-[rgba(255,215,0,0.1)]"
+            className="bg-transparent border-gold-primary/30 text-white hover:bg-gold-50"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             Nollställ
@@ -267,7 +267,7 @@ export function NutritionCalculatorClient({ clients }: NutritionCalculatorClient
 
       {/* Phase Tabs */}
       <Tabs value={selectedTab} onValueChange={handleTabChange}>
-        <TabsList className="bg-gray-900/60 border border-[rgba(255,215,0,0.3)] w-full justify-start">
+        <TabsList className="bg-gray-900/60 border border-gold-primary/30 w-full justify-start">
           <TabsTrigger
             value="phase-1"
             className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-black"

@@ -96,7 +96,7 @@ export function Phase2Form({ onNext, onBack }: Phase2FormProps) {
 
   if (!phase1Data) {
     return (
-      <Card className="bg-gray-900/40 border-[rgba(255,215,0,0.3)]">
+      <Card className="bg-gray-900/40 border-gold-primary/30">
         <CardContent className="pt-6">
           <p className="text-gray-400">Du måste slutföra Fas 1 först.</p>
         </CardContent>
@@ -105,7 +105,7 @@ export function Phase2Form({ onNext, onBack }: Phase2FormProps) {
   }
 
   return (
-    <Card className="bg-gray-900/40 border-[rgba(255,215,0,0.3)]">
+    <Card className="bg-gray-900/40 border-gold-primary/30">
       <CardHeader>
         <CardTitle className="text-white">Fas 2: Ramp Up 1</CardTitle>
         <CardDescription className="text-gray-400">
@@ -126,7 +126,7 @@ export function Phase2Form({ onNext, onBack }: Phase2FormProps) {
                 type="number"
                 step="0.1"
                 {...register('weight')}
-                className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-gray-900/60 border-gold-primary/30 text-white"
               />
               {errors.weight && (
                 <p className="text-sm text-red-400">{errors.weight.message}</p>
@@ -146,7 +146,7 @@ export function Phase2Form({ onNext, onBack }: Phase2FormProps) {
                     value={String(field.value || 30)}
                     onValueChange={(value) => field.onChange(Number(value) as ActivityLevel)}
                   >
-                    <SelectTrigger className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white">
+                    <SelectTrigger className="bg-gray-900/60 border-gold-primary/30 text-white">
                       <SelectValue placeholder="Välj nivå" />
                     </SelectTrigger>
                     <SelectContent>
@@ -172,7 +172,7 @@ export function Phase2Form({ onNext, onBack }: Phase2FormProps) {
                 id="weightLoss"
                 type="number"
                 {...register('weightLoss')}
-                className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-gray-900/60 border-gold-primary/30 text-white"
               />
               {errors.weightLoss && (
                 <p className="text-sm text-red-400">{errors.weightLoss.message}</p>
@@ -183,8 +183,8 @@ export function Phase2Form({ onNext, onBack }: Phase2FormProps) {
           {/* Calculated Results */}
           {calories && (
             <div className="space-y-4">
-              <div className="border border-[rgba(255,215,0,0.3)] bg-gray-900/40 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold text-[#FFD700] mb-3">
+              <div className="border border-gold-primary/30 bg-gray-900/40 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold text-gold-light mb-3">
                   Beräknade Makron
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -208,8 +208,8 @@ export function Phase2Form({ onNext, onBack }: Phase2FormProps) {
               </div>
 
               {/* Activity Updates */}
-              <div className="border border-[rgba(255,215,0,0.3)] bg-gray-900/40 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold text-[#FFD700] mb-3">
+              <div className="border border-gold-primary/30 bg-gray-900/40 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold text-gold-light mb-3">
                   Aktivitetsuppdateringar
                 </h3>
                 <div className="space-y-2">
@@ -240,7 +240,7 @@ export function Phase2Form({ onNext, onBack }: Phase2FormProps) {
               type="button"
               variant="outline"
               onClick={onBack}
-              className="bg-transparent border-[rgba(255,215,0,0.3)] text-white hover:bg-[rgba(255,215,0,0.1)]"
+              className="bg-transparent border-gold-primary/30 text-white hover:bg-gold-50"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Tillbaka till Fas 1

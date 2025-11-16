@@ -129,8 +129,8 @@ export default function ShoppingListsPage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-[rgba(255,255,255,0.7)]">
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
+          <p className="text-gray-300">
             Du har inte behörighet att se denna sida.
           </p>
         </div>
@@ -141,7 +141,7 @@ export default function ShoppingListsPage() {
   if (isLoading) {
     return (
       <div className="container mx-auto p-6">
-        <p className="text-[rgba(255,255,255,0.6)] text-center py-8">Laddar...</p>
+        <p className="text-gray-400 text-center py-8">Laddar...</p>
       </div>
     )
   }
@@ -151,16 +151,16 @@ export default function ShoppingListsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+          <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
             Inköpslistor
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-400 mt-1">
             Hantera inköpslistor för dina klienter
           </p>
         </div>
         <Button
           onClick={() => setIsCreateDialogOpen(true)}
-          className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+          className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
         >
           <Plus className="h-4 w-4 mr-2" />
           Skapa ny lista
@@ -168,9 +168,9 @@ export default function ShoppingListsPage() {
       </div>
 
       {/* Own Lists */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+      <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
         <CardHeader>
-          <CardTitle className="text-xl font-bold text-[#FFD700] tracking-[1px]">
+          <CardTitle className="text-xl font-bold text-gold-light tracking-[1px]">
             Mina listor ({ownLists.length})
           </CardTitle>
         </CardHeader>
@@ -178,7 +178,7 @@ export default function ShoppingListsPage() {
           {ownLists.length === 0 ? (
             <div className="text-center py-12">
               <ShoppingCart className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-              <p className="text-[rgba(255,255,255,0.6)]">Inga listor ännu.</p>
+              <p className="text-gray-400">Inga listor ännu.</p>
               <p className="text-sm text-[rgba(255,255,255,0.4)] mt-1">
                 Skapa din första inköpslista för att komma igång.
               </p>
@@ -188,7 +188,7 @@ export default function ShoppingListsPage() {
               {ownLists.map((list) => (
                 <Card
                   key={list.id}
-                  className="bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors cursor-pointer"
+                  className="bg-black/30 border border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)] transition-colors cursor-pointer"
                   onClick={() => router.push(`/dashboard/content/shopping-lists/${list.id}`)}
                 >
                   <CardContent className="p-4">
@@ -204,7 +204,7 @@ export default function ShoppingListsPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 text-[rgba(255,255,255,0.6)] hover:text-red-400"
+                          className="h-7 w-7 text-gray-400 hover:text-red-400"
                           onClick={(e) => {
                             e.stopPropagation()
                             handleDeleteList(list.id, list.name)
@@ -215,7 +215,7 @@ export default function ShoppingListsPage() {
                       </div>
                     </div>
                     {list.description && (
-                      <p className="text-sm text-[rgba(255,255,255,0.6)] mb-3 line-clamp-2">
+                      <p className="text-sm text-gray-400 mb-3 line-clamp-2">
                         {list.description}
                       </p>
                     )}
@@ -240,9 +240,9 @@ export default function ShoppingListsPage() {
 
       {/* Shared Lists */}
       {sharedLists.length > 0 && (
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle className="text-xl font-bold text-[#FFD700] tracking-[1px]">
+            <CardTitle className="text-xl font-bold text-gold-light tracking-[1px]">
               Delade med mig ({sharedLists.length})
             </CardTitle>
           </CardHeader>
@@ -251,7 +251,7 @@ export default function ShoppingListsPage() {
               {sharedLists.map((list) => (
                 <Card
                   key={list.id}
-                  className="bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors cursor-pointer"
+                  className="bg-black/30 border border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)] transition-colors cursor-pointer"
                   onClick={() => router.push(`/dashboard/content/shopping-lists/${list.id}`)}
                 >
                   <CardContent className="p-4">
@@ -265,7 +265,7 @@ export default function ShoppingListsPage() {
                       </div>
                     </div>
                     {list.description && (
-                      <p className="text-sm text-[rgba(255,255,255,0.6)] mb-3 line-clamp-2">
+                      <p className="text-sm text-gray-400 mb-3 line-clamp-2">
                         {list.description}
                       </p>
                     )}
@@ -288,18 +288,18 @@ export default function ShoppingListsPage() {
 
       {/* Create List Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] max-w-md">
+        <DialogContent className="bg-gray-900/95 border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               Skapa inköpslista
             </DialogTitle>
-            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+            <DialogDescription className="text-gray-400">
               Skapa en ny inköpslista för dina klienter.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="name" className="text-gray-200">
                 Namn *
               </Label>
               <Input
@@ -307,11 +307,11 @@ export default function ShoppingListsPage() {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="t.ex. Veckohandling"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div>
-              <Label htmlFor="description" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="description" className="text-gray-200">
                 Beskrivning
               </Label>
               <Input
@@ -319,11 +319,11 @@ export default function ShoppingListsPage() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Valfri beskrivning"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div>
-              <Label htmlFor="color" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="color" className="text-gray-200">
                 Färg
               </Label>
               <div className="flex items-center gap-2">
@@ -332,22 +332,22 @@ export default function ShoppingListsPage() {
                   id="color"
                   value={formData.color}
                   onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="h-10 w-16 cursor-pointer rounded border border-[rgba(255,215,0,0.3)]"
+                  className="h-10 w-16 cursor-pointer rounded border border-gold-primary/30"
                 />
-                <span className="text-sm text-[rgba(255,255,255,0.6)]">{formData.color}</span>
+                <span className="text-sm text-gray-400">{formData.color}</span>
               </div>
             </div>
           </div>
           <DialogFooter>
             <Button
               onClick={() => setIsCreateDialogOpen(false)}
-              className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+              className="bg-transparent border border-gold-primary/30 text-gray-200 hover:bg-gold-50 hover:text-gold-light"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleCreateList}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             >
               Skapa lista
             </Button>

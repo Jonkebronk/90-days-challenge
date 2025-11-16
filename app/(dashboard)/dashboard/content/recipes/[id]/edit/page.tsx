@@ -212,7 +212,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px] bg-gray-900">
-        <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-gold-primary/30 border-t-[#FFD700] rounded-full animate-spin" />
       </div>
     )
   }
@@ -220,11 +220,11 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
   return (
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="border-b border-[rgba(255,215,0,0.2)] bg-[rgba(255,255,255,0.02)] sticky top-0 z-10 backdrop-blur-sm">
+      <div className="border-b border-gold-primary/20 bg-white/5 sticky top-0 z-10 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-[rgba(255,255,255,0.7)] hover:text-[#FFD700]"
+            className="flex items-center gap-2 text-gray-300 hover:text-gold-light"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Tillbaka</span>
@@ -233,14 +233,14 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
             <Button
               variant="outline"
               onClick={() => router.back()}
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,215,0,0.1)]"
+              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-gray-100 hover:bg-gold-50"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleSave}
               disabled={saving}
-              className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+              className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
             >
               <Save className="w-4 h-4 mr-2" />
               {saving ? 'Sparar...' : 'Spara ändringar'}
@@ -252,34 +252,34 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
       <div className="max-w-4xl mx-auto px-6 py-8 space-y-8">
         {/* Grundinformation */}
         <div>
-          <h2 className="text-lg font-semibold mb-4 text-[rgba(255,255,255,0.9)]">Grundinformation</h2>
+          <h2 className="text-lg font-semibold mb-4 text-gray-100">Grundinformation</h2>
           <div className="space-y-4">
             <div>
-              <Label className="text-sm text-[rgba(255,255,255,0.7)]">Titel *</Label>
+              <Label className="text-sm text-gray-300">Titel *</Label>
               <Input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="t.ex. Protein pannkakor"
-                className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
               />
             </div>
 
             <div>
-              <Label className="text-sm text-[rgba(255,255,255,0.7)]">Beskrivning</Label>
+              <Label className="text-sm text-gray-300">Beskrivning</Label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Beskriv receptet..."
                 rows={2}
-                className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm text-[rgba(255,255,255,0.7)]">Kategori *</Label>
+                <Label className="text-sm text-gray-300">Kategori *</Label>
                 <Select value={categoryId} onValueChange={setCategoryId}>
-                  <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                  <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white">
                     <SelectValue placeholder="Välj" />
                   </SelectTrigger>
                   <SelectContent>
@@ -291,12 +291,12 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
               </div>
 
               <div>
-                <Label className="text-sm text-[rgba(255,255,255,0.7)]">Portioner</Label>
+                <Label className="text-sm text-gray-300">Portioner</Label>
                 <Input
                   type="number"
                   value={servings}
                   onChange={(e) => setServings(parseInt(e.target.value) || 1)}
-                  className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                  className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
                 />
               </div>
             </div>
@@ -306,12 +306,12 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
         {/* Ingredienser */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Ingredienser ({ingredients.length})</h2>
+            <h2 className="text-lg font-semibold text-gray-100">Ingredienser ({ingredients.length})</h2>
             <Button
               onClick={handleAddIngredient}
               size="sm"
               variant="outline"
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)]"
+              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-gray-100"
             >
               <Plus className="w-4 h-4 mr-1" />
               Lägg till
@@ -319,7 +319,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
           </div>
 
           <div className="space-y-2">
-            <div className="grid grid-cols-12 gap-2 text-xs font-medium text-[rgba(255,255,255,0.5)] px-2">
+            <div className="grid grid-cols-12 gap-2 text-xs font-medium text-gray-500 px-2">
               <div className="col-span-4">Ingrediens</div>
               <div className="col-span-2">Mängd</div>
               <div className="col-span-2">Enhet</div>
@@ -334,7 +334,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                     value={ing.name}
                     onChange={(e) => handleUpdateIngredient(index, 'name', e.target.value)}
                     placeholder="Ingrediens..."
-                    className="text-sm bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                    className="text-sm bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
                   />
                 </div>
                 <div className="col-span-2">
@@ -342,7 +342,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                     value={ing.amount}
                     onChange={(e) => handleUpdateIngredient(index, 'amount', e.target.value)}
                     placeholder="2"
-                    className="text-sm bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                    className="text-sm bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
                   />
                 </div>
                 <div className="col-span-2">
@@ -350,7 +350,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                     value={ing.unit}
                     onValueChange={(value) => handleUpdateIngredient(index, 'unit', value)}
                   >
-                    <SelectTrigger className="text-sm bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                    <SelectTrigger className="text-sm bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -369,7 +369,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                     value={ing.grams}
                     onChange={(e) => handleUpdateIngredient(index, 'grams', e.target.value)}
                     placeholder="100"
-                    className="text-sm bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                    className="text-sm bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
                   />
                 </div>
                 <div className="col-span-1 flex justify-end">
@@ -388,12 +388,12 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
         {/* Tillagningsinstruktioner */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Tillagningsinstruktioner ({instructions.length} steg)</h2>
+            <h2 className="text-lg font-semibold text-gray-100">Tillagningsinstruktioner ({instructions.length} steg)</h2>
             <Button
               onClick={handleAddInstruction}
               size="sm"
               variant="outline"
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)]"
+              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-gray-100"
             >
               <Plus className="w-4 h-4 mr-1" />
               Lägg till steg
@@ -403,7 +403,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
           <div className="space-y-3">
             {instructions.map((inst, index) => (
               <div key={index} className="flex gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[rgba(255,215,0,0.2)] flex items-center justify-center text-sm font-medium text-[#FFD700]">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[rgba(255,215,0,0.2)] flex items-center justify-center text-sm font-medium text-gold-light">
                   {inst.step}
                 </div>
                 <div className="flex-1">
@@ -412,7 +412,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                     onChange={(e) => handleUpdateInstruction(index, 'text', e.target.value)}
                     placeholder="Beskriv detta steg..."
                     rows={2}
-                    className="text-sm bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                    className="text-sm bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
                   />
                 </div>
                 <div className="w-24">
@@ -421,7 +421,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                     value={inst.duration || ''}
                     onChange={(e) => handleUpdateInstruction(index, 'duration', e.target.value)}
                     placeholder="Min"
-                    className="text-sm bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                    className="text-sm bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
                   />
                 </div>
                 <button
@@ -437,49 +437,49 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
 
         {/* Näringsinformation */}
         <div>
-          <h2 className="text-lg font-semibold mb-4 text-[rgba(255,255,255,0.9)]">Näringsinformation (per portion)</h2>
+          <h2 className="text-lg font-semibold mb-4 text-gray-100">Näringsinformation (per portion)</h2>
           <div className="grid grid-cols-4 gap-4">
             <div>
-              <Label className="text-sm text-[rgba(255,255,255,0.7)]">Kalorier (kcal)</Label>
+              <Label className="text-sm text-gray-300">Kalorier (kcal)</Label>
               <Input
                 type="number"
                 value={calories}
                 onChange={(e) => setCalories(e.target.value)}
                 placeholder="400"
-                className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
               />
             </div>
             <div>
-              <Label className="text-sm text-[rgba(255,255,255,0.7)]">Protein (g)</Label>
+              <Label className="text-sm text-gray-300">Protein (g)</Label>
               <Input
                 type="number"
                 step="0.1"
                 value={protein}
                 onChange={(e) => setProtein(e.target.value)}
                 placeholder="25"
-                className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
               />
             </div>
             <div>
-              <Label className="text-sm text-[rgba(255,255,255,0.7)]">Kolhydrater (g)</Label>
+              <Label className="text-sm text-gray-300">Kolhydrater (g)</Label>
               <Input
                 type="number"
                 step="0.1"
                 value={carbs}
                 onChange={(e) => setCarbs(e.target.value)}
                 placeholder="50"
-                className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
               />
             </div>
             <div>
-              <Label className="text-sm text-[rgba(255,255,255,0.7)]">Fett (g)</Label>
+              <Label className="text-sm text-gray-300">Fett (g)</Label>
               <Input
                 type="number"
                 step="0.1"
                 value={fat}
                 onChange={(e) => setFat(e.target.value)}
                 placeholder="10"
-                className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
               />
             </div>
           </div>

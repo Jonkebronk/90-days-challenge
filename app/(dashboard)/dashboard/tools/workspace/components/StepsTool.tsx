@@ -16,7 +16,7 @@ export default function StepsTool() {
   if (!selectedClient) {
     return (
       <div className="text-center py-12">
-        <p className="text-[rgba(255,255,255,0.6)]">Välj en klient för att börja</p>
+        <p className="text-gray-400">Välj en klient för att börja</p>
       </div>
     )
   }
@@ -24,8 +24,8 @@ export default function StepsTool() {
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-3">
-        <Activity className="text-[#FFD700]" size={32} />
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+        <Activity className="text-gold-light" size={32} />
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-gold-light to-orange-500 bg-clip-text text-transparent">
           Daglig Aktivitetsnivå (Steg)
         </h1>
       </div>
@@ -40,7 +40,7 @@ export default function StepsTool() {
         </h2>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-[rgba(255,255,255,0.8)] mb-3">
+          <label className="block text-sm font-medium text-gray-200 mb-3">
             Antal steg per dag
           </label>
           <input
@@ -55,7 +55,7 @@ export default function StepsTool() {
               background: `linear-gradient(to right, #9333ea 0%, #9333ea ${(((localPlan.dailySteps || 5000) - 1000) / 14000) * 100}%, rgba(147, 51, 234, 0.3) ${(((localPlan.dailySteps || 5000) - 1000) / 14000) * 100}%, rgba(147, 51, 234, 0.3) 100%)`
             }}
           />
-          <div className="flex justify-between text-xs text-[rgba(255,255,255,0.6)] mt-2">
+          <div className="flex justify-between text-xs text-gray-400 mt-2">
             <span>1,000</span>
             <span>15,000</span>
           </div>
@@ -63,38 +63,38 @@ export default function StepsTool() {
 
         <div className="grid md:grid-cols-2 gap-4 mb-4">
           <div className="bg-[rgba(255,255,255,0.05)] p-4 rounded-lg border-2 border-purple-400">
-            <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Valda steg</p>
+            <p className="text-sm text-gray-400 mb-1">Valda steg</p>
             <p className="text-3xl font-bold text-purple-400">{(localPlan.dailySteps || 5000).toLocaleString()}</p>
           </div>
           <div className="bg-[rgba(255,255,255,0.05)] p-4 rounded-lg border-2 border-purple-400">
-            <p className="text-sm text-[rgba(255,255,255,0.6)] mb-1">Extra kalorier från steg</p>
+            <p className="text-sm text-gray-400 mb-1">Extra kalorier från steg</p>
             <p className="text-3xl font-bold text-purple-400">+{stepsCalories} kcal</p>
           </div>
         </div>
 
         <div className="bg-[rgba(59,130,246,0.15)] border-l-4 border-blue-400 rounded-lg p-4">
           <h3 className="font-semibold text-white mb-2">Beräkning</h3>
-          <p className="text-sm text-[rgba(255,255,255,0.8)]">
+          <p className="text-sm text-gray-200">
             1,000 steg ≈ 50 kcal
           </p>
-          <p className="text-sm text-[rgba(255,255,255,0.6)] mt-2">
+          <p className="text-sm text-gray-400 mt-2">
             {(localPlan.dailySteps || 5000).toLocaleString()} steg ÷ 1,000 × 50 = <span className="font-bold text-purple-400">{stepsCalories} kcal</span>
           </p>
         </div>
       </div>
 
       {/* Info Section */}
-      <div className="p-6 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-xl">
+      <div className="p-6 bg-white/5 border border-gold-primary/20 rounded-xl">
         <h3 className="font-semibold text-white mb-3">Om stegkalkylering</h3>
-        <div className="space-y-2 text-sm text-[rgba(255,255,255,0.8)]">
+        <div className="space-y-2 text-sm text-gray-200">
           <p>
-            <span className="text-[#FFD700] font-semibold">Steg som aktivitet:</span> När du räknar dagliga steg som extra aktivitet får klienten äta mer samtidigt som viktnedgången bibehålls.
+            <span className="text-gold-light font-semibold">Steg som aktivitet:</span> När du räknar dagliga steg som extra aktivitet får klienten äta mer samtidigt som viktnedgången bibehålls.
           </p>
           <p>
-            <span className="text-[#FFD700] font-semibold">Formeln:</span> Vi använder en enkel formel där 1,000 steg ≈ 50 kalorier. Detta är en bra approximation för de flesta personer.
+            <span className="text-gold-light font-semibold">Formeln:</span> Vi använder en enkel formel där 1,000 steg ≈ 50 kalorier. Detta är en bra approximation för de flesta personer.
           </p>
           <p>
-            <span className="text-[#FFD700] font-semibold">Integration:</span> De extra kalorierna från steg läggs till klientens dagliga kaloriintag automatiskt.
+            <span className="text-gold-light font-semibold">Integration:</span> De extra kalorierna från steg läggs till klientens dagliga kaloriintag automatiskt.
           </p>
         </div>
       </div>

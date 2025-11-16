@@ -133,8 +133,8 @@ export default function WorkoutGuidePage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-[#FFD700] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[rgba(255,255,255,0.8)]">Laddar guide...</p>
+          <div className="w-12 h-12 border-4 border-gold-light border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-200">Laddar guide...</p>
         </div>
       </div>
     )
@@ -149,7 +149,7 @@ export default function WorkoutGuidePage() {
             variant="ghost"
             size="sm"
             onClick={() => router.back()}
-            className="text-[rgba(255,255,255,0.8)] hover:text-[#FFD700]"
+            className="text-gray-200 hover:text-gold-light"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Tillbaka
@@ -160,20 +160,20 @@ export default function WorkoutGuidePage() {
         <div className="text-center mb-8">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Info className="w-8 h-8 text-[#FFD700]" />
-            <h1 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <Info className="w-8 h-8 text-gold-light" />
+            <h1 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               {guideData.title}
             </h1>
           </div>
-          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+          <p className="text-gray-400 text-sm tracking-[1px]">
             Allt du behöver veta om ditt träningsprogram
           </p>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
         </div>
 
         {/* Content Card */}
-        <div className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-8 backdrop-blur-[10px]">
-          <div className="prose prose-invert prose-lg max-w-none prose-headings:text-[#FFD700] prose-headings:font-bold prose-p:text-[rgba(255,255,255,0.8)] prose-strong:text-[#FFD700] prose-li:text-[rgba(255,255,255,0.8)] prose-a:text-[#3b82f6] prose-a:no-underline hover:prose-a:underline">
+        <div className="bg-[rgba(10,10,10,0.6)] border-2 border-gold-primary/30 rounded-xl p-8 backdrop-blur-[10px]">
+          <div className="prose prose-invert prose-lg max-w-none prose-headings:text-gold-light prose-headings:font-bold prose-p:text-gray-200 prose-strong:text-gold-light prose-li:text-gray-200 prose-a:text-[#3b82f6] prose-a:no-underline hover:prose-a:underline">
             <MDXPreview content={guideData.content} />
           </div>
         </div>
@@ -182,7 +182,7 @@ export default function WorkoutGuidePage() {
         <div className="text-center pt-6">
           <Button
             onClick={() => router.push('/dashboard/workout')}
-            className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold px-8 py-6 text-lg hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] transition-all"
+            className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] font-bold px-8 py-6 text-lg hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] transition-all"
           >
             Till Mitt Träningsprogram
           </Button>

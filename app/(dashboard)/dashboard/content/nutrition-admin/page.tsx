@@ -210,8 +210,8 @@ export default function NutritionAdminPage() {
   if (!session?.user || !isCoach) {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-[rgba(255,255,255,0.7)]">
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
+          <p className="text-gray-300">
             Du har inte behörighet att se denna sida.
           </p>
         </div>
@@ -222,7 +222,7 @@ export default function NutritionAdminPage() {
   if (isLoading) {
     return (
       <div className="container mx-auto p-6">
-        <p className="text-[rgba(255,255,255,0.6)] text-center py-8">Laddar...</p>
+        <p className="text-gray-400 text-center py-8">Laddar...</p>
       </div>
     )
   }
@@ -235,15 +235,15 @@ export default function NutritionAdminPage() {
           <Button
             variant="ghost"
             onClick={() => router.back()}
-            className="text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
+            className="text-gray-400 hover:text-gold-light"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+            <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
               Hantera Näringstabeller
             </h1>
-            <p className="text-[rgba(255,255,255,0.6)] mt-1">
+            <p className="text-gray-400 mt-1">
               Fyll i hur många gram mat som ger 20g - resten räknas ut automatiskt
             </p>
           </div>
@@ -251,7 +251,7 @@ export default function NutritionAdminPage() {
         <Button
           onClick={saveChanges}
           disabled={isSaving}
-          className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+          className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
         >
           <Save className="h-4 w-4 mr-2" />
           {isSaving ? 'Sparar...' : 'Spara alla ändringar'}
@@ -260,7 +260,7 @@ export default function NutritionAdminPage() {
 
       {/* Type Selector */}
       <Tabs value={activeType} onValueChange={(v) => setActiveType(v as any)} className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-3 bg-[rgba(255,255,255,0.03)]">
+        <TabsList className="grid w-full max-w-md grid-cols-3 bg-white/5">
           <TabsTrigger value="protein" className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a]">
             Protein
           </TabsTrigger>
@@ -274,16 +274,16 @@ export default function NutritionAdminPage() {
 
         <TabsContent value={activeType} className="mt-6 space-y-4">
           {categories.map((category, categoryIndex) => (
-            <Card key={category.id} className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+            <Card key={category.id} className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-xl text-[#FFD700]">{category.name}</CardTitle>
+                <CardTitle className="text-xl text-gold-light">{category.name}</CardTitle>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => moveCategory(category.id, 'up')}
                     disabled={categoryIndex === 0}
-                    className="border border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+                    className="border border-gold-primary/30 text-gold-light hover:bg-gold-50 hover:text-gold-light"
                   >
                     <ChevronUp className="h-4 w-4" />
                   </Button>
@@ -292,7 +292,7 @@ export default function NutritionAdminPage() {
                     size="sm"
                     onClick={() => moveCategory(category.id, 'down')}
                     disabled={categoryIndex === categories.length - 1}
-                    className="border border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+                    className="border border-gold-primary/30 text-gold-light hover:bg-gold-50 hover:text-gold-light"
                   >
                     <ChevronDown className="h-4 w-4" />
                   </Button>
@@ -303,19 +303,19 @@ export default function NutritionAdminPage() {
                   <table className="w-full border-collapse text-xs">
                     <thead className="bg-[rgba(255,215,0,0.05)]">
                       <tr>
-                        <th className="px-2 py-2 text-left text-xs font-semibold text-[rgba(255,255,255,0.8)] border border-[rgba(255,215,0,0.2)] sticky left-0 bg-[rgba(10,10,10,0.95)] z-10">
+                        <th className="px-2 py-2 text-left text-xs font-semibold text-gray-200 border border-gold-primary/20 sticky left-0 bg-gray-900/95 z-10">
                           Livsmedel
                         </th>
                         {proteinTargets.map((target) => (
                           <th
                             key={target}
-                            className="px-2 py-2 text-center text-xs font-semibold text-[#FFD700] border border-[rgba(255,215,0,0.2)] min-w-[70px]"
+                            className="px-2 py-2 text-center text-xs font-semibold text-gold-light border border-gold-primary/20 min-w-[70px]"
                           >
                             <div>{target}g</div>
                             <div className="text-[rgba(255,215,0,0.6)] font-normal">(gram mat)</div>
                           </th>
                         ))}
-                        <th className="px-2 py-2 text-center text-xs font-semibold text-[rgba(255,255,255,0.8)] border border-[rgba(255,215,0,0.2)] min-w-[80px]">
+                        <th className="px-2 py-2 text-center text-xs font-semibold text-gray-200 border border-gold-primary/20 min-w-[80px]">
                           Åtgärder
                         </th>
                       </tr>
@@ -324,35 +324,35 @@ export default function NutritionAdminPage() {
                       {category.items.map((item, idx) => (
                         <tr
                           key={item.id}
-                          className={`border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)] ${
+                          className={`border-b border-gold-primary/10 hover:bg-[rgba(255,215,0,0.02)] ${
                             idx % 2 === 0 ? 'bg-[rgba(255,255,255,0.01)]' : ''
                           }`}
                         >
-                          <td className="px-2 py-2 border border-[rgba(255,215,0,0.1)] sticky left-0 bg-[rgba(10,10,10,0.95)] z-10">
+                          <td className="px-2 py-2 border border-gold-primary/10 sticky left-0 bg-gray-900/95 z-10">
                             <Input
                               value={item.name}
                               onChange={(e) => updateItemValue(category.id, item.id, 'name', e.target.value)}
-                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white h-8 text-xs"
+                              className="bg-black/30 border-gold-primary/30 text-white h-8 text-xs"
                             />
                           </td>
                           {proteinTargets.map((target, targetIndex) => (
-                            <td key={target} className="px-2 py-2 border border-[rgba(255,215,0,0.1)]">
+                            <td key={target} className="px-2 py-2 border border-gold-primary/10">
                               {targetIndex === 0 ? (
                                 <Input
                                   type="number"
                                   value={calculateFoodWeight(item.valuePer100g, target)}
                                   onChange={(e) => updateItemByWeight(category.id, item.id, target, parseInt(e.target.value) || 0)}
-                                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white h-8 text-xs text-center"
+                                  className="bg-black/30 border-gold-primary/30 text-white h-8 text-xs text-center"
                                   placeholder="0"
                                 />
                               ) : (
-                                <div className="px-2 py-1 text-center text-[rgba(255,255,255,0.8)]">
+                                <div className="px-2 py-1 text-center text-gray-200">
                                   {calculateFoodWeight(item.valuePer100g, target)}
                                 </div>
                               )}
                             </td>
                           ))}
-                          <td className="px-2 py-2 text-center border border-[rgba(255,215,0,0.1)]">
+                          <td className="px-2 py-2 text-center border border-gold-primary/10">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -371,7 +371,7 @@ export default function NutritionAdminPage() {
                   onClick={() => addItem(category.id)}
                   variant="ghost"
                   size="sm"
-                  className="mt-4 border border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+                  className="mt-4 border border-gold-primary/30 text-gold-light hover:bg-gold-50 hover:text-gold-light"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Lägg till livsmedel

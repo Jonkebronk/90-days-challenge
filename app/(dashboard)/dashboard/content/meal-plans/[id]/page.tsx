@@ -515,8 +515,8 @@ export default function MealPlanTemplatePage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-[rgba(255,255,255,0.7)]">
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
+          <p className="text-gray-300">
             Du har inte behörighet att se denna sida.
           </p>
         </div>
@@ -527,7 +527,7 @@ export default function MealPlanTemplatePage() {
   if (isLoading) {
     return (
       <div className="container mx-auto p-6">
-        <p className="text-[rgba(255,255,255,0.6)] text-center py-8">Laddar...</p>
+        <p className="text-gray-400 text-center py-8">Laddar...</p>
       </div>
     )
   }
@@ -535,8 +535,8 @@ export default function MealPlanTemplatePage() {
   if (!template) {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-[rgba(255,255,255,0.7)]">Måltidsplan hittades inte</p>
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
+          <p className="text-gray-300">Måltidsplan hittades inte</p>
         </div>
       </div>
     )
@@ -550,16 +550,16 @@ export default function MealPlanTemplatePage() {
           <Button
             variant="ghost"
             onClick={() => router.push('/dashboard/content/meal-plans')}
-            className="text-[rgba(255,255,255,0.6)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+            className="text-gray-400 hover:text-gold-light hover:bg-gold-50"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Tillbaka
           </Button>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+            <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
               Redigera Måltidsplan
             </h1>
-            <p className="text-[rgba(255,255,255,0.6)] mt-1">
+            <p className="text-gray-400 mt-1">
               Lägg till måltider och alternativ
             </p>
           </div>
@@ -567,7 +567,7 @@ export default function MealPlanTemplatePage() {
         <div className="flex items-center gap-2">
           <Button
             onClick={() => setIsAssignDialogOpen(true)}
-            className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+            className="bg-transparent border border-gold-primary/30 text-gray-200 hover:bg-gold-50 hover:text-gold-light"
           >
             <Users className="h-4 w-4 mr-2" />
             Tilldela klienter
@@ -589,27 +589,27 @@ export default function MealPlanTemplatePage() {
       </div>
 
       {/* Template Details Card */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+      <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
         <CardHeader>
-          <CardTitle className="text-xl font-bold text-[#FFD700] tracking-[1px]">
+          <CardTitle className="text-xl font-bold text-gold-light tracking-[1px]">
             Plandetaljer
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="name" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="name" className="text-gray-200">
                 Namn *
               </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
             <div>
-              <Label htmlFor="targetCalories" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="targetCalories" className="text-gray-200">
                 Mål kalorier
               </Label>
               <Input
@@ -619,12 +619,12 @@ export default function MealPlanTemplatePage() {
                 onChange={(e) =>
                   setFormData({ ...formData, targetCalories: e.target.value })
                 }
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
           </div>
           <div>
-            <Label htmlFor="description" className="text-[rgba(255,255,255,0.8)]">
+            <Label htmlFor="description" className="text-gray-200">
               Beskrivning
             </Label>
             <Textarea
@@ -632,11 +632,11 @@ export default function MealPlanTemplatePage() {
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={3}
-              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+              className="bg-black/30 border-gold-primary/30 text-white"
             />
           </div>
           <div>
-            <Label htmlFor="generalAdvice" className="text-[rgba(255,255,255,0.8)]">
+            <Label htmlFor="generalAdvice" className="text-gray-200">
               Generella råd
             </Label>
             <Textarea
@@ -645,12 +645,12 @@ export default function MealPlanTemplatePage() {
               onChange={(e) => setFormData({ ...formData, generalAdvice: e.target.value })}
               rows={4}
               placeholder="Skriv generella råd som visas för klienten..."
-              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+              className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
             />
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="targetProtein" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="targetProtein" className="text-gray-200">
                 Mål protein (g)
               </Label>
               <Input
@@ -661,11 +661,11 @@ export default function MealPlanTemplatePage() {
                 onChange={(e) =>
                   setFormData({ ...formData, targetProtein: e.target.value })
                 }
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
             <div>
-              <Label htmlFor="targetFat" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="targetFat" className="text-gray-200">
                 Mål fett (g)
               </Label>
               <Input
@@ -674,11 +674,11 @@ export default function MealPlanTemplatePage() {
                 step="0.1"
                 value={formData.targetFat}
                 onChange={(e) => setFormData({ ...formData, targetFat: e.target.value })}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
             <div>
-              <Label htmlFor="targetCarbs" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="targetCarbs" className="text-gray-200">
                 Mål kolhydrater (g)
               </Label>
               <Input
@@ -687,7 +687,7 @@ export default function MealPlanTemplatePage() {
                 step="0.1"
                 value={formData.targetCarbs}
                 onChange={(e) => setFormData({ ...formData, targetCarbs: e.target.value })}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
           </div>
@@ -695,15 +695,15 @@ export default function MealPlanTemplatePage() {
       </Card>
 
       {/* Meals Card */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+      <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xl font-bold text-[#FFD700] tracking-[1px]">
+            <CardTitle className="text-xl font-bold text-gold-light tracking-[1px]">
               Måltider ({template.meals.length})
             </CardTitle>
             <Button
               onClick={() => setIsAddMealDialogOpen(true)}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             >
               <Plus className="h-4 w-4 mr-2" />
               Lägg till måltid
@@ -714,7 +714,7 @@ export default function MealPlanTemplatePage() {
           {template.meals.length === 0 ? (
             <div className="text-center py-8">
               <UtensilsCrossed className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-              <p className="text-[rgba(255,255,255,0.6)]">Inga måltider ännu.</p>
+              <p className="text-gray-400">Inga måltider ännu.</p>
               <p className="text-sm text-[rgba(255,255,255,0.4)] mt-1">
                 Lägg till din första måltid för att komma igång.
               </p>
@@ -726,7 +726,7 @@ export default function MealPlanTemplatePage() {
                 .map((meal, index, sortedArray) => (
                   <Card
                     key={meal.id}
-                    className="bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.2)]"
+                    className="bg-black/30 border border-gold-primary/20"
                   >
                     <CardHeader>
                       <div className="flex items-center justify-between">
@@ -734,7 +734,7 @@ export default function MealPlanTemplatePage() {
                           <CardTitle className="text-lg text-white">
                             {meal.name}
                           </CardTitle>
-                          <p className="text-sm text-[rgba(255,255,255,0.6)] mt-1">
+                          <p className="text-sm text-gray-400 mt-1">
                             {meal.mealType} •{' '}
                             {meal.targetCalories
                               ? `${meal.targetCalories} kcal`
@@ -751,7 +751,7 @@ export default function MealPlanTemplatePage() {
                             onClick={() => handleReorderMeal(meal.id, 'up')}
                             disabled={index === 0}
                             title="Flytta upp"
-                            className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700] disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="hover:bg-gold-50 text-gray-400 hover:text-gold-light disabled:opacity-30 disabled:cursor-not-allowed"
                           >
                             <ArrowUp className="h-4 w-4" />
                           </Button>
@@ -761,7 +761,7 @@ export default function MealPlanTemplatePage() {
                             onClick={() => handleReorderMeal(meal.id, 'down')}
                             disabled={index === sortedArray.length - 1}
                             title="Flytta ner"
-                            className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700] disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="hover:bg-gold-50 text-gray-400 hover:text-gold-light disabled:opacity-30 disabled:cursor-not-allowed"
                           >
                             <ArrowDown className="h-4 w-4" />
                           </Button>
@@ -770,7 +770,7 @@ export default function MealPlanTemplatePage() {
                             size="icon"
                             onClick={() => openEditMealDialog(meal)}
                             title="Redigera måltid"
-                            className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
+                            className="hover:bg-gold-50 text-gray-400 hover:text-gold-light"
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -779,7 +779,7 @@ export default function MealPlanTemplatePage() {
                             size="icon"
                             onClick={() => handleDeleteMeal(meal.id, meal.name)}
                             title="Radera måltid"
-                            className="hover:bg-[rgba(255,0,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-red-400"
+                            className="hover:bg-[rgba(255,0,0,0.1)] text-gray-400 hover:text-red-400"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -790,7 +790,7 @@ export default function MealPlanTemplatePage() {
                       {/* Ingredients Table */}
                       <div className="mb-6">
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-sm font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                          <h3 className="text-sm font-semibold text-gray-200 uppercase tracking-wide">
                             Råvaror
                           </h3>
                           <Button
@@ -799,7 +799,7 @@ export default function MealPlanTemplatePage() {
                               setIsAddIngredientDialogOpen(true)
                             }}
                             size="sm"
-                            className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+                            className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
                           >
                             <Plus className="h-3 w-3 mr-1" />
                             Lägg till råvara
@@ -807,26 +807,26 @@ export default function MealPlanTemplatePage() {
                         </div>
 
                         {meal.items && meal.items.length > 0 ? (
-                          <div className="border border-[rgba(255,215,0,0.2)] rounded-lg overflow-hidden">
+                          <div className="border border-gold-primary/20 rounded-lg overflow-hidden">
                             <table className="w-full">
                               <thead className="bg-[rgba(255,215,0,0.05)]">
                                 <tr>
-                                  <th className="px-3 py-2 text-left text-xs font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-200 uppercase tracking-wide">
                                     Råvara
                                   </th>
-                                  <th className="px-3 py-2 text-left text-xs font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-200 uppercase tracking-wide">
                                     Mängd
                                   </th>
-                                  <th className="px-3 py-2 text-right text-xs font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                                  <th className="px-3 py-2 text-right text-xs font-semibold text-gray-200 uppercase tracking-wide">
                                     P
                                   </th>
-                                  <th className="px-3 py-2 text-right text-xs font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                                  <th className="px-3 py-2 text-right text-xs font-semibold text-gray-200 uppercase tracking-wide">
                                     F
                                   </th>
-                                  <th className="px-3 py-2 text-right text-xs font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                                  <th className="px-3 py-2 text-right text-xs font-semibold text-gray-200 uppercase tracking-wide">
                                     K
                                   </th>
-                                  <th className="px-3 py-2 text-right text-xs font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                                  <th className="px-3 py-2 text-right text-xs font-semibold text-gray-200 uppercase tracking-wide">
                                     Kcal
                                   </th>
                                   <th className="px-3 py-2 w-20"></th>
@@ -838,12 +838,12 @@ export default function MealPlanTemplatePage() {
                                   .map((item) => (
                                     <tr
                                       key={item.id}
-                                      className="border-t border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]"
+                                      className="border-t border-gold-primary/10 hover:bg-[rgba(255,215,0,0.02)]"
                                     >
                                       <td className="px-3 py-2 text-sm text-white">
                                         {item.name}
                                       </td>
-                                      <td className="px-3 py-2 text-sm text-[rgba(255,255,255,0.8)]">
+                                      <td className="px-3 py-2 text-sm text-gray-200">
                                         {item.amount}
                                       </td>
                                       <td className="px-3 py-2 text-sm text-right text-blue-300">
@@ -855,7 +855,7 @@ export default function MealPlanTemplatePage() {
                                       <td className="px-3 py-2 text-sm text-right text-orange-300">
                                         {item.carbs}g
                                       </td>
-                                      <td className="px-3 py-2 text-sm text-right text-[#FFD700]">
+                                      <td className="px-3 py-2 text-sm text-right text-gold-light">
                                         {item.calories}
                                       </td>
                                       <td className="px-3 py-2">
@@ -863,7 +863,7 @@ export default function MealPlanTemplatePage() {
                                           variant="ghost"
                                           size="icon"
                                           onClick={() => handleDeleteIngredient(meal.id, item.id)}
-                                          className="h-6 w-6 hover:bg-[rgba(255,0,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-red-400"
+                                          className="h-6 w-6 hover:bg-[rgba(255,0,0,0.1)] text-gray-400 hover:text-red-400"
                                         >
                                           <Trash2 className="h-3 w-3" />
                                         </Button>
@@ -874,8 +874,8 @@ export default function MealPlanTemplatePage() {
                             </table>
                           </div>
                         ) : (
-                          <div className="border border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-6 text-center">
-                            <p className="text-sm text-[rgba(255,255,255,0.5)]">
+                          <div className="border border-dashed border-gold-primary/30 rounded-lg p-6 text-center">
+                            <p className="text-sm text-gray-500">
                               Inga råvaror tillagda ännu. Klicka på &quot;Lägg till råvara&quot; för att komma igång.
                             </p>
                           </div>
@@ -884,7 +884,7 @@ export default function MealPlanTemplatePage() {
 
                       {/* Meal Alternatives Section */}
                       <div className="mb-3">
-                        <h3 className="text-sm font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide mb-3">
+                        <h3 className="text-sm font-semibold text-gray-200 uppercase tracking-wide mb-3">
                           Receptförslag & Alternativ
                         </h3>
                       </div>
@@ -897,16 +897,16 @@ export default function MealPlanTemplatePage() {
                               .map((option) => (
                                 <div
                                   key={option.id}
-                                  className="p-3 bg-[rgba(0,0,0,0.2)] border border-[rgba(255,215,0,0.1)] rounded-lg"
+                                  className="p-3 bg-[rgba(0,0,0,0.2)] border border-gold-primary/10 rounded-lg"
                                 >
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                       {option.optionType === 'recipe' ? (
-                                        <ChefHat className="h-5 w-5 text-[#FFD700]" />
+                                        <ChefHat className="h-5 w-5 text-gold-light" />
                                       ) : option.optionType === 'ingredients' ? (
-                                        <Apple className="h-5 w-5 text-[#FFD700]" />
+                                        <Apple className="h-5 w-5 text-gold-light" />
                                       ) : (
-                                        <UtensilsCrossed className="h-5 w-5 text-[#FFD700]" />
+                                        <UtensilsCrossed className="h-5 w-5 text-gold-light" />
                                       )}
                                       <div>
                                         <p className="text-white font-medium">
@@ -919,7 +919,7 @@ export default function MealPlanTemplatePage() {
                                             </Badge>
                                           )}
                                         </p>
-                                        <p className="text-sm text-[rgba(255,255,255,0.6)]">
+                                        <p className="text-sm text-gray-400">
                                           {Math.round(option.calculatedCalories)} kcal • P:{' '}
                                           {Math.round(option.calculatedProtein)}g • F:{' '}
                                           {Math.round(option.calculatedFat)}g • K:{' '}
@@ -931,14 +931,14 @@ export default function MealPlanTemplatePage() {
                                       <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
+                                        className="hover:bg-gold-50 text-gray-400 hover:text-gold-light"
                                       >
                                         <Pencil className="h-4 w-4" />
                                       </Button>
                                       <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="hover:bg-[rgba(255,0,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-red-400"
+                                        className="hover:bg-[rgba(255,0,0,0.1)] text-gray-400 hover:text-red-400"
                                       >
                                         <Trash2 className="h-4 w-4" />
                                       </Button>
@@ -947,18 +947,18 @@ export default function MealPlanTemplatePage() {
 
                                   {/* Show food items if this is an ingredients option */}
                                   {option.optionType === 'ingredients' && option.customFoodItems && (
-                                    <div className="mt-3 border-t border-[rgba(255,215,0,0.1)] pt-3">
-                                      <p className="text-xs text-[rgba(255,255,255,0.5)] mb-2">Råvaror:</p>
+                                    <div className="mt-3 border-t border-gold-primary/10 pt-3">
+                                      <p className="text-xs text-gray-500 mb-2">Råvaror:</p>
                                       <div className="space-y-1">
                                         {(option.customFoodItems as any[]).map((item, idx) => (
                                           <div
                                             key={idx}
                                             className="flex items-center justify-between text-xs"
                                           >
-                                            <span className="text-[rgba(255,255,255,0.7)]">
+                                            <span className="text-gray-300">
                                               {item.name}
                                             </span>
-                                            <div className="flex items-center gap-3 text-[rgba(255,255,255,0.5)]">
+                                            <div className="flex items-center gap-3 text-gray-500">
                                               <span>{item.amountG}g</span>
                                               <span>
                                                 P: {item.protein.toFixed(1)}g • F: {item.fat.toFixed(1)}g • K: {item.carbs.toFixed(1)}g
@@ -978,7 +978,7 @@ export default function MealPlanTemplatePage() {
                               setSelectedMealForOption(meal.id)
                               setIsAddOptionDialogOpen(true)
                             }}
-                            className="w-full mt-3 bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+                            className="w-full mt-3 bg-transparent border border-gold-primary/30 text-gray-200 hover:bg-gold-50 hover:text-gold-light"
                           >
                             <Plus className="h-4 w-4 mr-2" />
                             Lägg till alternativ
@@ -986,7 +986,7 @@ export default function MealPlanTemplatePage() {
                         </>
                       ) : (
                         <div className="text-center py-6">
-                          <p className="text-[rgba(255,255,255,0.6)] mb-3">
+                          <p className="text-gray-400 mb-3">
                             Inga alternativ ännu
                           </p>
                           <Button
@@ -994,7 +994,7 @@ export default function MealPlanTemplatePage() {
                               setSelectedMealForOption(meal.id)
                               setIsAddOptionDialogOpen(true)
                             }}
-                            className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+                            className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
                           >
                             <Plus className="h-4 w-4 mr-2" />
                             Lägg till första alternativet
@@ -1011,18 +1011,18 @@ export default function MealPlanTemplatePage() {
 
       {/* Add Meal Dialog */}
       <Dialog open={isAddMealDialogOpen} onOpenChange={setIsAddMealDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] max-w-2xl">
+        <DialogContent className="bg-gray-900/95 border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               Lägg till måltid
             </DialogTitle>
-            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+            <DialogDescription className="text-gray-400">
               Skapa en ny måltid för denna måltidsplan.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="mealName" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="mealName" className="text-gray-200">
                 Måltidsnamn *
               </Label>
               <Input
@@ -1032,11 +1032,11 @@ export default function MealPlanTemplatePage() {
                   setMealFormData({ ...mealFormData, name: e.target.value })
                 }
                 placeholder="t.ex. Frukost"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div>
-              <Label htmlFor="mealType" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="mealType" className="text-gray-200">
                 Måltidstyp *
               </Label>
               <Select
@@ -1045,37 +1045,37 @@ export default function MealPlanTemplatePage() {
                   setMealFormData({ ...mealFormData, mealType: value })
                 }
               >
-                <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+                <SelectContent className="bg-gray-900/95 border-gold-primary/30">
                   <SelectItem
                     value="breakfast"
-                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                    className="text-white hover:bg-gold-50"
                   >
                     Frukost
                   </SelectItem>
                   <SelectItem
                     value="lunch"
-                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                    className="text-white hover:bg-gold-50"
                   >
                     Lunch
                   </SelectItem>
                   <SelectItem
                     value="dinner"
-                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                    className="text-white hover:bg-gold-50"
                   >
                     Middag
                   </SelectItem>
                   <SelectItem
                     value="snack"
-                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                    className="text-white hover:bg-gold-50"
                   >
                     Mellanmål
                   </SelectItem>
                   <SelectItem
                     value="evening"
-                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                    className="text-white hover:bg-gold-50"
                   >
                     Kvällsmål
                   </SelectItem>
@@ -1083,7 +1083,7 @@ export default function MealPlanTemplatePage() {
               </Select>
             </div>
             <div>
-              <Label htmlFor="mealDescription" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="mealDescription" className="text-gray-200">
                 Beskrivning
               </Label>
               <Textarea
@@ -1093,14 +1093,14 @@ export default function MealPlanTemplatePage() {
                   setMealFormData({ ...mealFormData, description: e.target.value })
                 }
                 placeholder="T.ex. 'Ät inom 30 min efter uppvakning'"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)] min-h-[80px]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)] min-h-[80px]"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label
                   htmlFor="mealTargetCalories"
-                  className="text-[rgba(255,255,255,0.8)]"
+                  className="text-gray-200"
                 >
                   Mål kalorier
                 </Label>
@@ -1113,13 +1113,13 @@ export default function MealPlanTemplatePage() {
                     setMealFormData({ ...mealFormData, targetCalories: e.target.value })
                   }
                   placeholder="500"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
               <div>
                 <Label
                   htmlFor="mealTargetProtein"
-                  className="text-[rgba(255,255,255,0.8)]"
+                  className="text-gray-200"
                 >
                   Mål protein (g)
                 </Label>
@@ -1132,11 +1132,11 @@ export default function MealPlanTemplatePage() {
                     setMealFormData({ ...mealFormData, targetProtein: e.target.value })
                   }
                   placeholder="30"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
               <div>
-                <Label htmlFor="mealTargetFat" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="mealTargetFat" className="text-gray-200">
                   Mål fett (g)
                 </Label>
                 <Input
@@ -1148,13 +1148,13 @@ export default function MealPlanTemplatePage() {
                     setMealFormData({ ...mealFormData, targetFat: e.target.value })
                   }
                   placeholder="15"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
               <div>
                 <Label
                   htmlFor="mealTargetCarbs"
-                  className="text-[rgba(255,255,255,0.8)]"
+                  className="text-gray-200"
                 >
                   Mål kolhydrater (g)
                 </Label>
@@ -1167,7 +1167,7 @@ export default function MealPlanTemplatePage() {
                     setMealFormData({ ...mealFormData, targetCarbs: e.target.value })
                   }
                   placeholder="50"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
             </div>
@@ -1175,13 +1175,13 @@ export default function MealPlanTemplatePage() {
           <DialogFooter>
             <Button
               onClick={() => setIsAddMealDialogOpen(false)}
-              className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+              className="bg-transparent border border-gold-primary/30 text-gray-200 hover:bg-gold-50 hover:text-gold-light"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleAddMeal}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             >
               Lägg till måltid
             </Button>
@@ -1191,18 +1191,18 @@ export default function MealPlanTemplatePage() {
 
       {/* Edit Meal Dialog */}
       <Dialog open={isEditMealDialogOpen} onOpenChange={setIsEditMealDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] max-w-2xl">
+        <DialogContent className="bg-gray-900/95 border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               Redigera måltid
             </DialogTitle>
-            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+            <DialogDescription className="text-gray-400">
               Uppdatera måltidsinformation.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="editMealName" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="editMealName" className="text-gray-200">
                 Måltidsnamn *
               </Label>
               <Input
@@ -1212,11 +1212,11 @@ export default function MealPlanTemplatePage() {
                   setMealFormData({ ...mealFormData, name: e.target.value })
                 }
                 placeholder="t.ex. Frukost"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div>
-              <Label htmlFor="editMealType" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="editMealType" className="text-gray-200">
                 Måltidstyp *
               </Label>
               <Select
@@ -1225,37 +1225,37 @@ export default function MealPlanTemplatePage() {
                   setMealFormData({ ...mealFormData, mealType: value })
                 }
               >
-                <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+                <SelectContent className="bg-gray-900/95 border-gold-primary/30">
                   <SelectItem
                     value="breakfast"
-                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                    className="text-white hover:bg-gold-50"
                   >
                     Frukost
                   </SelectItem>
                   <SelectItem
                     value="lunch"
-                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                    className="text-white hover:bg-gold-50"
                   >
                     Lunch
                   </SelectItem>
                   <SelectItem
                     value="dinner"
-                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                    className="text-white hover:bg-gold-50"
                   >
                     Middag
                   </SelectItem>
                   <SelectItem
                     value="snack"
-                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                    className="text-white hover:bg-gold-50"
                   >
                     Mellanmål
                   </SelectItem>
                   <SelectItem
                     value="evening"
-                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                    className="text-white hover:bg-gold-50"
                   >
                     Kvällsmål
                   </SelectItem>
@@ -1263,7 +1263,7 @@ export default function MealPlanTemplatePage() {
               </Select>
             </div>
             <div>
-              <Label htmlFor="editMealDescription" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="editMealDescription" className="text-gray-200">
                 Beskrivning
               </Label>
               <Textarea
@@ -1273,14 +1273,14 @@ export default function MealPlanTemplatePage() {
                   setMealFormData({ ...mealFormData, description: e.target.value })
                 }
                 placeholder="T.ex. 'Ät inom 30 min efter uppvakning'"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)] min-h-[80px]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)] min-h-[80px]"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label
                   htmlFor="editMealTargetCalories"
-                  className="text-[rgba(255,255,255,0.8)]"
+                  className="text-gray-200"
                 >
                   Mål kalorier
                 </Label>
@@ -1293,13 +1293,13 @@ export default function MealPlanTemplatePage() {
                     setMealFormData({ ...mealFormData, targetCalories: e.target.value })
                   }
                   placeholder="500"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
               <div>
                 <Label
                   htmlFor="editMealTargetProtein"
-                  className="text-[rgba(255,255,255,0.8)]"
+                  className="text-gray-200"
                 >
                   Mål protein (g)
                 </Label>
@@ -1312,11 +1312,11 @@ export default function MealPlanTemplatePage() {
                     setMealFormData({ ...mealFormData, targetProtein: e.target.value })
                   }
                   placeholder="30"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
               <div>
-                <Label htmlFor="editMealTargetFat" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="editMealTargetFat" className="text-gray-200">
                   Mål fett (g)
                 </Label>
                 <Input
@@ -1328,13 +1328,13 @@ export default function MealPlanTemplatePage() {
                     setMealFormData({ ...mealFormData, targetFat: e.target.value })
                   }
                   placeholder="15"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
               <div>
                 <Label
                   htmlFor="editMealTargetCarbs"
-                  className="text-[rgba(255,255,255,0.8)]"
+                  className="text-gray-200"
                 >
                   Mål kolhydrater (g)
                 </Label>
@@ -1347,7 +1347,7 @@ export default function MealPlanTemplatePage() {
                     setMealFormData({ ...mealFormData, targetCarbs: e.target.value })
                   }
                   placeholder="50"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
             </div>
@@ -1358,13 +1358,13 @@ export default function MealPlanTemplatePage() {
                 setIsEditMealDialogOpen(false)
                 setEditingMeal(null)
               }}
-              className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+              className="bg-transparent border border-gold-primary/30 text-gray-200 hover:bg-gold-50 hover:text-gold-light"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleEditMeal}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             >
               Spara ändringar
             </Button>
@@ -1397,19 +1397,19 @@ export default function MealPlanTemplatePage() {
 
       {/* Add Ingredient Dialog */}
       <Dialog open={isAddIngredientDialogOpen} onOpenChange={setIsAddIngredientDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] max-w-2xl">
+        <DialogContent className="bg-gray-900/95 border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               Lägg till råvara
             </DialogTitle>
-            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+            <DialogDescription className="text-gray-400">
               Ange råvarans namn, mängd och näringsinnehåll.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="ingredientName" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="ingredientName" className="text-gray-200">
                   Råvara *
                 </Label>
                 <Input
@@ -1419,11 +1419,11 @@ export default function MealPlanTemplatePage() {
                     setIngredientFormData({ ...ingredientFormData, name: e.target.value })
                   }
                   placeholder="t.ex. Havregryn"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
               <div>
-                <Label htmlFor="ingredientAmount" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="ingredientAmount" className="text-gray-200">
                   Mängd *
                 </Label>
                 <Input
@@ -1433,13 +1433,13 @@ export default function MealPlanTemplatePage() {
                     setIngredientFormData({ ...ingredientFormData, amount: e.target.value })
                   }
                   placeholder="t.ex. 50g, 3 styck"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="ingredientProtein" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="ingredientProtein" className="text-gray-200">
                   Protein (g)
                 </Label>
                 <Input
@@ -1451,11 +1451,11 @@ export default function MealPlanTemplatePage() {
                     setIngredientFormData({ ...ingredientFormData, protein: e.target.value })
                   }
                   placeholder="0"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
               <div>
-                <Label htmlFor="ingredientFat" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="ingredientFat" className="text-gray-200">
                   Fett (g)
                 </Label>
                 <Input
@@ -1467,13 +1467,13 @@ export default function MealPlanTemplatePage() {
                     setIngredientFormData({ ...ingredientFormData, fat: e.target.value })
                   }
                   placeholder="0"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="ingredientCarbs" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="ingredientCarbs" className="text-gray-200">
                   Kolhydrater (g)
                 </Label>
                 <Input
@@ -1485,11 +1485,11 @@ export default function MealPlanTemplatePage() {
                     setIngredientFormData({ ...ingredientFormData, carbs: e.target.value })
                   }
                   placeholder="0"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
               <div>
-                <Label htmlFor="ingredientCalories" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="ingredientCalories" className="text-gray-200">
                   Kalorier
                 </Label>
                 <Input
@@ -1501,7 +1501,7 @@ export default function MealPlanTemplatePage() {
                     setIngredientFormData({ ...ingredientFormData, calories: e.target.value })
                   }
                   placeholder="0"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
             </div>
@@ -1519,13 +1519,13 @@ export default function MealPlanTemplatePage() {
                   calories: '',
                 })
               }}
-              className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+              className="bg-transparent border border-gold-primary/30 text-gray-200 hover:bg-gold-50 hover:text-gold-light"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleAddIngredient}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             >
               Lägg till råvara
             </Button>

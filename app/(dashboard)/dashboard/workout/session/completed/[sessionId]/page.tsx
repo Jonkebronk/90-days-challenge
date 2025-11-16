@@ -128,7 +128,7 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-[rgba(255,255,255,0.6)]">Laddar träningspass...</div>
+        <div className="text-gray-400">Laddar träningspass...</div>
       </div>
     )
   }
@@ -136,7 +136,7 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
   if (!session) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-[rgba(255,255,255,0.6)]">Träningspass hittades inte</div>
+        <div className="text-gray-400">Träningspass hittades inte</div>
       </div>
     )
   }
@@ -149,21 +149,21 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
           <Button
             variant="ghost"
             onClick={() => router.push('/dashboard/workout/history')}
-            className="mb-4 text-[rgba(255,255,255,0.7)] hover:text-[rgba(255,255,255,0.9)]"
+            className="mb-4 text-gray-300 hover:text-gray-100"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Tillbaka till historik
           </Button>
 
           <div className="flex items-start gap-4 mb-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
               <Dumbbell className="w-8 h-8 text-black" />
             </div>
             <div className="flex-1">
-              <h1 className="text-4xl font-bold text-[rgba(255,255,255,0.95)] mb-2">
+              <h1 className="text-4xl font-bold text-white mb-2">
                 {session.workoutProgramDay.name}
               </h1>
-              <div className="flex items-center gap-4 text-[rgba(255,255,255,0.6)]">
+              <div className="flex items-center gap-4 text-gray-400">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
                   {formatDate(session.startedAt)}
@@ -175,7 +175,7 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
               </div>
             </div>
             {session.completed && (
-              <div className="px-4 py-2 bg-[rgba(34,197,94,0.2)] border-2 border-[rgba(34,197,94,0.4)] rounded-xl text-[#22c55e] font-semibold flex items-center gap-2">
+              <div className="px-4 py-2 bg-[rgba(34,197,94,0.2)] border-2 border-[rgba(34,197,94,0.4)] rounded-xl text-green-500 font-semibold flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5" />
                 Genomfört
               </div>
@@ -185,38 +185,38 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-6 backdrop-blur-[10px]">
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
                 <Clock className="w-5 h-5 text-black" />
               </div>
-              <div className="text-[rgba(255,255,255,0.6)] text-sm">Tid</div>
+              <div className="text-gray-400 text-sm">Tid</div>
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.95)]">
+            <div className="text-3xl font-bold text-white">
               {session.durationMinutes ? `${session.durationMinutes} min` : '-'}
             </div>
           </div>
 
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-6 backdrop-blur-[10px]">
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center">
                 <Dumbbell className="w-5 h-5 text-white" />
               </div>
-              <div className="text-[rgba(255,255,255,0.6)] text-sm">Totala Set</div>
+              <div className="text-gray-400 text-sm">Totala Set</div>
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.95)]">
+            <div className="text-3xl font-bold text-white">
               {session.sets.filter(s => s.completed).length}
             </div>
           </div>
 
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-6 backdrop-blur-[10px]">
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
-              <div className="text-[rgba(255,255,255,0.6)] text-sm">Total Volym</div>
+              <div className="text-gray-400 text-sm">Total Volym</div>
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.95)]">
+            <div className="text-3xl font-bold text-white">
               {calculateTotalVolume().toLocaleString('sv-SE')} kg
             </div>
           </div>
@@ -224,15 +224,15 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
 
         {/* Notes */}
         {session.notes && (
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-6 backdrop-blur-[10px] mb-8">
-            <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)] mb-3">Anteckningar</h3>
-            <p className="text-[rgba(255,255,255,0.7)]">{session.notes}</p>
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px] mb-8">
+            <h3 className="text-lg font-semibold text-gray-100 mb-3">Anteckningar</h3>
+            <p className="text-gray-300">{session.notes}</p>
           </div>
         )}
 
         {/* Exercises */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-[rgba(255,255,255,0.95)]">Övningar</h2>
+          <h2 className="text-2xl font-bold text-white">Övningar</h2>
 
           {getUniqueExercises().map((exercise) => {
             const sets = getExerciseSets(exercise.id)
@@ -240,10 +240,10 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
             return (
               <div
                 key={exercise.id}
-                className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-6 backdrop-blur-[10px]"
+                className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]"
               >
                 <div className="mb-4">
-                  <h3 className="text-xl font-semibold text-[rgba(255,255,255,0.95)] mb-2">
+                  <h3 className="text-xl font-semibold text-white mb-2">
                     {exercise.name}
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -262,7 +262,7 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
                   {sets.map((set) => (
                     <div
                       key={set.id}
-                      className="bg-[rgba(255,255,255,0.02)] rounded-xl p-4 flex items-center justify-between"
+                      className="bg-white/5 rounded-xl p-4 flex items-center justify-between"
                     >
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center">
@@ -271,28 +271,28 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
                         <div className="flex gap-8">
                           {set.reps !== null && (
                             <div>
-                              <div className="text-[rgba(255,255,255,0.5)] text-sm">Reps</div>
-                              <div className="text-[rgba(255,255,255,0.9)] font-semibold">{set.reps}</div>
+                              <div className="text-gray-500 text-sm">Reps</div>
+                              <div className="text-gray-100 font-semibold">{set.reps}</div>
                             </div>
                           )}
                           {set.weightKg !== null && (
                             <div>
-                              <div className="text-[rgba(255,255,255,0.5)] text-sm">Vikt (kg)</div>
-                              <div className="text-[rgba(255,255,255,0.9)] font-semibold">{set.weightKg}</div>
+                              <div className="text-gray-500 text-sm">Vikt (kg)</div>
+                              <div className="text-gray-100 font-semibold">{set.weightKg}</div>
                             </div>
                           )}
                           {set.timeSeconds !== null && (
                             <div>
-                              <div className="text-[rgba(255,255,255,0.5)] text-sm">Tid</div>
-                              <div className="text-[rgba(255,255,255,0.9)] font-semibold">
+                              <div className="text-gray-500 text-sm">Tid</div>
+                              <div className="text-gray-100 font-semibold">
                                 {formatDuration(set.timeSeconds)}
                               </div>
                             </div>
                           )}
                           {set.reps && set.weightKg && (
                             <div>
-                              <div className="text-[rgba(255,255,255,0.5)] text-sm">Volym</div>
-                              <div className="text-[rgba(255,255,255,0.9)] font-semibold">
+                              <div className="text-gray-500 text-sm">Volym</div>
+                              <div className="text-gray-100 font-semibold">
                                 {(set.reps * Number(set.weightKg)).toFixed(0)} kg
                               </div>
                             </div>
@@ -300,7 +300,7 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
                         </div>
                       </div>
                       {set.notes && (
-                        <div className="text-[rgba(255,255,255,0.6)] text-sm italic">
+                        <div className="text-gray-400 text-sm italic">
                           {set.notes}
                         </div>
                       )}

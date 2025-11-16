@@ -68,10 +68,10 @@ export default function LearningPathsPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
-          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
+          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3">
             Lärandevägar
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+          <p className="text-gray-400 text-sm tracking-[1px]">
             Strukturerade läranderesor för din utveckling
           </p>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
@@ -81,17 +81,17 @@ export default function LearningPathsPage() {
         {!isLoading && (
           <div className="flex items-center justify-center gap-8 mb-8 text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-[rgba(255,255,255,0.5)]">Totalt:</span>
-              <span className="text-[#FFD700] font-semibold">{paths.length}</span>
+              <span className="text-gray-500">Totalt:</span>
+              <span className="text-gold-light font-semibold">{paths.length}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[rgba(255,255,255,0.5)]">Påbörjade:</span>
+              <span className="text-gray-500">Påbörjade:</span>
               <span className="text-yellow-400 font-semibold">
                 {paths.filter(p => p.isStarted && !p.isCompleted).length}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[rgba(255,255,255,0.5)]">Klara:</span>
+              <span className="text-gray-500">Klara:</span>
               <span className="text-green-400 font-semibold">
                 {paths.filter(p => p.isCompleted).length}
               </span>
@@ -102,7 +102,7 @@ export default function LearningPathsPage() {
         {/* Loading State */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-[#FFD700]" />
+            <Loader2 className="h-8 w-8 animate-spin text-gold-light" />
           </div>
         ) : (
           <>
@@ -114,10 +114,10 @@ export default function LearningPathsPage() {
                 ))}
               </div>
             ) : (
-              <Card className="bg-[rgba(10,10,10,0.5)] backdrop-blur-sm border-[rgba(255,215,0,0.2)]">
+              <Card className="bg-[rgba(10,10,10,0.5)] backdrop-blur-sm border-gold-primary/20">
                 <CardContent className="p-12 text-center">
                   <Map className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.3)] mb-4" />
-                  <p className="text-[rgba(255,255,255,0.5)] mb-2">
+                  <p className="text-gray-500 mb-2">
                     Inga lärandevägar publicerade än
                   </p>
                   <p className="text-sm text-[rgba(255,255,255,0.3)]">

@@ -152,8 +152,8 @@ export default function RecipeCategoriesPage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-[rgba(255,255,255,0.7)]">Du har inte behörighet att se denna sida.</p>
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
+          <p className="text-gray-300">Du har inte behörighet att se denna sida.</p>
         </div>
       </div>
     )
@@ -163,33 +163,33 @@ export default function RecipeCategoriesPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+          <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
             Skapa Recept Kategorier
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-400 mt-1">
             Skapa och hantera kategorier för Recept
           </p>
         </div>
         <Button
           onClick={() => setIsCreateDialogOpen(true)}
-          className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+          className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
         >
           <Plus className="h-4 w-4 mr-2" />
           Ny kategori
         </Button>
       </div>
 
-      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] overflow-hidden">
-        <div className="p-6 border-b border-[rgba(255,215,0,0.2)]">
-          <h2 className="text-xl font-bold text-[#FFD700] tracking-[1px]">Alla kategorier</h2>
+      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden">
+        <div className="p-6 border-b border-gold-primary/20">
+          <h2 className="text-xl font-bold text-gold-light tracking-[1px]">Alla kategorier</h2>
         </div>
         <div className="p-6">
           {isLoading ? (
-            <p className="text-[rgba(255,255,255,0.6)] text-center py-8">Laddar...</p>
+            <p className="text-gray-400 text-center py-8">Laddar...</p>
           ) : categories.length === 0 ? (
             <div className="text-center py-8">
               <ChefHat className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-              <p className="text-[rgba(255,255,255,0.6)]">Inga kategorier ännu.</p>
+              <p className="text-gray-400">Inga kategorier ännu.</p>
               <p className="text-sm text-[rgba(255,255,255,0.4)] mt-1">
                 Skapa din första kategori för att komma igång.
               </p>
@@ -198,7 +198,7 @@ export default function RecipeCategoriesPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-b border-[rgba(255,215,0,0.2)] hover:bg-[rgba(255,215,0,0.05)]">
+                  <TableRow className="border-b border-gold-primary/20 hover:bg-[rgba(255,215,0,0.05)]">
                     <TableHead className="text-[rgba(255,215,0,0.8)]">Namn</TableHead>
                     <TableHead className="text-[rgba(255,215,0,0.8)]">Beskrivning</TableHead>
                     <TableHead className="text-[rgba(255,215,0,0.8)]">Slug</TableHead>
@@ -208,13 +208,13 @@ export default function RecipeCategoriesPage() {
                 </TableHeader>
                 <TableBody>
                   {categories.map((category) => (
-                    <TableRow key={category.id} className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.05)] transition-colors">
+                    <TableRow key={category.id} className="border-b border-gold-primary/10 hover:bg-[rgba(255,215,0,0.05)] transition-colors">
                       <TableCell className="font-medium text-white">{category.name}</TableCell>
-                      <TableCell className="text-[rgba(255,255,255,0.6)]">
+                      <TableCell className="text-gray-400">
                         {category.description || '-'}
                       </TableCell>
                       <TableCell>
-                        <code className="text-xs bg-[rgba(255,215,0,0.1)] text-[#FFD700] px-2 py-1 rounded border border-[rgba(255,215,0,0.2)]">
+                        <code className="text-xs bg-[rgba(255,215,0,0.1)] text-gold-light px-2 py-1 rounded border border-gold-primary/20">
                           {category.slug}
                         </code>
                       </TableCell>
@@ -227,7 +227,7 @@ export default function RecipeCategoriesPage() {
                           size="icon"
                           onClick={() => handleDeleteCategory(category)}
                           disabled={category._count.recipes > 0}
-                          className="hover:bg-[rgba(255,0,0,0.1)] hover:text-red-400 text-[rgba(255,255,255,0.6)]"
+                          className="hover:bg-[rgba(255,0,0,0.1)] hover:text-red-400 text-gray-400"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -243,45 +243,45 @@ export default function RecipeCategoriesPage() {
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
+        <DialogContent className="bg-gray-900/95 border-2 border-gold-primary/30 backdrop-blur-[10px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               Skapa ny kategori
             </DialogTitle>
-            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+            <DialogDescription className="text-gray-400">
               Lägg till en ny kategori för att organisera recept.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name" className="text-[rgba(255,255,255,0.8)]">Namn *</Label>
+              <Label htmlFor="name" className="text-gray-200">Namn *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleNameChange(e.target.value)}
                 placeholder="t.ex. Frukost, Middag, Desserter"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div>
-              <Label htmlFor="slug" className="text-[rgba(255,255,255,0.8)]">Slug *</Label>
+              <Label htmlFor="slug" className="text-gray-200">Slug *</Label>
               <Input
                 id="slug"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                 placeholder="t.ex. frukost, middag, desserter"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div>
-              <Label htmlFor="description" className="text-[rgba(255,255,255,0.8)]">Beskrivning</Label>
+              <Label htmlFor="description" className="text-gray-200">Beskrivning</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Kort beskrivning av kategorin..."
                 rows={3}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
           </div>
@@ -289,14 +289,14 @@ export default function RecipeCategoriesPage() {
             <Button
               variant="outline"
               onClick={() => setIsCreateDialogOpen(false)}
-              className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+              className="border-gold-primary/30 text-gray-200 hover:bg-gold-50"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleCreateCategory}
               disabled={isSaving}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             >
               {isSaving ? 'Skapar...' : 'Skapa kategori'}
             </Button>

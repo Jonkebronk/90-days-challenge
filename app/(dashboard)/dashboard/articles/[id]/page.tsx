@@ -218,14 +218,14 @@ export default function ArticleReaderPage() {
   return (
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-[rgba(0,0,0,0.3)] backdrop-blur-sm border-b border-[rgba(255,215,0,0.2)] sticky top-0 z-10">
+      <div className="bg-black/30 backdrop-blur-sm border-b border-gold-primary/20 sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
           {/* Category Progress Bar */}
           {categoryProgress && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[rgba(255,255,255,0.6)]">{article.category.name}</span>
-                <span className="font-medium text-[#FFD700]">
+                <span className="text-gray-400">{article.category.name}</span>
+                <span className="font-medium text-gold-light">
                   {categoryProgress.completed} av {categoryProgress.total} artiklar lästa
                 </span>
               </div>
@@ -240,7 +240,7 @@ export default function ArticleReaderPage() {
         <div className="max-w-4xl mx-auto">
           {/* Cover Image */}
           {article.coverImage && (
-            <div className="mb-8 rounded-lg overflow-hidden border border-[rgba(255,215,0,0.2)]">
+            <div className="mb-8 rounded-lg overflow-hidden border border-gold-primary/20">
               <img
                 src={article.coverImage}
                 alt={article.title}
@@ -252,21 +252,21 @@ export default function ArticleReaderPage() {
           {/* Article Header */}
           <div className="mb-8">
             <div className="flex flex-wrap gap-2 mb-4">
-              <Badge className="bg-[rgba(255,215,0,0.2)] text-[#FFD700] border-[rgba(255,215,0,0.3)]">{article.category.name}</Badge>
+              <Badge className="bg-[rgba(255,215,0,0.2)] text-gold-light border-gold-primary/30">{article.category.name}</Badge>
               {article.phase && (
-                <Badge className="bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)] border-[rgba(255,255,255,0.2)]">Fas {article.phase}</Badge>
+                <Badge className="bg-[rgba(255,255,255,0.05)] text-gray-300 border-[rgba(255,255,255,0.2)]">Fas {article.phase}</Badge>
               )}
               {article.difficulty && (
-                <Badge className="bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)] border-[rgba(255,255,255,0.2)]">{getDifficultyLabel(article.difficulty)}</Badge>
+                <Badge className="bg-[rgba(255,255,255,0.05)] text-gray-300 border-[rgba(255,255,255,0.2)]">{getDifficultyLabel(article.difficulty)}</Badge>
               )}
               {article.estimatedReadingMinutes && (
-                <Badge className="bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.7)] border-[rgba(255,255,255,0.2)] flex items-center gap-1">
+                <Badge className="bg-[rgba(255,255,255,0.05)] text-gray-300 border-[rgba(255,255,255,0.2)] flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {article.estimatedReadingMinutes} min läsning
                 </Badge>
               )}
               {isCompleted && (
-                <Badge className="bg-[rgba(34,197,94,0.2)] text-[#22c55e] border-[#22c55e] flex items-center gap-1">
+                <Badge className="bg-[rgba(34,197,94,0.2)] text-green-500 border-[#22c55e] flex items-center gap-1">
                   <CheckCircle className="h-3 w-3" />
                   Läst
                 </Badge>
@@ -285,9 +285,9 @@ export default function ArticleReaderPage() {
           </div>
 
           {/* Article Content */}
-          <Card className="bg-white border-[rgba(255,215,0,0.3)]">
+          <Card className="bg-white border-gold-primary/30">
             <CardContent className="p-8">
-              <div className="prose prose-lg max-w-none prose-headings:text-[#1a0933] prose-headings:font-bold prose-p:text-gray-800 prose-p:leading-relaxed prose-strong:text-[#1a0933] prose-strong:font-semibold prose-li:text-gray-800 prose-a:text-[#1a0933] prose-a:hover:text-[#FFA500] prose-a:underline prose-blockquote:border-l-[#FFD700] prose-blockquote:text-gray-700 prose-code:text-[#1a0933] prose-code:bg-gray-100 prose-pre:bg-gray-100 prose-pre:text-gray-900">
+              <div className="prose prose-lg max-w-none prose-headings:text-[#1a0933] prose-headings:font-bold prose-p:text-gray-800 prose-p:leading-relaxed prose-strong:text-[#1a0933] prose-strong:font-semibold prose-li:text-gray-800 prose-a:text-[#1a0933] prose-a:hover:text-orange-500 prose-a:underline prose-blockquote:border-l-[#FFD700] prose-blockquote:text-gray-700 prose-code:text-[#1a0933] prose-code:bg-gray-100 prose-pre:bg-gray-100 prose-pre:text-gray-900">
                 <MDXPreview content={article.content} />
               </div>
             </CardContent>
@@ -324,7 +324,7 @@ export default function ArticleReaderPage() {
                 disabled={isMarkingComplete}
                 size="lg"
                 className={`min-w-[200px] ${isCompleted
-                  ? 'bg-[rgba(34,197,94,0.2)] text-[#22c55e] border-[#22c55e] hover:bg-[rgba(34,197,94,0.3)]'
+                  ? 'bg-[rgba(34,197,94,0.2)] text-green-500 border-[#22c55e] hover:bg-[rgba(34,197,94,0.3)]'
                   : 'bg-[#FFD700] text-black hover:bg-[#FFA500]'
                 }`}
               >
@@ -343,7 +343,7 @@ export default function ArticleReaderPage() {
             </div>
 
             {/* Navigation */}
-            <div className="flex items-center justify-between pt-6 border-t border-[rgba(255,215,0,0.2)]">
+            <div className="flex items-center justify-between pt-6 border-t border-gold-primary/20">
               {previousCategoryArticle ? (
                 <Button
                   onClick={() => router.push(`/dashboard/articles/${previousCategoryArticle.id}`)}

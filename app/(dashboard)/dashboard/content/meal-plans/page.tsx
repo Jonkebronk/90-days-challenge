@@ -190,8 +190,8 @@ export default function MealPlansPage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-[rgba(255,255,255,0.7)]">
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
+          <p className="text-gray-300">
             Du har inte behörighet att se denna sida.
           </p>
         </div>
@@ -203,35 +203,35 @@ export default function MealPlansPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+          <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
             MÅLTIDSPLANER
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-400 mt-1">
             Skapa och hantera måltidsplaner med måltidsalternativ
           </p>
         </div>
         <Button
           onClick={() => setIsCreateDialogOpen(true)}
-          className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+          className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
         >
           <Plus className="h-4 w-4 mr-2" />
           Ny måltidsplan
         </Button>
       </div>
 
-      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] overflow-hidden">
-        <div className="p-6 border-b border-[rgba(255,215,0,0.2)]">
-          <h2 className="text-xl font-bold text-[#FFD700] tracking-[1px]">
+      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden">
+        <div className="p-6 border-b border-gold-primary/20">
+          <h2 className="text-xl font-bold text-gold-light tracking-[1px]">
             Alla måltidsplaner ({templates.length})
           </h2>
         </div>
         <div className="p-6">
           {isLoading ? (
-            <p className="text-[rgba(255,255,255,0.6)] text-center py-8">Laddar...</p>
+            <p className="text-gray-400 text-center py-8">Laddar...</p>
           ) : templates.length === 0 ? (
             <div className="text-center py-8">
               <UtensilsCrossed className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-              <p className="text-[rgba(255,255,255,0.6)]">Inga måltidsplaner ännu.</p>
+              <p className="text-gray-400">Inga måltidsplaner ännu.</p>
               <p className="text-sm text-[rgba(255,255,255,0.4)] mt-1">
                 Skapa din första måltidsplan för att komma igång.
               </p>
@@ -240,7 +240,7 @@ export default function MealPlansPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-b border-[rgba(255,215,0,0.2)] hover:bg-[rgba(255,215,0,0.05)]">
+                  <TableRow className="border-b border-gold-primary/20 hover:bg-[rgba(255,215,0,0.05)]">
                     <TableHead className="text-[rgba(255,215,0,0.8)]">Namn</TableHead>
                     <TableHead className="text-[rgba(255,215,0,0.8)]">Mål kcal</TableHead>
                     <TableHead className="text-[rgba(255,215,0,0.8)]">Makron (P/F/K)</TableHead>
@@ -254,7 +254,7 @@ export default function MealPlansPage() {
                   {templates.map((template) => (
                     <TableRow
                       key={template.id}
-                      className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.05)] transition-colors"
+                      className="border-b border-gold-primary/10 hover:bg-[rgba(255,215,0,0.05)] transition-colors"
                     >
                       <TableCell className="font-medium text-white">
                         {template.name}
@@ -262,7 +262,7 @@ export default function MealPlansPage() {
                       <TableCell className="text-white">
                         {template.targetCalories ? `${template.targetCalories} kcal` : '-'}
                       </TableCell>
-                      <TableCell className="text-[rgba(255,255,255,0.6)]">
+                      <TableCell className="text-gray-400">
                         {template.targetProtein || template.targetFat || template.targetCarbs
                           ? `${template.targetProtein || '-'}g / ${template.targetFat || '-'}g / ${template.targetCarbs || '-'}g`
                           : '-'}
@@ -273,7 +273,7 @@ export default function MealPlansPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1 text-[rgba(255,255,255,0.6)]">
+                        <div className="flex items-center gap-1 text-gray-400">
                           <Users className="h-4 w-4" />
                           <span>{template._count.assignments}</span>
                         </div>
@@ -296,7 +296,7 @@ export default function MealPlansPage() {
                             size="icon"
                             onClick={() => handleTogglePublished(template)}
                             title={template.published ? 'Avpublicera' : 'Publicera'}
-                            className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
+                            className="hover:bg-gold-50 text-gray-400 hover:text-gold-light"
                           >
                             {template.published ? (
                               <EyeOff className="h-4 w-4" />
@@ -310,7 +310,7 @@ export default function MealPlansPage() {
                             onClick={() =>
                               router.push(`/dashboard/content/meal-plans/${template.id}`)
                             }
-                            className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
+                            className="hover:bg-gold-50 text-gray-400 hover:text-gold-light"
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -318,7 +318,7 @@ export default function MealPlansPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDeleteTemplate(template)}
-                            className="hover:bg-[rgba(255,0,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-red-400"
+                            className="hover:bg-[rgba(255,0,0,0.1)] text-gray-400 hover:text-red-400"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -335,18 +335,18 @@ export default function MealPlansPage() {
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] max-w-2xl">
+        <DialogContent className="bg-gray-900/95 border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               Skapa ny måltidsplan
             </DialogTitle>
-            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+            <DialogDescription className="text-gray-400">
               Skapa en ny måltidsplan mall. Du kan lägga till måltider och alternativ efteråt.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="name" className="text-gray-200">
                 Namn *
               </Label>
               <Input
@@ -354,11 +354,11 @@ export default function MealPlansPage() {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="t.ex. 2000 kcal Viktnedgång"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div>
-              <Label htmlFor="description" className="text-[rgba(255,255,255,0.8)]">
+              <Label htmlFor="description" className="text-gray-200">
                 Beskrivning
               </Label>
               <Textarea
@@ -367,12 +367,12 @@ export default function MealPlansPage() {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Beskrivning av måltidsplanen..."
                 rows={3}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="targetCalories" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="targetCalories" className="text-gray-200">
                   Mål kalorier
                 </Label>
                 <Input
@@ -384,11 +384,11 @@ export default function MealPlansPage() {
                     setFormData({ ...formData, targetCalories: e.target.value })
                   }
                   placeholder="2000"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
               <div>
-                <Label htmlFor="targetProtein" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="targetProtein" className="text-gray-200">
                   Mål protein (g)
                 </Label>
                 <Input
@@ -400,11 +400,11 @@ export default function MealPlansPage() {
                     setFormData({ ...formData, targetProtein: e.target.value })
                   }
                   placeholder="150"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
               <div>
-                <Label htmlFor="targetFat" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="targetFat" className="text-gray-200">
                   Mål fett (g)
                 </Label>
                 <Input
@@ -416,11 +416,11 @@ export default function MealPlansPage() {
                     setFormData({ ...formData, targetFat: e.target.value })
                   }
                   placeholder="60"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
               <div>
-                <Label htmlFor="targetCarbs" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="targetCarbs" className="text-gray-200">
                   Mål kolhydrater (g)
                 </Label>
                 <Input
@@ -432,7 +432,7 @@ export default function MealPlansPage() {
                     setFormData({ ...formData, targetCarbs: e.target.value })
                   }
                   placeholder="200"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
             </div>
@@ -440,14 +440,14 @@ export default function MealPlansPage() {
           <DialogFooter>
             <Button
               onClick={() => setIsCreateDialogOpen(false)}
-              className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+              className="bg-transparent border border-gold-primary/30 text-gray-200 hover:bg-gold-50 hover:text-gold-light"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleCreateTemplate}
               disabled={isSaving}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             >
               {isSaving ? 'Skapar...' : 'Skapa måltidsplan'}
             </Button>

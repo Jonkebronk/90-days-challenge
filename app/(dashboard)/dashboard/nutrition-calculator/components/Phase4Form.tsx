@@ -103,7 +103,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
 
   if (!phase3Data) {
     return (
-      <Card className="bg-gray-900/40 border-[rgba(255,215,0,0.3)]">
+      <Card className="bg-gray-900/40 border-gold-primary/30">
         <CardContent className="pt-6">
           <p className="text-gray-400">Du måste slutföra Fas 3 först.</p>
         </CardContent>
@@ -112,7 +112,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
   }
 
   return (
-    <Card className="bg-gray-900/40 border-[rgba(255,215,0,0.3)]">
+    <Card className="bg-gray-900/40 border-gold-primary/30">
       <CardHeader>
         <CardTitle className="text-white">Fas 4: Din Nya Vardag (Underhåll)</CardTitle>
         <CardDescription className="text-gray-400">
@@ -133,7 +133,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
                 type="number"
                 step="0.1"
                 {...register('weight')}
-                className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-gray-900/60 border-gold-primary/30 text-white"
               />
               {errors.weight && (
                 <p className="text-sm text-red-400">{errors.weight.message}</p>
@@ -153,7 +153,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
                     value={String(field.value || 30)}
                     onValueChange={(value) => field.onChange(Number(value) as ActivityLevel)}
                   >
-                    <SelectTrigger className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white">
+                    <SelectTrigger className="bg-gray-900/60 border-gold-primary/30 text-white">
                       <SelectValue placeholder="Välj nivå" />
                     </SelectTrigger>
                     <SelectContent>
@@ -179,7 +179,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
                 id="activityAdjustment"
                 type="number"
                 {...register('activityAdjustment')}
-                className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-gray-900/60 border-gold-primary/30 text-white"
               />
               {errors.activityAdjustment && (
                 <p className="text-sm text-red-400">{errors.activityAdjustment.message}</p>
@@ -188,7 +188,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
           </div>
 
           {/* Cardio Options */}
-          <div className="border border-[rgba(255,215,0,0.3)] bg-gray-900/40 p-4 rounded-lg">
+          <div className="border border-gold-primary/30 bg-gray-900/40 p-4 rounded-lg">
             <Label className="text-white text-lg mb-3 block">Välj Cardio-alternativ</Label>
             <Controller
               name="cardioOption"
@@ -199,7 +199,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
                   onValueChange={(value) => field.onChange(Number(value) as CardioOption)}
                 >
                   <div className="space-y-3">
-                    <div className="flex items-start space-x-3 p-3 rounded-lg border border-[rgba(255,215,0,0.2)] hover:bg-[rgba(255,215,0,0.05)]">
+                    <div className="flex items-start space-x-3 p-3 rounded-lg border border-gold-primary/20 hover:bg-[rgba(255,215,0,0.05)]">
                       <RadioGroupItem value="1" id="option-1" className="mt-1" />
                       <Label htmlFor="option-1" className="flex-1 cursor-pointer">
                         <div className="font-semibold text-white">Alternativ 1: Med Cardio</div>
@@ -208,7 +208,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
                         </div>
                       </Label>
                     </div>
-                    <div className="flex items-start space-x-3 p-3 rounded-lg border border-[rgba(255,215,0,0.2)] hover:bg-[rgba(255,215,0,0.05)]">
+                    <div className="flex items-start space-x-3 p-3 rounded-lg border border-gold-primary/20 hover:bg-[rgba(255,215,0,0.05)]">
                       <RadioGroupItem value="2" id="option-2" className="mt-1" />
                       <Label htmlFor="option-2" className="flex-1 cursor-pointer">
                         <div className="font-semibold text-white">Alternativ 2: Utan Cardio</div>
@@ -229,8 +229,8 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
           {/* Calculated Results */}
           {calories && (
             <div className="space-y-4">
-              <div className="border border-[rgba(255,215,0,0.3)] bg-gray-900/40 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold text-[#FFD700] mb-3">
+              <div className="border border-gold-primary/30 bg-gray-900/40 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold text-gold-light mb-3">
                   Underhållsmakron
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -254,8 +254,8 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
               </div>
 
               {/* Activity Summary */}
-              <div className="border border-[rgba(255,215,0,0.3)] bg-gray-900/40 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold text-[#FFD700] mb-3">
+              <div className="border border-gold-primary/30 bg-gray-900/40 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold text-gold-light mb-3">
                   Din Nya Vardag
                 </h3>
                 <div className="space-y-2">
@@ -294,7 +294,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
               type="button"
               variant="outline"
               onClick={onBack}
-              className="bg-transparent border-[rgba(255,215,0,0.3)] text-white hover:bg-[rgba(255,215,0,0.1)]"
+              className="bg-transparent border-gold-primary/30 text-white hover:bg-gold-50"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Tillbaka till Fas 3

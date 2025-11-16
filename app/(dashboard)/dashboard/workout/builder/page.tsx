@@ -189,16 +189,16 @@ export default function WorkoutBuilderPage() {
           <Button
             variant="ghost"
             size="icon"
-            className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+            className="text-gray-300 hover:text-gold-light hover:bg-gold-50"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
+          <h1 className="text-3xl font-bold text-gray-100">
             Skapa anpassat träningspass
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-400 mt-1">
             Bygg ditt eget träningspass från grunden
           </p>
         </div>
@@ -207,7 +207,7 @@ export default function WorkoutBuilderPage() {
             onClick={handleSave}
             disabled={saving}
             variant="outline"
-            className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)]"
+            className="border-gold-primary/30 text-gray-100"
           >
             <Save className="w-4 h-4 mr-2" />
             {saving ? 'Sparar...' : 'Spara mall'}
@@ -215,7 +215,7 @@ export default function WorkoutBuilderPage() {
           <Button
             onClick={handleStartWorkout}
             disabled={saving}
-            className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+            className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
           >
             <Play className="w-4 h-4 mr-2" />
             Starta träning
@@ -224,39 +224,39 @@ export default function WorkoutBuilderPage() {
       </div>
 
       {/* Template Info */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+      <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
         <CardHeader>
-          <CardTitle className="text-xl text-[rgba(255,255,255,0.9)]">
+          <CardTitle className="text-xl text-gray-100">
             Träningspassinformation
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label className="text-[rgba(255,255,255,0.7)]">Namn på träningspass *</Label>
+            <Label className="text-gray-300">Namn på träningspass *</Label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="T.ex. Snabb överkropp"
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1"
             />
           </div>
 
           <div>
-            <Label className="text-[rgba(255,255,255,0.7)]">Beskrivning</Label>
+            <Label className="text-gray-300">Beskrivning</Label>
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Beskriv träningspasset..."
               rows={3}
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Kategori</Label>
+              <Label className="text-gray-300">Kategori</Label>
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white">
                   <SelectValue placeholder="Välj kategori" />
                 </SelectTrigger>
                 <SelectContent>
@@ -271,13 +271,13 @@ export default function WorkoutBuilderPage() {
             </div>
 
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Uppskattad tid (min)</Label>
+              <Label className="text-gray-300">Uppskattad tid (min)</Label>
               <Input
                 type="number"
                 value={estimatedDuration || ''}
                 onChange={(e) => setEstimatedDuration(e.target.value ? parseInt(e.target.value) : null)}
                 placeholder="T.ex. 45"
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1"
               />
             </div>
           </div>
@@ -288,9 +288,9 @@ export default function WorkoutBuilderPage() {
               id="isPublic"
               checked={isPublic}
               onChange={(e) => setIsPublic(e.target.checked)}
-              className="w-4 h-4 rounded border-[rgba(255,215,0,0.3)]"
+              className="w-4 h-4 rounded border-gold-primary/30"
             />
-            <Label htmlFor="isPublic" className="text-[rgba(255,255,255,0.7)] cursor-pointer">
+            <Label htmlFor="isPublic" className="text-gray-300 cursor-pointer">
               Gör mallen publik (andra kan använda den)
             </Label>
           </div>
@@ -300,12 +300,12 @@ export default function WorkoutBuilderPage() {
       {/* Exercises */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
+          <h2 className="text-2xl font-bold text-gray-100">
             Övningar ({templateExercises.length})
           </h2>
           <Button
             onClick={addExercise}
-            className="bg-[rgba(255,215,0,0.2)] border border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.3)]"
+            className="bg-[rgba(255,215,0,0.2)] border border-gold-primary/30 text-gold-light hover:bg-[rgba(255,215,0,0.3)]"
           >
             <Plus className="w-4 h-4 mr-2" />
             Lägg till övning
@@ -325,7 +325,7 @@ export default function WorkoutBuilderPage() {
             return (
               <Card
                 key={index}
-                className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,215,0,0.1)]"
+                className="bg-white/5 border border-gold-primary/10"
               >
                 <CardContent className="pt-6 space-y-3">
                   <div className="flex items-start gap-2">
@@ -339,14 +339,14 @@ export default function WorkoutBuilderPage() {
                             ...prev,
                             [exerciseKey]: e.target.value
                           }))}
-                          className="pl-8 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm"
+                          className="pl-8 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                         />
                       </div>
                       <Select
                         value={exercise.exerciseId}
                         onValueChange={(value) => updateExercise(index, 'exerciseId', value)}
                       >
-                        <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                        <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white">
                           <SelectValue placeholder="Välj övning" />
                         </SelectTrigger>
                         <SelectContent>
@@ -357,7 +357,7 @@ export default function WorkoutBuilderPage() {
                               </SelectItem>
                             ))
                           ) : (
-                            <div className="p-2 text-sm text-[rgba(255,255,255,0.5)]">Inga övningar hittades</div>
+                            <div className="p-2 text-sm text-gray-500">Inga övningar hittades</div>
                           )}
                         </SelectContent>
                       </Select>
@@ -378,7 +378,7 @@ export default function WorkoutBuilderPage() {
                         <Badge
                           key={mg}
                           variant="outline"
-                          className="text-xs bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.3)] text-[#FFD700]"
+                          className="text-xs bg-[rgba(255,215,0,0.1)] border-gold-primary/30 text-gold-light"
                         >
                           {mg}
                         </Badge>
@@ -388,50 +388,50 @@ export default function WorkoutBuilderPage() {
 
                   <div className="grid grid-cols-4 gap-2">
                     <div>
-                      <Label className="text-xs text-[rgba(255,255,255,0.6)]">Sets</Label>
+                      <Label className="text-xs text-gray-400">Sets</Label>
                       <Input
                         type="number"
                         value={exercise.sets}
                         onChange={(e) => updateExercise(index, 'sets', parseInt(e.target.value) || 0)}
-                        className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm"
+                        className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                       />
                     </div>
                     <div>
-                      <Label className="text-xs text-[rgba(255,255,255,0.6)]">Reps Min</Label>
+                      <Label className="text-xs text-gray-400">Reps Min</Label>
                       <Input
                         type="number"
                         value={exercise.repsMin || ''}
                         onChange={(e) => updateExercise(index, 'repsMin', e.target.value ? parseInt(e.target.value) : null)}
-                        className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm"
+                        className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                       />
                     </div>
                     <div>
-                      <Label className="text-xs text-[rgba(255,255,255,0.6)]">Reps Max</Label>
+                      <Label className="text-xs text-gray-400">Reps Max</Label>
                       <Input
                         type="number"
                         value={exercise.repsMax || ''}
                         onChange={(e) => updateExercise(index, 'repsMax', e.target.value ? parseInt(e.target.value) : null)}
-                        className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm"
+                        className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                       />
                     </div>
                     <div>
-                      <Label className="text-xs text-[rgba(255,255,255,0.6)]">Vila (s)</Label>
+                      <Label className="text-xs text-gray-400">Vila (s)</Label>
                       <Input
                         type="number"
                         value={exercise.restSeconds}
                         onChange={(e) => updateExercise(index, 'restSeconds', parseInt(e.target.value) || 60)}
-                        className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm"
+                        className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <Label className="text-xs text-[rgba(255,255,255,0.6)]">Anteckningar</Label>
+                    <Label className="text-xs text-gray-400">Anteckningar</Label>
                     <Input
                       value={exercise.notes}
                       onChange={(e) => updateExercise(index, 'notes', e.target.value)}
                       placeholder="T.ex. Drop set, superset..."
-                      className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm mt-1"
+                      className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm mt-1"
                     />
                   </div>
                 </CardContent>
@@ -441,14 +441,14 @@ export default function WorkoutBuilderPage() {
         </div>
 
         {templateExercises.length === 0 && (
-          <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+          <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
             <CardContent className="py-12 text-center">
-              <p className="text-[rgba(255,255,255,0.6)] mb-4">
+              <p className="text-gray-400 mb-4">
                 Inga övningar ännu. Lägg till din första övning!
               </p>
               <Button
                 onClick={addExercise}
-                className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+                className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Lägg till första övningen

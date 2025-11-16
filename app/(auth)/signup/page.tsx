@@ -97,15 +97,15 @@ export default function SignupPage() {
     <div className="space-y-4">
       <Link
         href="/"
-        className="inline-flex items-center gap-2 text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] transition-colors"
+        className="inline-flex items-center gap-2 text-[rgba(255,215,0,0.8)] hover:text-gold-light transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Tillbaka till startsidan</span>
       </Link>
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+      <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">Create Account</CardTitle>
-        <CardDescription className="text-[rgba(255,255,255,0.6)]">
+        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gold-light to-orange-500 bg-clip-text text-transparent">Create Account</CardTitle>
+        <CardDescription className="text-gray-400">
           Fill in the details below to start your 90-day journey
         </CardDescription>
       </CardHeader>
@@ -119,7 +119,7 @@ export default function SignupPage() {
               placeholder="Your name"
               {...register('fullName')}
               disabled={isLoading}
-              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
+              className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-gold-light"
             />
             {errors.fullName && (
               <p className="text-sm text-[#ff4444]">{errors.fullName.message}</p>
@@ -133,7 +133,7 @@ export default function SignupPage() {
               placeholder="your@email.com"
               {...register('email')}
               disabled={isLoading}
-              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
+              className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-gold-light"
             />
             {errors.email && (
               <p className="text-sm text-[#ff4444]">{errors.email.message}</p>
@@ -147,7 +147,7 @@ export default function SignupPage() {
               placeholder="••••••••"
               {...register('password')}
               disabled={isLoading}
-              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
+              className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-gold-light"
             />
             {errors.password && (
               <p className="text-sm text-[#ff4444]">{errors.password.message}</p>
@@ -161,7 +161,7 @@ export default function SignupPage() {
               placeholder="••••••••"
               {...register('confirmPassword')}
               disabled={isLoading}
-              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
+              className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-gold-light"
             />
             {errors.confirmPassword && (
               <p className="text-sm text-[#ff4444]">{errors.confirmPassword.message}</p>
@@ -169,12 +169,12 @@ export default function SignupPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold" disabled={isLoading}>
+          <Button type="submit" className="w-full bg-gradient-to-r from-gold-light to-orange-500 hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold" disabled={isLoading}>
             {isLoading ? 'Creating account...' : 'Create Account'}
           </Button>
-          <p className="text-sm text-[rgba(255,255,255,0.6)] text-center">
+          <p className="text-sm text-gray-400 text-center">
             Already have an account?{' '}
-            <Link href="/login" className="text-[#FFD700] hover:text-[#FFA500] hover:underline">
+            <Link href="/login" className="text-gold-light hover:text-orange-500 hover:underline">
               Sign in
             </Link>
           </p>

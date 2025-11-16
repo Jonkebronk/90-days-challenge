@@ -178,8 +178,8 @@ export default function EditFoodItemPage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-[rgba(255,255,255,0.7)]">Du har inte behörighet att se denna sida.</p>
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
+          <p className="text-gray-300">Du har inte behörighet att se denna sida.</p>
         </div>
       </div>
     )
@@ -189,7 +189,7 @@ export default function EditFoodItemPage() {
     return (
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-[#FFD700]" />
+          <Loader2 className="h-8 w-8 animate-spin text-gold-light" />
         </div>
       </div>
     )
@@ -203,15 +203,15 @@ export default function EditFoodItemPage() {
           variant="ghost"
           size="icon"
           onClick={() => router.back()}
-          className="text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
+          className="text-gray-400 hover:text-gold-light"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+          <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
             Redigera livsmedel
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-400 mt-1">
             Uppdatera information om livsmedlet
           </p>
         </div>
@@ -220,34 +220,34 @@ export default function EditFoodItemPage() {
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Info */}
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle className="text-xl text-[#FFD700]">Grundläggande information</CardTitle>
+            <CardTitle className="text-xl text-gold-light">Grundläggande information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="name" className="text-[rgba(255,255,255,0.8)]">Namn *</Label>
+              <Label htmlFor="name" className="text-gray-200">Namn *</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="t.ex. Kycklingfilé, Havregryn, Broccoli"
                 required
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
             </div>
 
             <div>
-              <Label htmlFor="category" className="text-[rgba(255,255,255,0.8)]">Kategori *</Label>
+              <Label htmlFor="category" className="text-gray-200">Kategori *</Label>
               <Select
                 value={formData.categoryId}
                 onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
                 required
               >
-                <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                   <SelectValue placeholder="Välj kategori" />
                 </SelectTrigger>
-                <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+                <SelectContent className="bg-gray-900/95 border-gold-primary/30">
                   {categories.map((cat) => {
                     const Icon = getIconComponent(cat.icon)
                     return (
@@ -264,15 +264,15 @@ export default function EditFoodItemPage() {
             </div>
 
             <div>
-              <Label htmlFor="commonServingSize" className="text-[rgba(255,255,255,0.8)]">Vanlig portion</Label>
+              <Label htmlFor="commonServingSize" className="text-gray-200">Vanlig portion</Label>
               <Input
                 id="commonServingSize"
                 value={formData.commonServingSize}
                 onChange={(e) => setFormData({ ...formData, commonServingSize: e.target.value })}
                 placeholder="t.ex. 100g, 1 st, 1 dl"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
-              <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 Näringsvärden anges per denna portion
               </p>
             </div>
@@ -280,14 +280,14 @@ export default function EditFoodItemPage() {
         </Card>
 
         {/* Nutrition */}
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle className="text-xl text-[#FFD700]">Näringsvärden per portion</CardTitle>
+            <CardTitle className="text-xl text-gold-light">Näringsvärden per portion</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="calories" className="text-[rgba(255,255,255,0.8)]">Kalorier (kcal) *</Label>
+                <Label htmlFor="calories" className="text-gray-200">Kalorier (kcal) *</Label>
                 <Input
                   id="calories"
                   type="number"
@@ -296,12 +296,12 @@ export default function EditFoodItemPage() {
                   onChange={(e) => setFormData({ ...formData, calories: e.target.value })}
                   placeholder="0"
                   required
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
 
               <div>
-                <Label htmlFor="proteinG" className="text-[rgba(255,255,255,0.8)]">Protein (g) *</Label>
+                <Label htmlFor="proteinG" className="text-gray-200">Protein (g) *</Label>
                 <Input
                   id="proteinG"
                   type="number"
@@ -310,12 +310,12 @@ export default function EditFoodItemPage() {
                   onChange={(e) => setFormData({ ...formData, proteinG: e.target.value })}
                   placeholder="0"
                   required
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
 
               <div>
-                <Label htmlFor="carbsG" className="text-[rgba(255,255,255,0.8)]">Kolhydrater (g) *</Label>
+                <Label htmlFor="carbsG" className="text-gray-200">Kolhydrater (g) *</Label>
                 <Input
                   id="carbsG"
                   type="number"
@@ -324,12 +324,12 @@ export default function EditFoodItemPage() {
                   onChange={(e) => setFormData({ ...formData, carbsG: e.target.value })}
                   placeholder="0"
                   required
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
 
               <div>
-                <Label htmlFor="fatG" className="text-[rgba(255,255,255,0.8)]">Fett (g) *</Label>
+                <Label htmlFor="fatG" className="text-gray-200">Fett (g) *</Label>
                 <Input
                   id="fatG"
                   type="number"
@@ -338,7 +338,7 @@ export default function EditFoodItemPage() {
                   onChange={(e) => setFormData({ ...formData, fatG: e.target.value })}
                   placeholder="0"
                   required
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
                 />
               </div>
             </div>
@@ -346,22 +346,22 @@ export default function EditFoodItemPage() {
         </Card>
 
         {/* Additional Info */}
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle className="text-xl text-[#FFD700]">Ytterligare information</CardTitle>
+            <CardTitle className="text-xl text-gold-light">Ytterligare information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="notes" className="text-[rgba(255,255,255,0.8)]">Anteckningar</Label>
+              <Label htmlFor="notes" className="text-gray-200">Anteckningar</Label>
               <Textarea
                 id="notes"
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 placeholder="Förslag på tillagning, fördelar med livsmedlet, etc..."
                 rows={4}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
-              <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 Synlig för klienter i Food Guide
               </p>
             </div>
@@ -374,11 +374,11 @@ export default function EditFoodItemPage() {
                   onCheckedChange={(checked) =>
                     setFormData({ ...formData, isVegetarian: checked as boolean })
                   }
-                  className="border-[rgba(255,215,0,0.3)] data-[state=checked]:bg-[#FFD700] data-[state=checked]:text-[#0a0a0a]"
+                  className="border-gold-primary/30 data-[state=checked]:bg-[#FFD700] data-[state=checked]:text-[#0a0a0a]"
                 />
                 <Label
                   htmlFor="isVegetarian"
-                  className="text-[rgba(255,255,255,0.8)] cursor-pointer"
+                  className="text-gray-200 cursor-pointer"
                 >
                   Vegetariskt
                 </Label>
@@ -391,11 +391,11 @@ export default function EditFoodItemPage() {
                   onCheckedChange={(checked) =>
                     setFormData({ ...formData, isVegan: checked as boolean })
                   }
-                  className="border-[rgba(255,215,0,0.3)] data-[state=checked]:bg-[#FFD700] data-[state=checked]:text-[#0a0a0a]"
+                  className="border-gold-primary/30 data-[state=checked]:bg-[#FFD700] data-[state=checked]:text-[#0a0a0a]"
                 />
                 <Label
                   htmlFor="isVegan"
-                  className="text-[rgba(255,255,255,0.8)] cursor-pointer"
+                  className="text-gray-200 cursor-pointer"
                 >
                   Veganskt
                 </Label>
@@ -408,11 +408,11 @@ export default function EditFoodItemPage() {
                   onCheckedChange={(checked) =>
                     setFormData({ ...formData, isRecommended: checked as boolean })
                   }
-                  className="border-[rgba(255,215,0,0.3)] data-[state=checked]:bg-[#FFD700] data-[state=checked]:text-[#0a0a0a]"
+                  className="border-gold-primary/30 data-[state=checked]:bg-[#FFD700] data-[state=checked]:text-[#0a0a0a]"
                 />
                 <Label
                   htmlFor="isRecommended"
-                  className="text-[rgba(255,255,255,0.8)] cursor-pointer"
+                  className="text-gray-200 cursor-pointer"
                 >
                   Rekommenderad (visas med tumme upp)
                 </Label>
@@ -422,19 +422,19 @@ export default function EditFoodItemPage() {
         </Card>
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-6 border-t border-[rgba(255,215,0,0.2)]">
+        <div className="flex items-center justify-between pt-6 border-t border-gold-primary/20">
           <Button
             type="button"
             variant="outline"
             onClick={() => router.back()}
-            className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
+            className="border-gold-primary/30 text-gray-200 hover:bg-gold-50"
           >
             Avbryt
           </Button>
           <Button
             type="submit"
             disabled={isSaving}
-            className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+            className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
           >
             <Save className="h-4 w-4 mr-2" />
             {isSaving ? 'Sparar...' : 'Spara ändringar'}

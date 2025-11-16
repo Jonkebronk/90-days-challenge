@@ -344,7 +344,7 @@ export default function ClientShoppingListDetailPage({
   if (!session?.user) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <p className="text-[rgba(255,255,255,0.7)]">Du måste logga in</p>
+        <p className="text-gray-300">Du måste logga in</p>
       </div>
     )
   }
@@ -352,7 +352,7 @@ export default function ClientShoppingListDetailPage({
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-[rgba(255,255,255,0.6)]">Laddar...</p>
+        <p className="text-gray-400">Laddar...</p>
       </div>
     )
   }
@@ -360,7 +360,7 @@ export default function ClientShoppingListDetailPage({
   if (!shoppingList) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
-        <p className="text-[rgba(255,255,255,0.7)]">Listan hittades inte</p>
+        <p className="text-gray-300">Listan hittades inte</p>
       </div>
     )
   }
@@ -380,7 +380,7 @@ export default function ClientShoppingListDetailPage({
     <div className="min-h-screen bg-gray-900">
       {/* Sticky Header */}
       <div
-        className="sticky top-0 z-20 border-b border-[rgba(255,215,0,0.2)] backdrop-blur-lg"
+        className="sticky top-0 z-20 border-b border-gold-primary/20 backdrop-blur-lg"
         style={{ backgroundColor: `${shoppingList.color}15` }}
       >
         <div className="p-4">
@@ -416,12 +416,12 @@ export default function ClientShoppingListDetailPage({
           </div>
           <h1 className="text-2xl font-bold text-white mb-1">{shoppingList.name}</h1>
           {shoppingList.description && (
-            <p className="text-sm text-[rgba(255,255,255,0.7)] mb-3">
+            <p className="text-sm text-gray-300 mb-3">
               {shoppingList.description}
             </p>
           )}
           <div className="flex items-center justify-between">
-            <p className="text-sm text-[rgba(255,255,255,0.8)]">
+            <p className="text-sm text-gray-200">
               {checkedItems} av {totalItems} klara
             </p>
             <Badge className="bg-[rgba(255,255,255,0.2)] text-white border-0">
@@ -430,7 +430,7 @@ export default function ClientShoppingListDetailPage({
           </div>
           <div className="w-full bg-[rgba(255,255,255,0.1)] h-1.5 rounded-full mt-2 overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] transition-all duration-300"
+              className="h-full bg-gradient-to-r from-gold-light to-orange-500 transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -440,13 +440,13 @@ export default function ClientShoppingListDetailPage({
       {/* Content */}
       <div className="p-4 pb-24">
         {totalItems === 0 ? (
-          <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] mt-8">
+          <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] mt-8">
             <CardContent className="text-center py-16">
-              <p className="text-[rgba(255,255,255,0.6)] mb-4">Listan är tom</p>
+              <p className="text-gray-400 mb-4">Listan är tom</p>
               {canEdit && (
                 <Button
                   onClick={() => setIsAddDialogOpen(true)}
-                  className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold"
+                  className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Lägg till vara
@@ -458,7 +458,7 @@ export default function ClientShoppingListDetailPage({
           <div className="space-y-6">
             {Object.entries(grouped).map(([category, items]) => (
               <div key={category}>
-                <h2 className="text-sm font-semibold text-[rgba(255,255,255,0.5)] uppercase tracking-wide px-1 mb-2">
+                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide px-1 mb-2">
                   {category}
                 </h2>
                 <div className="space-y-2">
@@ -470,7 +470,7 @@ export default function ClientShoppingListDetailPage({
                         className={`transition-all ${
                           item.checked
                             ? 'bg-[rgba(34,197,94,0.1)] border-[rgba(34,197,94,0.3)] opacity-70'
-                            : 'bg-[rgba(255,255,255,0.03)] border-[rgba(255,215,0,0.2)]'
+                            : 'bg-white/5 border-gold-primary/20'
                         }`}
                       >
                         <CardContent className="p-4">
@@ -495,7 +495,7 @@ export default function ClientShoppingListDetailPage({
                                 {item.quantity} {item.unit} {name}
                               </p>
                               {item.notes && (
-                                <p className="text-sm text-[rgba(255,255,255,0.5)] mt-0.5">
+                                <p className="text-sm text-gray-500 mt-0.5">
                                   {item.notes}
                                 </p>
                               )}
@@ -505,7 +505,7 @@ export default function ClientShoppingListDetailPage({
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handleDeleteItem(item.id)}
-                                className="text-[rgba(255,255,255,0.5)] hover:text-red-400 flex-shrink-0"
+                                className="text-gray-500 hover:text-red-400 flex-shrink-0"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -524,9 +524,9 @@ export default function ClientShoppingListDetailPage({
 
       {/* Add Item Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.98)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] max-w-lg max-h-[85vh] flex flex-col">
+        <DialogContent className="bg-[rgba(10,10,10,0.98)] border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-lg max-h-[85vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <DialogTitle className="text-xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               Lägg till vara
             </DialogTitle>
           </DialogHeader>
@@ -536,8 +536,8 @@ export default function ClientShoppingListDetailPage({
               onClick={() => setActiveTab('search')}
               className={`flex-1 ${
                 activeTab === 'search'
-                  ? 'bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a]'
-                  : 'bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)]'
+                  ? 'bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a]'
+                  : 'bg-transparent border border-gold-primary/30 text-gray-200'
               }`}
             >
               Sök livsmedel
@@ -546,8 +546,8 @@ export default function ClientShoppingListDetailPage({
               onClick={() => setActiveTab('custom')}
               className={`flex-1 ${
                 activeTab === 'custom'
-                  ? 'bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a]'
-                  : 'bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)]'
+                  ? 'bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a]'
+                  : 'bg-transparent border border-gold-primary/30 text-gray-200'
               }`}
             >
               Egen vara
@@ -557,12 +557,12 @@ export default function ClientShoppingListDetailPage({
           {activeTab === 'search' ? (
             <div className="flex-1 overflow-auto">
               <div className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(255,255,255,0.5)]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                 <Input
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Sök i livsmedelbanken..."
-                  className="pl-10 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="pl-10 bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
 
@@ -570,7 +570,7 @@ export default function ClientShoppingListDetailPage({
                 {searchResults.map((foodItem) => (
                   <Card
                     key={foodItem.id}
-                    className="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] hover:border-[rgba(255,215,0,0.4)] cursor-pointer transition-all"
+                    className="bg-white/5 border border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)] cursor-pointer transition-all"
                     onClick={() => handleAddFromFoodBank(foodItem)}
                   >
                     <CardContent className="p-3">
@@ -578,7 +578,7 @@ export default function ClientShoppingListDetailPage({
                         <div>
                           <p className="font-medium text-white">{foodItem.name}</p>
                           {foodItem.category && (
-                            <p className="text-xs text-[rgba(255,255,255,0.5)]">
+                            <p className="text-xs text-gray-500">
                               {foodItem.category.name}
                             </p>
                           )}
@@ -589,7 +589,7 @@ export default function ClientShoppingListDetailPage({
                   </Card>
                 ))}
                 {searchTerm.length >= 2 && searchResults.length === 0 && (
-                  <p className="text-center text-[rgba(255,255,255,0.5)] py-8">
+                  <p className="text-center text-gray-500 py-8">
                     Inga resultat
                   </p>
                 )}
@@ -598,43 +598,43 @@ export default function ClientShoppingListDetailPage({
           ) : (
             <div className="space-y-4">
               <div>
-                <label className="text-sm text-[rgba(255,255,255,0.8)] mb-1.5 block">
+                <label className="text-sm text-gray-200 mb-1.5 block">
                   Varunamn *
                 </label>
                 <Input
                   value={customItemName}
                   onChange={(e) => setCustomItemName(e.target.value)}
                   placeholder="t.ex. Äpplen"
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-black/30 border-gold-primary/30 text-white"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm text-[rgba(255,255,255,0.8)] mb-1.5 block">
+                  <label className="text-sm text-gray-200 mb-1.5 block">
                     Antal
                   </label>
                   <Input
                     type="number"
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                    className="bg-black/30 border-gold-primary/30 text-white"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-[rgba(255,255,255,0.8)] mb-1.5 block">
+                  <label className="text-sm text-gray-200 mb-1.5 block">
                     Enhet
                   </label>
                   <Input
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
                     placeholder="st, kg, l"
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                    className="bg-black/30 border-gold-primary/30 text-white"
                   />
                 </div>
               </div>
               <Button
                 onClick={handleAddCustomItem}
-                className="w-full bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold"
+                className="w-full bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
               >
                 Lägg till
               </Button>
@@ -645,7 +645,7 @@ export default function ClientShoppingListDetailPage({
 
       {/* Menu Dialog */}
       <Dialog open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.98)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] max-w-sm">
+        <DialogContent className="bg-[rgba(10,10,10,0.98)] border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-sm">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-white">Meny</DialogTitle>
           </DialogHeader>
@@ -656,7 +656,7 @@ export default function ClientShoppingListDetailPage({
                   setIsMenuOpen(false)
                   setIsShareDialogOpen(true)
                 }}
-                className="w-full justify-start bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] text-white border border-[rgba(255,215,0,0.2)]"
+                className="w-full justify-start bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] text-white border border-gold-primary/20"
               >
                 <Share2 className="h-4 w-4 mr-2" />
                 Dela lista
@@ -667,7 +667,7 @@ export default function ClientShoppingListDetailPage({
                 setIsMenuOpen(false)
                 handleExport()
               }}
-              className="w-full justify-start bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] text-white border border-[rgba(255,215,0,0.2)]"
+              className="w-full justify-start bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] text-white border border-gold-primary/20"
             >
               Exportera
             </Button>
@@ -689,26 +689,26 @@ export default function ClientShoppingListDetailPage({
 
       {/* Share Dialog */}
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.98)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] max-w-md">
+        <DialogContent className="bg-[rgba(10,10,10,0.98)] border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <DialogTitle className="text-xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               Dela lista
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm text-[rgba(255,255,255,0.8)] mb-1.5 block">
+              <label className="text-sm text-gray-200 mb-1.5 block">
                 Användar-ID
               </label>
               <Input
                 value={shareUserId}
                 onChange={(e) => setShareUserId(e.target.value)}
                 placeholder="Mottagarens användar-ID"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
             <div>
-              <label className="text-sm text-[rgba(255,255,255,0.8)] mb-1.5 block">
+              <label className="text-sm text-gray-200 mb-1.5 block">
                 Behörighet
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -716,8 +716,8 @@ export default function ClientShoppingListDetailPage({
                   onClick={() => setShareRole('viewer')}
                   className={`${
                     shareRole === 'viewer'
-                      ? 'bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a]'
-                      : 'bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)]'
+                      ? 'bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a]'
+                      : 'bg-transparent border border-gold-primary/30 text-gray-200'
                   }`}
                 >
                   Läsa
@@ -726,8 +726,8 @@ export default function ClientShoppingListDetailPage({
                   onClick={() => setShareRole('editor')}
                   className={`${
                     shareRole === 'editor'
-                      ? 'bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a]'
-                      : 'bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)]'
+                      ? 'bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a]'
+                      : 'bg-transparent border border-gold-primary/30 text-gray-200'
                   }`}
                 >
                   Redigera
@@ -738,13 +738,13 @@ export default function ClientShoppingListDetailPage({
           <DialogFooter>
             <Button
               onClick={() => setIsShareDialogOpen(false)}
-              className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)]"
+              className="bg-transparent border border-gold-primary/30 text-gray-200"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleShare}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold"
+              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
             >
               Dela
             </Button>

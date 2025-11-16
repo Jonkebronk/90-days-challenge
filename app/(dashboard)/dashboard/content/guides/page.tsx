@@ -158,8 +158,8 @@ export default function GuidesManagementPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-[#FFD700] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[rgba(255,255,255,0.8)]">Laddar guider...</p>
+          <div className="w-12 h-12 border-4 border-gold-light border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-200">Laddar guider...</p>
         </div>
       </div>
     )
@@ -171,12 +171,12 @@ export default function GuidesManagementPage() {
       <div className="text-center">
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
         <div className="flex items-center justify-center gap-3 mb-4">
-          <BookOpen className="w-8 h-8 text-[#FFD700]" />
-          <h1 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+          <BookOpen className="w-8 h-8 text-gold-light" />
+          <h1 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
             Hantera Guider
           </h1>
         </div>
-        <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+        <p className="text-gray-400 text-sm tracking-[1px]">
           Redigera innehåll för kom igång, kostschema, träningsprogram, livsmedelsguide och generella kosttips
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
@@ -184,7 +184,7 @@ export default function GuidesManagementPage() {
 
       {/* Tabs for different guides */}
       <Tabs defaultValue="onboarding" className="w-full">
-        <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-2 md:grid-cols-5 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.3)]">
+        <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-2 md:grid-cols-5 bg-[rgba(255,255,255,0.05)] border border-gold-primary/30">
           <TabsTrigger
             value="onboarding"
             className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a]"
@@ -219,36 +219,36 @@ export default function GuidesManagementPage() {
 
         {/* Onboarding / Kom Igång Guide */}
         <TabsContent value="onboarding">
-          <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
+          <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-gold-primary/30 backdrop-blur-[10px]">
             <CardHeader>
-              <CardTitle className="text-[rgba(255,255,255,0.9)]">Kom Igång Guide</CardTitle>
-              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+              <CardTitle className="text-gray-100">Kom Igång Guide</CardTitle>
+              <p className="text-sm text-gray-400">
                 Denna text visas på /dashboard/onboarding/guide
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="onboarding-title" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="onboarding-title" className="text-gray-200">
                   Titel
                 </Label>
                 <Input
                   id="onboarding-title"
                   value={onboardingData.title}
                   onChange={(e) => setOnboardingData({ ...onboardingData, title: e.target.value })}
-                  className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-white"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <Label htmlFor="onboarding-content" className="text-[rgba(255,255,255,0.8)]">
+                  <Label htmlFor="onboarding-content" className="text-gray-200">
                     Innehåll (MDX)
                   </Label>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setActivePreview(activePreview === 'onboarding' ? null : 'onboarding')}
-                    className="bg-transparent border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)]"
+                    className="bg-transparent border-gold-primary/30 text-gray-200"
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     {activePreview === 'onboarding' ? 'Dölj' : 'Visa'} Förhandsvisning
@@ -258,15 +258,15 @@ export default function GuidesManagementPage() {
                   id="onboarding-content"
                   value={onboardingData.content}
                   onChange={(e) => setOnboardingData({ ...onboardingData, content: e.target.value })}
-                  className="min-h-[400px] font-mono bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="min-h-[400px] font-mono bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-white"
                   placeholder="# Rubrik&#10;&#10;Din text här..."
                 />
               </div>
 
               {activePreview === 'onboarding' && (
-                <div className="border-2 border-[rgba(255,215,0,0.3)] rounded-lg p-6 bg-[rgba(0,0,0,0.3)]">
-                  <h3 className="text-lg font-bold text-[#FFD700] mb-4">Förhandsvisning:</h3>
-                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-[#FFD700] prose-headings:font-bold prose-p:text-[rgba(255,255,255,0.8)] prose-strong:text-[#FFD700] prose-li:text-[rgba(255,255,255,0.8)]">
+                <div className="border-2 border-gold-primary/30 rounded-lg p-6 bg-black/30">
+                  <h3 className="text-lg font-bold text-gold-light mb-4">Förhandsvisning:</h3>
+                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-gold-light prose-headings:font-bold prose-p:text-gray-200 prose-strong:text-gold-light prose-li:text-gray-200">
                     <MDXPreview content={onboardingData.content} />
                   </div>
                 </div>
@@ -276,7 +276,7 @@ export default function GuidesManagementPage() {
                 <Button
                   onClick={() => handleSave('onboarding')}
                   disabled={saving === 'onboarding'}
-                  className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:shadow-[0_0_20px_rgba(255,215,0,0.5)]"
+                  className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:shadow-[0_0_20px_rgba(255,215,0,0.5)]"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {saving === 'onboarding' ? 'Sparar...' : 'Spara Ändringar'}
@@ -284,7 +284,7 @@ export default function GuidesManagementPage() {
                 <Button
                   variant="outline"
                   onClick={() => window.open('/dashboard/onboarding/guide', '_blank')}
-                  className="bg-transparent border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)]"
+                  className="bg-transparent border-gold-primary/30 text-gray-200"
                 >
                   <Eye className="w-4 h-4 mr-2" />
                   Öppna Live-sida
@@ -293,7 +293,7 @@ export default function GuidesManagementPage() {
 
               <div className="mt-4 p-4 bg-[rgba(59,130,246,0.1)] border border-[rgba(59,130,246,0.3)] rounded-lg">
                 <p className="text-sm font-medium text-[#3b82f6] mb-2">MDX Formatering:</p>
-                <ul className="text-sm text-[rgba(255,255,255,0.7)] space-y-1 list-disc list-inside">
+                <ul className="text-sm text-gray-300 space-y-1 list-disc list-inside">
                   <li># för huvudrubrik (H1)</li>
                   <li>## för underrubrik (H2)</li>
                   <li>**text** för fet text</li>
@@ -308,36 +308,36 @@ export default function GuidesManagementPage() {
 
         {/* Meal Plan Guide */}
         <TabsContent value="meal_plan">
-          <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
+          <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-gold-primary/30 backdrop-blur-[10px]">
             <CardHeader>
-              <CardTitle className="text-[rgba(255,255,255,0.9)]">Kostschema Guide</CardTitle>
-              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+              <CardTitle className="text-gray-100">Kostschema Guide</CardTitle>
+              <p className="text-sm text-gray-400">
                 Denna text visas på /dashboard/meal-plan/guide
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="meal-plan-title" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="meal-plan-title" className="text-gray-200">
                   Titel
                 </Label>
                 <Input
                   id="meal-plan-title"
                   value={mealPlanData.title}
                   onChange={(e) => setMealPlanData({ ...mealPlanData, title: e.target.value })}
-                  className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-white"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <Label htmlFor="meal-plan-content" className="text-[rgba(255,255,255,0.8)]">
+                  <Label htmlFor="meal-plan-content" className="text-gray-200">
                     Innehåll (MDX)
                   </Label>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setActivePreview(activePreview === 'meal_plan' ? null : 'meal_plan')}
-                    className="bg-transparent border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)]"
+                    className="bg-transparent border-gold-primary/30 text-gray-200"
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     {activePreview === 'meal_plan' ? 'Dölj' : 'Visa'} Förhandsvisning
@@ -347,15 +347,15 @@ export default function GuidesManagementPage() {
                   id="meal-plan-content"
                   value={mealPlanData.content}
                   onChange={(e) => setMealPlanData({ ...mealPlanData, content: e.target.value })}
-                  className="min-h-[400px] font-mono bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="min-h-[400px] font-mono bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-white"
                   placeholder="# Rubrik&#10;&#10;Din text här..."
                 />
               </div>
 
               {activePreview === 'meal_plan' && (
-                <div className="border-2 border-[rgba(255,215,0,0.3)] rounded-lg p-6 bg-[rgba(0,0,0,0.3)]">
-                  <h3 className="text-lg font-bold text-[#FFD700] mb-4">Förhandsvisning:</h3>
-                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-[#FFD700] prose-headings:font-bold prose-p:text-[rgba(255,255,255,0.8)] prose-strong:text-[#FFD700] prose-li:text-[rgba(255,255,255,0.8)]">
+                <div className="border-2 border-gold-primary/30 rounded-lg p-6 bg-black/30">
+                  <h3 className="text-lg font-bold text-gold-light mb-4">Förhandsvisning:</h3>
+                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-gold-light prose-headings:font-bold prose-p:text-gray-200 prose-strong:text-gold-light prose-li:text-gray-200">
                     <MDXPreview content={mealPlanData.content} />
                   </div>
                 </div>
@@ -365,7 +365,7 @@ export default function GuidesManagementPage() {
                 <Button
                   onClick={() => handleSave('meal_plan')}
                   disabled={saving === 'meal_plan'}
-                  className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:shadow-[0_0_20px_rgba(255,215,0,0.5)]"
+                  className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:shadow-[0_0_20px_rgba(255,215,0,0.5)]"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {saving === 'meal_plan' ? 'Sparar...' : 'Spara Ändringar'}
@@ -373,7 +373,7 @@ export default function GuidesManagementPage() {
                 <Button
                   variant="outline"
                   onClick={() => window.open('/dashboard/meal-plan/guide', '_blank')}
-                  className="bg-transparent border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)]"
+                  className="bg-transparent border-gold-primary/30 text-gray-200"
                 >
                   <Eye className="w-4 h-4 mr-2" />
                   Öppna Live-sida
@@ -382,7 +382,7 @@ export default function GuidesManagementPage() {
 
               <div className="mt-4 p-4 bg-[rgba(59,130,246,0.1)] border border-[rgba(59,130,246,0.3)] rounded-lg">
                 <p className="text-sm font-medium text-[#3b82f6] mb-2">MDX Formatering:</p>
-                <ul className="text-sm text-[rgba(255,255,255,0.7)] space-y-1 list-disc list-inside">
+                <ul className="text-sm text-gray-300 space-y-1 list-disc list-inside">
                   <li># för huvudrubrik (H1)</li>
                   <li>## för underrubrik (H2)</li>
                   <li>**text** för fet text</li>
@@ -397,36 +397,36 @@ export default function GuidesManagementPage() {
 
         {/* Workout Guide */}
         <TabsContent value="workout">
-          <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
+          <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-gold-primary/30 backdrop-blur-[10px]">
             <CardHeader>
-              <CardTitle className="text-[rgba(255,255,255,0.9)]">Träningsprogram Guide</CardTitle>
-              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+              <CardTitle className="text-gray-100">Träningsprogram Guide</CardTitle>
+              <p className="text-sm text-gray-400">
                 Denna text visas på /dashboard/workout/guide
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="workout-title" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="workout-title" className="text-gray-200">
                   Titel
                 </Label>
                 <Input
                   id="workout-title"
                   value={workoutData.title}
                   onChange={(e) => setWorkoutData({ ...workoutData, title: e.target.value })}
-                  className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-white"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <Label htmlFor="workout-content" className="text-[rgba(255,255,255,0.8)]">
+                  <Label htmlFor="workout-content" className="text-gray-200">
                     Innehåll (MDX)
                   </Label>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setActivePreview(activePreview === 'workout' ? null : 'workout')}
-                    className="bg-transparent border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)]"
+                    className="bg-transparent border-gold-primary/30 text-gray-200"
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     {activePreview === 'workout' ? 'Dölj' : 'Visa'} Förhandsvisning
@@ -436,15 +436,15 @@ export default function GuidesManagementPage() {
                   id="workout-content"
                   value={workoutData.content}
                   onChange={(e) => setWorkoutData({ ...workoutData, content: e.target.value })}
-                  className="min-h-[400px] font-mono bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white"
+                  className="min-h-[400px] font-mono bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-white"
                   placeholder="# Rubrik&#10;&#10;Din text här..."
                 />
               </div>
 
               {activePreview === 'workout' && (
-                <div className="border-2 border-[rgba(255,215,0,0.3)] rounded-lg p-6 bg-[rgba(0,0,0,0.3)]">
-                  <h3 className="text-lg font-bold text-[#FFD700] mb-4">Förhandsvisning:</h3>
-                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-[#FFD700] prose-headings:font-bold prose-p:text-[rgba(255,255,255,0.8)] prose-strong:text-[#FFD700] prose-li:text-[rgba(255,255,255,0.8)]">
+                <div className="border-2 border-gold-primary/30 rounded-lg p-6 bg-black/30">
+                  <h3 className="text-lg font-bold text-gold-light mb-4">Förhandsvisning:</h3>
+                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-gold-light prose-headings:font-bold prose-p:text-gray-200 prose-strong:text-gold-light prose-li:text-gray-200">
                     <MDXPreview content={workoutData.content} />
                   </div>
                 </div>
@@ -454,7 +454,7 @@ export default function GuidesManagementPage() {
                 <Button
                   onClick={() => handleSave('workout')}
                   disabled={saving === 'workout'}
-                  className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:shadow-[0_0_20px_rgba(255,215,0,0.5)]"
+                  className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:shadow-[0_0_20px_rgba(255,215,0,0.5)]"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {saving === 'workout' ? 'Sparar...' : 'Spara Ändringar'}
@@ -462,7 +462,7 @@ export default function GuidesManagementPage() {
                 <Button
                   variant="outline"
                   onClick={() => window.open('/dashboard/workout/guide', '_blank')}
-                  className="bg-transparent border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)]"
+                  className="bg-transparent border-gold-primary/30 text-gray-200"
                 >
                   <Eye className="w-4 h-4 mr-2" />
                   Öppna Live-sida
@@ -471,7 +471,7 @@ export default function GuidesManagementPage() {
 
               <div className="mt-4 p-4 bg-[rgba(59,130,246,0.1)] border border-[rgba(59,130,246,0.3)] rounded-lg">
                 <p className="text-sm font-medium text-[#3b82f6] mb-2">MDX Formatering:</p>
-                <ul className="text-sm text-[rgba(255,255,255,0.7)] space-y-1 list-disc list-inside">
+                <ul className="text-sm text-gray-300 space-y-1 list-disc list-inside">
                   <li># för huvudrubrik (H1)</li>
                   <li>## för underrubrik (H2)</li>
                   <li>**text** för fet text</li>
@@ -488,14 +488,14 @@ export default function GuidesManagementPage() {
         <TabsContent value="food_guide">
           <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(16,185,129,0.3)] backdrop-blur-[10px]">
             <CardHeader>
-              <CardTitle className="text-[rgba(255,255,255,0.9)]">Livsmedelsguide</CardTitle>
-              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+              <CardTitle className="text-gray-100">Livsmedelsguide</CardTitle>
+              <p className="text-sm text-gray-400">
                 Denna text visas på /dashboard/meal-plan/food-guide
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="food-guide-title" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="food-guide-title" className="text-gray-200">
                   Titel
                 </Label>
                 <Input
@@ -508,14 +508,14 @@ export default function GuidesManagementPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <Label htmlFor="food-guide-content" className="text-[rgba(255,255,255,0.8)]">
+                  <Label htmlFor="food-guide-content" className="text-gray-200">
                     Innehåll (MDX)
                   </Label>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setActivePreview(activePreview === 'food_guide' ? null : 'food_guide')}
-                    className="bg-transparent border-[rgba(16,185,129,0.3)] text-[rgba(255,255,255,0.8)]"
+                    className="bg-transparent border-[rgba(16,185,129,0.3)] text-gray-200"
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     {activePreview === 'food_guide' ? 'Dölj' : 'Visa'} Förhandsvisning
@@ -531,9 +531,9 @@ export default function GuidesManagementPage() {
               </div>
 
               {activePreview === 'food_guide' && (
-                <div className="border-2 border-[rgba(16,185,129,0.3)] rounded-lg p-6 bg-[rgba(0,0,0,0.3)]">
+                <div className="border-2 border-[rgba(16,185,129,0.3)] rounded-lg p-6 bg-black/30">
                   <h3 className="text-lg font-bold text-[#10b981] mb-4">Förhandsvisning:</h3>
-                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-[#10b981] prose-headings:font-bold prose-p:text-[rgba(255,255,255,0.8)] prose-strong:text-[#10b981] prose-li:text-[rgba(255,255,255,0.8)]">
+                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-[#10b981] prose-headings:font-bold prose-p:text-gray-200 prose-strong:text-[#10b981] prose-li:text-gray-200">
                     <MDXPreview content={foodGuideData.content} />
                   </div>
                 </div>
@@ -551,7 +551,7 @@ export default function GuidesManagementPage() {
                 <Button
                   variant="outline"
                   onClick={() => window.open('/dashboard/meal-plan/food-guide', '_blank')}
-                  className="bg-transparent border-[rgba(16,185,129,0.3)] text-[rgba(255,255,255,0.8)]"
+                  className="bg-transparent border-[rgba(16,185,129,0.3)] text-gray-200"
                 >
                   <Eye className="w-4 h-4 mr-2" />
                   Visa Live
@@ -560,7 +560,7 @@ export default function GuidesManagementPage() {
 
               <div className="mt-4 p-4 bg-[rgba(16,185,129,0.1)] border border-[rgba(16,185,129,0.3)] rounded-lg">
                 <p className="text-sm font-medium text-[#10b981] mb-2">MDX Formatering:</p>
-                <ul className="text-sm text-[rgba(255,255,255,0.7)] space-y-1 list-disc list-inside">
+                <ul className="text-sm text-gray-300 space-y-1 list-disc list-inside">
                   <li># för huvudrubrik (H1)</li>
                   <li>## för underrubrik (H2)</li>
                   <li>**text** för fet text</li>
@@ -577,14 +577,14 @@ export default function GuidesManagementPage() {
         <TabsContent value="nutrition_tips">
           <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(245,158,11,0.3)] backdrop-blur-[10px]">
             <CardHeader>
-              <CardTitle className="text-[rgba(255,255,255,0.9)]">Generella råd för kosten</CardTitle>
-              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+              <CardTitle className="text-gray-100">Generella råd för kosten</CardTitle>
+              <p className="text-sm text-gray-400">
                 Denna text visas på klientens kostschema-sida
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="nutrition-tips-title" className="text-[rgba(255,255,255,0.8)]">
+                <Label htmlFor="nutrition-tips-title" className="text-gray-200">
                   Titel
                 </Label>
                 <Input
@@ -597,14 +597,14 @@ export default function GuidesManagementPage() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <Label htmlFor="nutrition-tips-content" className="text-[rgba(255,255,255,0.8)]">
+                  <Label htmlFor="nutrition-tips-content" className="text-gray-200">
                     Innehåll (MDX)
                   </Label>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setActivePreview(activePreview === 'nutrition_tips' ? null : 'nutrition_tips')}
-                    className="bg-transparent border-[rgba(245,158,11,0.3)] text-[rgba(255,255,255,0.8)]"
+                    className="bg-transparent border-[rgba(245,158,11,0.3)] text-gray-200"
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     {activePreview === 'nutrition_tips' ? 'Dölj' : 'Visa'} Förhandsvisning
@@ -620,9 +620,9 @@ export default function GuidesManagementPage() {
               </div>
 
               {activePreview === 'nutrition_tips' && (
-                <div className="border-2 border-[rgba(245,158,11,0.3)] rounded-lg p-6 bg-[rgba(0,0,0,0.3)]">
+                <div className="border-2 border-[rgba(245,158,11,0.3)] rounded-lg p-6 bg-black/30">
                   <h3 className="text-lg font-bold text-[#f59e0b] mb-4">Förhandsvisning:</h3>
-                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-[#f59e0b] prose-headings:font-bold prose-p:text-[rgba(255,255,255,0.8)] prose-strong:text-[#f59e0b] prose-li:text-[rgba(255,255,255,0.8)]">
+                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-[#f59e0b] prose-headings:font-bold prose-p:text-gray-200 prose-strong:text-[#f59e0b] prose-li:text-gray-200">
                     <MDXPreview content={nutritionTipsData.content} />
                   </div>
                 </div>
@@ -641,7 +641,7 @@ export default function GuidesManagementPage() {
 
               <div className="mt-4 p-4 bg-[rgba(245,158,11,0.1)] border border-[rgba(245,158,11,0.3)] rounded-lg">
                 <p className="text-sm font-medium text-[#f59e0b] mb-2">MDX Formatering:</p>
-                <ul className="text-sm text-[rgba(255,255,255,0.7)] space-y-1 list-disc list-inside">
+                <ul className="text-sm text-gray-300 space-y-1 list-disc list-inside">
                   <li># för huvudrubrik (H1)</li>
                   <li>## för underrubrik (H2)</li>
                   <li>**text** för fet text</li>

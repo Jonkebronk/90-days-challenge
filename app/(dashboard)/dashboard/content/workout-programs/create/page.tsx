@@ -276,16 +276,16 @@ export default function CreateWorkoutProgramPage() {
           <Button
             variant="ghost"
             size="icon"
-            className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+            className="text-gray-300 hover:text-gold-light hover:bg-gold-50"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
+          <h1 className="text-3xl font-bold text-gray-100">
             Skapa träningsprogram
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-400 mt-1">
             Bygg ett anpassat träningsprogram för dina klienter
           </p>
         </div>
@@ -293,14 +293,14 @@ export default function CreateWorkoutProgramPage() {
           <Button
             variant="outline"
             onClick={() => router.back()}
-            className="border-[rgba(255,215,0,0.2)] text-[rgba(255,255,255,0.7)]"
+            className="border-gold-primary/20 text-gray-300"
           >
             Avbryt
           </Button>
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+            className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
           >
             {saving ? 'Sparar...' : 'Spara program'}
           </Button>
@@ -308,39 +308,39 @@ export default function CreateWorkoutProgramPage() {
       </div>
 
       {/* Program Info */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+      <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
         <CardHeader>
-          <CardTitle className="text-xl text-[rgba(255,255,255,0.9)]">
+          <CardTitle className="text-xl text-gray-100">
             Programinformation
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label className="text-[rgba(255,255,255,0.7)]">Programnamn *</Label>
+            <Label className="text-gray-300">Programnamn *</Label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="T.ex. Full Body Beginner"
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1"
             />
           </div>
 
           <div>
-            <Label className="text-[rgba(255,255,255,0.7)]">Beskrivning</Label>
+            <Label className="text-gray-300">Beskrivning</Label>
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Beskriv programmet och dess mål..."
               rows={3}
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Svårighetsgrad</Label>
+              <Label className="text-gray-300">Svårighetsgrad</Label>
               <Select value={difficulty} onValueChange={setDifficulty}>
-                <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white">
                   <SelectValue placeholder="Välj nivå" />
                 </SelectTrigger>
                 <SelectContent>
@@ -352,13 +352,13 @@ export default function CreateWorkoutProgramPage() {
             </div>
 
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Varaktighet (veckor)</Label>
+              <Label className="text-gray-300">Varaktighet (veckor)</Label>
               <Input
                 type="number"
                 value={durationWeeks || ''}
                 onChange={(e) => setDurationWeeks(e.target.value ? parseInt(e.target.value) : null)}
                 placeholder="T.ex. 8"
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1"
               />
             </div>
           </div>
@@ -370,9 +370,9 @@ export default function CreateWorkoutProgramPage() {
                 id="published"
                 checked={published}
                 onChange={(e) => setPublished(e.target.checked)}
-                className="w-4 h-4 rounded border-[rgba(255,215,0,0.3)]"
+                className="w-4 h-4 rounded border-gold-primary/30"
               />
-              <Label htmlFor="published" className="text-[rgba(255,255,255,0.7)] cursor-pointer">
+              <Label htmlFor="published" className="text-gray-300 cursor-pointer">
                 Publicera direkt
               </Label>
             </div>
@@ -382,9 +382,9 @@ export default function CreateWorkoutProgramPage() {
                 id="multiWeek"
                 checked={useMultiWeek}
                 onChange={(e) => setUseMultiWeek(e.target.checked)}
-                className="w-4 h-4 rounded border-[rgba(255,215,0,0.3)]"
+                className="w-4 h-4 rounded border-gold-primary/30"
               />
-              <Label htmlFor="multiWeek" className="text-[rgba(255,255,255,0.7)] cursor-pointer">
+              <Label htmlFor="multiWeek" className="text-gray-300 cursor-pointer">
                 Flerveckoprogram (organisera dagar i veckor)
               </Label>
             </div>
@@ -396,12 +396,12 @@ export default function CreateWorkoutProgramPage() {
       {useMultiWeek ? (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
+            <h2 className="text-2xl font-bold text-gray-100">
               Veckor ({weeks.length})
             </h2>
             <Button
               onClick={addWeek}
-              className="bg-[rgba(255,215,0,0.2)] border border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.3)]"
+              className="bg-[rgba(255,215,0,0.2)] border border-gold-primary/30 text-gold-light hover:bg-[rgba(255,215,0,0.3)]"
             >
               <Plus className="w-4 h-4 mr-2" />
               Lägg till vecka
@@ -411,17 +411,17 @@ export default function CreateWorkoutProgramPage() {
           {weeks.map((week, weekIndex) => (
             <Card
               key={weekIndex}
-              className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(139,92,246,0.3)] backdrop-blur-[10px]"
+              className="bg-white/5 border-2 border-[rgba(139,92,246,0.3)] backdrop-blur-[10px]"
             >
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-xl text-[rgba(255,255,255,0.9)] mb-3">
+                    <CardTitle className="text-xl text-gray-100 mb-3">
                       Vecka {week.weekNumber}
                     </CardTitle>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label className="text-[rgba(255,255,255,0.7)]">Veckonamn</Label>
+                        <Label className="text-gray-300">Veckonamn</Label>
                         <Input
                           value={week.title}
                           onChange={(e) => updateWeek(weekIndex, 'title', e.target.value)}
@@ -430,7 +430,7 @@ export default function CreateWorkoutProgramPage() {
                         />
                       </div>
                       <div>
-                        <Label className="text-[rgba(255,255,255,0.7)]">Beskrivning</Label>
+                        <Label className="text-gray-300">Beskrivning</Label>
                         <Input
                           value={week.description}
                           onChange={(e) => updateWeek(weekIndex, 'description', e.target.value)}
@@ -453,13 +453,13 @@ export default function CreateWorkoutProgramPage() {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between pt-2 border-t border-[rgba(139,92,246,0.2)]">
-                    <Label className="text-[rgba(255,255,255,0.7)]">
+                    <Label className="text-gray-300">
                       Dagar ({week.days.length})
                     </Label>
                     <Button
                       onClick={() => addDayToWeek(weekIndex)}
                       size="sm"
-                      className="bg-[rgba(255,215,0,0.2)] border border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.3)]"
+                      className="bg-[rgba(255,215,0,0.2)] border border-gold-primary/30 text-gold-light hover:bg-[rgba(255,215,0,0.3)]"
                     >
                       <Plus className="w-3 h-3 mr-1" />
                       Lägg till dag
@@ -467,17 +467,17 @@ export default function CreateWorkoutProgramPage() {
                   </div>
 
                   {week.days.length === 0 && (
-                    <p className="text-center text-[rgba(255,255,255,0.5)] py-6">Inga dagar i denna vecka ännu</p>
+                    <p className="text-center text-gray-500 py-6">Inga dagar i denna vecka ännu</p>
                   )}
 
                   {week.days.map((day, dayIndex) => (
                     <Card
                       key={dayIndex}
-                      className="bg-[rgba(255,255,255,0.02)] border border-[rgba(255,215,0,0.2)]"
+                      className="bg-white/5 border border-gold-primary/20"
                     >
                       <CardHeader>
                         <div className="flex items-center justify-between">
-                          <CardTitle className="text-md text-[rgba(255,255,255,0.9)]">
+                          <CardTitle className="text-md text-gray-100">
                             Dag {day.dayNumber}
                           </CardTitle>
                           <Button
@@ -494,21 +494,21 @@ export default function CreateWorkoutProgramPage() {
                         {/* Day fields - same as regular day */}
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <Label className="text-xs text-[rgba(255,255,255,0.6)]">Dagnamn</Label>
+                            <Label className="text-xs text-gray-400">Dagnamn</Label>
                             <Input
                               value={day.name}
                               onChange={(e) => updateDayInWeek(weekIndex, dayIndex, 'name', e.target.value)}
                               placeholder="T.ex. Push Day"
-                              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm mt-1"
+                              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm mt-1"
                             />
                           </div>
                           <div>
-                            <Label className="text-xs text-[rgba(255,255,255,0.6)]">Beskrivning</Label>
+                            <Label className="text-xs text-gray-400">Beskrivning</Label>
                             <Input
                               value={day.description}
                               onChange={(e) => updateDayInWeek(weekIndex, dayIndex, 'description', e.target.value)}
                               placeholder="Kort beskrivning"
-                              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm mt-1"
+                              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm mt-1"
                             />
                           </div>
                         </div>
@@ -519,23 +519,23 @@ export default function CreateWorkoutProgramPage() {
                             id={`week-${weekIndex}-day-${dayIndex}-rest`}
                             checked={day.isRestDay}
                             onChange={(e) => updateDayInWeek(weekIndex, dayIndex, 'isRestDay', e.target.checked)}
-                            className="w-4 h-4 rounded border-[rgba(255,215,0,0.3)]"
+                            className="w-4 h-4 rounded border-gold-primary/30"
                           />
-                          <Label htmlFor={`week-${weekIndex}-day-${dayIndex}-rest`} className="text-xs text-[rgba(255,255,255,0.6)] cursor-pointer">
+                          <Label htmlFor={`week-${weekIndex}-day-${dayIndex}-rest`} className="text-xs text-gray-400 cursor-pointer">
                             Vilodag
                           </Label>
                         </div>
 
                         {!day.isRestDay && (
                           <>
-                            <div className="flex items-center justify-between pt-2 border-t border-[rgba(255,215,0,0.1)]">
-                              <Label className="text-xs text-[rgba(255,255,255,0.6)]">
+                            <div className="flex items-center justify-between pt-2 border-t border-gold-primary/10">
+                              <Label className="text-xs text-gray-400">
                                 Övningar ({day.exercises.length})
                               </Label>
                               <Button
                                 onClick={() => addExerciseToDayInWeek(weekIndex, dayIndex)}
                                 size="sm"
-                                className="bg-[rgba(255,215,0,0.15)] text-[#FFD700] text-xs px-2 py-1 h-7"
+                                className="bg-[rgba(255,215,0,0.15)] text-gold-light text-xs px-2 py-1 h-7"
                               >
                                 <Plus className="w-3 h-3 mr-1" />
                                 Övning
@@ -568,14 +568,14 @@ export default function CreateWorkoutProgramPage() {
                                               ...prev,
                                               [exerciseKey]: e.target.value
                                             }))}
-                                            className="pl-8 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-xs h-8"
+                                            className="pl-8 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-8"
                                           />
                                         </div>
                                         <Select
                                           value={exercise.exerciseId}
                                           onValueChange={(value) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'exerciseId', value)}
                                         >
-                                          <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-xs h-8">
+                                          <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-8">
                                             <SelectValue placeholder="Välj övning" />
                                           </SelectTrigger>
                                           <SelectContent>
@@ -586,7 +586,7 @@ export default function CreateWorkoutProgramPage() {
                                                 </SelectItem>
                                               ))
                                             ) : (
-                                              <div className="p-2 text-xs text-[rgba(255,255,255,0.5)]">Inga övningar</div>
+                                              <div className="p-2 text-xs text-gray-500">Inga övningar</div>
                                             )}
                                           </SelectContent>
                                         </Select>
@@ -607,7 +607,7 @@ export default function CreateWorkoutProgramPage() {
                                           <Badge
                                             key={mg}
                                             variant="outline"
-                                            className="text-[10px] bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.3)] text-[#FFD700] px-1 py-0"
+                                            className="text-[10px] bg-[rgba(255,215,0,0.1)] border-gold-primary/30 text-gold-light px-1 py-0"
                                           >
                                             {mg}
                                           </Badge>
@@ -617,50 +617,50 @@ export default function CreateWorkoutProgramPage() {
 
                                     <div className="grid grid-cols-4 gap-2">
                                       <div>
-                                        <Label className="text-[10px] text-[rgba(255,255,255,0.5)]">Sets</Label>
+                                        <Label className="text-[10px] text-gray-500">Sets</Label>
                                         <Input
                                           type="number"
                                           value={exercise.sets}
                                           onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'sets', parseInt(e.target.value) || 0)}
-                                          className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-xs h-7"
+                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
                                         />
                                       </div>
                                       <div>
-                                        <Label className="text-[10px] text-[rgba(255,255,255,0.5)]">Reps Min</Label>
+                                        <Label className="text-[10px] text-gray-500">Reps Min</Label>
                                         <Input
                                           type="number"
                                           value={exercise.repsMin || ''}
                                           onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMin', e.target.value ? parseInt(e.target.value) : null)}
-                                          className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-xs h-7"
+                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
                                         />
                                       </div>
                                       <div>
-                                        <Label className="text-[10px] text-[rgba(255,255,255,0.5)]">Reps Max</Label>
+                                        <Label className="text-[10px] text-gray-500">Reps Max</Label>
                                         <Input
                                           type="number"
                                           value={exercise.repsMax || ''}
                                           onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMax', e.target.value ? parseInt(e.target.value) : null)}
-                                          className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-xs h-7"
+                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
                                         />
                                       </div>
                                       <div>
-                                        <Label className="text-[10px] text-[rgba(255,255,255,0.5)]">Vila (s)</Label>
+                                        <Label className="text-[10px] text-gray-500">Vila (s)</Label>
                                         <Input
                                           type="number"
                                           value={exercise.restSeconds}
                                           onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 60)}
-                                          className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-xs h-7"
+                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
                                         />
                                       </div>
                                     </div>
 
                                     <div>
-                                      <Label className="text-[10px] text-[rgba(255,255,255,0.5)]">Anteckningar</Label>
+                                      <Label className="text-[10px] text-gray-500">Anteckningar</Label>
                                       <Input
                                         value={exercise.notes}
                                         onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'notes', e.target.value)}
                                         placeholder="T.ex. Drop set..."
-                                        className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-xs h-7 mt-1"
+                                        className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7 mt-1"
                                       />
                                     </div>
                                   </div>
@@ -678,9 +678,9 @@ export default function CreateWorkoutProgramPage() {
           ))}
 
           {weeks.length === 0 && (
-            <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(139,92,246,0.3)] backdrop-blur-[10px]">
+            <Card className="bg-white/5 border-2 border-[rgba(139,92,246,0.3)] backdrop-blur-[10px]">
               <CardContent className="py-12 text-center">
-                <p className="text-[rgba(255,255,255,0.6)] mb-4">
+                <p className="text-gray-400 mb-4">
                   Inga veckor ännu. Lägg till din första vecka!
                 </p>
                 <Button
@@ -698,12 +698,12 @@ export default function CreateWorkoutProgramPage() {
         // Original flat days structure
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
+            <h2 className="text-2xl font-bold text-gray-100">
               Träningsdagar ({days.length})
             </h2>
             <Button
               onClick={addDay}
-              className="bg-[rgba(255,215,0,0.2)] border border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.3)]"
+              className="bg-[rgba(255,215,0,0.2)] border border-gold-primary/30 text-gold-light hover:bg-[rgba(255,215,0,0.3)]"
             >
               <Plus className="w-4 h-4 mr-2" />
               Lägg till dag
@@ -713,13 +713,13 @@ export default function CreateWorkoutProgramPage() {
         {days.map((day, dayIndex) => (
           <Card
             key={dayIndex}
-            className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]"
+            className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]"
           >
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <GripVertical className="w-5 h-5 text-[rgba(255,255,255,0.3)]" />
-                  <CardTitle className="text-lg text-[rgba(255,255,255,0.9)]">
+                  <CardTitle className="text-lg text-gray-100">
                     Dag {day.dayNumber}
                   </CardTitle>
                 </div>
@@ -736,21 +736,21 @@ export default function CreateWorkoutProgramPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-[rgba(255,255,255,0.7)]">Dagnamn</Label>
+                  <Label className="text-gray-300">Dagnamn</Label>
                   <Input
                     value={day.name}
                     onChange={(e) => updateDay(dayIndex, 'name', e.target.value)}
                     placeholder="T.ex. Push Day"
-                    className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+                    className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1"
                   />
                 </div>
                 <div>
-                  <Label className="text-[rgba(255,255,255,0.7)]">Beskrivning</Label>
+                  <Label className="text-gray-300">Beskrivning</Label>
                   <Input
                     value={day.description}
                     onChange={(e) => updateDay(dayIndex, 'description', e.target.value)}
                     placeholder="Kort beskrivning"
-                    className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+                    className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1"
                   />
                 </div>
               </div>
@@ -761,23 +761,23 @@ export default function CreateWorkoutProgramPage() {
                   id={`restDay-${dayIndex}`}
                   checked={day.isRestDay}
                   onChange={(e) => updateDay(dayIndex, 'isRestDay', e.target.checked)}
-                  className="w-4 h-4 rounded border-[rgba(255,215,0,0.3)]"
+                  className="w-4 h-4 rounded border-gold-primary/30"
                 />
-                <Label htmlFor={`restDay-${dayIndex}`} className="text-[rgba(255,255,255,0.7)] cursor-pointer">
+                <Label htmlFor={`restDay-${dayIndex}`} className="text-gray-300 cursor-pointer">
                   Vilodag
                 </Label>
               </div>
 
               {!day.isRestDay && (
                 <>
-                  <div className="flex items-center justify-between pt-2 border-t border-[rgba(255,215,0,0.1)]">
-                    <Label className="text-[rgba(255,255,255,0.7)]">
+                  <div className="flex items-center justify-between pt-2 border-t border-gold-primary/10">
+                    <Label className="text-gray-300">
                       Övningar ({day.exercises.length})
                     </Label>
                     <Button
                       onClick={() => addExerciseToDay(dayIndex)}
                       size="sm"
-                      className="bg-[rgba(255,215,0,0.2)] border border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.3)]"
+                      className="bg-[rgba(255,215,0,0.2)] border border-gold-primary/30 text-gold-light hover:bg-[rgba(255,215,0,0.3)]"
                     >
                       <Plus className="w-3 h-3 mr-1" />
                       Lägg till övning
@@ -797,7 +797,7 @@ export default function CreateWorkoutProgramPage() {
                       return (
                         <div
                           key={exIndex}
-                          className="p-3 bg-[rgba(255,255,255,0.02)] border border-[rgba(255,215,0,0.1)] rounded-lg space-y-3"
+                          className="p-3 bg-white/5 border border-gold-primary/10 rounded-lg space-y-3"
                         >
                           <div className="flex items-start gap-2">
                             <div className="flex-1 space-y-2">
@@ -810,14 +810,14 @@ export default function CreateWorkoutProgramPage() {
                                     ...prev,
                                     [exerciseKey]: e.target.value
                                   }))}
-                                  className="pl-8 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm"
+                                  className="pl-8 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                                 />
                               </div>
                               <Select
                                 value={exercise.exerciseId}
                                 onValueChange={(value) => updateExercise(dayIndex, exIndex, 'exerciseId', value)}
                               >
-                                <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                                <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white">
                                   <SelectValue placeholder="Välj övning" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -828,7 +828,7 @@ export default function CreateWorkoutProgramPage() {
                                       </SelectItem>
                                     ))
                                   ) : (
-                                    <div className="p-2 text-sm text-[rgba(255,255,255,0.5)]">Inga övningar hittades</div>
+                                    <div className="p-2 text-sm text-gray-500">Inga övningar hittades</div>
                                   )}
                                 </SelectContent>
                               </Select>
@@ -849,7 +849,7 @@ export default function CreateWorkoutProgramPage() {
                                 <Badge
                                   key={mg}
                                   variant="outline"
-                                  className="text-xs bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.3)] text-[#FFD700]"
+                                  className="text-xs bg-[rgba(255,215,0,0.1)] border-gold-primary/30 text-gold-light"
                                 >
                                   {mg}
                                 </Badge>
@@ -859,50 +859,50 @@ export default function CreateWorkoutProgramPage() {
 
                           <div className="grid grid-cols-4 gap-2">
                             <div>
-                              <Label className="text-xs text-[rgba(255,255,255,0.6)]">Sets</Label>
+                              <Label className="text-xs text-gray-400">Sets</Label>
                               <Input
                                 type="number"
                                 value={exercise.sets}
                                 onChange={(e) => updateExercise(dayIndex, exIndex, 'sets', parseInt(e.target.value) || 0)}
-                                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm"
+                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                               />
                             </div>
                             <div>
-                              <Label className="text-xs text-[rgba(255,255,255,0.6)]">Reps Min</Label>
+                              <Label className="text-xs text-gray-400">Reps Min</Label>
                               <Input
                                 type="number"
                                 value={exercise.repsMin || ''}
                                 onChange={(e) => updateExercise(dayIndex, exIndex, 'repsMin', e.target.value ? parseInt(e.target.value) : null)}
-                                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm"
+                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                               />
                             </div>
                             <div>
-                              <Label className="text-xs text-[rgba(255,255,255,0.6)]">Reps Max</Label>
+                              <Label className="text-xs text-gray-400">Reps Max</Label>
                               <Input
                                 type="number"
                                 value={exercise.repsMax || ''}
                                 onChange={(e) => updateExercise(dayIndex, exIndex, 'repsMax', e.target.value ? parseInt(e.target.value) : null)}
-                                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm"
+                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                               />
                             </div>
                             <div>
-                              <Label className="text-xs text-[rgba(255,255,255,0.6)]">Vila (s)</Label>
+                              <Label className="text-xs text-gray-400">Vila (s)</Label>
                               <Input
                                 type="number"
                                 value={exercise.restSeconds}
                                 onChange={(e) => updateExercise(dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 60)}
-                                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm"
+                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                               />
                             </div>
                           </div>
 
                           <div>
-                            <Label className="text-xs text-[rgba(255,255,255,0.6)]">Anteckningar</Label>
+                            <Label className="text-xs text-gray-400">Anteckningar</Label>
                             <Input
                               value={exercise.notes}
                               onChange={(e) => updateExercise(dayIndex, exIndex, 'notes', e.target.value)}
                               placeholder="T.ex. Drop set, superset..."
-                              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm mt-1"
+                              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm mt-1"
                             />
                           </div>
                         </div>
@@ -916,14 +916,14 @@ export default function CreateWorkoutProgramPage() {
         ))}
 
         {days.length === 0 && (
-          <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+          <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
             <CardContent className="py-12 text-center">
-              <p className="text-[rgba(255,255,255,0.6)] mb-4">
+              <p className="text-gray-400 mb-4">
                 Inga träningsdagar ännu. Lägg till din första dag!
               </p>
               <Button
                 onClick={addDay}
-                className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+                className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Lägg till första dagen

@@ -351,15 +351,15 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const getRestTimerColor = () => {
     if (!originalRestTime) return 'text-[#fb923c]'
     const percentage = (restTimerSeconds / originalRestTime) * 100
-    if (percentage > 50) return 'text-[#22c55e]'
+    if (percentage > 50) return 'text-green-500'
     if (percentage > 25) return 'text-[#fbbf24]'
-    return 'text-[#ef4444]'
+    return 'text-red-500'
   }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-gold-primary/30 border-t-[#FFD700] rounded-full animate-spin" />
       </div>
     )
   }
@@ -367,9 +367,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   if (!workoutDay) {
     return (
       <div className="space-y-6">
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20">
           <CardContent className="py-12 text-center">
-            <p className="text-[rgba(255,255,255,0.6)]">
+            <p className="text-gray-400">
               Workout day not found
             </p>
             <Link href="/dashboard/workout">
@@ -393,7 +393,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       {/* PR Celebration */}
       {showPRCelebration && newPRs.length > 0 && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-bounce">
-          <div className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black px-8 py-4 rounded-2xl shadow-[0_0_50px_rgba(255,215,0,0.6)] border-4 border-[#FFD700]">
+          <div className="bg-gradient-to-r from-gold-light to-orange-500 text-black px-8 py-4 rounded-2xl shadow-[0_0_50px_rgba(255,215,0,0.6)] border-4 border-gold-light">
             <div className="flex items-center gap-3">
               <Trophy className="w-8 h-8" />
               <div>
@@ -416,15 +416,15 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href="/dashboard/workout">
-            <Button variant="ghost" size="icon" className="text-[rgba(255,255,255,0.7)]">
+            <Button variant="ghost" size="icon" className="text-gray-300">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
+            <h1 className="text-2xl font-bold text-gray-100">
               {workoutDay.name}
             </h1>
-            <p className="text-sm text-[rgba(255,255,255,0.5)]">
+            <p className="text-sm text-gray-500">
               Dag {workoutDay.dayNumber}
             </p>
           </div>
@@ -433,7 +433,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         {!sessionId ? (
           <Button
             onClick={startSession}
-            className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+            className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
           >
             <Play className="w-4 h-4 mr-2" />
             Starta träning
@@ -443,37 +443,37 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
       {/* Timer & Progress */}
       {sessionId && (
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20">
           <CardContent className="pt-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <div className="text-center">
-                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Tid</p>
+                <p className="text-sm text-gray-500 mb-1">Tid</p>
                 <div className="flex items-center justify-center gap-2">
-                  <Clock className="w-4 h-4 text-[#FFD700]" />
-                  <p className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
+                  <Clock className="w-4 h-4 text-gold-light" />
+                  <p className="text-2xl font-bold text-gray-100">
                     {formatTime(elapsedSeconds)}
                   </p>
                 </div>
               </div>
               <div className="text-center">
-                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Sets klara</p>
-                <p className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
+                <p className="text-sm text-gray-500 mb-1">Sets klara</p>
+                <p className="text-2xl font-bold text-gray-100">
                   {totalSetsCompleted}/{totalSets}
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Övningar</p>
-                <p className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
+                <p className="text-sm text-gray-500 mb-1">Övningar</p>
+                <p className="text-2xl font-bold text-gray-100">
                   {currentExerciseIndex + 1}/{workoutDay.exercises.length}
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Kontroll</p>
+                <p className="text-sm text-gray-500 mb-1">Kontroll</p>
                 <Button
                   onClick={togglePause}
                   size="sm"
                   variant="outline"
-                  className="bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.3)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.2)]"
+                  className="bg-[rgba(255,215,0,0.1)] border-gold-primary/30 text-gold-light hover:bg-[rgba(255,215,0,0.2)]"
                 >
                   {isRunning ? (
                     <>
@@ -492,12 +492,12 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
             {/* Rest Timer Controls */}
             {isResting && (
-              <div className="border-t border-[rgba(255,215,0,0.1)] pt-4">
+              <div className="border-t border-gold-primary/10 pt-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Pause className={`w-5 h-5 ${getRestTimerColor()}`} />
                     <div>
-                      <p className="text-sm text-[rgba(255,255,255,0.5)]">Vilotid</p>
+                      <p className="text-sm text-gray-500">Vilotid</p>
                       <p className={`text-3xl font-bold ${getRestTimerColor()}`}>
                         {formatTime(restTimerSeconds)}
                       </p>
@@ -508,7 +508,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       onClick={() => addRestTime(15)}
                       size="sm"
                       variant="outline"
-                      className="bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.2)]"
+                      className="bg-[rgba(255,215,0,0.1)] border-gold-primary/30 text-gray-200 hover:bg-[rgba(255,215,0,0.2)]"
                     >
                       <Plus className="w-3 h-3 mr-1" />
                       15s
@@ -517,7 +517,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       onClick={() => addRestTime(30)}
                       size="sm"
                       variant="outline"
-                      className="bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.2)]"
+                      className="bg-[rgba(255,215,0,0.1)] border-gold-primary/30 text-gray-200 hover:bg-[rgba(255,215,0,0.2)]"
                     >
                       <Plus className="w-3 h-3 mr-1" />
                       30s
@@ -526,14 +526,14 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       onClick={resetRestTimer}
                       size="sm"
                       variant="outline"
-                      className="bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.2)]"
+                      className="bg-[rgba(255,215,0,0.1)] border-gold-primary/30 text-gray-200 hover:bg-[rgba(255,215,0,0.2)]"
                     >
                       <RotateCcw className="w-3 h-3" />
                     </Button>
                     <Button
                       onClick={skipRest}
                       size="sm"
-                      className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+                      className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
                     >
                       <SkipForward className="w-3 h-3 mr-1" />
                       Hoppa över
@@ -569,10 +569,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           return (
             <Card
               key={exercise.id}
-              className={`bg-[rgba(255,255,255,0.03)] border-2 backdrop-blur-[10px] transition-all ${
+              className={`bg-white/5 border-2 backdrop-blur-[10px] transition-all ${
                 isCurrent && sessionId
                   ? 'border-[rgba(255,215,0,0.5)] shadow-[0_0_20px_rgba(255,215,0,0.3)]'
-                  : 'border-[rgba(255,215,0,0.2)]'
+                  : 'border-gold-primary/20'
               } ${isExerciseComplete ? 'opacity-60' : ''}`}
             >
               <CardHeader>
@@ -585,27 +585,27 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       isExerciseComplete
                         ? 'bg-[rgba(34,197,94,0.2)]'
                         : isCurrent
-                        ? 'bg-gradient-to-br from-[#FFD700] to-[#FFA500]'
+                        ? 'bg-gradient-to-br from-gold-light to-orange-500'
                         : 'bg-[rgba(255,255,255,0.05)]'
                     }`}>
                       {isExerciseComplete ? (
-                        <Check className="w-5 h-5 text-[#22c55e]" />
+                        <Check className="w-5 h-5 text-green-500" />
                       ) : (
-                        <Dumbbell className={`w-5 h-5 ${isCurrent ? 'text-[#0a0a0a]' : 'text-[rgba(255,255,255,0.5)]'}`} />
+                        <Dumbbell className={`w-5 h-5 ${isCurrent ? 'text-[#0a0a0a]' : 'text-gray-500'}`} />
                       )}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <CardTitle className="text-lg text-[rgba(255,255,255,0.9)]">
+                        <CardTitle className="text-lg text-gray-100">
                           {exercise.exercise.name}
                         </CardTitle>
                         {isCurrent && sessionId && !isExerciseComplete && (
-                          <Badge className="bg-[rgba(255,215,0,0.2)] text-[#FFD700] border-[rgba(255,215,0,0.3)]">
+                          <Badge className="bg-[rgba(255,215,0,0.2)] text-gold-light border-gold-primary/30">
                             Aktiv
                           </Badge>
                         )}
                       </div>
-                      <p className="text-sm text-[rgba(255,255,255,0.5)]">
+                      <p className="text-sm text-gray-500">
                         {exercise.sets} x {exercise.repsMin}
                         {exercise.repsMax && exercise.repsMax !== exercise.repsMin ? `-${exercise.repsMax}` : ''} reps
                         {exercise.restSeconds > 0 && ` • ${exercise.restSeconds}s vila`}
@@ -616,7 +616,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             <Badge
                               key={mg}
                               variant="outline"
-                              className="text-xs bg-[rgba(255,215,0,0.05)] border-[rgba(255,215,0,0.2)] text-[rgba(255,215,0,0.8)]"
+                              className="text-xs bg-[rgba(255,215,0,0.05)] border-gold-primary/20 text-[rgba(255,215,0,0.8)]"
                             >
                               {mg}
                             </Badge>
@@ -626,13 +626,13 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-[rgba(255,255,255,0.5)]">
+                    <span className="text-sm text-gray-500">
                       {exerciseSets.length}/{exercise.sets}
                     </span>
                     {isExpanded ? (
-                      <ChevronUp className="w-5 h-5 text-[rgba(255,255,255,0.5)]" />
+                      <ChevronUp className="w-5 h-5 text-gray-500" />
                     ) : (
-                      <ChevronDown className="w-5 h-5 text-[rgba(255,255,255,0.5)]" />
+                      <ChevronDown className="w-5 h-5 text-gray-500" />
                     )}
                   </div>
                 </div>
@@ -643,35 +643,35 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   {/* Logged Sets */}
                   {exerciseSets.length > 0 && (
                     <div className="space-y-2">
-                      <Label className="text-sm text-[rgba(255,255,255,0.6)]">Genomförda sets:</Label>
+                      <Label className="text-sm text-gray-400">Genomförda sets:</Label>
                       {exerciseSets.map((set, setIdx) => (
                         <div
                           key={setIdx}
                           className="flex items-center gap-3 p-2 bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.3)] rounded"
                         >
-                          <Check className="w-4 h-4 text-[#22c55e]" />
-                          <span className="text-sm text-[rgba(255,255,255,0.8)]">
+                          <Check className="w-4 h-4 text-green-500" />
+                          <span className="text-sm text-gray-200">
                             Set {set.setNumber}:
                           </span>
                           {set.setType === 'TIME' ? (
-                            <span className="text-sm font-semibold text-[rgba(255,255,255,0.9)]">
+                            <span className="text-sm font-semibold text-gray-100">
                               {set.timeSeconds}s
                             </span>
                           ) : (
                             <>
-                              <span className="text-sm font-semibold text-[rgba(255,255,255,0.9)]">
+                              <span className="text-sm font-semibold text-gray-100">
                                 {set.reps || 0} reps
                               </span>
                               {set.setType === 'WEIGHT' && set.weightKg && (
                                 <>
-                                  <span className="text-sm text-[rgba(255,255,255,0.5)]">@</span>
-                                  <span className="text-sm font-semibold text-[rgba(255,255,255,0.9)]">
+                                  <span className="text-sm text-gray-500">@</span>
+                                  <span className="text-sm font-semibold text-gray-100">
                                     {set.weightKg} kg
                                   </span>
                                 </>
                               )}
                               {set.setType === 'BODYWEIGHT' && (
-                                <span className="text-xs text-[rgba(255,255,255,0.5)] ml-1">(kroppsvikt)</span>
+                                <span className="text-xs text-gray-500 ml-1">(kroppsvikt)</span>
                               )}
                             </>
                           )}
@@ -682,21 +682,21 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Log Next Set */}
                   {sessionId && !isExerciseComplete && (
-                    <div className="space-y-3 p-4 bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.2)] rounded-lg">
-                      <Label className="text-[rgba(255,255,255,0.8)]">
+                    <div className="space-y-3 p-4 bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg">
+                      <Label className="text-gray-200">
                         Logga set {exerciseSets.length + 1}:
                       </Label>
 
                       {/* Set Type Selector */}
                       <div>
-                        <Label className="text-sm text-[rgba(255,255,255,0.6)] mb-2 block">Set-typ</Label>
+                        <Label className="text-sm text-gray-400 mb-2 block">Set-typ</Label>
                         <div className="grid grid-cols-4 gap-2">
                           <button
                             onClick={() => setCurrentSetType('WEIGHT')}
                             className={`px-3 py-2 rounded text-xs font-medium transition-all ${
                               currentSetType === 'WEIGHT'
                                 ? 'bg-[#FFD700] text-black'
-                                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.1)]'
+                                : 'bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)]'
                             }`}
                           >
                             Vikt
@@ -706,7 +706,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             className={`px-3 py-2 rounded text-xs font-medium transition-all ${
                               currentSetType === 'BODYWEIGHT'
                                 ? 'bg-[#FFD700] text-black'
-                                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.1)]'
+                                : 'bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)]'
                             }`}
                           >
                             Kroppsvikt
@@ -716,7 +716,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             className={`px-3 py-2 rounded text-xs font-medium transition-all ${
                               currentSetType === 'TIME'
                                 ? 'bg-[#FFD700] text-black'
-                                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.1)]'
+                                : 'bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)]'
                             }`}
                           >
                             Tid
@@ -726,7 +726,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             className={`px-3 py-2 rounded text-xs font-medium transition-all ${
                               currentSetType === 'REPS'
                                 ? 'bg-[#FFD700] text-black'
-                                : 'bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.1)]'
+                                : 'bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)]'
                             }`}
                           >
                             Reps
@@ -738,24 +738,24 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       {currentSetType === 'WEIGHT' && (
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <Label className="text-sm text-[rgba(255,255,255,0.6)]">Reps</Label>
+                            <Label className="text-sm text-gray-400">Reps</Label>
                             <Input
                               type="number"
                               value={currentReps}
                               onChange={(e) => setCurrentReps(e.target.value)}
                               placeholder={`${exercise.repsMin || 0}`}
-                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white mt-1"
+                              className="bg-black/30 border-gold-primary/30 text-white mt-1"
                             />
                           </div>
                           <div>
-                            <Label className="text-sm text-[rgba(255,255,255,0.6)]">Vikt (kg)</Label>
+                            <Label className="text-sm text-gray-400">Vikt (kg)</Label>
                             <Input
                               type="number"
                               step="0.5"
                               value={currentWeight}
                               onChange={(e) => setCurrentWeight(e.target.value)}
                               placeholder="0"
-                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white mt-1"
+                              className="bg-black/30 border-gold-primary/30 text-white mt-1"
                             />
                           </div>
                         </div>
@@ -763,39 +763,39 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                       {currentSetType === 'BODYWEIGHT' && (
                         <div>
-                          <Label className="text-sm text-[rgba(255,255,255,0.6)]">Reps</Label>
+                          <Label className="text-sm text-gray-400">Reps</Label>
                           <Input
                             type="number"
                             value={currentReps}
                             onChange={(e) => setCurrentReps(e.target.value)}
                             placeholder={`${exercise.repsMin || 0}`}
-                            className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white mt-1"
+                            className="bg-black/30 border-gold-primary/30 text-white mt-1"
                           />
                         </div>
                       )}
 
                       {currentSetType === 'TIME' && (
                         <div>
-                          <Label className="text-sm text-[rgba(255,255,255,0.6)]">Tid (sekunder)</Label>
+                          <Label className="text-sm text-gray-400">Tid (sekunder)</Label>
                           <Input
                             type="number"
                             value={currentTimeSeconds}
                             onChange={(e) => setCurrentTimeSeconds(e.target.value)}
                             placeholder="30"
-                            className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white mt-1"
+                            className="bg-black/30 border-gold-primary/30 text-white mt-1"
                           />
                         </div>
                       )}
 
                       {currentSetType === 'REPS' && (
                         <div>
-                          <Label className="text-sm text-[rgba(255,255,255,0.6)]">Reps</Label>
+                          <Label className="text-sm text-gray-400">Reps</Label>
                           <Input
                             type="number"
                             value={currentReps}
                             onChange={(e) => setCurrentReps(e.target.value)}
                             placeholder={`${exercise.repsMin || 0}`}
-                            className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white mt-1"
+                            className="bg-black/30 border-gold-primary/30 text-white mt-1"
                           />
                         </div>
                       )}
@@ -805,7 +805,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         disabled={
                           currentSetType === 'TIME' ? !currentTimeSeconds : !currentReps
                         }
-                        className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+                        className="w-full bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
                       >
                         <Check className="w-4 h-4 mr-2" />
                         Logga set
@@ -816,7 +816,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   {/* Exercise Video */}
                   {exercise.exercise.videoUrl && (
                     <div className="mb-4">
-                      <Label className="text-sm text-[rgba(255,255,255,0.6)] mb-2 block">
+                      <Label className="text-sm text-gray-400 mb-2 block">
                         Övningsvideo:
                       </Label>
                       <VideoPlayer
@@ -829,9 +829,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   )}
 
                   {exercise.exercise.description && (
-                    <div className="p-3 bg-[rgba(255,255,255,0.03)] rounded border border-[rgba(255,215,0,0.1)]">
-                      <Label className="text-sm text-[rgba(255,255,255,0.6)]">Beskrivning:</Label>
-                      <p className="text-sm text-[rgba(255,255,255,0.8)] mt-1">
+                    <div className="p-3 bg-white/5 rounded border border-gold-primary/10">
+                      <Label className="text-sm text-gray-400">Beskrivning:</Label>
+                      <p className="text-sm text-gray-200 mt-1">
                         {exercise.exercise.description}
                       </p>
                     </div>
@@ -845,23 +845,23 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
       {/* Workout Notes & Complete */}
       {sessionId && isWorkoutComplete && (
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(34,197,94,0.3)]">
+        <Card className="bg-white/5 border-2 border-[rgba(34,197,94,0.3)]">
           <CardHeader>
-            <CardTitle className="text-[rgba(255,255,255,0.95)] flex items-center gap-2">
-              <Trophy className="w-6 h-6 text-[#22c55e]" />
+            <CardTitle className="text-white flex items-center gap-2">
+              <Trophy className="w-6 h-6 text-green-500" />
               Bra jobbat! Alla övningar klara
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label className="text-[rgba(255,255,255,0.8)]">
+              <Label className="text-gray-200">
                 Anteckningar (valfritt)
               </Label>
               <textarea
                 value={workoutNotes}
                 onChange={(e) => setWorkoutNotes(e.target.value)}
                 placeholder="Hur kändes passet? Några nya personliga rekord eller observationer?"
-                className="w-full mt-2 p-3 bg-[rgba(0,0,0,0.3)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl text-white placeholder-[rgba(255,255,255,0.4)] focus:border-[rgba(255,215,0,0.5)] outline-none min-h-[100px] resize-y"
+                className="w-full mt-2 p-3 bg-black/30 border-2 border-gold-primary/30 rounded-xl text-white placeholder-[rgba(255,255,255,0.4)] focus:border-[rgba(255,215,0,0.5)] outline-none min-h-[100px] resize-y"
                 rows={4}
               />
             </div>
@@ -880,16 +880,16 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       {/* Rating Modal */}
       {showRatingModal && (
         <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] w-full max-w-md">
+          <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-gold-primary/30 backdrop-blur-[10px] w-full max-w-md">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-[rgba(255,255,255,0.95)] flex items-center gap-2">
-                  <Trophy className="w-6 h-6 text-[#FFD700]" />
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Trophy className="w-6 h-6 text-gold-light" />
                   Hur var träningen?
                 </CardTitle>
                 <button
                   onClick={() => submitRating(true)}
-                  className="text-[rgba(255,255,255,0.5)] hover:text-[rgba(255,255,255,0.8)]"
+                  className="text-gray-500 hover:text-gray-200"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -898,7 +898,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             <CardContent className="space-y-6">
               {/* Star Rating */}
               <div>
-                <Label className="text-[rgba(255,255,255,0.8)] mb-3 block">
+                <Label className="text-gray-200 mb-3 block">
                   Betygsätt ditt pass
                 </Label>
                 <div className="flex gap-2 justify-center">
@@ -911,7 +911,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       <Star
                         className={`w-10 h-10 ${
                           sessionRating && star <= sessionRating
-                            ? 'fill-[#FFD700] text-[#FFD700]'
+                            ? 'fill-[#FFD700] text-gold-light'
                             : 'text-[rgba(255,215,0,0.3)] hover:text-[rgba(255,215,0,0.5)]'
                         }`}
                       />
@@ -919,7 +919,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   ))}
                 </div>
                 {sessionRating && (
-                  <p className="text-center text-sm text-[rgba(255,255,255,0.6)] mt-2">
+                  <p className="text-center text-sm text-gray-400 mt-2">
                     {sessionRating === 5 && '🔥 Fantastiskt!'}
                     {sessionRating === 4 && '💪 Riktigt bra!'}
                     {sessionRating === 3 && '👍 Bra jobbat!'}
@@ -931,14 +931,14 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
               {/* Optional Comment */}
               <div>
-                <Label className="text-[rgba(255,255,255,0.8)]">
+                <Label className="text-gray-200">
                   Kommentar (valfritt)
                 </Label>
                 <textarea
                   value={sessionRatingComment}
                   onChange={(e) => setSessionRatingComment(e.target.value)}
                   placeholder="Vad gjorde passet bra eller dåligt?"
-                  className="w-full mt-2 p-3 bg-[rgba(0,0,0,0.3)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl text-white placeholder-[rgba(255,255,255,0.4)] focus:border-[rgba(255,215,0,0.5)] outline-none min-h-[80px] resize-y"
+                  className="w-full mt-2 p-3 bg-black/30 border-2 border-gold-primary/30 rounded-xl text-white placeholder-[rgba(255,255,255,0.4)] focus:border-[rgba(255,215,0,0.5)] outline-none min-h-[80px] resize-y"
                   rows={3}
                 />
               </div>
@@ -948,14 +948,14 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                 <Button
                   onClick={() => submitRating(true)}
                   variant="outline"
-                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,255,255,0.1)]"
+                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-gray-200 hover:bg-[rgba(255,255,255,0.1)]"
                   disabled={isCompleting}
                 >
                   Hoppa över
                 </Button>
                 <Button
                   onClick={() => submitRating(false)}
-                  className="flex-1 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+                  className="flex-1 bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
                   disabled={isCompleting || !sessionRating}
                 >
                   {isCompleting ? 'Sparar...' : 'Spara betyg'}

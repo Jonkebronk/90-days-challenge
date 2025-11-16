@@ -339,7 +339,7 @@ export default function MessagesPage() {
           onClick={() => setSelectedImage(null)}
         >
           <button
-            className="absolute top-4 right-4 text-white hover:text-[#FFD700] transition-colors"
+            className="absolute top-4 right-4 text-white hover:text-gold-light transition-colors"
             onClick={() => setSelectedImage(null)}
           >
             <X className="w-8 h-8" />

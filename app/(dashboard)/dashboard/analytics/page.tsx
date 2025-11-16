@@ -82,7 +82,7 @@ export default function AnalyticsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-gold-primary/30 border-t-[#FFD700] rounded-full animate-spin" />
       </div>
     )
   }
@@ -90,7 +90,7 @@ export default function AnalyticsPage() {
   if (!data) {
     return (
       <div className="text-center py-12">
-        <p className="text-[rgba(255,255,255,0.6)]">Ingen data tillgänglig</p>
+        <p className="text-gray-400">Ingen data tillgänglig</p>
       </div>
     )
   }
@@ -100,11 +100,11 @@ export default function AnalyticsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)] flex items-center gap-2">
-            <BarChart3 className="w-8 h-8 text-[#FFD700]" />
+          <h1 className="text-3xl font-bold text-gray-100 flex items-center gap-2">
+            <BarChart3 className="w-8 h-8 text-gold-light" />
             Analytics Dashboard
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-400 mt-1">
             Spåra din utveckling och prestationer
           </p>
         </div>
@@ -118,8 +118,8 @@ export default function AnalyticsPage() {
               onClick={() => setTimeRange(days)}
               className={
                 timeRange === days
-                  ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black'
-                  : 'bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,255,255,0.1)]'
+                  ? 'bg-gradient-to-r from-gold-light to-orange-500 text-black'
+                  : 'bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-gray-100 hover:bg-[rgba(255,255,255,0.1)]'
               }
             >
               {days}d
@@ -130,73 +130,73 @@ export default function AnalyticsPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
                 <Dumbbell className="w-5 h-5 text-black" />
               </div>
-              <div className="text-[rgba(255,255,255,0.6)] text-sm">Totalt Pass</div>
+              <div className="text-gray-400 text-sm">Totalt Pass</div>
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.95)]">
+            <div className="text-3xl font-bold text-white">
               {data.summary.totalWorkouts}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
-              <div className="text-[rgba(255,255,255,0.6)] text-sm">Totala Set</div>
+              <div className="text-gray-400 text-sm">Totala Set</div>
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.95)]">
+            <div className="text-3xl font-bold text-white">
               {data.summary.totalSets}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
-              <div className="text-[rgba(255,255,255,0.6)] text-sm">Total Volym</div>
+              <div className="text-gray-400 text-sm">Total Volym</div>
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.95)]">
+            <div className="text-3xl font-bold text-white">
               {data.summary.totalVolume.toLocaleString('sv-SE')}
-              <span className="text-sm text-[rgba(255,255,255,0.5)] ml-1">kg</span>
+              <span className="text-sm text-gray-500 ml-1">kg</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center">
                 <Clock className="w-5 h-5 text-white" />
               </div>
-              <div className="text-[rgba(255,255,255,0.6)] text-sm">Snitt Tid</div>
+              <div className="text-gray-400 text-sm">Snitt Tid</div>
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.95)]">
+            <div className="text-3xl font-bold text-white">
               {data.summary.avgSessionDuration}
-              <span className="text-sm text-[rgba(255,255,255,0.5)] ml-1">min</span>
+              <span className="text-sm text-gray-500 ml-1">min</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center">
                 <Calendar className="w-5 h-5 text-white" />
               </div>
-              <div className="text-[rgba(255,255,255,0.6)] text-sm">Pass/Vecka</div>
+              <div className="text-gray-400 text-sm">Pass/Vecka</div>
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.95)]">
+            <div className="text-3xl font-bold text-white">
               {data.summary.avgWorkoutsPerWeek}
             </div>
           </CardContent>
@@ -206,9 +206,9 @@ export default function AnalyticsPage() {
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Volume Progression Chart */}
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20">
           <CardHeader>
-            <CardTitle className="text-[rgba(255,255,255,0.95)]">Volymprogression</CardTitle>
+            <CardTitle className="text-white">Volymprogression</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -244,9 +244,9 @@ export default function AnalyticsPage() {
         </Card>
 
         {/* Workout Frequency Chart */}
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20">
           <CardHeader>
-            <CardTitle className="text-[rgba(255,255,255,0.95)]">Träningsfrekvens (per vecka)</CardTitle>
+            <CardTitle className="text-white">Träningsfrekvens (per vecka)</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -276,9 +276,9 @@ export default function AnalyticsPage() {
         </Card>
 
         {/* Muscle Group Distribution */}
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20">
           <CardHeader>
-            <CardTitle className="text-[rgba(255,255,255,0.95)]">Volymfördelning per muskelgrupp</CardTitle>
+            <CardTitle className="text-white">Volymfördelning per muskelgrupp</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -311,9 +311,9 @@ export default function AnalyticsPage() {
 
         {/* PR Progression */}
         {Object.keys(data.prProgression).length > 0 && (
-          <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)]">
+          <Card className="bg-white/5 border-2 border-gold-primary/20">
             <CardHeader>
-              <CardTitle className="text-[rgba(255,255,255,0.95)]">Personliga rekord (vikt)</CardTitle>
+              <CardTitle className="text-white">Personliga rekord (vikt)</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>

@@ -535,14 +535,14 @@ export default function ArticleEditorPage() {
 
             <TabsContent value="edit">
               {/* File Import Section */}
-              <div className="mb-4 p-4 bg-gradient-to-r from-[rgba(255,215,0,0.05)] to-[rgba(255,215,0,0.02)] border-2 border-[rgba(255,215,0,0.2)] rounded-lg">
+              <div className="mb-4 p-4 bg-gradient-to-r from-[rgba(255,215,0,0.05)] to-[rgba(255,215,0,0.02)] border-2 border-gold-primary/20 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-[#FFD700]" />
-                    <h3 className="font-semibold text-[#FFD700]">Importera innehåll från fil</h3>
+                    <FileText className="w-5 h-5 text-gold-light" />
+                    <h3 className="font-semibold text-gold-light">Importera innehåll från fil</h3>
                   </div>
                 </div>
-                <p className="text-sm text-[rgba(255,255,255,0.6)] mb-3">
+                <p className="text-sm text-gray-400 mb-3">
                   Ladda upp ett Word-dokument (.docx), PDF (.pdf) eller textfil (.txt) för att importera innehållet
                 </p>
                 <div className="flex items-center gap-3">
@@ -552,7 +552,7 @@ export default function ArticleEditorPage() {
                       variant="outline"
                       size="sm"
                       disabled={isImporting}
-                      className="border-[rgba(255,215,0,0.4)] hover:bg-[rgba(255,215,0,0.1)] text-[#FFD700]"
+                      className="border-[rgba(255,215,0,0.4)] hover:bg-gold-50 text-gold-light"
                       onClick={() => document.getElementById('file-import')?.click()}
                     >
                       <Upload className="w-4 h-4 mr-2" />
@@ -566,7 +566,7 @@ export default function ArticleEditorPage() {
                       className="hidden"
                     />
                   </label>
-                  <span className="text-xs text-[rgba(255,255,255,0.5)]">
+                  <span className="text-xs text-gray-500">
                     .docx, .pdf, .txt
                   </span>
                 </div>

@@ -58,7 +58,7 @@ export default function PersonalRecordsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-gold-primary/30 border-t-[#FFD700] rounded-full animate-spin" />
       </div>
     )
   }
@@ -69,16 +69,16 @@ export default function PersonalRecordsPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/dashboard/workout">
-            <Button variant="ghost" size="icon" className="text-[rgba(255,255,255,0.7)]">
+            <Button variant="ghost" size="icon" className="text-gray-300">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)] flex items-center gap-2">
-              <Trophy className="w-8 h-8 text-[#FFD700]" />
+            <h1 className="text-3xl font-bold text-gray-100 flex items-center gap-2">
+              <Trophy className="w-8 h-8 text-gold-light" />
               Personal Records
             </h1>
-            <p className="text-[rgba(255,255,255,0.6)] mt-1">
+            <p className="text-gray-400 mt-1">
               Your all-time bests for each exercise
             </p>
           </div>
@@ -87,17 +87,17 @@ export default function PersonalRecordsPage() {
 
       {/* Records Grid */}
       {records.length === 0 ? (
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardContent className="py-12 text-center">
             <Trophy className="w-16 h-16 text-[rgba(255,215,0,0.3)] mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-[rgba(255,255,255,0.9)] mb-2">
+            <h3 className="text-xl font-semibold text-gray-100 mb-2">
               No Personal Records Yet
             </h3>
-            <p className="text-[rgba(255,255,255,0.6)] mb-6">
+            <p className="text-gray-400 mb-6">
               Complete your first workout to start tracking your PRs!
             </p>
             <Link href="/dashboard/workout">
-              <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90">
+              <Button className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90">
                 Start Training
               </Button>
             </Link>
@@ -108,16 +108,16 @@ export default function PersonalRecordsPage() {
           {records.map((record) => (
             <Card
               key={record.exercise.id}
-              className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] transition-all"
+              className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] transition-all"
             >
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
                       <Dumbbell className="w-6 h-6 text-[#0a0a0a]" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg text-[rgba(255,255,255,0.95)]">
+                      <CardTitle className="text-lg text-white">
                         {record.exercise.name}
                       </CardTitle>
                       <div className="flex flex-wrap gap-1 mt-1">
@@ -137,29 +137,29 @@ export default function PersonalRecordsPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {record.records.max_weight && (
-                  <div className="flex items-center justify-between p-3 bg-[rgba(255,255,255,0.02)] rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                     <div>
-                      <div className="text-sm text-[rgba(255,255,255,0.6)]">Max Weight</div>
-                      <div className="text-2xl font-bold text-[rgba(255,255,255,0.95)]">
+                      <div className="text-sm text-gray-400">Max Weight</div>
+                      <div className="text-2xl font-bold text-white">
                         {Number(record.records.max_weight.weightKg).toFixed(1)} kg
                       </div>
-                      <div className="text-xs text-[rgba(255,255,255,0.5)] flex items-center gap-1 mt-1">
+                      <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                         <Calendar className="w-3 h-3" />
                         {formatDate(record.records.max_weight.achievedAt)}
                       </div>
                     </div>
-                    <Trophy className="w-6 h-6 text-[#FFD700]" />
+                    <Trophy className="w-6 h-6 text-gold-light" />
                   </div>
                 )}
 
                 {record.records.max_reps && (
-                  <div className="flex items-center justify-between p-3 bg-[rgba(255,255,255,0.02)] rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                     <div>
-                      <div className="text-sm text-[rgba(255,255,255,0.6)]">Max Reps</div>
-                      <div className="text-2xl font-bold text-[rgba(255,255,255,0.95)]">
+                      <div className="text-sm text-gray-400">Max Reps</div>
+                      <div className="text-2xl font-bold text-white">
                         {record.records.max_reps.reps} reps
                       </div>
-                      <div className="text-xs text-[rgba(255,255,255,0.5)] flex items-center gap-1 mt-1">
+                      <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                         <Calendar className="w-3 h-3" />
                         {formatDate(record.records.max_reps.achievedAt)}
                       </div>
@@ -169,16 +169,16 @@ export default function PersonalRecordsPage() {
                 )}
 
                 {record.records.max_volume && (
-                  <div className="flex items-center justify-between p-3 bg-[rgba(255,255,255,0.02)] rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                     <div>
-                      <div className="text-sm text-[rgba(255,255,255,0.6)]">Max Volume</div>
-                      <div className="text-2xl font-bold text-[rgba(255,255,255,0.95)]">
+                      <div className="text-sm text-gray-400">Max Volume</div>
+                      <div className="text-2xl font-bold text-white">
                         {Number(record.records.max_volume.volume).toFixed(0)} kg
                       </div>
-                      <div className="text-xs text-[rgba(255,255,255,0.5)]">
+                      <div className="text-xs text-gray-500">
                         {record.records.max_volume.reps} reps × {Number(record.records.max_volume.weightKg).toFixed(1)}kg
                       </div>
-                      <div className="text-xs text-[rgba(255,255,255,0.5)] flex items-center gap-1 mt-1">
+                      <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                         <Calendar className="w-3 h-3" />
                         {formatDate(record.records.max_volume.achievedAt)}
                       </div>
@@ -188,21 +188,21 @@ export default function PersonalRecordsPage() {
                 )}
 
                 {record.records.max_one_rep_max && (
-                  <div className="flex items-center justify-between p-3 bg-[rgba(255,255,255,0.02)] rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                     <div>
-                      <div className="text-sm text-[rgba(255,255,255,0.6)]">Est. 1RM</div>
-                      <div className="text-2xl font-bold text-[rgba(255,255,255,0.95)]">
+                      <div className="text-sm text-gray-400">Est. 1RM</div>
+                      <div className="text-2xl font-bold text-white">
                         {Number(record.records.max_one_rep_max.oneRepMax).toFixed(1)} kg
                       </div>
-                      <div className="text-xs text-[rgba(255,255,255,0.5)]">
+                      <div className="text-xs text-gray-500">
                         Based on {record.records.max_one_rep_max.reps} reps @ {Number(record.records.max_one_rep_max.weightKg).toFixed(1)}kg
                       </div>
-                      <div className="text-xs text-[rgba(255,255,255,0.5)] flex items-center gap-1 mt-1">
+                      <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                         <Calendar className="w-3 h-3" />
                         {formatDate(record.records.max_one_rep_max.achievedAt)}
                       </div>
                     </div>
-                    <Trophy className="w-6 h-6 text-[#22c55e]" />
+                    <Trophy className="w-6 h-6 text-green-500" />
                   </div>
                 )}
               </CardContent>

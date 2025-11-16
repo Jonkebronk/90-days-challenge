@@ -67,9 +67,9 @@ export default function LivePreview() {
   if (!selectedClient) {
     return (
       <div className="w-96 flex-shrink-0">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-6 backdrop-blur-[10px] h-full flex items-center justify-center">
-          <div className="text-center text-[rgba(255,255,255,0.5)]">
-            <Zap size={48} className="mx-auto mb-4 text-[#FFD700] opacity-50" />
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px] h-full flex items-center justify-center">
+          <div className="text-center text-gray-500">
+            <Zap size={48} className="mx-auto mb-4 text-gold-light opacity-50" />
             <p className="text-lg font-semibold mb-2">Ingen klient vald</p>
             <p className="text-sm">Välj en klient för att se live preview</p>
           </div>
@@ -80,12 +80,12 @@ export default function LivePreview() {
 
   return (
     <div className="w-96 flex-shrink-0">
-      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-6 backdrop-blur-[10px] h-full overflow-y-auto">
+      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px] h-full overflow-y-auto">
         <div className="flex items-center gap-2 mb-6">
-          <Zap className="text-[#FFD700]" size={24} />
+          <Zap className="text-gold-light" size={24} />
           <div>
             <h3 className="text-lg font-semibold text-white">Live Preview</h3>
-            <p className="text-xs text-[rgba(255,255,255,0.5)]">
+            <p className="text-xs text-gray-500">
               {selectedClientData?.name || selectedClientData?.email}
             </p>
           </div>
@@ -100,26 +100,26 @@ export default function LivePreview() {
 
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-[rgba(255,255,255,0.7)]">BMR</span>
+              <span className="text-sm text-gray-300">BMR</span>
               <span className="font-bold text-blue-400">{bmr.toFixed(0)} kcal</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-[rgba(255,255,255,0.7)]">Underskott</span>
+              <span className="text-sm text-gray-300">Underskott</span>
               <span className="font-bold text-orange-400">-{localPlan.deficit || 0} kcal</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-[rgba(255,255,255,0.7)]">Basintag</span>
+              <span className="text-sm text-gray-300">Basintag</span>
               <span className="font-bold text-white">{targetCalories.toFixed(0)} kcal</span>
             </div>
             {stepsCalories > 0 && (
               <div className="flex justify-between items-center">
-                <span className="text-sm text-[rgba(255,255,255,0.7)]">+ Steg</span>
+                <span className="text-sm text-gray-300">+ Steg</span>
                 <span className="font-bold text-purple-400">+{stepsCalories} kcal</span>
               </div>
             )}
             <div className="pt-3 border-t border-[rgba(255,255,255,0.1)] flex justify-between items-center">
               <span className="text-sm font-semibold text-white">Totalt intag</span>
-              <span className="text-xl font-bold text-[#FFD700]">{targetWithSteps.toFixed(0)} kcal</span>
+              <span className="text-xl font-bold text-gold-light">{targetWithSteps.toFixed(0)} kcal</span>
             </div>
           </div>
         </div>
@@ -131,15 +131,15 @@ export default function LivePreview() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[rgba(255,255,255,0.7)]">Protein</span>
+                <span className="text-sm text-gray-300">Protein</span>
                 <span className="font-bold text-red-400">{macros.protein}g</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[rgba(255,255,255,0.7)]">Fett</span>
+                <span className="text-sm text-gray-300">Fett</span>
                 <span className="font-bold text-yellow-400">{macros.fat}g</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[rgba(255,255,255,0.7)]">Kolhydrater</span>
+                <span className="text-sm text-gray-300">Kolhydrater</span>
                 <span className="font-bold text-blue-400">{macros.carbs}g</span>
               </div>
             </div>
@@ -156,12 +156,12 @@ export default function LivePreview() {
 
             <div className="space-y-2">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-[rgba(255,255,255,0.7)]">Antal måltider</span>
+                <span className="text-sm text-gray-300">Antal måltider</span>
                 <span className="font-bold text-purple-400">{localPlan.numMeals || 3}</span>
               </div>
               {meals.map((calories, index) => (
                 <div key={index} className="flex justify-between items-center text-sm">
-                  <span className="text-[rgba(255,255,255,0.6)]">Måltid {index + 1}</span>
+                  <span className="text-gray-400">Måltid {index + 1}</span>
                   <span className="font-semibold text-white">{calories} kcal</span>
                 </div>
               ))}
@@ -178,11 +178,11 @@ export default function LivePreview() {
 
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-[rgba(255,255,255,0.7)]">Dagliga steg</span>
+              <span className="text-sm text-gray-300">Dagliga steg</span>
               <span className="font-bold text-orange-400">{(localPlan.dailySteps || 0).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-[rgba(255,255,255,0.7)]">Extra kalorier</span>
+              <span className="text-sm text-gray-300">Extra kalorier</span>
               <span className="font-bold text-orange-400">+{stepsCalories} kcal</span>
             </div>
           </div>
