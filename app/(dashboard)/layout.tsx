@@ -31,7 +31,9 @@ import {
   Bell,
   Dumbbell,
   MessageSquare,
-  HelpCircle
+  HelpCircle,
+  ShoppingCart,
+  Apple
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
@@ -57,6 +59,8 @@ const navigation = [
       { name: 'Skapa Artiklar', href: '/dashboard/content/articles', icon: Library },
       { name: 'Skapa Recept Kategorier', href: '/dashboard/content/recipe-categories', icon: FolderOpen },
       { name: 'Skapa Recept', href: '/dashboard/content/recipes', icon: ChefHat },
+      { name: 'Livsmedelbanken', href: '/dashboard/content/food-items', icon: Apple },
+      { name: 'Inköpslistor', href: '/dashboard/content/shopping-lists', icon: ShoppingCart },
       { name: 'Måltidsplaner', href: '/dashboard/content/meal-plans', icon: UtensilsCrossed },
       { name: 'Guider', href: '/dashboard/content/guides', icon: BookOpen },
       { name: 'Vanliga frågor', href: '/dashboard/content/faqs', icon: HelpCircle },
@@ -67,6 +71,7 @@ const navigation = [
   { name: 'Kunskapsbanken', href: '/dashboard/articles', icon: Library },
   { name: 'Recept', href: '/dashboard/recipes', icon: ChefHat },
   { name: 'Kostschema', href: '/dashboard/meal-plan', icon: Utensils, clientOnly: true },
+  { name: 'Inköpslistor', href: '/dashboard/shopping-lists', icon: ShoppingCart, clientOnly: true },
   { name: 'Träningsprogram', href: '/dashboard/workout', icon: Dumbbell, clientOnly: true },
   {
     name: 'Verktyg',
