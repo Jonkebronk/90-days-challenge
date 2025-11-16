@@ -36,10 +36,18 @@ export default function NutritionAdminPage() {
   const [isSaving, setIsSaving] = useState(false)
 
   const isCoach = (session?.user as any)?.role === 'coach'
-  const portions = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
+  const proteinTargets = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
 
-  const calculateValue = (valuePer100g: number, portion: number) => {
-    return ((valuePer100g * portion) / 100).toFixed(1)
+  // Calculate food weight needed to get target protein/fat/carbs
+  const calculateFoodWeight = (valuePer100g: number, targetValue: number) => {
+    if (valuePer100g === 0) return 0
+    return Math.round((targetValue * 100) / valuePer100g)
+  }
+
+  // Calculate valuePer100g from food weight and target
+  const calculateValuePer100g = (foodWeight: number, targetValue: number) => {
+    if (foodWeight === 0) return 0
+    return parseFloat(((targetValue * 100) / foodWeight).toFixed(2))
   }
 
   useEffect(() => {
@@ -81,6 +89,11 @@ export default function NutritionAdminPage() {
           : cat
       )
     )
+  }
+
+  const updateItemByWeight = (categoryId: string, itemId: string, targetValue: number, foodWeight: number) => {
+    const newValuePer100g = calculateValuePer100g(foodWeight, targetValue)
+    updateItemValue(categoryId, itemId, 'valuePer100g', newValuePer100g)
   }
 
   const addItem = (categoryId: string) => {
@@ -293,15 +306,13 @@ export default function NutritionAdminPage() {
                         <th className="px-2 py-2 text-left text-xs font-semibold text-[rgba(255,255,255,0.8)] border border-[rgba(255,215,0,0.2)] sticky left-0 bg-[rgba(10,10,10,0.95)] z-10">
                           Livsmedel
                         </th>
-                        <th className="px-2 py-2 text-center text-xs font-semibold text-[#FFD700] border border-[rgba(255,215,0,0.2)] min-w-[80px]">
-                          Per 100g
-                        </th>
-                        {portions.map((portion) => (
+                        {proteinTargets.map((target) => (
                           <th
-                            key={portion}
-                            className="px-2 py-2 text-center text-xs font-semibold text-[rgba(255,215,0,0.7)] border border-[rgba(255,215,0,0.2)] min-w-[60px]"
+                            key={target}
+                            className="px-2 py-2 text-center text-xs font-semibold text-[#FFD700] border border-[rgba(255,215,0,0.2)] min-w-[70px]"
                           >
-                            {portion}g
+                            <div>{target}g</div>
+                            <div className="text-[rgba(255,215,0,0.6)] font-normal">(gram mat)</div>
                           </th>
                         ))}
                         <th className="px-2 py-2 text-center text-xs font-semibold text-[rgba(255,255,255,0.8)] border border-[rgba(255,215,0,0.2)] min-w-[80px]">
@@ -324,21 +335,15 @@ export default function NutritionAdminPage() {
                               className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white h-8 text-xs"
                             />
                           </td>
-                          <td className="px-2 py-2 border border-[rgba(255,215,0,0.1)]">
-                            <Input
-                              type="number"
-                              step="0.1"
-                              value={item.valuePer100g}
-                              onChange={(e) => updateItemValue(category.id, item.id, 'valuePer100g', parseFloat(e.target.value) || 0)}
-                              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white h-8 text-xs text-center"
-                            />
-                          </td>
-                          {portions.map((portion) => (
-                            <td
-                              key={portion}
-                              className="px-2 py-2 text-center text-[rgba(255,255,255,0.8)] border border-[rgba(255,215,0,0.1)] text-xs"
-                            >
-                              {calculateValue(item.valuePer100g, portion)}
+                          {proteinTargets.map((target) => (
+                            <td key={target} className="px-2 py-2 border border-[rgba(255,215,0,0.1)]">
+                              <Input
+                                type="number"
+                                value={calculateFoodWeight(item.valuePer100g, target)}
+                                onChange={(e) => updateItemByWeight(category.id, item.id, target, parseInt(e.target.value) || 0)}
+                                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white h-8 text-xs text-center"
+                                placeholder="0"
+                              />
                             </td>
                           ))}
                           <td className="px-2 py-2 text-center border border-[rgba(255,215,0,0.1)]">
