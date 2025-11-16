@@ -849,7 +849,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
               disabled={isSubmitting}
               className="w-full md:w-auto px-12 py-6 text-lg tracking-[3px] uppercase font-bold bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] hover:scale-105 transition-transform disabled:opacity-50 disabled:hover:scale-100"
             >
-              {isSubmitting ? 'Skickar...' : 'Skicka Ansökan'}
+              {isSubmitting ? 'Skickar...' : 'Skicka Intresseanmälan'}
             </Button>
 
             <p className="text-xs text-[rgba(255,255,255,0.4)] mt-4">
