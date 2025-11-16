@@ -528,7 +528,13 @@ Detta är **bold** och detta är *italic*.
 
 ## 📖 Dokumentation
 
-- **STATUS.md** - Detaljerad projektstatus
+- **[DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)** - Komplett design system dokumentation
+  - Color system (backgrounds, gold palette, semantic colors)
+  - Typography (font families, type scale, letter spacing)
+  - Components (buttons, cards, forms, badges)
+  - Spacing & accessibility guidelines
+  - Best practices & code examples
+- **[STATUS.md](./STATUS.md)** - Detaljerad projektstatus
 - **Prisma Schema** - Se `prisma/schema.prisma` för databasstruktur
 - **API Endpoints** - Se `app/api/` för alla endpoints
 
