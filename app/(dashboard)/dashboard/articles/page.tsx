@@ -459,11 +459,11 @@ function ArticleBankContent() {
                     >
                       {category.name}
                     </h2>
-                    <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/30 backdrop-blur-sm">
-                      <span className="text-xs font-semibold" style={{ color: categoryColor }}>
+                    <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-black/20 backdrop-blur-sm">
+                      <span className="text-[10px] font-medium" style={{ color: categoryColor }}>
                         {categoryArticles.filter(a => isArticleCompleted(a)).length}
                       </span>
-                      <span className="text-xs text-[rgba(255,255,255,0.5)]"> / {categoryArticles.length}</span>
+                      <span className="text-[10px] text-[rgba(255,255,255,0.4)]"> / {categoryArticles.length}</span>
                     </div>
                     {/* Expand/Collapse indicator */}
                     <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
