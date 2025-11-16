@@ -176,50 +176,51 @@ export default function NutritionAdminPage() {
     try {
       setIsSaving(true)
 
-      // Prepare items for bulk update
-      const allItems = categories.flatMap(cat =>
-        cat.items.filter(item => !item.id.startsWith('temp-')).map(item => ({
-          id: item.id,
-          name: item.name,
-          valuePer100g: item.valuePer100g,
-          order: item.order,
-        }))
-      )
+      // Process each category separately to maintain correct order within category
+      for (const cat of categories) {
+        // Update existing items with reassigned order based on current position
+        const existingItems = cat.items
+          .filter(item => !item.id.startsWith('temp-'))
+          .map((item, index) => ({
+            id: item.id,
+            name: item.name,
+            valuePer100g: item.valuePer100g,
+            order: index, // Use current array index as order within category
+          }))
 
-      // Update existing items
-      if (allItems.length > 0) {
-        const updateResponse = await fetch('/api/nutrition-items', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items: allItems }),
-        })
+        if (existingItems.length > 0) {
+          const updateResponse = await fetch('/api/nutrition-items', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: existingItems }),
+          })
 
-        if (!updateResponse.ok) {
-          throw new Error('Failed to update items')
+          if (!updateResponse.ok) {
+            throw new Error('Failed to update items')
+          }
         }
-      }
 
-      // Create new items
-      const newItems = categories.flatMap(cat =>
-        cat.items
-          .filter(item => item.id.startsWith('temp-'))
-          .map(item => ({
+        // Create new items with correct order
+        const newItems = cat.items
+          .map((item, index) => ({ item, index }))
+          .filter(({ item }) => item.id.startsWith('temp-'))
+          .map(({ item, index }) => ({
             categoryId: cat.id,
             name: item.name,
             valuePer100g: item.valuePer100g,
-            order: item.order,
+            order: index, // Use current array index as order within category
           }))
-      )
 
-      for (const newItem of newItems) {
-        const createResponse = await fetch('/api/nutrition-items', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newItem),
-        })
+        for (const newItem of newItems) {
+          const createResponse = await fetch('/api/nutrition-items', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newItem),
+          })
 
-        if (!createResponse.ok) {
-          throw new Error('Failed to create item')
+          if (!createResponse.ok) {
+            throw new Error('Failed to create item')
+          }
         }
       }
 

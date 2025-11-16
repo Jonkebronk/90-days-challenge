@@ -169,11 +169,11 @@ export default function DashboardLayout({
             {/* Logo */}
             <Link href="/dashboard" className="flex items-center mr-6 group flex-shrink-0">
               <Image
-                src="/images/logo-black.svg"
-                alt="90-Dagars Utmaningen"
-                width={200}
-                height={40}
-                className="h-8 w-auto object-contain transition-all group-hover:opacity-80"
+                src="/images/compass-icon-black.svg"
+                alt="Friskvårdskompassen"
+                width={48}
+                height={48}
+                className="h-12 w-auto object-contain transition-all group-hover:scale-110 group-hover:rotate-12"
                 priority
               />
             </Link>
