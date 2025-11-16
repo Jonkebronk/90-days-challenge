@@ -67,6 +67,17 @@ type TemplateMealOption = {
   }
 }
 
+type TemplateMealItem = {
+  id: string
+  name: string
+  amount: string
+  protein: number
+  fat: number
+  carbs: number
+  calories: number
+  orderIndex: number
+}
+
 type TemplateMeal = {
   id: string
   name: string
@@ -77,6 +88,7 @@ type TemplateMeal = {
   targetCarbs: number | null
   targetCalories: number | null
   orderIndex: number
+  items: TemplateMealItem[]
   options: TemplateMealOption[]
 }
 
@@ -140,6 +152,17 @@ export default function MealPlanTemplatePage() {
     targetFat: '',
     targetCarbs: '',
     targetCalories: '',
+  })
+
+  const [isAddIngredientDialogOpen, setIsAddIngredientDialogOpen] = useState(false)
+  const [selectedMealForIngredient, setSelectedMealForIngredient] = useState<string | null>(null)
+  const [ingredientFormData, setIngredientFormData] = useState({
+    name: '',
+    amount: '',
+    protein: '',
+    fat: '',
+    carbs: '',
+    calories: '',
   })
 
   useEffect(() => {
@@ -411,6 +434,80 @@ export default function MealPlanTemplatePage() {
       }
     } catch (error) {
       console.error('Error reordering meal:', error)
+      toast.error('Ett fel uppstod')
+    }
+  }
+
+  const handleAddIngredient = async () => {
+    if (!ingredientFormData.name || !ingredientFormData.amount) {
+      toast.error('Råvara och mängd krävs')
+      return
+    }
+
+    if (!selectedMealForIngredient) return
+
+    try {
+      const response = await fetch(
+        `/api/meal-plan-templates/${templateId}/meals/${selectedMealForIngredient}/items`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: ingredientFormData.name,
+            amount: ingredientFormData.amount,
+            protein: ingredientFormData.protein ? parseFloat(ingredientFormData.protein) : 0,
+            fat: ingredientFormData.fat ? parseFloat(ingredientFormData.fat) : 0,
+            carbs: ingredientFormData.carbs ? parseFloat(ingredientFormData.carbs) : 0,
+            calories: ingredientFormData.calories ? parseFloat(ingredientFormData.calories) : 0,
+          }),
+        }
+      )
+
+      if (response.ok) {
+        toast.success('Råvara tillagd')
+        setIsAddIngredientDialogOpen(false)
+        setSelectedMealForIngredient(null)
+        setIngredientFormData({
+          name: '',
+          amount: '',
+          protein: '',
+          fat: '',
+          carbs: '',
+          calories: '',
+        })
+        fetchTemplate()
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Kunde inte lägga till råvara')
+      }
+    } catch (error) {
+      console.error('Error adding ingredient:', error)
+      toast.error('Ett fel uppstod')
+    }
+  }
+
+  const handleDeleteIngredient = async (mealId: string, itemId: string) => {
+    if (!confirm('Är du säker på att du vill radera denna råvara?')) {
+      return
+    }
+
+    try {
+      const response = await fetch(
+        `/api/meal-plan-templates/${templateId}/meals/${mealId}/items/${itemId}`,
+        {
+          method: 'DELETE',
+        }
+      )
+
+      if (response.ok) {
+        toast.success('Råvara raderad')
+        fetchTemplate()
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Kunde inte radera råvara')
+      }
+    } catch (error) {
+      console.error('Error deleting ingredient:', error)
       toast.error('Ett fel uppstod')
     }
   }
@@ -690,6 +787,108 @@ export default function MealPlanTemplatePage() {
                       </div>
                     </CardHeader>
                     <CardContent>
+                      {/* Ingredients Table */}
+                      <div className="mb-6">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-sm font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                            Råvaror
+                          </h3>
+                          <Button
+                            onClick={() => {
+                              setSelectedMealForIngredient(meal.id)
+                              setIsAddIngredientDialogOpen(true)
+                            }}
+                            size="sm"
+                            className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Lägg till råvara
+                          </Button>
+                        </div>
+
+                        {meal.items && meal.items.length > 0 ? (
+                          <div className="border border-[rgba(255,215,0,0.2)] rounded-lg overflow-hidden">
+                            <table className="w-full">
+                              <thead className="bg-[rgba(255,215,0,0.05)]">
+                                <tr>
+                                  <th className="px-3 py-2 text-left text-xs font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                                    Råvara
+                                  </th>
+                                  <th className="px-3 py-2 text-left text-xs font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                                    Mängd
+                                  </th>
+                                  <th className="px-3 py-2 text-right text-xs font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                                    P
+                                  </th>
+                                  <th className="px-3 py-2 text-right text-xs font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                                    F
+                                  </th>
+                                  <th className="px-3 py-2 text-right text-xs font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                                    K
+                                  </th>
+                                  <th className="px-3 py-2 text-right text-xs font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide">
+                                    Kcal
+                                  </th>
+                                  <th className="px-3 py-2 w-20"></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {meal.items
+                                  .sort((a, b) => a.orderIndex - b.orderIndex)
+                                  .map((item) => (
+                                    <tr
+                                      key={item.id}
+                                      className="border-t border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]"
+                                    >
+                                      <td className="px-3 py-2 text-sm text-white">
+                                        {item.name}
+                                      </td>
+                                      <td className="px-3 py-2 text-sm text-[rgba(255,255,255,0.8)]">
+                                        {item.amount}
+                                      </td>
+                                      <td className="px-3 py-2 text-sm text-right text-blue-300">
+                                        {item.protein}g
+                                      </td>
+                                      <td className="px-3 py-2 text-sm text-right text-yellow-300">
+                                        {item.fat}g
+                                      </td>
+                                      <td className="px-3 py-2 text-sm text-right text-orange-300">
+                                        {item.carbs}g
+                                      </td>
+                                      <td className="px-3 py-2 text-sm text-right text-[#FFD700]">
+                                        {item.calories}
+                                      </td>
+                                      <td className="px-3 py-2">
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          onClick={() => handleDeleteIngredient(meal.id, item.id)}
+                                          className="h-6 w-6 hover:bg-[rgba(255,0,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-red-400"
+                                        >
+                                          <Trash2 className="h-3 w-3" />
+                                        </Button>
+                                      </td>
+                                    </tr>
+                                  ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <div className="border border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-6 text-center">
+                            <p className="text-sm text-[rgba(255,255,255,0.5)]">
+                              Inga råvaror tillagda ännu. Klicka på "Lägg till råvara" för att komma igång.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Meal Alternatives Section */}
+                      <div className="mb-3">
+                        <h3 className="text-sm font-semibold text-[rgba(255,255,255,0.8)] uppercase tracking-wide mb-3">
+                          Receptförslag & Alternativ
+                        </h3>
+                      </div>
+
                       {meal.options.length > 0 ? (
                         <>
                           <div className="space-y-2">
@@ -1195,6 +1394,144 @@ export default function MealPlanTemplatePage() {
           onSuccess={fetchTemplate}
         />
       )}
+
+      {/* Add Ingredient Dialog */}
+      <Dialog open={isAddIngredientDialogOpen} onOpenChange={setIsAddIngredientDialogOpen}>
+        <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+              Lägg till råvara
+            </DialogTitle>
+            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+              Ange råvarans namn, mängd och näringsinnehåll.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="ingredientName" className="text-[rgba(255,255,255,0.8)]">
+                  Råvara *
+                </Label>
+                <Input
+                  id="ingredientName"
+                  value={ingredientFormData.name}
+                  onChange={(e) =>
+                    setIngredientFormData({ ...ingredientFormData, name: e.target.value })
+                  }
+                  placeholder="t.ex. Havregryn"
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="ingredientAmount" className="text-[rgba(255,255,255,0.8)]">
+                  Mängd *
+                </Label>
+                <Input
+                  id="ingredientAmount"
+                  value={ingredientFormData.amount}
+                  onChange={(e) =>
+                    setIngredientFormData({ ...ingredientFormData, amount: e.target.value })
+                  }
+                  placeholder="t.ex. 50g, 3 styck"
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="ingredientProtein" className="text-[rgba(255,255,255,0.8)]">
+                  Protein (g)
+                </Label>
+                <Input
+                  id="ingredientProtein"
+                  type="number"
+                  step="0.1"
+                  value={ingredientFormData.protein}
+                  onChange={(e) =>
+                    setIngredientFormData({ ...ingredientFormData, protein: e.target.value })
+                  }
+                  placeholder="0"
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                />
+              </div>
+              <div>
+                <Label htmlFor="ingredientFat" className="text-[rgba(255,255,255,0.8)]">
+                  Fett (g)
+                </Label>
+                <Input
+                  id="ingredientFat"
+                  type="number"
+                  step="0.1"
+                  value={ingredientFormData.fat}
+                  onChange={(e) =>
+                    setIngredientFormData({ ...ingredientFormData, fat: e.target.value })
+                  }
+                  placeholder="0"
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="ingredientCarbs" className="text-[rgba(255,255,255,0.8)]">
+                  Kolhydrater (g)
+                </Label>
+                <Input
+                  id="ingredientCarbs"
+                  type="number"
+                  step="0.1"
+                  value={ingredientFormData.carbs}
+                  onChange={(e) =>
+                    setIngredientFormData({ ...ingredientFormData, carbs: e.target.value })
+                  }
+                  placeholder="0"
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                />
+              </div>
+              <div>
+                <Label htmlFor="ingredientCalories" className="text-[rgba(255,255,255,0.8)]">
+                  Kalorier
+                </Label>
+                <Input
+                  id="ingredientCalories"
+                  type="number"
+                  step="0.1"
+                  value={ingredientFormData.calories}
+                  onChange={(e) =>
+                    setIngredientFormData({ ...ingredientFormData, calories: e.target.value })
+                  }
+                  placeholder="0"
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                setIsAddIngredientDialogOpen(false)
+                setIngredientFormData({
+                  name: '',
+                  amount: '',
+                  protein: '',
+                  fat: '',
+                  carbs: '',
+                  calories: '',
+                })
+              }}
+              className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+            >
+              Avbryt
+            </Button>
+            <Button
+              onClick={handleAddIngredient}
+              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+            >
+              Lägg till råvara
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
