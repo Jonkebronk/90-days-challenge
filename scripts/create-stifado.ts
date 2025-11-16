@@ -67,36 +67,36 @@ async function main() {
 
   // Calculate nutrition per serving
   const calories = Math.round(
-    (notgrytbitar.calories * 182/100) +
-    (ris.calories * 70/100) +
-    (tomater.calories * 100/100) +
-    (gullok.calories * 25/100) +
-    (sallad.calories * 75/100) +
-    (kokosolja.calories * 1/100) // 1 tsk ≈ 5g, but using 1g for low amount
+    (Number(notgrytbitar.calories) * 182/100) +
+    (Number(ris.calories) * 70/100) +
+    (Number(tomater.calories) * 100/100) +
+    (Number(gullok.calories) * 25/100) +
+    (Number(sallad.calories) * 75/100) +
+    (Number(kokosolja.calories) * 1/100) // 1 tsk ≈ 5g, but using 1g for low amount
   )
 
   const protein = Math.round(
-    (notgrytbitar.proteinG * 182/100) +
-    (ris.proteinG * 70/100) +
-    (tomater.proteinG * 100/100) +
-    (gullok.proteinG * 25/100) +
-    (sallad.proteinG * 75/100)
+    (Number(notgrytbitar.proteinG) * 182/100) +
+    (Number(ris.proteinG) * 70/100) +
+    (Number(tomater.proteinG) * 100/100) +
+    (Number(gullok.proteinG) * 25/100) +
+    (Number(sallad.proteinG) * 75/100)
   )
 
   const carbs = Math.round(
-    (ris.carbsG * 70/100) +
-    (tomater.carbsG * 100/100) +
-    (gullok.carbsG * 25/100) +
-    (sallad.carbsG * 75/100)
+    (Number(ris.carbsG) * 70/100) +
+    (Number(tomater.carbsG) * 100/100) +
+    (Number(gullok.carbsG) * 25/100) +
+    (Number(sallad.carbsG) * 75/100)
   )
 
   const fat = Math.round(
-    (notgrytbitar.fatG * 182/100) +
-    (ris.fatG * 70/100) +
-    (tomater.fatG * 100/100) +
-    (gullok.fatG * 25/100) +
-    (sallad.fatG * 75/100) +
-    (kokosolja.fatG * 1/100)
+    (Number(notgrytbitar.fatG) * 182/100) +
+    (Number(ris.fatG) * 70/100) +
+    (Number(tomater.fatG) * 100/100) +
+    (Number(gullok.fatG) * 25/100) +
+    (Number(sallad.fatG) * 75/100) +
+    (Number(kokosolja.fatG) * 1/100)
   )
 
   // Create the recipe
