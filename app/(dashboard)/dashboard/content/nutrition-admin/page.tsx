@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -67,7 +67,7 @@ export default function NutritionAdminPage() {
       console.log('  🧹 Cleaning up timer')
       clearTimeout(saveTimer)
     }
-  }, [categories, hasUnsavedChanges, isLoading, isSaving])
+  }, [categories, hasUnsavedChanges, isLoading, isSaving, saveChanges])
 
   // Calculate food weight needed to get target protein/fat/carbs
   const calculateFoodWeight = (valuePer100g: number, targetValue: number) => {
@@ -242,7 +242,7 @@ export default function NutritionAdminPage() {
     console.log('✅ hasUnsavedChanges set to true')
   }
 
-  const saveChanges = async () => {
+  const saveChanges = useCallback(async () => {
     try {
       setIsSaving(true)
 
@@ -315,7 +315,7 @@ export default function NutritionAdminPage() {
     } finally {
       setIsSaving(false)
     }
-  }
+  }, [categories, activeType])
 
   if (!session?.user || !isCoach) {
     return (
