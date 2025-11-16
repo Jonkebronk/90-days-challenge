@@ -146,6 +146,32 @@ export default function NutritionAdminPage() {
     setCategories(newCategories)
   }
 
+  const moveItem = (categoryId: string, itemId: string, direction: 'up' | 'down') => {
+    setCategories(prev =>
+      prev.map(cat => {
+        if (cat.id !== categoryId) return cat
+
+        const index = cat.items.findIndex(i => i.id === itemId)
+        if (index === -1) return cat
+        if (direction === 'up' && index === 0) return cat
+        if (direction === 'down' && index === cat.items.length - 1) return cat
+
+        const newItems = [...cat.items]
+        const swapIndex = direction === 'up' ? index - 1 : index + 1
+
+        // Swap order values
+        const tempOrder = newItems[index].order
+        newItems[index].order = newItems[swapIndex].order
+        newItems[swapIndex].order = tempOrder
+
+        // Swap positions
+        ;[newItems[index], newItems[swapIndex]] = [newItems[swapIndex], newItems[index]]
+
+        return { ...cat, items: newItems }
+      })
+    )
+  }
+
   const saveChanges = async () => {
     try {
       setIsSaving(true)
@@ -315,7 +341,7 @@ export default function NutritionAdminPage() {
                             <div className="text-[rgba(255,215,0,0.6)] font-normal">(gram mat)</div>
                           </th>
                         ))}
-                        <th className="px-2 py-2 text-center text-xs font-semibold text-gray-200 border border-gold-primary/20 min-w-[80px]">
+                        <th className="px-2 py-2 text-center text-xs font-semibold text-gray-200 border border-gold-primary/20 min-w-[120px]">
                           Åtgärder
                         </th>
                       </tr>
@@ -335,32 +361,46 @@ export default function NutritionAdminPage() {
                               className="bg-black/30 border-gold-primary/30 text-white h-8 text-xs"
                             />
                           </td>
-                          {proteinTargets.map((target, targetIndex) => (
+                          {proteinTargets.map((target) => (
                             <td key={target} className="px-2 py-2 border border-gold-primary/10">
-                              {targetIndex === 0 ? (
-                                <Input
-                                  type="number"
-                                  value={calculateFoodWeight(item.valuePer100g, target)}
-                                  onChange={(e) => updateItemByWeight(category.id, item.id, target, parseInt(e.target.value) || 0)}
-                                  className="bg-black/30 border-gold-primary/30 text-white h-8 text-xs text-center"
-                                  placeholder="0"
-                                />
-                              ) : (
-                                <div className="px-2 py-1 text-center text-gray-200">
-                                  {calculateFoodWeight(item.valuePer100g, target)}
-                                </div>
-                              )}
+                              <Input
+                                type="number"
+                                value={calculateFoodWeight(item.valuePer100g, target)}
+                                onChange={(e) => updateItemByWeight(category.id, item.id, target, parseInt(e.target.value) || 0)}
+                                className="bg-black/30 border-gold-primary/30 text-white h-8 text-xs text-center"
+                                placeholder="0"
+                              />
                             </td>
                           ))}
                           <td className="px-2 py-2 text-center border border-gold-primary/10">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeItem(category.id, item.id)}
-                              className="text-red-400 hover:text-red-300 hover:bg-red-900/20 h-7"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
+                            <div className="flex items-center justify-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => moveItem(category.id, item.id, 'up')}
+                                disabled={idx === 0}
+                                className="text-gold-light hover:bg-gold-50/10 h-7 w-7 p-0"
+                              >
+                                <ChevronUp className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => moveItem(category.id, item.id, 'down')}
+                                disabled={idx === category.items.length - 1}
+                                className="text-gold-light hover:bg-gold-50/10 h-7 w-7 p-0"
+                              >
+                                <ChevronDown className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeItem(category.id, item.id)}
+                                className="text-red-400 hover:text-red-300 hover:bg-red-900/20 h-7 w-7 p-0"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
