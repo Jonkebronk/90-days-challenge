@@ -20,8 +20,6 @@ import { toast } from 'sonner'
 import { getCategoryIcon } from '@/lib/icons/category-icons'
 import { getPhaseColors, getPhaseShortName, type Phase } from '@/lib/utils/phase-colors'
 import { ArticleSearch } from '@/components/article-search'
-import { ArticleFilters } from '@/components/article-filters'
-import { ArticleSort, type SortOption } from '@/components/article-sort'
 
 type ArticleCategory = {
   id: string
@@ -61,16 +59,7 @@ function ArticleBankContent() {
   const [isLoading, setIsLoading] = useState(true)
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({})
 
-  // Filters
   const [searchQuery, setSearchQuery] = useState(searchParams?.get('q') || '')
-  const [filters, setFilters] = useState({
-    category: 'all',
-    phase: 'all',
-    difficulty: 'all',
-    completed: 'all',
-    tags: [] as string[]
-  })
-  const [sortBy, setSortBy] = useState<SortOption>('newest')
 
   useEffect(() => {
     if (session?.user) {
@@ -156,59 +145,8 @@ function ArticleBankContent() {
     return article.progress && article.progress.length > 0 && article.progress[0].completed
   }
 
-  const filteredArticles = articles.filter(article => {
-    // Search filter
-    if (searchQuery && !article.title.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false
-    }
-
-    // Category filter
-    if (filters.category !== 'all' && article.category.id !== filters.category) return false
-
-    // Phase filter
-    if (filters.phase !== 'all') {
-      if (filters.phase === 'none' && article.phase !== null) return false
-      if (filters.phase !== 'none' && article.phase?.toString() !== filters.phase) return false
-    }
-
-    // Difficulty filter
-    if (filters.difficulty !== 'all') {
-      if (filters.difficulty === 'none' && article.difficulty !== null) return false
-      if (filters.difficulty !== 'none' && article.difficulty !== filters.difficulty) return false
-    }
-
-    // Completed filter
-    if (filters.completed !== 'all') {
-      const completed = isArticleCompleted(article)
-      if (filters.completed === 'true' && !completed) return false
-      if (filters.completed === 'false' && completed) return false
-    }
-
-    return true
-  })
-
-  // Sort articles
-  const sortedArticles = [...filteredArticles].sort((a, b) => {
-    switch (sortBy) {
-      case 'newest':
-        return new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime()
-      case 'oldest':
-        return new Date(a.updatedAt || 0).getTime() - new Date(b.updatedAt || 0).getTime()
-      case 'title-asc':
-        return a.title.localeCompare(b.title, 'sv')
-      case 'title-desc':
-        return b.title.localeCompare(a.title, 'sv')
-      case 'reading-time-asc':
-        return (a.estimatedReadingMinutes || 0) - (b.estimatedReadingMinutes || 0)
-      case 'reading-time-desc':
-        return (b.estimatedReadingMinutes || 0) - (a.estimatedReadingMinutes || 0)
-      default:
-        return 0
-    }
-  })
-
   // Group by category
-  const articlesByCategory = sortedArticles.reduce((acc, article) => {
+  const articlesByCategory = articles.reduce((acc, article) => {
     const categoryName = article.category.name
     if (!acc[categoryName]) {
       acc[categoryName] = []
@@ -262,41 +200,6 @@ function ArticleBankContent() {
         {/* Search Bar */}
         <div className="max-w-2xl mx-auto mb-8">
           <ArticleSearch />
-        </div>
-
-        {/* Filters and Sorting */}
-        <div className="mb-8 space-y-4">
-          <ArticleFilters
-            categories={categories}
-            filters={filters}
-            onFilterChange={setFilters}
-            totalResults={sortedArticles.length}
-          />
-          {!searchQuery && (
-            <div className="flex justify-end">
-              <ArticleSort
-                value={sortBy}
-                onChange={setSortBy}
-                showRelevance={!!searchQuery}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Compact Stats Bar */}
-        <div className="flex items-center justify-center gap-8 mb-8 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="text-[rgba(255,255,255,0.5)]">Totalt:</span>
-            <span className="text-[#FFD700] font-semibold">{articles.length}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[rgba(255,255,255,0.5)]">Lästa:</span>
-            <span className="text-[#22c55e] font-semibold">{articles.filter(a => isArticleCompleted(a)).length}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[rgba(255,255,255,0.5)]">Kvar:</span>
-            <span className="text-[#FFD700] font-semibold">{articles.length - articles.filter(a => isArticleCompleted(a)).length}</span>
-          </div>
         </div>
 
         {/* Search Results */}
@@ -434,10 +337,13 @@ function ArticleBankContent() {
                 <div key={category.id} className="flex flex-col bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-xl overflow-hidden shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/50 hover:border-[rgba(255,215,0,0.35)] transition-all duration-300">
                   {/* Category Header with Icon */}
                   <div
-                    onClick={() => setExpandedCategories(prev => ({
-                      ...prev,
-                      [category.id]: !prev[category.id]
-                    }))}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setExpandedCategories(prev => ({
+                        ...prev,
+                        [category.id]: !prev[category.id]
+                      }))
+                    }}
                     className="relative h-28 flex items-center justify-center gap-3 px-4 cursor-pointer"
                     style={{
                       background: `linear-gradient(135deg, ${categoryColor}33, ${categoryColor}15)`
