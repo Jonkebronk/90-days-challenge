@@ -1,99 +1,57 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Input } from '@/components/ui/input'
-import { ArrowLeft, Edit, Save, X } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+
+type NutritionItem = {
+  id: string
+  name: string
+  valuePer100g: number
+  order: number
+}
+
+type NutritionCategory = {
+  id: string
+  key: string
+  name: string
+  order: number
+  items: NutritionItem[]
+}
 
 export default function ProteinOverviewPage() {
-  const { data: session } = useSession()
   const router = useRouter()
-  const [isEditMode, setIsEditMode] = useState(false)
-  const isCoach = (session?.user as any)?.role === 'coach'
+  const [categories, setCategories] = useState<NutritionCategory[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Portion sizes
   const portions = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
 
-  // Food items organized by category - initial data
-  const initialCategories = {
-    'egg-dairy': {
-      name: 'Ägg & Mejeri',
-      order: 0,
-      items: [
-        { name: 'Kaseinpulver (0%)', proteinPer100g: 80 },
-        { name: 'Mjölkproteinpulver (0%)', proteinPer100g: 80 },
-        { name: 'Kvarg (naturell 0%)', proteinPer100g: 12 },
-        { name: 'Keso (0%)', proteinPer100g: 11 },
-        { name: 'Äggvita', proteinPer100g: 11 },
-        { name: 'Ägg (hela)', proteinPer100g: 13 },
-      ],
-    },
-    'pork': {
-      name: 'Fläsk',
-      items: [
-        { name: 'Fläskfilé (rå)', proteinPer100g: 22 },
-        { name: 'Fläskkotlett (rå)', proteinPer100g: 20 },
-      ],
-    },
-    'fish': {
-      name: 'Fisk & Skaldjur',
-      items: [
-        { name: 'Torsk (rå)', proteinPer100g: 18 },
-        { name: 'Lax (rå)', proteinPer100g: 20 },
-        { name: 'Räkor (kokta)', proteinPer100g: 24 },
-        { name: 'Tonfisk (konserv, vatten)', proteinPer100g: 26 },
-        { name: 'Gös (rå)', proteinPer100g: 19 },
-        { name: 'Abborre (rå)', proteinPer100g: 19 },
-        { name: 'Sej (rå)', proteinPer100g: 17 },
-      ],
-    },
-    'game': {
-      name: 'Viltkött',
-      items: [
-        { name: 'Älgkött (rå)', proteinPer100g: 22 },
-        { name: 'Hjortkött (rå)', proteinPer100g: 22 },
-        { name: 'Renkött (rå)', proteinPer100g: 22 },
-      ],
-    },
-    'beef': {
-      name: 'Nötkött',
-      items: [
-        { name: 'Nötfärs (5%)', proteinPer100g: 20 },
-        { name: 'Nötfilé (rå)', proteinPer100g: 21 },
-        { name: 'Rostbiff (rå)', proteinPer100g: 21 },
-        { name: 'Oxfilé (rå)', proteinPer100g: 21 },
-      ],
-    },
-    'poultry': {
-      name: 'Fågel',
-      items: [
-        { name: 'Kycklingfilé (rå)', proteinPer100g: 23 },
-        { name: 'Kycklingbröst (rå)', proteinPer100g: 23 },
-        { name: 'Kalkonbröst (rå)', proteinPer100g: 24 },
-      ],
-    },
-    'vegetarian': {
-      name: 'Vegetariskt',
-      items: [
-        { name: 'Tofu', proteinPer100g: 8 },
-        { name: 'Linser (kokta)', proteinPer100g: 9 },
-        { name: 'Kikärtor (kokta)', proteinPer100g: 9 },
-        { name: 'Jordnötssmör', proteinPer100g: 25 },
-        { name: 'Mandlar', proteinPer100g: 21 },
-        { name: 'Cashewnötter', proteinPer100g: 18 },
-      ],
-    },
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('/api/nutrition-categories?type=protein')
+      if (response.ok) {
+        const data = await response.json()
+        setCategories(data.categories)
+      }
+    } catch (error) {
+      console.error('Error fetching protein data:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const calculateProtein = (proteinPer100g: number, portion: number) => {
     return ((proteinPer100g * portion) / 100).toFixed(1)
   }
 
-  const renderTable = (items: { name: string; proteinPer100g: number }[]) => (
+  const renderTable = (items: NutritionItem[]) => (
     <div className="overflow-x-auto">
       <table className="w-full border-collapse text-xs">
         <thead className="bg-[rgba(255,215,0,0.05)]">
@@ -114,7 +72,7 @@ export default function ProteinOverviewPage() {
         <tbody>
           {items.map((item, idx) => (
             <tr
-              key={idx}
+              key={item.id}
               className={`border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)] ${
                 idx % 2 === 0 ? 'bg-[rgba(255,255,255,0.01)]' : ''
               }`}
@@ -127,7 +85,7 @@ export default function ProteinOverviewPage() {
                   key={portion}
                   className="px-2 py-2 text-center text-[rgba(255,255,255,0.8)] border border-[rgba(255,215,0,0.1)]"
                 >
-                  {calculateProtein(item.proteinPer100g, portion)}
+                  {calculateProtein(item.valuePer100g, portion)}
                 </td>
               ))}
             </tr>
@@ -136,6 +94,14 @@ export default function ProteinOverviewPage() {
       </table>
     </div>
   )
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-6">
+        <p className="text-[rgba(255,255,255,0.6)] text-center py-8">Laddar...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -167,25 +133,31 @@ export default function ProteinOverviewPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="egg-dairy" className="w-full">
-            <TabsList className="grid grid-cols-7 gap-2 bg-[rgba(255,255,255,0.03)] p-1 mb-6">
-              {Object.entries(categories).map(([key, category]) => (
-                <TabsTrigger
-                  key={key}
-                  value={key}
-                  className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-[rgba(255,255,255,0.7)] hover:text-white transition-all"
-                >
-                  {category.name}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+          {categories.length > 0 ? (
+            <Tabs defaultValue={categories[0]?.key} className="w-full">
+              <TabsList className={`grid gap-2 bg-[rgba(255,255,255,0.03)] p-1 mb-6`} style={{ gridTemplateColumns: `repeat(${categories.length}, minmax(0, 1fr))` }}>
+                {categories.map((category) => (
+                  <TabsTrigger
+                    key={category.key}
+                    value={category.key}
+                    className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-[rgba(255,255,255,0.7)] hover:text-white transition-all"
+                  >
+                    {category.name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
 
-            {Object.entries(categories).map(([key, category]) => (
-              <TabsContent key={key} value={key} className="mt-0">
-                {renderTable(category.items)}
-              </TabsContent>
-            ))}
-          </Tabs>
+              {categories.map((category) => (
+                <TabsContent key={category.key} value={category.key} className="mt-0">
+                  {renderTable(category.items)}
+                </TabsContent>
+              ))}
+            </Tabs>
+          ) : (
+            <p className="text-[rgba(255,255,255,0.6)] text-center py-8">
+              Ingen data tillgänglig
+            </p>
+          )}
 
           <div className="mt-4 p-4 bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.2)] rounded-lg">
             <p className="text-sm text-[rgba(255,255,255,0.7)]">
