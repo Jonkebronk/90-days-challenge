@@ -84,9 +84,9 @@ export default function HomePage() {
               <Image
                 src="/images/logo-black.svg"
                 alt="90-Dagars Utmaningen - Friskvårdskompassen"
-                width={280}
-                height={60}
-                className="h-10 lg:h-12 w-auto object-contain transition-all group-hover:opacity-80"
+                width={400}
+                height={80}
+                className="h-14 lg:h-20 w-auto object-contain transition-all group-hover:opacity-80"
                 priority
               />
             </Link>
@@ -160,7 +160,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/login"
-                className="px-4 py-2.5 text-xs font-semibold tracking-[1px] uppercase bg-gradient-to-r from-gold-primary to-gold-secondary border-2 border-gold-primary text-white rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-gold-primary/30"
+                className="px-4 py-2.5 text-xs font-semibold tracking-[1px] uppercase bg-white border-2 border-gray-300 text-gray-900 rounded-lg transition-all duration-300 hover:scale-105 hover:border-gold-primary hover:text-gold-primary hover:shadow-md"
               >
                 Coach Login
               </Link>
