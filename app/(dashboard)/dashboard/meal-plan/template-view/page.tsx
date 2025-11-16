@@ -25,6 +25,7 @@ type TemplateMealOption = {
   servingMultiplier: number | null
   customName: string | null
   customDescription: string | null
+  customFoodItems: any
   calculatedProtein: number
   calculatedFat: number
   calculatedCarbs: number
