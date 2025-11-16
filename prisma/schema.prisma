@@ -1441,10 +1441,31 @@ model TemplateMeal {
   updatedAt  DateTime @updatedAt
 
   template         MealPlanTemplate      @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  items            TemplateMealItem[] // Direct ingredients in the meal
   options          TemplateMealOption[]
   clientSelections ClientMealSelection[]
 
   @@map("template_meals")
+}
+
+// Template Meal Item - Direct ingredients in a meal (manual entry)
+model TemplateMealItem {
+  id             String  @id @default(cuid())
+  templateMealId String
+  name           String // Ingredient name: "Havregryn eller 415g Naturell yoghurt 0.5% fett"
+  amount         String // "50g", "3 styck", "150g", etc.
+  protein        Decimal @db.Decimal(6, 2)
+  fat            Decimal @db.Decimal(6, 2)
+  carbs          Decimal @db.Decimal(6, 2)
+  calories       Decimal @db.Decimal(7, 2)
+
+  orderIndex Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  templateMeal TemplateMeal @relation(fields: [templateMealId], references: [id], onDelete: Cascade)
+
+  @@map("template_meal_items")
 }
 
 // Template Meal Option - An alternative for a meal (recipe OR custom food items)
