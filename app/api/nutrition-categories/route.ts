@@ -85,3 +85,46 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to create category' }, { status: 500 })
   }
 }
+
+// PATCH /api/nutrition-categories - Update category order (coach only)
+export async function PATCH(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Check if user is coach
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true },
+    })
+
+    if (user?.role !== 'coach') {
+      return NextResponse.json({ error: 'Forbidden: Coach access required' }, { status: 403 })
+    }
+
+    const body = await req.json()
+    const { categories } = body
+
+    if (!Array.isArray(categories)) {
+      return NextResponse.json({ error: 'Categories array is required' }, { status: 400 })
+    }
+
+    // Update each category's order
+    await Promise.all(
+      categories.map((cat: { id: string; order: number }) =>
+        prisma.nutritionCategory.update({
+          where: { id: cat.id },
+          data: { order: cat.order },
+        })
+      )
+    )
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error updating nutrition categories:', error)
+    return NextResponse.json({ error: 'Failed to update categories' }, { status: 500 })
+  }
+}

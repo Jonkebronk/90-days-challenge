@@ -68,9 +68,10 @@ export default function NutritionAdminPage() {
       const response = await fetch(`/api/nutrition-categories?type=${activeType}`)
       if (response.ok) {
         const data = await response.json()
+        console.log('📥 Categories loaded from DB:', data.categories.map((c: any) => `${c.name}:${c.order}`).join(', '))
         data.categories.forEach((cat: any) => {
           const orderInfo = cat.items.map((item: any) => `${item.name}:${item.order}`).join(', ')
-          console.log(`${cat.name} LOADED ORDER:`, orderInfo)
+          console.log(`${cat.name} ITEMS ORDER:`, orderInfo)
         })
         setCategories(data.categories || [])
       }
@@ -163,6 +164,7 @@ export default function NutritionAdminPage() {
   }
 
   const moveCategory = (categoryId: string, direction: 'up' | 'down') => {
+    console.log('🔄 Moving category:', categoryId, direction)
     const index = categories.findIndex(c => c.id === categoryId)
     if (index === -1) return
     if (direction === 'up' && index === 0) return
@@ -171,15 +173,14 @@ export default function NutritionAdminPage() {
     const newCategories = [...categories]
     const swapIndex = direction === 'up' ? index - 1 : index + 1
 
-    // Swap order values
-    const tempOrder = newCategories[index].order
-    newCategories[index].order = newCategories[swapIndex].order
-    newCategories[swapIndex].order = tempOrder
+    console.log(`  Moving ${newCategories[index].name} from position ${index} to ${swapIndex}`)
 
-    // Swap positions
+    // Just swap positions in array - order will be assigned based on array position when saving
     ;[newCategories[index], newCategories[swapIndex]] = [newCategories[swapIndex], newCategories[index]]
 
     setCategories(newCategories)
+    setHasUnsavedChanges(true)
+    console.log('✅ Category moved, hasUnsavedChanges set to true')
   }
 
   const moveItem = (categoryId: string, itemId: string, direction: 'up' | 'down') => {
@@ -216,6 +217,28 @@ export default function NutritionAdminPage() {
   const saveChanges = useCallback(async () => {
     try {
       setIsSaving(true)
+
+      // Save category order first
+      const categoryUpdates = categories.map((cat, index) => ({
+        id: cat.id,
+        order: index, // Use current array position as order
+      }))
+
+      console.log('💾 Saving category order:', categories.map((c, i) => `${c.name}:${i}`).join(', '))
+
+      const categoryResponse = await fetch('/api/nutrition-categories', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ categories: categoryUpdates }),
+      })
+
+      if (!categoryResponse.ok) {
+        const errorData = await categoryResponse.json()
+        console.error('❌ Failed to save category order:', errorData)
+        throw new Error('Failed to update category order')
+      }
+
+      console.log('✅ Category order saved successfully')
 
       // Process each category separately to maintain correct order within category
       for (const cat of categories) {
