@@ -8,6 +8,33 @@ import { ArrowLeft } from 'lucide-react'
 export default function KolhydraterOverviewPage() {
   const router = useRouter()
 
+  // Portion sizes
+  const portions = [10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 65, 70, 75, 80, 85, 90, 95, 100]
+
+  // Food items with carbs per 100g
+  const foodItems = [
+    { name: 'Livsmedel', carbsPer100g: 5 },
+    { name: 'Quinoa', carbsPer100g: 5 },
+    { name: 'Avokado', carbsPer100g: 3 },
+    { name: 'Kokosolja', carbsPer100g: 5.5 },
+    { name: 'Fullkornspasta (kokt)', carbsPer100g: 5.5 },
+    { name: 'Pasta (vit, kokt)', carbsPer100g: 14 },
+    { name: 'Fullkornsbröd', carbsPer100g: 14 },
+    { name: 'Knäckebröd', carbsPer100g: 16 },
+    { name: 'Havregryn', carbsPer100g: 10 },
+    { name: 'Jasminris (kokt)', carbsPer100g: 18 },
+    { name: 'Sötpotatis (kokt)', carbsPer100g: 20 },
+    { name: 'Potatis (kokt)', carbsPer100g: 18 },
+    { name: 'Pumpafrön (skalade)', carbsPer100g: 10 },
+    { name: 'Sesamfrö', carbsPer100g: 10 },
+    { name: 'Hasselnötter', carbsPer100g: 8 },
+    { name: 'Macadamianötter', carbsPer100g: 7 },
+  ]
+
+  const calculateCarbs = (carbsPer100g: number, portion: number) => {
+    return ((carbsPer100g * portion) / 100).toFixed(1)
+  }
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
@@ -22,10 +49,10 @@ export default function KolhydraterOverviewPage() {
         </Button>
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
-            Kolhydratkällor Översikt
+            Kolhydrater
           </h1>
           <p className="text-[rgba(255,255,255,0.6)] mt-1">
-            Näringsinnehåll per 100g
+            Gram kolhydrater per portion
           </p>
         </div>
       </div>
@@ -39,166 +66,50 @@ export default function KolhydraterOverviewPage() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
+            <table className="w-full border-collapse text-xs">
               <thead className="bg-[rgba(255,215,0,0.05)]">
                 <tr>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-[rgba(255,255,255,0.8)] border-b border-[rgba(255,215,0,0.2)]">
+                  <th className="px-2 py-2 text-left text-xs font-semibold text-[rgba(255,255,255,0.8)] border border-[rgba(255,215,0,0.2)] sticky left-0 bg-[rgba(10,10,10,0.95)] z-10">
                     Livsmedel
                   </th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-[rgba(255,255,255,0.8)] border-b border-[rgba(255,215,0,0.2)]">
-                    Mängd (g)
-                  </th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-blue-300 border-b border-[rgba(255,215,0,0.2)]">
-                    Protein (g)
-                  </th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-yellow-300 border-b border-[rgba(255,215,0,0.2)]">
-                    Fett (g)
-                  </th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-orange-300 border-b border-[rgba(255,215,0,0.2)]">
-                    Kolhydrater (g)
-                  </th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold text-[#FFD700] border-b border-[rgba(255,215,0,0.2)]">
-                    Kalorier
-                  </th>
+                  {portions.map((portion) => (
+                    <th
+                      key={portion}
+                      className="px-2 py-2 text-center text-xs font-semibold text-orange-300 border border-[rgba(255,215,0,0.2)] min-w-[50px]"
+                    >
+                      {portion}g
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {/* Spannmål och gröt */}
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Havregryn (torra)</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">13</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">7</td>
-                  <td className="px-4 py-3 text-center text-orange-300">60</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">371</td>
-                </tr>
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Fullkornsris (kokt)</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">3</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">1</td>
-                  <td className="px-4 py-3 text-center text-orange-300">23</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">111</td>
-                </tr>
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Jasminris (kokt)</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">3</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">0.3</td>
-                  <td className="px-4 py-3 text-center text-orange-300">28</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">130</td>
-                </tr>
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Quinoa (kokt)</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">4</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">2</td>
-                  <td className="px-4 py-3 text-center text-orange-300">21</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">120</td>
-                </tr>
-
-                {/* Pasta och bröd */}
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Fullkornspasta (kokt)</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">5</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">1</td>
-                  <td className="px-4 py-3 text-center text-orange-300">26</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">131</td>
-                </tr>
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Fullkornsbröd</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">10</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">4</td>
-                  <td className="px-4 py-3 text-center text-orange-300">44</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">252</td>
-                </tr>
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Knäckebröd (fullkorn)</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">11</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">2</td>
-                  <td className="px-4 py-3 text-center text-orange-300">68</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">334</td>
-                </tr>
-
-                {/* Rotfrukter och potatis */}
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Potatis (kokt)</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">2</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">0.1</td>
-                  <td className="px-4 py-3 text-center text-orange-300">17</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">77</td>
-                </tr>
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Sötpotatis (kokt)</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">2</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">0.2</td>
-                  <td className="px-4 py-3 text-center text-orange-300">20</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">90</td>
-                </tr>
-
-                {/* Baljväxter */}
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Svarta bönor (kokta)</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">9</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">0.5</td>
-                  <td className="px-4 py-3 text-center text-orange-300">24</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">132</td>
-                </tr>
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Röda linser (kokta)</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">9</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">0.4</td>
-                  <td className="px-4 py-3 text-center text-orange-300">20</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">116</td>
-                </tr>
-
-                {/* Frukt */}
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Banan</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">1</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">0.3</td>
-                  <td className="px-4 py-3 text-center text-orange-300">23</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">89</td>
-                </tr>
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Äpple</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">0.3</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">0.2</td>
-                  <td className="px-4 py-3 text-center text-orange-300">14</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">52</td>
-                </tr>
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Blåbär</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">0.7</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">0.3</td>
-                  <td className="px-4 py-3 text-center text-orange-300">14</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">57</td>
-                </tr>
-                <tr className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)]">
-                  <td className="px-4 py-3 text-white font-medium">Dadlar (torkade)</td>
-                  <td className="px-4 py-3 text-center text-[rgba(255,255,255,0.8)]">100</td>
-                  <td className="px-4 py-3 text-center text-blue-300">2</td>
-                  <td className="px-4 py-3 text-center text-yellow-300">0.2</td>
-                  <td className="px-4 py-3 text-center text-orange-300">75</td>
-                  <td className="px-4 py-3 text-center text-[#FFD700]">282</td>
-                </tr>
+                {foodItems.map((item, idx) => (
+                  <tr
+                    key={idx}
+                    className={`border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.02)] ${
+                      idx % 2 === 0 ? 'bg-[rgba(255,255,255,0.01)]' : ''
+                    }`}
+                  >
+                    <td className="px-2 py-2 text-white font-medium border border-[rgba(255,215,0,0.1)] sticky left-0 bg-[rgba(10,10,10,0.95)] z-10">
+                      {item.name}
+                    </td>
+                    {portions.map((portion) => (
+                      <td
+                        key={portion}
+                        className="px-2 py-2 text-center text-[rgba(255,255,255,0.8)] border border-[rgba(255,215,0,0.1)]"
+                      >
+                        {calculateCarbs(item.carbsPer100g, portion)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
 
           <div className="mt-4 p-4 bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.2)] rounded-lg">
             <p className="text-sm text-[rgba(255,255,255,0.7)]">
-              <strong className="text-[#FFD700]">Tips:</strong> Välj komplexa kolhydrater (fullkorn, havregryn, sötpotatis) för långsam energifrisättning och bättre mättnad. Enkla kolhydrater (frukt, dadlar) är bra runt träning för snabb energi.
+              <strong className="text-[#FFD700]">Tips:</strong> Tabellen visar antal gram kolhydrater för olika portionsstorlekar. Välj komplexa kolhydrater (fullkorn, havregryn, sötpotatis) för långsam energifrisättning och bättre mättnad.
             </p>
           </div>
         </CardContent>
