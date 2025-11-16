@@ -4,12 +4,12 @@ export default function OnboardingLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-black">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-2">90-Dagars Challenge</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl font-bold text-gold-primary mb-2">90-Dagars Challenge</h1>
+            <p className="text-gray-400">
               Bygg din personliga plan på 8 steg
             </p>
           </div>

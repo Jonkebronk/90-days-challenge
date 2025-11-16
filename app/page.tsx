@@ -74,10 +74,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-white">
-      {/* Clean gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white via-gray-50 to-white" />
-
+    <div className="min-h-screen relative overflow-hidden bg-black">
       {/* Header Navigation */}
       <header className="relative z-50 bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">

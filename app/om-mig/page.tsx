@@ -47,7 +47,7 @@ export default function AboutMePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f1419] relative overflow-hidden">
+    <div className="min-h-screen bg-black relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
 
