@@ -50,7 +50,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Klienter', href: '/dashboard/clients', icon: Users, coachOnly: true },
   { name: 'Journal', href: '/dashboard/journal', icon: ClipboardList },
-  { name: 'Ansökningar', href: '/dashboard/leads', icon: UserPlus, coachOnly: true },
+  { name: 'Intresseanmälningar', href: '/dashboard/leads', icon: UserPlus, coachOnly: true },
   {
     name: 'Innehåll',
     icon: BookOpen,

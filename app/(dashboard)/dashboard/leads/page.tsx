@@ -202,10 +202,10 @@ export default function LeadsPage() {
         <div className="text-center mb-8">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
           <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3">
-            Ansökningar
+            Intresseanmälningar
           </h1>
           <p className="text-gray-400 text-sm tracking-[1px]">
-            Inkomna ansökningar från potentiella klienter
+            Inkomna intresseanmälningar från potentiella klienter
           </p>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
         </div>
