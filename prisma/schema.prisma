@@ -294,10 +294,11 @@ model FoodItem {
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
-  foodCategory      FoodCategory?      @relation(fields: [categoryId], references: [id])
-  mealIngredients   MealIngredient[]
-  recipeIngredients RecipeIngredient[]
-  mealPlanItems     MealPlanItem[]
+  foodCategory       FoodCategory?       @relation(fields: [categoryId], references: [id])
+  mealIngredients    MealIngredient[]
+  recipeIngredients  RecipeIngredient[]
+  mealPlanItems      MealPlanItem[]
+  shoppingListItems  ShoppingListItem[]
 
   @@map("food_items")
 }
@@ -1639,4 +1640,71 @@ model GuideContent {
   updatedAt DateTime @updatedAt
 
   @@map("guide_content")
+}
+
+// ========================================
+// Shopping List System
+// ========================================
+
+// Shopping List - Multiple lists per user (veckohandling, festlista, etc.)
+model ShoppingList {
+  id          String   @id @default(cuid())
+  name        String // "Veckohandling", "Fredagsmiddag", "Snabbköp"
+  userId      String // Owner (coach or client)
+  createdBy   String // Coach ID if created by coach
+  description String?
+  color       String   @default("#FFD700") // Visual categorization color
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items  ShoppingListItem[]
+  shares ShoppingListShare[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("shopping_lists")
+}
+
+// Shopping List Item - Individual items in a shopping list
+model ShoppingListItem {
+  id     String @id @default(cuid())
+  listId String
+  list   ShoppingList @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  // Food item from database OR custom item
+  foodItemId String?
+  foodItem   FoodItem? @relation(fields: [foodItemId], references: [id])
+  customName String? // If not from food bank
+
+  quantity   Float   @default(1)
+  unit       String  @default("st") // st, kg, g, l, dl, msk, tsk, etc.
+  category   String  @default("Övrigt") // Frukt & Grönt, Mejeri, Kött, etc.
+
+  checked    Boolean @default(false)
+  orderIndex Int     @default(0)
+  notes      String? // "ekologisk", "färsk", etc.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([listId, checked])
+  @@index([listId, category])
+  @@map("shopping_list_items")
+}
+
+// Shopping List Share - Share lists with family/household members
+model ShoppingListShare {
+  id         String @id @default(cuid())
+  listId     String
+  list       ShoppingList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  sharedWith String // User ID or email for pending invites
+  role       String  @default("editor") // "viewer" or "editor"
+  accepted   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@unique([listId, sharedWith])
+  @@index([sharedWith])
+  @@map("shopping_list_shares")
 }
