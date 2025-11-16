@@ -1754,6 +1754,7 @@ model NutritionItem {
   categoryId   String
   name         String // Food item name
   valuePer100g Decimal  @db.Decimal(6, 2) // Nutrition value per 100g
+  customValues Json?    // Manual values for each target: {20: 100, 25: 125, 30: 150, ...}
   order        Int      @default(0) // Display order within category
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

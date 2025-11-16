@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { categoryId, name, valuePer100g, order } = body
+    const { categoryId, name, valuePer100g, customValues, order } = body
 
     if (!categoryId || !name || valuePer100g === undefined) {
       return NextResponse.json({ error: 'CategoryId, name, and valuePer100g are required' }, { status: 400 })
@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
         categoryId,
         name,
         valuePer100g: parseFloat(valuePer100g.toString()),
+        customValues: customValues || null,
         order: order || 0,
       },
     })
@@ -65,7 +66,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { items } = body // Array of { id, name?, valuePer100g?, order? }
+    const { items } = body // Array of { id, name?, valuePer100g?, customValues?, order? }
 
     if (!items || !Array.isArray(items)) {
       return NextResponse.json({ error: 'Items array is required' }, { status: 400 })
@@ -79,6 +80,7 @@ export async function PATCH(req: NextRequest) {
           data: {
             ...(item.name !== undefined && { name: item.name }),
             ...(item.valuePer100g !== undefined && { valuePer100g: parseFloat(item.valuePer100g.toString()) }),
+            ...(item.customValues !== undefined && { customValues: item.customValues }),
             ...(item.order !== undefined && { order: item.order }),
           },
         })

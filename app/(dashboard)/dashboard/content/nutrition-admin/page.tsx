@@ -16,6 +16,7 @@ type NutritionItem = {
   id: string
   name: string
   valuePer100g: number
+  customValues?: Record<number, number> // Store manual values for each target
   order: number
 }
 
@@ -41,14 +42,14 @@ export default function NutritionAdminPage() {
 
   // Auto-save when categories change (debounced)
   useEffect(() => {
-    if (!hasUnsavedChanges || isLoading) return
+    if (!hasUnsavedChanges || isLoading || isSaving) return
 
     const saveTimer = setTimeout(() => {
       saveChanges()
     }, 2000) // Auto-save after 2 seconds of no changes
 
     return () => clearTimeout(saveTimer)
-  }, [categories, hasUnsavedChanges])
+  }, [categories, hasUnsavedChanges, isLoading, isSaving])
 
   // Calculate food weight needed to get target protein/fat/carbs
   const calculateFoodWeight = (valuePer100g: number, targetValue: number) => {
@@ -104,9 +105,38 @@ export default function NutritionAdminPage() {
     setHasUnsavedChanges(true)
   }
 
-  const updateItemByWeight = (categoryId: string, itemId: string, targetValue: number, foodWeight: number) => {
-    const newValuePer100g = calculateValuePer100g(foodWeight, targetValue)
-    updateItemValue(categoryId, itemId, 'valuePer100g', newValuePer100g)
+  // Update custom value for a specific target
+  const updateCustomValue = (categoryId: string, itemId: string, target: number, value: number) => {
+    setCategories(prev =>
+      prev.map(cat =>
+        cat.id === categoryId
+          ? {
+              ...cat,
+              items: cat.items.map(item =>
+                item.id === itemId
+                  ? {
+                      ...item,
+                      customValues: {
+                        ...(item.customValues || {}),
+                        [target]: value
+                      }
+                    }
+                  : item
+              ),
+            }
+          : cat
+      )
+    )
+    setHasUnsavedChanges(true)
+  }
+
+  // Get value for a specific target (custom or calculated)
+  const getValueForTarget = (item: NutritionItem, target: number): number => {
+    // Return custom value if exists, otherwise calculate
+    if (item.customValues && item.customValues[target] !== undefined) {
+      return item.customValues[target]
+    }
+    return calculateFoodWeight(item.valuePer100g, target)
   }
 
   const addItem = (categoryId: string) => {
@@ -201,6 +231,7 @@ export default function NutritionAdminPage() {
             id: item.id,
             name: item.name,
             valuePer100g: item.valuePer100g,
+            customValues: item.customValues || null,
             order: index, // Use original array index as order within category
           }))
 
@@ -224,6 +255,7 @@ export default function NutritionAdminPage() {
             categoryId: cat.id,
             name: item.name,
             valuePer100g: item.valuePer100g,
+            customValues: item.customValues || null,
             order: index, // Use current array index as order within category
           }))
 
@@ -386,8 +418,8 @@ export default function NutritionAdminPage() {
                             <td key={target} className="px-2 py-2 border border-gold-primary/10">
                               <Input
                                 type="number"
-                                value={calculateFoodWeight(item.valuePer100g, target)}
-                                onChange={(e) => updateItemByWeight(category.id, item.id, target, parseInt(e.target.value) || 0)}
+                                value={getValueForTarget(item, target)}
+                                onChange={(e) => updateCustomValue(category.id, item.id, target, parseInt(e.target.value) || 0)}
                                 className="bg-black/30 border-gold-primary/30 text-white h-8 text-xs text-center"
                                 placeholder="0"
                               />
