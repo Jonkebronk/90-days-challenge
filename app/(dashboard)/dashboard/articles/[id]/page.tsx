@@ -216,7 +216,7 @@ export default function ArticleReaderPage() {
   const isCompleted = article.progress && article.progress.length > 0 && article.progress[0].completed
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <div className="bg-[rgba(0,0,0,0.3)] backdrop-blur-sm border-b border-[rgba(255,215,0,0.2)] sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">

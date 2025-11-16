@@ -282,7 +282,7 @@ export default function MessagesPage() {
                                   alt={`Bild ${idx + 1}`}
                                   className="w-full h-24 object-cover rounded-lg"
                                 />
-                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded-lg flex items-center justify-center">
+                                <div className="absolute inset-0 bg-gray-900 bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded-lg flex items-center justify-center">
                                   <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
                               </div>
@@ -335,7 +335,7 @@ export default function MessagesPage() {
       {/* Image Lightbox */}
       {selectedImage && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-gray-900 bg-opacity-90 z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedImage(null)}
         >
           <button

@@ -47,7 +47,7 @@ export default function AboutMePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
+    <div className="min-h-screen bg-gray-900 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-5" />
 

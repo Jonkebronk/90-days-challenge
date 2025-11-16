@@ -146,7 +146,7 @@ function SetupAccountContent() {
 
   if (verifying) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6 flex flex-col items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-[#FFD700] mb-4" />
@@ -159,7 +159,7 @@ function SetupAccountContent() {
 
   if (error && !clientInfo) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-[#ef4444]">
@@ -184,7 +184,7 @@ function SetupAccountContent() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
       <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
         <CardHeader className="text-center pb-8">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
@@ -305,7 +305,7 @@ function SetupAccountContent() {
 export default function SetupAccountPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-[#FFD700]" />
       </div>
     }>

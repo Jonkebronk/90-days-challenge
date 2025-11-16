@@ -108,7 +108,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
   // Step 1: Welcome
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <CardHeader className="text-center pb-8">
             <CardTitle className="text-3xl font-bold">Välkommen {userName} 👋</CardTitle>
@@ -135,7 +135,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
   // Step 2: Goal
   if (step === 2) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <CardHeader className="text-center pb-4">
             <p className="text-sm font-semibold text-muted-foreground">Kom igång</p>
@@ -177,7 +177,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
   // Step 3: Physical state
   if (step === 3) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <Header onBack={() => setStep(2)} />
           <CardContent className="space-y-6">
@@ -252,7 +252,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
     ]
 
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <Header onBack={() => setStep(3)} />
           <CardContent className="space-y-6">
@@ -301,7 +301,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
     ]
 
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <Header onBack={() => setStep(4)} />
           <CardContent className="space-y-6">
@@ -343,7 +343,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
   // Step 6: Nutrition intro
   if (step === 6) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <Header onBack={() => setStep(5)} />
           <CardContent className="space-y-6">
@@ -366,7 +366,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
 
             <Button
               onClick={() => setStep(7)}
-              className="w-full bg-black hover:bg-gray-800 text-white font-semibold h-12"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold h-12"
             >
               Fortsätt
             </Button>
@@ -386,7 +386,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
     ]
 
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <Header onBack={() => setStep(6)} />
           <CardContent className="space-y-6">
@@ -415,7 +415,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
 
             <Button
               onClick={() => setStep(8)}
-              className="w-full bg-black hover:bg-gray-800 text-white font-semibold h-12"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold h-12"
             >
               Fortsätt
             </Button>
@@ -437,7 +437,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
     ]
 
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <Header onBack={() => setStep(7)} />
           <CardContent className="space-y-6">
@@ -467,7 +467,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
 
             <Button
               onClick={() => setStep(9)}
-              className="w-full bg-black hover:bg-gray-800 text-white font-semibold h-12"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold h-12"
             >
               Fortsätt
             </Button>
@@ -480,7 +480,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
   // Step 9: Excluded ingredients
   if (step === 9) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <Header onBack={() => setStep(8)} />
           <CardContent className="space-y-6">
@@ -501,7 +501,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
 
             <Button
               onClick={() => setStep(10)}
-              className="w-full bg-black hover:bg-gray-800 text-white font-semibold h-12"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold h-12"
             >
               Fortsätt
             </Button>
@@ -514,7 +514,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
   // Step 10: Missing nutrition info
   if (step === 10) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <Header onBack={() => setStep(9)} />
           <CardContent className="space-y-6">
@@ -536,7 +536,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
 
             <Button
               onClick={() => setStep(11)}
-              className="w-full bg-black hover:bg-gray-800 text-white font-semibold h-12"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold h-12"
             >
               Fortsätt
             </Button>
@@ -549,7 +549,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
   // Step 11: Activity intro
   if (step === 11) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <Header onBack={() => setStep(10)} />
           <CardContent className="space-y-6">
@@ -564,7 +564,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
 
             <Button
               onClick={() => setStep(12)}
-              className="w-full bg-black hover:bg-gray-800 text-white font-semibold h-12"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold h-12"
             >
               Fortsätt
             </Button>
@@ -579,7 +579,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
     const days = ['MÅN', 'TIS', 'ONS', 'TORS', 'FRE', 'LÖR', 'SÖN']
 
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <Header onBack={() => setStep(11)} />
           <CardContent className="space-y-6">
@@ -627,7 +627,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
     ]
 
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <Header onBack={() => setStep(12)} />
           <CardContent className="space-y-6">
@@ -668,7 +668,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
             <Button
               onClick={() => formData.trainingExperience && setStep(14)}
               disabled={!formData.trainingExperience}
-              className="w-full bg-black hover:bg-gray-800 text-white font-semibold h-12 disabled:opacity-50"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold h-12 disabled:opacity-50"
             >
               Fortsätt
             </Button>
@@ -681,7 +681,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
   // Step 14: Lifestyle intro
   if (step === 14) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <Header onBack={() => setStep(13)} />
           <CardContent className="space-y-6">
@@ -696,7 +696,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
 
             <Button
               onClick={() => setStep(15)}
-              className="w-full bg-black hover:bg-gray-800 text-white font-semibold h-12"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold h-12"
             >
               Fortsätt
             </Button>
@@ -709,7 +709,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
   // Step 15: Final notes
   if (step === 15) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg border-0 shadow-none">
           <Header onBack={() => setStep(14)} />
           <CardContent className="space-y-6">
@@ -732,7 +732,7 @@ export default function OnboardingFlow({ userId, userName }: OnboardingFlowProps
             <Button
               onClick={handleSubmit}
               disabled={isLoading}
-              className="w-full bg-black hover:bg-gray-800 text-white font-semibold h-12"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold h-12"
             >
               {isLoading ? 'Skickar...' : 'Skicka in'}
             </Button>

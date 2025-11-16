@@ -209,14 +209,14 @@ export function NutritionCalculatorClient({ clients }: NutritionCalculatorClient
       {/* Header Actions */}
       <div className="flex justify-between items-start">
         <div className="flex-1">
-          <Card className="bg-black/40 border-[rgba(255,215,0,0.3)]">
+          <Card className="bg-gray-900/40 border-[rgba(255,215,0,0.3)]">
             <CardHeader>
               <CardTitle className="text-white text-lg">Välj Klient</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <Select value={clientId || ''} onValueChange={handleClientSelect}>
-                  <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">
+                  <SelectTrigger className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white">
                     <SelectValue placeholder="Välj en klient..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -267,7 +267,7 @@ export function NutritionCalculatorClient({ clients }: NutritionCalculatorClient
 
       {/* Phase Tabs */}
       <Tabs value={selectedTab} onValueChange={handleTabChange}>
-        <TabsList className="bg-black/60 border border-[rgba(255,215,0,0.3)] w-full justify-start">
+        <TabsList className="bg-gray-900/60 border border-[rgba(255,215,0,0.3)] w-full justify-start">
           <TabsTrigger
             value="phase-1"
             className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-black"

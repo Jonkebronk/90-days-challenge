@@ -6,6 +6,28 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Text utilities for better readability */
+  .text-body {
+    @apply text-gray-700;
+  }
+
+  .text-body-light {
+    @apply text-gray-600;
+  }
+
+  .text-heading {
+    @apply text-gray-900;
+  }
+
+  .text-muted-dark {
+    @apply text-gray-500;
+  }
+
+  /* Focus utilities */
+  .focus-gold {
+    @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600;
+  }
 }
 
 

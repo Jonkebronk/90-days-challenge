@@ -87,7 +87,7 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
   const carbs = watch('carbs');
 
   return (
-    <Card className="bg-black/40 border-[rgba(255,215,0,0.3)]">
+    <Card className="bg-gray-900/40 border-[rgba(255,215,0,0.3)]">
       <CardHeader>
         <CardTitle className="text-white">Fas 1: Basberäkningar</CardTitle>
         <CardDescription className="text-gray-400">
@@ -108,7 +108,7 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
                 type="number"
                 step="0.1"
                 {...register('weight')}
-                className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white"
               />
               {errors.weight && (
                 <p className="text-sm text-red-400">{errors.weight.message}</p>
@@ -128,7 +128,7 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
                     value={String(field.value || 30)}
                     onValueChange={(value) => field.onChange(Number(value) as ActivityLevel)}
                   >
-                    <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">
+                    <SelectTrigger className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white">
                       <SelectValue placeholder="Välj nivå" />
                     </SelectTrigger>
                     <SelectContent>
@@ -154,7 +154,7 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
                 id="weightLoss"
                 type="number"
                 {...register('weightLoss')}
-                className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white"
               />
               {errors.weightLoss && (
                 <p className="text-sm text-red-400">{errors.weightLoss.message}</p>
@@ -170,7 +170,7 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
                 id="steps"
                 type="number"
                 {...register('steps')}
-                className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white"
               />
               {errors.steps && (
                 <p className="text-sm text-red-400">{errors.steps.message}</p>
@@ -180,7 +180,7 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
 
           {/* Calculated Results */}
           {calories && (
-            <div className="border border-[rgba(255,215,0,0.3)] bg-black/40 p-4 rounded-lg">
+            <div className="border border-[rgba(255,215,0,0.3)] bg-gray-900/40 p-4 rounded-lg">
               <h3 className="text-lg font-semibold text-[#FFD700] mb-3">
                 Beräknade Makron
               </h3>

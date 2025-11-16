@@ -879,7 +879,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
       {/* Rating Modal */}
       {showRatingModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] w-full max-w-md">
             <CardHeader>
               <div className="flex items-center justify-between">

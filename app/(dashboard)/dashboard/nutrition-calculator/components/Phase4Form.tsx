@@ -103,7 +103,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
 
   if (!phase3Data) {
     return (
-      <Card className="bg-black/40 border-[rgba(255,215,0,0.3)]">
+      <Card className="bg-gray-900/40 border-[rgba(255,215,0,0.3)]">
         <CardContent className="pt-6">
           <p className="text-gray-400">Du måste slutföra Fas 3 först.</p>
         </CardContent>
@@ -112,7 +112,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
   }
 
   return (
-    <Card className="bg-black/40 border-[rgba(255,215,0,0.3)]">
+    <Card className="bg-gray-900/40 border-[rgba(255,215,0,0.3)]">
       <CardHeader>
         <CardTitle className="text-white">Fas 4: Din Nya Vardag (Underhåll)</CardTitle>
         <CardDescription className="text-gray-400">
@@ -133,7 +133,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
                 type="number"
                 step="0.1"
                 {...register('weight')}
-                className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white"
               />
               {errors.weight && (
                 <p className="text-sm text-red-400">{errors.weight.message}</p>
@@ -153,7 +153,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
                     value={String(field.value || 30)}
                     onValueChange={(value) => field.onChange(Number(value) as ActivityLevel)}
                   >
-                    <SelectTrigger className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white">
+                    <SelectTrigger className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white">
                       <SelectValue placeholder="Välj nivå" />
                     </SelectTrigger>
                     <SelectContent>
@@ -179,7 +179,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
                 id="activityAdjustment"
                 type="number"
                 {...register('activityAdjustment')}
-                className="bg-black/60 border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-gray-900/60 border-[rgba(255,215,0,0.3)] text-white"
               />
               {errors.activityAdjustment && (
                 <p className="text-sm text-red-400">{errors.activityAdjustment.message}</p>
@@ -188,7 +188,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
           </div>
 
           {/* Cardio Options */}
-          <div className="border border-[rgba(255,215,0,0.3)] bg-black/40 p-4 rounded-lg">
+          <div className="border border-[rgba(255,215,0,0.3)] bg-gray-900/40 p-4 rounded-lg">
             <Label className="text-white text-lg mb-3 block">Välj Cardio-alternativ</Label>
             <Controller
               name="cardioOption"
@@ -229,7 +229,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
           {/* Calculated Results */}
           {calories && (
             <div className="space-y-4">
-              <div className="border border-[rgba(255,215,0,0.3)] bg-black/40 p-4 rounded-lg">
+              <div className="border border-[rgba(255,215,0,0.3)] bg-gray-900/40 p-4 rounded-lg">
                 <h3 className="text-lg font-semibold text-[#FFD700] mb-3">
                   Underhållsmakron
                 </h3>
@@ -254,7 +254,7 @@ export function Phase4Form({ onNext, onBack }: Phase4FormProps) {
               </div>
 
               {/* Activity Summary */}
-              <div className="border border-[rgba(255,215,0,0.3)] bg-black/40 p-4 rounded-lg">
+              <div className="border border-[rgba(255,215,0,0.3)] bg-gray-900/40 p-4 rounded-lg">
                 <h3 className="text-lg font-semibold text-[#FFD700] mb-3">
                   Din Nya Vardag
                 </h3>

@@ -51,10 +51,40 @@ const config: Config = {
   				'5': 'hsl(var(--chart-5))'
   			},
   			gold: {
+  				50: '#FFFBEB',
+  				100: '#FEF3C7',
+  				200: '#FDE68A',
+  				300: '#FCD34D',
+  				400: '#FBBF24',
+  				500: '#F59E0B',
+  				600: '#D97706',
+  				700: '#B45309',
+  				800: '#92400E',
+  				900: '#78350F',
   				primary: '#D4AF37',
   				secondary: '#B8860B',
   				light: '#FFD700',
-  				DEFAULT: '#D4AF37'
+  				DEFAULT: '#D97706'
+  			},
+  			success: {
+  				light: '#D1FAE5',
+  				DEFAULT: '#10B981',
+  				dark: '#047857'
+  			},
+  			warning: {
+  				light: '#FEF3C7',
+  				DEFAULT: '#F59E0B',
+  				dark: '#D97706'
+  			},
+  			error: {
+  				light: '#FEE2E2',
+  				DEFAULT: '#EF4444',
+  				dark: '#DC2626'
+  			},
+  			info: {
+  				light: '#DBEAFE',
+  				DEFAULT: '#3B82F6',
+  				dark: '#1D4ED8'
   			}
   		},
   		borderRadius: {

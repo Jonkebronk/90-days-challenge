@@ -196,7 +196,7 @@ export default function LeadsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-gray-900">
       <div className="container mx-auto p-6 space-y-8 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-8">
@@ -279,7 +279,7 @@ export default function LeadsPage() {
                           <Eye className="h-4 w-4" />
                         </button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto bg-black border-2 border-[rgba(255,215,0,0.3)]">
+                      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto bg-gray-900 border-2 border-[rgba(255,215,0,0.3)]">
                         <DialogHeader className="border-b border-[rgba(255,215,0,0.2)] pb-4">
                           <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
                             Ansökning - {lead.name}

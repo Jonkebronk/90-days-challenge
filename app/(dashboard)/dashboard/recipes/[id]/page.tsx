@@ -165,7 +165,7 @@ export default function RecipeDetailPage() {
 
   if (!session?.user) {
     return (
-      <div className="container mx-auto p-6 min-h-screen bg-black">
+      <div className="container mx-auto p-6 min-h-screen bg-gray-900">
         <Card className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)]">
           <CardContent className="p-6">
             <p className="text-[rgba(255,255,255,0.6)]">Du måste vara inloggad för att se denna sida.</p>
@@ -177,7 +177,7 @@ export default function RecipeDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6 min-h-screen bg-black">
+      <div className="container mx-auto p-6 min-h-screen bg-gray-900">
         <p className="text-[rgba(255,255,255,0.6)]">Laddar...</p>
       </div>
     )
@@ -185,7 +185,7 @@ export default function RecipeDetailPage() {
 
   if (!recipe) {
     return (
-      <div className="container mx-auto p-6 min-h-screen bg-black">
+      <div className="container mx-auto p-6 min-h-screen bg-gray-900">
         <Card className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)]">
           <CardContent className="p-6">
             <p className="text-[rgba(255,255,255,0.6)]">Recept hittades inte.</p>
@@ -198,7 +198,7 @@ export default function RecipeDetailPage() {
   const totalTime = (recipe.prepTimeMinutes || 0) + (recipe.cookTimeMinutes || 0)
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <div className="bg-[rgba(10,10,10,0.95)] border-b border-[rgba(255,215,0,0.3)] sticky top-0 z-10 no-print backdrop-blur-[10px]">
         <div className="container mx-auto px-6 py-4">
