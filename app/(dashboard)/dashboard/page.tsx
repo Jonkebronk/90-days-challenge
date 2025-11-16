@@ -75,10 +75,10 @@ export default function DashboardPage() {
 
   if (status === 'loading') {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
+      <div className="flex items-center justify-center min-h-screen bg-black">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Laddar...</p>
+          <p className="text-gray-400">Laddar...</p>
         </div>
       </div>
     )
@@ -94,7 +94,7 @@ export default function DashboardPage() {
           <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-3">
             Dashboard
           </h1>
-          <p className="text-gray-600 text-sm tracking-[1px]">
+          <p className="text-gray-400 text-sm tracking-[1px]">
             Översikt över din coaching-verksamhet
           </p>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
@@ -271,7 +271,7 @@ export default function DashboardPage() {
         <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-3">
           Välkommen {session?.user?.name?.split(' ')[0] || 'Champion'}!
         </h1>
-        <p className="text-gray-600 text-sm tracking-[1px]">
+        <p className="text-gray-400 text-sm tracking-[1px]">
           Din översikt för 90-Dagars Challenge
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />

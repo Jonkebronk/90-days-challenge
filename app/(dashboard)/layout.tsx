@@ -160,7 +160,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
+    <div className="min-h-screen bg-black">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4">
