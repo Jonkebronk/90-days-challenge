@@ -34,9 +34,21 @@ export default function NutritionAdminPage() {
   const [categories, setCategories] = useState<NutritionCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
   const isCoach = (session?.user as any)?.role === 'coach'
   const proteinTargets = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
+
+  // Auto-save when categories change (debounced)
+  useEffect(() => {
+    if (!hasUnsavedChanges || isLoading) return
+
+    const saveTimer = setTimeout(() => {
+      saveChanges()
+    }, 2000) // Auto-save after 2 seconds of no changes
+
+    return () => clearTimeout(saveTimer)
+  }, [categories, hasUnsavedChanges])
 
   // Calculate food weight needed to get target protein/fat/carbs
   const calculateFoodWeight = (valuePer100g: number, targetValue: number) => {
@@ -89,6 +101,7 @@ export default function NutritionAdminPage() {
           : cat
       )
     )
+    setHasUnsavedChanges(true)
   }
 
   const updateItemByWeight = (categoryId: string, itemId: string, targetValue: number, foodWeight: number) => {
@@ -170,6 +183,7 @@ export default function NutritionAdminPage() {
         return { ...cat, items: newItems }
       })
     )
+    setHasUnsavedChanges(true)
   }
 
   const saveChanges = async () => {
@@ -226,11 +240,15 @@ export default function NutritionAdminPage() {
         }
       }
 
-      toast.success('Ändringar sparade!')
-      await fetchData()
+      setHasUnsavedChanges(false)
+      // Don't show toast for auto-save, only for manual save
+      if (!hasUnsavedChanges) {
+        toast.success('Ändringar sparade!')
+      }
     } catch (error) {
       console.error('Error saving changes:', error)
       toast.error('Kunde inte spara ändringar')
+      setHasUnsavedChanges(true) // Set back to true on error
     } finally {
       setIsSaving(false)
     }
@@ -279,11 +297,11 @@ export default function NutritionAdminPage() {
         </div>
         <Button
           onClick={saveChanges}
-          disabled={isSaving}
-          className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+          disabled={isSaving || !hasUnsavedChanges}
+          className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform disabled:opacity-50"
         >
           <Save className="h-4 w-4 mr-2" />
-          {isSaving ? 'Sparar...' : 'Spara alla ändringar'}
+          {isSaving ? 'Sparar automatiskt...' : hasUnsavedChanges ? 'Spara nu' : 'Allt sparat'}
         </Button>
       </div>
 

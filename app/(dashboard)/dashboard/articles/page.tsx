@@ -344,9 +344,9 @@ function ArticleBankContent() {
                         [category.id]: !prev[category.id]
                       }))
                     }}
-                    className="relative h-28 flex items-center justify-center gap-3 px-4 cursor-pointer"
+                    className="relative h-28 flex items-center justify-center gap-3 px-4 cursor-pointer bg-gradient-to-br from-gray-50 to-white"
                     style={{
-                      background: `linear-gradient(135deg, ${categoryColor}22, ${categoryColor}11)`
+                      borderBottom: `2px solid ${categoryColor}20`
                     }}
                   >
                     {/* Category Icon */}
@@ -360,8 +360,7 @@ function ArticleBankContent() {
                     })()}
 
                     <h2
-                      className="text-xl font-black tracking-wider uppercase z-10 text-center leading-tight"
-                      style={{ color: categoryColor }}
+                      className="text-xl font-black tracking-wider uppercase z-10 text-center leading-tight text-gray-700"
                     >
                       {category.name}
                     </h2>
