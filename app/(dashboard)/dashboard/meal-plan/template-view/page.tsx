@@ -11,6 +11,7 @@ import {
   ChefHat,
   ChevronDown,
   ChevronUp,
+  Apple,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import Image from 'next/image'
@@ -524,6 +525,10 @@ export default function MealPlanTemplateViewPage() {
                                                 <ChefHat className="h-6 w-6 text-[rgba(255,215,0,0.5)]" />
                                               </div>
                                             )
+                                          ) : option.optionType === 'ingredients' ? (
+                                            <div className="w-12 h-12 bg-[rgba(255,215,0,0.1)] rounded-lg flex items-center justify-center">
+                                              <Apple className="h-6 w-6 text-[rgba(255,215,0,0.5)]" />
+                                            </div>
                                           ) : (
                                             <div className="w-12 h-12 bg-[rgba(255,215,0,0.1)] rounded-lg flex items-center justify-center">
                                               <UtensilsCrossed className="h-6 w-6 text-[rgba(255,215,0,0.5)]" />
@@ -564,6 +569,33 @@ export default function MealPlanTemplateViewPage() {
                                               K: {Math.round(option.calculatedCarbs)}g
                                             </span>
                                           </div>
+
+                                          {/* Show food items if this is an ingredients option */}
+                                          {option.optionType === 'ingredients' && option.customFoodItems && (
+                                            <div className="mt-3 border-t border-[rgba(255,215,0,0.1)] pt-2">
+                                              <p className="text-xs text-[rgba(255,255,255,0.5)] mb-2">Råvaror:</p>
+                                              <div className="space-y-1">
+                                                {(option.customFoodItems as any[]).map((item, idx) => (
+                                                  <div
+                                                    key={idx}
+                                                    className="flex items-center justify-between text-xs"
+                                                  >
+                                                    <span className="text-[rgba(255,255,255,0.7)]">
+                                                      {item.name}
+                                                    </span>
+                                                    <div className="flex items-center gap-2 text-[rgba(255,255,255,0.5)]">
+                                                      <span>{item.amountG}g</span>
+                                                      <span className="hidden sm:inline">
+                                                        P: {item.protein.toFixed(1)}g • F: {item.fat.toFixed(1)}g • K: {item.carbs.toFixed(1)}g
+                                                      </span>
+                                                      <span>{Math.round(item.calories)} kcal</span>
+                                                    </div>
+                                                  </div>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          )}
+
                                           {option.notes && (
                                             <p className="text-sm text-[rgba(255,215,0,0.8)] mt-2 italic">
                                               {option.notes}

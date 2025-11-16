@@ -33,6 +33,7 @@ import {
   ChefHat,
   Users,
   Pencil,
+  Apple,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AddMealOptionDialog } from '@/components/AddMealOptionDialog'
@@ -628,49 +629,79 @@ export default function MealPlanTemplatePage() {
                               .map((option) => (
                                 <div
                                   key={option.id}
-                                  className="flex items-center justify-between p-3 bg-[rgba(0,0,0,0.2)] border border-[rgba(255,215,0,0.1)] rounded-lg"
+                                  className="p-3 bg-[rgba(0,0,0,0.2)] border border-[rgba(255,215,0,0.1)] rounded-lg"
                                 >
-                                  <div className="flex items-center gap-3">
-                                    {option.optionType === 'recipe' ? (
-                                      <ChefHat className="h-5 w-5 text-[#FFD700]" />
-                                    ) : (
-                                      <UtensilsCrossed className="h-5 w-5 text-[#FFD700]" />
-                                    )}
-                                    <div>
-                                      <p className="text-white font-medium">
-                                        {option.optionType === 'recipe'
-                                          ? option.recipe?.title
-                                          : option.customName}
-                                        {option.isDefault && (
-                                          <Badge className="ml-2 bg-[rgba(34,197,94,0.1)] text-green-400 border border-[rgba(34,197,94,0.3)] text-xs">
-                                            Standard
-                                          </Badge>
-                                        )}
-                                      </p>
-                                      <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                                        {Math.round(option.calculatedCalories)} kcal • P:{' '}
-                                        {Math.round(option.calculatedProtein)}g • F:{' '}
-                                        {Math.round(option.calculatedFat)}g • K:{' '}
-                                        {Math.round(option.calculatedCarbs)}g
-                                      </p>
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                      {option.optionType === 'recipe' ? (
+                                        <ChefHat className="h-5 w-5 text-[#FFD700]" />
+                                      ) : option.optionType === 'ingredients' ? (
+                                        <Apple className="h-5 w-5 text-[#FFD700]" />
+                                      ) : (
+                                        <UtensilsCrossed className="h-5 w-5 text-[#FFD700]" />
+                                      )}
+                                      <div>
+                                        <p className="text-white font-medium">
+                                          {option.optionType === 'recipe'
+                                            ? option.recipe?.title
+                                            : option.customName}
+                                          {option.isDefault && (
+                                            <Badge className="ml-2 bg-[rgba(34,197,94,0.1)] text-green-400 border border-[rgba(34,197,94,0.3)] text-xs">
+                                              Standard
+                                            </Badge>
+                                          )}
+                                        </p>
+                                        <p className="text-sm text-[rgba(255,255,255,0.6)]">
+                                          {Math.round(option.calculatedCalories)} kcal • P:{' '}
+                                          {Math.round(option.calculatedProtein)}g • F:{' '}
+                                          {Math.round(option.calculatedFat)}g • K:{' '}
+                                          {Math.round(option.calculatedCarbs)}g
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
+                                      >
+                                        <Pencil className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="hover:bg-[rgba(255,0,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-red-400"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
                                     </div>
                                   </div>
-                                  <div className="flex items-center gap-2">
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
-                                    >
-                                      <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="hover:bg-[rgba(255,0,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-red-400"
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </div>
+
+                                  {/* Show food items if this is an ingredients option */}
+                                  {option.optionType === 'ingredients' && option.customFoodItems && (
+                                    <div className="mt-3 border-t border-[rgba(255,215,0,0.1)] pt-3">
+                                      <p className="text-xs text-[rgba(255,255,255,0.5)] mb-2">Råvaror:</p>
+                                      <div className="space-y-1">
+                                        {(option.customFoodItems as any[]).map((item, idx) => (
+                                          <div
+                                            key={idx}
+                                            className="flex items-center justify-between text-xs"
+                                          >
+                                            <span className="text-[rgba(255,255,255,0.7)]">
+                                              {item.name}
+                                            </span>
+                                            <div className="flex items-center gap-3 text-[rgba(255,255,255,0.5)]">
+                                              <span>{item.amountG}g</span>
+                                              <span>
+                                                P: {item.protein.toFixed(1)}g • F: {item.fat.toFixed(1)}g • K: {item.carbs.toFixed(1)}g
+                                              </span>
+                                              <span>{Math.round(item.calories)} kcal</span>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                           </div>
