@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { signOut, useSession } from 'next-auth/react'
 import {
   Home,
@@ -165,8 +166,20 @@ export default function DashboardLayout({
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Link href="/dashboard" className="flex items-center mr-6 group flex-shrink-0">
+              <Image
+                src="/images/logo-black.svg"
+                alt="90-Dagars Utmaningen"
+                width={200}
+                height={40}
+                className="h-8 w-auto object-contain transition-all group-hover:opacity-80"
+                priority
+              />
+            </Link>
+
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-1 flex-1">
               {filteredNavigation.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href

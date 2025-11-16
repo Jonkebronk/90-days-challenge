@@ -80,22 +80,15 @@ export default function HomePage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20 lg:h-24">
             {/* Logo */}
-            <Link href="/" className="flex flex-row items-center gap-2 lg:gap-4 group flex-shrink-0">
-              <div className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center">
-                <Image
-                  src="/images/compass-gold.png"
-                  alt="Compass"
-                  width={40}
-                  height={40}
-                  className="w-full h-full object-contain transition-all group-hover:opacity-90 group-hover:scale-110"
-                  priority
-                />
-              </div>
-              <div className="hidden xl:flex items-center border-l-2 border-gold-primary/30 pl-4">
-                <span className="font-['Orbitron',sans-serif] text-sm font-semibold tracking-[2px] uppercase bg-gradient-to-r from-gold-light to-orange-500 bg-clip-text text-transparent whitespace-nowrap">
-                  DIN VÄGVISARE TILL BÄTTRE HÄLSA
-                </span>
-              </div>
+            <Link href="/" className="flex flex-row items-center group flex-shrink-0">
+              <Image
+                src="/images/logo-black.svg"
+                alt="90-Dagars Utmaningen - Friskvårdskompassen"
+                width={280}
+                height={60}
+                className="h-10 lg:h-12 w-auto object-contain transition-all group-hover:opacity-80"
+                priority
+              />
             </Link>
 
             {/* Desktop Navigation */}

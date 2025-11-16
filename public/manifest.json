@@ -1,11 +1,11 @@
 {
-  "name": "90 Days Challenge - Personlig Träning & Nutrition",
-  "short_name": "90 Days",
-  "description": "Din personliga 90-dagars plan för träning och nutrition med professionell coaching",
+  "name": "90-Dagars Utmaningen - Friskvårdskompassen",
+  "short_name": "90-Dagars Utmaningen",
+  "description": "Transform din kropp och hälsa på 90 dagar. Din vägvisare till bättre hälsa med personlig coaching, träningsprogram och kostplaner.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#0a0a0a",
+  "background_color": "#D4AF37",
+  "theme_color": "#D4AF37",
   "orientation": "portrait-primary",
   "icons": [
     {
