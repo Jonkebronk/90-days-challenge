@@ -82,11 +82,11 @@ export default function HomePage() {
             {/* Logo */}
             <Link href="/" className="flex flex-row items-center group flex-shrink-0">
               <Image
-                src="/images/compass-gold.png"
+                src="/images/compass-icon-black.svg"
                 alt="Friskvårdskompassen"
-                width={60}
-                height={60}
-                className="h-12 lg:h-16 w-auto object-contain transition-all group-hover:scale-110 group-hover:rotate-12"
+                width={70}
+                height={70}
+                className="h-14 lg:h-20 w-auto object-contain transition-all group-hover:scale-110 group-hover:rotate-12"
                 priority
               />
             </Link>
