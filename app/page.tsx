@@ -84,9 +84,9 @@ export default function HomePage() {
               <Image
                 src="/images/compass-icon-black.svg"
                 alt="Friskvårdskompassen"
-                width={70}
-                height={70}
-                className="h-14 lg:h-20 w-auto object-contain transition-all group-hover:scale-110 group-hover:rotate-12"
+                width={60}
+                height={60}
+                className="h-12 lg:h-16 w-auto object-contain transition-all group-hover:scale-110 group-hover:rotate-12"
                 priority
               />
             </Link>
