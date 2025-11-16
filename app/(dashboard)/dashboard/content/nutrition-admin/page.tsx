@@ -270,7 +270,7 @@ export default function NutritionAdminPage() {
               Hantera Näringstabeller
             </h1>
             <p className="text-gray-400 mt-1">
-              Fyll i hur många gram mat som ger 20g - resten räknas ut automatiskt
+              Fyll i hur många gram mat som ger 20g protein - resten räknas ut automatiskt
             </p>
           </div>
         </div>
@@ -338,7 +338,7 @@ export default function NutritionAdminPage() {
                             className="px-2 py-2 text-center text-xs font-semibold text-gold-light border border-gold-primary/20 min-w-[70px]"
                           >
                             <div>{target}g</div>
-                            <div className="text-[rgba(255,215,0,0.6)] font-normal">(gram mat)</div>
+                            <div className="text-[rgba(255,215,0,0.6)] font-normal">Protein</div>
                           </th>
                         ))}
                         <th className="px-2 py-2 text-center text-xs font-semibold text-gray-200 border border-gold-primary/20 min-w-[120px]">
