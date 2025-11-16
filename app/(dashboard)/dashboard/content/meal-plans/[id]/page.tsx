@@ -876,7 +876,7 @@ export default function MealPlanTemplatePage() {
                         ) : (
                           <div className="border border-dashed border-[rgba(255,215,0,0.3)] rounded-lg p-6 text-center">
                             <p className="text-sm text-[rgba(255,255,255,0.5)]">
-                              Inga råvaror tillagda ännu. Klicka på "Lägg till råvara" för att komma igång.
+                              Inga råvaror tillagda ännu. Klicka på &quot;Lägg till råvara&quot; för att komma igång.
                             </p>
                           </div>
                         )}
