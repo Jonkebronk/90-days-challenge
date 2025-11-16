@@ -311,34 +311,6 @@ export default function NutritionAdminPage() {
     }
   }, [categories, activeType])
 
-  // Auto-save when categories change (debounced)
-  useEffect(() => {
-    console.log('⏰ useEffect triggered:', { hasUnsavedChanges, isLoading, isSaving })
-
-    if (!hasUnsavedChanges) {
-      console.log('  ❌ Skipping: no unsaved changes')
-      return
-    }
-    if (isLoading) {
-      console.log('  ❌ Skipping: is loading')
-      return
-    }
-    if (isSaving) {
-      console.log('  ❌ Skipping: is saving')
-      return
-    }
-
-    console.log('  ⏱️ Starting 2-second timer...')
-    const saveTimer = setTimeout(() => {
-      console.log('  💾 Timer expired - calling saveChanges()')
-      saveChanges()
-    }, 2000) // Auto-save after 2 seconds of no changes
-
-    return () => {
-      console.log('  🧹 Cleaning up timer')
-      clearTimeout(saveTimer)
-    }
-  }, [categories, hasUnsavedChanges, isLoading, isSaving, saveChanges])
 
   if (!session?.user || !isCoach) {
     return (
@@ -377,7 +349,7 @@ export default function NutritionAdminPage() {
               Hantera Näringstabeller
             </h1>
             <p className="text-gray-400 mt-1">
-              Fyll i varje cell manuellt med dina egna beräkningar - sparas automatiskt efter 2 sekunder
+              Fyll i varje cell manuellt med dina egna beräkningar
             </p>
           </div>
         </div>
@@ -387,7 +359,7 @@ export default function NutritionAdminPage() {
           className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform disabled:opacity-50"
         >
           <Save className="h-4 w-4 mr-2" />
-          {isSaving ? 'Sparar automatiskt...' : hasUnsavedChanges ? 'Spara nu' : 'Allt sparat'}
+          {isSaving ? 'Sparar...' : hasUnsavedChanges ? 'Spara ändringar' : 'Allt sparat'}
         </Button>
       </div>
 
