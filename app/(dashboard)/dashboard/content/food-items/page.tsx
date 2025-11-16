@@ -11,6 +11,10 @@ import {
   ChevronRight,
   Plus,
   List,
+  FileText,
+  Beef,
+  Droplet,
+  Wheat,
 } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 import { toast } from 'sonner'
@@ -175,6 +179,92 @@ export default function FoodItemsCategoriesPage() {
           })}
         </div>
       )}
+
+      {/* Nutrition Overviews Section */}
+      <div className="mt-8 space-y-4">
+        <div>
+          <h2 className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+            Näringsöversikter
+          </h2>
+          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+            Detaljerade tabeller med näringsinnehåll
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Protein Overview Card */}
+          <Card
+            className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(59,130,246,0.2)] hover:border-[rgba(59,130,246,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
+            onClick={() => router.push('/dashboard/content/food-items/overviews/protein')}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div
+                  className="w-14 h-14 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
+                >
+                  <Beef className="h-7 w-7 text-blue-400" />
+                </div>
+                <ChevronRight className="h-5 w-5 text-[rgba(255,255,255,0.4)]" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">
+                Protein källor
+              </h3>
+              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+                Komplett översikt med näringsinnehåll per 100g
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Fat Overview Card */}
+          <Card
+            className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(234,179,8,0.2)] hover:border-[rgba(234,179,8,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
+            onClick={() => router.push('/dashboard/content/food-items/overviews/fett')}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div
+                  className="w-14 h-14 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: 'rgba(234, 179, 8, 0.1)' }}
+                >
+                  <Droplet className="h-7 w-7 text-yellow-500" />
+                </div>
+                <ChevronRight className="h-5 w-5 text-[rgba(255,255,255,0.4)]" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">
+                Fett källor
+              </h3>
+              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+                Komplett översikt med näringsinnehåll per 100g
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Carbs Overview Card */}
+          <Card
+            className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(249,115,22,0.2)] hover:border-[rgba(249,115,22,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
+            onClick={() => router.push('/dashboard/content/food-items/overviews/kolhydrater')}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div
+                  className="w-14 h-14 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: 'rgba(249, 115, 22, 0.1)' }}
+                >
+                  <Wheat className="h-7 w-7 text-orange-500" />
+                </div>
+                <ChevronRight className="h-5 w-5 text-[rgba(255,255,255,0.4)]" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">
+                Kolhydrat källor
+              </h3>
+              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+                Komplett översikt med näringsinnehåll per 100g
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }
