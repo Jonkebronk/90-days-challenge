@@ -213,7 +213,7 @@ export default function FoodItemsPage() {
             Livsmedel
           </h1>
           <p className="text-[rgba(255,255,255,0.6)] mt-1">
-            Skapa och hantera livsmedel för kostplaner
+            Skapa och hantera livsmedel
           </p>
         </div>
         <div className="flex gap-2">
