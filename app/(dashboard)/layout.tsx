@@ -60,6 +60,7 @@ const navigation = [
       { name: 'Skapa Recept Kategorier', href: '/dashboard/content/recipe-categories', icon: FolderOpen },
       { name: 'Skapa Recept', href: '/dashboard/content/recipes', icon: ChefHat },
       { name: 'Livsmedelbanken', href: '/dashboard/content/food-items', icon: Apple },
+      { name: 'Näringstabeller', href: '/dashboard/content/nutrition-admin', icon: Calculator },
       { name: 'Inköpslistor', href: '/dashboard/content/shopping-lists', icon: ShoppingCart },
       { name: 'Måltidsplaner', href: '/dashboard/content/meal-plans', icon: UtensilsCrossed },
       { name: 'Guider', href: '/dashboard/content/guides', icon: BookOpen },
