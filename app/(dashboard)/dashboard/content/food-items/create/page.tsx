@@ -42,6 +42,7 @@ export default function CreateFoodItemPage() {
     carbsG: '',
     fatG: '',
     commonServingSize: '100g',
+    imageUrl: '',
     notes: '',
     isVegetarian: true,
     isVegan: false,
@@ -92,6 +93,7 @@ export default function CreateFoodItemPage() {
           carbsG: parseFloat(formData.carbsG),
           fatG: parseFloat(formData.fatG),
           commonServingSize: formData.commonServingSize || '100g',
+          imageUrl: formData.imageUrl || null,
           notes: formData.notes || null,
           isVegetarian: formData.isVegetarian,
           isVegan: formData.isVegan,
@@ -209,6 +211,21 @@ export default function CreateFoodItemPage() {
               />
               <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
                 Näringsvärden anges per denna portion
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="imageUrl" className="text-[rgba(255,255,255,0.8)]">Bild-URL</Label>
+              <Input
+                id="imageUrl"
+                type="url"
+                value={formData.imageUrl}
+                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                placeholder="https://exempel.se/bild.jpg"
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+              />
+              <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
+                Länk till en bild av livsmedlet
               </p>
             </div>
           </CardContent>

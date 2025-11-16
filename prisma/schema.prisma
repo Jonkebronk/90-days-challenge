@@ -283,6 +283,7 @@ model FoodItem {
   isVegetarian      Boolean  @default(true)
   isVegan           Boolean  @default(false)
   commonServingSize String?
+  imageUrl          String? // URL to food item image
 
   // Approval and recommendation system
   isRecommended Boolean   @default(false) // Thumbs up flag
