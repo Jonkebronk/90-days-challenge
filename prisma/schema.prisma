@@ -255,18 +255,46 @@ model CoachNutritionPlan {
   @@map("coach_nutrition_plans")
 }
 
+model FoodCategory {
+  id          String   @id @default(cuid())
+  name        String // "Proteinkälla", "Kolhydratkälla", "Fettkälla", "Grönsaker"
+  description String?
+  slug        String   @unique
+  color       String   @default("#FFD700") // Category accent color
+  icon        String   @default("Apple") // Lucide icon name
+  orderIndex  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  foodItems FoodItem[]
+
+  @@map("food_categories")
+}
+
 model FoodItem {
-  id                String  @id @default(cuid())
+  id                String   @id @default(cuid())
   name              String
-  category          String?
-  calories          Decimal @db.Decimal(6, 2)
-  proteinG          Decimal @db.Decimal(5, 2)
-  carbsG            Decimal @db.Decimal(5, 2)
-  fatG              Decimal @db.Decimal(5, 2)
-  isVegetarian      Boolean @default(true)
-  isVegan           Boolean @default(false)
+  category          String? // Legacy field, will be removed after migration
+  categoryId        String?
+  calories          Decimal  @db.Decimal(6, 2)
+  proteinG          Decimal  @db.Decimal(5, 2)
+  carbsG            Decimal  @db.Decimal(5, 2)
+  fatG              Decimal  @db.Decimal(5, 2)
+  isVegetarian      Boolean  @default(true)
+  isVegan           Boolean  @default(false)
   commonServingSize String?
 
+  // Approval and recommendation system
+  isRecommended Boolean   @default(false) // Thumbs up flag
+  notes         String?   @db.Text // Coach comments/notes (visible to clients)
+  approvedBy    String? // Coach who approved it
+  approvedAt    DateTime? // When it was approved
+  isApproved    Boolean   @default(false) // Approval status
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  foodCategory      FoodCategory?      @relation(fields: [categoryId], references: [id])
   mealIngredients   MealIngredient[]
   recipeIngredients RecipeIngredient[]
   mealPlanItems     MealPlanItem[]
