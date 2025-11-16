@@ -17,7 +17,12 @@
       "Bash(npx shadcn@latest add:*)",
       "Bash(find:*)",
       "Bash(ls:*)",
-      "Bash(1)"
+      "Bash(1)",
+      "Bash(npx tsx:*)",
+      "Bash(npx prisma studio:*)",
+      "Bash(git diff:*)",
+      "Bash(npx prisma db push:*)",
+      "Bash(railway status:*)"
     ],
     "deny": [],
     "ask": []

@@ -1398,6 +1398,7 @@ model TemplateMeal {
   templateId String
   name       String // "Frukost", "Lunch", "Middag", "Mellanmål"
   mealType   String? // "breakfast", "lunch", "dinner", "snack"
+  description String? @db.Text // Description/context for the meal (e.g., "Eat within 30 min of waking up")
 
   // Target macros for this meal
   targetProtein  Decimal? @db.Decimal(6, 2)

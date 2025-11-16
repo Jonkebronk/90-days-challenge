@@ -1,6 +1,6 @@
 # Projektstatus - 90-Dagars Challenge
 
-**Senast uppdaterad**: 2025-11-13
+**Senast uppdaterad**: 2025-11-15
 
 ## ✅ Färdigt (Klart att använda)
 
@@ -115,6 +115,13 @@
   - Detailed recipe view with nutrition info
   - Servings calculator
   - Print-friendly layout
+
+- [x] **Recipe Database (205 total recipes):**
+  - **Frukost**: 100 recipes
+  - **Lunch & Middag**: 83 recipes
+  - **Mellanmål**: 15 recipes
+  - **Sås**: 3 recipes (Rebeckas kebabsås, Vitlökssås, etc.)
+  - **Tips på tillagning**: 4 items (Broccoli guide, Couscous guide, Fisk på en kvart, Fläskfilé helstekt)
 
 #### Workout Program System
 - [x] **Complete 6-Program System:**

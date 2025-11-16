@@ -14,6 +14,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import Image from 'next/image'
+import { MacroProgressBar } from '@/components/macro-progress-bar'
+import { MacroBadge } from '@/components/macro-badge'
 
 type TemplateMealOption = {
   id: string
@@ -44,6 +46,7 @@ type TemplateMeal = {
   id: string
   name: string
   mealType: string
+  description: string | null
   targetProtein: number | null
   targetFat: number | null
   targetCarbs: number | null
@@ -446,6 +449,11 @@ export default function MealPlanTemplateViewPage() {
                                 </Badge>
                               )}
                             </h3>
+                            {meal.description && (
+                              <p className="text-sm text-[rgba(255,255,255,0.5)] mt-1 italic">
+                                {meal.description}
+                              </p>
+                            )}
                             {selectedOption && (
                               <p className="text-sm text-[rgba(255,255,255,0.6)] mt-2">
                                 {selectedOption.optionType === 'recipe'

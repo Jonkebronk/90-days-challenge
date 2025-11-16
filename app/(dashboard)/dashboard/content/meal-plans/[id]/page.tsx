@@ -129,6 +129,7 @@ export default function MealPlanTemplatePage() {
   const [mealFormData, setMealFormData] = useState({
     name: '',
     mealType: 'breakfast',
+    description: '',
     targetProtein: '',
     targetFat: '',
     targetCarbs: '',
@@ -226,6 +227,7 @@ export default function MealPlanTemplatePage() {
         body: JSON.stringify({
           name: mealFormData.name,
           mealType: mealFormData.mealType,
+          description: mealFormData.description || null,
           targetProtein: mealFormData.targetProtein
             ? parseFloat(mealFormData.targetProtein)
             : null,
@@ -247,6 +249,7 @@ export default function MealPlanTemplatePage() {
         setMealFormData({
           name: '',
           mealType: 'breakfast',
+          description: '',
           targetProtein: '',
           targetFat: '',
           targetCarbs: '',
@@ -705,6 +708,20 @@ export default function MealPlanTemplatePage() {
                   </SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div>
+              <Label htmlFor="mealDescription" className="text-[rgba(255,255,255,0.8)]">
+                Beskrivning
+              </Label>
+              <Textarea
+                id="mealDescription"
+                value={mealFormData.description}
+                onChange={(e) =>
+                  setMealFormData({ ...mealFormData, description: e.target.value })
+                }
+                placeholder="T.ex. 'Ät inom 30 min efter uppvakning'"
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)] min-h-[80px]"
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>

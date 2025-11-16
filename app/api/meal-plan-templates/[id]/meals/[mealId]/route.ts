@@ -23,6 +23,7 @@ export async function PATCH(
       data: {
         name: body.name,
         mealType: body.mealType,
+        description: body.description !== undefined ? (body.description || null) : undefined,
         targetProtein: body.targetProtein ? parseFloat(body.targetProtein) : null,
         targetFat: body.targetFat ? parseFloat(body.targetFat) : null,
         targetCarbs: body.targetCarbs ? parseFloat(body.targetCarbs) : null,

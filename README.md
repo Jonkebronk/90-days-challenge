@@ -92,6 +92,12 @@ En komplett coaching-plattform för personlig träning och kost, med interaktiva
   - Svårighetsfiltrering
   - Favoritmarkering
   - Näringsinfo och tillagningstid
+- [x] **Recipe Database (205 total recipes):**
+  - **Frukost**: 100 recipes
+  - **Lunch & Middag**: 83 recipes
+  - **Mellanmål**: 15 recipes
+  - **Sås**: 3 recipes (Rebeckas kebabsås, Vitlökssås, etc.)
+  - **Tips på tillagning**: 4 items (Cooking guides & quick recipes)
 
 #### 📅 90-Dagars Roadmap
 - [x] **Roadmap Management (Coach):**

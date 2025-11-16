@@ -20,6 +20,7 @@ export async function POST(
     const {
       name,
       mealType,
+      description,
       targetProtein,
       targetFat,
       targetCarbs,
@@ -47,6 +48,7 @@ export async function POST(
         templateId: id,
         name,
         mealType,
+        description: description || null,
         targetProtein: targetProtein ? parseFloat(targetProtein) : null,
         targetFat: targetFat ? parseFloat(targetFat) : null,
         targetCarbs: targetCarbs ? parseFloat(targetCarbs) : null,
