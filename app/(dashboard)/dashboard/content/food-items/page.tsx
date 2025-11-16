@@ -9,9 +9,6 @@ import { Badge } from '@/components/ui/badge'
 import {
   Apple,
   ChevronRight,
-  Plus,
-  List,
-  FileText,
   Beef,
   Droplet,
   Wheat,
@@ -88,32 +85,13 @@ export default function FoodItemsCategoriesPage() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
-            Livsmedelbanken
-          </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
-            Välj en kategori för att se livsmedel
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            onClick={() => router.push('/dashboard/content/food-items/all')}
-            variant="outline"
-            className="border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)]"
-          >
-            <List className="h-4 w-4 mr-2" />
-            Visa alla
-          </Button>
-          <Button
-            onClick={() => router.push('/dashboard/content/food-items/create')}
-            className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Nytt livsmedel
-          </Button>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+          Livsmedelbanken
+        </h1>
+        <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          Välj en kategori för att se livsmedel
+        </p>
       </div>
 
       {/* Categories Grid */}
