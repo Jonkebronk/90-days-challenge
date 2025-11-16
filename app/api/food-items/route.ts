@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const search = searchParams.get('search') || ''
     const categoryId = searchParams.get('categoryId')
+    const categorySlug = searchParams.get('categorySlug')
     const isRecommended = searchParams.get('isRecommended')
     const isApproved = searchParams.get('isApproved')
     const limitParam = searchParams.get('limit')
@@ -41,9 +42,16 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Filter by category
+    // Filter by category ID
     if (categoryId) {
       where.categoryId = categoryId
+    }
+
+    // Filter by category slug
+    if (categorySlug) {
+      where.foodCategory = {
+        slug: categorySlug,
+      }
     }
 
     // Filter by recommended
