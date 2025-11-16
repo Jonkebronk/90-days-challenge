@@ -313,7 +313,7 @@ function ArticleBankContent() {
                     <h2 className="text-2xl font-black tracking-wider uppercase text-gold-primary mb-2">
                       {sectionName}
                     </h2>
-                    <div className="h-[1px] bg-gradient-to-r from-gold-primary via-gold-primary/30 to-transparent" />
+                    <div className="h-[2px] bg-gradient-to-r from-gold-primary/80 via-gold-primary/40 to-gold-primary/10 w-full" />
                   </div>
 
                   {/* Categories Grid for this section */}
