@@ -160,9 +160,9 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[rgba(10,10,10,0.8)] backdrop-blur-lg border-b border-[rgba(255,215,0,0.2)]">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Desktop Navigation */}
@@ -184,8 +184,8 @@ export default function DashboardLayout({
                           className={`
                             flex items-center gap-2 px-4 py-2 rounded-lg transition-all
                             ${isDropdownActive
-                              ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-medium'
-                              : 'hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]'
+                              ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-medium'
+                              : 'hover:bg-gray-100 text-gray-700 hover:text-gold-primary'
                             }
                           `}
                         >
@@ -221,8 +221,8 @@ export default function DashboardLayout({
                     className={`
                       flex items-center gap-2 px-4 py-2 rounded-lg transition-all
                       ${isActive
-                        ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-medium'
-                        : 'hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]'
+                        ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-medium'
+                        : 'hover:bg-gray-100 text-gray-700 hover:text-gold-primary'
                       }
                     `}
                   >
@@ -242,12 +242,12 @@ export default function DashboardLayout({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="relative text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+                      className="relative text-gray-700 hover:text-gold-primary hover:bg-gray-100"
                     >
                       <Bell className="w-4 h-4" />
                       {notificationCount > 0 && (
                         <Badge
-                          className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] text-xs font-bold border-none"
+                          className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-gradient-to-br from-gold-primary to-gold-secondary text-white text-xs font-bold border-none"
                         >
                           {notificationCount > 99 ? '99+' : notificationCount}
                         </Badge>
@@ -256,16 +256,16 @@ export default function DashboardLayout({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="w-80 max-h-[500px] overflow-y-auto bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)] backdrop-blur-lg"
+                    className="w-80 max-h-[500px] overflow-y-auto bg-white border-gray-200 shadow-xl"
                   >
-                    <div className="px-3 py-2 border-b border-[rgba(255,215,0,0.2)]">
-                      <h3 className="text-sm font-semibold text-[#FFD700]">
+                    <div className="px-3 py-2 border-b border-gray-200">
+                      <h3 className="text-sm font-semibold text-gold-primary">
                         Notifikationer {notificationCount > 0 && `(${notificationCount})`}
                       </h3>
                     </div>
 
                     {notifications.length === 0 ? (
-                      <div className="px-4 py-8 text-center text-[rgba(255,255,255,0.4)] text-sm">
+                      <div className="px-4 py-8 text-center text-gray-400 text-sm">
                         Inga nya notifikationer
                       </div>
                     ) : (
@@ -277,20 +277,20 @@ export default function DashboardLayout({
                           >
                             <Link
                               href={notification.link}
-                              className="flex flex-col gap-1 px-3 py-3 cursor-pointer hover:bg-[rgba(255,215,0,0.1)] focus:bg-[rgba(255,215,0,0.1)] border-b border-[rgba(255,215,0,0.1)] last:border-b-0"
+                              className="flex flex-col gap-1 px-3 py-3 cursor-pointer hover:bg-gray-50 focus:bg-gray-50 border-b border-gray-100 last:border-b-0"
                               onClick={() => setNotificationsOpen(false)}
                             >
                               <div className="flex items-start justify-between gap-2">
-                                <p className="text-sm text-white font-medium leading-tight">
+                                <p className="text-sm text-gray-900 font-medium leading-tight">
                                   {notification.message}
                                 </p>
                                 <Badge
                                   className={`shrink-0 text-xs ${
                                     notification.type === 'NEW_LEAD'
-                                      ? 'bg-[rgba(255,215,0,0.2)] text-[#FFD700] border border-[rgba(255,215,0,0.3)]'
+                                      ? 'bg-gold-primary/20 text-gold-primary border border-gold-primary/30'
                                       : notification.type === 'NEW_PHOTOS'
-                                      ? 'bg-[rgba(0,123,255,0.2)] text-[#007bff] border border-[rgba(0,123,255,0.3)]'
-                                      : 'bg-[rgba(40,167,69,0.2)] text-[#28a745] border border-[rgba(40,167,69,0.3)]'
+                                      ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                                      : 'bg-green-100 text-green-700 border border-green-200'
                                   }`}
                                 >
                                   {notification.type === 'NEW_LEAD' && 'Ansökan'}
@@ -298,7 +298,7 @@ export default function DashboardLayout({
                                   {notification.type === 'NEW_PHOTOS' && 'Bilder'}
                                 </Badge>
                               </div>
-                              <p className="text-xs text-[rgba(255,255,255,0.5)]">
+                              <p className="text-xs text-gray-500">
                                 {formatNotificationTime(notification.timestamp)}
                               </p>
                             </Link>
@@ -314,7 +314,7 @@ export default function DashboardLayout({
                 variant="ghost"
                 size="sm"
                 onClick={handleSignOut}
-                className="text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+                className="text-gray-700 hover:text-gold-primary hover:bg-gray-100"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">Logga ut</span>
@@ -339,7 +339,7 @@ export default function DashboardLayout({
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-[rgba(255,215,0,0.2)] bg-[rgba(10,10,10,0.95)]">
+          <div className="md:hidden border-t border-gray-200 bg-white shadow-lg">
             <nav className="container mx-auto px-4 py-4 space-y-1">
               {filteredNavigation.map((item) => {
                 const Icon = item.icon
@@ -349,7 +349,7 @@ export default function DashboardLayout({
                 if ('dropdown' in item && item.dropdown) {
                   return (
                     <div key={item.name} className="space-y-1">
-                      <div className="flex items-center gap-3 px-4 py-3 text-[rgba(255,255,255,0.6)] font-medium">
+                      <div className="flex items-center gap-3 px-4 py-3 text-gray-700 font-medium">
                         <Icon className="w-5 h-5" />
                         <span>{item.name}</span>
                       </div>
@@ -365,8 +365,8 @@ export default function DashboardLayout({
                               className={`
                                 flex items-center gap-3 px-4 py-2 rounded-lg transition-all
                                 ${isDropdownActive
-                                  ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-medium'
-                                  : 'hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]'
+                                  ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-medium'
+                                  : 'hover:bg-gray-100 text-gray-700 hover:text-gold-primary'
                                 }
                               `}
                             >
@@ -388,8 +388,8 @@ export default function DashboardLayout({
                     className={`
                       flex items-center gap-3 px-4 py-3 rounded-lg transition-all
                       ${isActive
-                        ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-medium'
-                        : 'hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]'
+                        ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-medium'
+                        : 'hover:bg-gray-100 text-gray-700 hover:text-gold-primary'
                       }
                     `}
                   >

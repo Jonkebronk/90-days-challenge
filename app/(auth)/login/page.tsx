@@ -70,55 +70,53 @@ export default function LoginPage() {
     <div className="space-y-4">
       <Link
         href="/"
-        className="inline-flex items-center gap-2 text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] transition-colors"
+        className="inline-flex items-center gap-2 text-gold-primary hover:text-gold-secondary transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Tillbaka till startsidan</span>
       </Link>
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+      <Card className="bg-white border-2 border-gray-200 shadow-lg">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gold-primary to-gold-secondary bg-clip-text text-transparent">
           Sign In
         </CardTitle>
-        <CardDescription className="text-[rgba(255,255,255,0.6)]">
+        <CardDescription className="text-gray-600">
           Enter your email and password to sign in
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-[rgba(255,215,0,0.8)]">Email</Label>
+            <Label htmlFor="email" className="text-gray-700">Email</Label>
             <Input
               id="email"
               type="email"
               placeholder="your@email.com"
               {...register('email')}
               disabled={isLoading}
-              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
             />
             {errors.email && (
-              <p className="text-sm text-[#ff4444]">{errors.email.message}</p>
+              <p className="text-sm text-red-500">{errors.email.message}</p>
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-[rgba(255,215,0,0.8)]">Password</Label>
+            <Label htmlFor="password" className="text-gray-700">Password</Label>
             <Input
               id="password"
               type="password"
               placeholder="••••••••"
               {...register('password')}
               disabled={isLoading}
-              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
             />
             {errors.password && (
-              <p className="text-sm text-[#ff4444]">{errors.password.message}</p>
+              <p className="text-sm text-red-500">{errors.password.message}</p>
             )}
           </div>
         </CardContent>
         <CardFooter>
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold"
+            className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
             disabled={isLoading}
           >
             {isLoading ? 'Signing in...' : 'Sign In'}

@@ -85,7 +85,7 @@ export default function WorkoutPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -93,23 +93,23 @@ export default function WorkoutPage() {
   if (!assignment) {
     return (
       <div className="space-y-6">
-        {/* Header - Centrerad som Kostschema */}
-        <div className="relative text-center py-8 bg-gradient-to-br from-[rgba(255,215,0,0.05)] to-transparent border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px]">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+        {/* Header */}
+        <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
             TRÄNINGSPROGRAM
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-2">
+          <p className="text-gray-600 mt-2">
             Ditt personliga träningsprogram
           </p>
         </div>
 
-        <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_20px_rgba(255,215,0,0.15)] transition-all">
+        <Card className="bg-white border-2 border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all">
           <CardContent className="py-12 text-center">
-            <Dumbbell className="w-16 h-16 text-[rgba(255,215,0,0.5)] mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">
+            <Dumbbell className="w-16 h-16 text-gold-primary mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
               Inget träningsprogram tilldelat
             </h3>
-            <p className="text-[rgba(255,255,255,0.6)] max-w-md mx-auto">
+            <p className="text-gray-600 max-w-md mx-auto">
               Din coach har inte tilldelat ett träningsprogram till dig ännu. Kontakta din coach för att få ett program.
             </p>
           </CardContent>
@@ -132,19 +132,19 @@ export default function WorkoutPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header - Centrerad som Kostschema */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-[rgba(255,215,0,0.05)] to-transparent border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px]">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+      {/* Header */}
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
           {workoutProgram.name.toUpperCase()}
         </h1>
         {programHasWeeks && currentWeekData && (
-          <p className="text-[#8b5cf6] font-semibold mt-2">
+          <p className="text-purple-600 font-semibold mt-2">
             {currentWeekData.title || `Vecka ${currentWeek}`}
             {currentWeekData.description && ` - ${currentWeekData.description}`}
           </p>
         )}
         {workoutProgram.description && (
-          <p className="text-[rgba(255,255,255,0.6)] mt-2">
+          <p className="text-gray-600 mt-2">
             {workoutProgram.description}
           </p>
         )}
@@ -154,7 +154,7 @@ export default function WorkoutPage() {
           <Button
             onClick={() => router.push('/dashboard/workout/guide')}
             variant="outline"
-            className="bg-transparent border-2 border-[rgba(59,130,246,0.4)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(59,130,246,0.1)] hover:border-[rgba(59,130,246,0.6)] hover:text-white transition-all"
+            className="bg-white border-2 border-blue-300 text-blue-600 hover:bg-blue-50 hover:border-blue-400 transition-all"
           >
             <Info className="w-4 h-4 mr-2" />
             Introduktion till träningsprogram
@@ -165,31 +165,31 @@ export default function WorkoutPage() {
       {/* Action buttons row */}
       <div className="flex flex-wrap gap-2 justify-center">
         <Link href="/dashboard/workout/builder">
-          <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90 font-semibold">
+          <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold">
             <Plus className="w-4 h-4 mr-2" />
             Skapa pass
           </Button>
         </Link>
         <Link href="/dashboard/workout/templates">
-          <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+          <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
             <Dumbbell className="w-4 h-4 mr-2" />
             Mallar
           </Button>
         </Link>
         <Link href="/dashboard/workout/records">
-          <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+          <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
             <Trophy className="w-4 h-4 mr-2" />
             Rekord
           </Button>
         </Link>
         <Link href="/dashboard/analytics">
-          <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+          <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
             <BarChart3 className="w-4 h-4 mr-2" />
             Analytics
           </Button>
         </Link>
         <Link href="/dashboard/workout/history">
-          <Button className="bg-transparent border-2 border-[rgba(255,215,0,0.5)] text-white hover:bg-[rgba(255,215,0,0.1)] hover:border-[#FFD700] hover:shadow-[0_0_15px_rgba(255,215,0,0.3)] transition-all">
+          <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
             <History className="w-4 h-4 mr-2" />
             Historik
           </Button>
@@ -197,20 +197,20 @@ export default function WorkoutPage() {
       </div>
 
       {/* Program Info Card */}
-      <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_20px_rgba(255,215,0,0.15)] transition-all">
+      <Card className="bg-white border-2 border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all">
         <CardContent className="pt-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {workoutProgram.difficulty && (
               <div>
-                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Nivå</p>
+                <p className="text-sm text-gray-500 mb-1">Nivå</p>
                 <Badge className={`${
                   workoutProgram.difficulty === 'BEGINNER'
-                    ? 'bg-[rgba(40,167,69,0.2)] text-[#28a745] border-[rgba(40,167,69,0.3)]'
+                    ? 'bg-green-100 text-green-700 border-green-200'
                     : workoutProgram.difficulty === 'INTERMEDIATE'
-                    ? 'bg-[rgba(255,193,7,0.2)] text-[#ffc107] border-[rgba(255,193,7,0.3)]'
+                    ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
                     : workoutProgram.difficulty === 'ADVANCED'
-                    ? 'bg-[rgba(220,53,69,0.2)] text-[#dc3545] border-[rgba(220,53,69,0.3)]'
-                    : 'bg-[rgba(139,92,246,0.2)] text-[#8b5cf6] border-[rgba(139,92,246,0.3)]'
+                    ? 'bg-red-100 text-red-700 border-red-200'
+                    : 'bg-purple-100 text-purple-700 border-purple-200'
                 }`}>
                   {workoutProgram.difficulty}
                 </Badge>
@@ -218,27 +218,27 @@ export default function WorkoutPage() {
             )}
             {programHasWeeks && (
               <div>
-                <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Nuvarande vecka</p>
-                <p className="text-2xl font-bold text-[#FFD700]">
+                <p className="text-sm text-gray-500 mb-1">Nuvarande vecka</p>
+                <p className="text-2xl font-bold text-gold-primary">
                   {currentWeek} / {workoutProgram.weeks?.length || 0}
                 </p>
               </div>
             )}
             <div>
-              <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">{programHasWeeks ? 'Dagar denna vecka' : 'Totalt dagar'}</p>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-sm text-gray-500 mb-1">{programHasWeeks ? 'Dagar denna vecka' : 'Totalt dagar'}</p>
+              <p className="text-2xl font-bold text-gray-900">
                 {daysToShow.length}
               </p>
             </div>
             <div>
-              <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Träningsdagar</p>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-sm text-gray-500 mb-1">Träningsdagar</p>
+              <p className="text-2xl font-bold text-gray-900">
                 {daysToShow.filter(d => !d.isRestDay).length}
               </p>
             </div>
             <div>
-              <p className="text-sm text-[rgba(255,255,255,0.5)] mb-1">Startdatum</p>
-              <p className="text-white">
+              <p className="text-sm text-gray-500 mb-1">Startdatum</p>
+              <p className="text-gray-900">
                 {new Date(assignment.startDate).toLocaleDateString('sv-SE')}
               </p>
             </div>
@@ -248,18 +248,18 @@ export default function WorkoutPage() {
 
       {/* Days List */}
       <div className="space-y-3">
-        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-          <Calendar className="w-6 h-6 text-[#FFD700]" />
+        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <Calendar className="w-6 h-6 text-gold-primary" />
           {programHasWeeks ? 'Denna veckans schema' : 'Träningsschema'}
         </h2>
 
         {daysToShow.map((day) => (
           <Card
             key={day.id}
-            className={`bg-[rgba(10,10,10,0.6)] border-2 backdrop-blur-[10px] transition-all ${
+            className={`bg-white border-2 transition-all ${
               day.isRestDay
-                ? 'border-[rgba(100,100,100,0.3)] hover:border-[rgba(100,100,100,0.4)]'
-                : 'border-[rgba(255,215,0,0.3)] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_20px_rgba(255,215,0,0.2)]'
+                ? 'border-gray-200 hover:border-gray-300'
+                : 'border-gray-200 hover:border-gold-primary hover:shadow-lg'
             }`}
           >
             <CardHeader>
@@ -267,31 +267,31 @@ export default function WorkoutPage() {
                 <div className="flex items-center gap-3">
                   <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
                     day.isRestDay
-                      ? 'bg-[rgba(100,100,100,0.2)]'
-                      : 'bg-gradient-to-br from-[#FFD700] to-[#FFA500]'
+                      ? 'bg-gray-100'
+                      : 'bg-gradient-to-br from-gold-primary to-gold-secondary'
                   }`}>
                     {day.isRestDay ? (
-                      <Coffee className="w-6 h-6 text-[rgba(255,255,255,0.6)]" />
+                      <Coffee className="w-6 h-6 text-gray-500" />
                     ) : (
-                      <Dumbbell className="w-6 h-6 text-[#0a0a0a]" />
+                      <Dumbbell className="w-6 h-6 text-white" />
                     )}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-[rgba(255,255,255,0.5)]">
+                      <span className="text-sm text-gray-500">
                         Dag {day.dayNumber}
                       </span>
                       {day.isRestDay && (
-                        <Badge variant="outline" className="bg-[rgba(100,100,100,0.1)] border-[rgba(100,100,100,0.3)] text-[rgba(255,255,255,0.6)]">
+                        <Badge variant="outline" className="bg-gray-50 border-gray-300 text-gray-600">
                           Vilodag
                         </Badge>
                       )}
                     </div>
-                    <CardTitle className="text-lg text-white">
+                    <CardTitle className="text-lg text-gray-900">
                       {day.name}
                     </CardTitle>
                     {day.description && (
-                      <p className="text-sm text-[rgba(255,255,255,0.6)] mt-1">
+                      <p className="text-sm text-gray-600 mt-1">
                         {day.description}
                       </p>
                     )}
@@ -300,7 +300,7 @@ export default function WorkoutPage() {
 
                 {!day.isRestDay && (
                   <Link href={`/dashboard/workout/session/${day.id}`}>
-                    <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90">
+                    <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white">
                       <Play className="w-4 h-4 mr-2" />
                       Starta
                     </Button>
@@ -312,24 +312,24 @@ export default function WorkoutPage() {
             {!day.isRestDay && day.exercises && day.exercises.length > 0 && (
               <CardContent>
                 <div className="space-y-2">
-                  <p className="text-sm text-[rgba(255,255,255,0.5)] mb-2">
+                  <p className="text-sm text-gray-500 mb-2">
                     {day.exercises.length} övningar
                   </p>
                   <div className="space-y-1">
                     {day.exercises.slice(0, 3).map((ex, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.7)]"
+                        className="flex items-center gap-2 text-sm text-gray-700"
                       >
-                        <ChevronRight className="w-3 h-3 text-[rgba(255,215,0,0.5)]" />
+                        <ChevronRight className="w-3 h-3 text-gold-primary" />
                         <span>{ex.exercise.name}</span>
-                        <span className="text-[rgba(255,255,255,0.5)]">
+                        <span className="text-gray-500">
                           {ex.sets} x {ex.repsMin}{ex.repsMax && ex.repsMax !== ex.repsMin ? `-${ex.repsMax}` : ''}
                         </span>
                       </div>
                     ))}
                     {day.exercises.length > 3 && (
-                      <p className="text-xs text-[rgba(255,255,255,0.4)] ml-5">
+                      <p className="text-xs text-gray-400 ml-5">
                         +{day.exercises.length - 3} fler övningar
                       </p>
                     )}
@@ -342,9 +342,9 @@ export default function WorkoutPage() {
       </div>
 
       {daysToShow.length === 0 && (
-        <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
+        <Card className="bg-white border-2 border-gray-200">
           <CardContent className="py-12 text-center">
-            <p className="text-[rgba(255,255,255,0.6)]">
+            <p className="text-gray-600">
               {programHasWeeks
                 ? `Det finns inga dagar för vecka ${currentWeek} än.`
                 : 'Det finns inga dagar i detta träningsprogram än.'}

@@ -75,10 +75,10 @@ export default function DashboardPage() {
 
   if (status === 'loading') {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-white via-gray-50 to-white">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-[#FFD700] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[rgba(255,255,255,0.8)]">Laddar...</p>
+          <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Laddar...</p>
         </div>
       </div>
     )
@@ -90,171 +90,171 @@ export default function DashboardPage() {
       <div className="space-y-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
-          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-6 opacity-20" />
+          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-3">
             Dashboard
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+          <p className="text-gray-600 text-sm tracking-[1px]">
             Översikt över din coaching-verksamhet
           </p>
-          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all">
+          <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg transition-all">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[rgba(255,255,255,0.7)] text-sm font-medium">Aktiva Klienter</span>
-              <Users className="h-5 w-5 text-[#FFD700]" />
+              <span className="text-gray-700 text-sm font-medium">Aktiva Klienter</span>
+              <Users className="h-5 w-5 text-gold-primary" />
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">{stats.clients}</div>
-            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">klienter</p>
+            <div className="text-3xl font-bold text-gray-900">{stats.clients}</div>
+            <p className="text-xs text-gray-500 mt-1">klienter</p>
           </div>
 
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all">
+          <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg transition-all">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[rgba(255,255,255,0.7)] text-sm font-medium">Nya Leads</span>
-              <UserPlus className="h-5 w-5 text-[#22c55e]" />
+              <span className="text-gray-700 text-sm font-medium">Nya Leads</span>
+              <UserPlus className="h-5 w-5 text-green-600" />
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">{stats.leads}</div>
-            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">denna vecka</p>
+            <div className="text-3xl font-bold text-gray-900">{stats.leads}</div>
+            <p className="text-xs text-gray-500 mt-1">denna vecka</p>
           </div>
 
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all">
+          <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg transition-all">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[rgba(255,255,255,0.7)] text-sm font-medium">Check-ins</span>
-              <Calendar className="h-5 w-5 text-[#a855f7]" />
+              <span className="text-gray-700 text-sm font-medium">Check-ins</span>
+              <Calendar className="h-5 w-5 text-purple-600" />
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">{stats.checkIns}</div>
-            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">inväntar granskning</p>
+            <div className="text-3xl font-bold text-gray-900">{stats.checkIns}</div>
+            <p className="text-xs text-gray-500 mt-1">inväntar granskning</p>
           </div>
 
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all">
+          <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg transition-all">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[rgba(255,255,255,0.7)] text-sm font-medium">Innehåll</span>
-              <FileText className="h-5 w-5 text-[#FFA500]" />
+              <span className="text-gray-700 text-sm font-medium">Innehåll</span>
+              <FileText className="h-5 w-5 text-orange-600" />
             </div>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">{stats.content}</div>
-            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">filer & lektioner</p>
+            <div className="text-3xl font-bold text-gray-900">{stats.content}</div>
+            <p className="text-xs text-gray-500 mt-1">filer & lektioner</p>
           </div>
         </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link href="/dashboard/clients">
-            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:scale-105 transition-all cursor-pointer group">
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center">
-                    <Users className="w-6 h-6 text-[#0a0a0a]" />
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
+                    <Users className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Hantera Team</h3>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)]">Se alla klienter</p>
+                    <h3 className="text-lg font-semibold text-gray-900">Hantera Team</h3>
+                    <p className="text-sm text-gray-600">Se alla klienter</p>
                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.7)] group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="w-5 h-5 text-gold-primary group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           </Link>
 
           <Link href="/dashboard/leads">
-            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:scale-105 transition-all cursor-pointer group">
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
                     <UserPlus className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Leads</h3>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)]">Hantera intressenter</p>
+                    <h3 className="text-lg font-semibold text-gray-900">Leads</h3>
+                    <p className="text-sm text-gray-600">Hantera intressenter</p>
                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.7)] group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="w-5 h-5 text-gold-primary group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           </Link>
 
           <Link href="/dashboard/articles">
-            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:scale-105 transition-all cursor-pointer group">
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#a855f7] to-[#7c3aed] flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
                     <BookOpen className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Kunskapsbanken</h3>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)]">Läs artiklar</p>
+                    <h3 className="text-lg font-semibold text-gray-900">Kunskapsbanken</h3>
+                    <p className="text-sm text-gray-600">Läs artiklar</p>
                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.7)] group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="w-5 h-5 text-gold-primary group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           </Link>
 
           <Link href="/dashboard/recipes">
-            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:scale-105 transition-all cursor-pointer group">
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFA500] to-[#ff8800] flex items-center justify-center">
-                    <ChefHat className="w-6 h-6 text-[#0a0a0a]" />
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
+                    <ChefHat className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Recept</h3>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)]">Hitta matinspiration</p>
+                    <h3 className="text-lg font-semibold text-gray-900">Recept</h3>
+                    <p className="text-sm text-gray-600">Hitta matinspiration</p>
                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.7)] group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="w-5 h-5 text-gold-primary group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           </Link>
 
           <Link href="/dashboard/check-in">
-            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:scale-105 transition-all cursor-pointer group">
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
                     <Calendar className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Check-ins</h3>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)]">Granska klient-data</p>
+                    <h3 className="text-lg font-semibold text-gray-900">Check-ins</h3>
+                    <p className="text-sm text-gray-600">Granska klient-data</p>
                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.7)] group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="w-5 h-5 text-gold-primary group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           </Link>
 
           <Link href="/dashboard/progress">
-            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:scale-105 transition-all cursor-pointer group">
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#ec4899] to-[#db2777] flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center">
                     <TrendingUp className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Statistik</h3>
-                    <p className="text-sm text-[rgba(255,255,255,0.6)]">Översikt & grafer</p>
+                    <h3 className="text-lg font-semibold text-gray-900">Statistik</h3>
+                    <p className="text-sm text-gray-600">Översikt & grafer</p>
                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.7)] group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="w-5 h-5 text-gold-primary group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           </Link>
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px]">
-          <div className="p-6 border-b border-[rgba(255,215,0,0.1)]">
-            <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">Senaste Aktivitet</h2>
-            <p className="text-[rgba(255,255,255,0.6)] text-sm mt-1">Vad som händer med dina klienter</p>
+        <div className="bg-white border-2 border-gray-200 rounded-xl">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-xl font-bold text-gray-900">Senaste Aktivitet</h2>
+            <p className="text-gray-600 text-sm mt-1">Vad som händer med dina klienter</p>
           </div>
           <div className="p-8">
             <div className="text-center py-8">
-              <Sparkles className="w-12 h-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-              <p className="text-[rgba(255,255,255,0.6)]">Ingen aktivitet ännu</p>
-              <p className="text-sm text-[rgba(255,255,255,0.4)] mt-2">Börja genom att bjuda in klienter</p>
+              <Sparkles className="w-12 h-12 mx-auto text-gold-primary mb-4" />
+              <p className="text-gray-600">Ingen aktivitet ännu</p>
+              <p className="text-sm text-gray-500 mt-2">Börja genom att bjuda in klienter</p>
             </div>
           </div>
         </div>
@@ -267,27 +267,27 @@ export default function DashboardPage() {
     <div className="space-y-8">
       {/* Welcome Header */}
       <div className="text-center">
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
-        <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-6 opacity-20" />
+        <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-3">
           Välkommen {session?.user?.name?.split(' ')[0] || 'Champion'}!
         </h1>
-        <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+        <p className="text-gray-600 text-sm tracking-[1px]">
           Din översikt för 90-Dagars Challenge
         </p>
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
       </div>
 
       {/* Quick Tips Section */}
-      <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] max-w-6xl mx-auto">
-        <div className="p-6 border-b border-[rgba(255,215,0,0.1)] flex items-center justify-between">
+      <div className="bg-white border-2 border-gray-200 rounded-xl max-w-6xl mx-auto">
+        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">Kom Igång</h2>
-            <p className="text-[rgba(255,255,255,0.6)] text-sm mt-1">Tips för att få ut det mesta av programmet</p>
+            <h2 className="text-xl font-bold text-gray-900">Kom Igång</h2>
+            <p className="text-gray-600 text-sm mt-1">Tips för att få ut det mesta av programmet</p>
           </div>
           <Link href="/dashboard/onboarding/guide">
             <Button
               size="lg"
-              className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold px-4 py-2 md:px-6 md:py-3 hover:shadow-[0_0_30px_rgba(255,215,0,0.6)] transition-all animate-pulse hover:animate-none text-sm md:text-base"
+              className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-bold px-4 py-2 md:px-6 md:py-3 hover:shadow-lg transition-all animate-pulse hover:animate-none text-sm md:text-base"
             >
               <Info className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
               <span className="hidden sm:inline">Läs Introduktion</span>
@@ -298,50 +298,50 @@ export default function DashboardPage() {
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Link href="/dashboard/onboarding/guide" className="flex items-start gap-3 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                <span className="text-[#0a0a0a] font-bold text-sm">1</span>
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                <span className="text-white font-bold text-sm">1</span>
               </div>
               <div>
-                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1 group-hover:text-[#FFD700] transition-colors">Läs introduktionen</h4>
-                <p className="text-[rgba(255,255,255,0.6)] text-xs">Viktigt - börja här!</p>
+                <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-gold-primary transition-colors">Läs introduktionen</h4>
+                <p className="text-gray-600 text-xs">Viktigt - börja här!</p>
               </div>
             </Link>
 
             <Link href="/dashboard/check-in" className="flex items-start gap-3 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                 <span className="text-white font-bold text-sm">2</span>
               </div>
               <div>
-                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1 group-hover:text-[#3b82f6] transition-colors">Gör din start-check in</h4>
-                <p className="text-[rgba(255,255,255,0.6)] text-xs">Dokumentera din startvikt och mål</p>
+                <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-blue-600 transition-colors">Gör din start-check in</h4>
+                <p className="text-gray-600 text-xs">Dokumentera din startvikt och mål</p>
               </div>
             </Link>
 
             <Link href="/dashboard/articles" className="flex items-start gap-3 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#a855f7] to-[#7c3aed] flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                 <span className="text-white font-bold text-sm">3</span>
               </div>
               <div>
-                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm mb-1 group-hover:text-[#a855f7] transition-colors">Utforska kunskapsbanken</h4>
-                <p className="text-[rgba(255,255,255,0.6)] text-xs">Lär dig grunderna för framgång</p>
+                <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-purple-600 transition-colors">Utforska kunskapsbanken</h4>
+                <p className="text-gray-600 text-xs">Lär dig grunderna för framgång</p>
               </div>
             </Link>
 
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FFA500] to-[#ff8800] flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center flex-shrink-0">
                   <span className="text-white font-bold text-sm">4</span>
                 </div>
-                <h4 className="font-semibold text-[rgba(255,255,255,0.9)] text-sm">Gå igenom dina planer</h4>
+                <h4 className="font-semibold text-gray-900 text-sm">Gå igenom dina planer</h4>
               </div>
               <div className="flex flex-col gap-2 ml-10">
                 <Link href="/dashboard/meal-plan" className="group flex items-center gap-2">
-                  <Utensils className="w-3.5 h-3.5 text-[#FFA500] group-hover:scale-110 transition-transform" />
-                  <span className="text-xs text-[rgba(255,255,255,0.7)] group-hover:text-[#FFA500] transition-colors">Kostschema</span>
+                  <Utensils className="w-3.5 h-3.5 text-orange-600 group-hover:scale-110 transition-transform" />
+                  <span className="text-xs text-gray-700 group-hover:text-orange-600 transition-colors">Kostschema</span>
                 </Link>
                 <Link href="/dashboard/workout" className="group flex items-center gap-2">
-                  <Dumbbell className="w-3.5 h-3.5 text-[#FFA500] group-hover:scale-110 transition-transform" />
-                  <span className="text-xs text-[rgba(255,255,255,0.7)] group-hover:text-[#FFA500] transition-colors">Träningsplan</span>
+                  <Dumbbell className="w-3.5 h-3.5 text-orange-600 group-hover:scale-110 transition-transform" />
+                  <span className="text-xs text-gray-700 group-hover:text-orange-600 transition-colors">Träningsplan</span>
                 </Link>
               </div>
             </div>
@@ -354,215 +354,215 @@ export default function DashboardPage() {
 
         {/* Check-in Card */}
         <Link href="/dashboard/check-in">
-          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(59,130,246,0.1)] to-transparent opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-50" />
 
             {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(59,130,246,0.4)]">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
               <Calendar className="w-10 h-10 text-white" />
             </div>
 
             {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Check-in</h3>
-            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Check-in</h3>
+            <p className="text-gray-600 text-center text-sm relative z-10">
               Gör din veckocheckning
             </p>
 
             {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
           </div>
         </Link>
 
         {/* Progress Card */}
         <Link href="/dashboard/progress">
-          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(236,72,153,0.1)] to-transparent opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-br from-pink-50 to-transparent opacity-50" />
 
             {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#ec4899] to-[#db2777] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(236,72,153,0.4)]">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
               <TrendingUp className="w-10 h-10 text-white" />
             </div>
 
             {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Framsteg</h3>
-            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Framsteg</h3>
+            <p className="text-gray-600 text-center text-sm relative z-10">
               Se din utveckling & statistik
             </p>
 
             {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
           </div>
         </Link>
 
         {/* Kunskapsbanken Card */}
         <Link href="/dashboard/articles">
-          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(168,85,247,0.1)] to-transparent opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-transparent opacity-50" />
 
             {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#a855f7] to-[#7c3aed] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(168,85,247,0.4)]">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
               <BookOpen className="w-10 h-10 text-white" />
             </div>
 
             {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Kunskapsbanken</h3>
-            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Kunskapsbanken</h3>
+            <p className="text-gray-600 text-center text-sm relative z-10">
               Läs artiklar & guider
             </p>
 
             {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
           </div>
         </Link>
 
         {/* Recept Card */}
         <Link href="/dashboard/recipes">
-          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(255,165,0,0.1)] to-transparent opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-transparent opacity-50" />
 
             {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#FFA500] to-[#ff8800] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(255,165,0,0.4)]">
-              <ChefHat className="w-10 h-10 text-[#0a0a0a]" />
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+              <ChefHat className="w-10 h-10 text-white" />
             </div>
 
             {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Recept</h3>
-            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Recept</h3>
+            <p className="text-gray-600 text-center text-sm relative z-10">
               Hitta matinspiration
             </p>
 
             {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
           </div>
         </Link>
 
         {/* Kostschema Card */}
         <Link href="/dashboard/meal-plan">
-          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(251,146,60,0.1)] to-transparent opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-transparent opacity-50" />
 
             {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#fb923c] to-[#f97316] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(251,146,60,0.4)]">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
               <Utensils className="w-10 h-10 text-white" />
             </div>
 
             {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Kostschema</h3>
-            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Kostschema</h3>
+            <p className="text-gray-600 text-center text-sm relative z-10">
               Din personliga måltidsplan
             </p>
 
             {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
           </div>
         </Link>
 
         {/* Träningsprogram Card */}
         <Link href="/dashboard/workout">
-          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(139,92,246,0.1)] to-transparent opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-transparent opacity-50" />
 
             {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(139,92,246,0.4)]">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-500 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
               <Dumbbell className="w-10 h-10 text-white" />
             </div>
 
             {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Träningsprogram</h3>
-            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Träningsprogram</h3>
+            <p className="text-gray-600 text-center text-sm relative z-10">
               Ditt personliga träningsschema
             </p>
 
             {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
           </div>
         </Link>
 
         {/* Meddelanden Card */}
         <Link href="/dashboard/messages">
-          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(59,130,246,0.1)] to-transparent opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-50" />
 
             {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(59,130,246,0.4)]">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
               <MessageSquare className="w-10 h-10 text-white" />
             </div>
 
             {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Meddelanden</h3>
-            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Meddelanden</h3>
+            <p className="text-gray-600 text-center text-sm relative z-10">
               Kommunicera med din coach
             </p>
 
             {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
           </div>
         </Link>
 
         {/* Profile Card */}
         <Link href="/dashboard/profile">
-          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(34,197,94,0.1)] to-transparent opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent opacity-50" />
 
             {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(34,197,94,0.4)]">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
               <Users className="w-10 h-10 text-white" />
             </div>
 
             {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Min Profil</h3>
-            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Min Profil</h3>
+            <p className="text-gray-600 text-center text-sm relative z-10">
               Hantera dina uppgifter
             </p>
 
             {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
           </div>
         </Link>
 
         {/* FAQ Card */}
         <Link href="/dashboard/faqs">
-          <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-2xl p-8 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_40px_rgba(255,215,0,0.3)] hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[rgba(59,130,246,0.1)] to-transparent opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-50" />
 
             {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-[0_0_30px_rgba(59,130,246,0.4)]">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
               <HelpCircle className="w-10 h-10 text-white" />
             </div>
 
             {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)] mb-2 relative z-10">Vanliga frågor</h3>
-            <p className="text-[rgba(255,255,255,0.6)] text-center text-sm relative z-10">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Vanliga frågor</h3>
+            <p className="text-gray-600 text-center text-sm relative z-10">
               Svar på vanliga frågor
             </p>
 
             {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-[rgba(255,215,0,0.5)] group-hover:translate-x-2 group-hover:text-[#FFD700] transition-all" />
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
           </div>
         </Link>
 
         {/* Recent Activity Card (Coming Soon) */}
-        <div className="group relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.1)] rounded-2xl p-8 backdrop-blur-[10px] overflow-hidden h-[280px] flex flex-col items-center justify-center opacity-60">
+        <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 overflow-hidden h-[280px] flex flex-col items-center justify-center opacity-60">
           {/* Background Pattern */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[rgba(100,100,100,0.1)] to-transparent opacity-30" />
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-transparent opacity-30" />
 
           {/* Icon */}
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[rgba(255,255,255,0.1)] to-[rgba(255,255,255,0.05)] flex items-center justify-center mb-6">
-            <Clock className="w-10 h-10 text-[rgba(255,215,0,0.5)]" />
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center mb-6">
+            <Clock className="w-10 h-10 text-gray-500" />
           </div>
 
           {/* Title & Description */}
-          <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.5)] mb-2 relative z-10">Senaste aktivitet</h3>
-          <p className="text-[rgba(255,255,255,0.4)] text-center text-sm relative z-10">
+          <h3 className="text-2xl font-bold text-gray-500 mb-2 relative z-10">Senaste aktivitet</h3>
+          <p className="text-gray-400 text-center text-sm relative z-10">
             Coachens uppdateringar
           </p>
         </div>

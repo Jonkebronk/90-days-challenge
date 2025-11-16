@@ -43,30 +43,27 @@ export default async function NutritionCalculatorPage() {
     }));
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#1a1a1a] p-6">
-      <div className="container mx-auto max-w-7xl">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-1 h-8 bg-gradient-to-b from-[#FFD700] to-[#FFA500]" />
-            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] to-[#FFA500]">
-              4-FAS KOSTSCHEMA KALKYLATOR
-            </h1>
-          </div>
-          <p className="text-gray-400 ml-3">
-            Skapa personliga nutrition plans för dina klienter med progressiv 4-fas modell
-          </p>
-        </div>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
+          4-FAS KOSTSCHEMA KALKYLATOR
+        </h1>
+        <p className="text-gray-600 mt-2">
+          Skapa personliga nutrition plans för dina klienter med progressiv 4-fas modell
+        </p>
+      </div>
 
+      <div className="max-w-7xl mx-auto">
         {/* Main Calculator */}
         {clients.length > 0 ? (
           <NutritionCalculatorClient clients={clients} />
         ) : (
-          <div className="bg-black/40 border border-[rgba(255,215,0,0.3)] rounded-lg p-8 text-center">
-            <h2 className="text-xl font-semibold text-white mb-2">
+          <div className="bg-white border-2 border-gray-200 rounded-xl p-8 text-center">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
               Inga klienter ännu
             </h2>
-            <p className="text-gray-400">
+            <p className="text-gray-600">
               Du måste ha minst en klient för att skapa nutritionsplaner.
             </p>
           </div>

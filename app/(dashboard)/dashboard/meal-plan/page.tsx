@@ -95,8 +95,8 @@ export default function MealPlanPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-[#FFD700] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[rgba(255,255,255,0.8)]">Laddar kostschema...</p>
+          <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Laddar kostschema...</p>
         </div>
       </div>
     )
@@ -106,26 +106,24 @@ export default function MealPlanPage() {
     return (
       <div className="space-y-6">
         {/* Header */}
-        <div className="text-center">
-          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
-          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
-            Kostschema
+        <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
+            KOSTSCHEMA
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+          <p className="text-gray-600 mt-2">
             Ditt skräddarsydda kosttillskott
           </p>
-          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
         </div>
 
         {/* Empty State */}
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white border-2 border-gray-200">
           <CardContent className="py-16">
             <div className="text-center">
-              <Sparkles className="w-16 h-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-              <h3 className="text-xl font-bold text-[rgba(255,255,255,0.9)] mb-2">
+              <Sparkles className="w-16 h-16 mx-auto text-gold-primary mb-4" />
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
                 Inget kostschema ännu
               </h3>
-              <p className="text-[rgba(255,255,255,0.6)]">
+              <p className="text-gray-600">
                 Din coach kommer snart att tilldela ett personligt kostschema till dig
               </p>
             </div>
@@ -144,22 +142,20 @@ export default function MealPlanPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="text-center relative">
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
-        <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
-          {mealPlan.name}
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
+          {mealPlan.name.toUpperCase()}
         </h1>
-        <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+        <p className="text-gray-600 mt-2">
           Ditt skräddarsydda kostschema
         </p>
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
 
         {/* Introduction Buttons */}
         <div className="mt-6 flex flex-wrap gap-3 justify-center">
           <Button
             onClick={() => router.push('/dashboard/meal-plan/guide')}
             variant="outline"
-            className="bg-transparent border-2 border-[rgba(59,130,246,0.4)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(59,130,246,0.1)] hover:border-[rgba(59,130,246,0.6)] hover:text-white transition-all"
+            className="bg-white border-2 border-blue-300 text-blue-600 hover:bg-blue-50 hover:border-blue-400 transition-all"
           >
             <Info className="w-4 h-4 mr-2" />
             Introduktion till kostschema
@@ -167,7 +163,7 @@ export default function MealPlanPage() {
           <Button
             onClick={() => router.push('/dashboard/meal-plan/food-guide')}
             variant="outline"
-            className="bg-transparent border-2 border-[rgba(34,197,94,0.4)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(34,197,94,0.1)] hover:border-[rgba(34,197,94,0.6)] hover:text-white transition-all"
+            className="bg-white border-2 border-green-300 text-green-600 hover:bg-green-50 hover:border-green-400 transition-all"
           >
             <Apple className="w-4 h-4 mr-2" />
             Livsmedelsguide
@@ -175,7 +171,7 @@ export default function MealPlanPage() {
           <Button
             onClick={() => router.push('/dashboard/meal-plan/nutrition-tips')}
             variant="outline"
-            className="bg-transparent border-2 border-[rgba(245,158,11,0.4)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(245,158,11,0.1)] hover:border-[rgba(245,158,11,0.6)] hover:text-white transition-all"
+            className="bg-white border-2 border-amber-300 text-amber-600 hover:bg-amber-50 hover:border-amber-400 transition-all"
           >
             <Lightbulb className="w-4 h-4 mr-2" />
             Generella råd för kosten
@@ -187,49 +183,49 @@ export default function MealPlanPage() {
         {/* Left Sidebar - Totals */}
         <div className="lg:col-span-1 space-y-4">
           {/* Daily Totals */}
-          <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+          <Card className="bg-white border-2 border-gray-200">
             <CardHeader>
-              <CardTitle className="text-lg text-[rgba(255,255,255,0.9)]">Totalt för kost</CardTitle>
+              <CardTitle className="text-lg text-gray-900">Totalt för kost</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-[rgba(255,255,255,0.7)]">Protein:</span>
-                <span className="font-bold text-[rgba(255,255,255,0.9)]">{mealPlan.totalProtein?.toFixed(1)}g</span>
+                <span className="text-gray-700">Protein:</span>
+                <span className="font-bold text-gray-900">{mealPlan.totalProtein?.toFixed(1)}g</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[rgba(255,255,255,0.7)]">Fett:</span>
-                <span className="font-bold text-[rgba(255,255,255,0.9)]">{mealPlan.totalFat?.toFixed(1)}g</span>
+                <span className="text-gray-700">Fett:</span>
+                <span className="font-bold text-gray-900">{mealPlan.totalFat?.toFixed(1)}g</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[rgba(255,255,255,0.7)]">Kolhydrater:</span>
-                <span className="font-bold text-[rgba(255,255,255,0.9)]">{mealPlan.totalCarbs?.toFixed(1)}g</span>
+                <span className="text-gray-700">Kolhydrater:</span>
+                <span className="font-bold text-gray-900">{mealPlan.totalCarbs?.toFixed(1)}g</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[rgba(255,255,255,0.7)]">Kcal:</span>
-                <span className="font-bold text-[rgba(255,255,255,0.9)]">{mealPlan.totalCalories?.toFixed(0)}</span>
+                <span className="text-gray-700">Kcal:</span>
+                <span className="font-bold text-gray-900">{mealPlan.totalCalories?.toFixed(0)}</span>
               </div>
             </CardContent>
           </Card>
 
           {/* Total Daily Intake */}
-          <div className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-xl p-6">
-            <h3 className="text-[#0a0a0a] font-bold text-lg mb-4">Totalt dagsintag</h3>
+          <div className="bg-gradient-to-br from-gold-primary to-gold-secondary rounded-xl p-6">
+            <h3 className="text-white font-bold text-lg mb-4">Totalt dagsintag</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-[rgba(10,10,10,0.8)] font-medium">Protein</span>
-                <span className="font-bold text-[#0a0a0a]">{totalDailyProtein.toFixed(1)}g</span>
+                <span className="text-white/90 font-medium">Protein</span>
+                <span className="font-bold text-white">{totalDailyProtein.toFixed(1)}g</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[rgba(10,10,10,0.8)] font-medium">Fett</span>
-                <span className="font-bold text-[#0a0a0a]">{totalDailyFat.toFixed(1)}g</span>
+                <span className="text-white/90 font-medium">Fett</span>
+                <span className="font-bold text-white">{totalDailyFat.toFixed(1)}g</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[rgba(10,10,10,0.8)] font-medium">Kolhydrater</span>
-                <span className="font-bold text-[#0a0a0a]">{totalDailyCarbs.toFixed(1)}g</span>
+                <span className="text-white/90 font-medium">Kolhydrater</span>
+                <span className="font-bold text-white">{totalDailyCarbs.toFixed(1)}g</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[rgba(10,10,10,0.8)] font-medium">Kcal</span>
-                <span className="font-bold text-[#0a0a0a]">{totalDailyCalories.toFixed(0)}</span>
+                <span className="text-white/90 font-medium">Kcal</span>
+                <span className="font-bold text-white">{totalDailyCalories.toFixed(0)}</span>
               </div>
             </div>
           </div>

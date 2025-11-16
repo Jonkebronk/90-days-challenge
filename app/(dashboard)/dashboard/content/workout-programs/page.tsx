@@ -80,24 +80,24 @@ export default function WorkoutProgramsPage() {
   }
 
   const getDifficultyColor = (difficulty: string | null) => {
-    if (!difficulty) return 'bg-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.6)]'
+    if (!difficulty) return 'bg-gray-100 text-gray-600'
 
     switch (difficulty.toLowerCase()) {
       case 'beginner':
-        return 'bg-[rgba(40,167,69,0.2)] text-[#28a745] border-[rgba(40,167,69,0.3)]'
+        return 'bg-green-100 text-green-700 border-green-200'
       case 'intermediate':
-        return 'bg-[rgba(255,193,7,0.2)] text-[#ffc107] border-[rgba(255,193,7,0.3)]'
+        return 'bg-yellow-100 text-yellow-700 border-yellow-200'
       case 'advanced':
-        return 'bg-[rgba(220,53,69,0.2)] text-[#dc3545] border-[rgba(220,53,69,0.3)]'
+        return 'bg-red-100 text-red-700 border-red-200'
       default:
-        return 'bg-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.6)]'
+        return 'bg-gray-100 text-gray-600'
     }
   }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -107,15 +107,15 @@ export default function WorkoutProgramsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
+          <h1 className="text-3xl font-bold text-gray-900">
             Träningsprogram
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-600 mt-1">
             Skapa och hantera träningsprogram för dina klienter
           </p>
         </div>
         <Link href="/dashboard/content/workout-programs/create">
-          <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90">
+          <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold">
             <Plus className="w-4 h-4 mr-2" />
             Skapa program
           </Button>
@@ -123,15 +123,15 @@ export default function WorkoutProgramsPage() {
       </div>
 
       {/* Search */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+      <Card className="bg-white border-2 border-gray-200">
         <CardContent className="pt-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgba(255,255,255,0.4)]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="Sök program..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+              className="pl-10 bg-white border-gray-300 text-gray-900"
             />
           </div>
         </CardContent>
@@ -142,16 +142,16 @@ export default function WorkoutProgramsPage() {
         {filteredPrograms.map((program) => (
           <Card
             key={program.id}
-            className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] transition-all"
+            className="bg-white border-2 border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all"
           >
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3 flex-1">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center shrink-0">
-                    <Dumbbell className="w-6 h-6 text-[#0a0a0a]" />
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center shrink-0">
+                    <Dumbbell className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="text-lg text-[rgba(255,255,255,0.9)] break-words">
+                    <CardTitle className="text-lg text-gray-900 break-words">
                       {program.name}
                     </CardTitle>
                     {program.difficulty && (
@@ -166,7 +166,7 @@ export default function WorkoutProgramsPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-[rgba(255,215,0,0.8)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+                      className="h-8 w-8 text-gold-primary hover:text-gold-secondary hover:bg-gray-100"
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
@@ -175,7 +175,7 @@ export default function WorkoutProgramsPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleDelete(program.id)}
-                    className="h-8 w-8 text-[rgba(255,100,100,0.8)] hover:text-[#ff6464] hover:bg-[rgba(255,100,100,0.1)]"
+                    className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -184,35 +184,35 @@ export default function WorkoutProgramsPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               {program.description && (
-                <p className="text-sm text-[rgba(255,255,255,0.6)] line-clamp-2">
+                <p className="text-sm text-gray-600 line-clamp-2">
                   {program.description}
                 </p>
               )}
 
               <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-1 text-[rgba(255,255,255,0.6)]">
-                  <Calendar className="w-4 h-4 text-[rgba(255,215,0,0.7)]" />
+                <div className="flex items-center gap-1 text-gray-600">
+                  <Calendar className="w-4 h-4 text-gold-primary" />
                   <span>{program.days.length} dagar</span>
                 </div>
                 {program.durationWeeks && (
-                  <div className="text-[rgba(255,255,255,0.6)]">
+                  <div className="text-gray-600">
                     {program.durationWeeks} veckor
                   </div>
                 )}
               </div>
 
-              <div className="flex items-center justify-between pt-2 border-t border-[rgba(255,215,0,0.1)]">
-                <div className="flex items-center gap-1 text-sm text-[rgba(255,255,255,0.6)]">
-                  <Users className="w-4 h-4 text-[rgba(255,215,0,0.7)]" />
+              <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                <div className="flex items-center gap-1 text-sm text-gray-600">
+                  <Users className="w-4 h-4 text-gold-primary" />
                   <span>{program._count.assignments} tilldelade</span>
                 </div>
 
                 {program.published ? (
-                  <Badge className="bg-[rgba(40,167,69,0.2)] text-[#28a745] border-[rgba(40,167,69,0.3)]">
+                  <Badge className="bg-green-100 text-green-700 border-green-200">
                     Publicerad
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-[rgba(255,255,255,0.5)]">
+                  <Badge variant="outline" className="bg-gray-50 border-gray-300 text-gray-500">
                     Utkast
                   </Badge>
                 )}
@@ -221,7 +221,7 @@ export default function WorkoutProgramsPage() {
               <Link href={`/dashboard/content/workout-programs/${program.id}/edit`}>
                 <Button
                   variant="outline"
-                  className="w-full border-[rgba(255,215,0,0.3)] text-[rgba(255,215,0,0.9)] hover:bg-[rgba(255,215,0,0.1)] mt-2"
+                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 mt-2"
                 >
                   Visa detaljer
                   <ChevronRight className="w-4 h-4 ml-2" />
@@ -233,14 +233,14 @@ export default function WorkoutProgramsPage() {
       </div>
 
       {filteredPrograms.length === 0 && (
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white border-2 border-gray-200">
           <CardContent className="py-12 text-center">
-            <Dumbbell className="w-12 h-12 text-[rgba(255,215,0,0.3)] mx-auto mb-4" />
-            <p className="text-[rgba(255,255,255,0.6)] mb-4">
+            <Dumbbell className="w-12 h-12 text-gold-primary mx-auto mb-4" />
+            <p className="text-gray-600 mb-4">
               Inga träningsprogram hittades. Skapa ditt första program!
             </p>
             <Link href="/dashboard/content/workout-programs/create">
-              <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90">
+              <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold">
                 <Plus className="w-4 h-4 mr-2" />
                 Skapa program
               </Button>

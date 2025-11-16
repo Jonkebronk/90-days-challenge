@@ -246,7 +246,7 @@ export default function ExercisesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -256,16 +256,16 @@ export default function ExercisesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
+          <h1 className="text-3xl font-bold text-gray-900">
             Övningsbank
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-600 mt-1">
             Hantera övningar för träningsprogram
           </p>
         </div>
         <Button
           onClick={() => handleOpenDialog()}
-          className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+          className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
         >
           <Plus className="w-4 h-4 mr-2" />
           Lägg till övning
@@ -273,26 +273,26 @@ export default function ExercisesPage() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+      <Card className="bg-white border-2 border-gray-200">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Sök</Label>
+              <Label className="text-gray-700">Sök</Label>
               <div className="relative mt-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[rgba(255,255,255,0.4)]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
                   placeholder="Sök övning..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                  className="pl-10 bg-white border-gray-300 text-gray-900"
                 />
               </div>
             </div>
 
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Muskelgrupp</Label>
+              <Label className="text-gray-700">Muskelgrupp</Label>
               <Select value={filterMuscleGroup} onValueChange={setFilterMuscleGroup}>
-                <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                <SelectTrigger className="mt-1 bg-white border-gray-300 text-gray-900">
                   <SelectValue placeholder="Alla muskelgrupper" />
                 </SelectTrigger>
                 <SelectContent>
@@ -305,9 +305,9 @@ export default function ExercisesPage() {
             </div>
 
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Utrustning</Label>
+              <Label className="text-gray-700">Utrustning</Label>
               <Select value={filterEquipment} onValueChange={setFilterEquipment}>
-                <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                <SelectTrigger className="mt-1 bg-white border-gray-300 text-gray-900">
                   <SelectValue placeholder="All utrustning" />
                 </SelectTrigger>
                 <SelectContent>
@@ -320,9 +320,9 @@ export default function ExercisesPage() {
             </div>
 
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Svårighet</Label>
+              <Label className="text-gray-700">Svårighet</Label>
               <Select value={filterDifficulty} onValueChange={setFilterDifficulty}>
-                <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                <SelectTrigger className="mt-1 bg-white border-gray-300 text-gray-900">
                   <SelectValue placeholder="Alla nivåer" />
                 </SelectTrigger>
                 <SelectContent>
@@ -342,7 +342,7 @@ export default function ExercisesPage() {
         {filteredExercises.map((exercise) => (
           <Card
             key={exercise.id}
-            className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] transition-all"
+            className="bg-white border-2 border-gray-200 hover:border-[rgba(255,215,0,0.4)] transition-all"
           >
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -441,7 +441,7 @@ export default function ExercisesPage() {
       </div>
 
       {filteredExercises.length === 0 && (
-        <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
+        <Card className="bg-white border-2 border-gray-200">
           <CardContent className="py-12 text-center">
             <Dumbbell className="w-12 h-12 text-[rgba(255,215,0,0.3)] mx-auto mb-4" />
             <p className="text-[rgba(255,255,255,0.6)]">
@@ -462,20 +462,20 @@ export default function ExercisesPage() {
 
           <div className="space-y-4">
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Övningsnamn *</Label>
+              <Label className="text-gray-700">Övningsnamn *</Label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="T.ex. Barbell Bench Press"
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+                className="bg-white border-gray-300 text-gray-900 mt-1"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-[rgba(255,255,255,0.7)]">Kategori</Label>
+                <Label className="text-gray-700">Kategori</Label>
                 <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                  <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                  <SelectTrigger className="mt-1 bg-white border-gray-300 text-gray-900">
                     <SelectValue placeholder="Välj kategori" />
                   </SelectTrigger>
                   <SelectContent>
@@ -487,9 +487,9 @@ export default function ExercisesPage() {
               </div>
 
               <div>
-                <Label className="text-[rgba(255,255,255,0.7)]">Svårighetsgrad</Label>
+                <Label className="text-gray-700">Svårighetsgrad</Label>
                 <Select value={formData.difficultyLevel} onValueChange={(value) => setFormData({ ...formData, difficultyLevel: value })}>
-                  <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                  <SelectTrigger className="mt-1 bg-white border-gray-300 text-gray-900">
                     <SelectValue placeholder="Välj svårighet" />
                   </SelectTrigger>
                   <SelectContent>
@@ -502,7 +502,7 @@ export default function ExercisesPage() {
             </div>
 
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Muskelgrupper</Label>
+              <Label className="text-gray-700">Muskelgrupper</Label>
               <div className="flex flex-wrap gap-2 mt-2">
                 {MUSCLE_GROUPS.map(muscle => (
                   <Badge
@@ -521,7 +521,7 @@ export default function ExercisesPage() {
             </div>
 
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Utrustning</Label>
+              <Label className="text-gray-700">Utrustning</Label>
               <div className="flex flex-wrap gap-2 mt-2">
                 {EQUIPMENT_OPTIONS.map(equipment => (
                   <Badge
@@ -540,34 +540,34 @@ export default function ExercisesPage() {
             </div>
 
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Beskrivning</Label>
+              <Label className="text-gray-700">Beskrivning</Label>
               <Textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Beskriv övningen..."
                 rows={3}
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+                className="bg-white border-gray-300 text-gray-900 mt-1"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-[rgba(255,255,255,0.7)]">Video URL</Label>
+                <Label className="text-gray-700">Video URL</Label>
                 <Input
                   value={formData.videoUrl}
                   onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
                   placeholder="YouTube/Vimeo URL"
-                  className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+                  className="bg-white border-gray-300 text-gray-900 mt-1"
                 />
               </div>
 
               <div>
-                <Label className="text-[rgba(255,255,255,0.7)]">Thumbnail URL</Label>
+                <Label className="text-gray-700">Thumbnail URL</Label>
                 <Input
                   value={formData.thumbnailUrl}
                   onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
                   placeholder="Image URL"
-                  className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+                  className="bg-white border-gray-300 text-gray-900 mt-1"
                 />
               </div>
             </div>
@@ -575,7 +575,7 @@ export default function ExercisesPage() {
             {/* Video Preview */}
             {formData.videoUrl && (
               <div>
-                <Label className="text-[rgba(255,255,255,0.7)] mb-2 block">Videoförhandsvisning:</Label>
+                <Label className="text-gray-700 mb-2 block">Videoförhandsvisning:</Label>
                 <VideoPlayer
                   videoUrl={formData.videoUrl}
                   thumbnailUrl={formData.thumbnailUrl}
@@ -586,14 +586,14 @@ export default function ExercisesPage() {
             )}
 
             <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Instruktioner</Label>
+              <Label className="text-gray-700">Instruktioner</Label>
               <div className="flex gap-2 mt-1">
                 <Input
                   value={instructionInput}
                   onChange={(e) => setInstructionInput(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addInstruction())}
                   placeholder="Lägg till instruktion..."
-                  className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+                  className="bg-white border-gray-300 text-gray-900"
                 />
                 <Button
                   type="button"
@@ -636,7 +636,7 @@ export default function ExercisesPage() {
             <Button
               variant="outline"
               onClick={handleCloseDialog}
-              className="border-[rgba(255,215,0,0.2)] text-[rgba(255,255,255,0.7)] hover:bg-[rgba(255,215,0,0.1)]"
+              className="border-[rgba(255,215,0,0.2)] text-gray-700 hover:bg-[rgba(255,215,0,0.1)]"
             >
               Avbryt
             </Button>

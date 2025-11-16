@@ -200,38 +200,41 @@ export default function WeightTrackerPage() {
   const selectedClient = clients.find(c => c.id === selectedClientId)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-            <Scale className="h-8 w-8 text-yellow-400" />
-            Viktspårning
-            {selectedClient && (
-              <span className="text-yellow-400 text-xl">- {selectedClient.name || selectedClient.email}</span>
-            )}
-          </h1>
-        </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px] flex items-center justify-center gap-3">
+          <Scale className="h-10 w-10 text-gold-primary" />
+          VIKTSPÅRNING
+        </h1>
+        {selectedClient && (
+          <p className="text-gold-primary font-semibold text-xl mt-2">
+            {selectedClient.name || selectedClient.email}
+          </p>
+        )}
+      </div>
 
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Client Selector for Coaches */}
         {isCoach && (
-          <Card className="bg-gray-800 border-gray-700 mb-6">
+          <Card className="bg-white border-2 border-gray-200">
             <CardContent className="py-4">
               <div className="flex items-center gap-4">
-                <Users className="h-5 w-5 text-yellow-400" />
+                <Users className="h-5 w-5 text-gold-primary" />
                 <div className="flex-1">
-                  <Label htmlFor="client-select" className="text-white font-semibold mb-2 block">
+                  <Label htmlFor="client-select" className="text-gray-900 font-semibold mb-2 block">
                     Välj klient
                   </Label>
                   <Select value={selectedClientId} onValueChange={setSelectedClientId}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                       <SelectValue placeholder="Välj en klient att spåra" />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700">
+                    <SelectContent className="bg-white border-gray-200">
                       {clients.map((client) => (
                         <SelectItem
                           key={client.id}
                           value={client.id}
-                          className="text-white hover:bg-gray-700"
+                          className="text-gray-900 hover:bg-gray-100"
                         >
                           {client.name || client.email}
                         </SelectItem>
@@ -241,7 +244,7 @@ export default function WeightTrackerPage() {
                 </div>
               </div>
               {!selectedClientId && (
-                <p className="text-gray-400 text-sm mt-2 ml-9">
+                <p className="text-gray-600 text-sm mt-2 ml-9">
                   Välj en klient ovan för att hantera deras viktspårning
                 </p>
               )}
@@ -253,52 +256,52 @@ export default function WeightTrackerPage() {
           {/* Left Column - Profile & Stats */}
           <div className="space-y-6">
             {/* Profile Section */}
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-white border-2 border-gray-200">
               <CardHeader>
-                <CardTitle className="text-white">Profil</CardTitle>
+                <CardTitle className="text-gray-900">Profil</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="startWeight" className="text-gray-400">Startvikt (kg)</Label>
+                  <Label htmlFor="startWeight" className="text-gray-700">Startvikt (kg)</Label>
                   <Input
                     id="startWeight"
                     type="number"
                     step="0.1"
                     value={profile.startWeight}
                     onChange={(e) => setProfile({ ...profile, startWeight: e.target.value })}
-                    className="bg-gray-700 border-gray-600 text-white"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="targetWeight" className="text-gray-400">Målvikt (kg)</Label>
+                  <Label htmlFor="targetWeight" className="text-gray-700">Målvikt (kg)</Label>
                   <Input
                     id="targetWeight"
                     type="number"
                     step="0.1"
                     value={profile.targetWeight}
                     onChange={(e) => setProfile({ ...profile, targetWeight: e.target.value })}
-                    className="bg-gray-700 border-gray-600 text-white"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="height" className="text-gray-400">Längd (cm)</Label>
+                  <Label htmlFor="height" className="text-gray-700">Längd (cm)</Label>
                   <Input
                     id="height"
                     type="number"
                     value={profile.height}
                     onChange={(e) => setProfile({ ...profile, height: e.target.value })}
-                    className="bg-gray-700 border-gray-600 text-white"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="targetDate" className="text-gray-400">Måldatum</Label>
+                  <Label htmlFor="targetDate" className="text-gray-700">Måldatum</Label>
                   <div className="flex gap-2">
                     <Input
                       id="targetDate"
                       type="date"
                       value={profile.targetDate}
                       onChange={(e) => setProfile({ ...profile, targetDate: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white flex-1"
+                      className="bg-white border-gray-300 text-gray-900 flex-1"
                     />
                     <Button
                       type="button"
@@ -311,7 +314,7 @@ export default function WeightTrackerPage() {
                         const dateStr = futureDate.toISOString().split('T')[0]
                         setProfile({ ...profile, targetDate: dateStr })
                       }}
-                      className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600 whitespace-nowrap"
+                      className="bg-white border-gray-300 text-gray-900 hover:bg-gray-100 whitespace-nowrap"
                       title="Sätt automatiskt till 90 dagar (13 veckor) från idag"
                     >
                       90 dagar
@@ -323,7 +326,7 @@ export default function WeightTrackerPage() {
                 </div>
                 <Button
                   onClick={saveProfile}
-                  className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-semibold"
+                  className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   Spara profil
@@ -332,17 +335,17 @@ export default function WeightTrackerPage() {
             </Card>
 
             {/* Statistics Section */}
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-white border-2 border-gray-200">
               <CardHeader>
-                <CardTitle className="text-white">Statistik</CardTitle>
+                <CardTitle className="text-gray-900">Statistik</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <StatItem label="Nuvarande vikt" value={stats.currentWeight} color="text-white" />
-                <StatItem label="Total viktförlust" value={stats.totalWeightLoss} color="text-green-400" />
+                <StatItem label="Nuvarande vikt" value={stats.currentWeight} color="text-gray-900" />
+                <StatItem label="Total viktförlust" value={stats.totalWeightLoss} color="text-green-600" />
                 <StatItem label="Avvikelse från mål" value={stats.deviationFromTarget} color={stats.deviationColor} />
-                <StatItem label="Gram per dag" value={stats.gramsPerDay} color="text-yellow-400" />
-                <StatItem label="Kg per vecka" value={stats.kgPerWeek} color="text-yellow-400" />
-                <StatItem label="Dagar till mål" value={stats.daysToTarget} color="text-blue-400" />
+                <StatItem label="Gram per dag" value={stats.gramsPerDay} color="text-gold-primary" />
+                <StatItem label="Kg per vecka" value={stats.kgPerWeek} color="text-gold-primary" />
+                <StatItem label="Dagar till mål" value={stats.daysToTarget} color="text-blue-600" />
               </CardContent>
             </Card>
           </div>
@@ -355,8 +358,8 @@ export default function WeightTrackerPage() {
                 onClick={() => setActiveTab('weekly')}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-colors ${
                   activeTab === 'weekly'
-                    ? 'bg-yellow-400 text-black'
-                    : 'bg-gray-800 text-gray-400 hover:text-white border border-gray-700'
+                    ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white'
+                    : 'bg-white text-gray-700 hover:text-gray-900 border-2 border-gray-200'
                 }`}
               >
                 <Calendar className="h-5 w-5" />
@@ -366,8 +369,8 @@ export default function WeightTrackerPage() {
                 onClick={() => setActiveTab('graph')}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-colors ${
                   activeTab === 'graph'
-                    ? 'bg-yellow-400 text-black'
-                    : 'bg-gray-800 text-gray-400 hover:text-white border border-gray-700'
+                    ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white'
+                    : 'bg-white text-gray-700 hover:text-gray-900 border-2 border-gray-200'
                 }`}
               >
                 <TrendingDown className="h-5 w-5" />
@@ -379,16 +382,16 @@ export default function WeightTrackerPage() {
             {activeTab === 'weekly' && (
               <div className="space-y-4">
                 {isCoach && !selectedClientId ? (
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-white border-2 border-gray-200">
                     <CardContent className="py-12 text-center">
-                      <Users className="h-12 w-12 mx-auto mb-4 text-yellow-400" />
-                      <p className="text-gray-400">Välj en klient ovan för att se deras veckoöversikt.</p>
+                      <Users className="h-12 w-12 mx-auto mb-4 text-gold-primary" />
+                      <p className="text-gray-600">Välj en klient ovan för att se deras veckoöversikt.</p>
                     </CardContent>
                   </Card>
                 ) : weeks.length === 0 ? (
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-white border-2 border-gray-200">
                     <CardContent className="py-12 text-center">
-                      <p className="text-gray-400">
+                      <p className="text-gray-600">
                         {profile.targetDate
                           ? 'Klicka "Spara profil" för att generera veckoöversikten.'
                           : 'Fyll i profil med måldatum och klicka "Spara profil" för att se veckoöversikten.'}
@@ -412,47 +415,47 @@ export default function WeightTrackerPage() {
 
             {/* Graph View */}
             {activeTab === 'graph' && (
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-white border-2 border-gray-200">
                 <CardContent className="py-6">
                   {graphData.length === 0 ? (
                     <div className="py-12 text-center">
-                      <p className="text-gray-400">Ingen viktdata att visa. Börja registrera vikter för att se grafen.</p>
+                      <p className="text-gray-600">Ingen viktdata att visa. Börja registrera vikter för att se grafen.</p>
                     </div>
                   ) : (
                     <ResponsiveContainer width="100%" height={500}>
                       <LineChart data={graphData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                         <XAxis
                           dataKey="date"
-                          stroke="#9CA3AF"
+                          stroke="#6B7280"
                           style={{ fontSize: '12px' }}
                         />
                         <YAxis
-                          stroke="#9CA3AF"
+                          stroke="#6B7280"
                           domain={['dataMin - 2', 'dataMax + 2']}
                           style={{ fontSize: '12px' }}
                         />
                         <Tooltip
                           contentStyle={{
-                            backgroundColor: '#1F2937',
-                            border: '1px solid #374151',
+                            backgroundColor: '#fff',
+                            border: '1px solid #E5E7EB',
                             borderRadius: '8px',
-                            color: '#fff'
+                            color: '#111827'
                           }}
                         />
                         <Line
                           type="monotone"
                           dataKey="weight"
-                          stroke="#FBBF24"
+                          stroke="#D4AF37"
                           strokeWidth={3}
-                          dot={{ fill: '#FBBF24', r: 4 }}
+                          dot={{ fill: '#D4AF37', r: 4 }}
                         />
                         {profile.targetWeight && (
                           <ReferenceLine
                             y={parseFloat(profile.targetWeight)}
-                            stroke="#4ADE80"
+                            stroke="#10B981"
                             strokeDasharray="5 5"
-                            label={{ value: 'Mål', fill: '#4ADE80', fontSize: 12 }}
+                            label={{ value: 'Mål', fill: '#10B981', fontSize: 12 }}
                           />
                         )}
                       </LineChart>
@@ -472,7 +475,7 @@ export default function WeightTrackerPage() {
 function StatItem({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div className="flex justify-between items-center">
-      <span className="text-gray-400 text-sm">{label}</span>
+      <span className="text-gray-600 text-sm">{label}</span>
       <span className={`font-semibold ${color}`}>{value}</span>
     </div>
   )
@@ -495,24 +498,24 @@ function WeekCard({
   const weeklyAverage = calculateWeeklyAverage(week, entries)
 
   return (
-    <Card className={`border-gray-700 overflow-hidden ${isLocked ? 'bg-gray-850 opacity-90' : 'bg-gray-800'}`}>
-      <div className="grid grid-cols-5 bg-yellow-400">
-        <div className="col-span-1 p-4 flex items-center justify-center border-r border-yellow-500">
-          <span className="text-4xl font-bold text-black">V{week.weekNumber}</span>
+    <Card className={`border-2 overflow-hidden ${isLocked ? 'bg-gray-50 opacity-90 border-gray-300' : 'bg-white border-gray-200'}`}>
+      <div className="grid grid-cols-5 bg-gradient-to-r from-gold-primary to-gold-secondary">
+        <div className="col-span-1 p-4 flex items-center justify-center border-r border-gold-secondary">
+          <span className="text-4xl font-bold text-white">V{week.weekNumber}</span>
         </div>
-        <div className="col-span-2 p-4 border-r border-yellow-500">
-          <div className="text-black font-semibold text-sm flex items-center gap-2">
+        <div className="col-span-2 p-4 border-r border-gold-secondary">
+          <div className="text-white font-semibold text-sm flex items-center gap-2">
             Vecka {week.weekNumber}
             {isLocked && <Lock className="h-3 w-3" />}
           </div>
-          <div className="text-black text-xs opacity-75">
+          <div className="text-white text-xs opacity-90">
             {formatDate(week.startDate)} - {formatDate(addDays(week.startDate, 6))}
           </div>
         </div>
-        <div className="col-span-1 p-4 flex items-center justify-center border-r border-yellow-500">
+        <div className="col-span-1 p-4 flex items-center justify-center border-r border-gold-secondary">
           <div className="text-center">
-            <div className="text-black text-xs font-semibold">Weekly Average</div>
-            <div className="text-black text-2xl font-bold">{weeklyAverage}</div>
+            <div className="text-white text-xs font-semibold">Weekly Average</div>
+            <div className="text-white text-2xl font-bold">{weeklyAverage}</div>
           </div>
         </div>
         <div className="col-span-1 p-4 flex items-center justify-center">
@@ -520,7 +523,7 @@ function WeekCard({
             size="sm"
             variant="ghost"
             onClick={onToggleLock}
-            className="text-black hover:bg-yellow-500"
+            className="text-white hover:bg-gold-secondary"
             title={isLocked ? 'Lås upp vecka' : 'Lås vecka'}
           >
             {isLocked ? <Unlock className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
@@ -533,9 +536,9 @@ function WeekCard({
             {week.days.map((day, index) => {
               const entry = entries.find(e => e.date === day.date)
               return (
-                <tr key={day.date} className={index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750'}>
-                  <td className="px-4 py-3 text-gray-400 w-32">{day.dayName}</td>
-                  <td className="px-4 py-3 text-gray-400 text-sm">{formatDisplayDate(day.date)}</td>
+                <tr key={day.date} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  <td className="px-4 py-3 text-gray-700 w-32">{day.dayName}</td>
+                  <td className="px-4 py-3 text-gray-600 text-sm">{formatDisplayDate(day.date)}</td>
                   <td className="px-4 py-3">
                     <Input
                       type="number"
@@ -544,10 +547,10 @@ function WeekCard({
                       value={entry?.weight || ''}
                       onChange={(e) => onUpdateWeight(day.date, e.target.value, week.weekNumber)}
                       disabled={isLocked}
-                      className={`border-gray-600 text-white text-center focus:ring-yellow-400 ${
+                      className={`border-gray-300 text-gray-900 text-center focus:ring-gold-primary ${
                         isLocked
-                          ? 'bg-gray-600 cursor-not-allowed opacity-70'
-                          : 'bg-gray-700'
+                          ? 'bg-gray-100 cursor-not-allowed opacity-70'
+                          : 'bg-white'
                       }`}
                     />
                   </td>

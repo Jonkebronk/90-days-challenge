@@ -351,9 +351,9 @@ export default function ArticlesPage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <Card>
+        <Card className="bg-white border-2 border-gray-200">
           <CardContent className="p-6">
-            <p className="text-muted-foreground">Du har inte behörighet att se denna sida.</p>
+            <p className="text-gray-600">Du har inte behörighet att se denna sida.</p>
           </CardContent>
         </Card>
       </div>
@@ -364,27 +364,30 @@ export default function ArticlesPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">Skapa Artiklar</h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <h1 className="text-3xl font-bold text-gray-900">Skapa Artiklar</h1>
+          <p className="text-gray-600 mt-1">
             Skapa och hantera artiklar för Kunskapsbanken
           </p>
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
+        <Button
+          onClick={() => setIsCreateDialogOpen(true)}
+          className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Ny artikel
         </Button>
       </div>
 
       {/* Filters */}
-      <Card className="bg-gradient-to-br from-[#1a0933]/50 to-[#0a0a0a]/50 border-[rgba(255,215,0,0.2)]">
+      <Card className="bg-white border-2 border-gray-200">
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
-            <Filter className="h-5 w-5 text-[#FFD700]" />
+            <Filter className="h-5 w-5 text-gold-primary" />
             <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label className="text-xs text-[rgba(255,255,255,0.7)] mb-1 block">Kategori</Label>
+                <Label className="text-xs text-gray-600 mb-1 block">Kategori</Label>
                 <Select value={filterCategory} onValueChange={setFilterCategory}>
-                  <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)]">
+                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                     <SelectValue placeholder="Välj kategori" />
                   </SelectTrigger>
                   <SelectContent>
@@ -398,9 +401,9 @@ export default function ArticlesPage() {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs text-[rgba(255,255,255,0.7)] mb-1 block">Fas</Label>
+                <Label className="text-xs text-gray-600 mb-1 block">Fas</Label>
                 <Select value={filterPhase} onValueChange={setFilterPhase}>
-                  <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)]">
+                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                     <SelectValue placeholder="Välj fas" />
                   </SelectTrigger>
                   <SelectContent>
@@ -412,9 +415,9 @@ export default function ArticlesPage() {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs text-[rgba(255,255,255,0.7)] mb-1 block">Status</Label>
+                <Label className="text-xs text-gray-600 mb-1 block">Status</Label>
                 <Select value={filterPublished} onValueChange={setFilterPublished}>
-                  <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)]">
+                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                     <SelectValue placeholder="Välj status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -431,18 +434,20 @@ export default function ArticlesPage() {
 
       <div className="space-y-6">
         {isLoading ? (
-          <Card className="bg-gradient-to-br from-[#1a0933]/50 to-[#0a0a0a]/50 border-[rgba(255,215,0,0.2)]">
+          <Card className="bg-white border-2 border-gray-200">
             <CardContent className="py-8">
-              <p className="text-[rgba(255,255,255,0.6)] text-center">Laddar...</p>
+              <div className="flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-gold-primary border-t-transparent rounded-full animate-spin" />
+              </div>
             </CardContent>
           </Card>
         ) : filteredArticles.length === 0 ? (
-          <Card className="bg-gradient-to-br from-[#1a0933]/50 to-[#0a0a0a]/50 border-[rgba(255,215,0,0.2)]">
+          <Card className="bg-white border-2 border-gray-200">
             <CardContent className="py-8">
               <div className="text-center">
-                <FileText className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-                <p className="text-[rgba(255,255,255,0.7)]">Inga artiklar ännu.</p>
-                <p className="text-sm text-[rgba(255,255,255,0.5)] mt-1">
+                <FileText className="h-12 w-12 mx-auto text-gold-primary mb-4" />
+                <p className="text-gray-700">Inga artiklar ännu.</p>
+                <p className="text-sm text-gray-500 mt-1">
                   Skapa din första artikel för att komma igång.
                 </p>
               </div>
@@ -454,29 +459,26 @@ export default function ArticlesPage() {
             return (
             <Card
               key={group.category.id}
-              className="overflow-hidden bg-gradient-to-br from-[#1a0933]/50 to-[#0a0a0a]/50 border-[rgba(255,215,0,0.2)]"
+              className="overflow-hidden bg-white border-2 border-gray-200"
             >
               <CardHeader
-                className="border-b border-[rgba(255,215,0,0.2)]"
+                className="border-b border-gray-200"
                 style={{
-                  background: `linear-gradient(to right, ${group.category.color}1a, transparent)`
+                  background: `linear-gradient(to right, ${group.category.color}15, transparent)`
                 }}
               >
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-1 h-8 rounded-full shadow-lg"
+                      className="w-1 h-8 rounded-full"
                       style={{
-                        backgroundColor: group.category.color || '#FFD700',
-                        boxShadow: `0 0 10px ${group.category.color}40`
+                        backgroundColor: group.category.color || '#D4AF37'
                       }}
                     />
-                    <span className="text-[rgba(255,255,255,0.9)] uppercase tracking-[1px] font-semibold">
+                    <span className="text-gray-900 uppercase tracking-[1px] font-semibold">
                       {group.category.name}
                     </span>
-                    <Badge
-                      className="bg-[rgba(255,215,0,0.15)] text-[#FFD700] border border-[rgba(255,215,0,0.3)]"
-                    >
+                    <Badge className="bg-gold-primary/10 text-gold-primary border border-gold-primary/30">
                       {group.articles.length}
                     </Badge>
                   </div>
@@ -486,18 +488,18 @@ export default function ArticlesPage() {
                       size="icon"
                       onClick={() => handleMoveCategory(group.category, 'up')}
                       disabled={categoryIndex === 0}
-                      className="hover:bg-[rgba(255,215,0,0.1)]"
+                      className="hover:bg-gray-100"
                     >
-                      <ArrowUp className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
+                      <ArrowUp className="h-4 w-4 text-gray-600" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => handleMoveCategory(group.category, 'down')}
                       disabled={categoryIndex === categories.length - 1}
-                      className="hover:bg-[rgba(255,215,0,0.1)]"
+                      className="hover:bg-gray-100"
                     >
-                      <ArrowDown className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
+                      <ArrowDown className="h-4 w-4 text-gray-600" />
                     </Button>
                   </div>
                 </CardTitle>
@@ -505,35 +507,35 @@ export default function ArticlesPage() {
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-b border-[rgba(255,215,0,0.2)] hover:bg-transparent">
-                      <TableHead className="text-[rgba(255,255,255,0.7)] font-semibold">Titel</TableHead>
-                      <TableHead className="text-[rgba(255,255,255,0.7)] font-semibold">Fas</TableHead>
-                      <TableHead className="text-[rgba(255,255,255,0.7)] font-semibold">Svårighetsgrad</TableHead>
-                      <TableHead className="text-[rgba(255,255,255,0.7)] font-semibold">Tid</TableHead>
-                      <TableHead className="text-[rgba(255,255,255,0.7)] font-semibold">Status</TableHead>
-                      <TableHead className="text-right text-[rgba(255,255,255,0.7)] font-semibold">Åtgärder</TableHead>
+                    <TableRow className="border-b border-gray-200 hover:bg-transparent">
+                      <TableHead className="text-gray-600 font-semibold">Titel</TableHead>
+                      <TableHead className="text-gray-600 font-semibold">Fas</TableHead>
+                      <TableHead className="text-gray-600 font-semibold">Svårighetsgrad</TableHead>
+                      <TableHead className="text-gray-600 font-semibold">Tid</TableHead>
+                      <TableHead className="text-gray-600 font-semibold">Status</TableHead>
+                      <TableHead className="text-right text-gray-600 font-semibold">Åtgärder</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {group.articles.map((article, index) => (
-                      <TableRow key={article.id} className="border-b border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.05)]">
-                        <TableCell className="font-medium text-[rgba(255,255,255,0.9)]">{article.title}</TableCell>
-                        <TableCell className="text-[rgba(255,255,255,0.7)]">
+                      <TableRow key={article.id} className="border-b border-gray-100 hover:bg-gray-50">
+                        <TableCell className="font-medium text-gray-900">{article.title}</TableCell>
+                        <TableCell className="text-gray-700">
                           {article.phase ? `Fas ${article.phase}` : '-'}
                         </TableCell>
-                        <TableCell className="text-[rgba(255,255,255,0.7)]">
+                        <TableCell className="text-gray-700">
                           {article.difficulty ? (
-                            <Badge variant="secondary">{article.difficulty}</Badge>
+                            <Badge variant="secondary" className="bg-gray-100 text-gray-700">{article.difficulty}</Badge>
                           ) : '-'}
                         </TableCell>
-                        <TableCell className="text-[rgba(255,255,255,0.7)]">
+                        <TableCell className="text-gray-700">
                           {article.estimatedReadingMinutes ? `${article.estimatedReadingMinutes} min` : '-'}
                         </TableCell>
-                        <TableCell className="text-[rgba(255,255,255,0.7)]">
+                        <TableCell className="text-gray-700">
                           {article.published ? (
-                            <Badge className="bg-green-600">Publicerad</Badge>
+                            <Badge className="bg-green-100 text-green-700 border-green-200">Publicerad</Badge>
                           ) : (
-                            <Badge variant="secondary">Utkast</Badge>
+                            <Badge variant="secondary" className="bg-gray-100 text-gray-600">Utkast</Badge>
                           )}
                         </TableCell>
                         <TableCell className="text-right">
@@ -554,18 +556,18 @@ export default function ArticlesPage() {
                                     size="icon"
                                     onClick={() => handleMoveArticle(article, 'up')}
                                     disabled={isFirst}
-                                    className="hover:bg-[rgba(255,215,0,0.1)]"
+                                    className="hover:bg-gray-100"
                                   >
-                                    <ArrowUp className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
+                                    <ArrowUp className="h-4 w-4 text-gray-600" />
                                   </Button>
                                   <Button
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => handleMoveArticle(article, 'down')}
                                     disabled={isLast}
-                                    className="hover:bg-[rgba(255,215,0,0.1)]"
+                                    className="hover:bg-gray-100"
                                   >
-                                    <ArrowDown className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
+                                    <ArrowDown className="h-4 w-4 text-gray-600" />
                                   </Button>
                                 </>
                               )
@@ -575,29 +577,29 @@ export default function ArticlesPage() {
                               size="icon"
                               onClick={() => handleTogglePublished(article)}
                               title={article.published ? 'Avpublicera' : 'Publicera'}
-                              className="hover:bg-[rgba(255,215,0,0.1)]"
+                              className="hover:bg-gray-100"
                             >
                               {article.published ? (
-                                <EyeOff className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
+                                <EyeOff className="h-4 w-4 text-gray-600" />
                               ) : (
-                                <Eye className="h-4 w-4 text-[rgba(255,255,255,0.7)]" />
+                                <Eye className="h-4 w-4 text-gray-600" />
                               )}
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
-                              className="hover:bg-[rgba(255,215,0,0.1)]"
+                              className="hover:bg-gray-100"
                             >
-                              <Pencil className="h-4 w-4 text-[rgba(255,215,0,0.8)]" />
+                              <Pencil className="h-4 w-4 text-gold-primary" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => handleDeleteArticle(article)}
-                              className="hover:bg-red-500/10"
+                              className="hover:bg-red-50"
                             >
-                              <Trash2 className="h-4 w-4 text-red-400" />
+                              <Trash2 className="h-4 w-4 text-red-500" />
                             </Button>
                           </div>
                         </TableCell>
@@ -614,39 +616,41 @@ export default function ArticlesPage() {
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent>
+        <DialogContent className="bg-white border-2 border-gray-200">
           <DialogHeader>
-            <DialogTitle>Skapa ny artikel</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-gray-900">Skapa ny artikel</DialogTitle>
+            <DialogDescription className="text-gray-600">
               Lägg till en ny artikel till artikel banken.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="title">Titel *</Label>
+              <Label htmlFor="title" className="text-gray-700">Titel *</Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 placeholder="t.ex. Varför protein är viktigt"
+                className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
               />
             </div>
             <div>
-              <Label htmlFor="slug">Slug *</Label>
+              <Label htmlFor="slug" className="text-gray-700">Slug *</Label>
               <Input
                 id="slug"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                 placeholder="t.ex. varfor-protein-ar-viktigt"
+                className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
               />
             </div>
             <div>
-              <Label htmlFor="category">Kategori *</Label>
+              <Label htmlFor="category" className="text-gray-700">Kategori *</Label>
               <Select
                 value={formData.categoryId}
                 onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                   <SelectValue placeholder="Välj kategori" />
                 </SelectTrigger>
                 <SelectContent>
@@ -660,10 +664,18 @@ export default function ArticlesPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsCreateDialogOpen(false)}
+              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
               Avbryt
             </Button>
-            <Button onClick={handleCreateArticle} disabled={isSaving}>
+            <Button
+              onClick={handleCreateArticle}
+              disabled={isSaving}
+              className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
+            >
               {isSaving ? 'Skapar...' : 'Skapa artikel'}
             </Button>
           </DialogFooter>

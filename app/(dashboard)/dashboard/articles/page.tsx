@@ -183,18 +183,18 @@ function ArticleBankContent() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+    <div className="min-h-screen">
       <div className="container mx-auto p-6 space-y-8 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
-          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-6 opacity-20" />
+          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-3">
             Kunskapsbanken
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+          <p className="text-gray-600 text-sm tracking-[1px]">
             Din kunskapsresa genom de 90 dagarna
           </p>
-          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
         </div>
 
         {/* Search Bar */}
@@ -206,9 +206,9 @@ function ArticleBankContent() {
         {searchQuery && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-xl font-bold text-gray-900">
                 Sökresultat för &quot;{searchQuery}&quot;
-                <span className="text-[rgba(255,255,255,0.5)] ml-2">({articles.length})</span>
+                <span className="text-gray-500 ml-2">({articles.length})</span>
               </h2>
               <Button
                 onClick={() => {
@@ -217,7 +217,7 @@ function ArticleBankContent() {
                   fetchArticles()
                 }}
                 variant="ghost"
-                className="text-[#FFD700] hover:text-[#FFA500]"
+                className="text-gold-primary hover:text-gold-secondary"
               >
                 Rensa sökning
               </Button>
@@ -234,7 +234,7 @@ function ArticleBankContent() {
                   <Card
                     key={article.id}
                     onClick={() => router.push(`/dashboard/articles/${article.id}`)}
-                    className="cursor-pointer hover:border-[rgba(255,215,0,0.5)] transition-all bg-[rgba(10,10,10,0.5)] backdrop-blur-sm border-[rgba(255,215,0,0.2)]"
+                    className="cursor-pointer hover:border-gold-primary transition-all bg-white border-gray-200"
                   >
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
@@ -243,10 +243,10 @@ function ArticleBankContent() {
                         </div>
 
                         <div className="flex-1 min-w-0 space-y-2">
-                          <h3 className="font-semibold text-white line-clamp-2">{article.title}</h3>
+                          <h3 className="font-semibold text-gray-900 line-clamp-2">{article.title}</h3>
 
                           <div className="flex items-center gap-2 flex-wrap">
-                            <Badge className="text-xs bg-[rgba(255,215,0,0.2)] text-[#FFD700] border-[rgba(255,215,0,0.3)]">
+                            <Badge className="text-xs bg-gold-primary/10 text-gold-primary border-gold-primary/30">
                               {article.category.name}
                             </Badge>
                             {article.phase && (
@@ -255,13 +255,13 @@ function ArticleBankContent() {
                               </Badge>
                             )}
                             {article.estimatedReadingMinutes && (
-                              <div className="flex items-center gap-1 text-xs text-[rgba(255,255,255,0.5)]">
+                              <div className="flex items-center gap-1 text-xs text-gray-500">
                                 <Clock className="h-3 w-3" />
                                 {article.estimatedReadingMinutes} min
                               </div>
                             )}
                             {isCompleted && (
-                              <Badge className="text-xs bg-[rgba(34,197,94,0.2)] text-[#22c55e] border-[#22c55e]">
+                              <Badge className="text-xs bg-green-100 text-green-700 border-green-200">
                                 <CheckCircle className="h-3 w-3 mr-1" />
                                 Läst
                               </Badge>
@@ -277,7 +277,7 @@ function ArticleBankContent() {
 
             {articles.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-[rgba(255,255,255,0.5)]">
+                <p className="text-gray-500">
                   Inga artiklar hittades för &quot;{searchQuery}&quot;
                 </p>
               </div>
@@ -289,7 +289,7 @@ function ArticleBankContent() {
         {!searchQuery && (
           isLoading ? (
             <div className="text-center py-12">
-              <p className="text-[rgba(255,255,255,0.5)]">Laddar artiklar...</p>
+              <p className="text-gray-500">Laddar artiklar...</p>
             </div>
           ) : (
             <>
@@ -316,10 +316,10 @@ function ArticleBankContent() {
                 <div key={sectionName} className="mb-12">
                   {/* Section Header */}
                   <div className="mb-6">
-                    <h2 className="text-2xl font-black tracking-wider uppercase text-[#FFD700] mb-2">
+                    <h2 className="text-2xl font-black tracking-wider uppercase text-gold-primary mb-2">
                       {sectionName}
                     </h2>
-                    <div className="h-[1px] bg-gradient-to-r from-[#FFD700] via-[rgba(255,215,0,0.3)] to-transparent" />
+                    <div className="h-[1px] bg-gradient-to-r from-gold-primary via-gold-primary/30 to-transparent" />
                   </div>
 
                   {/* Categories Grid for this section */}
@@ -334,7 +334,7 @@ function ArticleBankContent() {
               const displayedArticles = isExpanded ? categoryArticles : []
 
               return (
-                <div key={category.id} className="flex flex-col bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-xl overflow-hidden shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/50 hover:border-[rgba(255,215,0,0.35)] transition-all duration-300">
+                <div key={category.id} className="flex flex-col bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl hover:border-gold-primary transition-all duration-300">
                   {/* Category Header with Icon */}
                   <div
                     onClick={(e) => {
@@ -346,7 +346,7 @@ function ArticleBankContent() {
                     }}
                     className="relative h-28 flex items-center justify-center gap-3 px-4 cursor-pointer"
                     style={{
-                      background: `linear-gradient(135deg, ${categoryColor}33, ${categoryColor}15)`
+                      background: `linear-gradient(135deg, ${categoryColor}22, ${categoryColor}11)`
                     }}
                   >
                     {/* Category Icon */}
@@ -365,11 +365,11 @@ function ArticleBankContent() {
                     >
                       {category.name}
                     </h2>
-                    <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-black/20 backdrop-blur-sm">
+                    <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-white/80 backdrop-blur-sm">
                       <span className="text-[10px] font-medium" style={{ color: categoryColor }}>
                         {categoryArticles.filter(a => isArticleCompleted(a)).length}
                       </span>
-                      <span className="text-[10px] text-[rgba(255,255,255,0.4)]"> / {categoryArticles.length}</span>
+                      <span className="text-[10px] text-gray-500"> / {categoryArticles.length}</span>
                     </div>
                     {/* Expand/Collapse indicator */}
                     <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
@@ -390,27 +390,24 @@ function ArticleBankContent() {
                         <button
                           key={article.id}
                           onClick={() => router.push(`/dashboard/articles/${article.id}`)}
-                          className="w-full text-left bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.15)] rounded-lg p-3.5 hover:border-[rgba(255,215,0,0.5)] hover:bg-[rgba(255,215,0,0.08)] hover:scale-[1.02] transition-all duration-200 group relative overflow-hidden"
+                          className="w-full text-left bg-gray-50 border border-gray-200 rounded-lg p-3.5 hover:border-gold-primary hover:bg-gold-primary/5 hover:scale-[1.02] transition-all duration-200 group relative overflow-hidden"
                         >
                           {/* Phase indicator stripe */}
                           {article.phase && (
-                            <div className={`absolute top-0 left-0 right-0 h-1 ${phaseColors.bg} opacity-60`} />
+                            <div className={`absolute top-0 left-0 right-0 h-1 ${phaseColors.bg}`} />
                           )}
-
-                          {/* Subtle glow on hover */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.1)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                           <div className="flex items-start gap-3 relative z-10">
                             {/* Completion Status Icon */}
                             {completed ? (
-                              <CheckCircle className="h-5 w-5 text-[#22c55e] flex-shrink-0 mt-0.5" />
+                              <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                             ) : (
-                              <Circle className="h-5 w-5 text-[rgba(255,255,255,0.2)] flex-shrink-0 mt-0.5" />
+                              <Circle className="h-5 w-5 text-gray-300 flex-shrink-0 mt-0.5" />
                             )}
 
                             {/* Thumbnail */}
                             {article.coverImage && (
-                              <div className="w-20 h-14 flex-shrink-0 rounded-md overflow-hidden bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.1)]">
+                              <div className="w-20 h-14 flex-shrink-0 rounded-md overflow-hidden bg-gray-100 border border-gray-200">
                                 <img
                                   src={article.coverImage}
                                   alt={article.title}
@@ -422,7 +419,7 @@ function ArticleBankContent() {
                             {/* Content */}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-start justify-between gap-2 mb-2">
-                                <h3 className="text-sm font-medium text-white group-hover:text-[#FFD700] transition-colors line-clamp-2 leading-snug flex-1">
+                                <h3 className="text-sm font-medium text-gray-900 group-hover:text-gold-primary transition-colors line-clamp-2 leading-snug flex-1">
                                   {article.title}
                                 </h3>
                                 {/* Phase badge */}
@@ -432,7 +429,7 @@ function ArticleBankContent() {
                                   </span>
                                 )}
                               </div>
-                              <div className="flex items-center gap-3 text-xs text-[rgba(255,255,255,0.5)]">
+                              <div className="flex items-center gap-3 text-xs text-gray-500">
                                 {article.estimatedReadingMinutes && (
                                   <div className="flex items-center gap-1.5">
                                     <Clock className="h-3.5 w-3.5" />
@@ -440,7 +437,7 @@ function ArticleBankContent() {
                                   </div>
                                 )}
                                 {article.difficulty && (
-                                  <span className="px-2 py-0.5 rounded-full bg-[rgba(255,255,255,0.1)] text-xs">
+                                  <span className="px-2 py-0.5 rounded-full bg-gray-200 text-xs">
                                     {getDifficultyLabel(article.difficulty)}
                                   </span>
                                 )}
@@ -466,9 +463,9 @@ function ArticleBankContent() {
         {/* Empty State */}
         {!isLoading && articles.length === 0 && (
           <div className="text-center py-12">
-            <BookOpen className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.3)] mb-4" />
-            <p className="text-[rgba(255,255,255,0.5)]">Inga artiklar publicerade än.</p>
-            <p className="text-sm text-[rgba(255,255,255,0.3)] mt-2">Artiklar kommer snart!</p>
+            <BookOpen className="h-16 w-16 mx-auto text-gold-primary/50 mb-4" />
+            <p className="text-gray-500">Inga artiklar publicerade än.</p>
+            <p className="text-sm text-gray-400 mt-2">Artiklar kommer snart!</p>
           </div>
         )}
       </div>
@@ -479,8 +476,8 @@ function ArticleBankContent() {
 export default function ArticleBankPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a] flex items-center justify-center">
-        <p className="text-[rgba(255,255,255,0.5)]">Laddar...</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">Laddar...</p>
       </div>
     }>
       <ArticleBankContent />

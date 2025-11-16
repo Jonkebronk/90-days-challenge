@@ -161,8 +161,8 @@ export default function MessagesPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-[#FFD700] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[rgba(255,255,255,0.8)]">Laddar meddelanden...</p>
+          <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Laddar meddelanden...</p>
         </div>
       </div>
     )
@@ -175,23 +175,21 @@ export default function MessagesPage() {
   return (
     <div className="space-y-6 h-[calc(100vh-12rem)]">
       {/* Header */}
-      <div className="text-center">
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
-        <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
-          Meddelanden
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
+          MEDDELANDEN
         </h1>
-        <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+        <p className="text-gray-600 mt-2">
           Kommunicera med din {isCoach ? 'klient' : 'coach'}
         </p>
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100%-12rem)]">
         {/* Sidebar - Contact List (Coach only) */}
         {isCoach && (
           <div className="lg:col-span-1">
-            <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] p-4 h-full overflow-y-auto">
-              <h3 className="text-lg font-bold text-[rgba(255,255,255,0.9)] mb-4">Klienter</h3>
+            <Card className="bg-white border-2 border-gray-200 p-4 h-full overflow-y-auto">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Klienter</h3>
               <div className="space-y-2">
                 {clients.map(client => (
                   <button
@@ -199,12 +197,12 @@ export default function MessagesPage() {
                     onClick={() => setOtherUserId(client.id)}
                     className={`w-full text-left p-3 rounded-lg transition-all ${
                       otherUserId === client.id
-                        ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a]'
-                        : 'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.9)]'
+                        ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white'
+                        : 'bg-gray-50 hover:bg-gold-primary/10 text-gray-900'
                     }`}
                   >
                     <p className="font-medium">{client.name}</p>
-                    <p className={`text-sm ${otherUserId === client.id ? 'text-[rgba(10,10,10,0.7)]' : 'text-[rgba(255,255,255,0.5)]'}`}>
+                    <p className={`text-sm ${otherUserId === client.id ? 'text-white/80' : 'text-gray-500'}`}>
                       {client.email}
                     </p>
                   </button>
@@ -216,14 +214,14 @@ export default function MessagesPage() {
 
         {/* Messages Area */}
         <div className={`${isCoach ? 'lg:col-span-3' : 'lg:col-span-4'} flex flex-col`}>
-          <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px] flex-1 flex flex-col">
+          <Card className="bg-white border-2 border-gray-200 flex-1 flex flex-col">
             {/* Contact Header */}
             {selectedContact && (
-              <div className="p-4 border-b border-[rgba(255,215,0,0.2)]">
-                <h3 className="text-lg font-bold text-[rgba(255,255,255,0.9)]">
+              <div className="p-4 border-b border-gray-200">
+                <h3 className="text-lg font-bold text-gray-900">
                   {selectedContact.name}
                 </h3>
-                <p className="text-sm text-[rgba(255,255,255,0.5)]">{selectedContact.email}</p>
+                <p className="text-sm text-gray-500">{selectedContact.email}</p>
               </div>
             )}
 
@@ -231,7 +229,7 @@ export default function MessagesPage() {
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-[rgba(255,255,255,0.6)]">Inga meddelanden än. Skicka det första!</p>
+                  <p className="text-gray-600">Inga meddelanden än. Skicka det första!</p>
                 </div>
               ) : (
                 messages.map((message) => {
@@ -246,16 +244,16 @@ export default function MessagesPage() {
                       <div
                         className={`max-w-[70%] ${
                           isCheckIn
-                            ? 'bg-[rgba(59,130,246,0.1)] border-2 border-[rgba(59,130,246,0.3)]'
+                            ? 'bg-blue-50 border-2 border-blue-200'
                             : isMine
-                            ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500]'
-                            : 'bg-[rgba(255,255,255,0.1)]'
+                            ? 'bg-gradient-to-r from-gold-primary to-gold-secondary'
+                            : 'bg-gray-100'
                         } rounded-2xl p-4`}
                       >
                         {/* Check-in header */}
                         {isCheckIn && (
-                          <div className="mb-2 pb-2 border-b border-[rgba(59,130,246,0.3)]">
-                            <p className="text-xs font-bold text-[#3b82f6]">VECKORAPPORT</p>
+                          <div className="mb-2 pb-2 border-b border-blue-200">
+                            <p className="text-xs font-bold text-blue-600">VECKORAPPORT</p>
                           </div>
                         )}
 
@@ -263,8 +261,8 @@ export default function MessagesPage() {
                         <p
                           className={`whitespace-pre-wrap ${
                             isMine && !isCheckIn
-                              ? 'text-[#0a0a0a]'
-                              : 'text-[rgba(255,255,255,0.9)]'
+                              ? 'text-white'
+                              : 'text-gray-900'
                           }`}
                         >
                           {message.content}
@@ -296,8 +294,8 @@ export default function MessagesPage() {
                         <p
                           className={`text-xs mt-2 ${
                             isMine && !isCheckIn
-                              ? 'text-[rgba(10,10,10,0.6)]'
-                              : 'text-[rgba(255,255,255,0.5)]'
+                              ? 'text-white/70'
+                              : 'text-gray-500'
                           }`}
                         >
                           {format(new Date(message.createdAt), 'PPp', { locale: sv })}
@@ -311,20 +309,20 @@ export default function MessagesPage() {
             </div>
 
             {/* Input Area */}
-            <div className="p-4 border-t border-[rgba(255,215,0,0.2)]">
+            <div className="p-4 border-t border-gray-200">
               <div className="flex gap-2">
                 <Input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Skriv ett meddelande..."
-                  className="flex-1 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)]"
+                  className="flex-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-gold-primary"
                   disabled={sending}
                 />
                 <Button
                   onClick={sendMessage}
                   disabled={sending || !newMessage.trim()}
-                  className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold"
+                  className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
                 >
                   <Send className="w-4 h-4" />
                 </Button>

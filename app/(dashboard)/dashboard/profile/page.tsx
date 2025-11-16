@@ -31,44 +31,42 @@ export default function ProfilePage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="text-center">
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 opacity-30" />
-        <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-3">
-          Min Profil
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
+          MIN PROFIL
         </h1>
-        <p className="text-[rgba(255,255,255,0.6)] text-sm tracking-[1px]">
+        <p className="text-gray-600 mt-2">
           Hantera dina uppgifter och inställningar
         </p>
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
       </div>
 
       <div className="space-y-6 max-w-4xl mx-auto">
         {/* User Info Card */}
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all">
-          <div className="p-6 border-b border-[rgba(255,215,0,0.1)]">
-            <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">Personlig Information</h2>
+        <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-xl font-bold text-gray-900">Personlig Information</h2>
           </div>
           <div className="p-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="name" className="text-[rgba(255,215,0,0.8)]">Namn</Label>
+                <Label htmlFor="name" className="text-gold-primary">Namn</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   disabled={!isEditing}
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700] disabled:opacity-60"
+                  className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-gold-primary disabled:bg-gray-50 disabled:opacity-60"
                 />
               </div>
               <div>
-                <Label htmlFor="email" className="text-[rgba(255,215,0,0.8)]">E-post</Label>
+                <Label htmlFor="email" className="text-gold-primary">E-post</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   disabled={!isEditing}
-                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700] disabled:opacity-60"
+                  className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-gold-primary disabled:bg-gray-50 disabled:opacity-60"
                 />
               </div>
             </div>
@@ -77,7 +75,7 @@ export default function ProfilePage() {
               {!isEditing ? (
                 <Button
                   onClick={() => setIsEditing(true)}
-                  className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold"
+                  className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
                 >
                   Redigera
                 </Button>
@@ -85,7 +83,7 @@ export default function ProfilePage() {
                 <>
                   <Button
                     onClick={handleSave}
-                    className="bg-gradient-to-r from-[#22c55e] to-[#16a34a] hover:from-[#22c55e] hover:to-[#22c55e] text-white font-semibold"
+                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-500 text-white font-semibold"
                   >
                     Spara
                   </Button>
@@ -97,7 +95,7 @@ export default function ProfilePage() {
                         email: session?.user?.email || '',
                       })
                     }}
-                    className="bg-[rgba(255,255,255,0.1)] border border-[rgba(255,215,0,0.3)] hover:bg-[rgba(255,255,255,0.15)] text-[rgba(255,255,255,0.9)]"
+                    className="bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-900"
                   >
                     Avbryt
                   </Button>
@@ -108,22 +106,22 @@ export default function ProfilePage() {
         </div>
 
         {/* Account Info Card */}
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all">
-          <div className="p-6 border-b border-[rgba(255,215,0,0.1)]">
-            <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">Kontoinformation</h2>
+        <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-xl font-bold text-gray-900">Kontoinformation</h2>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label className="text-[rgba(255,215,0,0.8)] text-sm">Roll</Label>
-                <p className="text-lg font-medium text-[rgba(255,255,255,0.9)] capitalize mt-1">
+                <Label className="text-gold-primary text-sm">Roll</Label>
+                <p className="text-lg font-medium text-gray-900 capitalize mt-1">
                   {(session?.user as any)?.role || 'Client'}
                 </p>
               </div>
               <div>
-                <Label className="text-[rgba(255,215,0,0.8)] text-sm">Status</Label>
+                <Label className="text-gold-primary text-sm">Status</Label>
                 <p className="text-lg font-medium mt-1">
-                  <span className="inline-block px-3 py-1 rounded-full text-sm bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white font-semibold">
+                  <span className="inline-block px-3 py-1 rounded-full text-sm bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold">
                     Aktiv
                   </span>
                 </p>
@@ -133,13 +131,13 @@ export default function ProfilePage() {
         </div>
 
         {/* Security Card */}
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all">
-          <div className="p-6 border-b border-[rgba(255,215,0,0.1)]">
-            <h2 className="text-xl font-bold text-[rgba(255,255,255,0.9)]">Säkerhet</h2>
+        <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-xl font-bold text-gray-900">Säkerhet</h2>
           </div>
           <div className="p-6">
             <Button
-              className="bg-[rgba(255,255,255,0.1)] border border-[rgba(255,215,0,0.3)] hover:bg-[rgba(255,215,0,0.1)] hover:border-[rgba(255,215,0,0.5)] text-[rgba(255,255,255,0.9)]"
+              className="bg-gray-100 border border-gray-300 hover:bg-gray-200 hover:border-gold-primary text-gray-900"
             >
               Ändra Lösenord
             </Button>

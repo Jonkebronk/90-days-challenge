@@ -123,11 +123,11 @@ export default function ProgressPage() {
   return (
     <div className="space-y-8">
       {/* Header - Centrerad som Kostschema */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-[rgba(255,215,0,0.05)] to-transparent border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px]">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
           PROGRESS
         </h1>
-        <p className="text-[rgba(255,255,255,0.6)] mt-2">
+        <p className="text-gray-600 mt-2">
           Se hur du utvecklas över tid
         </p>
       </div>
@@ -135,13 +135,13 @@ export default function ProgressPage() {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Time Range Selector */}
         <div className="flex justify-end">
-          <div className="flex gap-2 p-1 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.2)] rounded-lg">
+          <div className="flex gap-2 p-1 bg-gray-100 border border-gray-200 rounded-lg">
             <Button
               size="sm"
               onClick={() => setTimeRange('7')}
               className={timeRange === '7'
-                ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold'
-                : 'bg-transparent hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.7)]'}
+                ? 'bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold'
+                : 'bg-transparent hover:bg-gray-200 text-gray-700'}
             >
               7d
             </Button>
@@ -149,8 +149,8 @@ export default function ProgressPage() {
               size="sm"
               onClick={() => setTimeRange('30')}
               className={timeRange === '30'
-                ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold'
-                : 'bg-transparent hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.7)]'}
+                ? 'bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold'
+                : 'bg-transparent hover:bg-gray-200 text-gray-700'}
             >
               30d
             </Button>
@@ -158,8 +158,8 @@ export default function ProgressPage() {
               size="sm"
               onClick={() => setTimeRange('90')}
               className={timeRange === '90'
-                ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold'
-                : 'bg-transparent hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.7)]'}
+                ? 'bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold'
+                : 'bg-transparent hover:bg-gray-200 text-gray-700'}
             >
               90d
             </Button>
@@ -168,37 +168,37 @@ export default function ProgressPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all p-6">
-            <p className="text-[rgba(255,215,0,0.8)] text-sm font-medium mb-3">Viktförändring</p>
+          <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-6">
+            <p className="text-gold-primary text-sm font-medium mb-3">Viktförändring</p>
             <div className="flex items-baseline gap-2">
-              <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
+              <div className="text-3xl font-bold text-gray-900">
                 {weightChange > 0 ? '+' : ''}{weightChange.toFixed(1)} kg
               </div>
-              {weightChange < 0 && <TrendingDown className="w-5 h-5 text-[#22c55e]" />}
-              {weightChange > 0 && <TrendingUp className="w-5 h-5 text-[#ef4444]" />}
-              {weightChange === 0 && <Minus className="w-5 h-5 text-[rgba(255,255,255,0.4)]" />}
+              {weightChange < 0 && <TrendingDown className="w-5 h-5 text-green-600" />}
+              {weightChange > 0 && <TrendingUp className="w-5 h-5 text-red-500" />}
+              {weightChange === 0 && <Minus className="w-5 h-5 text-gray-400" />}
             </div>
-            <p className="text-sm text-[rgba(255,255,255,0.5)] mt-2">
+            <p className="text-sm text-gray-500 mt-2">
               Från {startWeight}kg till {currentWeight}kg
             </p>
           </div>
 
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all p-6">
-            <p className="text-[rgba(255,215,0,0.8)] text-sm font-medium mb-3">Genomsnittlig Energi</p>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
+          <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-6">
+            <p className="text-gold-primary text-sm font-medium mb-3">Genomsnittlig Energi</p>
+            <div className="text-3xl font-bold text-gray-900">
               {avgEnergy.toFixed(1)} / 5
             </div>
-            <p className="text-sm text-[rgba(255,255,255,0.5)] mt-2">
+            <p className="text-sm text-gray-500 mt-2">
               {avgEnergy >= 4 ? 'Bra nivåer! 🎉' : avgEnergy >= 3 ? 'Okej nivåer 👍' : 'Försök få mer vila 😴'}
             </p>
           </div>
 
-          <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all p-6">
-            <p className="text-[rgba(255,215,0,0.8)] text-sm font-medium mb-3">Genomsnittlig Sömn</p>
-            <div className="text-3xl font-bold text-[rgba(255,255,255,0.9)]">
+          <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-6">
+            <p className="text-gold-primary text-sm font-medium mb-3">Genomsnittlig Sömn</p>
+            <div className="text-3xl font-bold text-gray-900">
               {avgSleep.toFixed(1)}h
             </div>
-            <p className="text-sm text-[rgba(255,255,255,0.5)] mt-2">
+            <p className="text-sm text-gray-500 mt-2">
               {avgSleep >= 7 ? 'Bra! 😴' : 'Försök sova mer 🌙'}
             </p>
           </div>
@@ -314,15 +314,15 @@ export default function ProgressPage() {
           </TabsContent>
         </Tabs>
       ) : (
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all p-12">
+        <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-12">
           <div className="text-center space-y-4">
             <div className="text-6xl mb-4">📊</div>
-            <h3 className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">Ingen data än</h3>
-            <p className="text-[rgba(255,255,255,0.6)] max-w-md mx-auto">
+            <h3 className="text-2xl font-bold text-gray-900">Ingen data än</h3>
+            <p className="text-gray-600 max-w-md mx-auto">
               Börja med att göra din första dagliga check-in för att se din progress här!
             </p>
             <Link href="/dashboard/check-in">
-              <Button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold">
+              <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold">
                 Gör Check-in
               </Button>
             </Link>

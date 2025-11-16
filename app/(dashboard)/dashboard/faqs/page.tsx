@@ -75,12 +75,10 @@ export default function ClientFaqsPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="w-12 h-12 border-4 border-[#FFD700] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-[rgba(255,255,255,0.8)]">Laddar vanliga frågor...</p>
-          </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Laddar vanliga frågor...</p>
         </div>
       </div>
     )
@@ -88,11 +86,16 @@ export default function ClientFaqsPage() {
 
   if (categories.length === 0) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-12 backdrop-blur-[10px] text-center">
-          <HelpCircle className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-2">Inga vanliga frågor än</h2>
-          <p className="text-[rgba(255,255,255,0.6)]">
+      <div className="space-y-6">
+        <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
+            VANLIGA FRÅGOR
+          </h1>
+        </div>
+        <div className="bg-white border-2 border-gray-200 rounded-xl p-12 text-center">
+          <HelpCircle className="h-16 w-16 mx-auto text-gold-primary mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Inga vanliga frågor än</h2>
+          <p className="text-gray-600">
             Din coach har inte lagt till några vanliga frågor än.
           </p>
         </div>
@@ -101,71 +104,73 @@ export default function ClientFaqsPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header - Centrerad som Kostschema */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-[rgba(255,215,0,0.05)] to-transparent border-2 border-[rgba(255,215,0,0.2)] rounded-xl backdrop-blur-[10px]">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
           VANLIGA FRÅGOR
         </h1>
-        <p className="text-[rgba(255,255,255,0.6)] mt-2">
+        <p className="text-gray-600 mt-2">
           Svar på vanliga frågor om träning, kost och mer
         </p>
       </div>
 
-      {/* FAQ Categories */}
-      {categories
-        .sort((a, b) => a.orderIndex - b.orderIndex)
-        .map((category) => (
-          <div key={category.id} className="space-y-4">
-            {/* Category Header */}
-            <div>
-              <h2 className="text-2xl font-bold text-white">{category.name}</h2>
-              {category.description && (
-                <p className="text-[rgba(255,255,255,0.6)] mt-1">{category.description}</p>
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* FAQ Categories */}
+        {categories
+          .sort((a, b) => a.orderIndex - b.orderIndex)
+          .map((category) => (
+            <div key={category.id} className="space-y-4">
+              {/* Category Header */}
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">{category.name}</h2>
+                {category.description && (
+                  <p className="text-gray-600 mt-1">{category.description}</p>
+                )}
+              </div>
+
+              {/* Questions */}
+              <div className="space-y-3">
+                {category.questions
+                  .sort((a, b) => a.orderIndex - b.orderIndex)
+                  .map((question) => {
+                    const isExpanded = expandedQuestions.has(question.id)
+
+                    return (
+                      <Card
+                        key={question.id}
+                        className="bg-white border-2 border-gray-200 cursor-pointer hover:border-gold-primary hover:shadow-lg transition-all"
+                        onClick={() => toggleQuestion(question.id)}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-bold text-gray-900 flex-1 pr-4">
+                              {question.question}
+                            </h3>
+                            {isExpanded ? (
+                              <ChevronUp className="h-5 w-5 text-gold-primary flex-shrink-0" />
+                            ) : (
+                              <ChevronDown className="h-5 w-5 text-gold-primary flex-shrink-0" />
+                            )}
+                          </div>
+                          {isExpanded && (
+                            <div className="mt-4 pt-4 border-t border-gray-200">
+                              <p className="text-gray-700 whitespace-pre-wrap">{question.answer}</p>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    )
+                  })}
+              </div>
+
+              {/* "se fler..." link if needed */}
+              {category.questions.length > 5 && (
+                <p className="text-sm text-gray-500 italic">se fler...</p>
               )}
             </div>
-
-            {/* Questions */}
-            <div className="space-y-3">
-              {category.questions
-                .sort((a, b) => a.orderIndex - b.orderIndex)
-                .map((question) => {
-                  const isExpanded = expandedQuestions.has(question.id)
-
-                  return (
-                    <Card
-                      key={question.id}
-                      className="bg-gradient-to-br from-[#3b82f6] to-[#2563eb] border-none cursor-pointer hover:from-[#2563eb] hover:to-[#1d4ed8] transition-all"
-                      onClick={() => toggleQuestion(question.id)}
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-bold text-white flex-1 pr-4">
-                            {question.question}
-                          </h3>
-                          {isExpanded ? (
-                            <ChevronUp className="h-5 w-5 text-white flex-shrink-0" />
-                          ) : (
-                            <ChevronDown className="h-5 w-5 text-white flex-shrink-0" />
-                          )}
-                        </div>
-                        {isExpanded && (
-                          <div className="mt-4 pt-4 border-t border-[rgba(255,255,255,0.2)]">
-                            <p className="text-white whitespace-pre-wrap">{question.answer}</p>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  )
-                })}
-            </div>
-
-            {/* "se fler..." link if needed */}
-            {category.questions.length > 5 && (
-              <p className="text-sm text-[rgba(255,255,255,0.6)] italic">se fler...</p>
-            )}
-          </div>
-        ))}
+          ))}
+      </div>
     </div>
   )
 }

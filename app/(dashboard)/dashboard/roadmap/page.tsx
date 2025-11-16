@@ -278,13 +278,18 @@ export default function ClientRoadmapPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Min 90-Dagars Roadmap</h1>
-        <p className="text-muted-foreground mt-1">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
+          MIN 90-DAGARS ROADMAP
+        </h1>
+        <p className="text-gray-600 mt-2">
           Din personliga inlärningsresa - dag {currentDay} av 90
         </p>
       </div>
+
+      <div className="max-w-7xl mx-auto space-y-6">
 
       {/* Progress Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -430,6 +435,7 @@ export default function ClientRoadmapPage() {
           </Tabs>
         </CardContent>
       </Card>
+      </div>
     </div>
   )
 }

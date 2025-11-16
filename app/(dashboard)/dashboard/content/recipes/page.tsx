@@ -185,8 +185,8 @@ export default function CoachRecipesPage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-[rgba(255,255,255,0.7)]">Du har inte behörighet att se denna sida.</p>
+        <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
+          <p className="text-gray-600">Du har inte behörighet att se denna sida.</p>
         </div>
       </div>
     )
@@ -196,16 +196,16 @@ export default function CoachRecipesPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent tracking-[1px]">
+          <h1 className="text-3xl font-bold text-gray-900">
             Skapa Recept
           </h1>
-          <p className="text-[rgba(255,255,255,0.6)] mt-1">
+          <p className="text-gray-600 mt-1">
             Skapa och hantera recept
           </p>
         </div>
         <Button
           onClick={() => setIsCreateDialogOpen(true)}
-          className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+          className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nytt recept
@@ -214,13 +214,13 @@ export default function CoachRecipesPage() {
 
       {isLoading ? (
         <div className="text-center py-12">
-          <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin mx-auto" />
+          <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto" />
         </div>
       ) : recipes.length === 0 ? (
         <div className="text-center py-12">
-          <ChefHat className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-          <p className="text-[rgba(255,255,255,0.6)] text-lg">Inga recept ännu.</p>
-          <p className="text-sm text-[rgba(255,255,255,0.4)] mt-2">
+          <ChefHat className="h-16 w-16 mx-auto text-gold-primary mb-4" />
+          <p className="text-gray-700 text-lg">Inga recept ännu.</p>
+          <p className="text-sm text-gray-500 mt-2">
             Skapa ditt första recept för att komma igång.
           </p>
         </div>
@@ -234,9 +234,9 @@ export default function CoachRecipesPage() {
               <div key={category.id}>
                 {/* Category Header */}
                 <div className="flex items-center gap-3 mb-4">
-                  <ChefHat className="h-5 w-5 text-[#FFD700]" />
-                  <h2 className="text-xl font-bold text-[#FFD700]">{category.name}</h2>
-                  <Badge className="bg-[rgba(255,215,0,0.1)] text-[#FFD700] border border-[rgba(255,215,0,0.3)]">
+                  <ChefHat className="h-5 w-5 text-gold-primary" />
+                  <h2 className="text-xl font-bold text-gray-900">{category.name}</h2>
+                  <Badge className="bg-gold-primary/10 text-gold-primary border border-gold-primary/30">
                     {categoryRecipes.length} recept
                   </Badge>
                 </div>
@@ -247,11 +247,11 @@ export default function CoachRecipesPage() {
                     <div
                       key={recipe.id}
                       onClick={() => router.push(`/dashboard/content/recipes/${recipe.id}/edit`)}
-                      className="group relative bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-lg overflow-hidden cursor-pointer hover:border-[rgba(255,215,0,0.5)] transition-all hover:scale-[1.02]"
+                      className="group relative bg-white border-2 border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-gold-primary hover:shadow-lg transition-all"
                     >
                       {/* Image */}
                       {recipe.coverImage ? (
-                        <div className="h-32 w-full bg-[rgba(255,255,255,0.05)] overflow-hidden">
+                        <div className="h-32 w-full bg-gray-50 overflow-hidden">
                           <img
                             src={recipe.coverImage}
                             alt={recipe.title}
@@ -259,15 +259,15 @@ export default function CoachRecipesPage() {
                           />
                         </div>
                       ) : (
-                        <div className="h-32 w-full bg-[rgba(255,255,255,0.05)] flex items-center justify-center">
-                          <ChefHat className="h-12 w-12 text-[rgba(255,215,0,0.3)]" />
+                        <div className="h-32 w-full bg-gray-50 flex items-center justify-center">
+                          <ChefHat className="h-12 w-12 text-gray-300" />
                         </div>
                       )}
 
                       {/* Content */}
                       <div className="p-4">
                         <div className="flex items-start justify-between mb-2">
-                          <h3 className="text-base font-semibold text-[rgba(255,255,255,0.9)] line-clamp-1 flex-1">
+                          <h3 className="text-base font-semibold text-gray-900 line-clamp-1 flex-1">
                             {recipe.title}
                           </h3>
                           <button
@@ -277,20 +277,20 @@ export default function CoachRecipesPage() {
                             }}
                             className="opacity-0 group-hover:opacity-100 transition-opacity ml-2"
                           >
-                            <Trash2 className="h-4 w-4 text-[rgba(255,255,255,0.4)] hover:text-red-400" />
+                            <Trash2 className="h-4 w-4 text-gray-400 hover:text-red-500" />
                           </button>
                         </div>
 
                         {recipe.description && (
-                          <p className="text-sm text-[rgba(255,255,255,0.6)] mb-3 line-clamp-2">
+                          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                             {recipe.description}
                           </p>
                         )}
 
-                        <div className="flex items-center gap-4 text-xs text-[rgba(255,255,255,0.6)]">
+                        <div className="flex items-center gap-4 text-xs text-gray-600">
                           {recipe.caloriesPerServing && (
                             <div className="flex items-center gap-1">
-                              <span className="text-[#FFA500]">🔥</span>
+                              <span className="text-orange-500">🔥</span>
                               <span>{Math.round(recipe.caloriesPerServing)} kcal</span>
                             </div>
                           )}
@@ -311,38 +311,38 @@ export default function CoachRecipesPage() {
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
+        <DialogContent className="bg-white border-2 border-gray-200">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+            <DialogTitle className="text-2xl font-bold text-gray-900">
               Skapa nytt recept
             </DialogTitle>
-            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+            <DialogDescription className="text-gray-600">
               Skapa ett nytt recept. Du kan lägga till ingredienser och instruktioner efteråt.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="title" className="text-[rgba(255,255,255,0.8)]">Titel *</Label>
+              <Label htmlFor="title" className="text-gray-700">Titel *</Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 placeholder="t.ex. Protein pannkakor"
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
               />
             </div>
             <div>
-              <Label htmlFor="category" className="text-[rgba(255,255,255,0.8)]">Kategori *</Label>
+              <Label htmlFor="category" className="text-gray-700">Kategori *</Label>
               <Select
                 value={formData.categoryId}
                 onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
               >
-                <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                   <SelectValue placeholder="Välj kategori" />
                 </SelectTrigger>
-                <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+                <SelectContent>
                   {categories.map(cat => (
-                    <SelectItem key={cat.id} value={cat.id} className="text-white hover:bg-[rgba(255,215,0,0.1)]">
+                    <SelectItem key={cat.id} value={cat.id}>
                       {cat.name}
                     </SelectItem>
                   ))}
@@ -350,14 +350,14 @@ export default function CoachRecipesPage() {
               </Select>
             </div>
             <div>
-              <Label htmlFor="servings" className="text-[rgba(255,255,255,0.8)]">Portioner *</Label>
+              <Label htmlFor="servings" className="text-gray-700">Portioner *</Label>
               <Input
                 id="servings"
                 type="number"
                 min="1"
                 value={formData.servings}
                 onChange={(e) => setFormData({ ...formData, servings: e.target.value })}
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                className="bg-white border-gray-300 text-gray-900"
               />
             </div>
           </div>
@@ -365,14 +365,14 @@ export default function CoachRecipesPage() {
             <Button
               variant="outline"
               onClick={() => setIsCreateDialogOpen(false)}
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.9)] hover:bg-[rgba(255,215,0,0.1)]"
+              className="border-gray-300 text-gray-700 hover:bg-gray-50"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleCreateRecipe}
               disabled={isSaving}
-              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+              className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
             >
               {isSaving ? 'Skapar...' : 'Skapa recept'}
             </Button>
