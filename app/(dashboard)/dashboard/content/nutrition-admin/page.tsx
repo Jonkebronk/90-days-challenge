@@ -79,6 +79,10 @@ export default function NutritionAdminPage() {
       const response = await fetch(`/api/nutrition-categories?type=${activeType}`)
       if (response.ok) {
         const data = await response.json()
+        console.log('Loaded categories:', data.categories.map((cat: any) => ({
+          name: cat.name,
+          items: cat.items.map((item: any) => ({ name: item.name, order: item.order }))
+        })))
         setCategories(data.categories || [])
       }
     } catch (error) {
@@ -130,13 +134,13 @@ export default function NutritionAdminPage() {
     setHasUnsavedChanges(true)
   }
 
-  // Get value for a specific target (custom or calculated)
+  // Get value for a specific target (only custom values, no calculation)
   const getValueForTarget = (item: NutritionItem, target: number): number => {
-    // Return custom value if exists, otherwise calculate
+    // Return custom value if exists, otherwise return 0 (user must fill in manually)
     if (item.customValues && item.customValues[target] !== undefined) {
       return item.customValues[target]
     }
-    return calculateFoodWeight(item.valuePer100g, target)
+    return 0
   }
 
   const addItem = (categoryId: string) => {
@@ -235,6 +239,8 @@ export default function NutritionAdminPage() {
             order: index, // Use original array index as order within category
           }))
 
+        console.log(`Category ${cat.name} - Saving items with order:`, existingItems.map(i => ({ name: i.name, order: i.order })))
+
         if (existingItems.length > 0) {
           const updateResponse = await fetch('/api/nutrition-items', {
             method: 'PATCH',
@@ -273,10 +279,12 @@ export default function NutritionAdminPage() {
       }
 
       setHasUnsavedChanges(false)
-      // Don't show toast for auto-save, only for manual save
-      if (!hasUnsavedChanges) {
-        toast.success('Ändringar sparade!')
-      }
+      console.log('Save completed, reloading data...')
+
+      // Reload data to sync with database
+      await fetchData()
+
+      toast.success('Ändringar sparade!')
     } catch (error) {
       console.error('Error saving changes:', error)
       toast.error('Kunde inte spara ändringar')
