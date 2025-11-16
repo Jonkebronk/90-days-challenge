@@ -25,10 +25,10 @@ export function calculateRecipeNutrition(
 
       // Calculate nutrition for this ingredient
       // Formula: (nutrition_per_100g * amount_in_grams) / 100
-      const calories = (foodItem.caloriesPer100g * amount) / 100
-      const protein = (foodItem.proteinPer100g * amount) / 100
-      const carbs = (foodItem.carbsPer100g * amount) / 100
-      const fat = (foodItem.fatPer100g * amount) / 100
+      const calories = (foodItem.calories * amount) / 100
+      const protein = (foodItem.proteinG * amount) / 100
+      const carbs = (foodItem.carbsG * amount) / 100
+      const fat = (foodItem.fatG * amount) / 100
 
       return {
         calories: acc.calories + calories,
@@ -65,10 +65,10 @@ export function calculateIngredientNutrition(
   fat: number
 } {
   return {
-    calories: Math.round((foodItem.caloriesPer100g * amountInGrams) / 100),
-    protein: Math.round(((foodItem.proteinPer100g * amountInGrams) / 100) * 10) / 10,
-    carbs: Math.round(((foodItem.carbsPer100g * amountInGrams) / 100) * 10) / 10,
-    fat: Math.round(((foodItem.fatPer100g * amountInGrams) / 100) * 10) / 10,
+    calories: Math.round((foodItem.calories * amountInGrams) / 100),
+    protein: Math.round(((foodItem.proteinG * amountInGrams) / 100) * 10) / 10,
+    carbs: Math.round(((foodItem.carbsG * amountInGrams) / 100) * 10) / 10,
+    fat: Math.round(((foodItem.fatG * amountInGrams) / 100) * 10) / 10,
   }
 }
 
