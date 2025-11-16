@@ -42,13 +42,31 @@ export default function NutritionAdminPage() {
 
   // Auto-save when categories change (debounced)
   useEffect(() => {
-    if (!hasUnsavedChanges || isLoading || isSaving) return
+    console.log('⏰ useEffect triggered:', { hasUnsavedChanges, isLoading, isSaving })
 
+    if (!hasUnsavedChanges) {
+      console.log('  ❌ Skipping: no unsaved changes')
+      return
+    }
+    if (isLoading) {
+      console.log('  ❌ Skipping: is loading')
+      return
+    }
+    if (isSaving) {
+      console.log('  ❌ Skipping: is saving')
+      return
+    }
+
+    console.log('  ⏱️ Starting 2-second timer...')
     const saveTimer = setTimeout(() => {
+      console.log('  💾 Timer expired - calling saveChanges()')
       saveChanges()
     }, 2000) // Auto-save after 2 seconds of no changes
 
-    return () => clearTimeout(saveTimer)
+    return () => {
+      console.log('  🧹 Cleaning up timer')
+      clearTimeout(saveTimer)
+    }
   }, [categories, hasUnsavedChanges, isLoading, isSaving])
 
   // Calculate food weight needed to get target protein/fat/carbs
@@ -194,6 +212,7 @@ export default function NutritionAdminPage() {
   }
 
   const moveItem = (categoryId: string, itemId: string, direction: 'up' | 'down') => {
+    console.log('🔄 Moving item:', itemId, direction)
     setCategories(prev =>
       prev.map(cat => {
         if (cat.id !== categoryId) return cat
@@ -205,6 +224,8 @@ export default function NutritionAdminPage() {
 
         const newItems = [...cat.items]
         const swapIndex = direction === 'up' ? index - 1 : index + 1
+
+        console.log(`  Swapping ${newItems[index].name} (${index}) with ${newItems[swapIndex].name} (${swapIndex})`)
 
         // Swap order values
         const tempOrder = newItems[index].order
@@ -218,6 +239,7 @@ export default function NutritionAdminPage() {
       })
     )
     setHasUnsavedChanges(true)
+    console.log('✅ hasUnsavedChanges set to true')
   }
 
   const saveChanges = async () => {
