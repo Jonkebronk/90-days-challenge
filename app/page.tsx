@@ -118,16 +118,16 @@ export default function HomePage() {
             <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
               <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
                 <DialogTrigger asChild>
-                  <button className="p-2.5 text-xs font-semibold bg-gradient-to-r from-[rgba(255,215,0,0.15)] to-[rgba(255,215,0,0.05)] border-2 border-[rgba(255,215,0,0.4)] text-[#FFD700] rounded-lg backdrop-blur-[10px] transition-all duration-300 hover:scale-105 hover:border-[rgba(255,215,0,0.7)] hover:shadow-[0_0_20px_rgba(255,215,0,0.3)]">
+                  <button className="p-2.5 text-xs font-semibold bg-white border-2 border-gold-primary text-gold-primary rounded-lg transition-all duration-300 hover:scale-105 hover:bg-gold-primary hover:text-white hover:shadow-md">
                     <Key className="w-4 h-4" />
                   </button>
                 </DialogTrigger>
-                <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
+                <DialogContent className="bg-white border-2 border-gray-200 shadow-xl">
                   <DialogHeader>
-                    <DialogTitle className="font-['Orbitron',sans-serif] text-xl font-bold tracking-[2px] uppercase bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent text-center">
+                    <DialogTitle className="font-['Orbitron',sans-serif] text-xl font-bold tracking-[2px] uppercase bg-gradient-to-r from-gold-primary to-gold-secondary bg-clip-text text-transparent text-center">
                       Har du en inbjudningskod?
                     </DialogTitle>
-                    <DialogDescription className="text-[rgba(255,255,255,0.7)] text-sm text-center">
+                    <DialogDescription className="text-gray-600 text-sm text-center">
                       Om du har fått en inbjudningskod av din coach, ange den här för att komma igång direkt
                     </DialogDescription>
                   </DialogHeader>
@@ -139,17 +139,17 @@ export default function HomePage() {
                       onKeyDown={(e) => e.key === 'Enter' && handleVerifyInviteCode()}
                       placeholder="GOLD-XXXX-XXXX-XXXX"
                       disabled={isVerifying}
-                      className="w-full px-4 py-3 bg-[rgba(0,0,0,0.5)] border-2 border-[rgba(255,215,0,0.3)] rounded-lg text-[#FFD700] placeholder:text-[rgba(255,215,0,0.3)] text-center font-mono text-sm tracking-[2px] uppercase focus:outline-none focus:border-[#FFD700] focus:shadow-[0_0_20px_rgba(255,215,0,0.3)] transition-all disabled:opacity-50"
+                      className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gold-primary placeholder:text-gray-400 text-center font-mono text-sm tracking-[2px] uppercase focus:outline-none focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 transition-all disabled:opacity-50"
                       maxLength={19}
                     />
                     <button
                       onClick={handleVerifyInviteCode}
                       disabled={isVerifying || !inviteCode}
-                      className="w-full px-6 py-3 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] rounded-lg font-bold tracking-[1px] uppercase text-sm transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,215,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+                      className="w-full px-6 py-3 bg-gradient-to-r from-gold-primary to-gold-secondary text-white rounded-lg font-bold tracking-[1px] uppercase text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-gold-primary/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
                     >
                       {isVerifying ? (
                         <>
-                          <div className="w-4 h-4 border-2 border-[#0a0a0a] border-t-transparent rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                           <span>Verifierar...</span>
                         </>
                       ) : (
@@ -283,42 +283,42 @@ export default function HomePage() {
             </div>
 
             {/* Step 2 */}
-            <div className="relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-10 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.6)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:-translate-y-1 overflow-hidden">
+            <div className="relative bg-white border-2 border-gray-200 rounded-xl p-10 shadow-md transition-all duration-300 hover:border-gold-primary hover:shadow-lg hover:-translate-y-1 overflow-hidden">
               {/* Large background number */}
-              <div className="absolute top-0 left-0 font-['Orbitron',sans-serif] text-[140px] font-black text-[rgba(255,255,255,0.05)] leading-none select-none pointer-events-none">
+              <div className="absolute top-0 left-0 font-['Orbitron',sans-serif] text-[140px] font-black text-gray-100 leading-none select-none pointer-events-none">
                 02
               </div>
 
               {/* Content */}
               <div className="relative z-10">
-                <div className="text-xl font-bold text-white mb-3 tracking-[2px] font-['Orbitron',sans-serif]">
+                <div className="text-xl font-bold text-gray-900 mb-3 tracking-[2px] font-['Orbitron',sans-serif]">
                   Steg 2.
                 </div>
-                <h3 className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
+                <h3 className="text-2xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
                   Vi går igenom din plan tillsammans
                 </h3>
-                <p className="text-[rgba(255,255,255,0.8)] text-base leading-relaxed">
+                <p className="text-gray-700 text-base leading-relaxed">
                   Jag går igenom din ansökan och visar exakt hur vi ska nå dina mål. Du får full insyn i upplägget innan du bestämmer dig.
                 </p>
               </div>
             </div>
 
             {/* Step 3 */}
-            <div className="relative bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.3)] rounded-xl p-10 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,215,0,0.6)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] hover:-translate-y-1 overflow-hidden">
+            <div className="relative bg-white border-2 border-gray-200 rounded-xl p-10 shadow-md transition-all duration-300 hover:border-gold-primary hover:shadow-lg hover:-translate-y-1 overflow-hidden">
               {/* Large background number */}
-              <div className="absolute top-0 left-0 font-['Orbitron',sans-serif] text-[140px] font-black text-[rgba(255,255,255,0.05)] leading-none select-none pointer-events-none">
+              <div className="absolute top-0 left-0 font-['Orbitron',sans-serif] text-[140px] font-black text-gray-100 leading-none select-none pointer-events-none">
                 03
               </div>
 
               {/* Content */}
               <div className="relative z-10">
-                <div className="text-xl font-bold text-white mb-3 tracking-[2px] font-['Orbitron',sans-serif]">
+                <div className="text-xl font-bold text-gray-900 mb-3 tracking-[2px] font-['Orbitron',sans-serif]">
                   Steg 3.
                 </div>
-                <h3 className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
+                <h3 className="text-2xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
                   Säg ja till utmaningen
                 </h3>
-                <p className="text-[rgba(255,255,255,0.8)] text-base leading-relaxed">
+                <p className="text-gray-700 text-base leading-relaxed">
                   Om det känns rätt tar du steget och vi sätter igång. Ingen press, bara en möjlighet att äntligen få ordning på träning och kost.
                 </p>
               </div>
@@ -340,62 +340,62 @@ export default function HomePage() {
           {/* Two-column grid */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             {/* Left column - Passar för dig */}
-            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(34,197,94,0.3)] rounded-xl p-6 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(34,197,94,0.6)] hover:shadow-[0_0_30px_rgba(34,197,94,0.2)] hover:-translate-y-1">
-              <h3 className="text-xl font-bold text-[#22c55e] mb-4 tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+            <div className="bg-white border-2 border-green-200 rounded-xl p-6 shadow-md transition-all duration-300 hover:border-green-400 hover:shadow-lg hover:-translate-y-1">
+              <h3 className="text-xl font-bold text-green-600 mb-4 tracking-[2px] uppercase font-['Orbitron',sans-serif]">
                 Passar för dig
               </h3>
               <ul className="space-y-3 text-left">
-                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
-                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                <li className="flex items-start gap-3 text-gray-700 text-sm">
+                  <span className="text-green-600 text-xl flex-shrink-0">✓</span>
                   <span>Du som vill gå ner i vikt under 90 dagar med beprövade metoder</span>
                 </li>
-                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
-                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                <li className="flex items-start gap-3 text-gray-700 text-sm">
+                  <span className="text-green-600 text-xl flex-shrink-0">✓</span>
                   <span>Du som är redo att följa en strukturerad plan och lyssna på professionell coachning</span>
                 </li>
-                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
-                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                <li className="flex items-start gap-3 text-gray-700 text-sm">
+                  <span className="text-green-600 text-xl flex-shrink-0">✓</span>
                   <span>Du som vill ha personlig coaching och stöd genom hela resan med en dedikerad coach</span>
                 </li>
-                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
-                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                <li className="flex items-start gap-3 text-gray-700 text-sm">
+                  <span className="text-green-600 text-xl flex-shrink-0">✓</span>
                   <span>Du kan träna 4 gånger i veckan på gym</span>
                 </li>
-                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
-                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                <li className="flex items-start gap-3 text-gray-700 text-sm">
+                  <span className="text-green-600 text-xl flex-shrink-0">✓</span>
                   <span>Du som vill lära dig hållbara vanor för livet</span>
                 </li>
-                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
-                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                <li className="flex items-start gap-3 text-gray-700 text-sm">
+                  <span className="text-green-600 text-xl flex-shrink-0">✓</span>
                   <span>Du som är motiverad att checka in varje vecka och följa upp din progress systematiskt</span>
                 </li>
-                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
-                  <span className="text-[#22c55e] text-xl flex-shrink-0">✓</span>
+                <li className="flex items-start gap-3 text-gray-700 text-sm">
+                  <span className="text-green-600 text-xl flex-shrink-0">✓</span>
                   <span>Du som vill ha tillgång till träningsprogram, kostschemat, verktyg och kunskap i en och samma plattform</span>
                 </li>
               </ul>
             </div>
 
             {/* Right column - Passar INTE */}
-            <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(239,68,68,0.3)] rounded-xl p-6 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(239,68,68,0.6)] hover:shadow-[0_0_30px_rgba(239,68,68,0.2)] hover:-translate-y-1">
-              <h3 className="text-xl font-bold text-[#ef4444] mb-4 tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+            <div className="bg-white border-2 border-red-200 rounded-xl p-6 shadow-md transition-all duration-300 hover:border-red-400 hover:shadow-lg hover:-translate-y-1">
+              <h3 className="text-xl font-bold text-red-600 mb-4 tracking-[2px] uppercase font-['Orbitron',sans-serif]">
                 Passar INTE
               </h3>
               <ul className="space-y-3 text-left">
-                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
-                  <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
+                <li className="flex items-start gap-3 text-gray-700 text-sm">
+                  <span className="text-red-600 text-xl flex-shrink-0">✗</span>
                   <span>Du som inte är redo att göra livsstilsförändringar och följa ett strukturerat upplägg</span>
                 </li>
-                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
-                  <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
+                <li className="flex items-start gap-3 text-gray-700 text-sm">
+                  <span className="text-red-600 text-xl flex-shrink-0">✗</span>
                   <span>Du som inte är villig att investera tid, energi och pengar i din hälsotransformation</span>
                 </li>
-                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
-                  <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
+                <li className="flex items-start gap-3 text-gray-700 text-sm">
+                  <span className="text-red-600 text-xl flex-shrink-0">✗</span>
                   <span>Du som söker extrema dieter eller andra ohållbara metoder för snabba resultat</span>
                 </li>
-                <li className="flex items-start gap-3 text-[rgba(255,255,255,0.8)] text-sm">
-                  <span className="text-[#ef4444] text-xl flex-shrink-0">✗</span>
+                <li className="flex items-start gap-3 text-gray-700 text-sm">
+                  <span className="text-red-600 text-xl flex-shrink-0">✗</span>
                   <span>De som &ldquo;vet bäst själv&rdquo;</span>
                 </li>
               </ul>
@@ -405,7 +405,7 @@ export default function HomePage() {
           {/* Countdown Timer */}
           <div className="mb-8">
             <div className="text-center mb-6">
-              <p className="text-[rgba(255,255,255,0.8)] text-lg md:text-xl tracking-[2px] uppercase font-['Orbitron',sans-serif] font-semibold">
+              <p className="text-gray-900 text-lg md:text-xl tracking-[2px] uppercase font-['Orbitron',sans-serif] font-semibold">
                 Ansökningarna stänger om:
               </p>
             </div>
@@ -416,13 +416,13 @@ export default function HomePage() {
           <div className="space-y-4">
             <button
               onClick={() => router.push('/apply')}
-              className="w-full py-5 px-10 text-lg tracking-[3px] uppercase font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] border-none rounded-lg cursor-pointer transition-all duration-300 font-['Orbitron',sans-serif] relative overflow-hidden hover:scale-105 hover:shadow-[0_10px_40px_rgba(255,215,0,0.4)] active:scale-[0.98] before:content-[''] before:absolute before:top-0 before:left-[-100%] before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-[rgba(255,255,255,0.3)] before:to-transparent before:transition-[left] before:duration-500 hover:before:left-[100%]"
+              className="w-full py-5 px-10 text-lg tracking-[3px] uppercase font-bold bg-gradient-to-br from-gold-primary to-gold-secondary text-white border-none rounded-lg cursor-pointer transition-all duration-300 font-['Orbitron',sans-serif] relative overflow-hidden hover:scale-105 hover:shadow-xl hover:shadow-gold-primary/40 active:scale-[0.98] before:content-[''] before:absolute before:top-0 before:left-[-100%] before:w-full before:h-full before:bg-gradient-to-r before:from-transparent before:via-[rgba(255,255,255,0.3)] before:to-transparent before:transition-[left] before:duration-500 hover:before:left-[100%]"
             >
               Ansök Nu
             </button>
 
             {/* Limited spots message */}
-            <p className="text-base md:text-lg text-[#FFD700] tracking-[2px] uppercase font-semibold animate-pulse">
+            <p className="text-base md:text-lg text-gold-primary tracking-[2px] uppercase font-semibold animate-pulse">
               ⚠️ Begränsat antal platser
             </p>
           </div>
