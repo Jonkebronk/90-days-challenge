@@ -408,7 +408,7 @@ export default function NutritionAdminPage() {
                   <table className="w-full border-collapse text-xs">
                     <thead className="bg-[rgba(255,215,0,0.05)]">
                       <tr>
-                        <th className="px-2 py-2 text-left text-xs font-semibold text-gray-200 border border-gold-primary/20 sticky left-0 bg-gray-900/95 z-10">
+                        <th className="px-2 py-2 text-left text-xs font-semibold text-gray-200 border border-gold-primary/20 sticky left-0 bg-gray-900/95 z-10 min-w-[200px]">
                           Livsmedel
                         </th>
                         {proteinTargets.map((target) => (
@@ -433,7 +433,7 @@ export default function NutritionAdminPage() {
                             idx % 2 === 0 ? 'bg-[rgba(255,255,255,0.01)]' : ''
                           }`}
                         >
-                          <td className="px-2 py-2 border border-gold-primary/10 sticky left-0 bg-gray-900/95 z-10">
+                          <td className="px-2 py-2 border border-gold-primary/10 sticky left-0 bg-gray-900/95 z-10 min-w-[200px]">
                             <Input
                               value={item.name}
                               onChange={(e) => updateItemValue(category.id, item.id, 'name', e.target.value)}
