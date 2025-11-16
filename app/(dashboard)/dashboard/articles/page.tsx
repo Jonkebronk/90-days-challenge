@@ -428,14 +428,17 @@ function ArticleBankContent() {
 
               const categoryColor = category.color || '#FFD700'
               const isExpanded = expandedCategories[category.id]
-              const displayedArticles = isExpanded ? categoryArticles : categoryArticles.slice(0, 3)
-              const hasMore = categoryArticles.length > 3
+              const displayedArticles = isExpanded ? categoryArticles : []
 
               return (
                 <div key={category.id} className="flex flex-col bg-[rgba(255,255,255,0.03)] border border-[rgba(255,215,0,0.2)] rounded-xl overflow-hidden shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/50 hover:border-[rgba(255,215,0,0.35)] transition-all duration-300">
                   {/* Category Header with Icon */}
                   <div
-                    className="relative h-28 flex items-center justify-center gap-3 px-4"
+                    onClick={() => setExpandedCategories(prev => ({
+                      ...prev,
+                      [category.id]: !prev[category.id]
+                    }))}
+                    className="relative h-28 flex items-center justify-center gap-3 px-4 cursor-pointer"
                     style={{
                       background: `linear-gradient(135deg, ${categoryColor}33, ${categoryColor}15)`
                     }}
@@ -462,9 +465,16 @@ function ArticleBankContent() {
                       </span>
                       <span className="text-xs text-[rgba(255,255,255,0.5)]"> / {categoryArticles.length}</span>
                     </div>
+                    {/* Expand/Collapse indicator */}
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
+                      <span className="text-sm" style={{ color: categoryColor }}>
+                        {isExpanded ? '↑' : '↓'}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Articles List */}
+                  {isExpanded && (
                   <div className="flex-1 p-4 space-y-3">
                     {displayedArticles.map(article => {
                       const completed = isArticleCompleted(article)
@@ -535,23 +545,6 @@ function ArticleBankContent() {
                       )
                     })}
                   </div>
-
-                  {/* "Mer" Button */}
-                  {hasMore && (
-                    <div className="px-4 pb-4 pt-2">
-                      <button
-                        onClick={() => setExpandedCategories(prev => ({
-                          ...prev,
-                          [category.id]: !prev[category.id]
-                        }))}
-                        className="w-full py-2.5 text-sm font-semibold text-[#FFD700] hover:text-white bg-[rgba(255,215,0,0.05)] hover:bg-[rgba(255,215,0,0.12)] border border-[rgba(255,215,0,0.3)] hover:border-[rgba(255,215,0,0.6)] rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
-                        style={{
-                          boxShadow: isExpanded ? `0 0 10px ${categoryColor}22` : 'none'
-                        }}
-                      >
-                        {isExpanded ? '↑ Visa mindre' : '↓ Mer'}
-                      </button>
-                    </div>
                   )}
                 </div>
               )
