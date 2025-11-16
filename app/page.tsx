@@ -241,67 +241,20 @@ export default function HomePage() {
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-5 animate-shimmer" />
         </div>
 
-        {/* Services Section */}
+        {/* Program Section */}
         <div className="mt-20 mb-32 animate-fadeIn">
           <div className="mb-12">
             <h2 className="font-['Orbitron',sans-serif] text-3xl font-black tracking-[4px] leading-[1.2] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3">
-              Våra Tjänster
+              Programmet
             </h2>
             <p className="text-gray-400 text-sm">
-              Välj den coachning som passar dig bäst
+              Transform din kropp och hälsa på 90 dagar
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-[900px] mx-auto">
-            {/* Online Coachning */}
-            <div className="relative bg-white border-2 border-gold-primary/30 rounded-xl p-8 shadow-lg transition-all duration-300 hover:border-gold-primary hover:shadow-xl hover:-translate-y-2 overflow-hidden group">
-              {/* Gradient overlay on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-gold-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-              <div className="relative z-10">
-                <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center mb-4">
-                  <span className="text-3xl">💪</span>
-                </div>
-                <h3 className="text-2xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
-                  Online Coachning
-                </h3>
-                <p className="text-gray-700 text-base leading-relaxed mb-6">
-                  Personlig coaching online anpassad efter dina mål. Flexibel, effektiv och med kontinuerlig uppföljning.
-                </p>
-                <ul className="space-y-2 mb-6">
-                  <li className="flex items-start gap-2 text-gray-700 text-sm">
-                    <span className="text-gold-primary flex-shrink-0">✓</span>
-                    <span>Skräddarsydda träningsprogram</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-gray-700 text-sm">
-                    <span className="text-gold-primary flex-shrink-0">✓</span>
-                    <span>Individuella kostplaner</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-gray-700 text-sm">
-                    <span className="text-gold-primary flex-shrink-0">✓</span>
-                    <span>Veckovis uppföljning & support</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-gray-700 text-sm">
-                    <span className="text-gold-primary flex-shrink-0">✓</span>
-                    <span>Flexibel tidsperiod</span>
-                  </li>
-                </ul>
-                <Link
-                  href="/apply"
-                  className="inline-block w-full px-6 py-3 bg-gradient-to-r from-gold-primary to-gold-secondary text-white rounded-lg font-bold tracking-[1px] uppercase text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg text-center"
-                >
-                  Intresseanmälan
-                </Link>
-              </div>
-            </div>
-
+          <div className="max-w-[500px] mx-auto">
             {/* 90 Dagars Utmaningen */}
             <div className="relative bg-white border-2 border-gold-primary/30 rounded-xl p-8 shadow-lg transition-all duration-300 hover:border-gold-primary hover:shadow-xl hover:-translate-y-2 overflow-hidden group">
-              {/* Popular badge */}
-              <div className="absolute top-4 right-4 bg-gradient-to-r from-gold-primary to-gold-secondary text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-[1px]">
-                Populär
-              </div>
-
               {/* Gradient overlay on hover */}
               <div className="absolute inset-0 bg-gradient-to-br from-gold-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 

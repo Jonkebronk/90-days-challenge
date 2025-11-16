@@ -23,7 +23,9 @@
       "Bash(git diff:*)",
       "Bash(npx prisma db push:*)",
       "Bash(railway status:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(nul)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []
