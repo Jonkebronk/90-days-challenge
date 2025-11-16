@@ -41,6 +41,7 @@ export default function FettOverviewPage() {
       name: 'Oljor & Fetter',
       items: [
         { name: 'Kokosolja', fatPer100g: 100 },
+        { name: 'Avokadoolja', fatPer100g: 100 },
         { name: 'Olivolja', fatPer100g: 100 },
         { name: 'Smör', fatPer100g: 81 },
         { name: 'Rapsolja', fatPer100g: 100 },

@@ -211,7 +211,7 @@ export default function FoodItemsCategoriesPage() {
                 Protein källor
               </h3>
               <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                Komplett översikt med näringsinnehåll per 100g
+                Komplett översikt med näringsinnehåll för olika portioner
               </p>
             </CardContent>
           </Card>
@@ -235,7 +235,7 @@ export default function FoodItemsCategoriesPage() {
                 Fett källor
               </h3>
               <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                Komplett översikt med näringsinnehåll per 100g
+                Komplett översikt med näringsinnehåll för olika portioner
               </p>
             </CardContent>
           </Card>
@@ -259,7 +259,7 @@ export default function FoodItemsCategoriesPage() {
                 Kolhydrat källor
               </h3>
               <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                Komplett översikt med näringsinnehåll per 100g
+                Komplett översikt med näringsinnehåll för olika portioner
               </p>
             </CardContent>
           </Card>
