@@ -34,6 +34,8 @@ import {
   Users,
   Pencil,
   Apple,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AddMealOptionDialog } from '@/components/AddMealOptionDialog'
@@ -366,6 +368,53 @@ export default function MealPlanTemplatePage() {
     }
   }
 
+  const handleReorderMeal = async (mealId: string, direction: 'up' | 'down') => {
+    if (!template) return
+
+    const sortedMeals = [...template.meals].sort((a, b) => a.orderIndex - b.orderIndex)
+    const currentIndex = sortedMeals.findIndex((m) => m.id === mealId)
+
+    if (currentIndex === -1) return
+    if (direction === 'up' && currentIndex === 0) return
+    if (direction === 'down' && currentIndex === sortedMeals.length - 1) return
+
+    const swapIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    const currentMeal = sortedMeals[currentIndex]
+    const swapMeal = sortedMeals[swapIndex]
+
+    // Swap orderIndex values
+    const tempOrderIndex = currentMeal.orderIndex
+    currentMeal.orderIndex = swapMeal.orderIndex
+    swapMeal.orderIndex = tempOrderIndex
+
+    try {
+      const response = await fetch(
+        `/api/meal-plan-templates/${templateId}/meals/reorder`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            meals: sortedMeals.map((m) => ({
+              id: m.id,
+              orderIndex: m.orderIndex,
+            })),
+          }),
+        }
+      )
+
+      if (response.ok) {
+        toast.success('Måltidsordning uppdaterad')
+        fetchTemplate()
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Kunde inte ändra ordning')
+      }
+    } catch (error) {
+      console.error('Error reordering meal:', error)
+      toast.error('Ett fel uppstod')
+    }
+  }
+
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
@@ -577,7 +626,7 @@ export default function MealPlanTemplatePage() {
             <div className="space-y-4">
               {template.meals
                 .sort((a, b) => a.orderIndex - b.orderIndex)
-                .map((meal) => (
+                .map((meal, index, sortedArray) => (
                   <Card
                     key={meal.id}
                     className="bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.2)]"
@@ -599,6 +648,26 @@ export default function MealPlanTemplatePage() {
                           <Badge className="bg-[rgba(100,100,255,0.1)] text-blue-300 border border-[rgba(100,100,255,0.3)]">
                             {meal.options.length} alternativ
                           </Badge>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleReorderMeal(meal.id, 'up')}
+                            disabled={index === 0}
+                            title="Flytta upp"
+                            className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700] disabled:opacity-30 disabled:cursor-not-allowed"
+                          >
+                            <ArrowUp className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleReorderMeal(meal.id, 'down')}
+                            disabled={index === sortedArray.length - 1}
+                            title="Flytta ner"
+                            className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700] disabled:opacity-30 disabled:cursor-not-allowed"
+                          >
+                            <ArrowDown className="h-4 w-4" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"
