@@ -1324,7 +1324,8 @@ model MealPlanItem {
   mealPlanMealId String
   foodItemId     String? // Can be null for custom items
   customName     String? // For custom food items not in database
-  amountG        Decimal @db.Decimal(7, 2) // Amount in grams
+  amountG        Decimal? @db.Decimal(7, 2) // Amount in grams (legacy, optional)
+  amount         String? // Flexible amount field: "50g", "3 styck", "150g", etc.
 
   // Macros for this item (portion)
   protein  Decimal? @db.Decimal(6, 2)
