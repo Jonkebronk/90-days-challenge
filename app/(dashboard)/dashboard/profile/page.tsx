@@ -31,7 +31,7 @@ export default function ProfilePage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
           MIN PROFIL
         </h1>
@@ -42,7 +42,7 @@ export default function ProfilePage() {
 
       <div className="space-y-6 max-w-4xl mx-auto">
         {/* User Info Card */}
-        <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all">
+        <div className="bg-white border border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all">
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-xl font-bold text-gray-900">Personlig Information</h2>
           </div>
@@ -106,7 +106,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Account Info Card */}
-        <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all">
+        <div className="bg-white border border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all">
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-xl font-bold text-gray-900">Kontoinformation</h2>
           </div>
@@ -131,7 +131,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Security Card */}
-        <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all">
+        <div className="bg-white border border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all">
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-xl font-bold text-gray-900">Säkerhet</h2>
           </div>

@@ -102,7 +102,7 @@ export default function DashboardPage() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg transition-all">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg transition-all">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-700 text-sm font-medium">Aktiva Klienter</span>
               <Users className="h-5 w-5 text-gold-primary" />
@@ -111,7 +111,7 @@ export default function DashboardPage() {
             <p className="text-xs text-gray-500 mt-1">klienter</p>
           </div>
 
-          <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg transition-all">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg transition-all">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-700 text-sm font-medium">Nya Leads</span>
               <UserPlus className="h-5 w-5 text-green-600" />
@@ -120,7 +120,7 @@ export default function DashboardPage() {
             <p className="text-xs text-gray-500 mt-1">denna vecka</p>
           </div>
 
-          <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg transition-all">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg transition-all">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-700 text-sm font-medium">Check-ins</span>
               <Calendar className="h-5 w-5 text-purple-600" />
@@ -129,7 +129,7 @@ export default function DashboardPage() {
             <p className="text-xs text-gray-500 mt-1">inväntar granskning</p>
           </div>
 
-          <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg transition-all">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg transition-all">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-700 text-sm font-medium">Innehåll</span>
               <FileText className="h-5 w-5 text-orange-600" />
@@ -142,7 +142,7 @@ export default function DashboardPage() {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link href="/dashboard/clients">
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
@@ -159,7 +159,7 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/dashboard/leads">
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
@@ -176,7 +176,7 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/dashboard/articles">
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
@@ -193,7 +193,7 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/dashboard/recipes">
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
@@ -210,7 +210,7 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/dashboard/check-in">
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
@@ -227,7 +227,7 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/dashboard/progress">
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
+            <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center">
@@ -245,7 +245,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white border-2 border-gray-200 rounded-xl">
+        <div className="bg-white border border-gray-200 rounded-xl">
           <div className="p-6 border-b border-gray-200">
             <h2 className="text-xl font-bold text-gray-900">Senaste Aktivitet</h2>
             <p className="text-gray-600 text-sm mt-1">Vad som händer med dina klienter</p>
@@ -278,7 +278,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Tips Section */}
-      <div className="bg-white border-2 border-gray-200 rounded-xl max-w-6xl mx-auto">
+      <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto">
         <div className="p-6 border-b border-gray-200 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-gray-900">Kom Igång</h2>
@@ -354,7 +354,7 @@ export default function DashboardPage() {
 
         {/* Check-in Card */}
         <Link href="/dashboard/check-in">
-          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-50" />
 
@@ -376,7 +376,7 @@ export default function DashboardPage() {
 
         {/* Progress Card */}
         <Link href="/dashboard/progress">
-          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-gradient-to-br from-pink-50 to-transparent opacity-50" />
 
@@ -398,7 +398,7 @@ export default function DashboardPage() {
 
         {/* Kunskapsbanken Card */}
         <Link href="/dashboard/articles">
-          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-transparent opacity-50" />
 
@@ -420,7 +420,7 @@ export default function DashboardPage() {
 
         {/* Recept Card */}
         <Link href="/dashboard/recipes">
-          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-transparent opacity-50" />
 
@@ -442,7 +442,7 @@ export default function DashboardPage() {
 
         {/* Kostschema Card */}
         <Link href="/dashboard/meal-plan">
-          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-transparent opacity-50" />
 
@@ -464,7 +464,7 @@ export default function DashboardPage() {
 
         {/* Träningsprogram Card */}
         <Link href="/dashboard/workout">
-          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-transparent opacity-50" />
 
@@ -486,7 +486,7 @@ export default function DashboardPage() {
 
         {/* Meddelanden Card */}
         <Link href="/dashboard/messages">
-          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-50" />
 
@@ -508,7 +508,7 @@ export default function DashboardPage() {
 
         {/* Profile Card */}
         <Link href="/dashboard/profile">
-          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent opacity-50" />
 
@@ -530,7 +530,7 @@ export default function DashboardPage() {
 
         {/* FAQ Card */}
         <Link href="/dashboard/faqs">
-          <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-50" />
 
@@ -551,7 +551,7 @@ export default function DashboardPage() {
         </Link>
 
         {/* Recent Activity Card (Coming Soon) */}
-        <div className="group relative bg-white border-2 border-gray-200 rounded-2xl p-8 overflow-hidden h-[280px] flex flex-col items-center justify-center opacity-60">
+        <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 overflow-hidden h-[280px] flex flex-col items-center justify-center opacity-60">
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-transparent opacity-30" />
 

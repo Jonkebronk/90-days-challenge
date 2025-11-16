@@ -273,7 +273,7 @@ export default function ExercisesPage() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white border-2 border-gray-200">
+      <Card className="bg-white border border-gray-200">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
@@ -342,7 +342,7 @@ export default function ExercisesPage() {
         {filteredExercises.map((exercise) => (
           <Card
             key={exercise.id}
-            className="bg-white border-2 border-gray-200 hover:border-[rgba(255,215,0,0.4)] transition-all"
+            className="bg-white border border-gray-200 hover:border-[rgba(255,215,0,0.4)] transition-all"
           >
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -441,7 +441,7 @@ export default function ExercisesPage() {
       </div>
 
       {filteredExercises.length === 0 && (
-        <Card className="bg-white border-2 border-gray-200">
+        <Card className="bg-white border border-gray-200">
           <CardContent className="py-12 text-center">
             <Dumbbell className="w-12 h-12 text-[rgba(255,215,0,0.3)] mx-auto mb-4" />
             <p className="text-[rgba(255,255,255,0.6)]">

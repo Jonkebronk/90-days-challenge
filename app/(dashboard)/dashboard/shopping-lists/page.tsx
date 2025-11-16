@@ -60,7 +60,7 @@ export default function ClientShoppingListsPage() {
   if (!session?.user) {
     return (
       <div className="p-4">
-        <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
           <p className="text-gray-700">Du måste logga in för att se dina inköpslistor.</p>
         </div>
       </div>
@@ -80,7 +80,7 @@ export default function ClientShoppingListsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
           INKÖPSLISTOR
         </h1>
@@ -101,7 +101,7 @@ export default function ClientShoppingListsPage() {
         </div>
 
         {allLists.length === 0 ? (
-          <Card className="bg-white border-2 border-gray-200">
+          <Card className="bg-white border border-gray-200">
             <CardContent className="text-center py-16">
               <ShoppingCart className="h-16 w-16 mx-auto text-gold-primary mb-4" />
               <p className="text-gray-600 text-lg mb-2">Inga inköpslistor ännu</p>
@@ -132,7 +132,7 @@ export default function ClientShoppingListsPage() {
                   return (
                     <Card
                       key={list.id}
-                      className="bg-white border-2 border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all active:scale-98 cursor-pointer"
+                      className="bg-white border border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all active:scale-98 cursor-pointer"
                       onClick={() => router.push(`/dashboard/shopping-lists/${list.id}`)}
                     >
                       <CardContent className="p-4">
@@ -181,7 +181,7 @@ export default function ClientShoppingListsPage() {
                   return (
                     <Card
                       key={list.id}
-                      className="bg-white border-2 border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all active:scale-98 cursor-pointer"
+                      className="bg-white border border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all active:scale-98 cursor-pointer"
                       onClick={() => router.push(`/dashboard/shopping-lists/${list.id}`)}
                     >
                       <CardContent className="p-4">

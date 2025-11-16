@@ -123,7 +123,7 @@ export default function ProgressPage() {
   return (
     <div className="space-y-8">
       {/* Header - Centrerad som Kostschema */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
           PROGRESS
         </h1>
@@ -168,7 +168,7 @@ export default function ProgressPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-6">
+          <div className="bg-white border border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-6">
             <p className="text-gold-primary text-sm font-medium mb-3">Viktförändring</p>
             <div className="flex items-baseline gap-2">
               <div className="text-3xl font-bold text-gray-900">
@@ -183,7 +183,7 @@ export default function ProgressPage() {
             </p>
           </div>
 
-          <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-6">
+          <div className="bg-white border border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-6">
             <p className="text-gold-primary text-sm font-medium mb-3">Genomsnittlig Energi</p>
             <div className="text-3xl font-bold text-gray-900">
               {avgEnergy.toFixed(1)} / 5
@@ -193,7 +193,7 @@ export default function ProgressPage() {
             </p>
           </div>
 
-          <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-6">
+          <div className="bg-white border border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-6">
             <p className="text-gold-primary text-sm font-medium mb-3">Genomsnittlig Sömn</p>
             <div className="text-3xl font-bold text-gray-900">
               {avgSleep.toFixed(1)}h
@@ -314,7 +314,7 @@ export default function ProgressPage() {
           </TabsContent>
         </Tabs>
       ) : (
-        <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-12">
+        <div className="bg-white border border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-12">
           <div className="text-center space-y-4">
             <div className="text-6xl mb-4">📊</div>
             <h3 className="text-2xl font-bold text-gray-900">Ingen data än</h3>

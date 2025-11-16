@@ -75,7 +75,7 @@ export default function LoginPage() {
         <ArrowLeft className="w-4 h-4" />
         <span>Tillbaka till startsidan</span>
       </Link>
-      <Card className="bg-white border-2 border-gray-200 shadow-lg">
+      <Card className="bg-white border border-gray-200 shadow-lg">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gold-primary to-gold-secondary bg-clip-text text-transparent">
           Sign In

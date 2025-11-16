@@ -45,7 +45,7 @@ export default async function NutritionCalculatorPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
           4-FAS KOSTSCHEMA KALKYLATOR
         </h1>
@@ -59,7 +59,7 @@ export default async function NutritionCalculatorPage() {
         {clients.length > 0 ? (
           <NutritionCalculatorClient clients={clients} />
         ) : (
-          <div className="bg-white border-2 border-gray-200 rounded-xl p-8 text-center">
+          <div className="bg-white border border-gray-200 rounded-xl p-8 text-center">
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
               Inga klienter ännu
             </h2>

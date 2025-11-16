@@ -351,7 +351,7 @@ export default function ArticlesPage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <Card className="bg-white border-2 border-gray-200">
+        <Card className="bg-white border border-gray-200">
           <CardContent className="p-6">
             <p className="text-gray-600">Du har inte behörighet att se denna sida.</p>
           </CardContent>
@@ -379,7 +379,7 @@ export default function ArticlesPage() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white border-2 border-gray-200">
+      <Card className="bg-white border border-gray-200">
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
             <Filter className="h-5 w-5 text-gold-primary" />
@@ -434,7 +434,7 @@ export default function ArticlesPage() {
 
       <div className="space-y-6">
         {isLoading ? (
-          <Card className="bg-white border-2 border-gray-200">
+          <Card className="bg-white border border-gray-200">
             <CardContent className="py-8">
               <div className="flex items-center justify-center">
                 <div className="w-8 h-8 border-4 border-gold-primary border-t-transparent rounded-full animate-spin" />
@@ -442,7 +442,7 @@ export default function ArticlesPage() {
             </CardContent>
           </Card>
         ) : filteredArticles.length === 0 ? (
-          <Card className="bg-white border-2 border-gray-200">
+          <Card className="bg-white border border-gray-200">
             <CardContent className="py-8">
               <div className="text-center">
                 <FileText className="h-12 w-12 mx-auto text-gold-primary mb-4" />
@@ -459,7 +459,7 @@ export default function ArticlesPage() {
             return (
             <Card
               key={group.category.id}
-              className="overflow-hidden bg-white border-2 border-gray-200"
+              className="overflow-hidden bg-white border border-gray-200"
             >
               <CardHeader
                 className="border-b border-gray-200"
@@ -616,7 +616,7 @@ export default function ArticlesPage() {
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="bg-white border-2 border-gray-200">
+        <DialogContent className="bg-white border border-gray-200">
           <DialogHeader>
             <DialogTitle className="text-gray-900">Skapa ny artikel</DialogTitle>
             <DialogDescription className="text-gray-600">

@@ -119,7 +119,7 @@ export default function HomePage() {
                     <Key className="w-4 h-4" />
                   </button>
                 </DialogTrigger>
-                <DialogContent className="bg-white border-2 border-gray-200 shadow-xl">
+                <DialogContent className="bg-white border border-gray-200 shadow-xl">
                   <DialogHeader>
                     <DialogTitle className="font-['Orbitron',sans-serif] text-xl font-bold tracking-[2px] uppercase bg-gradient-to-r from-gold-primary to-gold-secondary bg-clip-text text-transparent text-center">
                       Har du en inbjudningskod?
@@ -259,7 +259,7 @@ export default function HomePage() {
           {/* Vertical stack layout */}
           <div className="flex flex-col gap-6 max-w-[700px] mx-auto">
             {/* Step 1 */}
-            <div className="relative bg-white border-2 border-gray-200 rounded-xl p-10 shadow-md transition-all duration-300 hover:border-gold-primary hover:shadow-lg hover:-translate-y-1 overflow-hidden">
+            <div className="relative bg-white border border-gray-200 rounded-xl p-10 shadow-md transition-all duration-300 hover:border-gold-primary hover:shadow-lg hover:-translate-y-1 overflow-hidden">
               {/* Large background number */}
               <div className="absolute top-0 left-0 font-['Orbitron',sans-serif] text-[140px] font-black text-gray-100 leading-none select-none pointer-events-none">
                 01
@@ -280,7 +280,7 @@ export default function HomePage() {
             </div>
 
             {/* Step 2 */}
-            <div className="relative bg-white border-2 border-gray-200 rounded-xl p-10 shadow-md transition-all duration-300 hover:border-gold-primary hover:shadow-lg hover:-translate-y-1 overflow-hidden">
+            <div className="relative bg-white border border-gray-200 rounded-xl p-10 shadow-md transition-all duration-300 hover:border-gold-primary hover:shadow-lg hover:-translate-y-1 overflow-hidden">
               {/* Large background number */}
               <div className="absolute top-0 left-0 font-['Orbitron',sans-serif] text-[140px] font-black text-gray-100 leading-none select-none pointer-events-none">
                 02
@@ -301,7 +301,7 @@ export default function HomePage() {
             </div>
 
             {/* Step 3 */}
-            <div className="relative bg-white border-2 border-gray-200 rounded-xl p-10 shadow-md transition-all duration-300 hover:border-gold-primary hover:shadow-lg hover:-translate-y-1 overflow-hidden">
+            <div className="relative bg-white border border-gray-200 rounded-xl p-10 shadow-md transition-all duration-300 hover:border-gold-primary hover:shadow-lg hover:-translate-y-1 overflow-hidden">
               {/* Large background number */}
               <div className="absolute top-0 left-0 font-['Orbitron',sans-serif] text-[140px] font-black text-gray-100 leading-none select-none pointer-events-none">
                 03
@@ -439,7 +439,7 @@ export default function HomePage() {
           <Accordion type="single" collapsible className="space-y-4">
             <AccordionItem
               value="item-1"
-              className="bg-white border-2 border-gray-200 rounded-xl shadow-sm overflow-hidden"
+              className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
             >
               <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
                 <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
@@ -453,7 +453,7 @@ export default function HomePage() {
 
             <AccordionItem
               value="item-2"
-              className="bg-white border-2 border-gray-200 rounded-xl shadow-sm overflow-hidden"
+              className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
             >
               <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
                 <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
@@ -475,7 +475,7 @@ export default function HomePage() {
 
             <AccordionItem
               value="item-3"
-              className="bg-white border-2 border-gray-200 rounded-xl shadow-sm overflow-hidden"
+              className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
             >
               <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
                 <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
@@ -489,7 +489,7 @@ export default function HomePage() {
 
             <AccordionItem
               value="item-4"
-              className="bg-white border-2 border-gray-200 rounded-xl shadow-sm overflow-hidden"
+              className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
             >
               <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
                 <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
@@ -503,7 +503,7 @@ export default function HomePage() {
 
             <AccordionItem
               value="item-5"
-              className="bg-white border-2 border-gray-200 rounded-xl shadow-sm overflow-hidden"
+              className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
             >
               <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
                 <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
@@ -517,7 +517,7 @@ export default function HomePage() {
 
             <AccordionItem
               value="item-6"
-              className="bg-white border-2 border-gray-200 rounded-xl shadow-sm overflow-hidden"
+              className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
             >
               <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
                 <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
@@ -531,7 +531,7 @@ export default function HomePage() {
 
             <AccordionItem
               value="item-7"
-              className="bg-white border-2 border-gray-200 rounded-xl shadow-sm overflow-hidden"
+              className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
             >
               <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
                 <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">

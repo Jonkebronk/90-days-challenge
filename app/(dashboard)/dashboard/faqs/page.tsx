@@ -87,12 +87,12 @@ export default function ClientFaqsPage() {
   if (categories.length === 0) {
     return (
       <div className="space-y-6">
-        <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+        <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
             VANLIGA FRÅGOR
           </h1>
         </div>
-        <div className="bg-white border-2 border-gray-200 rounded-xl p-12 text-center">
+        <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
           <HelpCircle className="h-16 w-16 mx-auto text-gold-primary mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Inga vanliga frågor än</h2>
           <p className="text-gray-600">
@@ -106,7 +106,7 @@ export default function ClientFaqsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
           VANLIGA FRÅGOR
         </h1>
@@ -139,7 +139,7 @@ export default function ClientFaqsPage() {
                     return (
                       <Card
                         key={question.id}
-                        className="bg-white border-2 border-gray-200 cursor-pointer hover:border-gold-primary hover:shadow-lg transition-all"
+                        className="bg-white border border-gray-200 cursor-pointer hover:border-gold-primary hover:shadow-lg transition-all"
                         onClick={() => toggleQuestion(question.id)}
                       >
                         <CardContent className="p-4">

@@ -202,7 +202,7 @@ export default function WeightTrackerPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px] flex items-center justify-center gap-3">
           <Scale className="h-10 w-10 text-gold-primary" />
           VIKTSPÅRNING
@@ -217,7 +217,7 @@ export default function WeightTrackerPage() {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Client Selector for Coaches */}
         {isCoach && (
-          <Card className="bg-white border-2 border-gray-200">
+          <Card className="bg-white border border-gray-200">
             <CardContent className="py-4">
               <div className="flex items-center gap-4">
                 <Users className="h-5 w-5 text-gold-primary" />
@@ -256,7 +256,7 @@ export default function WeightTrackerPage() {
           {/* Left Column - Profile & Stats */}
           <div className="space-y-6">
             {/* Profile Section */}
-            <Card className="bg-white border-2 border-gray-200">
+            <Card className="bg-white border border-gray-200">
               <CardHeader>
                 <CardTitle className="text-gray-900">Profil</CardTitle>
               </CardHeader>
@@ -335,7 +335,7 @@ export default function WeightTrackerPage() {
             </Card>
 
             {/* Statistics Section */}
-            <Card className="bg-white border-2 border-gray-200">
+            <Card className="bg-white border border-gray-200">
               <CardHeader>
                 <CardTitle className="text-gray-900">Statistik</CardTitle>
               </CardHeader>
@@ -359,7 +359,7 @@ export default function WeightTrackerPage() {
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-colors ${
                   activeTab === 'weekly'
                     ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white'
-                    : 'bg-white text-gray-700 hover:text-gray-900 border-2 border-gray-200'
+                    : 'bg-white text-gray-700 hover:text-gray-900 border border-gray-200'
                 }`}
               >
                 <Calendar className="h-5 w-5" />
@@ -370,7 +370,7 @@ export default function WeightTrackerPage() {
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-colors ${
                   activeTab === 'graph'
                     ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white'
-                    : 'bg-white text-gray-700 hover:text-gray-900 border-2 border-gray-200'
+                    : 'bg-white text-gray-700 hover:text-gray-900 border border-gray-200'
                 }`}
               >
                 <TrendingDown className="h-5 w-5" />
@@ -382,14 +382,14 @@ export default function WeightTrackerPage() {
             {activeTab === 'weekly' && (
               <div className="space-y-4">
                 {isCoach && !selectedClientId ? (
-                  <Card className="bg-white border-2 border-gray-200">
+                  <Card className="bg-white border border-gray-200">
                     <CardContent className="py-12 text-center">
                       <Users className="h-12 w-12 mx-auto mb-4 text-gold-primary" />
                       <p className="text-gray-600">Välj en klient ovan för att se deras veckoöversikt.</p>
                     </CardContent>
                   </Card>
                 ) : weeks.length === 0 ? (
-                  <Card className="bg-white border-2 border-gray-200">
+                  <Card className="bg-white border border-gray-200">
                     <CardContent className="py-12 text-center">
                       <p className="text-gray-600">
                         {profile.targetDate
@@ -415,7 +415,7 @@ export default function WeightTrackerPage() {
 
             {/* Graph View */}
             {activeTab === 'graph' && (
-              <Card className="bg-white border-2 border-gray-200">
+              <Card className="bg-white border border-gray-200">
                 <CardContent className="py-6">
                   {graphData.length === 0 ? (
                     <div className="py-12 text-center">

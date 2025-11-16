@@ -28,6 +28,33 @@
   .focus-gold {
     @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600;
   }
+
+  /* Mobile-optimized touch targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Improved readability for mobile */
+  .text-mobile-base {
+    @apply text-base md:text-sm;
+  }
+
+  .text-mobile-lg {
+    @apply text-lg md:text-base;
+  }
+
+  /* Spacing utilities */
+  .space-section {
+    @apply space-y-8;
+  }
+
+  .space-content {
+    @apply space-y-4;
+  }
+
+  .space-compact {
+    @apply space-y-2;
+  }
 }
 
 

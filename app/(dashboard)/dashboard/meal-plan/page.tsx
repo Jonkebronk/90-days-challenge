@@ -106,7 +106,7 @@ export default function MealPlanPage() {
     return (
       <div className="space-y-6">
         {/* Header */}
-        <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+        <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
             KOSTSCHEMA
           </h1>
@@ -116,7 +116,7 @@ export default function MealPlanPage() {
         </div>
 
         {/* Empty State */}
-        <Card className="bg-white border-2 border-gray-200">
+        <Card className="bg-white border border-gray-200">
           <CardContent className="py-16">
             <div className="text-center">
               <Sparkles className="w-16 h-16 mx-auto text-gold-primary mb-4" />
@@ -142,7 +142,7 @@ export default function MealPlanPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
           {mealPlan.name.toUpperCase()}
         </h1>
@@ -183,7 +183,7 @@ export default function MealPlanPage() {
         {/* Left Sidebar - Totals */}
         <div className="lg:col-span-1 space-y-4">
           {/* Daily Totals */}
-          <Card className="bg-white border-2 border-gray-200">
+          <Card className="bg-white border border-gray-200">
             <CardHeader>
               <CardTitle className="text-lg text-gray-900">Totalt för kost</CardTitle>
             </CardHeader>

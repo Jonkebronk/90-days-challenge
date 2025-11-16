@@ -94,7 +94,7 @@ export default function WorkoutPage() {
     return (
       <div className="space-y-6">
         {/* Header */}
-        <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+        <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
             TRÄNINGSPROGRAM
           </h1>
@@ -103,7 +103,7 @@ export default function WorkoutPage() {
           </p>
         </div>
 
-        <Card className="bg-white border-2 border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all">
+        <Card className="bg-white border border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all">
           <CardContent className="py-12 text-center">
             <Dumbbell className="w-16 h-16 text-gold-primary mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -133,7 +133,7 @@ export default function WorkoutPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
           {workoutProgram.name.toUpperCase()}
         </h1>
@@ -197,7 +197,7 @@ export default function WorkoutPage() {
       </div>
 
       {/* Program Info Card */}
-      <Card className="bg-white border-2 border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all">
+      <Card className="bg-white border border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all">
         <CardContent className="pt-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {workoutProgram.difficulty && (
@@ -342,7 +342,7 @@ export default function WorkoutPage() {
       </div>
 
       {daysToShow.length === 0 && (
-        <Card className="bg-white border-2 border-gray-200">
+        <Card className="bg-white border border-gray-200">
           <CardContent className="py-12 text-center">
             <p className="text-gray-600">
               {programHasWeeks

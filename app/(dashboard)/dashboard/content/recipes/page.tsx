@@ -185,7 +185,7 @@ export default function CoachRecipesPage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
           <p className="text-gray-600">Du har inte behörighet att se denna sida.</p>
         </div>
       </div>
@@ -247,7 +247,7 @@ export default function CoachRecipesPage() {
                     <div
                       key={recipe.id}
                       onClick={() => router.push(`/dashboard/content/recipes/${recipe.id}/edit`)}
-                      className="group relative bg-white border-2 border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-gold-primary hover:shadow-lg transition-all"
+                      className="group relative bg-white border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-gold-primary hover:shadow-lg transition-all"
                     >
                       {/* Image */}
                       {recipe.coverImage ? (
@@ -311,7 +311,7 @@ export default function CoachRecipesPage() {
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="bg-white border-2 border-gray-200">
+        <DialogContent className="bg-white border border-gray-200">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-gray-900">
               Skapa nytt recept

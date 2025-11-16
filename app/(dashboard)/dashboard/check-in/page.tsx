@@ -155,7 +155,7 @@ export default function CheckInPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
           CHECK-IN
         </h1>
@@ -167,7 +167,7 @@ export default function CheckInPage() {
       <div className="max-w-4xl mx-auto">
         {!hasStartCheckIn ? (
           // Show Start Check-In card if not completed
-          <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-8">
+          <div className="bg-white border border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-8">
             <div className="flex items-start gap-4 mb-6">
               <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-3xl flex-shrink-0">
                 🎯
@@ -196,7 +196,7 @@ export default function CheckInPage() {
           </div>
         ) : (
           // Show regular check-in card if start check-in is completed
-          <div className="bg-white border-2 border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-8">
+          <div className="bg-white border border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Veckovis Check-in</h2>
             <p className="text-gray-600 mb-6">
               Det är dags för din veckovisa check-in. Klicka nedan för att börja.

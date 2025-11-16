@@ -334,7 +334,7 @@ function ArticleBankContent() {
               const displayedArticles = isExpanded ? categoryArticles : []
 
               return (
-                <div key={category.id} className="flex flex-col bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl hover:border-gold-primary transition-all duration-300">
+                <div key={category.id} className="flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-xl hover:border-gold-primary transition-all duration-300">
                   {/* Category Header with Icon */}
                   <div
                     onClick={(e) => {

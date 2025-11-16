@@ -175,7 +175,7 @@ export default function MessagesPage() {
   return (
     <div className="space-y-6 h-[calc(100vh-12rem)]">
       {/* Header */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border-2 border-gray-200 rounded-xl">
+      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
           MEDDELANDEN
         </h1>
@@ -188,7 +188,7 @@ export default function MessagesPage() {
         {/* Sidebar - Contact List (Coach only) */}
         {isCoach && (
           <div className="lg:col-span-1">
-            <Card className="bg-white border-2 border-gray-200 p-4 h-full overflow-y-auto">
+            <Card className="bg-white border border-gray-200 p-4 h-full overflow-y-auto">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Klienter</h3>
               <div className="space-y-2">
                 {clients.map(client => (
@@ -214,7 +214,7 @@ export default function MessagesPage() {
 
         {/* Messages Area */}
         <div className={`${isCoach ? 'lg:col-span-3' : 'lg:col-span-4'} flex flex-col`}>
-          <Card className="bg-white border-2 border-gray-200 flex-1 flex flex-col">
+          <Card className="bg-white border border-gray-200 flex-1 flex flex-col">
             {/* Contact Header */}
             {selectedContact && (
               <div className="p-4 border-b border-gray-200">

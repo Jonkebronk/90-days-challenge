@@ -123,7 +123,7 @@ export default function WorkoutProgramsPage() {
       </div>
 
       {/* Search */}
-      <Card className="bg-white border-2 border-gray-200">
+      <Card className="bg-white border border-gray-200">
         <CardContent className="pt-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -142,7 +142,7 @@ export default function WorkoutProgramsPage() {
         {filteredPrograms.map((program) => (
           <Card
             key={program.id}
-            className="bg-white border-2 border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all"
+            className="bg-white border border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all"
           >
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -233,7 +233,7 @@ export default function WorkoutProgramsPage() {
       </div>
 
       {filteredPrograms.length === 0 && (
-        <Card className="bg-white border-2 border-gray-200">
+        <Card className="bg-white border border-gray-200">
           <CardContent className="py-12 text-center">
             <Dumbbell className="w-12 h-12 text-gold-primary mx-auto mb-4" />
             <p className="text-gray-600 mb-4">

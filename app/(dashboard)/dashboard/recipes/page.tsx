@@ -165,7 +165,7 @@ export default function RecipeBankPage() {
   if (!session?.user) {
     return (
       <div className="container mx-auto p-6">
-        <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
           <p className="text-gray-700">Du måste vara inloggad för att se denna sida.</p>
         </div>
       </div>
@@ -185,7 +185,7 @@ export default function RecipeBankPage() {
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white border-2 border-gray-200 rounded-xl p-6 space-y-4">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gold-primary" />
           <Input
@@ -219,13 +219,13 @@ export default function RecipeBankPage() {
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
           <div className="text-center">
             <p className="text-3xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">{recipes.length}</p>
             <p className="text-sm text-gray-600 mt-1">Totalt recept</p>
           </div>
         </div>
-        <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
           <div className="text-center">
             <p className="text-3xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
               {recipes.filter(r => isFavorited(r)).length}
@@ -233,7 +233,7 @@ export default function RecipeBankPage() {
             <p className="text-sm text-gray-600 mt-1">Favoriter</p>
           </div>
         </div>
-        <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
           <div className="text-center">
             <p className="text-3xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">{categories.length}</p>
             <p className="text-sm text-gray-600 mt-1">Kategorier</p>
@@ -243,11 +243,11 @@ export default function RecipeBankPage() {
 
       {/* Recipes by Category */}
       {isLoading ? (
-        <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
           <p className="text-center text-gray-600">Laddar...</p>
         </div>
       ) : Object.keys(recipesByCategory).length === 0 ? (
-        <div className="bg-white border-2 border-gray-200 rounded-xl p-12 text-center">
+        <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
           <ChefHat className="h-12 w-12 mx-auto text-gold-primary mb-4" />
           <p className="text-gray-600">Inga recept hittades.</p>
           <p className="text-sm text-gray-500 mt-1">
@@ -256,7 +256,7 @@ export default function RecipeBankPage() {
         </div>
       ) : (
         Object.entries(recipesByCategory).map(([categoryName, categoryRecipes]) => (
-          <div key={categoryName} className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden">
+          <div key={categoryName} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
             <div className="p-6 border-b border-gray-200">
               <h2 className="text-xl font-bold flex items-center gap-2 text-gold-primary">
                 <ChefHat className="h-5 w-5" />
@@ -272,7 +272,7 @@ export default function RecipeBankPage() {
                   <div
                     key={recipe.id}
                     onClick={() => router.push(`/dashboard/recipes/${recipe.id}`)}
-                    className="bg-white border-2 border-gray-200 rounded-lg overflow-hidden hover:border-gold-primary hover:shadow-lg cursor-pointer transition-all relative group"
+                    className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gold-primary hover:shadow-lg cursor-pointer transition-all relative group"
                   >
                     {recipe.coverImage && (
                       <div className="h-48 overflow-hidden">
