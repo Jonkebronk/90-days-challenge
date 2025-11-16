@@ -216,7 +216,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a] flex items-center justify-center p-6">
+      <div className="min-h-screen bg-black flex items-center justify-center p-6">
         <div className="max-w-2xl w-full text-center">
           <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(34,197,94,0.3)] rounded-2xl p-12 backdrop-blur-[10px]">
             <div className="w-20 h-20 mx-auto mb-6 bg-[rgba(34,197,94,0.1)] rounded-full flex items-center justify-center">
@@ -251,7 +251,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+    <div className="min-h-screen bg-black">
       <div className="container mx-auto p-6 max-w-4xl">
         {/* Back button */}
         <Link

@@ -175,7 +175,7 @@ export default function LessonViewerPage() {
   const isCompleted = lesson.progress && lesson.progress.length > 0 && lesson.progress[0].completed
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black">
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">

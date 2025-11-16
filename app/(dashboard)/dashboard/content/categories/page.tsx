@@ -265,7 +265,7 @@ export default function CategoriesPage() {
 
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+      <div className="min-h-screen bg-black">
         <div className="container mx-auto p-6">
           <div className="bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] rounded-xl p-6 backdrop-blur-[10px]">
             <p className="text-[rgba(255,255,255,0.7)]">Du har inte behörighet att se denna sida.</p>
@@ -276,7 +276,7 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+    <div className="min-h-screen bg-black">
       <div className="container mx-auto p-6 space-y-8 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-8">
@@ -399,7 +399,7 @@ export default function CategoriesPage() {
           setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
         }
       }}>
-        <DialogContent className="max-w-2xl bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a] border-2 border-[rgba(255,215,0,0.3)]">
+        <DialogContent className="max-w-2xl bg-black border-2 border-[rgba(255,215,0,0.3)]">
           <DialogHeader className="border-b border-[rgba(255,215,0,0.2)] pb-4">
             <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent font-['Orbitron',sans-serif]">
               Skapa ny kategori
@@ -559,7 +559,7 @@ export default function CategoriesPage() {
           setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
         }
       }}>
-        <DialogContent className="max-w-2xl bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a] border-2 border-[rgba(255,215,0,0.3)]">
+        <DialogContent className="max-w-2xl bg-black border-2 border-[rgba(255,215,0,0.3)]">
           <DialogHeader className="border-b border-[rgba(255,215,0,0.2)] pb-4">
             <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent font-['Orbitron',sans-serif]">
               Redigera kategori

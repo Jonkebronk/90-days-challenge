@@ -287,7 +287,7 @@ export default function ClientsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+      <div className="min-h-screen bg-black">
         <div className="container mx-auto p-6 space-y-8 max-w-7xl">
           <div className="animate-pulse space-y-4">
             <div className="h-8 bg-[rgba(255,215,0,0.1)] rounded w-1/4"></div>
@@ -299,7 +299,7 @@ export default function ClientsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+    <div className="min-h-screen bg-black">
       <div className="container mx-auto p-6 space-y-8 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-8">

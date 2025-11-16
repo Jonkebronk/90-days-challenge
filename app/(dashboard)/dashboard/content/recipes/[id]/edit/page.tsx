@@ -211,14 +211,14 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px] bg-[#0a0a0a]">
+      <div className="flex items-center justify-center min-h-[400px] bg-black">
         <div className="w-12 h-12 border-4 border-[rgba(255,215,0,0.3)] border-t-[#FFD700] rounded-full animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-black">
       {/* Header */}
       <div className="border-b border-[rgba(255,215,0,0.2)] bg-[rgba(255,255,255,0.02)] sticky top-0 z-10 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">

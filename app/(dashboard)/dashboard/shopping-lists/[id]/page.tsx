@@ -377,7 +377,7 @@ export default function ClientShoppingListDetailPage({
     )
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#1a1a1a]">
+    <div className="min-h-screen bg-black">
       {/* Sticky Header */}
       <div
         className="sticky top-0 z-20 border-b border-[rgba(255,215,0,0.2)] backdrop-blur-lg"

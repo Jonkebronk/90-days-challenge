@@ -127,7 +127,7 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-[rgba(255,255,255,0.6)]">Laddar träningspass...</div>
       </div>
     )
@@ -135,14 +135,14 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-[rgba(255,255,255,0.6)]">Träningspass hittades inte</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] p-8">
+    <div className="min-h-screen bg-black p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">

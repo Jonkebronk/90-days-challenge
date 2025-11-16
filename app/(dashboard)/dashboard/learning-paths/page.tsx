@@ -63,7 +63,7 @@ export default function LearningPathsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a0933] to-[#0a0a0a]">
+    <div className="min-h-screen bg-black">
       <div className="container mx-auto p-6 space-y-8 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-12">
