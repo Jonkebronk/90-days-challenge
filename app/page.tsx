@@ -323,7 +323,7 @@ export default function HomePage() {
                   Steg 1.
                 </div>
                 <h3 className="text-2xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
-                  Ansök och berätta om dina mål
+                  Intresseanmälan
                 </h3>
                 <p className="text-gray-700 text-base leading-relaxed">
                   Fyll i ett kort formulär där du delar dina ambitioner, var du är idag och vart du vill komma. Det tar 5 minuter och är första steget mot förändring.
@@ -344,7 +344,7 @@ export default function HomePage() {
                   Steg 2.
                 </div>
                 <h3 className="text-2xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
-                  Vi går igenom din plan tillsammans
+                  Jag tar kontakt med dig
                 </h3>
                 <p className="text-gray-700 text-base leading-relaxed">
                   Jag går igenom din ansökan och visar exakt hur vi ska nå dina mål. Du får full insyn i upplägget innan du bestämmer dig.
@@ -365,7 +365,7 @@ export default function HomePage() {
                   Steg 3.
                 </div>
                 <h3 className="text-2xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-4 tracking-[1px] font-['Orbitron',sans-serif]">
-                  Säg ja till utmaningen
+                  Ta makten över din hälsa
                 </h3>
                 <p className="text-gray-700 text-base leading-relaxed">
                   Om det känns rätt tar du steget och vi sätter igång. Ingen press, bara en möjlighet att äntligen få ordning på träning och kost.
