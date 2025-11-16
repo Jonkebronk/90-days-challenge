@@ -68,6 +68,7 @@ type TemplateMeal = {
   id: string
   name: string
   mealType: string
+  description: string | null
   targetProtein: number | null
   targetFat: number | null
   targetCarbs: number | null
@@ -112,6 +113,8 @@ export default function MealPlanTemplatePage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [isAddMealDialogOpen, setIsAddMealDialogOpen] = useState(false)
+  const [isEditMealDialogOpen, setIsEditMealDialogOpen] = useState(false)
+  const [editingMeal, setEditingMeal] = useState<TemplateMeal | null>(null)
   const [isAddOptionDialogOpen, setIsAddOptionDialogOpen] = useState(false)
   const [selectedMealForOption, setSelectedMealForOption] = useState<string | null>(null)
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false)
@@ -264,6 +267,76 @@ export default function MealPlanTemplatePage() {
       console.error('Error adding meal:', error)
       toast.error('Ett fel uppstod')
     }
+  }
+
+  const handleEditMeal = async () => {
+    if (!mealFormData.name || !editingMeal) {
+      toast.error('Måltidsnamn krävs')
+      return
+    }
+
+    try {
+      const response = await fetch(
+        `/api/meal-plan-templates/${templateId}/meals/${editingMeal.id}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: mealFormData.name,
+            mealType: mealFormData.mealType,
+            description: mealFormData.description || null,
+            targetProtein: mealFormData.targetProtein
+              ? parseFloat(mealFormData.targetProtein)
+              : null,
+            targetFat: mealFormData.targetFat
+              ? parseFloat(mealFormData.targetFat)
+              : null,
+            targetCarbs: mealFormData.targetCarbs
+              ? parseFloat(mealFormData.targetCarbs)
+              : null,
+            targetCalories: mealFormData.targetCalories
+              ? parseFloat(mealFormData.targetCalories)
+              : null,
+          }),
+        }
+      )
+
+      if (response.ok) {
+        toast.success('Måltid uppdaterad')
+        setIsEditMealDialogOpen(false)
+        setEditingMeal(null)
+        setMealFormData({
+          name: '',
+          mealType: 'breakfast',
+          description: '',
+          targetProtein: '',
+          targetFat: '',
+          targetCarbs: '',
+          targetCalories: '',
+        })
+        fetchTemplate()
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Kunde inte uppdatera måltid')
+      }
+    } catch (error) {
+      console.error('Error updating meal:', error)
+      toast.error('Ett fel uppstod')
+    }
+  }
+
+  const openEditMealDialog = (meal: TemplateMeal) => {
+    setEditingMeal(meal)
+    setMealFormData({
+      name: meal.name,
+      mealType: meal.mealType,
+      description: meal.description || '',
+      targetProtein: meal.targetProtein?.toString() || '',
+      targetFat: meal.targetFat?.toString() || '',
+      targetCarbs: meal.targetCarbs?.toString() || '',
+      targetCalories: meal.targetCalories?.toString() || '',
+    })
+    setIsEditMealDialogOpen(true)
   }
 
   const handleDeleteMeal = async (mealId: string, mealName: string) => {
@@ -528,6 +601,7 @@ export default function MealPlanTemplatePage() {
                           <Button
                             variant="ghost"
                             size="icon"
+                            onClick={() => openEditMealDialog(meal)}
                             title="Redigera måltid"
                             className="hover:bg-[rgba(255,215,0,0.1)] text-[rgba(255,255,255,0.6)] hover:text-[#FFD700]"
                           >
@@ -811,6 +885,189 @@ export default function MealPlanTemplatePage() {
               className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
             >
               Lägg till måltid
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Meal Dialog */}
+      <Dialog open={isEditMealDialogOpen} onOpenChange={setIsEditMealDialogOpen}>
+        <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+              Redigera måltid
+            </DialogTitle>
+            <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+              Uppdatera måltidsinformation.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="editMealName" className="text-[rgba(255,255,255,0.8)]">
+                Måltidsnamn *
+              </Label>
+              <Input
+                id="editMealName"
+                value={mealFormData.name}
+                onChange={(e) =>
+                  setMealFormData({ ...mealFormData, name: e.target.value })
+                }
+                placeholder="t.ex. Frukost"
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+              />
+            </div>
+            <div>
+              <Label htmlFor="editMealType" className="text-[rgba(255,255,255,0.8)]">
+                Måltidstyp *
+              </Label>
+              <Select
+                value={mealFormData.mealType}
+                onValueChange={(value) =>
+                  setMealFormData({ ...mealFormData, mealType: value })
+                }
+              >
+                <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
+                  <SelectItem
+                    value="breakfast"
+                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                  >
+                    Frukost
+                  </SelectItem>
+                  <SelectItem
+                    value="lunch"
+                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                  >
+                    Lunch
+                  </SelectItem>
+                  <SelectItem
+                    value="dinner"
+                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                  >
+                    Middag
+                  </SelectItem>
+                  <SelectItem
+                    value="snack"
+                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                  >
+                    Mellanmål
+                  </SelectItem>
+                  <SelectItem
+                    value="evening"
+                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
+                  >
+                    Kvällsmål
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="editMealDescription" className="text-[rgba(255,255,255,0.8)]">
+                Beskrivning
+              </Label>
+              <Textarea
+                id="editMealDescription"
+                value={mealFormData.description}
+                onChange={(e) =>
+                  setMealFormData({ ...mealFormData, description: e.target.value })
+                }
+                placeholder="T.ex. 'Ät inom 30 min efter uppvakning'"
+                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)] min-h-[80px]"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label
+                  htmlFor="editMealTargetCalories"
+                  className="text-[rgba(255,255,255,0.8)]"
+                >
+                  Mål kalorier
+                </Label>
+                <Input
+                  id="editMealTargetCalories"
+                  type="number"
+                  step="1"
+                  value={mealFormData.targetCalories}
+                  onChange={(e) =>
+                    setMealFormData({ ...mealFormData, targetCalories: e.target.value })
+                  }
+                  placeholder="500"
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor="editMealTargetProtein"
+                  className="text-[rgba(255,255,255,0.8)]"
+                >
+                  Mål protein (g)
+                </Label>
+                <Input
+                  id="editMealTargetProtein"
+                  type="number"
+                  step="0.1"
+                  value={mealFormData.targetProtein}
+                  onChange={(e) =>
+                    setMealFormData({ ...mealFormData, targetProtein: e.target.value })
+                  }
+                  placeholder="30"
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editMealTargetFat" className="text-[rgba(255,255,255,0.8)]">
+                  Mål fett (g)
+                </Label>
+                <Input
+                  id="editMealTargetFat"
+                  type="number"
+                  step="0.1"
+                  value={mealFormData.targetFat}
+                  onChange={(e) =>
+                    setMealFormData({ ...mealFormData, targetFat: e.target.value })
+                  }
+                  placeholder="15"
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor="editMealTargetCarbs"
+                  className="text-[rgba(255,255,255,0.8)]"
+                >
+                  Mål kolhydrater (g)
+                </Label>
+                <Input
+                  id="editMealTargetCarbs"
+                  type="number"
+                  step="0.1"
+                  value={mealFormData.targetCarbs}
+                  onChange={(e) =>
+                    setMealFormData({ ...mealFormData, targetCarbs: e.target.value })
+                  }
+                  placeholder="50"
+                  className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                setIsEditMealDialogOpen(false)
+                setEditingMeal(null)
+              }}
+              className="bg-transparent border border-[rgba(255,215,0,0.3)] text-[rgba(255,255,255,0.8)] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+            >
+              Avbryt
+            </Button>
+            <Button
+              onClick={handleEditMeal}
+              className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+            >
+              Spara ändringar
             </Button>
           </DialogFooter>
         </DialogContent>
