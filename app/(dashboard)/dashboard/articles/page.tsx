@@ -22,7 +22,6 @@ import { getPhaseColors, getPhaseShortName, type Phase } from '@/lib/utils/phase
 import { ArticleSearch } from '@/components/article-search'
 import { ArticleFilters } from '@/components/article-filters'
 import { ArticleSort, type SortOption } from '@/components/article-sort'
-import { ReadingProgressDashboard } from '@/components/reading-progress-dashboard'
 
 type ArticleCategory = {
   id: string
@@ -259,9 +258,6 @@ function ArticleBankContent() {
           </p>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 opacity-30" />
         </div>
-
-        {/* Reading Progress Dashboard */}
-        <ReadingProgressDashboard className="mb-8" />
 
         {/* Search Bar */}
         <div className="max-w-2xl mx-auto mb-8">
