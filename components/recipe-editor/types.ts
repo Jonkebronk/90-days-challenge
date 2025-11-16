@@ -3,12 +3,24 @@
 export interface FoodItem {
   id: string
   name: string
-  caloriesPer100g: number
-  proteinPer100g: number
-  carbsPer100g: number
-  fatPer100g: number
+  categoryId?: string | null
+  calories: number
+  proteinG: number
+  carbsG: number
+  fatG: number
+  commonServingSize?: string | null
+  isRecommended: boolean
+  notes?: string | null
+  isApproved: boolean
   isVegetarian: boolean
   isVegan: boolean
+  foodCategory?: {
+    id: string
+    name: string
+    slug: string
+    color: string
+    icon: string
+  } | null
 }
 
 export interface RecipeIngredient {
