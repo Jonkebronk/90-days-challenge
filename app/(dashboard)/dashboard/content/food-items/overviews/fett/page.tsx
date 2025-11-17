@@ -48,7 +48,7 @@ export default function FettOverviewPage() {
       ],
     },
     spreads: {
-      name: 'Pålägg & Övrigt',
+      name: 'Pålägg & Nötsmör',
       items: [
         { name: 'Jordnötssmör', fatPer100g: 50 },
         { name: 'Mandelsmör', fatPer100g: 55 },
