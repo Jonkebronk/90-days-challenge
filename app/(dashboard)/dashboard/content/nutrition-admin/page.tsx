@@ -417,7 +417,9 @@ export default function NutritionAdminPage() {
                             className="px-2 md:px-3 py-2 text-center text-xs font-semibold text-gold-light border border-gold-primary/20 min-w-[65px] md:min-w-[70px] whitespace-nowrap"
                           >
                             <div>{target}g</div>
-                            <div className="text-[rgba(255,215,0,0.6)] font-normal">Protein</div>
+                            <div className="text-[rgba(255,215,0,0.6)] font-normal">
+                              {activeType === 'protein' ? 'Protein' : activeType === 'fat' ? 'Fett' : 'Kolhydrater'}
+                            </div>
                           </th>
                         ))}
                         <th className="px-2 md:px-3 py-2 text-center text-xs font-semibold text-gray-200 border border-gold-primary/20 min-w-[100px] md:min-w-[120px]">
