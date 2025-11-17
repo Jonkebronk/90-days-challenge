@@ -244,7 +244,7 @@ export default function MessagesPage() {
                       <div
                         className={`max-w-[70%] ${
                           isCheckIn
-                            ? 'bg-[rgba(30,58,138,0.3)] border-2 border-[rgba(59,130,246,0.4)] backdrop-blur-sm'
+                            ? 'bg-[rgba(30,58,138,0.5)] border-2 border-[rgba(59,130,246,0.6)]'
                             : isMine
                             ? 'bg-gradient-to-r from-gold-primary to-gold-secondary'
                             : 'bg-white/10 border border-gold-primary/20'
@@ -252,8 +252,8 @@ export default function MessagesPage() {
                       >
                         {/* Check-in header */}
                         {isCheckIn && (
-                          <div className="mb-2 pb-2 border-b border-[rgba(96,165,250,0.4)]">
-                            <p className="text-xs font-bold text-[rgba(96,165,250,1)]">VECKORAPPORT</p>
+                          <div className="mb-2 pb-2 border-b border-[rgba(147,197,253,0.5)]">
+                            <p className="text-xs font-bold text-[rgba(147,197,253,1)]">VECKORAPPORT</p>
                           </div>
                         )}
 
