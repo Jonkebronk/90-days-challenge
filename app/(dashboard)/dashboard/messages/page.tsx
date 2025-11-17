@@ -173,7 +173,7 @@ export default function MessagesPage() {
     : coach
 
   return (
-    <div className="space-y-6 h-[calc(100vh-12rem)]">
+    <div className="space-y-6 h-[calc(100vh-12rem)] max-w-full overflow-x-hidden">
       {/* Header */}
       <div className="relative text-center py-8 bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px]">
         <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
@@ -184,7 +184,7 @@ export default function MessagesPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100%-12rem)]">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100%-12rem)] max-w-full">
         {/* Sidebar - Contact List (Coach only) */}
         {isCoach && (
           <div className="lg:col-span-1">

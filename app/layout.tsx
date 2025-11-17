@@ -29,8 +29,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="sv">
-      <body className="antialiased">
+    <html lang="sv" className="overflow-x-hidden">
+      <body className="antialiased overflow-x-hidden">
         <SessionProvider>
           <PWARegister />
           {children}
