@@ -174,10 +174,10 @@ export default function WorkoutProgramsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
             Träningsprogram
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-gray-400 mt-1">
             Skapa och hantera träningsprogram för dina klienter
           </p>
         </div>
