@@ -289,10 +289,10 @@ export default function LeadsPage() {
                       <DialogTrigger asChild>
                         <button
                           onClick={() => setViewingLead(lead)}
-                          className="p-2 hover:bg-gold-50 rounded transition-colors text-[rgba(255,215,0,0.8)] hover:text-gold-light"
+                          className="p-2 hover:bg-[rgba(255,215,0,0.1)] rounded transition-colors text-[rgba(255,215,0,0.8)] hover:text-gold-light"
                           title="Visa ansökning"
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-4 w-4 text-[rgba(255,215,0,0.8)] hover:text-gold-light" />
                         </button>
                       </DialogTrigger>
                       <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto bg-gray-900 border-2 border-gold-primary/30">
