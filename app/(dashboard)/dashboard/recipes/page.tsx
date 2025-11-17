@@ -174,14 +174,16 @@ export default function RecipeBankPage() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold flex items-center gap-2 bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
-          <ChefHat className="h-8 w-8 text-gold-primary" />
-          Recept
-        </h1>
-        <p className="text-gray-400 mt-1">
-          Utforska hälsosamma och näringsrika recept
-        </p>
+      <div className="flex items-center gap-3">
+        <ChefHat className="h-8 w-8 text-gold-primary" />
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
+            Recept
+          </h1>
+          <p className="text-gray-300 mt-1">
+            Utforska hälsosamma och näringsrika recept
+          </p>
+        </div>
       </div>
 
       {/* Search and Filters */}
