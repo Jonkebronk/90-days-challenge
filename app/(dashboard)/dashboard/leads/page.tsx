@@ -478,9 +478,8 @@ export default function LeadsPage() {
                           {/* Actions */}
                           <div className="flex justify-end gap-3 pt-6 border-t border-gold-primary/20">
                             <Button
-                              variant="outline"
                               onClick={() => setViewingLead(null)}
-                              className="border-gold-primary/30 text-gray-100 hover:bg-gold-50 hover:border-[rgba(255,215,0,0.5)]"
+                              className="bg-white/5 border-2 border-gold-primary/30 text-gray-100 hover:bg-gold-primary/10 hover:border-[rgba(255,215,0,0.5)] transition-all"
                             >
                               Stäng
                             </Button>
