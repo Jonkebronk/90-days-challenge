@@ -179,6 +179,9 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
           whyJoin: formData.whyApply,
           biggestChallenges: formData.challenges,
           previousCoaching: formData.previousCoaching,
+
+          // Complete application notes
+          notes: leadNotes,
         })
       })
 
@@ -232,7 +235,7 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
               <CheckCircle className="w-12 h-12 text-green-500" />
             </div>
 
-            <h1 className="font-['Orbitron',sans-serif] text-3xl font-black tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4">
+            <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4 break-words">
               Tack för din intresseanmälan!
             </h1>
 
