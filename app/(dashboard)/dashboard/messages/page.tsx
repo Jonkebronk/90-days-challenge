@@ -244,7 +244,7 @@ export default function MessagesPage() {
                       <div
                         className={`max-w-[70%] ${
                           isCheckIn
-                            ? 'bg-[rgba(30,58,138,0.5)] border-2 border-[rgba(59,130,246,0.6)]'
+                            ? 'bg-gradient-to-br from-[rgba(30,58,138,0.8)] to-[rgba(30,58,138,0.6)] border-2 border-[rgba(96,165,250,0.5)]'
                             : isMine
                             ? 'bg-gradient-to-r from-gold-primary to-gold-secondary'
                             : 'bg-white/10 border border-gold-primary/20'
