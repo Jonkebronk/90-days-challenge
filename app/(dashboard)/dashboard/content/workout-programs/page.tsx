@@ -96,7 +96,7 @@ export default function WorkoutProgramsPage() {
       const response = await fetch(`/api/workout-programs/${selectedProgramId}/assign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: selectedClientId })
+        body: JSON.stringify({ clientId: selectedClientId })
       })
 
       if (response.ok) {
