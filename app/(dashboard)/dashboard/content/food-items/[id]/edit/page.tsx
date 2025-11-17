@@ -278,6 +278,20 @@ export default function EditFoodItemPage() {
               <p className="text-xs text-gray-500 mt-1">
                 Visa en bild av livsmedlet
               </p>
+              {formData.imageUrl && (
+                <div className="mt-3">
+                  <p className="text-xs text-gray-400 mb-2">Förhandsvisning:</p>
+                  <img
+                    src={formData.imageUrl}
+                    alt={formData.name}
+                    className="w-full h-48 object-cover rounded-lg border-2 border-gold-primary/20"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = ''
+                      ;(e.target as HTMLImageElement).alt = 'Bilden kunde inte laddas'
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
           </CardContent>
