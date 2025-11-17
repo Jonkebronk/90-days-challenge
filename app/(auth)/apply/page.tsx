@@ -532,12 +532,12 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
             {expandedSections.lifestyle && (
               <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
                 <div>
-                  <Label className="text-gray-200">Livsstil</Label>
+                  <Label className="text-gray-200">Ta mig igenom en dag, från när du vaknar till när du går och lägger dig. Hur ser den ut för dig?</Label>
                   <Textarea
                     value={formData.lifestyle}
                     onChange={(e) => setFormData({ ...formData, lifestyle: e.target.value })}
                     className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
-                    placeholder="Ta mig igenom en dag, från när du vaknar till när du går och lägger dig. Hur ser den ut för dig?"
+                    placeholder="Beskriv din dag..."
                   />
                 </div>
               </div>
