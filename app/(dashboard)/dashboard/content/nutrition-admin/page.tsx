@@ -463,8 +463,13 @@ export default function NutritionAdminPage() {
                               <Input
                                 type="number"
                                 value={getValueForTarget(item, target)}
-                                onChange={(e) => updateCustomValue(category.id, item.id, target, parseInt(e.target.value) || 0)}
-                                className="bg-black/30 border-gold-primary/30 text-white h-8 text-xs text-center"
+                                onChange={(e) => {
+                                  const value = e.target.value
+                                  // Remove leading zeros and parse
+                                  const numValue = value === '' ? 0 : parseInt(value.replace(/^0+/, '') || '0', 10)
+                                  updateCustomValue(category.id, item.id, target, numValue)
+                                }}
+                                className="bg-black/30 border-gold-primary/30 text-white h-10 md:h-12 text-sm md:text-base text-center min-w-[60px] md:min-w-[70px]"
                                 placeholder="0"
                               />
                             </td>
