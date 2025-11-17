@@ -217,7 +217,14 @@ En komplett coaching-plattform för personlig träning och kost, med interaktiva
 - [x] **Application Form:**
   - Multi-step comprehensive form
   - Photo uploads (required)
-- [x] PWA support & responsiv design
+- [x] **Mobile Responsiveness:**
+  - 100% mobile-optimized for all device sizes
+  - iPhone SE (375px) to Desktop (1440px+)
+  - Horizontal scroll tables with sticky columns
+  - Touch-friendly buttons (44x44px minimum)
+  - Responsive text sizing and spacing
+  - All coach tools usable on phones
+- [x] PWA support & fully responsive design
 
 #### 📐 Calculations
 - [x] BMR (Basal Metabolic Rate)
