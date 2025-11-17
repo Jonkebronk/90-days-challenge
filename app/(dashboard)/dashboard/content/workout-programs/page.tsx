@@ -291,6 +291,9 @@ export default function WorkoutProgramsPage() {
                   if (!open) {
                     setSelectedProgramId(null)
                     setSelectedClientId('')
+                  } else if (open && clients.length === 1) {
+                    // Auto-select if there's only one client
+                    setSelectedClientId(clients[0].id)
                   }
                 }}>
                   <DialogTrigger asChild>
