@@ -63,6 +63,7 @@ export default function EditFoodItemPage() {
     carbsG: '',
     fatG: '',
     commonServingSize: '100g',
+    imageUrl: '',
     notes: '',
     isVegetarian: true,
     isVegan: false,
@@ -103,6 +104,7 @@ export default function EditFoodItemPage() {
           carbsG: item.carbsG.toString(),
           fatG: item.fatG.toString(),
           commonServingSize: item.commonServingSize || '100g',
+          imageUrl: (item as any).imageUrl || '',
           notes: item.notes || '',
           isVegetarian: item.isVegetarian,
           isVegan: item.isVegan,
@@ -147,6 +149,7 @@ export default function EditFoodItemPage() {
           carbsG: parseFloat(formData.carbsG),
           fatG: parseFloat(formData.fatG),
           commonServingSize: formData.commonServingSize || '100g',
+          imageUrl: formData.imageUrl || null,
           notes: formData.notes || null,
           isVegetarian: formData.isVegetarian,
           isVegan: formData.isVegan,
@@ -264,25 +267,26 @@ export default function EditFoodItemPage() {
             </div>
 
             <div>
-              <Label htmlFor="commonServingSize" className="text-gray-200">Vanlig portion</Label>
+              <Label htmlFor="image" className="text-gray-200">Bild URL (valfritt)</Label>
               <Input
-                id="commonServingSize"
-                value={formData.commonServingSize}
-                onChange={(e) => setFormData({ ...formData, commonServingSize: e.target.value })}
-                placeholder="t.ex. 100g, 1 st, 1 dl"
+                id="image"
+                value={formData.imageUrl || ''}
+                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                placeholder="https://exempel.se/bild.jpg"
                 className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Näringsvärden anges per denna portion
+                Visa en bild av livsmedlet
               </p>
             </div>
+
           </CardContent>
         </Card>
 
         {/* Nutrition */}
         <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle className="text-xl text-gold-light">Näringsvärden per portion</CardTitle>
+            <CardTitle className="text-xl text-gold-light">Näringsvärden per 100g</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
