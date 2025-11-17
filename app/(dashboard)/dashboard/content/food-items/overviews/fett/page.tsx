@@ -63,17 +63,17 @@ export default function FettOverviewPage() {
   }
 
   const renderTable = (items: { name: string; fatPer100g: number }[]) => (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-xs">
+    <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+      <table className="min-w-[800px] w-full border-collapse text-xs">
         <thead className="bg-[rgba(255,215,0,0.05)]">
           <tr>
-            <th className="px-2 py-2 text-left text-xs font-semibold text-gray-200 border border-gold-primary/20 sticky left-0 bg-gray-900/95 z-10">
+            <th className="px-2 md:px-3 py-2 text-left text-xs font-semibold text-gray-200 border border-gold-primary/20 sticky left-0 bg-gray-900/95 z-10 min-w-[120px] md:min-w-[150px]">
               Livsmedel
             </th>
             {portions.map((portion) => (
               <th
                 key={portion}
-                className="px-2 py-2 text-center text-xs font-semibold text-yellow-300 border border-gold-primary/20 min-w-[50px]"
+                className="px-2 md:px-3 py-2 text-center text-xs font-semibold text-yellow-300 border border-gold-primary/20 min-w-[45px] md:min-w-[50px] whitespace-nowrap"
               >
                 {portion}g
               </th>
@@ -88,13 +88,13 @@ export default function FettOverviewPage() {
                 idx % 2 === 0 ? 'bg-[rgba(255,255,255,0.01)]' : ''
               }`}
             >
-              <td className="px-2 py-2 text-white font-medium border border-gold-primary/10 sticky left-0 bg-gray-900/95 z-10">
+              <td className="px-2 md:px-3 py-2 text-white font-medium border border-gold-primary/10 sticky left-0 bg-gray-900/95 z-10 min-w-[120px] md:min-w-[150px]">
                 {item.name}
               </td>
               {portions.map((portion) => (
                 <td
                   key={portion}
-                  className="px-2 py-2 text-center text-gray-200 border border-gold-primary/10"
+                  className="px-2 md:px-3 py-2 text-center text-gray-200 border border-gold-primary/10"
                 >
                   {calculateFat(item.fatPer100g, portion)}
                 </td>

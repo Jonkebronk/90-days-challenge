@@ -255,12 +255,12 @@ export default function DashboardLayout({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="relative text-gray-700 hover:text-gold-primary hover:bg-gray-100"
+                      className="relative text-gray-700 hover:text-gold-primary hover:bg-gray-100 h-8 w-8 md:h-10 md:w-10"
                     >
-                      <Bell className="w-4 h-4" />
+                      <Bell className="w-3 h-3 md:w-4 md:h-4" />
                       {notificationCount > 0 && (
                         <Badge
-                          className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-gradient-to-br from-gold-primary to-gold-secondary text-white text-xs font-bold border-none"
+                          className="absolute -top-1 -right-1 h-4 w-4 md:h-5 md:w-5 flex items-center justify-center p-0 bg-gradient-to-br from-gold-primary to-gold-secondary text-white text-[10px] md:text-xs font-bold border-none"
                         >
                           {notificationCount > 99 ? '99+' : notificationCount}
                         </Badge>

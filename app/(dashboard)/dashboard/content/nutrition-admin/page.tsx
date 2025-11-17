@@ -404,23 +404,23 @@ export default function NutritionAdminPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse text-xs">
+                <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+                  <table className="min-w-[1200px] w-full border-collapse text-xs">
                     <thead className="bg-[rgba(255,215,0,0.05)]">
                       <tr>
-                        <th className="px-2 py-2 text-left text-xs font-semibold text-gray-200 border border-gold-primary/20 sticky left-0 bg-gray-900/95 z-10 min-w-[200px]">
+                        <th className="px-2 md:px-3 py-2 text-left text-xs font-semibold text-gray-200 border border-gold-primary/20 sticky left-0 bg-gray-900/95 z-10 min-w-[150px] md:min-w-[200px]">
                           Livsmedel
                         </th>
                         {proteinTargets.map((target) => (
                           <th
                             key={target}
-                            className="px-2 py-2 text-center text-xs font-semibold text-gold-light border border-gold-primary/20 min-w-[70px]"
+                            className="px-2 md:px-3 py-2 text-center text-xs font-semibold text-gold-light border border-gold-primary/20 min-w-[65px] md:min-w-[70px] whitespace-nowrap"
                           >
                             <div>{target}g</div>
                             <div className="text-[rgba(255,215,0,0.6)] font-normal">Protein</div>
                           </th>
                         ))}
-                        <th className="px-2 py-2 text-center text-xs font-semibold text-gray-200 border border-gold-primary/20 min-w-[120px]">
+                        <th className="px-2 md:px-3 py-2 text-center text-xs font-semibold text-gray-200 border border-gold-primary/20 min-w-[100px] md:min-w-[120px]">
                           Åtgärder
                         </th>
                       </tr>
@@ -433,7 +433,7 @@ export default function NutritionAdminPage() {
                             idx % 2 === 0 ? 'bg-[rgba(255,255,255,0.01)]' : ''
                           }`}
                         >
-                          <td className="px-2 py-2 border border-gold-primary/10 sticky left-0 bg-gray-900/95 z-10 min-w-[200px]">
+                          <td className="px-2 md:px-3 py-2 border border-gold-primary/10 sticky left-0 bg-gray-900/95 z-10 min-w-[150px] md:min-w-[200px]">
                             <Input
                               value={item.name}
                               onChange={(e) => updateItemValue(category.id, item.id, 'name', e.target.value)}
@@ -441,7 +441,7 @@ export default function NutritionAdminPage() {
                             />
                           </td>
                           {proteinTargets.map((target) => (
-                            <td key={target} className="px-2 py-2 border border-gold-primary/10">
+                            <td key={target} className="px-2 md:px-3 py-2 border border-gold-primary/10">
                               <Input
                                 type="number"
                                 value={getValueForTarget(item, target)}
@@ -451,7 +451,7 @@ export default function NutritionAdminPage() {
                               />
                             </td>
                           ))}
-                          <td className="px-2 py-2 text-center border border-gold-primary/10">
+                          <td className="px-2 md:px-3 py-2 text-center border border-gold-primary/10">
                             <div className="flex items-center justify-center gap-1">
                               <Button
                                 variant="ghost"
