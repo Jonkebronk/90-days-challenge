@@ -25,9 +25,25 @@ import { useRouter } from 'next/navigation'
 
 type Lead = {
   id: string
-  name: string
+  fullName?: string | null
   email?: string | null
   phone?: string | null
+  city?: string | null
+  country?: string | null
+  age?: number | null
+  gender?: string | null
+  height?: number | null
+  currentWeight?: number | null
+  currentTraining?: string | null
+  trainingBackground?: string | null
+  injuries?: string | null
+  dietHistory?: string | null
+  foodPreferences?: string | null
+  allergies?: string | null
+  lifestyle?: string | null
+  whyJoin?: string | null
+  biggestChallenges?: string | null
+  previousCoaching?: string | null
   status: string
   notes?: string | null
   tags: string[]
@@ -101,7 +117,7 @@ export default function LeadsPage() {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
         (lead) =>
-          lead.name.toLowerCase().includes(query) ||
+          lead.fullName?.toLowerCase().includes(query) ||
           lead.email?.toLowerCase().includes(query) ||
           lead.phone?.includes(query)
       )
@@ -131,7 +147,7 @@ export default function LeadsPage() {
   }
 
   const handleConvertToClient = async (lead: Lead) => {
-    if (!confirm(`Konvertera ${lead.name} till klient?`)) return
+    if (!confirm(`Konvertera ${lead.fullName} till klient?`)) return
 
     try {
       setConvertingLeadId(lead.id)
@@ -141,7 +157,7 @@ export default function LeadsPage() {
 
       if (response.ok) {
         const data = await response.json()
-        toast.success(`${lead.name} konverterad till klient!`, {
+        toast.success(`${lead.fullName} konverterad till klient!`, {
           description: `Inbjudningskod: ${data.inviteCode}`,
           duration: 10000,
         })
@@ -252,7 +268,7 @@ export default function LeadsPage() {
                   key={lead.id}
                   className="grid grid-cols-12 gap-4 py-3 border-b border-gold-primary/10 items-center hover:bg-[rgba(255,215,0,0.05)] transition-colors rounded-lg px-2"
                 >
-                  <div className="col-span-3 font-medium text-gray-100">{lead.name}</div>
+                  <div className="col-span-3 font-medium text-gray-100">{lead.fullName}</div>
                   <div className="col-span-3 text-gray-400">
                     {lead.phone || '-'}
                   </div>
@@ -282,7 +298,7 @@ export default function LeadsPage() {
                       <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto bg-gray-900 border-2 border-gold-primary/30">
                         <DialogHeader className="border-b border-gold-primary/20 pb-4">
                           <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-gold-light to-orange-500 bg-clip-text text-transparent">
-                            Ansökning - {lead.name}
+                            Ansökning - {lead.fullName}
                           </DialogTitle>
                           <p className="text-gray-500 text-sm mt-2">
                             Mottagen {new Date(lead.createdAt).toLocaleDateString('sv-SE', {
@@ -301,7 +317,7 @@ export default function LeadsPage() {
                             <div className="grid grid-cols-2 gap-4">
                               <div>
                                 <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Namn</p>
-                                <p className="text-gray-100 font-medium">{lead.name}</p>
+                                <p className="text-gray-100 font-medium">{lead.fullName || '-'}</p>
                               </div>
                               <div>
                                 <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">E-post</p>
@@ -329,229 +345,149 @@ export default function LeadsPage() {
                                   </SelectContent>
                                 </Select>
                               </div>
+                              {lead.city && (
+                                <div>
+                                  <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Stad</p>
+                                  <p className="text-gray-100">{lead.city}</p>
+                                </div>
+                              )}
+                              {lead.country && (
+                                <div>
+                                  <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Land</p>
+                                  <p className="text-gray-100">{lead.country}</p>
+                                </div>
+                              )}
                             </div>
                           </div>
 
-                          {/* Application Details - Formatted */}
-                          {lead.notes && lead.notes.includes('===') && (
-                            <>
-                              {/* Personal Info */}
-                              {lead.notes.match(/=== PERSONUPPGIFTER ===([\s\S]*?)===/)?.[1] && (
-                                <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
-                                  <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
-                                    👤 Personuppgifter
-                                  </h3>
-                                  <div className="grid grid-cols-2 gap-3 text-sm">
-                                    {lead.notes.match(/Ålder: (.*)/)?.[1] && (
-                                      <div>
-                                        <span className="text-[rgba(255,215,0,0.7)]">Ålder:</span>
-                                        <span className="text-gray-100 ml-2">{lead.notes.match(/Ålder: (.*)/)?.[1]}</span>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Kön: (.*)/)?.[1] && (
-                                      <div>
-                                        <span className="text-[rgba(255,215,0,0.7)]">Kön:</span>
-                                        <span className="text-gray-100 ml-2">{lead.notes.match(/Kön: (.*)/)?.[1]}</span>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Stad: (.*)/)?.[1] && (
-                                      <div>
-                                        <span className="text-[rgba(255,215,0,0.7)]">Stad:</span>
-                                        <span className="text-gray-100 ml-2">{lead.notes.match(/Stad: (.*)/)?.[1]}</span>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Land: (.*)/)?.[1] && (
-                                      <div>
-                                        <span className="text-[rgba(255,215,0,0.7)]">Land:</span>
-                                        <span className="text-gray-100 ml-2">{lead.notes.match(/Land: (.*)/)?.[1]}</span>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Hittade oss via: (.*)/)?.[1] && (
-                                      <div className="col-span-2">
-                                        <span className="text-[rgba(255,215,0,0.7)]">Hittade oss via:</span>
-                                        <span className="text-gray-100 ml-2">{lead.notes.match(/Hittade oss via: (.*)/)?.[1]}</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Physical Stats */}
-                              {lead.notes.match(/=== FYSISKA MÅTT ===([\s\S]*?)===/)?.[1] && (
-                                <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
-                                  <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
-                                    📏 Fysiska mått
-                                  </h3>
-                                  <div className="grid grid-cols-2 gap-4 text-sm">
-                                    {lead.notes.match(/Längd: (.*?) cm/)?.[1] && (
-                                      <div className="bg-black/30 p-3 rounded-lg border border-gold-primary/10">
-                                        <p className="text-[rgba(255,215,0,0.7)] text-xs mb-1">Längd</p>
-                                        <p className="text-gray-100 font-semibold text-lg">{lead.notes.match(/Längd: (.*?) cm/)?.[1]} cm</p>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Nuvarande vikt: (.*?) kg/)?.[1] && (
-                                      <div className="bg-black/30 p-3 rounded-lg border border-gold-primary/10">
-                                        <p className="text-[rgba(255,215,0,0.7)] text-xs mb-1">Nuvarande vikt</p>
-                                        <p className="text-gray-100 font-semibold text-lg">{lead.notes.match(/Nuvarande vikt: (.*?) kg/)?.[1]} kg</p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Training */}
-                              {lead.notes.match(/=== TRÄNING ===([\s\S]*?)===/)?.[1] && (
-                                <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
-                                  <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
-                                    💪 Träning
-                                  </h3>
-                                  <div className="space-y-3 text-sm">
-                                    {lead.notes.match(/Nuvarande träning: (.*)/)?.[1] && lead.notes.match(/Nuvarande träning: (.*)/)?.[1] !== 'Ej angivet' && (
-                                      <div>
-                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Nuvarande träning</p>
-                                        <p className="text-gray-100">{lead.notes.match(/Nuvarande träning: (.*)/)?.[1]}</p>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Erfarenhet: (.*)/)?.[1] && lead.notes.match(/Erfarenhet: (.*)/)?.[1] !== 'Ej angivet' && (
-                                      <div>
-                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Erfarenhet</p>
-                                        <p className="text-gray-100">{lead.notes.match(/Erfarenhet: (.*)/)?.[1]}</p>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Mål: (.*)/)?.[1] && lead.notes.match(/Mål: (.*)/)?.[1] !== 'Ej angivet' && (
-                                      <div>
-                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Träningsmål</p>
-                                        <p className="text-gray-100">{lead.notes.match(/Mål: (.*)/)?.[1]}</p>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Skador\/Begränsningar: (.*)/)?.[1] && lead.notes.match(/Skador\/Begränsningar: (.*)/)?.[1] !== 'Ej angivet' && (
-                                      <div>
-                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Skador/Begränsningar</p>
-                                        <p className="text-gray-100">{lead.notes.match(/Skador\/Begränsningar: (.*)/)?.[1]}</p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Nutrition */}
-                              {lead.notes.match(/=== NÄRING ===([\s\S]*?)===/)?.[1] && (
-                                <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
-                                  <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
-                                    🍎 Näring & Kost
-                                  </h3>
-                                  <div className="space-y-3 text-sm">
-                                    {lead.notes.match(/Kost historik: (.*)/)?.[1] && lead.notes.match(/Kost historik: (.*)/)?.[1] !== 'Ej angivet' && (
-                                      <div>
-                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Kost historik</p>
-                                        <p className="text-gray-100">{lead.notes.match(/Kost historik: (.*)/)?.[1]}</p>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Allergier: (.*)/)?.[1] && lead.notes.match(/Allergier: (.*)/)?.[1] !== 'Ej angivet' && (
-                                      <div>
-                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Allergier</p>
-                                        <p className="text-gray-100">{lead.notes.match(/Allergier: (.*)/)?.[1]}</p>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Tidigare coaching: (.*)/)?.[1] && lead.notes.match(/Tidigare coaching: (.*)/)?.[1] !== 'Ej angivet' && (
-                                      <div>
-                                        <p className="text-[rgba(255,215,0,0.7)] mb-1">Tidigare coaching</p>
-                                        <p className="text-gray-100">{lead.notes.match(/Tidigare coaching: (.*)/)?.[1]}</p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Lifestyle */}
-                              {lead.notes.match(/=== LIVSSTIL ===([\s\S]*?)===/)?.[1] && (
-                                <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
-                                  <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
-                                    🌟 Livsstil
-                                  </h3>
-                                  <div className="grid grid-cols-2 gap-3 text-sm">
-                                    {lead.notes.match(/Stressnivå: (.*)/)?.[1] && (
-                                      <div>
-                                        <span className="text-[rgba(255,215,0,0.7)]">Stressnivå:</span>
-                                        <span className="text-gray-100 ml-2">{lead.notes.match(/Stressnivå: (.*)/)?.[1]}</span>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Sömn: (.*?) timmar/)?.[1] && (
-                                      <div>
-                                        <span className="text-[rgba(255,215,0,0.7)]">Sömn:</span>
-                                        <span className="text-gray-100 ml-2">{lead.notes.match(/Sömn: (.*?) timmar/)?.[1]} timmar</span>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Yrke: (.*)/)?.[1] && lead.notes.match(/Yrke: (.*)/)?.[1] !== 'Ej angivet' && (
-                                      <div className="col-span-2">
-                                        <span className="text-[rgba(255,215,0,0.7)]">Yrke:</span>
-                                        <span className="text-gray-100 ml-2">{lead.notes.match(/Yrke: (.*)/)?.[1]}</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Motivation */}
-                              {lead.notes.match(/=== MOTIVATION ===([\s\S]*?)===/)?.[1] && (
-                                <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
-                                  <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
-                                    🎯 Motivation & Mål
-                                  </h3>
-                                  <div className="space-y-4 text-sm">
-                                    {lead.notes.match(/Varför ansöker du\?([\s\S]*?)(?=Åtagande:|===|$)/)?.[1]?.trim() && lead.notes.match(/Varför ansöker du\?([\s\S]*?)(?=Åtagande:|===|$)/)?.[1]?.trim() !== 'Ej angivet' && (
-                                      <div>
-                                        <p className="text-[rgba(255,215,0,0.7)] mb-2 font-medium">Varför ansöker du?</p>
-                                        <p className="text-gray-100 bg-black/30 p-3 rounded-lg border border-gold-primary/10 whitespace-pre-wrap">
-                                          {lead.notes.match(/Varför ansöker du\?([\s\S]*?)(?=Åtagande:|===|$)/)?.[1]?.trim()}
-                                        </p>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Åtagande:([\s\S]*?)(?=Förväntningar:|===|$)/)?.[1]?.trim() && lead.notes.match(/Åtagande:([\s\S]*?)(?=Förväntningar:|===|$)/)?.[1]?.trim() !== 'Ej angivet' && (
-                                      <div>
-                                        <p className="text-[rgba(255,215,0,0.7)] mb-2 font-medium">Åtagande</p>
-                                        <p className="text-gray-100 bg-black/30 p-3 rounded-lg border border-gold-primary/10 whitespace-pre-wrap">
-                                          {lead.notes.match(/Åtagande:([\s\S]*?)(?=Förväntningar:|===|$)/)?.[1]?.trim()}
-                                        </p>
-                                      </div>
-                                    )}
-                                    {lead.notes.match(/Förväntningar:([\s\S]*?)(?=Utmaningar:|===|$)/)?.[1]?.trim() && lead.notes.match(/Förväntningar:([\s\S]*?)(?=Utmaningar:|===|$)/)?.[1]?.trim() !== 'Ej angivet' && (
-                                      <div>
-                                        <p className="text-[rgba(255,215,0,0.7)] mb-2 font-medium">Förväntningar</p>
-                                        <p className="text-gray-100 bg-black/30 p-3 rounded-lg border border-gold-primary/10 whitespace-pre-wrap">
-                                          {lead.notes.match(/Förväntningar:([\s\S]*?)(?=Utmaningar:|===|$)/)?.[1]?.trim()}
-                                        </p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-                            </>
-                          )}
-
-                          {/* Fallback for simple notes */}
-                          {lead.notes && !lead.notes.includes('===') && (
+                          {/* Personal Info */}
+                          {(lead.age || lead.gender || lead.height || lead.currentWeight) && (
                             <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
-                              <h3 className="text-lg font-semibold text-gold-light mb-4">Anteckningar</h3>
-                              <div className="text-gray-200 whitespace-pre-wrap text-sm leading-relaxed">
-                                {lead.notes}
+                              <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
+                                👤 Personuppgifter
+                              </h3>
+                              <div className="grid grid-cols-2 gap-4">
+                                {lead.age && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Ålder</p>
+                                    <p className="text-gray-100">{lead.age} år</p>
+                                  </div>
+                                )}
+                                {lead.gender && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Kön</p>
+                                    <p className="text-gray-100">{lead.gender}</p>
+                                  </div>
+                                )}
+                                {lead.height && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Längd</p>
+                                    <p className="text-gray-100">{lead.height} cm</p>
+                                  </div>
+                                )}
+                                {lead.currentWeight && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Nuvarande vikt</p>
+                                    <p className="text-gray-100">{lead.currentWeight} kg</p>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           )}
 
-                          {/* Tags */}
-                          {lead.tags && lead.tags.length > 0 && (
+                          {/* Training */}
+                          {(lead.currentTraining || lead.trainingBackground || lead.injuries) && (
                             <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
-                              <h3 className="text-lg font-semibold text-gold-light mb-3">Taggar</h3>
-                              <div className="flex flex-wrap gap-2">
-                                {lead.tags.map((tag, idx) => (
-                                  <span
-                                    key={idx}
-                                    className="px-3 py-1.5 bg-gradient-to-r from-[rgba(255,215,0,0.1)] to-[rgba(255,165,0,0.1)] border border-gold-primary/30 rounded-full text-sm text-gold-light font-medium"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
+                              <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
+                                💪 Träning
+                              </h3>
+                              <div className="space-y-3">
+                                {lead.currentTraining && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Tränar du idag</p>
+                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.currentTraining}</p>
+                                  </div>
+                                )}
+                                {lead.trainingBackground && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Träningserfarenhet historiskt</p>
+                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.trainingBackground}</p>
+                                  </div>
+                                )}
+                                {lead.injuries && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Skador/Begränsningar</p>
+                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.injuries}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Nutrition */}
+                          {(lead.dietHistory || lead.foodPreferences || lead.allergies) && (
+                            <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
+                              <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
+                                🥗 Kost
+                              </h3>
+                              <div className="space-y-3">
+                                {lead.dietHistory && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Hur äter du idag</p>
+                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.dietHistory}</p>
+                                  </div>
+                                )}
+                                {lead.foodPreferences && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Matpreferenser</p>
+                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.foodPreferences}</p>
+                                  </div>
+                                )}
+                                {lead.allergies && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Allergier</p>
+                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.allergies}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Lifestyle */}
+                          {lead.lifestyle && (
+                            <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
+                              <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
+                                🏡 Livsstil
+                              </h3>
+                              <p className="text-gray-100 whitespace-pre-wrap">{lead.lifestyle}</p>
+                            </div>
+                          )}
+
+                          {/* Motivation */}
+                          {(lead.whyJoin || lead.biggestChallenges || lead.previousCoaching) && (
+                            <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
+                              <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
+                                🎯 Motivation
+                              </h3>
+                              <div className="space-y-3">
+                                {lead.whyJoin && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Varför vill du gå med</p>
+                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.whyJoin}</p>
+                                  </div>
+                                )}
+                                {lead.biggestChallenges && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Största utmaningar</p>
+                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.biggestChallenges}</p>
+                                  </div>
+                                )}
+                                {lead.previousCoaching && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Tidigare coachning</p>
+                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.previousCoaching}</p>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           )}
