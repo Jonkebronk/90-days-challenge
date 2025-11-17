@@ -327,24 +327,6 @@ export default function LeadsPage() {
                                 <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Telefon</p>
                                 <p className="text-gray-100">{lead.phone || '-'}</p>
                               </div>
-                              <div>
-                                <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Status</p>
-                                <Select
-                                  value={lead.status}
-                                  onValueChange={(value) => handleUpdateStatus(lead.id, value)}
-                                >
-                                  <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white h-8">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {Object.entries(statusLabels).map(([value, label]) => (
-                                      <SelectItem key={value} value={value}>
-                                        {label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
                               {lead.city && (
                                 <div>
                                   <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Stad</p>
