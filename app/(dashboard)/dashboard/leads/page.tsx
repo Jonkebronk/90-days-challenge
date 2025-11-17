@@ -470,7 +470,7 @@ export default function LeadsPage() {
                               <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
                                 🏡 Livsstil
                               </h3>
-                              <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Livsstil</p>
+                              <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Ta mig igenom en dag, från när du vaknar till när du går och lägger dig. Hur ser den ut för dig?</p>
                               <p className="text-gray-100 whitespace-pre-wrap">{lead.lifestyle}</p>
                             </div>
                           )}
