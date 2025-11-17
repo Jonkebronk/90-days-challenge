@@ -175,33 +175,33 @@ export default function RecipeBankPage() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold flex items-center gap-2 bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold flex items-center gap-2 bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
           <ChefHat className="h-8 w-8 text-gold-primary" />
           Recept
         </h1>
-        <p className="text-gray-600 mt-1">
+        <p className="text-gray-400 mt-1">
           Utforska hälsosamma och näringsrika recept
         </p>
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+      <div className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-6 space-y-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gold-primary" />
           <Input
             placeholder="Sök recept..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 bg-black/30 border-gold-primary/30 text-white placeholder:text-gray-400"
           />
         </div>
 
         <div className="flex items-center gap-4">
           <Filter className="h-5 w-5 text-gold-primary" />
           <div className="flex-1">
-            <Label className="text-xs text-gray-700">Kategori</Label>
+            <Label className="text-xs text-gray-300">Kategori</Label>
             <Select value={filterCategory} onValueChange={setFilterCategory}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -219,49 +219,49 @@ export default function RecipeBankPage() {
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <div className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-6">
           <div className="text-center">
-            <p className="text-3xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">{recipes.length}</p>
-            <p className="text-sm text-gray-600 mt-1">Totalt recept</p>
+            <p className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">{recipes.length}</p>
+            <p className="text-sm text-gray-300 mt-1">Totalt recept</p>
           </div>
         </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <div className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-6">
           <div className="text-center">
-            <p className="text-3xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+            <p className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               {recipes.filter(r => isFavorited(r)).length}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Favoriter</p>
+            <p className="text-sm text-gray-300 mt-1">Favoriter</p>
           </div>
         </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
+        <div className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-6">
           <div className="text-center">
-            <p className="text-3xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">{categories.length}</p>
-            <p className="text-sm text-gray-600 mt-1">Kategorier</p>
+            <p className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">{categories.length}</p>
+            <p className="text-sm text-gray-300 mt-1">Kategorier</p>
           </div>
         </div>
       </div>
 
       {/* Recipes by Category */}
       {isLoading ? (
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
-          <p className="text-center text-gray-600">Laddar...</p>
+        <div className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-6">
+          <p className="text-center text-gray-400">Laddar...</p>
         </div>
       ) : Object.keys(recipesByCategory).length === 0 ? (
-        <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
+        <div className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-12 text-center">
           <ChefHat className="h-12 w-12 mx-auto text-gold-primary mb-4" />
-          <p className="text-gray-600">Inga recept hittades.</p>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-gray-300">Inga recept hittades.</p>
+          <p className="text-sm text-gray-400 mt-1">
             Prova att ändra dina filter.
           </p>
         </div>
       ) : (
         Object.entries(recipesByCategory).map(([categoryName, categoryRecipes]) => (
-          <div key={categoryName} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-bold flex items-center gap-2 text-gold-primary">
+          <div key={categoryName} className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl overflow-hidden">
+            <div className="p-6 border-b border-gold-primary/20">
+              <h2 className="text-xl font-bold flex items-center gap-2 text-gold-light">
                 <ChefHat className="h-5 w-5" />
                 {categoryName}
-                <Badge className="bg-gold-primary/10 text-gold-primary border border-gold-primary/30">
+                <Badge className="bg-gold-primary/20 text-gold-light border border-gold-primary/40">
                   {categoryRecipes.length} recept
                 </Badge>
               </h2>
@@ -272,7 +272,7 @@ export default function RecipeBankPage() {
                   <div
                     key={recipe.id}
                     onClick={() => router.push(`/dashboard/recipes/${recipe.id}`)}
-                    className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gold-primary hover:shadow-lg cursor-pointer transition-all relative group"
+                    className="bg-white/10 border-2 border-gold-primary/30 rounded-lg overflow-hidden hover:border-gold-primary hover:shadow-lg hover:shadow-gold-primary/20 cursor-pointer transition-all relative group backdrop-blur-sm"
                   >
                     {recipe.coverImage && (
                       <div className="h-48 overflow-hidden">
@@ -285,7 +285,7 @@ export default function RecipeBankPage() {
                     )}
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-semibold text-lg text-gray-900">{recipe.title}</h3>
+                        <h3 className="font-semibold text-lg text-gray-100">{recipe.title}</h3>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -300,29 +300,29 @@ export default function RecipeBankPage() {
                         </Button>
                       </div>
                       {recipe.description && (
-                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        <p className="text-sm text-gray-300 mb-3 line-clamp-2">
                           {recipe.description}
                         </p>
                       )}
                       <div className="flex flex-wrap gap-2 text-xs mb-3">
                         {recipe.mealType && (
-                          <Badge className="bg-blue-100 text-blue-700 border border-blue-200">
+                          <Badge className="bg-blue-500/20 text-blue-300 border border-blue-400/30">
                             {getMealTypeLabel(recipe.mealType)}
                           </Badge>
                         )}
                         {recipe.difficulty && (
-                          <Badge className="bg-gold-primary/10 text-gold-primary border border-gold-primary/30">
+                          <Badge className="bg-gold-primary/20 text-gold-light border border-gold-primary/40">
                             {getDifficultyLabel(recipe.difficulty)}
                           </Badge>
                         )}
                         {recipe.caloriesPerServing && (
-                          <Badge className="bg-orange-100 text-orange-700 border border-orange-200 flex items-center gap-1">
+                          <Badge className="bg-orange-500/20 text-orange-300 border border-orange-400/30 flex items-center gap-1">
                             <Flame className="h-3 w-3" />
                             {Math.round(recipe.caloriesPerServing)} kcal
                           </Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <div className="flex items-center gap-4 text-xs text-gray-400">
                         {getTotalTime(recipe) > 0 && (
                           <div className="flex items-center gap-1">
                             <Clock className="h-3 w-3" />
