@@ -377,16 +377,45 @@ export default function LeadsPage() {
                             </div>
                           )}
 
-                          {/* Training */}
+                          {/* Målsättning */}
+                          {(lead.whyJoin || lead.biggestChallenges || lead.previousCoaching) && (
+                            <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
+                              <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
+                                🎯 Målsättning
+                              </h3>
+                              <div className="space-y-3">
+                                {lead.whyJoin && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Klientens målsättningar (Stora och små mål)</p>
+                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.whyJoin}</p>
+                                  </div>
+                                )}
+                                {lead.biggestChallenges && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Största utmaningar</p>
+                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.biggestChallenges}</p>
+                                  </div>
+                                )}
+                                {lead.previousCoaching && (
+                                  <div>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Tidigare coaching eller PT</p>
+                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.previousCoaching}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Träningsbakgrund */}
                           {(lead.currentTraining || lead.trainingBackground || lead.injuries) && (
                             <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
                               <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
-                                💪 Träning
+                                💪 Träningsbakgrund
                               </h3>
                               <div className="space-y-3">
                                 {lead.currentTraining && (
                                   <div>
-                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Tränar du idag</p>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Tränar du idag?</p>
                                     <p className="text-gray-100 whitespace-pre-wrap">{lead.currentTraining}</p>
                                   </div>
                                 )}
@@ -406,16 +435,16 @@ export default function LeadsPage() {
                             </div>
                           )}
 
-                          {/* Nutrition */}
+                          {/* Kostbakgrund */}
                           {(lead.dietHistory || lead.foodPreferences || lead.allergies) && (
                             <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
                               <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
-                                🥗 Kost
+                                🥗 Kostbakgrund
                               </h3>
                               <div className="space-y-3">
                                 {lead.dietHistory && (
                                   <div>
-                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Hur äter du idag</p>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Hur äter du idag?</p>
                                     <p className="text-gray-100 whitespace-pre-wrap">{lead.dietHistory}</p>
                                   </div>
                                 )}
@@ -427,7 +456,7 @@ export default function LeadsPage() {
                                 )}
                                 {lead.allergies && (
                                   <div>
-                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Allergier</p>
+                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Allergier och intoleranser</p>
                                     <p className="text-gray-100 whitespace-pre-wrap">{lead.allergies}</p>
                                   </div>
                                 )}
@@ -435,42 +464,14 @@ export default function LeadsPage() {
                             </div>
                           )}
 
-                          {/* Lifestyle */}
+                          {/* Livsstil */}
                           {lead.lifestyle && (
                             <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
                               <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
                                 🏡 Livsstil
                               </h3>
+                              <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Livsstil</p>
                               <p className="text-gray-100 whitespace-pre-wrap">{lead.lifestyle}</p>
-                            </div>
-                          )}
-
-                          {/* Motivation */}
-                          {(lead.whyJoin || lead.biggestChallenges || lead.previousCoaching) && (
-                            <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-5">
-                              <h3 className="text-lg font-semibold text-gold-light mb-4 flex items-center gap-2">
-                                🎯 Motivation
-                              </h3>
-                              <div className="space-y-3">
-                                {lead.whyJoin && (
-                                  <div>
-                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Varför vill du gå med</p>
-                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.whyJoin}</p>
-                                  </div>
-                                )}
-                                {lead.biggestChallenges && (
-                                  <div>
-                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Största utmaningar</p>
-                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.biggestChallenges}</p>
-                                  </div>
-                                )}
-                                {lead.previousCoaching && (
-                                  <div>
-                                    <p className="text-sm text-[rgba(255,215,0,0.7)] mb-1">Tidigare coachning</p>
-                                    <p className="text-gray-100 whitespace-pre-wrap">{lead.previousCoaching}</p>
-                                  </div>
-                                )}
-                              </div>
                             </div>
                           )}
 
