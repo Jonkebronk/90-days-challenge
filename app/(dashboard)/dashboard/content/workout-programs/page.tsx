@@ -307,7 +307,7 @@ export default function WorkoutProgramsPage() {
                     <DialogHeader>
                       <DialogTitle className="text-gray-900">Tilldela träningsprogram</DialogTitle>
                       <DialogDescription className="text-gray-600">
-                        Välj en klient att tilldela "{program.name}" till
+                        Välj en klient att tilldela &quot;{program.name}&quot; till
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 pt-4">
