@@ -180,26 +180,26 @@ export function Phase1Form({ onNext }: Phase1FormProps) {
 
           {/* Calculated Results */}
           {calories && (
-            <div className="border border-gold-primary/30 bg-gray-900/40 p-4 rounded-lg">
-              <h3 className="text-lg font-semibold text-gold-light mb-3">
+            <div className="border border-gold-primary/30 bg-gray-900/40 p-3 md:p-4 rounded-lg">
+              <h3 className="text-base md:text-lg font-semibold text-gold-light mb-2 md:mb-3">
                 Beräknade Makron
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 <div>
-                  <p className="text-gray-400 text-sm">Kalorier</p>
-                  <p className="text-white text-xl font-bold">{calories} kcal</p>
+                  <p className="text-gray-400 text-xs md:text-sm">Kalorier</p>
+                  <p className="text-white text-lg md:text-xl font-bold">{calories} kcal</p>
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm">Protein</p>
-                  <p className="text-white text-xl font-bold">{protein}g</p>
+                  <p className="text-gray-400 text-xs md:text-sm">Protein</p>
+                  <p className="text-white text-lg md:text-xl font-bold">{protein}g</p>
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm">Fett</p>
-                  <p className="text-white text-xl font-bold">{fat}g</p>
+                  <p className="text-gray-400 text-xs md:text-sm">Fett</p>
+                  <p className="text-white text-lg md:text-xl font-bold">{fat}g</p>
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm">Kolhydrater</p>
-                  <p className="text-white text-xl font-bold">{carbs}g</p>
+                  <p className="text-gray-400 text-xs md:text-sm">Kolhydrater</p>
+                  <p className="text-white text-lg md:text-xl font-bold">{carbs}g</p>
                 </div>
               </div>
             </div>

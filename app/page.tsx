@@ -112,7 +112,7 @@ export default function HomePage() {
                     <Key className="w-4 h-4" />
                   </button>
                 </DialogTrigger>
-                <DialogContent className="bg-white border border-gray-200 shadow-xl">
+                <DialogContent className="bg-white border border-gray-200 shadow-xl max-w-[90vw] sm:max-w-md md:max-w-lg">
                   <DialogHeader>
                     <DialogTitle className="font-['Orbitron',sans-serif] text-xl font-bold tracking-[2px] uppercase bg-gradient-to-r from-gold-primary to-gold-secondary bg-clip-text text-transparent text-center">
                       Har du en inbjudningskod?
