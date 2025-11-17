@@ -380,7 +380,13 @@ export default function NutritionAdminPage() {
       </div>
 
       {/* Type Selector */}
-      <Tabs value={activeType} onValueChange={(v) => setActiveType(v as any)} className="w-full">
+      <Tabs value={activeType} onValueChange={async (v) => {
+        // Auto-save before switching tabs if there are unsaved changes
+        if (hasUnsavedChanges) {
+          await saveChanges()
+        }
+        setActiveType(v as any)
+      }} className="w-full">
         <TabsList className="grid w-full max-w-md grid-cols-3 bg-white/5">
           <TabsTrigger value="protein" className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a]">
             Protein
