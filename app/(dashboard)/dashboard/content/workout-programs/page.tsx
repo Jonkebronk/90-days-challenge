@@ -1,12 +1,28 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, Search, Edit, Trash2, Dumbbell, Calendar, Users, ChevronRight } from 'lucide-react'
+import { Plus, Search, Edit, Trash2, Dumbbell, Calendar, Users, ChevronRight, UserPlus } from 'lucide-react'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { toast } from 'sonner'
 
 interface WorkoutProgram {
   id: string
@@ -27,9 +43,15 @@ export default function WorkoutProgramsPage() {
   const [filteredPrograms, setFilteredPrograms] = useState<WorkoutProgram[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [clients, setClients] = useState<any[]>([])
+  const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null)
+  const [selectedClientId, setSelectedClientId] = useState<string>('')
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false)
+  const [assigning, setAssigning] = useState(false)
 
   useEffect(() => {
     fetchPrograms()
+    fetchClients()
   }, [])
 
   useEffect(() => {
@@ -47,6 +69,51 @@ export default function WorkoutProgramsPage() {
       console.error('Error fetching programs:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchClients = async () => {
+    try {
+      const response = await fetch('/api/clients')
+      if (response.ok) {
+        const data = await response.json()
+        setClients(data.clients || [])
+      }
+    } catch (error) {
+      console.error('Error fetching clients:', error)
+    }
+  }
+
+  const handleAssignProgram = async () => {
+    if (!selectedClientId || !selectedProgramId) {
+      toast.error('Välj en klient')
+      return
+    }
+
+    setAssigning(true)
+
+    try {
+      const response = await fetch(`/api/workout-programs/${selectedProgramId}/assign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: selectedClientId })
+      })
+
+      if (response.ok) {
+        toast.success('Träningsprogram tilldelat!')
+        setAssignDialogOpen(false)
+        setSelectedClientId('')
+        setSelectedProgramId(null)
+        await fetchPrograms()
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Kunde inte tilldela programmet')
+      }
+    } catch (error) {
+      console.error('Error assigning program:', error)
+      toast.error('Ett fel uppstod')
+    } finally {
+      setAssigning(false)
     }
   }
 
@@ -218,15 +285,83 @@ export default function WorkoutProgramsPage() {
                 )}
               </div>
 
-              <Link href={`/dashboard/content/workout-programs/${program.id}/edit`}>
-                <Button
-                  variant="outline"
-                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 mt-2"
-                >
-                  Visa detaljer
-                  <ChevronRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
+              <div className="flex gap-2 mt-2">
+                <Dialog open={assignDialogOpen && selectedProgramId === program.id} onOpenChange={(open) => {
+                  setAssignDialogOpen(open)
+                  if (!open) {
+                    setSelectedProgramId(null)
+                    setSelectedClientId('')
+                  }
+                }}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="flex-1 border-gold-primary/30 text-gold-primary hover:bg-gold-primary/10"
+                      onClick={() => setSelectedProgramId(program.id)}
+                    >
+                      <UserPlus className="w-4 h-4 mr-2" />
+                      Tilldela
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-white border-2 border-gold-primary/20">
+                    <DialogHeader>
+                      <DialogTitle className="text-gray-900">Tilldela träningsprogram</DialogTitle>
+                      <DialogDescription className="text-gray-600">
+                        Välj en klient att tilldela "{program.name}" till
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 pt-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-700 mb-2 block">
+                          Välj klient
+                        </label>
+                        <Select value={selectedClientId} onValueChange={setSelectedClientId}>
+                          <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                            <SelectValue placeholder="Välj en klient..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {clients.map((client) => (
+                              <SelectItem key={client.id} value={client.id}>
+                                {client.name} ({client.email})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex gap-2 justify-end">
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setAssignDialogOpen(false)
+                            setSelectedProgramId(null)
+                            setSelectedClientId('')
+                          }}
+                          className="border-gray-300 text-gray-700"
+                        >
+                          Avbryt
+                        </Button>
+                        <Button
+                          onClick={handleAssignProgram}
+                          disabled={!selectedClientId || assigning}
+                          className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white"
+                        >
+                          {assigning ? 'Tilldelar...' : 'Tilldela'}
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <Link href={`/dashboard/content/workout-programs/${program.id}/edit`} className="flex-1">
+                  <Button
+                    variant="outline"
+                    className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                  >
+                    Visa detaljer
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         ))}
