@@ -38,7 +38,23 @@ export default function NutritionAdminPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
   const isCoach = (session?.user as any)?.role === 'coach'
-  const proteinTargets = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
+
+  // Different targets for each macronutrient type
+  const getTargets = () => {
+    if (activeType === 'protein') {
+      // protein: 20g to 70g in 5g increments
+      return [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
+    } else if (activeType === 'fat') {
+      // fat: 5g to 50g in 5g increments
+      return [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+    } else {
+      // carbs: 10g to 100g in 5g increments
+      return [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
+    }
+  }
+
+  const targets = getTargets()
+  const proteinTargets = targets // Keep for backwards compatibility in code
 
   // Calculate food weight needed to get target protein/fat/carbs
   const calculateFoodWeight = (valuePer100g: number, targetValue: number) => {
