@@ -37,6 +37,7 @@ type FoodItem = {
   carbsG: number
   fatG: number
   commonServingSize?: string | null
+  imageUrl?: string | null
   isRecommended: boolean
   notes?: string | null
   isApproved: boolean
@@ -281,14 +282,22 @@ export default function CategoryFoodItemsPage({
               className="bg-white/5 border border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)] transition-all backdrop-blur-[10px]"
             >
               <CardContent className="p-4">
+                {item.imageUrl && (
+                  <div className="mb-3 -mx-4 -mt-4">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.name}
+                      className="w-full h-32 object-cover rounded-t-lg"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none'
+                      }}
+                    />
+                  </div>
+                )}
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <h3 className="font-semibold text-white text-lg mb-1">{item.name}</h3>
-                    {item.commonServingSize && (
-                      <p className="text-xs text-gray-500">
-                        Per {item.commonServingSize}
-                      </p>
-                    )}
+                    <p className="text-xs text-gray-500">Per 100g</p>
                   </div>
                   <div className="flex items-center gap-1">
                     <Button
