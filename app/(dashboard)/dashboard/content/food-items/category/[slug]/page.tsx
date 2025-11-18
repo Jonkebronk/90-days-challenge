@@ -294,37 +294,8 @@ export default function CategoryFoodItemsPage({
                     />
                   </div>
                 )}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-white text-lg mb-1">{item.name}</h3>
-                    <p className="text-xs text-gray-500">Per 100g</p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={`h-7 w-7 ${
-                        item.isRecommended
-                          ? 'text-gold-light hover:text-orange-500'
-                          : 'text-[rgba(255,255,255,0.3)] hover:text-gold-light'
-                      }`}
-                      onClick={() => handleToggleRecommended(item.id, item.isRecommended)}
-                    >
-                      <ThumbsUp className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={`h-7 w-7 ${
-                        item.isApproved
-                          ? 'text-green-500 hover:text-green-400'
-                          : 'text-[rgba(255,255,255,0.3)] hover:text-green-500'
-                      }`}
-                      onClick={() => handleToggleApproved(item.id, item.isApproved)}
-                    >
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
+                <div className="mb-3">
+                  <h3 className="font-semibold text-white text-lg">{item.name}</h3>
                 </div>
 
                 <div className="flex items-center justify-between">
