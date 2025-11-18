@@ -1,71 +1,56 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 
+type NutritionItem = {
+  id: string
+  name: string
+  valuePer100g: number
+  order: number
+}
+
+type NutritionCategory = {
+  id: string
+  key: string
+  name: string
+  order: number
+  items: NutritionItem[]
+}
+
 export default function FettOverviewPage() {
   const router = useRouter()
+  const [categories, setCategories] = useState<NutritionCategory[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Food items organized by category
-  const categories = [
-    {
-      key: 'nuts',
-      name: 'Nötter',
-      items: [
-        { name: 'Hasselnötter' },
-        { name: 'Paranötter' },
-        { name: 'Pekannötter' },
-        { name: 'Cashewnötter' },
-        { name: 'Valnötter' },
-        { name: 'Mandlar' },
-        { name: 'Macadamianötter' },
-        { name: 'Jordnötter' },
-      ],
-    },
-    {
-      key: 'seeds',
-      name: 'Frön',
-      items: [
-        { name: 'Sesamfrö' },
-        { name: 'Pumpafrön (skalade)' },
-        { name: 'Solrosfrön (skalade)' },
-        { name: 'Chiafrön' },
-        { name: 'Linfrön' },
-      ],
-    },
-    {
-      key: 'oils',
-      name: 'Oljor & Fetter',
-      items: [
-        { name: 'Kokosolja' },
-        { name: 'Avokadoolja' },
-        { name: 'Olivolja' },
-        { name: 'Smör' },
-        { name: 'Rapsolja' },
-      ],
-    },
-    {
-      key: 'spreads',
-      name: 'Pålägg & Nötsmör',
-      items: [
-        { name: 'Jordnötssmör' },
-        { name: 'Mandelsmör' },
-        { name: 'Avokado' },
-        { name: 'Tahini (sesampasta)' },
-      ],
-    },
-    {
-      key: 'fruits',
-      name: 'Frukt',
-      items: [
-        { name: 'Avokado' },
-        { name: 'Kokosnöt' },
-        { name: 'Oliver' },
-      ],
-    },
-  ]
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('/api/nutrition-categories?type=fat')
+      if (response.ok) {
+        const data = await response.json()
+        setCategories(data.categories)
+      }
+    } catch (error) {
+      console.error('Error fetching fat data:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-6">
+        <p className="text-gray-400 text-center py-8">Laddar...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -90,29 +75,35 @@ export default function FettOverviewPage() {
       </div>
 
       {/* Fat List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {categories.map((category) => (
-          <Card key={category.key} className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-bold text-gold-light tracking-[1px]">
-                {category.name}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {category.items.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="px-3 py-2 bg-white/5 border border-gold-primary/20 rounded-lg hover:bg-gold-primary/10 transition-colors"
-                  >
-                    <p className="text-gray-100 text-sm">{item.name}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {categories.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {categories.map((category) => (
+            <Card key={category.key} className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg font-bold text-gold-light tracking-[1px]">
+                  {category.name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {category.items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="px-3 py-2 bg-white/5 border border-gold-primary/20 rounded-lg hover:bg-gold-primary/10 transition-colors"
+                    >
+                      <p className="text-gray-100 text-sm">{item.name}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <p className="text-gray-400">Inga fettkällor ännu.</p>
+        </div>
+      )}
     </div>
   )
 }

@@ -183,7 +183,6 @@ export default function DashboardLayout({
             <nav className="hidden md:flex items-center gap-1 flex-1">
               {filteredNavigation.map((item) => {
                 const Icon = item.icon
-                const isActive = pathname === item.href
 
                 // Check if item has dropdown
                 if ('dropdown' in item && item.dropdown) {
@@ -227,6 +226,13 @@ export default function DashboardLayout({
                     </DropdownMenu>
                   )
                 }
+
+                // For non-dropdown items, check if the path is in any dropdown to avoid double-highlighting
+                const isInAnyDropdown = filteredNavigation.some(navItem =>
+                  'dropdown' in navItem && navItem.dropdown &&
+                  navItem.dropdown.some((dropdownItem: any) => pathname === dropdownItem.href)
+                )
+                const isActive = pathname === item.href && !isInAnyDropdown
 
                 return (
                   <Link
