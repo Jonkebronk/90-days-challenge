@@ -276,12 +276,12 @@ model FoodItem {
   name              String
   category          String? // Legacy field, will be removed after migration
   categoryId        String?
-  calories          Decimal  @db.Decimal(6, 2)
-  proteinG          Decimal  @db.Decimal(5, 2)
-  carbsG            Decimal  @db.Decimal(5, 2)
-  fatG              Decimal  @db.Decimal(5, 2)
-  isVegetarian      Boolean  @default(true)
-  isVegan           Boolean  @default(false)
+  calories          Decimal? @db.Decimal(6, 2)
+  proteinG          Decimal? @db.Decimal(5, 2)
+  carbsG            Decimal? @db.Decimal(5, 2)
+  fatG              Decimal? @db.Decimal(5, 2)
+  isVegetarian      Boolean? @default(true)
+  isVegan           Boolean? @default(false)
   commonServingSize String?
   imageUrl          String? // URL to food item image
 
