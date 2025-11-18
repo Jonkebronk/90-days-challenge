@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { ChefHat, Search, Clock, Users, Flame, ArrowLeft } from 'lucide-react'
+import { ChefHat, Clock, Users, Flame, ArrowLeft } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -45,7 +44,6 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
   const [category, setCategory] = useState<RecipeCategory | null>(null)
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     params.then(p => setSlug(p.slug))
@@ -94,13 +92,8 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
     return Icon
   }
 
-  const filteredRecipes = recipes.filter(recipe =>
-    recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    recipe.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
   // Group recipes by subcategory
-  const groupedRecipes = filteredRecipes.reduce((acc, recipe) => {
+  const groupedRecipes = recipes.reduce((acc, recipe) => {
     const key = recipe.subcategory?.name || 'Övrigt'
     if (!acc[key]) acc[key] = []
     acc[key].push(recipe)
@@ -157,40 +150,21 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
           </div>
 
           <p className="text-gray-400 text-sm tracking-[1px]">
-            {filteredRecipes.length} {filteredRecipes.length === 1 ? 'recept' : 'recept'}
+            {recipes.length} {recipes.length === 1 ? 'recept' : 'recept'}
           </p>
 
           <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
         </div>
       </div>
 
-      {/* Search */}
-      <div className="max-w-md mx-auto">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Sök recept..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-white/5 border-gold-primary/20 text-gray-200 placeholder:text-gray-500"
-          />
-        </div>
-      </div>
-
       {/* Recipes */}
-      {filteredRecipes.length === 0 ? (
+      {recipes.length === 0 ? (
         <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardContent className="text-center py-16">
             <ChefHat className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
             <p className="text-gray-400 text-lg mb-2">
-              {searchQuery ? 'Inga recept hittades' : 'Inga recept i denna kategori ännu'}
+              Inga recept i denna kategori ännu
             </p>
-            {searchQuery && (
-              <p className="text-sm text-[rgba(255,255,255,0.4)]">
-                Prova en annan sökning
-              </p>
-            )}
           </CardContent>
         </Card>
       ) : hasSubcategories ? (
@@ -247,7 +221,7 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
       ) : (
         // Regular grid without subcategories
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredRecipes.map((recipe) => (
+          {recipes.map((recipe) => (
             <Card
               key={recipe.id}
               onClick={() => router.push(`/dashboard/recipes/${recipe.id}`)}

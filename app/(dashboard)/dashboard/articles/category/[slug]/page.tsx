@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { BookOpen, Search, Clock, ArrowLeft, CheckCircle } from 'lucide-react'
+import { BookOpen, Clock, ArrowLeft, CheckCircle } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 import { toast } from 'sonner'
 import { getCategoryIcon } from '@/lib/icons/category-icons'
@@ -44,7 +43,6 @@ export default function ArticleCategoryPage({ params }: { params: Promise<{ slug
   const [category, setCategory] = useState<ArticleCategory | null>(null)
   const [articles, setArticles] = useState<Article[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     params.then(p => setSlug(p.slug))
@@ -98,11 +96,6 @@ export default function ArticleCategoryPage({ params }: { params: Promise<{ slug
   const isArticleCompleted = (article: Article) => {
     return article.progress && article.progress.length > 0 && article.progress[0].completed
   }
-
-  const filteredArticles = articles.filter(article =>
-    article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    article.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  )
 
   const getDifficultyLabel = (difficulty?: string | null) => {
     if (!difficulty) return null
@@ -163,45 +156,26 @@ export default function ArticleCategoryPage({ params }: { params: Promise<{ slug
           </div>
 
           <p className="text-gray-400 text-sm tracking-[1px]">
-            {filteredArticles.length} {filteredArticles.length === 1 ? 'artikel' : 'artiklar'}
+            {articles.length} {articles.length === 1 ? 'artikel' : 'artiklar'}
           </p>
 
           <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
         </div>
       </div>
 
-      {/* Search */}
-      <div className="max-w-md mx-auto">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Sök artiklar..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-white/5 border-gold-primary/20 text-gray-200 placeholder:text-gray-500"
-          />
-        </div>
-      </div>
-
       {/* Articles */}
-      {filteredArticles.length === 0 ? (
+      {articles.length === 0 ? (
         <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardContent className="text-center py-16">
             <BookOpen className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
             <p className="text-gray-400 text-lg mb-2">
-              {searchQuery ? 'Inga artiklar hittades' : 'Inga artiklar i denna kategori ännu'}
+              Inga artiklar i denna kategori ännu
             </p>
-            {searchQuery && (
-              <p className="text-sm text-[rgba(255,255,255,0.4)]">
-                Prova en annan sökning
-              </p>
-            )}
           </CardContent>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredArticles.map((article) => {
+          {articles.map((article) => {
             const isCompleted = isArticleCompleted(article)
             const phaseColors = getPhaseColors(article.phase as Phase)
 
