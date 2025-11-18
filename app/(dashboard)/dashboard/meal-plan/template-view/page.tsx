@@ -49,6 +49,9 @@ type TemplateMeal = {
   name: string
   mealType: string
   description: string | null
+  carbSource: string | null
+  proteinSource: string | null
+  fatSource: string | null
   targetProtein: number | null
   targetFat: number | null
   targetCarbs: number | null
@@ -456,6 +459,31 @@ export default function MealPlanTemplateViewPage() {
                                 {meal.description}
                               </p>
                             )}
+
+                            {/* Ingredient Sources */}
+                            {(meal.carbSource || meal.proteinSource || meal.fatSource) && (
+                              <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+                                {meal.carbSource && (
+                                  <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
+                                    <p className="text-xs text-gray-400 mb-1 font-semibold">Kolhydratskälla</p>
+                                    <p className="text-sm text-gray-300 whitespace-pre-line">{meal.carbSource}</p>
+                                  </div>
+                                )}
+                                {meal.proteinSource && (
+                                  <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
+                                    <p className="text-xs text-gray-400 mb-1 font-semibold">Proteinkälla</p>
+                                    <p className="text-sm text-gray-300 whitespace-pre-line">{meal.proteinSource}</p>
+                                  </div>
+                                )}
+                                {meal.fatSource && (
+                                  <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
+                                    <p className="text-xs text-gray-400 mb-1 font-semibold">Fettkälla</p>
+                                    <p className="text-sm text-gray-300 whitespace-pre-line">{meal.fatSource}</p>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
                             {selectedOption && (
                               <p className="text-sm text-gray-400 mt-2">
                                 {selectedOption.optionType === 'recipe'
