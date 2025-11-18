@@ -143,15 +143,7 @@ export async function POST(req: NextRequest) {
     const {
       name,
       categoryId,
-      calories,
-      proteinG,
-      carbsG,
-      fatG,
-      commonServingSize,
       imageUrl,
-      isVegetarian,
-      isVegan,
-      isRecommended,
       notes,
     } = body
 
@@ -159,23 +151,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Name and category are required' }, { status: 400 })
     }
 
-    if (calories === undefined || proteinG === undefined || carbsG === undefined || fatG === undefined) {
-      return NextResponse.json({ error: 'All macro values are required' }, { status: 400 })
-    }
-
     const foodItem = await prisma.foodItem.create({
       data: {
         name,
         categoryId,
-        calories: parseFloat(calories.toString()),
-        proteinG: parseFloat(proteinG.toString()),
-        carbsG: parseFloat(carbsG.toString()),
-        fatG: parseFloat(fatG.toString()),
-        commonServingSize: commonServingSize || '100g',
         imageUrl: imageUrl || null,
-        isVegetarian: isVegetarian !== undefined ? isVegetarian : true,
-        isVegan: isVegan !== undefined ? isVegan : false,
-        isRecommended: isRecommended !== undefined ? isRecommended : false,
         notes: notes || null,
         isApproved: true, // Auto-approve when coach creates
         approvedBy: session.user.id,
