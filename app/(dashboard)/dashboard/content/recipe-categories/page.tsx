@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Plus, Pencil, Trash2, ChefHat, Coffee, Utensils, Cookie, Moon } from 'lucide-react'
+import { Plus, Pencil, Trash2, ChefHat, Coffee, Utensils, Cookie, Moon, GripVertical } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -79,6 +79,9 @@ export default function RecipeCategoriesPage() {
   const [isSubcategoryDialogOpen, setIsSubcategoryDialogOpen] = useState(false)
   const [subcategoryFormData, setSubcategoryFormData] = useState({ name: '' })
   const [managingCategoryId, setManagingCategoryId] = useState<string | null>(null)
+
+  // Drag and drop
+  const [draggedCategoryId, setDraggedCategoryId] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -295,6 +298,62 @@ export default function RecipeCategoriesPage() {
     return Icon || ChefHat
   }
 
+  const handleDragStart = (categoryId: string) => {
+    setDraggedCategoryId(categoryId)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+  }
+
+  const handleDrop = async (targetCategoryId: string) => {
+    if (!draggedCategoryId || draggedCategoryId === targetCategoryId) {
+      setDraggedCategoryId(null)
+      return
+    }
+
+    const draggedIndex = categories.findIndex(c => c.id === draggedCategoryId)
+    const targetIndex = categories.findIndex(c => c.id === targetCategoryId)
+
+    if (draggedIndex === -1 || targetIndex === -1) {
+      setDraggedCategoryId(null)
+      return
+    }
+
+    // Reorder locally first for immediate feedback
+    const newCategories = [...categories]
+    const [draggedCategory] = newCategories.splice(draggedIndex, 1)
+    newCategories.splice(targetIndex, 0, draggedCategory)
+
+    // Update orderIndex for all affected categories
+    const updatedCategories = newCategories.map((cat, index) => ({
+      ...cat,
+      orderIndex: index
+    }))
+
+    setCategories(updatedCategories)
+    setDraggedCategoryId(null)
+
+    // Save the new order to the backend
+    try {
+      const updatePromises = updatedCategories.map(cat =>
+        fetch(`/api/recipe-categories/${cat.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderIndex: cat.orderIndex })
+        })
+      )
+
+      await Promise.all(updatePromises)
+      toast.success('Ordning uppdaterad')
+    } catch (error) {
+      console.error('Error updating category order:', error)
+      toast.error('Kunde inte uppdatera ordning')
+      // Revert on error
+      fetchCategories()
+    }
+  }
+
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
@@ -344,11 +403,20 @@ export default function RecipeCategoriesPage() {
             return (
               <Card
                 key={category.id}
-                className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]"
+                draggable
+                onDragStart={() => handleDragStart(category.id)}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(category.id)}
+                className={`bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] transition-all ${
+                  draggedCategoryId === category.id ? 'opacity-50 scale-95' : 'cursor-move hover:border-gold-primary/40'
+                }`}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
+                      <div className="text-gray-400 hover:text-gold-primary cursor-grab active:cursor-grabbing">
+                        <GripVertical className="h-5 w-5" />
+                      </div>
                       <div
                         className="w-12 h-12 rounded-full flex items-center justify-center"
                         style={{ backgroundColor: `${category.color}20` }}
