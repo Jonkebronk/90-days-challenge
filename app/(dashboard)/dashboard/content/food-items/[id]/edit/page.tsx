@@ -42,6 +42,10 @@ export default function EditFoodItemPage() {
   const params = useParams()
   const foodItemId = params.id as string
 
+  // Get categorySlug from URL query params
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+  const categorySlug = searchParams.get('categorySlug')
+
   const [categories, setCategories] = useState<FoodCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -133,7 +137,12 @@ export default function EditFoodItemPage() {
 
       if (response.ok) {
         toast.success('Livsmedel uppdaterat')
-        router.push('/dashboard/content/food-items')
+        // Redirect back to category view if we came from there, otherwise to main view
+        if (categorySlug) {
+          router.push(`/dashboard/content/food-items/category/${categorySlug}`)
+        } else {
+          router.push('/dashboard/content/food-items')
+        }
       } else {
         const data = await response.json()
         toast.error(data.error || 'Kunde inte uppdatera livsmedel')

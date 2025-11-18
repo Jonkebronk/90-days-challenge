@@ -313,7 +313,7 @@ export default function CategoryFoodItemsPage({
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-gray-400 hover:text-gold-light hover:bg-gold-50/10"
-                        onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit`)}
+                        onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit?categorySlug=${categorySlug}`)}
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -348,13 +348,25 @@ export default function CategoryFoodItemsPage({
                           key={item.id}
                           className="flex items-center justify-between p-2 bg-white/5 border border-gold-primary/20 rounded-lg hover:bg-gold-primary/10 transition-colors"
                         >
-                          <span className="text-gray-100 text-sm">{item.name}</span>
-                          <div className="flex gap-0.5">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            {item.imageUrl && (
+                              <img
+                                src={item.imageUrl}
+                                alt={item.name}
+                                className="w-8 h-8 rounded object-cover flex-shrink-0"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).style.display = 'none'
+                                }}
+                              />
+                            )}
+                            <span className="text-gray-100 text-sm truncate">{item.name}</span>
+                          </div>
+                          <div className="flex gap-0.5 flex-shrink-0">
                             <Button
                               variant="ghost"
                               size="icon"
                               className="h-7 w-7 text-gray-400 hover:text-gold-light hover:bg-gold-50/10"
-                              onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit`)}
+                              onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit?categorySlug=${categorySlug}`)}
                             >
                               <Pencil className="h-3 w-3" />
                             </Button>
