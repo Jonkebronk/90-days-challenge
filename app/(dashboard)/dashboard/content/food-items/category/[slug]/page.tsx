@@ -5,14 +5,11 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import {
   ArrowLeft,
   Plus,
   Search,
-  ThumbsUp,
-  CheckCircle2,
   Trash2,
   Pencil,
   Apple,
@@ -298,37 +295,23 @@ export default function CategoryFoodItemsPage({
                   <h3 className="font-semibold text-white text-lg">{item.name}</h3>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-1">
-                    {item.isVegetarian && (
-                      <Badge className="text-xs bg-[rgba(34,197,94,0.1)] text-green-400 border border-[rgba(34,197,94,0.3)]">
-                        Veg
-                      </Badge>
-                    )}
-                    {item.isVegan && (
-                      <Badge className="text-xs bg-[rgba(34,197,94,0.1)] text-green-400 border border-[rgba(34,197,94,0.3)]">
-                        Vegan
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 text-gray-500 hover:text-gold-light"
-                      onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit`)}
-                    >
-                      <Pencil className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 text-gray-500 hover:text-red-400"
-                      onClick={() => handleDelete(item.id, item.name)}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
+                <div className="flex items-center justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-gray-400 hover:text-gold-light hover:bg-gold-50/10"
+                    onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit`)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-gray-400 hover:text-red-400 hover:bg-red-900/20"
+                    onClick={() => handleDelete(item.id, item.name)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
