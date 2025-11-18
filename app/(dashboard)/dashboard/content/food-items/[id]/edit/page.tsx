@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectContent,
@@ -32,15 +31,7 @@ type FoodItem = {
   id: string
   name: string
   categoryId?: string | null
-  calories: number
-  proteinG: number
-  carbsG: number
-  fatG: number
-  commonServingSize?: string | null
   notes?: string | null
-  isVegetarian: boolean
-  isVegan: boolean
-  isRecommended: boolean
   isApproved: boolean
   foodCategory?: FoodCategory | null
 }
@@ -58,16 +49,8 @@ export default function EditFoodItemPage() {
   const [formData, setFormData] = useState({
     name: '',
     categoryId: '',
-    calories: '',
-    proteinG: '',
-    carbsG: '',
-    fatG: '',
-    commonServingSize: '100g',
     imageUrl: '',
     notes: '',
-    isVegetarian: true,
-    isVegan: false,
-    isRecommended: false,
   })
 
   useEffect(() => {
@@ -99,16 +82,8 @@ export default function EditFoodItemPage() {
         setFormData({
           name: item.name,
           categoryId: item.categoryId || '',
-          calories: item.calories.toString(),
-          proteinG: item.proteinG.toString(),
-          carbsG: item.carbsG.toString(),
-          fatG: item.fatG.toString(),
-          commonServingSize: item.commonServingSize || '100g',
           imageUrl: (item as any).imageUrl || '',
           notes: item.notes || '',
-          isVegetarian: item.isVegetarian,
-          isVegan: item.isVegan,
-          isRecommended: item.isRecommended,
         })
       } else {
         toast.error('Kunde inte hämta livsmedel')
@@ -131,11 +106,6 @@ export default function EditFoodItemPage() {
       return
     }
 
-    if (!formData.calories || !formData.proteinG || !formData.carbsG || !formData.fatG) {
-      toast.error('Alla näringsvärden krävs')
-      return
-    }
-
     try {
       setIsSaving(true)
       const response = await fetch(`/api/food-items/${foodItemId}`, {
@@ -144,16 +114,8 @@ export default function EditFoodItemPage() {
         body: JSON.stringify({
           name: formData.name,
           categoryId: formData.categoryId,
-          calories: parseFloat(formData.calories),
-          proteinG: parseFloat(formData.proteinG),
-          carbsG: parseFloat(formData.carbsG),
-          fatG: parseFloat(formData.fatG),
-          commonServingSize: formData.commonServingSize || '100g',
           imageUrl: formData.imageUrl || null,
           notes: formData.notes || null,
-          isVegetarian: formData.isVegetarian,
-          isVegan: formData.isVegan,
-          isRecommended: formData.isRecommended,
         })
       })
 
