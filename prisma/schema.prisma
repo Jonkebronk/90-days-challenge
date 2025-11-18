@@ -1454,6 +1454,11 @@ model TemplateMeal {
   mealType   String? // "breakfast", "lunch", "dinner", "snack"
   description String? @db.Text // Description/context for the meal (e.g., "Eat within 30 min of waking up")
 
+  // Ingredient sources with alternatives
+  carbSource    String? @db.Text // e.g., "50g Havregryn ELLER 4dl Müsli"
+  proteinSource String? @db.Text // e.g., "200g Kvarg ELLER Keso"
+  fatSource     String? @db.Text // e.g., "1 Ägg eller 20g Nötter"
+
   // Target macros for this meal
   targetProtein  Decimal? @db.Decimal(6, 2)
   targetFat      Decimal? @db.Decimal(6, 2)

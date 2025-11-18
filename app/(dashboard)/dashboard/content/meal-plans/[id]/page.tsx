@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -83,6 +83,9 @@ type TemplateMeal = {
   name: string
   mealType: string
   description: string | null
+  carbSource: string | null
+  proteinSource: string | null
+  fatSource: string | null
   targetProtein: number | null
   targetFat: number | null
   targetCarbs: number | null
@@ -203,6 +206,46 @@ export default function MealPlanTemplatePage() {
       setIsLoading(false)
     }
   }
+
+  // Debounced save for meal ingredient sources
+  const saveTimeoutRef = useRef<NodeJS.Timeout>()
+
+  const debouncedSaveMeal = useCallback(async (meal: TemplateMeal) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+    }
+
+    saveTimeoutRef.current = setTimeout(async () => {
+      try {
+        const response = await fetch(
+          `/api/meal-plan-templates/${templateId}/meals/${meal.id}`,
+          {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: meal.name,
+              mealType: meal.mealType,
+              description: meal.description,
+              carbSource: meal.carbSource,
+              proteinSource: meal.proteinSource,
+              fatSource: meal.fatSource,
+              targetProtein: meal.targetProtein,
+              targetFat: meal.targetFat,
+              targetCarbs: meal.targetCarbs,
+              targetCalories: meal.targetCalories,
+            }),
+          }
+        )
+
+        if (!response.ok) {
+          toast.error('Kunde inte spara måltid')
+        }
+      } catch (error) {
+        console.error('Error saving meal:', error)
+        toast.error('Ett fel uppstod vid sparande')
+      }
+    }, 1000) // Save 1 second after user stops typing
+  }, [templateId])
 
   const handleSaveTemplate = async () => {
     if (!formData.name) {
@@ -787,29 +830,73 @@ export default function MealPlanTemplatePage() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      {/* Ingredients Free Text */}
-                      <div className="mb-6">
-                        <div className="mb-3">
-                          <Label htmlFor={`ingredients-${meal.id}`} className="text-gray-200">
-                            Råvaror
+                      {/* Ingredient Sources */}
+                      <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Carb Source */}
+                        <div>
+                          <Label htmlFor={`carb-${meal.id}`} className="text-gray-200 mb-2 block">
+                            Kolhydratskälla
                           </Label>
-                          <p className="text-xs text-gray-500 mt-1 mb-2">
-                            Skriv in råvaror fritt. T.ex. &quot;Kolhydratkälla: 50g Havregryn ELLER Müsli | Proteinkälla: Kvarg ELLER Keso&quot;
-                          </p>
+                          <Textarea
+                            id={`carb-${meal.id}`}
+                            value={meal.carbSource || ''}
+                            onChange={(e) => {
+                              const updatedMeal = { ...meal, carbSource: e.target.value }
+                              const updated = template!.meals.map((m) =>
+                                m.id === meal.id ? updatedMeal : m
+                              )
+                              setTemplate({ ...template!, meals: updated })
+                              debouncedSaveMeal(updatedMeal)
+                            }}
+                            placeholder="50g Havregryn ELLER 4dl Müsli"
+                            rows={4}
+                            className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)] font-mono text-sm"
+                          />
                         </div>
-                        <Textarea
-                          id={`ingredients-${meal.id}`}
-                          value={meal.description || ''}
-                          onChange={(e) => {
-                            const updated = template!.meals.map((m) =>
-                              m.id === meal.id ? { ...m, description: e.target.value } : m
-                            )
-                            setTemplate({ ...template!, meals: updated })
-                          }}
-                          placeholder="Kolhydratkälla: 50g Havregryn ELLER 4dl Müsli&#10;Proteinkälla: 200g Kvarg ELLER Keso&#10;Fettkälla: 1 Ägg eller 20g Nötter&#10;Grönsaker: Tomat, sallad osv..."
-                          rows={6}
-                          className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)] font-mono text-sm"
-                        />
+
+                        {/* Protein Source */}
+                        <div>
+                          <Label htmlFor={`protein-${meal.id}`} className="text-gray-200 mb-2 block">
+                            Proteinkälla
+                          </Label>
+                          <Textarea
+                            id={`protein-${meal.id}`}
+                            value={meal.proteinSource || ''}
+                            onChange={(e) => {
+                              const updatedMeal = { ...meal, proteinSource: e.target.value }
+                              const updated = template!.meals.map((m) =>
+                                m.id === meal.id ? updatedMeal : m
+                              )
+                              setTemplate({ ...template!, meals: updated })
+                              debouncedSaveMeal(updatedMeal)
+                            }}
+                            placeholder="200g Kvarg ELLER Keso"
+                            rows={4}
+                            className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)] font-mono text-sm"
+                          />
+                        </div>
+
+                        {/* Fat Source */}
+                        <div>
+                          <Label htmlFor={`fat-${meal.id}`} className="text-gray-200 mb-2 block">
+                            Fettkälla
+                          </Label>
+                          <Textarea
+                            id={`fat-${meal.id}`}
+                            value={meal.fatSource || ''}
+                            onChange={(e) => {
+                              const updatedMeal = { ...meal, fatSource: e.target.value }
+                              const updated = template!.meals.map((m) =>
+                                m.id === meal.id ? updatedMeal : m
+                              )
+                              setTemplate({ ...template!, meals: updated })
+                              debouncedSaveMeal(updatedMeal)
+                            }}
+                            placeholder="1 Ägg eller 20g Nötter"
+                            rows={4}
+                            className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)] font-mono text-sm"
+                          />
+                        </div>
                       </div>
 
                       {/* Meal Alternatives Section */}
