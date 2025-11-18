@@ -180,7 +180,7 @@ export default function NutritionAdminPage() {
       // Delete removed items first
       for (const itemId of deletedItemIds) {
         console.log('🗑️ Deleting item:', itemId)
-        const deleteResponse = await fetch(`/api/nutrition-items/${itemId}`, {
+        const deleteResponse = await fetch(`/api/nutrition-items?id=${itemId}`, {
           method: 'DELETE',
         })
 
