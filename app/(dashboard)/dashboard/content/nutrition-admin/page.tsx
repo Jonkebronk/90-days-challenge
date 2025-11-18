@@ -6,9 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ArrowLeft, Save, Plus, Trash2, ChevronUp, ChevronDown } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -16,7 +14,6 @@ type NutritionItem = {
   id: string
   name: string
   valuePer100g: number
-  customValues?: Record<number, number> // Store manual values for each target
   order: number
 }
 
@@ -38,35 +35,6 @@ export default function NutritionAdminPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
   const isCoach = (session?.user as any)?.role === 'coach'
-
-  // Different targets for each macronutrient type
-  const getTargets = () => {
-    if (activeType === 'protein') {
-      // protein: 20g to 70g in 5g increments
-      return [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]
-    } else if (activeType === 'fat') {
-      // fat: 5g to 50g in 5g increments
-      return [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
-    } else {
-      // carbs: 10g to 100g in 5g increments
-      return [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100]
-    }
-  }
-
-  const targets = getTargets()
-  const proteinTargets = targets // Keep for backwards compatibility in code
-
-  // Calculate food weight needed to get target protein/fat/carbs
-  const calculateFoodWeight = (valuePer100g: number, targetValue: number) => {
-    if (valuePer100g === 0) return 0
-    return Math.round((targetValue * 100) / valuePer100g)
-  }
-
-  // Calculate valuePer100g from food weight and target
-  const calculateValuePer100g = (foodWeight: number, targetValue: number) => {
-    if (foodWeight === 0) return 0
-    return parseFloat(((targetValue * 100) / foodWeight).toFixed(2))
-  }
 
   useEffect(() => {
     if (session?.user) {
@@ -113,40 +81,6 @@ export default function NutritionAdminPage() {
       )
     )
     setHasUnsavedChanges(true)
-  }
-
-  // Update custom value for a specific target
-  const updateCustomValue = (categoryId: string, itemId: string, target: number, value: number) => {
-    setCategories(prev =>
-      prev.map(cat =>
-        cat.id === categoryId
-          ? {
-              ...cat,
-              items: cat.items.map(item =>
-                item.id === itemId
-                  ? {
-                      ...item,
-                      customValues: {
-                        ...(item.customValues || {}),
-                        [target]: value
-                      }
-                    }
-                  : item
-              ),
-            }
-          : cat
-      )
-    )
-    setHasUnsavedChanges(true)
-  }
-
-  // Get value for a specific target (only custom values, no calculation)
-  const getValueForTarget = (item: NutritionItem, target: number): number => {
-    // Return custom value if exists, otherwise return 0 (user must fill in manually)
-    if (item.customValues && item.customValues[target] !== undefined) {
-      return item.customValues[target]
-    }
-    return 0
   }
 
   const addItem = (categoryId: string) => {
@@ -267,7 +201,6 @@ export default function NutritionAdminPage() {
             id: item.id,
             name: item.name,
             valuePer100g: item.valuePer100g,
-            customValues: item.customValues || null,
             order: index, // Use original array index as order within category
           }))
 
@@ -294,7 +227,6 @@ export default function NutritionAdminPage() {
             categoryId: cat.id,
             name: item.name,
             valuePer100g: item.valuePer100g,
-            customValues: item.customValues || null,
             order: index, // Use current array index as order within category
           }))
 
@@ -365,7 +297,7 @@ export default function NutritionAdminPage() {
               Hantera Näringstabeller
             </h1>
             <p className="text-gray-400 mt-1">
-              Fyll i varje cell manuellt med dina egna beräkningar
+              Redigera livsmedel under varje kategori
             </p>
           </div>
         </div>
@@ -426,94 +358,47 @@ export default function NutritionAdminPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-                  <table className="min-w-[1200px] w-full border-collapse text-xs">
-                    <thead className="bg-[rgba(255,215,0,0.05)]">
-                      <tr>
-                        <th className="px-2 md:px-3 py-2 text-left text-xs font-semibold text-gray-200 border border-gold-primary/20 sticky left-0 bg-gray-900/95 z-10 min-w-[150px] md:min-w-[200px]">
-                          Livsmedel
-                        </th>
-                        {proteinTargets.map((target) => (
-                          <th
-                            key={target}
-                            className="px-2 md:px-3 py-2 text-center text-xs font-semibold text-gold-light border border-gold-primary/20 min-w-[65px] md:min-w-[70px] whitespace-nowrap"
-                          >
-                            <div>{target}g</div>
-                            <div className="text-[rgba(255,215,0,0.6)] font-normal">
-                              {activeType === 'protein' ? 'Protein' : activeType === 'fat' ? 'Fett' : 'Kolhydrater'}
-                            </div>
-                          </th>
-                        ))}
-                        <th className="px-2 md:px-3 py-2 text-center text-xs font-semibold text-gray-200 border border-gold-primary/20 min-w-[100px] md:min-w-[120px]">
-                          Åtgärder
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {category.items.map((item, idx) => (
-                        <tr
-                          key={item.id}
-                          className={`border-b border-gold-primary/10 hover:bg-[rgba(255,215,0,0.02)] ${
-                            idx % 2 === 0 ? 'bg-[rgba(255,255,255,0.01)]' : ''
-                          }`}
+                <div className="space-y-2">
+                  {category.items.map((item, idx) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-3 p-3 bg-white/5 border border-gold-primary/20 rounded-lg hover:bg-gold-primary/10 transition-colors"
+                    >
+                      <Input
+                        value={item.name}
+                        onChange={(e) => updateItemValue(category.id, item.id, 'name', e.target.value)}
+                        className="flex-1 bg-black/30 border-gold-primary/30 text-white"
+                      />
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveItem(category.id, item.id, 'up')}
+                          disabled={idx === 0}
+                          className="text-gold-light hover:bg-gold-50/10 h-8 w-8 p-0"
                         >
-                          <td className="px-2 md:px-3 py-2 border border-gold-primary/10 sticky left-0 bg-gray-900/95 z-10 min-w-[150px] md:min-w-[200px]">
-                            <Input
-                              value={item.name}
-                              onChange={(e) => updateItemValue(category.id, item.id, 'name', e.target.value)}
-                              className="bg-black/30 border-gold-primary/30 text-white h-8 text-xs"
-                            />
-                          </td>
-                          {proteinTargets.map((target) => (
-                            <td key={target} className="px-2 md:px-3 py-2 border border-gold-primary/10">
-                              <Input
-                                type="number"
-                                value={getValueForTarget(item, target)}
-                                onChange={(e) => {
-                                  const value = e.target.value
-                                  // Remove leading zeros and parse
-                                  const numValue = value === '' ? 0 : parseInt(value.replace(/^0+/, '') || '0', 10)
-                                  updateCustomValue(category.id, item.id, target, numValue)
-                                }}
-                                className="bg-black/30 border-gold-primary/30 text-white h-10 md:h-12 text-sm md:text-base text-center min-w-[60px] md:min-w-[70px]"
-                                placeholder="0"
-                              />
-                            </td>
-                          ))}
-                          <td className="px-2 md:px-3 py-2 text-center border border-gold-primary/10">
-                            <div className="flex items-center justify-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => moveItem(category.id, item.id, 'up')}
-                                disabled={idx === 0}
-                                className="text-gold-light hover:bg-gold-50/10 h-7 w-7 p-0"
-                              >
-                                <ChevronUp className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => moveItem(category.id, item.id, 'down')}
-                                disabled={idx === category.items.length - 1}
-                                className="text-gold-light hover:bg-gold-50/10 h-7 w-7 p-0"
-                              >
-                                <ChevronDown className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeItem(category.id, item.id)}
-                                className="text-red-400 hover:text-red-300 hover:bg-red-900/20 h-7 w-7 p-0"
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          <ChevronUp className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveItem(category.id, item.id, 'down')}
+                          disabled={idx === category.items.length - 1}
+                          className="text-gold-light hover:bg-gold-50/10 h-8 w-8 p-0"
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeItem(category.id, item.id)}
+                          className="text-red-400 hover:text-red-300 hover:bg-red-900/20 h-8 w-8 p-0"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
                 <Button
                   onClick={() => addItem(category.id)}
