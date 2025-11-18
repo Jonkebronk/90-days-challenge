@@ -62,47 +62,16 @@ export default function FettOverviewPage() {
     return ((fatPer100g * portion) / 100).toFixed(1)
   }
 
-  const renderTable = (items: { name: string; fatPer100g: number }[]) => (
-    <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-      <table className="min-w-[800px] w-full border-collapse text-xs">
-        <thead className="bg-[rgba(255,215,0,0.05)]">
-          <tr>
-            <th className="px-2 md:px-3 py-2 text-left text-xs font-semibold text-gray-200 border border-gold-primary/20 sticky left-0 bg-gray-900/95 z-10 min-w-[120px] md:min-w-[150px]">
-              Livsmedel
-            </th>
-            {portions.map((portion) => (
-              <th
-                key={portion}
-                className="px-2 md:px-3 py-2 text-center text-xs font-semibold text-yellow-300 border border-gold-primary/20 min-w-[45px] md:min-w-[50px] whitespace-nowrap"
-              >
-                {portion}g
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item, idx) => (
-            <tr
-              key={idx}
-              className={`border-b border-gold-primary/10 hover:bg-[rgba(255,215,0,0.02)] ${
-                idx % 2 === 0 ? 'bg-[rgba(255,255,255,0.01)]' : ''
-              }`}
-            >
-              <td className="px-2 md:px-3 py-2 text-white font-medium border border-gold-primary/10 sticky left-0 bg-gray-900/95 z-10 min-w-[120px] md:min-w-[150px]">
-                {item.name}
-              </td>
-              {portions.map((portion) => (
-                <td
-                  key={portion}
-                  className="px-2 md:px-3 py-2 text-center text-gray-200 border border-gold-primary/10"
-                >
-                  {calculateFat(item.fatPer100g, portion)}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+  const renderList = (items: { name: string; fatPer100g: number }[]) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+      {items.map((item, idx) => (
+        <div
+          key={idx}
+          className="px-4 py-3 bg-white/5 border border-gold-primary/20 rounded-lg hover:bg-gold-primary/10 transition-colors"
+        >
+          <p className="text-gray-100 text-sm">{item.name}</p>
+        </div>
+      ))}
     </div>
   )
 
@@ -151,7 +120,7 @@ export default function FettOverviewPage() {
 
             {Object.entries(categories).map(([key, category]) => (
               <TabsContent key={key} value={key} className="mt-0">
-                {renderTable(category.items)}
+                {renderList(category.items)}
               </TabsContent>
             ))}
           </Tabs>
