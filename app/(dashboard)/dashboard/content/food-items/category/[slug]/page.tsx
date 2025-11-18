@@ -7,12 +7,19 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
   ArrowLeft,
   Plus,
   Search,
   Trash2,
   Pencil,
   Apple,
+  X,
 } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 import { toast } from 'sonner'
@@ -57,6 +64,7 @@ export default function CategoryFoodItemsPage({
   const [isLoading, setIsLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [total, setTotal] = useState(0)
+  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null)
 
   useEffect(() => {
     params.then((p) => setCategorySlug(p.slug))
@@ -285,7 +293,8 @@ export default function CategoryFoodItemsPage({
               {foodItems.map((item) => (
                 <Card
                   key={item.id}
-                  className="bg-white/5 border border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)] transition-all backdrop-blur-[10px]"
+                  className="bg-white/5 border border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)] transition-all backdrop-blur-[10px] cursor-pointer"
+                  onClick={() => setSelectedItem(item)}
                 >
                   <CardContent className="p-4">
                     {item.imageUrl && (
@@ -305,7 +314,7 @@ export default function CategoryFoodItemsPage({
                     </div>
 
                     {isCoach && (
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -344,7 +353,8 @@ export default function CategoryFoodItemsPage({
                       {items.map((item) => (
                         <div
                           key={item.id}
-                          className="flex items-center justify-between p-2 bg-white/5 border border-gold-primary/20 rounded-lg hover:bg-gold-primary/10 transition-colors"
+                          className="flex items-center justify-between p-2 bg-white/5 border border-gold-primary/20 rounded-lg hover:bg-gold-primary/10 transition-colors cursor-pointer"
+                          onClick={() => setSelectedItem(item)}
                         >
                           <div className="flex items-center gap-2 flex-1 min-w-0">
                             {item.imageUrl && (
@@ -360,7 +370,7 @@ export default function CategoryFoodItemsPage({
                             <span className="text-gray-100 text-sm truncate">{item.name}</span>
                           </div>
                           {isCoach && (
-                            <div className="flex gap-0.5 flex-shrink-0">
+                            <div className="flex gap-0.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -388,6 +398,131 @@ export default function CategoryFoodItemsPage({
           </div>
         )
       })()}
+
+      {/* Food Item Detail Dialog */}
+      <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
+        <DialogContent className="bg-[#0a0a0a] border-2 border-gold-primary/30 text-white max-w-2xl">
+          {selectedItem && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold text-gold-light flex items-center justify-between">
+                  {selectedItem.name}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setSelectedItem(null)}
+                    className="text-gray-400 hover:text-gold-light"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                {/* Image */}
+                {selectedItem.imageUrl && (
+                  <div className="w-full h-64 rounded-lg overflow-hidden border-2 border-gold-primary/20">
+                    <img
+                      src={selectedItem.imageUrl}
+                      alt={selectedItem.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none'
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* Nutrition Info */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
+                    <p className="text-xs text-gray-400 mb-1">Kalorier</p>
+                    <p className="text-xl font-bold text-gold-light">{selectedItem.calories}</p>
+                    <p className="text-xs text-gray-400">kcal/100g</p>
+                  </div>
+                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
+                    <p className="text-xs text-gray-400 mb-1">Protein</p>
+                    <p className="text-xl font-bold text-gold-light">{selectedItem.proteinG}g</p>
+                    <p className="text-xs text-gray-400">/100g</p>
+                  </div>
+                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
+                    <p className="text-xs text-gray-400 mb-1">Kolhydrater</p>
+                    <p className="text-xl font-bold text-gold-light">{selectedItem.carbsG}g</p>
+                    <p className="text-xs text-gray-400">/100g</p>
+                  </div>
+                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
+                    <p className="text-xs text-gray-400 mb-1">Fett</p>
+                    <p className="text-xl font-bold text-gold-light">{selectedItem.fatG}g</p>
+                    <p className="text-xs text-gray-400">/100g</p>
+                  </div>
+                </div>
+
+                {/* Common Serving Size */}
+                {selectedItem.commonServingSize && (
+                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-4">
+                    <p className="text-sm text-gray-400 mb-1">Vanlig portion</p>
+                    <p className="text-white font-medium">{selectedItem.commonServingSize}</p>
+                  </div>
+                )}
+
+                {/* Notes */}
+                {selectedItem.notes && (
+                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-4">
+                    <p className="text-sm text-gray-400 mb-2">Anteckningar</p>
+                    <p className="text-white leading-relaxed">{selectedItem.notes}</p>
+                  </div>
+                )}
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2">
+                  {selectedItem.isRecommended && (
+                    <span className="px-3 py-1 bg-gold-primary/20 text-gold-light text-xs font-medium rounded-full border border-gold-primary/30">
+                      Rekommenderad
+                    </span>
+                  )}
+                  {selectedItem.isVegetarian && (
+                    <span className="px-3 py-1 bg-green-900/20 text-green-400 text-xs font-medium rounded-full border border-green-700/30">
+                      Vegetarisk
+                    </span>
+                  )}
+                  {selectedItem.isVegan && (
+                    <span className="px-3 py-1 bg-green-900/20 text-green-400 text-xs font-medium rounded-full border border-green-700/30">
+                      Vegansk
+                    </span>
+                  )}
+                </div>
+
+                {/* Actions */}
+                {isCoach && (
+                  <div className="flex gap-2 pt-4 border-t border-gold-primary/20">
+                    <Button
+                      onClick={() => {
+                        setSelectedItem(null)
+                        router.push(`/dashboard/content/food-items/${selectedItem.id}/edit?categorySlug=${categorySlug}`)
+                      }}
+                      className="flex-1 bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+                    >
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Redigera
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        handleDelete(selectedItem.id, selectedItem.name)
+                        setSelectedItem(null)
+                      }}
+                      className="border-red-500/50 text-red-400 hover:bg-red-900/20"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Ta bort
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
