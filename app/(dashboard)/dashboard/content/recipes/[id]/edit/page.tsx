@@ -15,9 +15,16 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+interface RecipeSubcategory {
+  id: string
+  name: string
+  slug: string
+}
+
 interface RecipeCategory {
   id: string
   name: string
+  subcategories?: RecipeSubcategory[]
 }
 
 interface SimpleIngredient {
@@ -48,6 +55,8 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [categoryId, setCategoryId] = useState('')
+  const [subcategoryId, setSubcategoryId] = useState('')
+  const [subcategories, setSubcategories] = useState<RecipeSubcategory[]>([])
   const [servings, setServings] = useState(1)
   const [prepTimeMinutes, setPrepTimeMinutes] = useState('')
   const [cookTimeMinutes, setCookTimeMinutes] = useState('')
@@ -77,6 +86,15 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
     loadData()
   }, [])
 
+  useEffect(() => {
+    if (categoryId) {
+      const category = categories.find(c => c.id === categoryId)
+      setSubcategories(category?.subcategories || [])
+    } else {
+      setSubcategories([])
+    }
+  }, [categoryId, categories])
+
   const fetchCategories = async () => {
     try {
       const response = await fetch('/api/recipe-categories')
@@ -99,6 +117,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
         setTitle(recipe.title)
         setDescription(recipe.description || '')
         setCategoryId(recipe.categoryId)
+        setSubcategoryId(recipe.subcategoryId || '')
         setServings(recipe.servings)
         setPrepTimeMinutes(recipe.prepTimeMinutes?.toString() || '')
         setCookTimeMinutes(recipe.cookTimeMinutes?.toString() || '')
@@ -185,6 +204,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
           title,
           description,
           categoryId,
+          subcategoryId: subcategoryId || null,
           servings,
           prepTimeMinutes: prepTimeMinutes ? parseInt(prepTimeMinutes) : null,
           cookTimeMinutes: cookTimeMinutes ? parseInt(cookTimeMinutes) : null,
@@ -278,7 +298,10 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm text-gray-300">Kategori *</Label>
-                <Select value={categoryId} onValueChange={setCategoryId}>
+                <Select value={categoryId} onValueChange={(value) => {
+                  setCategoryId(value)
+                  setSubcategoryId('')
+                }}>
                   <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white">
                     <SelectValue placeholder="Välj" />
                   </SelectTrigger>
@@ -290,6 +313,24 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                 </Select>
               </div>
 
+              {subcategories.length > 0 && (
+                <div>
+                  <Label className="text-sm text-gray-300">Subkategori</Label>
+                  <Select value={subcategoryId} onValueChange={setSubcategoryId}>
+                    <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white">
+                      <SelectValue placeholder="Välj (valfritt)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {subcategories.map(sub => (
+                        <SelectItem key={sub.id} value={sub.id}>{sub.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm text-gray-300">Portioner</Label>
                 <Input
