@@ -787,99 +787,29 @@ export default function MealPlanTemplatePage() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      {/* Ingredients Table */}
+                      {/* Ingredients Free Text */}
                       <div className="mb-6">
-                        <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-sm font-semibold text-gray-200 uppercase tracking-wide">
+                        <div className="mb-3">
+                          <Label htmlFor={`ingredients-${meal.id}`} className="text-gray-200">
                             Råvaror
-                          </h3>
-                          <Button
-                            onClick={() => {
-                              setSelectedMealForIngredient(meal.id)
-                              setIsAddIngredientDialogOpen(true)
-                            }}
-                            size="sm"
-                            className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
-                          >
-                            <Plus className="h-3 w-3 mr-1" />
-                            Lägg till råvara
-                          </Button>
+                          </Label>
+                          <p className="text-xs text-gray-500 mt-1 mb-2">
+                            Skriv in råvaror fritt. T.ex. &quot;Kolhydratkälla: 50g Havregryn ELLER Müsli | Proteinkälla: Kvarg ELLER Keso&quot;
+                          </p>
                         </div>
-
-                        {meal.items && meal.items.length > 0 ? (
-                          <div className="border border-gold-primary/20 rounded-lg overflow-hidden">
-                            <table className="w-full">
-                              <thead className="bg-[rgba(255,215,0,0.05)]">
-                                <tr>
-                                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-200 uppercase tracking-wide">
-                                    Råvara
-                                  </th>
-                                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-200 uppercase tracking-wide">
-                                    Mängd
-                                  </th>
-                                  <th className="px-3 py-2 text-right text-xs font-semibold text-gray-200 uppercase tracking-wide">
-                                    P
-                                  </th>
-                                  <th className="px-3 py-2 text-right text-xs font-semibold text-gray-200 uppercase tracking-wide">
-                                    F
-                                  </th>
-                                  <th className="px-3 py-2 text-right text-xs font-semibold text-gray-200 uppercase tracking-wide">
-                                    K
-                                  </th>
-                                  <th className="px-3 py-2 text-right text-xs font-semibold text-gray-200 uppercase tracking-wide">
-                                    Kcal
-                                  </th>
-                                  <th className="px-3 py-2 w-20"></th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {meal.items
-                                  .sort((a, b) => a.orderIndex - b.orderIndex)
-                                  .map((item) => (
-                                    <tr
-                                      key={item.id}
-                                      className="border-t border-gold-primary/10 hover:bg-[rgba(255,215,0,0.02)]"
-                                    >
-                                      <td className="px-3 py-2 text-sm text-white">
-                                        {item.name}
-                                      </td>
-                                      <td className="px-3 py-2 text-sm text-gray-200">
-                                        {item.amount}
-                                      </td>
-                                      <td className="px-3 py-2 text-sm text-right text-blue-300">
-                                        {item.protein}g
-                                      </td>
-                                      <td className="px-3 py-2 text-sm text-right text-yellow-300">
-                                        {item.fat}g
-                                      </td>
-                                      <td className="px-3 py-2 text-sm text-right text-orange-300">
-                                        {item.carbs}g
-                                      </td>
-                                      <td className="px-3 py-2 text-sm text-right text-gold-light">
-                                        {item.calories}
-                                      </td>
-                                      <td className="px-3 py-2">
-                                        <Button
-                                          variant="ghost"
-                                          size="icon"
-                                          onClick={() => handleDeleteIngredient(meal.id, item.id)}
-                                          className="h-6 w-6 hover:bg-[rgba(255,0,0,0.1)] text-gray-400 hover:text-red-400"
-                                        >
-                                          <Trash2 className="h-3 w-3" />
-                                        </Button>
-                                      </td>
-                                    </tr>
-                                  ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        ) : (
-                          <div className="border border-dashed border-gold-primary/30 rounded-lg p-6 text-center">
-                            <p className="text-sm text-gray-500">
-                              Inga råvaror tillagda ännu. Klicka på &quot;Lägg till råvara&quot; för att komma igång.
-                            </p>
-                          </div>
-                        )}
+                        <Textarea
+                          id={`ingredients-${meal.id}`}
+                          value={meal.description || ''}
+                          onChange={(e) => {
+                            const updated = template!.meals.map((m) =>
+                              m.id === meal.id ? { ...m, description: e.target.value } : m
+                            )
+                            setTemplate({ ...template!, meals: updated })
+                          }}
+                          placeholder="Kolhydratkälla: 50g Havregryn ELLER 4dl Müsli&#10;Proteinkälla: 200g Kvarg ELLER Keso&#10;Fettkälla: 1 Ägg eller 20g Nötter&#10;Grönsaker: Tomat, sallad osv..."
+                          rows={6}
+                          className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)] font-mono text-sm"
+                        />
                       </div>
 
                       {/* Meal Alternatives Section */}
