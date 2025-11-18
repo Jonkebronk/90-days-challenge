@@ -457,14 +457,6 @@ export default function CategoryFoodItemsPage({
                   </div>
                 </div>
 
-                {/* Common Serving Size */}
-                {selectedItem.commonServingSize && (
-                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-4">
-                    <p className="text-sm text-gray-400 mb-1">Vanlig portion</p>
-                    <p className="text-white font-medium">{selectedItem.commonServingSize}</p>
-                  </div>
-                )}
-
                 {/* Notes */}
                 {selectedItem.notes && (
                   <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-4">
@@ -472,25 +464,6 @@ export default function CategoryFoodItemsPage({
                     <p className="text-white leading-relaxed">{selectedItem.notes}</p>
                   </div>
                 )}
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2">
-                  {selectedItem.isRecommended && (
-                    <span className="px-3 py-1 bg-gold-primary/20 text-gold-light text-xs font-medium rounded-full border border-gold-primary/30">
-                      Rekommenderad
-                    </span>
-                  )}
-                  {selectedItem.isVegetarian && (
-                    <span className="px-3 py-1 bg-green-900/20 text-green-400 text-xs font-medium rounded-full border border-green-700/30">
-                      Vegetarisk
-                    </span>
-                  )}
-                  {selectedItem.isVegan && (
-                    <span className="px-3 py-1 bg-green-900/20 text-green-400 text-xs font-medium rounded-full border border-green-700/30">
-                      Vegansk
-                    </span>
-                  )}
-                </div>
 
                 {/* Actions */}
                 {isCoach && (
