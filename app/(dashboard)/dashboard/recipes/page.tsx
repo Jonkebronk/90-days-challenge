@@ -145,12 +145,10 @@ export default function RecipesPage() {
         <h2 className="text-2xl font-bold text-gold-light tracking-[1px] mb-4 text-center">
           Snabbnavigering
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
           {[
             { name: 'Alla Recept', icon: 'ChefHat', count: categories.reduce((sum, cat) => sum + cat._count.recipes, 0) },
             { name: 'Favoriter', icon: 'Heart', count: '—' },
-            { name: 'Snabba Recept', icon: 'Clock', count: '—' },
-            { name: 'Enkla', icon: 'Smile', count: '—' },
           ].map((item) => {
             const Icon = getIconComponent(item.icon)
             return (
