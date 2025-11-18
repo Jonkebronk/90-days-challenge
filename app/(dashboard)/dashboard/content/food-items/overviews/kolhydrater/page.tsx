@@ -91,30 +91,29 @@ export default function KolhydraterOverviewPage() {
       </div>
 
       {/* Carbs List */}
-      <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-        <CardHeader>
-          <CardTitle className="text-xl font-bold text-gold-light tracking-[1px]">
-            Kolhydrater
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-8">
-          {categories.map((category) => (
-            <div key={category.key}>
-              <h3 className="text-lg font-semibold text-gold-light mb-4">{category.name}</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {categories.map((category) => (
+          <Card key={category.key} className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-bold text-gold-light tracking-[1px]">
+                {category.name}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
                 {category.items.map((item, idx) => (
                   <div
                     key={idx}
-                    className="px-4 py-3 bg-white/5 border border-gold-primary/20 rounded-lg hover:bg-gold-primary/10 transition-colors"
+                    className="px-3 py-2 bg-white/5 border border-gold-primary/20 rounded-lg hover:bg-gold-primary/10 transition-colors"
                   >
                     <p className="text-gray-100 text-sm">{item.name}</p>
                   </div>
                 ))}
               </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   )
 }
