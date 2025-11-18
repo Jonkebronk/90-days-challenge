@@ -433,26 +433,6 @@ export default function CategoryFoodItemsPage({
                   </div>
                 )}
 
-                {/* Nutrition Info */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
-                    <p className="text-xs text-gray-400 mb-1">Kalorier</p>
-                    <p className="text-xl font-bold text-gold-light">{selectedItem.calories}</p>
-                  </div>
-                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
-                    <p className="text-xs text-gray-400 mb-1">Protein</p>
-                    <p className="text-xl font-bold text-gold-light">{selectedItem.proteinG}g</p>
-                  </div>
-                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
-                    <p className="text-xs text-gray-400 mb-1">Kolhydrater</p>
-                    <p className="text-xl font-bold text-gold-light">{selectedItem.carbsG}g</p>
-                  </div>
-                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
-                    <p className="text-xs text-gray-400 mb-1">Fett</p>
-                    <p className="text-xl font-bold text-gold-light">{selectedItem.fatG}g</p>
-                  </div>
-                </div>
-
                 {/* Notes */}
                 {selectedItem.notes && (
                   <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-4">
