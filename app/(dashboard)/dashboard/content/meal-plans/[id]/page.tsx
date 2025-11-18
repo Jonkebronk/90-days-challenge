@@ -208,7 +208,7 @@ export default function MealPlanTemplatePage() {
   }
 
   // Debounced save for meal ingredient sources
-  const saveTimeoutRef = useRef<NodeJS.Timeout>()
+  const saveTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   const debouncedSaveMeal = useCallback(async (meal: TemplateMeal) => {
     if (saveTimeoutRef.current) {
