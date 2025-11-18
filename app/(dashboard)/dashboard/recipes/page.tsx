@@ -3,356 +3,171 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import {
-  ChefHat,
-  Search,
-  Clock,
-  Users,
-  Heart,
-  Filter,
-  Flame
-} from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { ChefHat } from 'lucide-react'
+import * as LucideIcons from 'lucide-react'
 import { toast } from 'sonner'
 
 type RecipeCategory = {
   id: string
   name: string
-}
-
-type Recipe = {
-  id: string
-  title: string
-  description?: string | null
-  categoryId: string
-  servings: number
-  prepTimeMinutes?: number | null
-  cookTimeMinutes?: number | null
-  difficulty?: string | null
-  mealType?: string | null
-  cuisineType?: string | null
-  coverImage?: string | null
-  dietaryTags: string[]
-  caloriesPerServing?: number | null
-  category: RecipeCategory
-  favorites: any[]
+  slug: string
+  color: string
+  icon: string
   _count: {
-    favorites: number
+    recipes: number
   }
 }
 
-export default function RecipeBankPage() {
+export default function RecipesPage() {
   const { data: session } = useSession()
   const router = useRouter()
-  const [recipes, setRecipes] = useState<Recipe[]>([])
   const [categories, setCategories] = useState<RecipeCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  // Filters
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filterCategory, setFilterCategory] = useState<string>('all')
-
   useEffect(() => {
     if (session?.user) {
-      fetchRecipes()
       fetchCategories()
     }
   }, [session])
 
-  const fetchRecipes = async () => {
+  const fetchCategories = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/recipes?published=true')
+      const response = await fetch('/api/recipe-categories')
       if (response.ok) {
         const data = await response.json()
-        setRecipes(data.recipes)
+        setCategories(data.categories)
       } else {
-        toast.error('Kunde inte hämta recept')
+        toast.error('Kunde inte hämta kategorier')
       }
     } catch (error) {
-      console.error('Error fetching recipes:', error)
+      console.error('Error fetching categories:', error)
       toast.error('Ett fel uppstod')
     } finally {
       setIsLoading(false)
     }
   }
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/recipe-categories')
-      if (response.ok) {
-        const data = await response.json()
-        setCategories(data.categories)
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-    }
-  }
-
-  const handleToggleFavorite = async (recipeId: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    try {
-      const response = await fetch(`/api/recipes/${recipeId}/favorite`, {
-        method: 'POST'
-      })
-      if (response.ok) {
-        fetchRecipes()
-      }
-    } catch (error) {
-      console.error('Error toggling favorite:', error)
-      toast.error('Ett fel uppstod')
-    }
-  }
-
-  const isFavorited = (recipe: Recipe) => {
-    return recipe.favorites && recipe.favorites.length > 0
-  }
-
-  const filteredRecipes = recipes.filter(recipe => {
-    if (searchQuery && !recipe.title.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false
-    }
-    if (filterCategory !== 'all' && recipe.category.id !== filterCategory) return false
-    return true
-  })
-
-  const recipesByCategory = filteredRecipes.reduce((acc, recipe) => {
-    const categoryName = recipe.category.name
-    if (!acc[categoryName]) {
-      acc[categoryName] = []
-    }
-    acc[categoryName].push(recipe)
-    return acc
-  }, {} as Record<string, Recipe[]>)
-
-  const getDifficultyLabel = (difficulty?: string | null) => {
-    const labels: Record<string, string> = {
-      easy: 'Lätt',
-      medium: 'Medel',
-      hard: 'Svår'
-    }
-    return difficulty ? labels[difficulty] || difficulty : null
-  }
-
-  const getMealTypeLabel = (mealType?: string | null) => {
-    const labels: Record<string, string> = {
-      breakfast: 'Frukost',
-      lunch: 'Lunch',
-      dinner: 'Middag',
-      snack: 'Mellanmål',
-      dessert: 'Dessert'
-    }
-    return mealType ? labels[mealType] || mealType : null
-  }
-
-  const getTotalTime = (recipe: Recipe) => {
-    const prep = recipe.prepTimeMinutes || 0
-    const cook = recipe.cookTimeMinutes || 0
-    return prep + cook
+  const getIconComponent = (iconName?: string) => {
+    if (!iconName) return ChefHat
+    const Icon = (LucideIcons as any)[iconName] || ChefHat
+    return Icon
   }
 
   if (!session?.user) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
-          <p className="text-gray-700">Du måste vara inloggad för att se denna sida.</p>
-        </div>
-      </div>
-    )
+    return null
   }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center gap-3">
-        <ChefHat className="h-8 w-8 text-gold-primary" />
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
-            Recept
-          </h1>
-          <p className="text-gray-300 mt-1">
-            Utforska hälsosamma och näringsrika recept
-          </p>
-        </div>
+      {/* Header */}
+      <div className="text-center mb-8">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-6 opacity-20" />
+        <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-3">
+          Receptbank
+        </h1>
+        <p className="text-gray-400 text-sm tracking-[1px]">
+          Utforska recept organiserade efter måltidstyp
+        </p>
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
       </div>
 
-      {/* Search and Filters */}
-      <div className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-6 space-y-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gold-primary" />
-          <Input
-            placeholder="Sök recept..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-black/30 border-gold-primary/30 text-white placeholder:text-gray-400"
-          />
-        </div>
-
-        <div className="flex items-center gap-4">
-          <Filter className="h-5 w-5 text-gold-primary" />
-          <div className="flex-1">
-            <Label className="text-xs text-gray-300">Kategori</Label>
-            <Select value={filterCategory} onValueChange={setFilterCategory}>
-              <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alla kategorier</SelectItem>
-                {categories.map(cat => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-
-      {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-6">
-          <div className="text-center">
-            <p className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">{recipes.length}</p>
-            <p className="text-sm text-gray-300 mt-1">Totalt recept</p>
-          </div>
-        </div>
-        <div className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-6">
-          <div className="text-center">
-            <p className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
-              {recipes.filter(r => isFavorited(r)).length}
-            </p>
-            <p className="text-sm text-gray-300 mt-1">Favoriter</p>
-          </div>
-        </div>
-        <div className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-6">
-          <div className="text-center">
-            <p className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">{categories.length}</p>
-            <p className="text-sm text-gray-300 mt-1">Kategorier</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Recipes by Category */}
+      {/* Category Grid */}
       {isLoading ? (
-        <div className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-6">
-          <p className="text-center text-gray-400">Laddar...</p>
+        <div className="text-center py-12">
+          <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto" />
         </div>
-      ) : Object.keys(recipesByCategory).length === 0 ? (
-        <div className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl p-12 text-center">
-          <ChefHat className="h-12 w-12 mx-auto text-gold-primary mb-4" />
-          <p className="text-gray-300">Inga recept hittades.</p>
-          <p className="text-sm text-gray-400 mt-1">
-            Prova att ändra dina filter.
-          </p>
-        </div>
+      ) : categories.length === 0 ? (
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
+          <CardContent className="text-center py-16">
+            <ChefHat className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
+            <p className="text-gray-400 text-lg mb-2">
+              Inga receptkategorier ännu
+            </p>
+            <p className="text-sm text-[rgba(255,255,255,0.4)]">
+              Kategorier kommer att visas här när de skapas
+            </p>
+          </CardContent>
+        </Card>
       ) : (
-        Object.entries(recipesByCategory).map(([categoryName, categoryRecipes]) => (
-          <div key={categoryName} className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] rounded-xl overflow-hidden">
-            <div className="p-6 border-b border-gold-primary/20">
-              <h2 className="text-xl font-bold flex items-center gap-2 text-gold-light">
-                <ChefHat className="h-5 w-5" />
-                {categoryName}
-                <Badge className="bg-gold-primary/20 text-gold-light border border-gold-primary/40">
-                  {categoryRecipes.length} recept
-                </Badge>
-              </h2>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {categoryRecipes.map(recipe => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {categories.map((category) => {
+            const Icon = getIconComponent(category.icon)
+            return (
+              <Card
+                key={category.id}
+                onClick={() => router.push(`/dashboard/recipes/category/${category.slug}`)}
+                className="group relative bg-white/5 border-2 border-gold-primary/20 hover:border-gold-primary/60 hover:bg-white/10 transition-all duration-300 cursor-pointer backdrop-blur-[10px] overflow-hidden"
+              >
+                {/* Gradient Overlay */}
+                <div
+                  className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity"
+                  style={{
+                    background: `linear-gradient(135deg, ${category.color}30 0%, transparent 100%)`
+                  }}
+                />
+
+                <CardContent className="relative p-8 flex flex-col items-center text-center">
+                  {/* Icon */}
                   <div
-                    key={recipe.id}
-                    onClick={() => router.push(`/dashboard/recipes/${recipe.id}`)}
-                    className="bg-white/10 border-2 border-gold-primary/30 rounded-lg overflow-hidden hover:border-gold-primary hover:shadow-lg hover:shadow-gold-primary/20 cursor-pointer transition-all relative group backdrop-blur-sm"
+                    className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg"
+                    style={{ backgroundColor: `${category.color}20` }}
                   >
-                    {recipe.coverImage && (
-                      <div className="h-48 overflow-hidden">
-                        <img
-                          src={recipe.coverImage}
-                          alt={recipe.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                      </div>
-                    )}
-                    <div className="p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-semibold text-lg text-gray-100">{recipe.title}</h3>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={(e) => handleToggleFavorite(recipe.id, e)}
-                        >
-                          <Heart
-                            className={`h-5 w-5 ${
-                              isFavorited(recipe) ? 'fill-red-500 text-red-500' : 'text-gray-400'
-                            }`}
-                          />
-                        </Button>
-                      </div>
-                      {recipe.description && (
-                        <p className="text-sm text-gray-300 mb-3 line-clamp-2">
-                          {recipe.description}
-                        </p>
-                      )}
-                      <div className="flex flex-wrap gap-2 text-xs mb-3">
-                        {recipe.mealType && (
-                          <Badge className="bg-blue-500/20 text-blue-300 border border-blue-400/30">
-                            {getMealTypeLabel(recipe.mealType)}
-                          </Badge>
-                        )}
-                        {recipe.difficulty && (
-                          <Badge className="bg-gold-primary/20 text-gold-light border border-gold-primary/40">
-                            {getDifficultyLabel(recipe.difficulty)}
-                          </Badge>
-                        )}
-                        {recipe.caloriesPerServing && (
-                          <Badge className="bg-orange-500/20 text-orange-300 border border-orange-400/30 flex items-center gap-1">
-                            <Flame className="h-3 w-3" />
-                            {Math.round(recipe.caloriesPerServing)} kcal
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-400">
-                        {getTotalTime(recipe) > 0 && (
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {getTotalTime(recipe)} min
-                          </div>
-                        )}
-                        <div className="flex items-center gap-1">
-                          <Users className="h-3 w-3" />
-                          {recipe.servings} portioner
-                        </div>
-                      </div>
-                      {recipe.dietaryTags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-3">
-                          {recipe.dietaryTags.slice(0, 3).map(tag => (
-                            <Badge key={tag} className="text-xs bg-green-100 text-green-700 border border-green-200">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    <Icon className="h-10 w-10" style={{ color: category.color }} />
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        ))
+
+                  {/* Category Name */}
+                  <h3 className="text-xl font-bold text-gold-light mb-2 tracking-[1px]">
+                    {category.name}
+                  </h3>
+
+                  {/* Recipe Count */}
+                  <p className="text-gray-400 text-sm">
+                    {category._count.recipes} {category._count.recipes === 1 ? 'recept' : 'recept'}
+                  </p>
+
+                  {/* Arrow indicator */}
+                  <div className="mt-4 text-gold-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
       )}
+
+      {/* Quick Navigation Tabs */}
+      <div className="mt-12 pt-8 border-t border-gold-primary/20">
+        <h2 className="text-2xl font-bold text-gold-light tracking-[1px] mb-4 text-center">
+          Snabbnavigering
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+          {[
+            { name: 'Alla Recept', icon: 'ChefHat', count: categories.reduce((sum, cat) => sum + cat._count.recipes, 0) },
+            { name: 'Favoriter', icon: 'Heart', count: '—' },
+            { name: 'Snabba Recept', icon: 'Clock', count: '—' },
+            { name: 'Enkla', icon: 'Smile', count: '—' },
+          ].map((item) => {
+            const Icon = getIconComponent(item.icon)
+            return (
+              <Card
+                key={item.name}
+                className="bg-white/5 border border-gold-primary/20 hover:border-gold-primary/40 hover:bg-white/10 transition-all cursor-pointer backdrop-blur-[10px]"
+              >
+                <CardContent className="p-4 text-center">
+                  <Icon className="h-8 w-8 mx-auto text-gold-primary mb-2" />
+                  <p className="text-sm font-medium text-gray-300">{item.name}</p>
+                  <p className="text-xs text-gray-500 mt-1">{item.count}</p>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 }

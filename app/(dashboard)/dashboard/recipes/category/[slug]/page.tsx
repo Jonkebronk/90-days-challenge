@@ -1,0 +1,315 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { Card, CardContent } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { ChefHat, Search, Clock, Users, Flame, ArrowLeft } from 'lucide-react'
+import * as LucideIcons from 'lucide-react'
+import { toast } from 'sonner'
+
+type RecipeSubcategory = {
+  id: string
+  name: string
+  slug: string
+}
+
+type RecipeCategory = {
+  id: string
+  name: string
+  slug: string
+  color: string
+  icon: string
+}
+
+type Recipe = {
+  id: string
+  title: string
+  description?: string | null
+  servings: number
+  prepTimeMinutes?: number | null
+  cookTimeMinutes?: number | null
+  difficulty?: string | null
+  coverImage?: string | null
+  caloriesPerServing?: number | null
+  category: RecipeCategory
+  subcategory?: RecipeSubcategory | null
+}
+
+export default function RecipeCategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { data: session } = useSession()
+  const router = useRouter()
+  const [slug, setSlug] = useState<string>('')
+  const [category, setCategory] = useState<RecipeCategory | null>(null)
+  const [recipes, setRecipes] = useState<Recipe[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  useEffect(() => {
+    params.then(p => setSlug(p.slug))
+  }, [params])
+
+  useEffect(() => {
+    if (session?.user && slug) {
+      fetchCategoryAndRecipes()
+    }
+  }, [session, slug])
+
+  const fetchCategoryAndRecipes = async () => {
+    try {
+      setIsLoading(true)
+
+      // Fetch category info
+      const categoryResponse = await fetch('/api/recipe-categories')
+      if (categoryResponse.ok) {
+        const categoryData = await categoryResponse.json()
+        const foundCategory = categoryData.categories.find((c: RecipeCategory) => c.slug === slug)
+        if (foundCategory) {
+          setCategory(foundCategory)
+
+          // Fetch recipes for this category
+          const recipesResponse = await fetch(`/api/recipes?categoryId=${foundCategory.id}`)
+          if (recipesResponse.ok) {
+            const recipesData = await recipesResponse.json()
+            setRecipes(recipesData.recipes)
+          }
+        } else {
+          toast.error('Kategori hittades inte')
+          router.push('/dashboard/recipes')
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      toast.error('Ett fel uppstod')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const getIconComponent = (iconName?: string) => {
+    if (!iconName) return ChefHat
+    const Icon = (LucideIcons as any)[iconName] || ChefHat
+    return Icon
+  }
+
+  const filteredRecipes = recipes.filter(recipe =>
+    recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    recipe.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  // Group recipes by subcategory
+  const groupedRecipes = filteredRecipes.reduce((acc, recipe) => {
+    const key = recipe.subcategory?.name || 'Övrigt'
+    if (!acc[key]) acc[key] = []
+    acc[key].push(recipe)
+    return acc
+  }, {} as Record<string, Recipe[]>)
+
+  const hasSubcategories = Object.keys(groupedRecipes).length > 1 || !groupedRecipes['Övrigt']
+
+  if (!session?.user) {
+    return null
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="text-center py-12">
+          <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto" />
+        </div>
+      </div>
+    )
+  }
+
+  if (!category) {
+    return null
+  }
+
+  const Icon = getIconComponent(category.icon)
+
+  return (
+    <div className="container mx-auto p-6 space-y-6">
+      {/* Header */}
+      <div className="space-y-4">
+        <button
+          onClick={() => router.push('/dashboard/recipes')}
+          className="flex items-center gap-2 text-gray-400 hover:text-gold-primary transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Tillbaka till kategorier</span>
+        </button>
+
+        <div className="text-center">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-6 opacity-20" />
+
+          <div className="flex items-center justify-center gap-4 mb-3">
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center"
+              style={{ backgroundColor: `${category.color}20` }}
+            >
+              <Icon className="h-8 w-8" style={{ color: category.color }} />
+            </div>
+            <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+              {category.name}
+            </h1>
+          </div>
+
+          <p className="text-gray-400 text-sm tracking-[1px]">
+            {filteredRecipes.length} {filteredRecipes.length === 1 ? 'recept' : 'recept'}
+          </p>
+
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
+        </div>
+      </div>
+
+      {/* Search */}
+      <div className="max-w-md mx-auto">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            type="text"
+            placeholder="Sök recept..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 bg-white/5 border-gold-primary/20 text-gray-200 placeholder:text-gray-500"
+          />
+        </div>
+      </div>
+
+      {/* Recipes */}
+      {filteredRecipes.length === 0 ? (
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
+          <CardContent className="text-center py-16">
+            <ChefHat className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
+            <p className="text-gray-400 text-lg mb-2">
+              {searchQuery ? 'Inga recept hittades' : 'Inga recept i denna kategori ännu'}
+            </p>
+            {searchQuery && (
+              <p className="text-sm text-[rgba(255,255,255,0.4)]">
+                Prova en annan sökning
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      ) : hasSubcategories ? (
+        // Column layout with subcategories
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Object.entries(groupedRecipes).sort(([a], [b]) => {
+            if (a === 'Övrigt') return 1
+            if (b === 'Övrigt') return -1
+            return a.localeCompare(b, 'sv')
+          }).map(([subcategoryName, subcategoryRecipes]) => (
+            <Card
+              key={subcategoryName}
+              className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]"
+            >
+              <CardContent className="p-6">
+                <h3 className="text-lg font-bold text-gold-light mb-4 tracking-[1px] text-center">
+                  {subcategoryName}
+                </h3>
+                <div className="space-y-3">
+                  {subcategoryRecipes.map((recipe) => (
+                    <div
+                      key={recipe.id}
+                      onClick={() => router.push(`/dashboard/recipes/${recipe.id}`)}
+                      className="group p-4 bg-white/5 border border-gold-primary/20 hover:border-gold-primary/60 hover:bg-white/10 rounded-lg cursor-pointer transition-all"
+                    >
+                      <h4 className="text-sm font-semibold text-gray-200 mb-2 group-hover:text-gold-light transition-colors">
+                        {recipe.title}
+                      </h4>
+                      <div className="flex items-center gap-3 text-xs text-gray-400">
+                        {(recipe.prepTimeMinutes || recipe.cookTimeMinutes) && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            <span>{(recipe.prepTimeMinutes || 0) + (recipe.cookTimeMinutes || 0)} min</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          <span>{recipe.servings}</span>
+                        </div>
+                        {recipe.caloriesPerServing && (
+                          <div className="flex items-center gap-1">
+                            <Flame className="h-3 w-3" />
+                            <span>{Math.round(recipe.caloriesPerServing)} kcal</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        // Regular grid without subcategories
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredRecipes.map((recipe) => (
+            <Card
+              key={recipe.id}
+              onClick={() => router.push(`/dashboard/recipes/${recipe.id}`)}
+              className="group relative bg-white/5 border-2 border-gold-primary/20 hover:border-gold-primary/60 hover:bg-white/10 transition-all cursor-pointer backdrop-blur-[10px] overflow-hidden"
+            >
+              {/* Cover Image */}
+              {recipe.coverImage ? (
+                <div className="h-48 w-full bg-gray-900 overflow-hidden">
+                  <img
+                    src={recipe.coverImage}
+                    alt={recipe.title}
+                    className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+              ) : (
+                <div className="h-48 w-full bg-gradient-to-br from-gold-primary/10 to-gold-secondary/10 flex items-center justify-center">
+                  <ChefHat className="h-16 w-16 text-gold-primary/30" />
+                </div>
+              )}
+
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold text-gold-light mb-2 tracking-[1px] group-hover:text-gold-primary transition-colors">
+                  {recipe.title}
+                </h3>
+
+                {recipe.description && (
+                  <p className="text-sm text-gray-400 mb-4 line-clamp-2">
+                    {recipe.description}
+                  </p>
+                )}
+
+                <div className="flex items-center gap-4 text-sm text-gray-400">
+                  {(recipe.prepTimeMinutes || recipe.cookTimeMinutes) && (
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-4 w-4" />
+                      <span>{(recipe.prepTimeMinutes || 0) + (recipe.cookTimeMinutes || 0)} min</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1">
+                    <Users className="h-4 w-4" />
+                    <span>{recipe.servings} {recipe.servings === 1 ? 'portion' : 'portioner'}</span>
+                  </div>
+                  {recipe.caloriesPerServing && (
+                    <div className="flex items-center gap-1">
+                      <Flame className="h-4 w-4" />
+                      <span>{Math.round(recipe.caloriesPerServing)} kcal</span>
+                    </div>
+                  )}
+                </div>
+
+                {recipe.difficulty && (
+                  <div className="mt-3">
+                    <Badge className="bg-gold-primary/10 text-gold-primary border border-gold-primary/30">
+                      {recipe.difficulty}
+                    </Badge>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
