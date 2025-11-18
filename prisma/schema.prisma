@@ -276,6 +276,7 @@ model FoodItem {
   name              String
   category          String? // Legacy field, will be removed after migration
   categoryId        String?
+  subcategory       String? // Subcategory/group within a category (e.g., "Fågel", "Nötkött")
   calories          Decimal? @db.Decimal(6, 2)
   proteinG          Decimal? @db.Decimal(5, 2)
   carbsG            Decimal? @db.Decimal(5, 2)

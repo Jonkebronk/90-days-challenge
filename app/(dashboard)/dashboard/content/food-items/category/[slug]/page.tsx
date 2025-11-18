@@ -271,53 +271,111 @@ export default function CategoryFoodItemsPage({
             </Button>
           </CardContent>
         </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {foodItems.map((item) => (
-            <Card
-              key={item.id}
-              className="bg-white/5 border border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)] transition-all backdrop-blur-[10px]"
-            >
-              <CardContent className="p-4">
-                {item.imageUrl && (
-                  <div className="mb-3 -mx-4 -mt-4">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.name}
-                      className="w-full h-32 object-cover rounded-t-lg"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none'
-                      }}
-                    />
-                  </div>
-                )}
-                <div className="mb-3">
-                  <h3 className="font-semibold text-white text-lg">{item.name}</h3>
-                </div>
+      ) : (() => {
+        // Group items by subcategory
+        const grouped = foodItems.reduce((acc, item) => {
+          const key = (item as any).subcategory || 'Övrigt'
+          if (!acc[key]) acc[key] = []
+          acc[key].push(item)
+          return acc
+        }, {} as Record<string, FoodItem[]>)
 
-                <div className="flex items-center justify-end gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-gray-400 hover:text-gold-light hover:bg-gold-50/10"
-                    onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit`)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-gray-400 hover:text-red-400 hover:bg-red-900/20"
-                    onClick={() => handleDelete(item.id, item.name)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+        const hasSubcategories = Object.keys(grouped).length > 1 || !grouped['Övrigt']
+
+        if (!hasSubcategories) {
+          // No subcategories, show regular grid
+          return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {foodItems.map((item) => (
+                <Card
+                  key={item.id}
+                  className="bg-white/5 border border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)] transition-all backdrop-blur-[10px]"
+                >
+                  <CardContent className="p-4">
+                    {item.imageUrl && (
+                      <div className="mb-3 -mx-4 -mt-4">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          className="w-full h-32 object-cover rounded-t-lg"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none'
+                          }}
+                        />
+                      </div>
+                    )}
+                    <div className="mb-3">
+                      <h3 className="font-semibold text-white text-lg">{item.name}</h3>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-gray-400 hover:text-gold-light hover:bg-gold-50/10"
+                        onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit`)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-gray-400 hover:text-red-400 hover:bg-red-900/20"
+                        onClick={() => handleDelete(item.id, item.name)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )
+        }
+
+        // Show grouped by subcategory in columns
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {Object.entries(grouped)
+              .sort(([a], [b]) => a.localeCompare(b, 'sv'))
+              .map(([subcategory, items]) => (
+                <Card key={subcategory} className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
+                  <CardContent className="p-4">
+                    <h3 className="text-lg font-bold text-gold-light mb-4">{subcategory}</h3>
+                    <div className="space-y-2">
+                      {items.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-center justify-between p-2 bg-white/5 border border-gold-primary/20 rounded-lg hover:bg-gold-primary/10 transition-colors"
+                        >
+                          <span className="text-gray-100 text-sm">{item.name}</span>
+                          <div className="flex gap-0.5">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-gray-400 hover:text-gold-light hover:bg-gold-50/10"
+                              onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit`)}
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-gray-400 hover:text-red-400 hover:bg-red-900/20"
+                              onClick={() => handleDelete(item.id, item.name)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+          </div>
+        )
+      })()}
     </div>
   )
 }

@@ -25,7 +25,8 @@
       "Bash(railway status:*)",
       "Bash(wc:*)",
       "Bash(nul)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(npx prisma migrate:*)"
     ],
     "deny": [],
     "ask": []

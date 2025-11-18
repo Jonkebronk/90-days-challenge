@@ -49,9 +49,19 @@ export default function EditFoodItemPage() {
   const [formData, setFormData] = useState({
     name: '',
     categoryId: '',
+    subcategory: '',
     imageUrl: '',
     notes: '',
   })
+
+  const subcategoryOptions = [
+    'Fågel',
+    'Nötkött',
+    'Viltkött',
+    'Fisk & Skaldjur',
+    'Fläsk',
+    'Ägg & Mejeri'
+  ]
 
   useEffect(() => {
     if (session?.user && foodItemId) {
@@ -82,6 +92,7 @@ export default function EditFoodItemPage() {
         setFormData({
           name: item.name,
           categoryId: item.categoryId || '',
+          subcategory: (item as any).subcategory || '',
           imageUrl: (item as any).imageUrl || '',
           notes: item.notes || '',
         })
@@ -114,6 +125,7 @@ export default function EditFoodItemPage() {
         body: JSON.stringify({
           name: formData.name,
           categoryId: formData.categoryId,
+          subcategory: formData.subcategory || null,
           imageUrl: formData.imageUrl || null,
           notes: formData.notes || null,
         })
@@ -226,6 +238,28 @@ export default function EditFoodItemPage() {
                   })}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="subcategory" className="text-gray-200">Subkategori (valfritt)</Label>
+              <Select
+                value={formData.subcategory}
+                onValueChange={(value) => setFormData({ ...formData, subcategory: value })}
+              >
+                <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
+                  <SelectValue placeholder="Välj subkategori" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900/95 border-gold-primary/30">
+                  {subcategoryOptions.map((sub) => (
+                    <SelectItem key={sub} value={sub} className="text-white">
+                      {sub}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-gray-500 mt-1">
+                Används för att gruppera livsmedel inom en kategori
+              </p>
             </div>
 
             <div>

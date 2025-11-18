@@ -77,6 +77,7 @@ export async function GET(req: NextRequest) {
         id: true,
         name: true,
         categoryId: true,
+        subcategory: true,
         calories: true,
         proteinG: true,
         carbsG: true,
@@ -143,6 +144,7 @@ export async function POST(req: NextRequest) {
     const {
       name,
       categoryId,
+      subcategory,
       imageUrl,
       notes,
     } = body
@@ -155,6 +157,7 @@ export async function POST(req: NextRequest) {
       data: {
         name,
         categoryId,
+        subcategory: subcategory || null,
         imageUrl: imageUrl || null,
         notes: notes || null,
         isApproved: true, // Auto-approve when coach creates

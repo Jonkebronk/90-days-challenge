@@ -79,6 +79,7 @@ export async function PATCH(
     const {
       name,
       categoryId,
+      subcategory,
       calories,
       proteinG,
       carbsG,
@@ -105,6 +106,7 @@ export async function PATCH(
       data: {
         name: name !== undefined ? name : undefined,
         categoryId: categoryId !== undefined ? categoryId : undefined,
+        subcategory: subcategory !== undefined ? (subcategory || null) : undefined,
         calories: calories !== undefined ? parseFloat(calories.toString()) : undefined,
         proteinG: proteinG !== undefined ? parseFloat(proteinG.toString()) : undefined,
         carbsG: carbsG !== undefined ? parseFloat(carbsG.toString()) : undefined,
