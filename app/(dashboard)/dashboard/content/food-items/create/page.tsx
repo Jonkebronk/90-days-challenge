@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectContent,
@@ -37,16 +36,8 @@ export default function CreateFoodItemPage() {
   const [formData, setFormData] = useState({
     name: '',
     categoryId: '',
-    calories: '',
-    proteinG: '',
-    carbsG: '',
-    fatG: '',
-    commonServingSize: '100g',
     imageUrl: '',
     notes: '',
-    isVegetarian: true,
-    isVegan: false,
-    isRecommended: false,
   })
 
   useEffect(() => {
@@ -75,11 +66,6 @@ export default function CreateFoodItemPage() {
       return
     }
 
-    if (!formData.calories || !formData.proteinG || !formData.carbsG || !formData.fatG) {
-      toast.error('Alla näringsvärden krävs')
-      return
-    }
-
     try {
       setIsSaving(true)
       const response = await fetch('/api/food-items', {
@@ -88,16 +74,8 @@ export default function CreateFoodItemPage() {
         body: JSON.stringify({
           name: formData.name,
           categoryId: formData.categoryId,
-          calories: parseFloat(formData.calories),
-          proteinG: parseFloat(formData.proteinG),
-          carbsG: parseFloat(formData.carbsG),
-          fatG: parseFloat(formData.fatG),
-          commonServingSize: formData.commonServingSize || '100g',
           imageUrl: formData.imageUrl || null,
           notes: formData.notes || null,
-          isVegetarian: formData.isVegetarian,
-          isVegan: formData.isVegan,
-          isRecommended: formData.isRecommended,
         })
       })
 
@@ -201,21 +179,7 @@ export default function CreateFoodItemPage() {
             </div>
 
             <div>
-              <Label htmlFor="commonServingSize" className="text-gray-200">Vanlig portion</Label>
-              <Input
-                id="commonServingSize"
-                value={formData.commonServingSize}
-                onChange={(e) => setFormData({ ...formData, commonServingSize: e.target.value })}
-                placeholder="t.ex. 100g, 1 st, 1 dl"
-                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Näringsvärden anges per denna portion
-              </p>
-            </div>
-
-            <div>
-              <Label htmlFor="imageUrl" className="text-gray-200">Bild-URL</Label>
+              <Label htmlFor="imageUrl" className="text-gray-200">Bild-URL (valfritt)</Label>
               <Input
                 id="imageUrl"
                 type="url"
@@ -224,75 +188,12 @@ export default function CreateFoodItemPage() {
                 placeholder="https://exempel.se/bild.jpg"
                 className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
-              <p className="text-xs text-gray-500 mt-1">
-                Länk till en bild av livsmedlet
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Nutrition */}
-        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-          <CardHeader>
-            <CardTitle className="text-xl text-gold-light">Näringsvärden per portion</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="calories" className="text-gray-200">Kalorier (kcal) *</Label>
-                <Input
-                  id="calories"
-                  type="number"
-                  step="0.01"
-                  value={formData.calories}
-                  onChange={(e) => setFormData({ ...formData, calories: e.target.value })}
-                  placeholder="0"
-                  required
-                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="proteinG" className="text-gray-200">Protein (g) *</Label>
-                <Input
-                  id="proteinG"
-                  type="number"
-                  step="0.1"
-                  value={formData.proteinG}
-                  onChange={(e) => setFormData({ ...formData, proteinG: e.target.value })}
-                  placeholder="0"
-                  required
-                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="carbsG" className="text-gray-200">Kolhydrater (g) *</Label>
-                <Input
-                  id="carbsG"
-                  type="number"
-                  step="0.1"
-                  value={formData.carbsG}
-                  onChange={(e) => setFormData({ ...formData, carbsG: e.target.value })}
-                  placeholder="0"
-                  required
-                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="fatG" className="text-gray-200">Fett (g) *</Label>
-                <Input
-                  id="fatG"
-                  type="number"
-                  step="0.1"
-                  value={formData.fatG}
-                  onChange={(e) => setFormData({ ...formData, fatG: e.target.value })}
-                  placeholder="0"
-                  required
-                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
-                />
-              </div>
+              {formData.imageUrl && (
+                <div className="mt-3">
+                  <p className="text-xs text-gray-400 mb-2">Förhandsvisning:</p>
+                  <img src={formData.imageUrl} alt={formData.name || 'Förhandsvisning'} className="w-full h-48 object-cover rounded-lg" />
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -304,7 +205,7 @@ export default function CreateFoodItemPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="notes" className="text-gray-200">Anteckningar</Label>
+              <Label htmlFor="notes" className="text-gray-200">Anteckningar (valfritt)</Label>
               <Textarea
                 id="notes"
                 value={formData.notes}
@@ -313,62 +214,6 @@ export default function CreateFoodItemPage() {
                 rows={4}
                 className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
               />
-              <p className="text-xs text-gray-500 mt-1">
-                Synlig för klienter i Food Guide
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="isVegetarian"
-                  checked={formData.isVegetarian}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, isVegetarian: checked as boolean })
-                  }
-                  className="border-gold-primary/30 data-[state=checked]:bg-[#FFD700] data-[state=checked]:text-[#0a0a0a]"
-                />
-                <Label
-                  htmlFor="isVegetarian"
-                  className="text-gray-200 cursor-pointer"
-                >
-                  Vegetariskt
-                </Label>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="isVegan"
-                  checked={formData.isVegan}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, isVegan: checked as boolean })
-                  }
-                  className="border-gold-primary/30 data-[state=checked]:bg-[#FFD700] data-[state=checked]:text-[#0a0a0a]"
-                />
-                <Label
-                  htmlFor="isVegan"
-                  className="text-gray-200 cursor-pointer"
-                >
-                  Veganskt
-                </Label>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="isRecommended"
-                  checked={formData.isRecommended}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, isRecommended: checked as boolean })
-                  }
-                  className="border-gold-primary/30 data-[state=checked]:bg-[#FFD700] data-[state=checked]:text-[#0a0a0a]"
-                />
-                <Label
-                  htmlFor="isRecommended"
-                  className="text-gray-200 cursor-pointer"
-                >
-                  Rekommenderad (visas med tumme upp)
-                </Label>
-              </div>
             </div>
           </CardContent>
         </Card>
