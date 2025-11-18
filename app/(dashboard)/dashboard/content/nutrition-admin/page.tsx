@@ -331,87 +331,89 @@ export default function NutritionAdminPage() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value={activeType} className="mt-6 space-y-4">
-          {categories.map((category, categoryIndex) => (
-            <Card key={category.id} className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-xl text-gold-light">{category.name}</CardTitle>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => moveCategory(category.id, 'up')}
-                    disabled={categoryIndex === 0}
-                    className="border border-gold-primary/30 text-gold-light hover:bg-gold-50 hover:text-gold-light"
-                  >
-                    <ChevronUp className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => moveCategory(category.id, 'down')}
-                    disabled={categoryIndex === categories.length - 1}
-                    className="border border-gold-primary/30 text-gold-light hover:bg-gold-50 hover:text-gold-light"
-                  >
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {category.items.map((item, idx) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center gap-3 p-3 bg-white/5 border border-gold-primary/20 rounded-lg hover:bg-gold-primary/10 transition-colors"
+        <TabsContent value={activeType} className="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {categories.map((category, categoryIndex) => (
+              <Card key={category.id} className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] flex flex-col">
+                <CardHeader className="flex flex-row items-center justify-between pb-3">
+                  <CardTitle className="text-lg text-gold-light">{category.name}</CardTitle>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => moveCategory(category.id, 'up')}
+                      disabled={categoryIndex === 0}
+                      className="text-gold-light hover:bg-gold-50/10 h-7 w-7 p-0"
                     >
-                      <Input
-                        value={item.name}
-                        onChange={(e) => updateItemValue(category.id, item.id, 'name', e.target.value)}
-                        className="flex-1 bg-black/30 border-gold-primary/30 text-white"
-                      />
-                      <div className="flex items-center gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => moveItem(category.id, item.id, 'up')}
-                          disabled={idx === 0}
-                          className="text-gold-light hover:bg-gold-50/10 h-8 w-8 p-0"
-                        >
-                          <ChevronUp className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => moveItem(category.id, item.id, 'down')}
-                          disabled={idx === category.items.length - 1}
-                          className="text-gold-light hover:bg-gold-50/10 h-8 w-8 p-0"
-                        >
-                          <ChevronDown className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeItem(category.id, item.id)}
-                          className="text-red-400 hover:text-red-300 hover:bg-red-900/20 h-8 w-8 p-0"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      <ChevronUp className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => moveCategory(category.id, 'down')}
+                      disabled={categoryIndex === categories.length - 1}
+                      className="text-gold-light hover:bg-gold-50/10 h-7 w-7 p-0"
+                    >
+                      <ChevronDown className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col">
+                  <div className="space-y-2 flex-1">
+                    {category.items.map((item, idx) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center gap-2 p-2 bg-white/5 border border-gold-primary/20 rounded-lg hover:bg-gold-primary/10 transition-colors"
+                      >
+                        <Input
+                          value={item.name}
+                          onChange={(e) => updateItemValue(category.id, item.id, 'name', e.target.value)}
+                          className="flex-1 bg-black/30 border-gold-primary/30 text-white text-sm h-8"
+                        />
+                        <div className="flex items-center gap-0.5">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => moveItem(category.id, item.id, 'up')}
+                            disabled={idx === 0}
+                            className="text-gold-light hover:bg-gold-50/10 h-7 w-7 p-0"
+                          >
+                            <ChevronUp className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => moveItem(category.id, item.id, 'down')}
+                            disabled={idx === category.items.length - 1}
+                            className="text-gold-light hover:bg-gold-50/10 h-7 w-7 p-0"
+                          >
+                            <ChevronDown className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeItem(category.id, item.id)}
+                            className="text-red-400 hover:text-red-300 hover:bg-red-900/20 h-7 w-7 p-0"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-                <Button
-                  onClick={() => addItem(category.id)}
-                  variant="ghost"
-                  size="sm"
-                  className="mt-4 border border-gold-primary/30 text-gold-light hover:bg-gold-50 hover:text-gold-light"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Lägg till livsmedel
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                    ))}
+                  </div>
+                  <Button
+                    onClick={() => addItem(category.id)}
+                    variant="ghost"
+                    size="sm"
+                    className="mt-3 border border-gold-primary/30 text-gold-light hover:bg-gold-50 hover:text-gold-light w-full"
+                  >
+                    <Plus className="h-3 w-3 mr-2" />
+                    Lägg till
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
