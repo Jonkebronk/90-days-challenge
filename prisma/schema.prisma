@@ -1172,14 +1172,34 @@ model RecipeCategory {
   name        String
   description String?
   slug        String  @unique
+  color       String  @default("#FFD700") // Category color for UI
+  icon        String  @default("ChefHat") // Lucide icon name
   orderIndex  Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  recipes Recipe[]
+  recipes       Recipe[]
+  subcategories RecipeSubcategory[]
 
   @@map("recipe_categories")
+}
+
+model RecipeSubcategory {
+  id         String @id @default(cuid())
+  name       String
+  slug       String
+  categoryId String
+  orderIndex Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category RecipeCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  recipes  Recipe[]
+
+  @@unique([categoryId, slug]) // Slug must be unique within a category
+  @@map("recipe_subcategories")
 }
 
 model Recipe {
@@ -1187,6 +1207,7 @@ model Recipe {
   title           String
   description     String?
   categoryId      String
+  subcategoryId   String? // Optional subcategory within the category
   servings        Int     @default(1)
   prepTimeMinutes Int? // Preparation time
   cookTimeMinutes Int? // Cooking time
@@ -1213,6 +1234,7 @@ model Recipe {
   updatedAt DateTime @updatedAt
 
   category            RecipeCategory       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  subcategory         RecipeSubcategory?   @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
   ingredients         RecipeIngredient[]
   instructions        RecipeInstruction[]
   favorites           RecipeFavorite[]
