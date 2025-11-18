@@ -317,59 +317,6 @@ export default function EditFoodItemPage() {
                 Synlig för klienter i Food Guide
               </p>
             </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="isVegetarian"
-                  checked={formData.isVegetarian}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, isVegetarian: checked as boolean })
-                  }
-                  className="border-gold-primary/30 data-[state=checked]:bg-[#FFD700] data-[state=checked]:text-[#0a0a0a]"
-                />
-                <Label
-                  htmlFor="isVegetarian"
-                  className="text-gray-200 cursor-pointer"
-                >
-                  Vegetariskt
-                </Label>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="isVegan"
-                  checked={formData.isVegan}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, isVegan: checked as boolean })
-                  }
-                  className="border-gold-primary/30 data-[state=checked]:bg-[#FFD700] data-[state=checked]:text-[#0a0a0a]"
-                />
-                <Label
-                  htmlFor="isVegan"
-                  className="text-gray-200 cursor-pointer"
-                >
-                  Veganskt
-                </Label>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="isRecommended"
-                  checked={formData.isRecommended}
-                  onCheckedChange={(checked) =>
-                    setFormData({ ...formData, isRecommended: checked as boolean })
-                  }
-                  className="border-gold-primary/30 data-[state=checked]:bg-[#FFD700] data-[state=checked]:text-[#0a0a0a]"
-                />
-                <Label
-                  htmlFor="isRecommended"
-                  className="text-gray-200 cursor-pointer"
-                >
-                  Rekommenderad (visas med tumme upp)
-                </Label>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
