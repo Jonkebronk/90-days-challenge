@@ -327,25 +327,6 @@ export default function CategoryFoodItemsPage({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-2 mb-3">
-                  <div className="text-center p-2 rounded bg-[rgba(255,215,0,0.05)] border border-gold-primary/10">
-                    <p className="text-xs text-gray-500">Kcal</p>
-                    <p className="font-semibold text-white">{item.calories}</p>
-                  </div>
-                  <div className="text-center p-2 rounded bg-[rgba(100,100,255,0.05)] border border-[rgba(100,100,255,0.1)]">
-                    <p className="text-xs text-gray-500">Protein</p>
-                    <p className="font-semibold text-blue-300">{item.proteinG}g</p>
-                  </div>
-                  <div className="text-center p-2 rounded bg-[rgba(255,165,0,0.05)] border border-[rgba(255,165,0,0.1)]">
-                    <p className="text-xs text-gray-500">Kolh.</p>
-                    <p className="font-semibold text-orange-300">{item.carbsG}g</p>
-                  </div>
-                  <div className="text-center p-2 rounded bg-[rgba(255,215,0,0.05)] border border-gold-primary/10">
-                    <p className="text-xs text-gray-500">Fett</p>
-                    <p className="font-semibold text-yellow-300">{item.fatG}g</p>
-                  </div>
-                </div>
-
                 <div className="flex items-center justify-between">
                   <div className="flex gap-1">
                     {item.isVegetarian && (
