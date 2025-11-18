@@ -56,6 +56,15 @@ export default function FettOverviewPage() {
         { name: 'Tahini (sesampasta)' },
       ],
     },
+    {
+      key: 'fruits',
+      name: 'Frukt',
+      items: [
+        { name: 'Avokado' },
+        { name: 'Kokosnöt' },
+        { name: 'Oliver' },
+      ],
+    },
   ]
 
   return (
