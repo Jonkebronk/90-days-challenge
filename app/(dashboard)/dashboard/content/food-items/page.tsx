@@ -62,17 +62,11 @@ export default function FoodItemsCategoriesPage() {
     return IconComponent || Apple
   }
 
-  if (!session?.user || (session.user as any).role !== 'coach') {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-gray-300">
-            Du har inte behörighet att se denna sida.
-          </p>
-        </div>
-      </div>
-    )
+  if (!session?.user) {
+    return null
   }
+
+  const isCoach = (session.user as any).role === 'coach'
 
   if (isLoading) {
     return (

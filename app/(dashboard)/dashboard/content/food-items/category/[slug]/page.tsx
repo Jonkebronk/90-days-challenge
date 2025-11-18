@@ -175,17 +175,11 @@ export default function CategoryFoodItemsPage({
     return IconComponent || Apple
   }
 
-  if (!session?.user || (session.user as any).role !== 'coach') {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px]">
-          <p className="text-gray-300">
-            Du har inte behörighet att se denna sida.
-          </p>
-        </div>
-      </div>
-    )
+  if (!session?.user) {
+    return null
   }
+
+  const isCoach = (session.user as any).role === 'coach'
 
   if (isLoading && !category) {
     return (
@@ -229,13 +223,15 @@ export default function CategoryFoodItemsPage({
             </p>
           </div>
         </div>
-        <Button
-          onClick={() => router.push('/dashboard/content/food-items/create')}
-          className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Nytt livsmedel
-        </Button>
+        {isCoach && (
+          <Button
+            onClick={() => router.push('/dashboard/content/food-items/create')}
+            className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Nytt livsmedel
+          </Button>
+        )}
       </div>
 
       {/* Search */}
@@ -308,24 +304,26 @@ export default function CategoryFoodItemsPage({
                       <h3 className="font-semibold text-white text-lg">{item.name}</h3>
                     </div>
 
-                    <div className="flex items-center justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-gray-400 hover:text-gold-light hover:bg-gold-50/10"
-                        onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit?categorySlug=${categorySlug}`)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-gray-400 hover:text-red-400 hover:bg-red-900/20"
-                        onClick={() => handleDelete(item.id, item.name)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    {isCoach && (
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-gray-400 hover:text-gold-light hover:bg-gold-50/10"
+                          onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit?categorySlug=${categorySlug}`)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-gray-400 hover:text-red-400 hover:bg-red-900/20"
+                          onClick={() => handleDelete(item.id, item.name)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -361,24 +359,26 @@ export default function CategoryFoodItemsPage({
                             )}
                             <span className="text-gray-100 text-sm truncate">{item.name}</span>
                           </div>
-                          <div className="flex gap-0.5 flex-shrink-0">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 text-gray-400 hover:text-gold-light hover:bg-gold-50/10"
-                              onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit?categorySlug=${categorySlug}`)}
-                            >
-                              <Pencil className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 text-gray-400 hover:text-red-400 hover:bg-red-900/20"
-                              onClick={() => handleDelete(item.id, item.name)}
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
+                          {isCoach && (
+                            <div className="flex gap-0.5 flex-shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-gray-400 hover:text-gold-light hover:bg-gold-50/10"
+                                onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit?categorySlug=${categorySlug}`)}
+                              >
+                                <Pencil className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-gray-400 hover:text-red-400 hover:bg-red-900/20"
+                                onClick={() => handleDelete(item.id, item.name)}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
