@@ -26,7 +26,8 @@
       "Bash(wc:*)",
       "Bash(nul)",
       "Bash(findstr:*)",
-      "Bash(npx prisma migrate:*)"
+      "Bash(npx prisma migrate:*)",
+      "Bash(node -e:*)"
     ],
     "deny": [],
     "ask": []
