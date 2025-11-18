@@ -30,6 +30,7 @@ export default function NutritionAdminPage() {
   const router = useRouter()
   const [activeType, setActiveType] = useState<'protein' | 'fat' | 'carbs'>('protein')
   const [categories, setCategories] = useState<NutritionCategory[]>([])
+  const [deletedItemIds, setDeletedItemIds] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -58,6 +59,8 @@ export default function NutritionAdminPage() {
           console.log(`${cat.name} ITEMS ORDER:`, orderInfo)
         })
         setCategories(data.categories || [])
+        setDeletedItemIds([]) // Clear deleted items when switching tabs
+        setHasUnsavedChanges(false) // Reset unsaved changes flag
       }
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -104,6 +107,11 @@ export default function NutritionAdminPage() {
   }
 
   const removeItem = (categoryId: string, itemId: string) => {
+    // Only track deletion if it's not a temporary item
+    if (!itemId.startsWith('temp-')) {
+      setDeletedItemIds(prev => [...prev, itemId])
+    }
+
     setCategories(prev =>
       prev.map(cat =>
         cat.id === categoryId
@@ -111,6 +119,7 @@ export default function NutritionAdminPage() {
           : cat
       )
     )
+    setHasUnsavedChanges(true)
   }
 
   const moveCategory = (categoryId: string, direction: 'up' | 'down') => {
@@ -168,7 +177,24 @@ export default function NutritionAdminPage() {
     try {
       setIsSaving(true)
 
-      // Save category order first
+      // Delete removed items first
+      for (const itemId of deletedItemIds) {
+        console.log('🗑️ Deleting item:', itemId)
+        const deleteResponse = await fetch(`/api/nutrition-items/${itemId}`, {
+          method: 'DELETE',
+        })
+
+        if (!deleteResponse.ok) {
+          console.error('❌ Failed to delete item:', itemId)
+          throw new Error('Failed to delete item')
+        }
+      }
+
+      if (deletedItemIds.length > 0) {
+        console.log(`✅ Deleted ${deletedItemIds.length} item(s)`)
+      }
+
+      // Save category order
       const categoryUpdates = categories.map((cat, index) => ({
         id: cat.id,
         order: index, // Use current array position as order
@@ -244,6 +270,7 @@ export default function NutritionAdminPage() {
       }
 
       setHasUnsavedChanges(false)
+      setDeletedItemIds([]) // Clear deleted items list after successful save
       console.log('Save completed, reloading data...')
 
       // Reload data to sync with database
@@ -257,7 +284,7 @@ export default function NutritionAdminPage() {
     } finally {
       setIsSaving(false)
     }
-  }, [categories, activeType])
+  }, [categories, deletedItemIds, activeType])
 
 
   if (!session?.user || !isCoach) {
