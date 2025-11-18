@@ -5,7 +5,21 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ChefHat, Clock, Users, Flame, ArrowLeft } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { ChefHat, Clock, Users, Flame, ArrowLeft, X, Pencil, Save } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -44,6 +58,12 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
   const [category, setCategory] = useState<RecipeCategory | null>(null)
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
+  const [availableSubcategories, setAvailableSubcategories] = useState<RecipeSubcategory[]>([])
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string>('')
+  const [isSaving, setIsSaving] = useState(false)
+
+  const isCoach = (session?.user as any)?.role === 'coach'
 
   useEffect(() => {
     params.then(p => setSlug(p.slug))
@@ -83,6 +103,58 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
       toast.error('Ett fel uppstod')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchSubcategories = async () => {
+    try {
+      const response = await fetch('/api/recipe-subcategories')
+      if (response.ok) {
+        const data = await response.json()
+        setAvailableSubcategories(data.subcategories || [])
+      }
+    } catch (error) {
+      console.error('Error fetching subcategories:', error)
+    }
+  }
+
+  const handleRecipeClick = (recipe: Recipe) => {
+    if (isCoach) {
+      setSelectedRecipe(recipe)
+      setSelectedSubcategoryId(recipe.subcategory?.id || '')
+      if (availableSubcategories.length === 0) {
+        fetchSubcategories()
+      }
+    } else {
+      router.push(`/dashboard/recipes/${recipe.id}`)
+    }
+  }
+
+  const handleSaveSubcategory = async () => {
+    if (!selectedRecipe) return
+
+    try {
+      setIsSaving(true)
+      const response = await fetch(`/api/recipes/${selectedRecipe.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subcategoryId: selectedSubcategoryId || null,
+        }),
+      })
+
+      if (response.ok) {
+        toast.success('Subkategori uppdaterad')
+        setSelectedRecipe(null)
+        fetchCategoryAndRecipes()
+      } else {
+        toast.error('Kunde inte uppdatera')
+      }
+    } catch (error) {
+      console.error('Error updating recipe:', error)
+      toast.error('Ett fel uppstod')
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -187,7 +259,7 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
                   {subcategoryRecipes.map((recipe) => (
                     <div
                       key={recipe.id}
-                      onClick={() => router.push(`/dashboard/recipes/${recipe.id}`)}
+                      onClick={() => handleRecipeClick(recipe)}
                       className="group p-4 bg-white/5 border border-gold-primary/20 hover:border-gold-primary/60 hover:bg-white/10 rounded-lg cursor-pointer transition-all"
                     >
                       <h4 className="text-sm font-semibold text-gray-200 mb-2 group-hover:text-gold-light transition-colors">
@@ -224,7 +296,7 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
           {recipes.map((recipe) => (
             <Card
               key={recipe.id}
-              onClick={() => router.push(`/dashboard/recipes/${recipe.id}`)}
+              onClick={() => handleRecipeClick(recipe)}
               className="group relative bg-white/5 border-2 border-gold-primary/20 hover:border-gold-primary/60 hover:bg-white/10 transition-all cursor-pointer backdrop-blur-[10px] overflow-hidden"
             >
               {/* Cover Image */}
@@ -283,6 +355,119 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
             </Card>
           ))}
         </div>
+      )}
+
+      {/* Recipe Edit Dialog (Coach Only) */}
+      {isCoach && (
+        <Dialog open={!!selectedRecipe} onOpenChange={(open) => !open && setSelectedRecipe(null)}>
+          <DialogContent className="bg-[#0a0a0a] border-2 border-gold-primary/30 text-white max-w-2xl">
+            {selectedRecipe && (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold text-gold-light flex items-center justify-between">
+                    {selectedRecipe.title}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setSelectedRecipe(null)}
+                      className="text-gray-400 hover:text-gold-light"
+                    >
+                      <X className="h-5 w-5" />
+                    </Button>
+                  </DialogTitle>
+                </DialogHeader>
+
+                <div className="space-y-4">
+                  {/* Cover Image */}
+                  {selectedRecipe.coverImage && (
+                    <div className="w-full h-64 rounded-lg overflow-hidden border-2 border-gold-primary/20">
+                      <img
+                        src={selectedRecipe.coverImage}
+                        alt={selectedRecipe.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+
+                  {/* Description */}
+                  {selectedRecipe.description && (
+                    <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-4">
+                      <p className="text-gray-300">{selectedRecipe.description}</p>
+                    </div>
+                  )}
+
+                  {/* Recipe Info */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
+                      <p className="text-xs text-gray-400 mb-1">Portioner</p>
+                      <p className="text-xl font-bold text-gold-light">{selectedRecipe.servings}</p>
+                    </div>
+                    {selectedRecipe.prepTimeMinutes && (
+                      <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
+                        <p className="text-xs text-gray-400 mb-1">Förberedelsetid</p>
+                        <p className="text-xl font-bold text-gold-light">{selectedRecipe.prepTimeMinutes} min</p>
+                      </div>
+                    )}
+                    {selectedRecipe.cookTimeMinutes && (
+                      <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
+                        <p className="text-xs text-gray-400 mb-1">Tillagningstid</p>
+                        <p className="text-xl font-bold text-gold-light">{selectedRecipe.cookTimeMinutes} min</p>
+                      </div>
+                    )}
+                    {selectedRecipe.caloriesPerServing && (
+                      <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
+                        <p className="text-xs text-gray-400 mb-1">Kalorier</p>
+                        <p className="text-xl font-bold text-gold-light">{Math.round(selectedRecipe.caloriesPerServing)}</p>
+                        <p className="text-xs text-gray-400">/portion</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Subcategory Selection */}
+                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-4">
+                    <p className="text-sm text-gray-400 mb-2">Subkategori</p>
+                    <Select value={selectedSubcategoryId} onValueChange={setSelectedSubcategoryId}>
+                      <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
+                        <SelectValue placeholder="Välj subkategori (valfritt)" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-900/95 border-gold-primary/30">
+                        <SelectItem value="" className="text-white">Ingen subkategori</SelectItem>
+                        {availableSubcategories.map((sub) => (
+                          <SelectItem key={sub.id} value={sub.id} className="text-white">
+                            {sub.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2 pt-4 border-t border-gold-primary/20">
+                    <Button
+                      onClick={handleSaveSubcategory}
+                      disabled={isSaving}
+                      className="flex-1 bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+                    >
+                      <Save className="h-4 w-4 mr-2" />
+                      {isSaving ? 'Sparar...' : 'Spara subkategori'}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setSelectedRecipe(null)
+                        router.push(`/dashboard/recipes/${selectedRecipe.id}/edit`)
+                      }}
+                      variant="outline"
+                      className="border-gold-primary/50 text-gold-light hover:bg-gold-50/10"
+                    >
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Redigera recept
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   )

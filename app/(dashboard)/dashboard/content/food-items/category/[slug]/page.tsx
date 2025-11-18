@@ -438,22 +438,18 @@ export default function CategoryFoodItemsPage({
                   <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
                     <p className="text-xs text-gray-400 mb-1">Kalorier</p>
                     <p className="text-xl font-bold text-gold-light">{selectedItem.calories}</p>
-                    <p className="text-xs text-gray-400">kcal/100g</p>
                   </div>
                   <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
                     <p className="text-xs text-gray-400 mb-1">Protein</p>
                     <p className="text-xl font-bold text-gold-light">{selectedItem.proteinG}g</p>
-                    <p className="text-xs text-gray-400">/100g</p>
                   </div>
                   <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
                     <p className="text-xs text-gray-400 mb-1">Kolhydrater</p>
                     <p className="text-xl font-bold text-gold-light">{selectedItem.carbsG}g</p>
-                    <p className="text-xs text-gray-400">/100g</p>
                   </div>
                   <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-3">
                     <p className="text-xs text-gray-400 mb-1">Fett</p>
                     <p className="text-xl font-bold text-gold-light">{selectedItem.fatG}g</p>
-                    <p className="text-xs text-gray-400">/100g</p>
                   </div>
                 </div>
 
