@@ -27,10 +27,19 @@ type FoodCategory = {
   icon: string
 }
 
+type NutritionCategory = {
+  id: string
+  type: string
+  key: string
+  name: string
+  order: number
+}
+
 export default function CreateFoodItemPage() {
   const { data: session } = useSession()
   const router = useRouter()
   const [categories, setCategories] = useState<FoodCategory[]>([])
+  const [nutritionCategories, setNutritionCategories] = useState<NutritionCategory[]>([])
   const [isSaving, setIsSaving] = useState(false)
 
   const [formData, setFormData] = useState({
@@ -41,20 +50,32 @@ export default function CreateFoodItemPage() {
     notes: '',
   })
 
-  const subcategoryOptions = [
-    'Fågel',
-    'Nötkött',
-    'Viltkött',
-    'Fisk & Skaldjur',
-    'Fläsk',
-    'Ägg & Mejeri'
-  ]
+  // Map food category slug to nutrition type
+  const getNutritionType = (categorySlug: string): string => {
+    const mapping: Record<string, string> = {
+      'proteinkalla': 'protein',
+      'kolhydratkalla': 'carbs',
+      'fettkalla': 'fat',
+      'gronsaker': 'vegetables'
+    }
+    return mapping[categorySlug] || 'protein'
+  }
 
   useEffect(() => {
     if (session?.user) {
       fetchCategories()
     }
   }, [session])
+
+  // Fetch nutrition categories when category changes
+  useEffect(() => {
+    if (formData.categoryId) {
+      const category = categories.find(c => c.id === formData.categoryId)
+      if (category) {
+        fetchNutritionCategories(category.slug)
+      }
+    }
+  }, [formData.categoryId, categories])
 
   const fetchCategories = async () => {
     try {
@@ -65,6 +86,19 @@ export default function CreateFoodItemPage() {
       }
     } catch (error) {
       console.error('Error fetching categories:', error)
+    }
+  }
+
+  const fetchNutritionCategories = async (categorySlug: string) => {
+    try {
+      const nutritionType = getNutritionType(categorySlug)
+      const response = await fetch(`/api/nutrition-categories?type=${nutritionType}`)
+      if (response.ok) {
+        const data = await response.json()
+        setNutritionCategories(data.categories)
+      }
+    } catch (error) {
+      console.error('Error fetching nutrition categories:', error)
     }
   }
 
@@ -199,9 +233,9 @@ export default function CreateFoodItemPage() {
                   <SelectValue placeholder="Välj subkategori" />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-900/95 border-gold-primary/30">
-                  {subcategoryOptions.map((sub) => (
-                    <SelectItem key={sub} value={sub} className="text-white">
-                      {sub}
+                  {nutritionCategories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.name} className="text-white">
+                      {cat.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
