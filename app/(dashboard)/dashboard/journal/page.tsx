@@ -137,6 +137,17 @@ type JournalData = {
       weight: number
       weekNumber: number | null
     }>
+    measurements: Array<{
+      date: string
+      weekNumber: number | null
+      chest: number | null
+      waist: number | null
+      hips: number | null
+      butt: number | null
+      arms: number | null
+      thighs: number | null
+      calves: number | null
+    }>
     photos: Array<{
       date: string
       weekNumber: number | null
@@ -287,7 +298,7 @@ function ClientJournalContent() {
               Översikt
             </TabsTrigger>
             <TabsTrigger value="application" className="data-[state=active]:bg-[rgba(255,215,0,0.2)] data-[state=active]:text-gold-light">
-              Ansökan
+              Intresseanmälan
             </TabsTrigger>
             <TabsTrigger value="checkins" className="data-[state=active]:bg-[rgba(255,215,0,0.2)] data-[state=active]:text-gold-light">
               Check-ins
@@ -399,7 +410,7 @@ function ClientJournalContent() {
               <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden">
                 <div className="p-6 border-b border-gold-primary/20">
                   <h2 className="text-xl font-bold text-gold-light">
-                    Ursprunglig Ansökan
+                    Ursprunglig Intresseanmälan
                   </h2>
                 </div>
                 <div className="p-6 space-y-6">
@@ -875,6 +886,81 @@ function ClientJournalContent() {
               </div>
             )}
 
+            {/* Measurements Progression */}
+            {journalData.progression.measurements && journalData.progression.measurements.length > 0 && (
+              <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden">
+                <div className="p-6 border-b border-gold-primary/20">
+                  <h2 className="text-xl font-bold text-gold-light flex items-center gap-2">
+                    📏
+                    Måttutveckling
+                  </h2>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-6">
+                    {journalData.progression.measurements.map((entry, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-black/30 rounded-lg border border-gold-primary/20"
+                      >
+                        <div className="mb-3">
+                          <p className="text-white font-medium">
+                            Vecka {entry.weekNumber || 'N/A'}
+                          </p>
+                          <p className="text-sm text-gray-400">
+                            {format(new Date(entry.date), 'PPP', { locale: sv })}
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {entry.chest && (
+                            <div>
+                              <Label className="text-gray-400 text-xs">Bröst</Label>
+                              <p className="text-white font-semibold">{entry.chest} cm</p>
+                            </div>
+                          )}
+                          {entry.waist && (
+                            <div>
+                              <Label className="text-gray-400 text-xs">Midja</Label>
+                              <p className="text-white font-semibold">{entry.waist} cm</p>
+                            </div>
+                          )}
+                          {entry.hips && (
+                            <div>
+                              <Label className="text-gray-400 text-xs">Höfter</Label>
+                              <p className="text-white font-semibold">{entry.hips} cm</p>
+                            </div>
+                          )}
+                          {entry.butt && (
+                            <div>
+                              <Label className="text-gray-400 text-xs">Rumpa</Label>
+                              <p className="text-white font-semibold">{entry.butt} cm</p>
+                            </div>
+                          )}
+                          {entry.arms && (
+                            <div>
+                              <Label className="text-gray-400 text-xs">Armar</Label>
+                              <p className="text-white font-semibold">{entry.arms} cm</p>
+                            </div>
+                          )}
+                          {entry.thighs && (
+                            <div>
+                              <Label className="text-gray-400 text-xs">Lår</Label>
+                              <p className="text-white font-semibold">{entry.thighs} cm</p>
+                            </div>
+                          )}
+                          {entry.calves && (
+                            <div>
+                              <Label className="text-gray-400 text-xs">Vader</Label>
+                              <p className="text-white font-semibold">{entry.calves} cm</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Photo Timeline */}
             {journalData.progression.photos.length > 0 && (
               <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden">
@@ -933,7 +1019,9 @@ function ClientJournalContent() {
               </div>
             )}
 
-            {journalData.progression.weight.length === 0 && journalData.progression.photos.length === 0 && (
+            {journalData.progression.weight.length === 0 &&
+             (!journalData.progression.measurements || journalData.progression.measurements.length === 0) &&
+             journalData.progression.photos.length === 0 && (
               <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-12 text-center">
                 <TrendingUp className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
                 <p className="text-gray-400">Ingen framstegsinformation tillgänglig ännu</p>

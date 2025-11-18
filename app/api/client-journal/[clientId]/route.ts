@@ -126,6 +126,22 @@ export async function GET(
       }))
       .reverse() // Oldest first
 
+    // Measurements timeline
+    const measurementsTimeline = client.checkIns
+      .filter((ci) => ci.chest || ci.waist || ci.hips || ci.butt || ci.arms || ci.thighs || ci.calves)
+      .map((ci) => ({
+        date: ci.createdAt,
+        weekNumber: ci.weekNumber,
+        chest: ci.chest,
+        waist: ci.waist,
+        hips: ci.hips,
+        butt: ci.butt,
+        arms: ci.arms,
+        thighs: ci.thighs,
+        calves: ci.calves,
+      }))
+      .reverse() // Oldest first
+
     return NextResponse.json({
       client: {
         id: client.id,
@@ -175,6 +191,7 @@ export async function GET(
       },
       progression: {
         weight: weightData,
+        measurements: measurementsTimeline,
         photos: photoTimeline,
       },
       plans: {
