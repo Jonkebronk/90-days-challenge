@@ -30,9 +30,16 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
+type RecipeSubcategory = {
+  id: string
+  name: string
+  slug: string
+}
+
 type RecipeCategory = {
   id: string
   name: string
+  subcategories: RecipeSubcategory[]
 }
 
 type Recipe = {
@@ -61,8 +68,11 @@ export default function CoachRecipesPage() {
   const [formData, setFormData] = useState({
     title: '',
     categoryId: '',
+    subcategoryId: '',
     servings: '4'
   })
+
+  const [subcategories, setSubcategories] = useState<RecipeSubcategory[]>([])
 
   useEffect(() => {
     if (session?.user) {
@@ -101,6 +111,12 @@ export default function CoachRecipesPage() {
     }
   }
 
+  const handleCategoryChange = (categoryId: string) => {
+    setFormData({ ...formData, categoryId, subcategoryId: '' })
+    const category = categories.find(c => c.id === categoryId)
+    setSubcategories(category?.subcategories || [])
+  }
+
   const handleCreateRecipe = async () => {
     if (!formData.title || !formData.categoryId) {
       toast.error('Titel och kategori krävs')
@@ -115,6 +131,7 @@ export default function CoachRecipesPage() {
         body: JSON.stringify({
           title: formData.title,
           categoryId: formData.categoryId,
+          subcategoryId: formData.subcategoryId || null,
           servings: parseInt(formData.servings) || 4,
           published: false
         })
@@ -124,7 +141,8 @@ export default function CoachRecipesPage() {
         const data = await response.json()
         toast.success('Recept skapat')
         setIsCreateDialogOpen(false)
-        setFormData({ title: '', categoryId: '', servings: '4' })
+        setFormData({ title: '', categoryId: '', subcategoryId: '', servings: '4' })
+        setSubcategories([])
         // Navigate to edit page to add ingredients and instructions
         router.push(`/dashboard/content/recipes/${data.recipe.id}/edit`)
       } else {
@@ -335,7 +353,7 @@ export default function CoachRecipesPage() {
               <Label htmlFor="category" className="text-gray-700">Kategori *</Label>
               <Select
                 value={formData.categoryId}
-                onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+                onValueChange={handleCategoryChange}
               >
                 <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                   <SelectValue placeholder="Välj kategori" />
@@ -349,6 +367,26 @@ export default function CoachRecipesPage() {
                 </SelectContent>
               </Select>
             </div>
+            {subcategories.length > 0 && (
+              <div>
+                <Label htmlFor="subcategory" className="text-gray-700">Subkategori (valfritt)</Label>
+                <Select
+                  value={formData.subcategoryId}
+                  onValueChange={(value) => setFormData({ ...formData, subcategoryId: value })}
+                >
+                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                    <SelectValue placeholder="Välj subkategori" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {subcategories.map(sub => (
+                      <SelectItem key={sub.id} value={sub.id}>
+                        {sub.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div>
               <Label htmlFor="servings" className="text-gray-700">Portioner *</Label>
               <Input

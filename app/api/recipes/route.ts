@@ -85,6 +85,7 @@ export async function POST(request: Request) {
       title,
       description,
       categoryId,
+      subcategoryId,
       servings,
       prepTimeMinutes,
       cookTimeMinutes,
@@ -109,6 +110,7 @@ export async function POST(request: Request) {
         title,
         description: description || null,
         categoryId,
+        subcategoryId: subcategoryId || null,
         servings: servings || 1,
         prepTimeMinutes: prepTimeMinutes || null,
         cookTimeMinutes: cookTimeMinutes || null,
@@ -122,7 +124,8 @@ export async function POST(request: Request) {
         publishedAt: published ? new Date() : null
       },
       include: {
-        category: true
+        category: true,
+        subcategory: true
       }
     })
 
