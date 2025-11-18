@@ -9,10 +9,10 @@ async function main() {
   const proteinCategories = [
     { type: 'protein', key: 'poultry', name: 'Fågel', order: 0 },
     { type: 'protein', key: 'beef', name: 'Nötkött', order: 1 },
-    { type: 'protein', key: 'pork', name: 'Viltkött', order: 2 },
+    { type: 'protein', key: 'game', name: 'Viltkött', order: 2 },
     { type: 'protein', key: 'fish', name: 'Fisk & Skaldjur', order: 3 },
-    { type: 'protein', key: 'eggs_dairy', name: 'Mejeri', order: 4 },
-    { type: 'protein', key: 'plant', name: 'Fläsk', order: 5 },
+    { type: 'protein', key: 'dairy', name: 'Mejeri', order: 4 },
+    { type: 'protein', key: 'pork', name: 'Fläsk', order: 5 },
   ]
 
   // Carbs categories
