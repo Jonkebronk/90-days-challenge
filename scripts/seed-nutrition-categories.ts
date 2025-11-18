@@ -33,6 +33,15 @@ async function main() {
     { type: 'fat', key: 'fruits', name: 'Frukt', order: 4 },
   ]
 
+  // Vegetable categories
+  const vegetableCategories = [
+    { type: 'vegetables', key: 'leafy', name: 'Bladgrönsaker', order: 0 },
+    { type: 'vegetables', key: 'cruciferous', name: 'Kålväxter', order: 1 },
+    { type: 'vegetables', key: 'root', name: 'Rotgrönsaker', order: 2 },
+    { type: 'vegetables', key: 'fruiting', name: 'Fruktgrönsaker', order: 3 },
+    { type: 'vegetables', key: 'other', name: 'Övriga', order: 4 },
+  ]
+
   // Create protein categories
   for (const cat of proteinCategories) {
     await prisma.nutritionCategory.upsert({
@@ -55,6 +64,16 @@ async function main() {
 
   // Create fat categories
   for (const cat of fatCategories) {
+    await prisma.nutritionCategory.upsert({
+      where: { type_key: { type: cat.type, key: cat.key } },
+      update: { name: cat.name, order: cat.order },
+      create: cat,
+    })
+    console.log(`✓ Created/Updated: ${cat.name}`)
+  }
+
+  // Create vegetable categories
+  for (const cat of vegetableCategories) {
     await prisma.nutritionCategory.upsert({
       where: { type_key: { type: cat.type, key: cat.key } },
       update: { name: cat.name, order: cat.order },
