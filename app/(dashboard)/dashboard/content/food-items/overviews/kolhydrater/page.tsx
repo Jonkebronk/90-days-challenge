@@ -164,12 +164,6 @@ export default function KolhydraterOverviewPage() {
               </TabsContent>
             ))}
           </Tabs>
-
-          <div className="mt-4 p-4 bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg">
-            <p className="text-sm text-gray-300">
-              <strong className="text-gold-light">Tips:</strong> Tabellen visar antal gram kolhydrater för olika portionsstorlekar. Välj komplexa kolhydrater (fullkorn, havregryn, sötpotatis) för långsam energifrisättning och bättre mättnad. Enkla kolhydrater (frukt, dadlar) är bra runt träning för snabb energi.
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>

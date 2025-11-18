@@ -155,12 +155,6 @@ export default function FettOverviewPage() {
               </TabsContent>
             ))}
           </Tabs>
-
-          <div className="mt-4 p-4 bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg">
-            <p className="text-sm text-gray-300">
-              <strong className="text-gold-light">Tips:</strong> Tabellen visar antal gram fett för olika portionsstorlekar. Fett är kaloritätt (9 kcal/g) men viktigt för hormonproduktion och vitaminupptagning. Fokusera på nyttiga fetter från nötter, frön och olivolja.
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>

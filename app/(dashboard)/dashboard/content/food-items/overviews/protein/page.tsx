@@ -158,12 +158,6 @@ export default function ProteinOverviewPage() {
               Ingen data tillgänglig
             </p>
           )}
-
-          <div className="mt-4 p-4 bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg">
-            <p className="text-sm text-gray-300">
-              <strong className="text-gold-light">Tips:</strong> Tabellen visar antal gram protein för olika portionsstorlekar. Kombinera olika proteinkällor för att få ett brett spektrum av aminosyror. Magert kött och fisk är bra val för lågt kaloriintag.
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
