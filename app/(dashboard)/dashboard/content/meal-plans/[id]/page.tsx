@@ -902,7 +902,7 @@ export default function MealPlanTemplatePage() {
                       {/* Meal Alternatives Section */}
                       <div className="mb-3">
                         <h3 className="text-sm font-semibold text-gray-200 uppercase tracking-wide mb-3">
-                          Receptförslag & Alternativ
+                          Receptförslag
                         </h3>
                       </div>
 
