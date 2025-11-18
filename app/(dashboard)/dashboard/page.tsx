@@ -20,7 +20,8 @@ import {
   MessageSquare,
   HelpCircle,
   Clock,
-  Info
+  Info,
+  Apple
 } from 'lucide-react'
 
 export default function DashboardPage() {
@@ -433,6 +434,28 @@ export default function DashboardPage() {
             <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Recept</h3>
             <p className="text-gray-600 text-center text-sm relative z-10">
               Hitta matinspiration
+            </p>
+
+            {/* Arrow indicator */}
+            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
+          </div>
+        </Link>
+
+        {/* Livsmedelbanken Card */}
+        <Link href="/dashboard/content/food-items">
+          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent opacity-50" />
+
+            {/* Icon */}
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+              <Apple className="w-10 h-10 text-white" />
+            </div>
+
+            {/* Title & Description */}
+            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Livsmedelbanken</h3>
+            <p className="text-gray-600 text-center text-sm relative z-10">
+              Utforska näringsinnehåll
             </p>
 
             {/* Arrow indicator */}

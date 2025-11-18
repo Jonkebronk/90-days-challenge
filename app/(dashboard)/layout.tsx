@@ -72,6 +72,7 @@ const navigation = [
   },
   { name: 'Kunskapsbanken', href: '/dashboard/articles', icon: Library },
   { name: 'Recept', href: '/dashboard/recipes', icon: ChefHat },
+  { name: 'Livsmedelbanken', href: '/dashboard/content/food-items', icon: Apple },
   { name: 'Kostschema', href: '/dashboard/meal-plan', icon: Utensils, clientOnly: true },
   { name: 'Inköpslistor', href: '/dashboard/shopping-lists', icon: ShoppingCart, clientOnly: true },
   { name: 'Träningsprogram', href: '/dashboard/workout', icon: Dumbbell, clientOnly: true },
