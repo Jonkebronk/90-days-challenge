@@ -511,6 +511,9 @@ export default function MealPlanTemplateViewPage() {
 
                       {isExpanded && meal.options.length > 1 && (
                         <CardContent className="pt-0">
+                          <h4 className="text-sm font-semibold text-gray-200 uppercase tracking-wide mb-4">
+                            Receptförslag
+                          </h4>
                           <RadioGroup
                             value={selectedOptionId || ''}
                             onValueChange={(value) =>
