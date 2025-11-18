@@ -141,26 +141,27 @@ export async function POST(request: NextRequest) {
         summaryLines.push('')
       }
 
-      // Training adherence
-      if (trainedAllSessions !== null) {
-        summaryLines.push(`💪 Tränat alla pass: ${trainedAllSessions ? 'Ja ✅' : 'Nej ❌'}`)
-      }
+      // Training and diet adherence (only show for weekly check-ins, not start check-in)
+      if (!isStartCheckIn) {
+        if (trainedAllSessions !== null) {
+          summaryLines.push(`💪 Tränat alla pass: ${trainedAllSessions ? 'Ja ✅' : 'Nej ❌'}`)
+        }
 
-      if (trainingComments) {
-        summaryLines.push(`Träning denna vecka:`)
-        summaryLines.push(trainingComments)
-        summaryLines.push('')
-      }
+        if (trainingComments) {
+          summaryLines.push(`Träning denna vecka:`)
+          summaryLines.push(trainingComments)
+          summaryLines.push('')
+        }
 
-      // Diet adherence
-      if (hadDietDeviations !== null) {
-        summaryLines.push(`🥗 Avsteg i kosten: ${hadDietDeviations ? 'Ja ⚠️' : 'Nej ✅'}`)
-      }
+        if (hadDietDeviations !== null) {
+          summaryLines.push(`🥗 Avsteg i kosten: ${hadDietDeviations ? 'Ja ⚠️' : 'Nej ✅'}`)
+        }
 
-      if (dietComments) {
-        summaryLines.push(`Kost denna vecka:`)
-        summaryLines.push(dietComments)
-        summaryLines.push('')
+        if (dietComments) {
+          summaryLines.push(`Kost denna vecka:`)
+          summaryLines.push(dietComments)
+          summaryLines.push('')
+        }
       }
 
       if (otherComments) {
