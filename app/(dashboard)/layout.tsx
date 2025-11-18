@@ -62,7 +62,6 @@ const navigation = [
       { name: 'Skapa Recept', href: '/dashboard/content/recipes', icon: ChefHat },
       { name: 'Livsmedelbanken', href: '/dashboard/content/food-items', icon: Apple },
       { name: 'Näringstabeller', href: '/dashboard/content/nutrition-admin', icon: Calculator },
-      { name: 'Inköpslistor', href: '/dashboard/content/shopping-lists', icon: ShoppingCart },
       { name: 'Måltidsplaner', href: '/dashboard/content/meal-plans', icon: UtensilsCrossed },
       { name: 'Guider', href: '/dashboard/content/guides', icon: BookOpen },
       { name: 'Vanliga frågor', href: '/dashboard/content/faqs', icon: HelpCircle },
@@ -74,7 +73,6 @@ const navigation = [
   { name: 'Recept', href: '/dashboard/recipes', icon: ChefHat },
   { name: 'Livsmedelbanken', href: '/dashboard/content/food-items', icon: Apple },
   { name: 'Kostschema', href: '/dashboard/meal-plan', icon: Utensils, clientOnly: true },
-  { name: 'Inköpslistor', href: '/dashboard/shopping-lists', icon: ShoppingCart, clientOnly: true },
   { name: 'Träningsprogram', href: '/dashboard/workout', icon: Dumbbell, clientOnly: true },
   {
     name: 'Verktyg',
