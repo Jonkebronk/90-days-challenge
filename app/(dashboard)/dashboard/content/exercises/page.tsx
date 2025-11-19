@@ -503,9 +503,6 @@ export default function ExercisesPage() {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3 flex-1">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center shrink-0">
-                    <Dumbbell className="w-5 h-5 text-[#0a0a0a]" />
-                  </div>
                   <div className="flex-1 min-w-0">
                     <CardTitle className="text-lg text-gray-100 break-words">
                       {exercise.name}
@@ -534,17 +531,12 @@ export default function ExercisesPage() {
             </CardHeader>
             <CardContent>
               {exercise.videoUrl && (
-                <div className="bg-white/5 border border-gold-primary/20 rounded p-2">
-                  <p className="text-xs text-gray-400 mb-1">Video URL:</p>
-                  <a
-                    href={exercise.videoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-blue-400 hover:text-blue-300 underline break-all"
-                  >
-                    {exercise.videoUrl}
-                  </a>
-                </div>
+                <VideoPlayer
+                  videoUrl={exercise.videoUrl}
+                  thumbnailUrl={exercise.thumbnailUrl}
+                  title={exercise.name}
+                  className="w-full rounded-lg overflow-hidden"
+                />
               )}
             </CardContent>
           </Card>
