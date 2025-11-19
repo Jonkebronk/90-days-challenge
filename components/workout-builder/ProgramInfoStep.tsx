@@ -108,12 +108,12 @@ export function ProgramInfoStep({ data, onChange, onNext }: ProgramInfoStepProps
 
           <div>
             <Label className="text-[rgba(255,255,255,0.7)]">Kategori</Label>
-            <Select value={data.categoryId || ''} onValueChange={(value) => onChange('categoryId', value)}>
+            <Select value={data.categoryId || 'none'} onValueChange={(value) => onChange('categoryId', value === 'none' ? undefined : value)}>
               <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
                 <SelectValue placeholder="Välj kategori (valfritt)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Ingen kategori</SelectItem>
+                <SelectItem value="none">Ingen kategori</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}

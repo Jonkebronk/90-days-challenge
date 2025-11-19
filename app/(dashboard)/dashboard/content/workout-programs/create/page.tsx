@@ -381,12 +381,12 @@ export default function CreateWorkoutProgramPage() {
 
           <div>
             <Label className="text-gray-300">Kategori</Label>
-            <Select value={categoryId} onValueChange={setCategoryId}>
+            <Select value={categoryId || 'none'} onValueChange={(value) => setCategoryId(value === 'none' ? '' : value)}>
               <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white">
                 <SelectValue placeholder="Välj kategori (valfritt)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Ingen kategori</SelectItem>
+                <SelectItem value="none">Ingen kategori</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}

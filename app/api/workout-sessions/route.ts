@@ -70,11 +70,28 @@ export async function GET(request: Request) {
     const userId = (session.user as any).id
     const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') || '10')
+    const dayId = searchParams.get('dayId')
+    const excludeSessionId = searchParams.get('excludeSessionId')
+
+    const whereClause: any = {
+      userId,
+      completed: true // Only get completed sessions
+    }
+
+    // Filter by specific workout day if provided
+    if (dayId) {
+      whereClause.workoutProgramDayId = dayId
+    }
+
+    // Exclude current session if provided (for getting "previous" session)
+    if (excludeSessionId) {
+      whereClause.id = {
+        not: excludeSessionId
+      }
+    }
 
     const sessions = await prisma.workoutSessionLog.findMany({
-      where: {
-        userId
-      },
+      where: whereClause,
       include: {
         workoutProgramDay: {
           select: {

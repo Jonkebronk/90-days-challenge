@@ -85,6 +85,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0)
   const [setLogs, setSetLogs] = useState<Record<string, SetLog[]>>({})
   const [expandedExercises, setExpandedExercises] = useState<Set<number>>(new Set([0]))
+  const [previousSessionData, setPreviousSessionData] = useState<any>(null)
 
   // Form state for current set
   const [currentSetType, setCurrentSetType] = useState<'WEIGHT' | 'TIME' | 'BODYWEIGHT' | 'REPS'>('WEIGHT')
@@ -142,6 +143,32 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     return () => clearInterval(interval)
   }, [isResting, restTimerSeconds])
 
+  // Pre-fill form when changing exercises or when first set is logged
+  useEffect(() => {
+    if (!workoutDay) return
+
+    const currentExercise = workoutDay.exercises[currentExerciseIndex]
+    if (!currentExercise) return
+
+    const exerciseId = currentExercise.exerciseId
+    const currentSets = setLogs[exerciseId] || []
+
+    // If this exercise has completed sets, pre-fill with the last set's data
+    if (currentSets.length > 0) {
+      const lastSet = currentSets[currentSets.length - 1]
+      setCurrentSetType(lastSet.setType || 'WEIGHT')
+      setCurrentReps(lastSet.reps?.toString() || '')
+      setCurrentWeight(lastSet.weightKg?.toString() || '')
+      setCurrentTimeSeconds(lastSet.timeSeconds?.toString() || '')
+    } else {
+      // First set for this exercise - start fresh (could load from previous workout here)
+      setCurrentSetType('WEIGHT')
+      setCurrentReps('')
+      setCurrentWeight('')
+      setCurrentTimeSeconds('')
+    }
+  }, [currentExerciseIndex, workoutDay])
+
   const playRestCompleteSound = () => {
     // Create a simple beep sound
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
@@ -175,6 +202,30 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     }
   }
 
+  const fetchPreviousSession = async () => {
+    try {
+      const queryParams = new URLSearchParams({
+        dayId: dayId,
+        limit: '1'
+      })
+
+      if (sessionId) {
+        queryParams.append('excludeSessionId', sessionId)
+      }
+
+      const response = await fetch(`/api/workout-sessions?${queryParams}`)
+
+      if (response.ok) {
+        const data = await response.json()
+        if (data.sessions && data.sessions.length > 0) {
+          setPreviousSessionData(data.sessions[0])
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching previous session:', error)
+    }
+  }
+
   const startSession = async () => {
     try {
       const response = await fetch('/api/workout-sessions', {
@@ -190,6 +241,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         setSessionId(data.session.id)
         setStartTime(new Date())
         setIsRunning(true)
+
+        // Fetch previous session data for reference
+        await fetchPreviousSession()
       }
     } catch (error) {
       console.error('Error starting session:', error)
@@ -247,17 +301,22 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           ]
         }))
 
-        // Clear form
-        setCurrentReps('')
-        setCurrentWeight('')
-        setCurrentTimeSeconds('')
+        // Pre-fill form with same values for next set (instead of clearing)
+        // Values stay the same, user can adjust if needed
+        // setCurrentReps('') - Keep the value
+        // setCurrentWeight('') - Keep the value
+        // setCurrentTimeSeconds('') - Keep the value
 
         // Check if we should move to next exercise
         const exercise = workoutDay?.exercises[currentExerciseIndex]
         if (exercise && setLogs[exerciseId]?.length + 1 >= exercise.sets) {
-          // All sets complete for this exercise
+          // All sets complete for this exercise - collapse it immediately
+          const newExpanded = new Set(expandedExercises)
+          newExpanded.delete(currentExerciseIndex)
+          setExpandedExercises(newExpanded)
+
           if (currentExerciseIndex < (workoutDay?.exercises.length || 0) - 1) {
-            // Move to next exercise
+            // Move to next exercise after a short delay
             setTimeout(() => {
               setCurrentExerciseIndex(prev => prev + 1)
               const newIndex = currentExerciseIndex + 1
@@ -558,30 +617,127 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         </Card>
       )}
 
-      {/* Exercises */}
-      <div className="space-y-3">
-        {workoutDay.exercises.map((exercise, index) => {
-          const isExpanded = expandedExercises.has(index)
-          const isCurrent = index === currentExerciseIndex
-          const exerciseSets = setLogs[exercise.exercise.id] || []
-          const isExerciseComplete = exerciseSets.length >= exercise.sets
+      {/* Previous Session Data */}
+      {sessionId && previousSessionData && workoutDay && (
+        <Card className="bg-white/5 border-2 border-blue-500/30">
+          <CardHeader>
+            <CardTitle className="text-gray-100 flex items-center gap-2 text-lg">
+              <Clock className="w-5 h-5 text-blue-400" />
+              Previous Session
+              <span className="text-sm text-gray-400 font-normal">
+                {new Date(previousSessionData.startedAt).toLocaleDateString()}
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {workoutDay.exercises[currentExerciseIndex] && (() => {
+                const currentExercise = workoutDay.exercises[currentExerciseIndex]
+                const previousSets = previousSessionData.sets?.filter(
+                  (set: any) => set.exerciseId === currentExercise.exercise.id
+                ) || []
 
-          return (
+                if (previousSets.length === 0) {
+                  return (
+                    <p className="text-sm text-gray-500">
+                      No data from previous session for {currentExercise.exercise.name}
+                    </p>
+                  )
+                }
+
+                return (
+                  <>
+                    <p className="text-sm text-gray-400">
+                      {currentExercise.exercise.name}
+                    </p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      {previousSets.map((set: any, idx: number) => (
+                        <div
+                          key={idx}
+                          className="p-2 bg-blue-500/10 border border-blue-500/20 rounded text-center"
+                        >
+                          <div className="text-xs text-gray-500 mb-1">Set {set.setNumber}</div>
+                          {set.setType === 'TIME' ? (
+                            <div className="text-sm font-semibold text-gray-200">
+                              {set.timeSeconds}s
+                            </div>
+                          ) : (
+                            <>
+                              <div className="text-sm font-semibold text-gray-200">
+                                {set.reps || 0} reps
+                              </div>
+                              {set.setType === 'WEIGHT' && set.weightKg && (
+                                <div className="text-xs text-gray-400">
+                                  @ {set.weightKg}kg
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )
+              })()}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Exercises - Split View on Desktop */}
+      <div className="lg:grid lg:grid-cols-[400px_1fr] lg:gap-6">
+        {/* Left Column: Video (Desktop only, sticky) */}
+        {sessionId && workoutDay.exercises[currentExerciseIndex]?.exercise.videoUrl && (
+          <div className="hidden lg:block">
+            <div className="sticky top-6">
+              <Card className="bg-white/5 border-2 border-gold-primary/20 overflow-hidden">
+                <CardContent className="p-0">
+                  <VideoPlayer
+                    videoUrl={workoutDay.exercises[currentExerciseIndex].exercise.videoUrl}
+                    thumbnailUrl={workoutDay.exercises[currentExerciseIndex].exercise.thumbnailUrl}
+                    title={workoutDay.exercises[currentExerciseIndex].exercise.name}
+                    className="w-full aspect-video"
+                  />
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-gray-100 mb-2">
+                      {workoutDay.exercises[currentExerciseIndex].exercise.name}
+                    </h3>
+                    {workoutDay.exercises[currentExerciseIndex].exercise.description && (
+                      <p className="text-sm text-gray-400">
+                        {workoutDay.exercises[currentExerciseIndex].exercise.description}
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {/* Right Column: Exercises List */}
+        <div className="space-y-3">
+          {workoutDay.exercises.map((exercise, index) => {
+            const isExpanded = expandedExercises.has(index)
+            const isCurrent = index === currentExerciseIndex
+            const exerciseSets = setLogs[exercise.exercise.id] || []
+            const isExerciseComplete = exerciseSets.length >= exercise.sets
+
+            return (
             <Card
               key={exercise.id}
               className={`bg-white/5 border-2 backdrop-blur-[10px] transition-all ${
                 isCurrent && sessionId
                   ? 'border-[rgba(255,215,0,0.5)] shadow-[0_0_20px_rgba(255,215,0,0.3)]'
                   : 'border-gold-primary/20'
-              } ${isExerciseComplete ? 'opacity-60' : ''}`}
+              } ${isExerciseComplete && !isExpanded ? 'opacity-50 scale-95' : isExerciseComplete ? 'opacity-60' : ''}`}
             >
-              <CardHeader>
+              <CardHeader className={isExerciseComplete && !isExpanded ? 'py-3' : ''}>
                 <div
                   className="flex items-center justify-between cursor-pointer"
                   onClick={() => toggleExercise(index)}
                 >
                   <div className="flex items-center gap-3 flex-1">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    <div className={`${isExerciseComplete && !isExpanded ? 'w-8 h-8' : 'w-10 h-10'} rounded-lg flex items-center justify-center transition-all ${
                       isExerciseComplete
                         ? 'bg-[rgba(34,197,94,0.2)]'
                         : isCurrent
@@ -589,19 +745,24 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         : 'bg-[rgba(255,255,255,0.05)]'
                     }`}>
                       {isExerciseComplete ? (
-                        <Check className="w-5 h-5 text-green-500" />
+                        <Check className={`${isExerciseComplete && !isExpanded ? 'w-4 h-4' : 'w-5 h-5'} text-green-500 transition-all`} />
                       ) : (
                         <Dumbbell className={`w-5 h-5 ${isCurrent ? 'text-[#0a0a0a]' : 'text-gray-500'}`} />
                       )}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <CardTitle className="text-lg text-gray-100">
+                        <CardTitle className={`${isExerciseComplete && !isExpanded ? 'text-base' : 'text-lg'} text-gray-100 transition-all`}>
                           {exercise.exercise.name}
                         </CardTitle>
                         {isCurrent && sessionId && !isExerciseComplete && (
                           <Badge className="bg-[rgba(255,215,0,0.2)] text-gold-light border-gold-primary/30">
                             Aktiv
+                          </Badge>
+                        )}
+                        {isExerciseComplete && !isExpanded && (
+                          <Badge className="bg-[rgba(34,197,94,0.2)] text-green-400 border-green-500/30 text-xs">
+                            Klar
                           </Badge>
                         )}
                       </div>
@@ -640,6 +801,18 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
               {isExpanded && (
                 <CardContent className="space-y-4">
+                  {/* Exercise Video - Mobile only (desktop shows in sticky left column) */}
+                  {exercise.exercise.videoUrl && (
+                    <div className="mb-4 lg:hidden">
+                      <VideoPlayer
+                        videoUrl={exercise.exercise.videoUrl}
+                        thumbnailUrl={exercise.exercise.thumbnailUrl}
+                        title={exercise.exercise.name}
+                        className="w-full rounded-lg overflow-hidden"
+                      />
+                    </div>
+                  )}
+
                   {/* Logged Sets */}
                   {exerciseSets.length > 0 && (
                     <div className="space-y-2">
@@ -749,14 +922,40 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           </div>
                           <div>
                             <Label className="text-sm text-gray-400">Vikt (kg)</Label>
-                            <Input
-                              type="number"
-                              step="0.5"
-                              value={currentWeight}
-                              onChange={(e) => setCurrentWeight(e.target.value)}
-                              placeholder="0"
-                              className="bg-black/30 border-gold-primary/30 text-white mt-1"
-                            />
+                            <div className="flex items-center gap-2 mt-1">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const current = parseFloat(currentWeight) || 0
+                                  setCurrentWeight(Math.max(0, current - 2.5).toString())
+                                }}
+                                className="px-3 border-gold-primary/30 text-gray-300 hover:bg-gold-primary/10"
+                              >
+                                -2.5
+                              </Button>
+                              <Input
+                                type="number"
+                                step="0.5"
+                                value={currentWeight}
+                                onChange={(e) => setCurrentWeight(e.target.value)}
+                                placeholder="0"
+                                className="bg-black/30 border-gold-primary/30 text-white text-center"
+                              />
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const current = parseFloat(currentWeight) || 0
+                                  setCurrentWeight((current + 2.5).toString())
+                                }}
+                                className="px-3 border-gold-primary/30 text-gray-300 hover:bg-gold-primary/10"
+                              >
+                                +2.5
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -800,6 +999,19 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         </div>
                       )}
 
+                      {/* Quick Log Button - Only show if there are previous sets */}
+                      {exerciseSets.length > 0 && currentReps && (
+                        <Button
+                          onClick={() => logSet(exercise.exercise.id, exercise.id, exerciseSets.length + 1)}
+                          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white hover:opacity-90 mb-2"
+                        >
+                          <Check className="w-4 h-4 mr-2" />
+                          Quick Log: {currentReps} reps
+                          {currentSetType === 'WEIGHT' && currentWeight && ` @ ${currentWeight}kg`}
+                          {currentSetType === 'TIME' && currentTimeSeconds && ` - ${currentTimeSeconds}s`}
+                        </Button>
+                      )}
+
                       <Button
                         onClick={() => logSet(exercise.exercise.id, exercise.id, exerciseSets.length + 1)}
                         disabled={
@@ -810,21 +1022,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         <Check className="w-4 h-4 mr-2" />
                         Logga set
                       </Button>
-                    </div>
-                  )}
-
-                  {/* Exercise Video */}
-                  {exercise.exercise.videoUrl && (
-                    <div className="mb-4">
-                      <Label className="text-sm text-gray-400 mb-2 block">
-                        Övningsvideo:
-                      </Label>
-                      <VideoPlayer
-                        videoUrl={exercise.exercise.videoUrl}
-                        thumbnailUrl={exercise.exercise.thumbnailUrl}
-                        title={exercise.exercise.name}
-                        className="w-full"
-                      />
                     </div>
                   )}
 
@@ -839,8 +1036,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                 </CardContent>
               )}
             </Card>
-          )
-        })}
+            )
+          })}
+        </div>
       </div>
 
       {/* Workout Notes & Complete */}
