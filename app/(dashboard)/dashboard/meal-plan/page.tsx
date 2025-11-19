@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Utensils, Dumbbell, Sparkles, Info, Apple, Lightbulb } from 'lucide-react'
+import { Utensils, Dumbbell, Sparkles, Info, Apple, Lightbulb, ChevronUp, ChevronDown } from 'lucide-react'
 
 interface MealPlanItem {
   id: string
@@ -84,6 +84,19 @@ export default function MealPlanPage() {
   const router = useRouter()
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null)
   const [loading, setLoading] = useState(true)
+  const [expandedMeals, setExpandedMeals] = useState<Set<number>>(new Set([1])) // First meal expanded by default
+
+  const toggleMeal = (mealNumber: number) => {
+    setExpandedMeals(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(mealNumber)) {
+        newSet.delete(mealNumber)
+      } else {
+        newSet.add(mealNumber)
+      }
+      return newSet
+    })
+  }
 
   useEffect(() => {
     fetchMealPlan()
@@ -265,17 +278,28 @@ export default function MealPlanPage() {
             </TabsList>
 
             <TabsContent value="meals" className="space-y-6 mt-6">
-              {mealPlan.meals.map((meal) => (
+              {mealPlan.meals.map((meal) => {
+                const isExpanded = expandedMeals.has(meal.mealNumber)
+                return (
                 <Card key={meal.id} className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-                  <CardHeader>
+                  <CardHeader
+                    className="cursor-pointer hover:bg-white/5 transition-colors"
+                    onClick={() => toggleMeal(meal.mealNumber)}
+                  >
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-xl text-gray-100 flex items-center gap-2">
                         <Utensils className="w-5 h-5 text-gold-light" />
                         Måltid {meal.mealNumber}
                         {meal.name && <span className="text-gray-400 font-normal">- {meal.name}</span>}
                       </CardTitle>
+                      {isExpanded ? (
+                        <ChevronUp className="w-6 h-6 text-gold-light" />
+                      ) : (
+                        <ChevronDown className="w-6 h-6 text-gold-light" />
+                      )}
                     </div>
                   </CardHeader>
+                  {isExpanded && (
                   <CardContent className="space-y-3">
                     {/* Meal Instructions/Description */}
                     {meal.description && (
@@ -441,8 +465,10 @@ export default function MealPlanPage() {
                       </div>
                     </div>
                   </CardContent>
+                  )}
                 </Card>
-              ))}
+                )
+              })}
             </TabsContent>
 
             <TabsContent value="supplements" className="space-y-6 mt-6">
