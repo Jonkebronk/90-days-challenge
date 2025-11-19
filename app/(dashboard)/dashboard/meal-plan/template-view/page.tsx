@@ -1,5 +1,8 @@
 'use client'
-// Build timestamp: 2025-11-19 08:00 - Force cache bust v3
+// Build: 2025-11-19 08:15:00 UTC
+
+const BUILD_VERSION = '2025-11-19-08-15-INGREDIENTS-FIX'
+console.log('🔄 PAGE LOADED - Version:', BUILD_VERSION)
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
@@ -114,10 +117,11 @@ export default function MealPlanTemplateViewPage() {
 
   const fetchAssignedTemplates = async () => {
     try {
+      console.log('🔍 Fetching meal plans - Build version:', BUILD_VERSION)
       setIsLoading(true)
       // Add cache busting timestamp
       const timestamp = new Date().getTime()
-      const response = await fetch(`/api/my-meal-plan-templates?_=${timestamp}`, {
+      const response = await fetch(`/api/my-meal-plan-templates?_=${timestamp}&v=${BUILD_VERSION}`, {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -126,14 +130,26 @@ export default function MealPlanTemplateViewPage() {
       })
       if (response.ok) {
         const data = await response.json()
-        console.log('API Response:', data) // Debug log
+        console.log('✅ API Response received:', data)
+
+        // Log ingredient sources for debugging
+        if (data.assignments && data.assignments[0]?.meals) {
+          const firstMeal = data.assignments[0].meals[0]
+          console.log('📋 First meal data:', {
+            name: firstMeal?.name,
+            carbSource: firstMeal?.carbSource,
+            proteinSource: firstMeal?.proteinSource,
+            fatSource: firstMeal?.fatSource,
+          })
+        }
+
         setTemplates(data.assignments || [])
         setSelections(data.selections || [])
       } else {
         toast.error('Kunde inte hämta måltidsplaner')
       }
     } catch (error) {
-      console.error('Error fetching templates:', error)
+      console.error('❌ Error fetching templates:', error)
       toast.error('Ett fel uppstod')
     } finally {
       setIsLoading(false)
@@ -288,6 +304,15 @@ export default function MealPlanTemplateViewPage() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       {templates.map((template) => {
+        console.log('🍽️  Rendering template:', template.name, 'Meals:', template.meals.length)
+        template.meals.forEach((meal, idx) => {
+          console.log(`  Meal ${idx + 1}:`, meal.name, 'Has ingredients:', {
+            carb: !!meal.carbSource,
+            protein: !!meal.proteinSource,
+            fat: !!meal.fatSource,
+          })
+        })
+
         const foodMacros = calculateFoodMacros(template)
         const trainingMacros = calculateTrainingMacros(template)
         const totals = calculateTotalMacros(template)
