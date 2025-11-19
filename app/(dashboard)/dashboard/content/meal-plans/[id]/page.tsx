@@ -918,7 +918,14 @@ export default function MealPlanTemplatePage() {
                                 >
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                      {option.optionType === 'recipe' ? (
+                                      {/* Recipe Image or Icon */}
+                                      {option.optionType === 'recipe' && option.recipe?.coverImage ? (
+                                        <img
+                                          src={option.recipe.coverImage}
+                                          alt={option.recipe.title}
+                                          className="w-12 h-12 object-cover rounded-lg border border-gold-primary/20"
+                                        />
+                                      ) : option.optionType === 'recipe' ? (
                                         <ChefHat className="h-5 w-5 text-gold-light" />
                                       ) : option.optionType === 'ingredients' ? (
                                         <Apple className="h-5 w-5 text-gold-light" />
