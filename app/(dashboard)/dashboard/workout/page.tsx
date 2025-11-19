@@ -177,18 +177,6 @@ export default function WorkoutPage() {
 
       {/* Action buttons row */}
       <div className="flex flex-wrap gap-2 justify-center">
-        <Link href="/dashboard/workout/builder">
-          <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold">
-            <Plus className="w-4 h-4 mr-2" />
-            Skapa pass
-          </Button>
-        </Link>
-        <Link href="/dashboard/workout/templates">
-          <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
-            <Dumbbell className="w-4 h-4 mr-2" />
-            Mallar
-          </Button>
-        </Link>
         <Link href="/dashboard/workout/records">
           <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
             <Trophy className="w-4 h-4 mr-2" />
@@ -233,17 +221,6 @@ export default function WorkoutPage() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                    day.isRestDay
-                      ? 'bg-gray-100'
-                      : 'bg-gradient-to-br from-gold-primary to-gold-secondary'
-                  }`}>
-                    {day.isRestDay ? (
-                      <Coffee className="w-6 h-6 text-gray-500" />
-                    ) : (
-                      <Dumbbell className="w-6 h-6 text-white" />
-                    )}
-                  </div>
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-500">
