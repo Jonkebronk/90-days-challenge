@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, BarChart3, Plus, Info } from 'lucide-react'
+import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, BarChart3, Plus, Info, ChevronUp, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 
 interface WorkoutDay {
@@ -60,6 +60,19 @@ export default function WorkoutPage() {
   const { data: session } = useSession()
   const [assignment, setAssignment] = useState<AssignedWorkout | null>(null)
   const [loading, setLoading] = useState(true)
+  const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set()) // All days closed by default
+
+  const toggleDay = (dayId: string) => {
+    setExpandedDays(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(dayId)) {
+        newSet.delete(dayId)
+      } else {
+        newSet.add(dayId)
+      }
+      return newSet
+    })
+  }
 
   useEffect(() => {
     fetchAssignment()
@@ -253,7 +266,9 @@ export default function WorkoutPage() {
           {programHasWeeks ? 'Denna veckans schema' : 'Träningsschema'}
         </h2>
 
-        {daysToShow.map((day) => (
+        {daysToShow.map((day) => {
+          const isExpanded = expandedDays.has(day.id)
+          return (
           <Card
             key={day.id}
             className={`bg-white border-2 transition-all ${
@@ -262,7 +277,10 @@ export default function WorkoutPage() {
                 : 'border-gray-200 hover:border-gold-primary hover:shadow-lg'
             }`}
           >
-            <CardHeader>
+            <CardHeader
+              className="cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => toggleDay(day.id)}
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
@@ -298,47 +316,54 @@ export default function WorkoutPage() {
                   </div>
                 </div>
 
-                {!day.isRestDay && (
-                  <Link href={`/dashboard/workout/session/${day.id}`}>
-                    <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white">
-                      <Play className="w-4 h-4 mr-2" />
-                      Starta
-                    </Button>
-                  </Link>
-                )}
+                <div className="flex items-center gap-2">
+                  {!day.isRestDay && (
+                    <Link href={`/dashboard/workout/session/${day.id}`} onClick={(e) => e.stopPropagation()}>
+                      <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white">
+                        <Play className="w-4 h-4 mr-2" />
+                        Starta
+                      </Button>
+                    </Link>
+                  )}
+                  {isExpanded ? (
+                    <ChevronUp className="w-6 h-6 text-gold-primary" />
+                  ) : (
+                    <ChevronDown className="w-6 h-6 text-gold-primary" />
+                  )}
+                </div>
               </div>
             </CardHeader>
 
-            {!day.isRestDay && day.exercises && day.exercises.length > 0 && (
+            {isExpanded && !day.isRestDay && day.exercises && day.exercises.length > 0 && (
               <CardContent>
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-500 mb-2">
+                  <p className="text-sm text-gray-500 mb-3 font-semibold">
                     {day.exercises.length} övningar
                   </p>
-                  <div className="space-y-1">
-                    {day.exercises.slice(0, 3).map((ex, idx) => (
+                  <div className="space-y-2">
+                    {day.exercises.map((ex, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center gap-2 text-sm text-gray-700"
+                        className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
                       >
-                        <ChevronRight className="w-3 h-3 text-gold-primary" />
-                        <span>{ex.exercise.name}</span>
-                        <span className="text-gray-500">
-                          {ex.sets} x {ex.repsMin}{ex.repsMax && ex.repsMax !== ex.repsMin ? `-${ex.repsMax}` : ''}
-                        </span>
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white text-sm font-bold">
+                          {idx + 1}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">{ex.exercise.name}</p>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {ex.sets} set × {ex.repsMin}{ex.repsMax && ex.repsMax !== ex.repsMin ? `-${ex.repsMax}` : ''} reps
+                          </p>
+                        </div>
                       </div>
                     ))}
-                    {day.exercises.length > 3 && (
-                      <p className="text-xs text-gray-400 ml-5">
-                        +{day.exercises.length - 3} fler övningar
-                      </p>
-                    )}
                   </div>
                 </div>
               </CardContent>
             )}
           </Card>
-        ))}
+          )
+        })}
       </div>
 
       {daysToShow.length === 0 && (
