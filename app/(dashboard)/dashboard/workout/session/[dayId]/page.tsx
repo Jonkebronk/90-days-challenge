@@ -106,8 +106,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       const { dayId: id } = await params
       setDayId(id)
       await fetchWorkoutDay(id)
-      // Auto-start session when page loads
-      await startSession()
     }
     loadData()
   }, [])
@@ -443,6 +441,16 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             </p>
           </div>
         </div>
+
+        {!sessionId ? (
+          <Button
+            onClick={startSession}
+            className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
+          >
+            <Play className="w-4 h-4 mr-2" />
+            Starta träning
+          </Button>
+        ) : null}
       </div>
 
       {/* Warm-up Instructions */}
