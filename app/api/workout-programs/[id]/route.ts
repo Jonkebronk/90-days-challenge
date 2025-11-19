@@ -71,6 +71,7 @@ export async function PUT(
       name,
       description,
       difficulty,
+      categoryId,
       durationWeeks,
       published,
       days
@@ -89,6 +90,7 @@ export async function PUT(
         name,
         description,
         difficulty,
+        categoryId: categoryId || null,
         durationWeeks,
         published,
         days: days ? {

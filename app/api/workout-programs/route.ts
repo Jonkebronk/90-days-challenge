@@ -113,6 +113,7 @@ export async function POST(request: Request) {
       name,
       description,
       difficulty,
+      categoryId,
       durationWeeks,
       published,
       useMultiWeek,
@@ -133,6 +134,7 @@ export async function POST(request: Request) {
       name,
       description,
       difficulty,
+      categoryId: categoryId || null,
       durationWeeks,
       published: published || false
     }

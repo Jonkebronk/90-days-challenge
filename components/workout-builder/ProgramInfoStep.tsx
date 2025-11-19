@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,6 +22,23 @@ interface ProgramInfoStepProps {
 
 export function ProgramInfoStep({ data, onChange, onNext }: ProgramInfoStepProps) {
   const canProceed = data.name.trim().length > 0
+  const [categories, setCategories] = useState<any[]>([])
+
+  useEffect(() => {
+    fetchCategories()
+  }, [])
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/workout-categories')
+      if (response.ok) {
+        const data = await response.json()
+        setCategories(data.categories || [])
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    }
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -86,6 +104,23 @@ export function ProgramInfoStep({ data, onChange, onNext }: ProgramInfoStepProps
                 className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
               />
             </div>
+          </div>
+
+          <div>
+            <Label className="text-[rgba(255,255,255,0.7)]">Kategori</Label>
+            <Select value={data.categoryId || ''} onValueChange={(value) => onChange('categoryId', value)}>
+              <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                <SelectValue placeholder="Välj kategori (valfritt)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Ingen kategori</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex items-center gap-2">

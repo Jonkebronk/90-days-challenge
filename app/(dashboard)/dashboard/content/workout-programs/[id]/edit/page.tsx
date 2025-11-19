@@ -56,6 +56,7 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
           name: program.name,
           description: program.description || '',
           difficulty: program.difficulty || '',
+          categoryId: program.categoryId || '',
           durationWeeks: program.durationWeeks,
           published: program.published
         })

@@ -39,6 +39,7 @@ export interface ProgramInfo {
   name: string
   description: string
   difficulty: string
+  categoryId?: string
   durationWeeks: number | null
   published: boolean
 }

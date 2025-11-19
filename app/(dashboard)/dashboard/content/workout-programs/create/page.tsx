@@ -56,11 +56,13 @@ export default function CreateWorkoutProgramPage() {
   const [saving, setSaving] = useState(false)
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [exerciseSearchTerms, setExerciseSearchTerms] = useState<Record<string, string>>({})
+  const [categories, setCategories] = useState<any[]>([])
 
   // Program data
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [difficulty, setDifficulty] = useState('')
+  const [categoryId, setCategoryId] = useState('')
   const [durationWeeks, setDurationWeeks] = useState<number | null>(null)
   const [published, setPublished] = useState(false)
   const [useMultiWeek, setUseMultiWeek] = useState(false)
@@ -69,7 +71,20 @@ export default function CreateWorkoutProgramPage() {
 
   useEffect(() => {
     fetchExercises()
+    fetchCategories()
   }, [])
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/workout-categories')
+      if (response.ok) {
+        const data = await response.json()
+        setCategories(data.categories || [])
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    }
+  }
 
   const fetchExercises = async () => {
     try {
@@ -222,6 +237,7 @@ export default function CreateWorkoutProgramPage() {
         name,
         description,
         difficulty,
+        categoryId: categoryId || null,
         durationWeeks,
         published,
         useMultiWeek,
@@ -361,6 +377,23 @@ export default function CreateWorkoutProgramPage() {
                 className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1"
               />
             </div>
+          </div>
+
+          <div>
+            <Label className="text-gray-300">Kategori</Label>
+            <Select value={categoryId} onValueChange={setCategoryId}>
+              <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white">
+                <SelectValue placeholder="Välj kategori (valfritt)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Ingen kategori</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex flex-col gap-2">
