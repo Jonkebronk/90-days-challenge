@@ -32,7 +32,8 @@ export default function RootLayout({
     <html lang="sv" className="overflow-x-hidden">
       <body className="antialiased overflow-x-hidden">
         <SessionProvider>
-          <PWARegister />
+          {/* <PWARegister /> */}
+          {/* Temporarily disabled to fix cache issues */}
           {children}
           <Toaster />
           <Sonner />
