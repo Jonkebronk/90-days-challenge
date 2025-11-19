@@ -658,21 +658,18 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   {/* Exercise Instructions */}
                   {exercise.exercise.instructions && exercise.exercise.instructions.length > 0 && (
                     <div className="p-5 bg-gradient-to-br from-[rgba(255,215,0,0.12)] to-[rgba(255,140,0,0.08)] border-l-4 border-gold-primary rounded-lg shadow-lg">
-                      <div className="flex items-start gap-3">
-                        <div className="text-2xl mt-0.5">💡</div>
-                        <div className="w-full space-y-3">
-                          <Label className="text-base font-bold text-gold-light block">Instruktioner:</Label>
-                          <ol className="space-y-2.5">
-                            {exercise.exercise.instructions.map((instruction, idx) => (
-                              <li key={idx} className="flex items-start gap-3 text-sm text-gray-100 leading-relaxed">
-                                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gold-primary/20 text-gold-light font-semibold text-xs flex items-center justify-center mt-0.5">
-                                  {idx + 1}
-                                </span>
-                                <span className="flex-1 pt-0.5">{instruction}</span>
-                              </li>
-                            ))}
-                          </ol>
-                        </div>
+                      <div className="w-full space-y-3">
+                        <Label className="text-base font-bold text-gold-light block">Instruktioner:</Label>
+                        <ol className="space-y-2.5">
+                          {exercise.exercise.instructions.map((instruction, idx) => (
+                            <li key={idx} className="flex items-start gap-3 text-sm text-gray-100 leading-relaxed">
+                              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gold-primary/20 text-gold-light font-semibold text-xs flex items-center justify-center mt-0.5">
+                                {idx + 1}
+                              </span>
+                              <span className="flex-1 pt-0.5">{instruction}</span>
+                            </li>
+                          ))}
+                        </ol>
                       </div>
                     </div>
                   )}
