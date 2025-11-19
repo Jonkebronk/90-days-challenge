@@ -719,11 +719,20 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           </Badge>
                         )}
                       </div>
-                      <p className="text-sm text-gray-500">
-                        {exercise.sets} x {exercise.repsMin}
-                        {exercise.repsMax && exercise.repsMax !== exercise.repsMin ? `-${exercise.repsMax}` : ''} reps
-                        {exercise.restSeconds > 0 && ` • ${exercise.restSeconds}s vila`}
-                      </p>
+                      <div className="text-sm text-gray-400 space-y-1">
+                        <p>
+                          <span className="font-semibold text-gray-300">Sets:</span> {exercise.sets}
+                          {' • '}
+                          <span className="font-semibold text-gray-300">Repetitioner:</span> {exercise.repsMin}
+                          {exercise.repsMax && exercise.repsMax !== exercise.repsMin ? `-${exercise.repsMax}` : ''}
+                          {exercise.restSeconds > 0 && (
+                            <>
+                              {' • '}
+                              <span className="font-semibold text-gray-300">Vila:</span> {exercise.restSeconds}s
+                            </>
+                          )}
+                        </p>
+                      </div>
                       {exercise.exercise.muscleGroups.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
                           {exercise.exercise.muscleGroups.map(mg => (
@@ -763,6 +772,21 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         title={exercise.exercise.name}
                         className="w-full rounded-lg overflow-hidden"
                       />
+                    </div>
+                  )}
+
+                  {/* Exercise Description/Instructions - Show at top */}
+                  {exercise.exercise.description && (
+                    <div className="p-4 bg-[rgba(255,215,0,0.08)] border-l-4 border-gold-primary rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <div className="text-gold-light mt-0.5">💡</div>
+                        <div>
+                          <Label className="text-sm font-semibold text-gold-light mb-1 block">Instruktioner:</Label>
+                          <p className="text-sm text-gray-200 leading-relaxed whitespace-pre-line">
+                            {exercise.exercise.description}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   )}
 
@@ -846,15 +870,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         <Check className="w-4 h-4 mr-2" />
                         Logga set
                       </Button>
-                    </div>
-                  )}
-
-                  {exercise.exercise.description && (
-                    <div className="p-3 bg-white/5 rounded border border-gold-primary/10">
-                      <Label className="text-sm text-gray-400">Beskrivning:</Label>
-                      <p className="text-sm text-gray-200 mt-1">
-                        {exercise.exercise.description}
-                      </p>
                     </div>
                   )}
                 </CardContent>
