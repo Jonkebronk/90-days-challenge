@@ -318,12 +318,14 @@ export default function WorkoutPage() {
 
                 <div className="flex items-center gap-2">
                   {!day.isRestDay && (
-                    <Link href={`/dashboard/workout/session/${day.id}`} onClick={(e) => e.stopPropagation()}>
-                      <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white">
-                        <Play className="w-4 h-4 mr-2" />
-                        Starta
-                      </Button>
-                    </Link>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <Link href={`/dashboard/workout/session/${day.id}`}>
+                        <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white">
+                          <Play className="w-4 h-4 mr-2" />
+                          Starta
+                        </Button>
+                      </Link>
+                    </div>
                   )}
                   {isExpanded ? (
                     <ChevronUp className="w-6 h-6 text-gold-primary" />
