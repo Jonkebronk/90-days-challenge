@@ -93,6 +93,18 @@ export default function MealPlanTemplateViewPage() {
   const [expandedMeals, setExpandedMeals] = useState<Set<string>>(new Set())
   const [savingMeal, setSavingMeal] = useState<string | null>(null)
 
+  // Unregister service workers on mount to prevent caching issues
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        registrations.forEach((registration) => {
+          registration.unregister()
+          console.log('Service worker unregistered')
+        })
+      })
+    }
+  }, [])
+
   useEffect(() => {
     if (session?.user) {
       fetchAssignedTemplates()
@@ -102,9 +114,18 @@ export default function MealPlanTemplateViewPage() {
   const fetchAssignedTemplates = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/my-meal-plan-templates')
+      // Add cache busting timestamp
+      const timestamp = new Date().getTime()
+      const response = await fetch(`/api/my-meal-plan-templates?_=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+        },
+      })
       if (response.ok) {
         const data = await response.json()
+        console.log('API Response:', data) // Debug log
         setTemplates(data.assignments || [])
         setSelections(data.selections || [])
       } else {
