@@ -32,6 +32,17 @@ interface Meal {
   totalFat: number | null
   totalCarbs: number | null
   totalCalories: number | null
+  carbSource?: string | null
+  proteinSource?: string | null
+  fatSource?: string | null
+  options?: Array<{
+    id: string
+    recipe?: {
+      id: string
+      title: string
+      coverImage: string | null
+    } | null
+  }>
   items: MealPlanItem[]
 }
 
@@ -264,6 +275,57 @@ export default function MealPlanPage() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
+                    {/* Ingredient Sources */}
+                    {(meal.carbSource || meal.proteinSource || meal.fatSource) && (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                        {meal.carbSource && (
+                          <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
+                            <p className="text-xs text-gray-400 mb-1 font-semibold">Kolhydratskälla</p>
+                            <p className="text-sm text-gray-300 whitespace-pre-line">{meal.carbSource}</p>
+                          </div>
+                        )}
+                        {meal.proteinSource && (
+                          <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
+                            <p className="text-xs text-gray-400 mb-1 font-semibold">Proteinkälla</p>
+                            <p className="text-sm text-gray-300 whitespace-pre-line">{meal.proteinSource}</p>
+                          </div>
+                        )}
+                        {meal.fatSource && (
+                          <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
+                            <p className="text-xs text-gray-400 mb-1 font-semibold">Fettkälla</p>
+                            <p className="text-sm text-gray-300 whitespace-pre-line">{meal.fatSource}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Recipe Options with Images */}
+                    {meal.options && meal.options.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="text-sm font-semibold text-gray-200 uppercase tracking-wide mb-3">
+                          Receptförslag
+                        </h4>
+                        <div className="space-y-2">
+                          {meal.options.map((option) => option.recipe && (
+                            <div key={option.id} className="flex items-center gap-3 p-2 bg-[rgba(0,0,0,0.2)] border border-gold-primary/10 rounded-lg">
+                              {option.recipe.coverImage ? (
+                                <img
+                                  src={option.recipe.coverImage}
+                                  alt={option.recipe.title}
+                                  className="w-12 h-12 object-cover rounded-lg border border-gold-primary/20"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 bg-[rgba(255,215,0,0.1)] rounded-lg flex items-center justify-center">
+                                  <span className="text-gold-light">🍽️</span>
+                                </div>
+                              )}
+                              <p className="text-white font-medium">{option.recipe.title}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {meal.items.map((item) => (
                       <div key={item.id} className="flex items-center justify-between py-2 border-b border-gold-primary/10 last:border-0">
                         <div className="flex items-center gap-3 flex-1">

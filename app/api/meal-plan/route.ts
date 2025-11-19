@@ -77,7 +77,12 @@ export async function GET() {
           totalFat: meal.targetFat ? Number(meal.targetFat) : null,
           totalCarbs: meal.targetCarbs ? Number(meal.targetCarbs) : null,
           totalCalories: meal.targetCalories ? Number(meal.targetCalories) : null,
+          // Include ingredient sources
+          carbSource: meal.carbSource,
+          proteinSource: meal.proteinSource,
+          fatSource: meal.fatSource,
           // Transform options to items
+          options: meal.options, // Keep full option data including recipe
           items: meal.options.map((option, optIndex) => ({
             id: option.id,
             customName: option.recipe?.title || option.customName || 'Alternativ',
