@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -280,20 +281,41 @@ export default function MealPlanPage() {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
                         {meal.carbSource && (
                           <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
-                            <p className="text-xs text-gray-400 mb-1 font-semibold">Kolhydratskälla</p>
-                            <p className="text-sm text-gray-300 whitespace-pre-line">{meal.carbSource}</p>
+                            <p className="text-xs text-gray-400 mb-2 font-semibold uppercase tracking-wide">🌾 Kolhydratskälla</p>
+                            <ul className="text-sm text-gray-300 space-y-1">
+                              {meal.carbSource.split(/ELLER|eller/).map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-2">
+                                  <span className="text-gold-light mt-0.5">•</span>
+                                  <span>{item.trim()}</span>
+                                </li>
+                              ))}
+                            </ul>
                           </div>
                         )}
                         {meal.proteinSource && (
-                          <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
-                            <p className="text-xs text-gray-400 mb-1 font-semibold">Proteinkälla</p>
-                            <p className="text-sm text-gray-300 whitespace-pre-line">{meal.proteinSource}</p>
+                          <div className="bg-[rgba(59,130,246,0.05)] border border-blue-500/20 rounded-lg p-3">
+                            <p className="text-xs text-gray-400 mb-2 font-semibold uppercase tracking-wide">🥩 Proteinkälla</p>
+                            <ul className="text-sm text-gray-300 space-y-1">
+                              {meal.proteinSource.split(/ELLER|eller/).map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-2">
+                                  <span className="text-blue-400 mt-0.5">•</span>
+                                  <span>{item.trim()}</span>
+                                </li>
+                              ))}
+                            </ul>
                           </div>
                         )}
                         {meal.fatSource && (
-                          <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
-                            <p className="text-xs text-gray-400 mb-1 font-semibold">Fettkälla</p>
-                            <p className="text-sm text-gray-300 whitespace-pre-line">{meal.fatSource}</p>
+                          <div className="bg-[rgba(34,197,94,0.05)] border border-green-500/20 rounded-lg p-3">
+                            <p className="text-xs text-gray-400 mb-2 font-semibold uppercase tracking-wide">🥑 Fettkälla</p>
+                            <ul className="text-sm text-gray-300 space-y-1">
+                              {meal.fatSource.split(/ELLER|eller/).map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-2">
+                                  <span className="text-green-400 mt-0.5">•</span>
+                                  <span>{item.trim()}</span>
+                                </li>
+                              ))}
+                            </ul>
                           </div>
                         )}
                       </div>
@@ -303,24 +325,34 @@ export default function MealPlanPage() {
                     {meal.options && meal.options.length > 0 && (
                       <div className="mb-4">
                         <h4 className="text-sm font-semibold text-gray-200 uppercase tracking-wide mb-3">
-                          Receptförslag
+                          📖 Receptförslag
                         </h4>
                         <div className="space-y-2">
                           {meal.options.map((option) => option.recipe && (
-                            <div key={option.id} className="flex items-center gap-3 p-2 bg-[rgba(0,0,0,0.2)] border border-gold-primary/10 rounded-lg">
+                            <Link
+                              key={option.id}
+                              href={`/dashboard/recipes/${option.recipe.id}`}
+                              className="flex items-center gap-3 p-3 bg-[rgba(0,0,0,0.2)] border border-gold-primary/10 rounded-lg hover:border-gold-primary/30 hover:bg-[rgba(0,0,0,0.3)] transition-all cursor-pointer group"
+                            >
                               {option.recipe.coverImage ? (
                                 <img
                                   src={option.recipe.coverImage}
                                   alt={option.recipe.title}
-                                  className="w-12 h-12 object-cover rounded-lg border border-gold-primary/20"
+                                  className="w-16 h-16 object-cover rounded-lg border border-gold-primary/20 group-hover:border-gold-primary/40 transition-all"
                                 />
                               ) : (
-                                <div className="w-12 h-12 bg-[rgba(255,215,0,0.1)] rounded-lg flex items-center justify-center">
-                                  <span className="text-gold-light">🍽️</span>
+                                <div className="w-16 h-16 bg-[rgba(255,215,0,0.1)] rounded-lg flex items-center justify-center">
+                                  <span className="text-2xl">🍽️</span>
                                 </div>
                               )}
-                              <p className="text-white font-medium">{option.recipe.title}</p>
-                            </div>
+                              <div className="flex-1">
+                                <p className="text-white font-medium group-hover:text-gold-light transition-colors">{option.recipe.title}</p>
+                                <p className="text-xs text-gray-400 mt-0.5">Klicka för att se receptet</p>
+                              </div>
+                              <svg className="w-5 h-5 text-gray-400 group-hover:text-gold-light group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </Link>
                           ))}
                         </div>
                       </div>
