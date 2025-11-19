@@ -24,6 +24,7 @@ export async function GET() {
         coachId: userId
       },
       include: {
+        category: true,
         weeks: {
           include: {
             days: {
@@ -72,7 +73,17 @@ export async function GET() {
       }
     })
 
-    return NextResponse.json({ programs })
+    // Also get all categories with program counts
+    const categories = await prisma.workoutProgramCategory.findMany({
+      include: {
+        _count: {
+          select: { programs: true }
+        }
+      },
+      orderBy: { orderIndex: 'asc' }
+    })
+
+    return NextResponse.json({ programs, categories })
   } catch (error) {
     console.error('Error fetching workout programs:', error)
     return NextResponse.json(

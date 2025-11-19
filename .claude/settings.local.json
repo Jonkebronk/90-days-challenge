@@ -28,7 +28,8 @@
       "Bash(findstr:*)",
       "Bash(npx prisma migrate:*)",
       "Bash(node -e:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(head:*)"
     ],
     "deny": [],
     "ask": []

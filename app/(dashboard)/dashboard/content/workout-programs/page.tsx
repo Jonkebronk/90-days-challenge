@@ -66,6 +66,8 @@ interface Assignment {
 
 export default function WorkoutProgramsPage() {
   const [programs, setPrograms] = useState<WorkoutProgram[]>([])
+  const [categories, setCategories] = useState<WorkoutProgramCategory[]>([])
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)
   const [filteredPrograms, setFilteredPrograms] = useState<WorkoutProgram[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -77,6 +79,7 @@ export default function WorkoutProgramsPage() {
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [loadingAssignments, setLoadingAssignments] = useState(false)
   const [unassigning, setUnassigning] = useState<string | null>(null)
+  const [showCategoryView, setShowCategoryView] = useState(true)
 
   useEffect(() => {
     fetchPrograms()
@@ -93,6 +96,9 @@ export default function WorkoutProgramsPage() {
       if (response.ok) {
         const data = await response.json()
         setPrograms(data.programs || [])
+        setCategories(data.categories || [])
+        // Show category view if there are categories
+        setShowCategoryView((data.categories || []).length > 0 && !selectedCategoryId)
       }
     } catch (error) {
       console.error('Error fetching programs:', error)
@@ -197,8 +203,19 @@ export default function WorkoutProgramsPage() {
       )
     }
 
+    // If a category is selected, filter by that category
+    if (selectedCategoryId) {
+      filtered = filtered.filter(prog => prog.categoryId === selectedCategoryId)
+    }
+
     setFilteredPrograms(filtered)
   }
+
+  const getProgramsByCategory = (categoryId: string | null) => {
+    return filteredPrograms.filter(prog => prog.categoryId === categoryId)
+  }
+
+  const uncategorizedPrograms = getProgramsByCategory(null)
 
   const handleDelete = async (id: string) => {
     if (!confirm('Är du säker på att du vill ta bort detta träningsprogram?')) return
