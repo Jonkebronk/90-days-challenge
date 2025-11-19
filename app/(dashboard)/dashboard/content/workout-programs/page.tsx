@@ -367,18 +367,10 @@ export default function WorkoutProgramsPage() {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3 flex-1">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center shrink-0">
-                    <Dumbbell className="w-6 h-6 text-[#0a0a0a]" />
-                  </div>
                   <div className="flex-1 min-w-0">
                     <CardTitle className="text-lg text-gray-100 break-words">
                       {program.name}
                     </CardTitle>
-                    {program.difficulty && (
-                      <Badge className={`text-xs mt-2 ${getDifficultyColor(program.difficulty)}`}>
-                        {program.difficulty}
-                      </Badge>
-                    )}
                   </div>
                 </div>
                 <div className="flex gap-1 shrink-0">
