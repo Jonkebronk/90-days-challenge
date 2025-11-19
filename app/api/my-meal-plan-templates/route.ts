@@ -38,7 +38,19 @@ export async function GET(request: Request) {
         template: {
           include: {
             meals: {
-              include: {
+              select: {
+                id: true,
+                name: true,
+                mealType: true,
+                description: true,
+                carbSource: true,
+                proteinSource: true,
+                fatSource: true,
+                targetProtein: true,
+                targetFat: true,
+                targetCarbs: true,
+                targetCalories: true,
+                orderIndex: true,
                 options: {
                   include: {
                     recipe: {
