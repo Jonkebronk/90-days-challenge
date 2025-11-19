@@ -453,119 +453,42 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         ) : null}
       </div>
 
-      {/* Timer & Progress */}
+      {/* Warm-up Instructions */}
       {sessionId && (
-        <Card className="bg-white/5 border-2 border-gold-primary/20">
+        <Card className="bg-gradient-to-br from-orange-500/10 to-red-500/10 border-2 border-orange-500/30 backdrop-blur-[10px]">
           <CardContent className="pt-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              <div className="text-center">
-                <p className="text-sm text-gray-500 mb-1">Tid</p>
-                <div className="flex items-center justify-center gap-2">
-                  <Clock className="w-4 h-4 text-gold-light" />
-                  <p className="text-2xl font-bold text-gray-100">
-                    {formatTime(elapsedSeconds)}
+            <div className="flex items-start gap-4">
+              <div className="text-4xl">🔥</div>
+              <div className="flex-1">
+                <h3 className="text-xl font-bold text-orange-400 mb-3 tracking-wide">
+                  UPPVÄRMNING
+                </h3>
+                <div className="space-y-3 text-gray-200">
+                  <p className="text-sm leading-relaxed">
+                    Innan du börjar träningen är det viktigt att värma upp kroppen ordentligt:
                   </p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-orange-400 mt-1">•</span>
+                      <span><strong className="text-orange-300">5-10 minuter lätt cardio</strong> - Löpband, crosstrainer eller roddmaskin för att höja pulsen</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-orange-400 mt-1">•</span>
+                      <span><strong className="text-orange-300">Dynamisk stretching</strong> - Armcirklar, höftrotationer och bensvingar</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-orange-400 mt-1">•</span>
+                      <span><strong className="text-orange-300">Aktivera muskelgrupper</strong> - Lätta sets med övningarna du ska göra (50% av vikten)</span>
+                    </li>
+                  </ul>
+                  <div className="mt-4 p-3 bg-orange-500/10 border-l-4 border-orange-500 rounded">
+                    <p className="text-xs text-orange-200 italic">
+                      💡 En bra uppvärmning minskar skaderisken och förbättrar din prestation!
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-500 mb-1">Sets klara</p>
-                <p className="text-2xl font-bold text-gray-100">
-                  {totalSetsCompleted}/{totalSets}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-500 mb-1">Övningar</p>
-                <p className="text-2xl font-bold text-gray-100">
-                  {currentExerciseIndex + 1}/{workoutDay.exercises.length}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-500 mb-1">Kontroll</p>
-                <Button
-                  onClick={togglePause}
-                  size="sm"
-                  variant="outline"
-                  className="bg-[rgba(255,215,0,0.1)] border-gold-primary/30 text-gold-light hover:bg-[rgba(255,215,0,0.2)]"
-                >
-                  {isRunning ? (
-                    <>
-                      <Pause className="w-4 h-4 mr-1" />
-                      Pausa
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4 mr-1" />
-                      Fortsätt
-                    </>
-                  )}
-                </Button>
               </div>
             </div>
-
-            {/* Rest Timer Controls */}
-            {isResting && (
-              <div className="border-t border-gold-primary/10 pt-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Pause className={`w-5 h-5 ${getRestTimerColor()}`} />
-                    <div>
-                      <p className="text-sm text-gray-500">Vilotid</p>
-                      <p className={`text-3xl font-bold ${getRestTimerColor()}`}>
-                        {formatTime(restTimerSeconds)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={() => addRestTime(15)}
-                      size="sm"
-                      variant="outline"
-                      className="bg-[rgba(255,215,0,0.1)] border-gold-primary/30 text-gray-200 hover:bg-[rgba(255,215,0,0.2)]"
-                    >
-                      <Plus className="w-3 h-3 mr-1" />
-                      15s
-                    </Button>
-                    <Button
-                      onClick={() => addRestTime(30)}
-                      size="sm"
-                      variant="outline"
-                      className="bg-[rgba(255,215,0,0.1)] border-gold-primary/30 text-gray-200 hover:bg-[rgba(255,215,0,0.2)]"
-                    >
-                      <Plus className="w-3 h-3 mr-1" />
-                      30s
-                    </Button>
-                    <Button
-                      onClick={resetRestTimer}
-                      size="sm"
-                      variant="outline"
-                      className="bg-[rgba(255,215,0,0.1)] border-gold-primary/30 text-gray-200 hover:bg-[rgba(255,215,0,0.2)]"
-                    >
-                      <RotateCcw className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      onClick={skipRest}
-                      size="sm"
-                      className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
-                    >
-                      <SkipForward className="w-3 h-3 mr-1" />
-                      Hoppa över
-                    </Button>
-                  </div>
-                </div>
-                <div className="w-full bg-[rgba(255,255,255,0.1)] rounded-full h-2 overflow-hidden">
-                  <div
-                    className={`h-full transition-all duration-1000 ${
-                      getRestTimerColor().includes('22c55e') ? 'bg-[#22c55e]' :
-                      getRestTimerColor().includes('fbbf24') ? 'bg-[#fbbf24]' :
-                      'bg-[#ef4444]'
-                    }`}
-                    style={{
-                      width: `${originalRestTime > 0 ? (restTimerSeconds / originalRestTime) * 100 : 0}%`
-                    }}
-                  />
-                </div>
-              </div>
-            )}
           </CardContent>
         </Card>
       )}
