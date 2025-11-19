@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, Search, Edit, Trash2, Dumbbell, Calendar, Users, ChevronRight, UserPlus } from 'lucide-react'
+import { Plus, Search, Edit, Trash2, Dumbbell, Calendar, Users, ChevronRight, UserPlus, X } from 'lucide-react'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -38,6 +38,17 @@ interface WorkoutProgram {
   createdAt: string
 }
 
+interface Assignment {
+  id: string
+  userId: string
+  assignedAt: string
+  user: {
+    id: string
+    name: string | null
+    email: string
+  }
+}
+
 export default function WorkoutProgramsPage() {
   const [programs, setPrograms] = useState<WorkoutProgram[]>([])
   const [filteredPrograms, setFilteredPrograms] = useState<WorkoutProgram[]>([])
@@ -48,6 +59,9 @@ export default function WorkoutProgramsPage() {
   const [selectedClientId, setSelectedClientId] = useState<string>('')
   const [assignDialogOpen, setAssignDialogOpen] = useState(false)
   const [assigning, setAssigning] = useState(false)
+  const [assignments, setAssignments] = useState<Assignment[]>([])
+  const [loadingAssignments, setLoadingAssignments] = useState(false)
+  const [unassigning, setUnassigning] = useState<string | null>(null)
 
   useEffect(() => {
     fetchPrograms()
@@ -84,6 +98,46 @@ export default function WorkoutProgramsPage() {
     }
   }
 
+  const fetchAssignments = async (programId: string) => {
+    setLoadingAssignments(true)
+    try {
+      const response = await fetch(`/api/workout-programs/${programId}/assignments`)
+      if (response.ok) {
+        const data = await response.json()
+        setAssignments(data.assignments || [])
+      }
+    } catch (error) {
+      console.error('Error fetching assignments:', error)
+    } finally {
+      setLoadingAssignments(false)
+    }
+  }
+
+  const handleUnassign = async (programId: string, clientId: string) => {
+    setUnassigning(clientId)
+    try {
+      const response = await fetch(`/api/workout-programs/${programId}/unassign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId })
+      })
+
+      if (response.ok) {
+        toast.success('Tilldelning borttagen!')
+        await fetchAssignments(programId)
+        await fetchPrograms()
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Kunde inte ta bort tilldelningen')
+      }
+    } catch (error) {
+      console.error('Error unassigning program:', error)
+      toast.error('Ett fel uppstod')
+    } finally {
+      setUnassigning(null)
+    }
+  }
+
   const handleAssignProgram = async () => {
     if (!selectedClientId || !selectedProgramId) {
       toast.error('Välj en klient')
@@ -101,10 +155,11 @@ export default function WorkoutProgramsPage() {
 
       if (response.ok) {
         toast.success('Träningsprogram tilldelat!')
-        setAssignDialogOpen(false)
         setSelectedClientId('')
-        setSelectedProgramId(null)
         await fetchPrograms()
+        if (selectedProgramId) {
+          await fetchAssignments(selectedProgramId)
+        }
       } else {
         const data = await response.json()
         toast.error(data.error || 'Kunde inte tilldela programmet')
@@ -291,9 +346,13 @@ export default function WorkoutProgramsPage() {
                   if (!open) {
                     setSelectedProgramId(null)
                     setSelectedClientId('')
-                  } else if (open && clients.length === 1) {
-                    // Auto-select if there's only one client
-                    setSelectedClientId(clients[0].id)
+                    setAssignments([])
+                  } else if (open) {
+                    fetchAssignments(program.id)
+                    if (clients.length === 1) {
+                      // Auto-select if there's only one client
+                      setSelectedClientId(clients[0].id)
+                    }
                   }
                 }}>
                   <DialogTrigger asChild>
@@ -306,50 +365,114 @@ export default function WorkoutProgramsPage() {
                       Tilldela
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-white border-2 border-gold-primary/20">
+                  <DialogContent className="bg-white border-2 border-gold-primary/20 max-w-2xl">
                     <DialogHeader>
-                      <DialogTitle className="text-gray-900">Tilldela träningsprogram</DialogTitle>
+                      <DialogTitle className="text-gray-900">Hantera tilldelningar</DialogTitle>
                       <DialogDescription className="text-gray-600">
-                        Välj en klient att tilldela &quot;{program.name}&quot; till
+                        Se och hantera vilka klienter som har &quot;{program.name}&quot; tilldelat
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 pt-4">
+                    <div className="space-y-6 pt-4">
+                      {/* Current Assignments */}
                       <div>
-                        <label className="text-sm font-medium text-gray-700 mb-2 block">
-                          Välj klient
-                        </label>
-                        <Select value={selectedClientId} onValueChange={setSelectedClientId}>
-                          <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                            <SelectValue placeholder="Välj en klient..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {clients.map((client) => (
-                              <SelectItem key={client.id} value={client.id}>
-                                {client.name} ({client.email})
-                              </SelectItem>
+                        <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                          Nuvarande tilldelningar
+                        </h3>
+                        {loadingAssignments ? (
+                          <div className="flex items-center justify-center py-8">
+                            <div className="w-6 h-6 border-2 border-gold-primary border-t-transparent rounded-full animate-spin" />
+                          </div>
+                        ) : assignments.length > 0 ? (
+                          <div className="space-y-2 max-h-48 overflow-y-auto">
+                            {assignments.map((assignment) => (
+                              <div
+                                key={assignment.id}
+                                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+                              >
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-gray-900">
+                                    {assignment.user.name || assignment.user.email}
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    {assignment.user.email}
+                                  </p>
+                                  <p className="text-xs text-gray-400 mt-1">
+                                    Tilldelad {new Date(assignment.assignedAt).toLocaleDateString('sv-SE')}
+                                  </p>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleUnassign(program.id, assignment.userId)}
+                                  disabled={unassigning === assignment.userId}
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  {unassigning === assignment.userId ? (
+                                    <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                                  ) : (
+                                    <X className="w-4 h-4" />
+                                  )}
+                                </Button>
+                              </div>
                             ))}
-                          </SelectContent>
-                        </Select>
+                          </div>
+                        ) : (
+                          <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
+                            <Users className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                            <p className="text-sm text-gray-500">
+                              Inga tilldelningar ännu
+                            </p>
+                          </div>
+                        )}
                       </div>
-                      <div className="flex gap-2 justify-end">
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            setAssignDialogOpen(false)
-                            setSelectedProgramId(null)
-                            setSelectedClientId('')
-                          }}
-                          className="border-gray-300 text-gray-700"
-                        >
-                          Avbryt
-                        </Button>
-                        <Button
-                          onClick={handleAssignProgram}
-                          disabled={!selectedClientId || assigning}
-                          className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white"
-                        >
-                          {assigning ? 'Tilldelar...' : 'Tilldela'}
-                        </Button>
+
+                      {/* Assign to New Client */}
+                      <div className="border-t border-gray-200 pt-4">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                          Tilldela till ny klient
+                        </h3>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="text-sm font-medium text-gray-700 mb-2 block">
+                              Välj klient
+                            </label>
+                            <Select value={selectedClientId} onValueChange={setSelectedClientId}>
+                              <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                                <SelectValue placeholder="Välj en klient..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {clients.filter(client =>
+                                  !assignments.some(a => a.userId === client.id)
+                                ).map((client) => (
+                                  <SelectItem key={client.id} value={client.id}>
+                                    {client.name} ({client.email})
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="flex gap-2 justify-end">
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setAssignDialogOpen(false)
+                                setSelectedProgramId(null)
+                                setSelectedClientId('')
+                                setAssignments([])
+                              }}
+                              className="border-gray-300 text-gray-700"
+                            >
+                              Stäng
+                            </Button>
+                            <Button
+                              onClick={handleAssignProgram}
+                              disabled={!selectedClientId || assigning}
+                              className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white"
+                            >
+                              {assigning ? 'Tilldelar...' : 'Tilldela'}
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </DialogContent>

@@ -470,9 +470,27 @@ enum Difficulty {
   EXPERT
 }
 
+model WorkoutProgramCategory {
+  id          String  @id @default(cuid())
+  name        String // "90-Dagars Challenge", "Styrkeprogram", etc.
+  description String? @db.Text
+  slug        String  @unique
+  icon        String  @default("Dumbbell") // Lucide icon name
+  color       String  @default("#FFD700") // Category color
+  orderIndex  Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  programs WorkoutProgram[]
+
+  @@map("workout_program_categories")
+}
+
 model WorkoutProgram {
   id            String      @id @default(cuid())
   coachId       String // Coach who created this program
+  categoryId    String? // Optional category
   name          String // "Upper/Lower Split", "Full Body Beginner", etc.
   description   String? // Program description and goals
   difficulty    Difficulty? // Program difficulty level
@@ -485,6 +503,7 @@ model WorkoutProgram {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  category    WorkoutProgramCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   weeks       WorkoutProgramWeek[]
   days        WorkoutProgramDay[]
   assignments AssignedWorkoutProgram[]
