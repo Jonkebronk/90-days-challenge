@@ -41,6 +41,7 @@ interface Exercise {
     description: string | null
     videoUrl: string | null
     thumbnailUrl: string | null
+    instructions: string[]
   }
 }
 
