@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, Search, Edit, Trash2, Dumbbell, X } from 'lucide-react'
+import { Plus, Search, Edit, Trash2, Dumbbell, X, Grid3x3, List, Activity, Heart, Zap, Target } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -50,6 +50,15 @@ const EQUIPMENT_OPTIONS = [
 const CATEGORIES = ['Strength', 'Cardio', 'Flexibility', 'Mobility', 'Plyometric']
 const DIFFICULTY_LEVELS = ['Beginner', 'Intermediate', 'Advanced']
 
+const MUSCLE_GROUP_CATEGORIES = [
+  { id: 'chest', name: 'Bröst', icon: 'Activity', color: '#FF6B6B', muscleGroups: ['Chest'] },
+  { id: 'back', name: 'Rygg', icon: 'Dumbbell', color: '#4ECDC4', muscleGroups: ['Back'] },
+  { id: 'shoulders', name: 'Axlar', icon: 'Zap', color: '#95E1D3', muscleGroups: ['Shoulders'] },
+  { id: 'arms', name: 'Armar', icon: 'Target', color: '#F38181', muscleGroups: ['Biceps', 'Triceps'] },
+  { id: 'legs', name: 'Ben', icon: 'Heart', color: '#AA96DA', muscleGroups: ['Legs', 'Quads', 'Hamstrings', 'Glutes', 'Calves'] },
+  { id: 'core', name: 'Core & Mage', icon: 'Activity', color: '#FCBAD3', muscleGroups: ['Abs', 'Core'] }
+]
+
 export default function ExercisesPage() {
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([])
@@ -58,6 +67,8 @@ export default function ExercisesPage() {
   const [filterMuscleGroup, setFilterMuscleGroup] = useState<string>('all')
   const [filterEquipment, setFilterEquipment] = useState<string>('all')
   const [filterDifficulty, setFilterDifficulty] = useState<string>('all')
+  const [showCategoryView, setShowCategoryView] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -130,6 +141,37 @@ export default function ExercisesPage() {
     }
 
     setFilteredExercises(filtered)
+  }
+
+  const handleCategoryClick = (categoryId: string) => {
+    const category = MUSCLE_GROUP_CATEGORIES.find(c => c.id === categoryId)
+    if (category) {
+      setSelectedCategory(categoryId)
+      setShowCategoryView(false)
+      // Set filter to first muscle group in the category
+      if (category.muscleGroups.length > 0) {
+        setFilterMuscleGroup(category.muscleGroups[0].toLowerCase())
+      }
+    }
+  }
+
+  const getIconComponent = (iconName: string) => {
+    const icons: Record<string, any> = {
+      Activity,
+      Dumbbell,
+      Zap,
+      Target,
+      Heart
+    }
+    return icons[iconName] || Activity
+  }
+
+  const getCategoryExerciseCount = (category: typeof MUSCLE_GROUP_CATEGORIES[0]) => {
+    return exercises.filter(ex =>
+      category.muscleGroups.some(mg =>
+        ex.muscleGroups.some(emg => emg.toLowerCase() === mg.toLowerCase())
+      )
+    ).length
   }
 
   const handleOpenDialog = (exercise?: Exercise) => {
@@ -263,13 +305,39 @@ export default function ExercisesPage() {
             Hantera övningar för träningsprogram
           </p>
         </div>
-        <Button
-          onClick={() => handleOpenDialog()}
-          className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Lägg till övning
-        </Button>
+        <div className="flex gap-2">
+          <div className="flex bg-white border border-gray-200 rounded-lg p-1">
+            <Button
+              variant={showCategoryView ? "default" : "ghost"}
+              size="sm"
+              onClick={() => {
+                setShowCategoryView(true)
+                setSelectedCategory(null)
+                setFilterMuscleGroup('all')
+              }}
+              className={showCategoryView ? "bg-gradient-to-r from-gold-primary to-gold-secondary text-white" : "text-gray-600 hover:text-gray-900"}
+            >
+              <Grid3x3 className="w-4 h-4 mr-2" />
+              Kategorier
+            </Button>
+            <Button
+              variant={!showCategoryView ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setShowCategoryView(false)}
+              className={!showCategoryView ? "bg-gradient-to-r from-gold-primary to-gold-secondary text-white" : "text-gray-600 hover:text-gray-900"}
+            >
+              <List className="w-4 h-4 mr-2" />
+              Alla övningar
+            </Button>
+          </div>
+          <Button
+            onClick={() => handleOpenDialog()}
+            className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Lägg till övning
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -337,9 +405,62 @@ export default function ExercisesPage() {
         </CardContent>
       </Card>
 
-      {/* Exercises Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredExercises.map((exercise) => (
+      {/* Category Cards View */}
+      {showCategoryView && !selectedCategory ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {MUSCLE_GROUP_CATEGORIES.map((category) => {
+            const Icon = getIconComponent(category.icon)
+            const exerciseCount = getCategoryExerciseCount(category)
+
+            return (
+              <Card
+                key={category.id}
+                onClick={() => handleCategoryClick(category.id)}
+                className="bg-white border border-gray-200 hover:border-[rgba(255,215,0,0.4)] cursor-pointer transition-all group hover:shadow-lg"
+              >
+                <CardContent className="p-6">
+                  <div
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110"
+                    style={{
+                      background: `linear-gradient(135deg, ${category.color}22, ${category.color}11)`
+                    }}
+                  >
+                    <Icon
+                      className="w-8 h-8"
+                      style={{ color: category.color }}
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    {category.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    {exerciseCount} övningar
+                  </p>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      ) : (
+        <>
+          {/* Back to Categories Button */}
+          {!showCategoryView && selectedCategory && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowCategoryView(true)
+                setSelectedCategory(null)
+                setFilterMuscleGroup('all')
+              }}
+              className="mb-4"
+            >
+              ← Tillbaka till kategorier
+            </Button>
+          )}
+
+          {/* Exercises Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredExercises.map((exercise) => (
           <Card
             key={exercise.id}
             className="bg-white border border-gray-200 hover:border-[rgba(255,215,0,0.4)] transition-all"
@@ -437,18 +558,20 @@ export default function ExercisesPage() {
               )}
             </CardContent>
           </Card>
-        ))}
-      </div>
+            ))}
+          </div>
 
-      {filteredExercises.length === 0 && (
-        <Card className="bg-white border border-gray-200">
-          <CardContent className="py-12 text-center">
-            <Dumbbell className="w-12 h-12 text-[rgba(255,215,0,0.3)] mx-auto mb-4" />
-            <p className="text-gray-400">
-              Inga övningar hittades. Skapa din första övning!
-            </p>
-          </CardContent>
-        </Card>
+          {filteredExercises.length === 0 && (
+            <Card className="bg-white border border-gray-200">
+              <CardContent className="py-12 text-center">
+                <Dumbbell className="w-12 h-12 text-[rgba(255,215,0,0.3)] mx-auto mb-4" />
+                <p className="text-gray-400">
+                  Inga övningar hittades. Skapa din första övning!
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </>
       )}
 
       {/* Exercise Dialog */}
