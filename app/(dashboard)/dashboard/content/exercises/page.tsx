@@ -486,7 +486,7 @@ export default function ExercisesPage() {
             {filteredExercises.map((exercise) => (
           <Card
             key={exercise.id}
-            className="bg-white border border-gray-200 hover:border-[rgba(255,215,0,0.4)] transition-all"
+            className="bg-white/5 border-2 border-gold-primary/20 hover:border-gold-primary/60 transition-all backdrop-blur-[10px]"
           >
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -499,7 +499,7 @@ export default function ExercisesPage() {
                       {exercise.name}
                     </CardTitle>
                     {exercise.category && (
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-400 mt-1">
                         {exercise.category}
                       </p>
                     )}
@@ -510,7 +510,7 @@ export default function ExercisesPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleOpenDialog(exercise)}
-                    className="h-8 w-8 text-[rgba(255,215,0,0.8)] hover:text-gold-light hover:bg-gold-50"
+                    className="h-8 w-8 text-[rgba(255,215,0,0.8)] hover:text-gold-light hover:bg-white/10"
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
@@ -528,7 +528,7 @@ export default function ExercisesPage() {
             <CardContent className="space-y-3">
               {exercise.muscleGroups.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Muskelgrupper:</p>
+                  <p className="text-xs text-gray-400 mb-1">Muskelgrupper:</p>
                   <div className="flex flex-wrap gap-1">
                     {exercise.muscleGroups.map(muscle => (
                       <Badge
@@ -545,7 +545,7 @@ export default function ExercisesPage() {
 
               {exercise.equipmentNeeded.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Utrustning:</p>
+                  <p className="text-xs text-gray-400 mb-1">Utrustning:</p>
                   <div className="flex flex-wrap gap-1">
                     {exercise.equipmentNeeded.map(equipment => (
                       <Badge
@@ -585,7 +585,7 @@ export default function ExercisesPage() {
           </div>
 
           {filteredExercises.length === 0 && (
-            <Card className="bg-white border border-gray-200">
+            <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
               <CardContent className="py-12 text-center">
                 <Dumbbell className="w-12 h-12 text-[rgba(255,215,0,0.3)] mx-auto mb-4" />
                 <p className="text-gray-400">
