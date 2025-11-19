@@ -97,7 +97,7 @@ export function StructuredIngredientInput({
         variant="outline"
         size="sm"
         onClick={addItem}
-        className="w-full border-gold-primary/30 text-gray-300 hover:bg-gold-primary/10 mt-2"
+        className="w-full bg-white/5 border-gold-primary/30 text-gold-light hover:bg-gold-primary/10 hover:border-gold-primary/50 transition-all mt-2"
       >
         <Plus className="w-4 h-4 mr-1" />
         Lägg till alternativ
