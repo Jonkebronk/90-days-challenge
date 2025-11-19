@@ -510,11 +510,6 @@ export default function ExercisesPage() {
                     <CardTitle className="text-lg text-gray-100 break-words">
                       {exercise.name}
                     </CardTitle>
-                    {exercise.category && (
-                      <p className="text-xs text-gray-400 mt-1">
-                        {exercise.category}
-                      </p>
-                    )}
                   </div>
                 </div>
                 <div className="flex gap-1 shrink-0">
@@ -537,59 +532,19 @@ export default function ExercisesPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
-              {exercise.muscleGroups.length > 0 && (
-                <div>
-                  <p className="text-xs text-gray-400 mb-1">Muskelgrupper:</p>
-                  <div className="flex flex-wrap gap-1">
-                    {exercise.muscleGroups.map(muscle => (
-                      <Badge
-                        key={muscle}
-                        variant="outline"
-                        className="text-xs bg-[rgba(255,215,0,0.1)] border-gold-primary/30 text-gold-light"
-                      >
-                        {muscle}
-                      </Badge>
-                    ))}
-                  </div>
+            <CardContent>
+              {exercise.videoUrl && (
+                <div className="bg-white/5 border border-gold-primary/20 rounded p-2">
+                  <p className="text-xs text-gray-400 mb-1">Video URL:</p>
+                  <a
+                    href={exercise.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-400 hover:text-blue-300 underline break-all"
+                  >
+                    {exercise.videoUrl}
+                  </a>
                 </div>
-              )}
-
-              {exercise.equipmentNeeded.length > 0 && (
-                <div>
-                  <p className="text-xs text-gray-400 mb-1">Utrustning:</p>
-                  <div className="flex flex-wrap gap-1">
-                    {exercise.equipmentNeeded.map(equipment => (
-                      <Badge
-                        key={equipment}
-                        variant="outline"
-                        className="text-xs bg-[rgba(100,150,255,0.1)] border-[rgba(100,150,255,0.3)] text-[#6496ff]"
-                      >
-                        {equipment}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {exercise.difficultyLevel && (
-                <Badge
-                  className={`text-xs ${
-                    exercise.difficultyLevel.toLowerCase() === 'beginner'
-                      ? 'bg-[rgba(40,167,69,0.2)] text-[#28a745] border-[rgba(40,167,69,0.3)]'
-                      : exercise.difficultyLevel.toLowerCase() === 'intermediate'
-                      ? 'bg-[rgba(255,193,7,0.2)] text-[#ffc107] border-[rgba(255,193,7,0.3)]'
-                      : 'bg-[rgba(220,53,69,0.2)] text-[#dc3545] border-[rgba(220,53,69,0.3)]'
-                  }`}
-                >
-                  {exercise.difficultyLevel}
-                </Badge>
-              )}
-
-              {exercise.description && (
-                <p className="text-sm text-gray-400 line-clamp-2">
-                  {exercise.description}
-                </p>
               )}
             </CardContent>
           </Card>
