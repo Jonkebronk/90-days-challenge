@@ -65,6 +65,7 @@ export default function ExercisesPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterMuscleGroup, setFilterMuscleGroup] = useState<string>('all')
+  const [filterCategoryMuscleGroups, setFilterCategoryMuscleGroups] = useState<string[]>([])
   const [filterEquipment, setFilterEquipment] = useState<string>('all')
   const [filterDifficulty, setFilterDifficulty] = useState<string>('all')
   const [showCategoryView, setShowCategoryView] = useState(true)
@@ -93,7 +94,7 @@ export default function ExercisesPage() {
 
   useEffect(() => {
     filterExercises()
-  }, [exercises, searchTerm, filterMuscleGroup, filterEquipment, filterDifficulty])
+  }, [exercises, searchTerm, filterMuscleGroup, filterCategoryMuscleGroups, filterEquipment, filterDifficulty])
 
   const fetchExercises = async () => {
     try {
@@ -118,7 +119,17 @@ export default function ExercisesPage() {
       )
     }
 
-    if (filterMuscleGroup && filterMuscleGroup !== 'all') {
+    // Check category muscle groups first (when viewing a category)
+    if (filterCategoryMuscleGroups.length > 0) {
+      filtered = filtered.filter(ex =>
+        ex.muscleGroups.some(muscle =>
+          filterCategoryMuscleGroups.some(catMuscle =>
+            muscle.toLowerCase() === catMuscle.toLowerCase()
+          )
+        )
+      )
+    } else if (filterMuscleGroup && filterMuscleGroup !== 'all') {
+      // Fall back to single muscle group filter
       filtered = filtered.filter(ex =>
         ex.muscleGroups.some(muscle =>
           muscle.toLowerCase() === filterMuscleGroup.toLowerCase()
@@ -148,10 +159,9 @@ export default function ExercisesPage() {
     if (category) {
       setSelectedCategory(categoryId)
       setShowCategoryView(false)
-      // Set filter to first muscle group in the category
-      if (category.muscleGroups.length > 0) {
-        setFilterMuscleGroup(category.muscleGroups[0].toLowerCase())
-      }
+      // Set filter to ALL muscle groups in the category
+      setFilterCategoryMuscleGroups(category.muscleGroups)
+      setFilterMuscleGroup('all')
     }
   }
 
@@ -319,6 +329,7 @@ export default function ExercisesPage() {
                 setShowCategoryView(true)
                 setSelectedCategory(null)
                 setFilterMuscleGroup('all')
+                setFilterCategoryMuscleGroups([])
               }}
               className={showCategoryView ? "bg-gradient-to-r from-gold-primary to-gold-secondary text-[#0a0a0a] hover:opacity-90" : "text-gray-400 hover:text-gray-200"}
             >
@@ -474,6 +485,7 @@ export default function ExercisesPage() {
                 setShowCategoryView(true)
                 setSelectedCategory(null)
                 setFilterMuscleGroup('all')
+                setFilterCategoryMuscleGroups([])
               }}
               className="mb-4 border-gold-primary/20 text-gray-300 hover:bg-white/10 hover:text-gold-light"
             >
