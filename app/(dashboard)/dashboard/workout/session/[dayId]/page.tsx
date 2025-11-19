@@ -143,30 +143,17 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     return () => clearInterval(interval)
   }, [isResting, restTimerSeconds])
 
-  // Pre-fill form when changing exercises or when first set is logged
+  // Keep inputs empty when changing exercises
   useEffect(() => {
     if (!workoutDay) return
 
     const currentExercise = workoutDay.exercises[currentExerciseIndex]
     if (!currentExercise) return
 
-    const exerciseId = currentExercise.exerciseId
-    const currentSets = setLogs[exerciseId] || []
-
-    // If this exercise has completed sets, pre-fill with the last set's data
-    if (currentSets.length > 0) {
-      const lastSet = currentSets[currentSets.length - 1]
-      setCurrentSetType(lastSet.setType || 'WEIGHT')
-      setCurrentReps(lastSet.reps?.toString() || '')
-      setCurrentWeight(lastSet.weightKg?.toString() || '')
-      setCurrentTimeSeconds(lastSet.timeSeconds?.toString() || '')
-    } else {
-      // First set for this exercise - start fresh (could load from previous workout here)
-      setCurrentSetType('WEIGHT')
-      setCurrentReps('')
-      setCurrentWeight('')
-      setCurrentTimeSeconds('')
-    }
+    // Always start with empty inputs
+    setCurrentReps('')
+    setCurrentWeight('')
+    setCurrentTimeSeconds('')
   }, [currentExerciseIndex, workoutDay])
 
   const playRestCompleteSound = () => {
@@ -860,163 +847,34 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         Logga set {exerciseSets.length + 1}:
                       </Label>
 
-                      {/* Set Type Selector */}
-                      <div>
-                        <Label className="text-sm text-gray-400 mb-2 block">Set-typ</Label>
-                        <div className="grid grid-cols-4 gap-2">
-                          <button
-                            onClick={() => setCurrentSetType('WEIGHT')}
-                            className={`px-3 py-2 rounded text-xs font-medium transition-all ${
-                              currentSetType === 'WEIGHT'
-                                ? 'bg-[#FFD700] text-black'
-                                : 'bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)]'
-                            }`}
-                          >
-                            Vikt
-                          </button>
-                          <button
-                            onClick={() => setCurrentSetType('BODYWEIGHT')}
-                            className={`px-3 py-2 rounded text-xs font-medium transition-all ${
-                              currentSetType === 'BODYWEIGHT'
-                                ? 'bg-[#FFD700] text-black'
-                                : 'bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)]'
-                            }`}
-                          >
-                            Kroppsvikt
-                          </button>
-                          <button
-                            onClick={() => setCurrentSetType('TIME')}
-                            className={`px-3 py-2 rounded text-xs font-medium transition-all ${
-                              currentSetType === 'TIME'
-                                ? 'bg-[#FFD700] text-black'
-                                : 'bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)]'
-                            }`}
-                          >
-                            Tid
-                          </button>
-                          <button
-                            onClick={() => setCurrentSetType('REPS')}
-                            className={`px-3 py-2 rounded text-xs font-medium transition-all ${
-                              currentSetType === 'REPS'
-                                ? 'bg-[#FFD700] text-black'
-                                : 'bg-[rgba(255,255,255,0.05)] text-gray-400 hover:bg-[rgba(255,255,255,0.1)]'
-                            }`}
-                          >
-                            Reps
-                          </button>
+                      {/* Input Fields */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-sm text-gray-400">Reps</Label>
+                          <Input
+                            type="number"
+                            value={currentReps}
+                            onChange={(e) => setCurrentReps(e.target.value)}
+                            placeholder=""
+                            className="bg-black/30 border-gold-primary/30 text-white mt-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-sm text-gray-400">Vikt (kg)</Label>
+                          <Input
+                            type="number"
+                            step="0.5"
+                            value={currentWeight}
+                            onChange={(e) => setCurrentWeight(e.target.value)}
+                            placeholder=""
+                            className="bg-black/30 border-gold-primary/30 text-white mt-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
                         </div>
                       </div>
 
-                      {/* Conditional Inputs Based on Set Type */}
-                      {currentSetType === 'WEIGHT' && (
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <Label className="text-sm text-gray-400">Reps</Label>
-                            <Input
-                              type="number"
-                              value={currentReps}
-                              onChange={(e) => setCurrentReps(e.target.value)}
-                              placeholder={`${exercise.repsMin || 0}`}
-                              className="bg-black/30 border-gold-primary/30 text-white mt-1"
-                            />
-                          </div>
-                          <div>
-                            <Label className="text-sm text-gray-400">Vikt (kg)</Label>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  const current = parseFloat(currentWeight) || 0
-                                  setCurrentWeight(Math.max(0, current - 2.5).toString())
-                                }}
-                                className="px-3 border-gold-primary/30 text-gray-300 hover:bg-gold-primary/10"
-                              >
-                                -2.5
-                              </Button>
-                              <Input
-                                type="number"
-                                step="0.5"
-                                value={currentWeight}
-                                onChange={(e) => setCurrentWeight(e.target.value)}
-                                placeholder="0"
-                                className="bg-black/30 border-gold-primary/30 text-white text-center"
-                              />
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  const current = parseFloat(currentWeight) || 0
-                                  setCurrentWeight((current + 2.5).toString())
-                                }}
-                                className="px-3 border-gold-primary/30 text-gray-300 hover:bg-gold-primary/10"
-                              >
-                                +2.5
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {currentSetType === 'BODYWEIGHT' && (
-                        <div>
-                          <Label className="text-sm text-gray-400">Reps</Label>
-                          <Input
-                            type="number"
-                            value={currentReps}
-                            onChange={(e) => setCurrentReps(e.target.value)}
-                            placeholder={`${exercise.repsMin || 0}`}
-                            className="bg-black/30 border-gold-primary/30 text-white mt-1"
-                          />
-                        </div>
-                      )}
-
-                      {currentSetType === 'TIME' && (
-                        <div>
-                          <Label className="text-sm text-gray-400">Tid (sekunder)</Label>
-                          <Input
-                            type="number"
-                            value={currentTimeSeconds}
-                            onChange={(e) => setCurrentTimeSeconds(e.target.value)}
-                            placeholder="30"
-                            className="bg-black/30 border-gold-primary/30 text-white mt-1"
-                          />
-                        </div>
-                      )}
-
-                      {currentSetType === 'REPS' && (
-                        <div>
-                          <Label className="text-sm text-gray-400">Reps</Label>
-                          <Input
-                            type="number"
-                            value={currentReps}
-                            onChange={(e) => setCurrentReps(e.target.value)}
-                            placeholder={`${exercise.repsMin || 0}`}
-                            className="bg-black/30 border-gold-primary/30 text-white mt-1"
-                          />
-                        </div>
-                      )}
-
-                      {/* Quick Log Button - Only show if there are previous sets */}
-                      {exerciseSets.length > 0 && currentReps && (
-                        <Button
-                          onClick={() => logSet(exercise.exercise.id, exercise.id, exerciseSets.length + 1)}
-                          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white hover:opacity-90 mb-2"
-                        >
-                          <Check className="w-4 h-4 mr-2" />
-                          Quick Log: {currentReps} reps
-                          {currentSetType === 'WEIGHT' && currentWeight && ` @ ${currentWeight}kg`}
-                          {currentSetType === 'TIME' && currentTimeSeconds && ` - ${currentTimeSeconds}s`}
-                        </Button>
-                      )}
-
                       <Button
                         onClick={() => logSet(exercise.exercise.id, exercise.id, exerciseSets.length + 1)}
-                        disabled={
-                          currentSetType === 'TIME' ? !currentTimeSeconds : !currentReps
-                        }
+                        disabled={!currentReps}
                         className="w-full bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
                       >
                         <Check className="w-4 h-4 mr-2" />
