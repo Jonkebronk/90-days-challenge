@@ -717,14 +717,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   {/* Log Next Set */}
                   {sessionId && !isExerciseComplete && (
                     <div className="space-y-4 p-6 bg-gradient-to-br from-[rgba(255,215,0,0.1)] to-[rgba(255,140,0,0.05)] border-2 border-gold-primary/30 rounded-xl shadow-lg">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-lg font-bold text-white">
-                          Set {exerciseSets.length + 1} av {exercise.sets}
-                        </Label>
-                        <Badge variant="outline" className="border-gold-primary/50 text-gold-light">
-                          {exercise.repsMin}-{exercise.repsMax}
-                        </Badge>
-                      </div>
+                      <Label className="text-lg font-bold text-white">
+                        Set {exerciseSets.length + 1} av {exercise.sets}
+                      </Label>
 
                       {/* Show previous set if exists */}
                       {exerciseSets.length > 0 && (
