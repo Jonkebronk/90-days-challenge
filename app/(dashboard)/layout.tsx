@@ -67,6 +67,7 @@ const navigation = [
       { name: 'Vanliga frågor', href: '/dashboard/content/faqs', icon: HelpCircle },
       { name: 'Övningar', href: '/dashboard/content/exercises', icon: Activity },
       { name: 'Träningsprogram', href: '/dashboard/content/workout-programs', icon: Zap },
+      { name: 'Träningskategorier', href: '/dashboard/content/workout-categories', icon: FolderOpen },
     ]
   },
   { name: 'Kunskapsbanken', href: '/dashboard/articles', icon: Library },
