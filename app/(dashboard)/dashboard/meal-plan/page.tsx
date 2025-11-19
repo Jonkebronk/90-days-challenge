@@ -372,7 +372,8 @@ export default function MealPlanPage() {
                       </div>
                     )}
 
-                    {meal.items.map((item) => (
+                    {/* Only show items with actual amounts (not template recipe items with 0g) */}
+                    {meal.items.filter(item => item.amountG > 0).map((item) => (
                       <div key={item.id} className="flex items-center justify-between py-2 border-b border-gold-primary/10 last:border-0">
                         <div className="flex items-center gap-3 flex-1">
                           <div className="w-10 h-10 rounded-lg bg-[rgba(255,215,0,0.1)] flex items-center justify-center">
