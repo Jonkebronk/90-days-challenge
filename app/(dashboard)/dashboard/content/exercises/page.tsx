@@ -577,20 +577,6 @@ export default function ExercisesPage() {
             </div>
 
             <div>
-              <Label className="text-gray-300">Kategori</Label>
-              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                <SelectTrigger className="mt-1 bg-white/5 border-gold-primary/20 text-white">
-                  <SelectValue placeholder="Välj kategori" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map(cat => (
-                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
               <Label className="text-gray-300">Muskelgrupper</Label>
               <div className="flex flex-wrap gap-2 mt-2">
                 {MUSCLE_GROUPS.map(muscle => (
@@ -607,17 +593,6 @@ export default function ExercisesPage() {
                   </Badge>
                 ))}
               </div>
-            </div>
-
-            <div>
-              <Label className="text-gray-300">Beskrivning</Label>
-              <Textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Beskriv övningen..."
-                rows={3}
-                className="bg-white/5 border-gold-primary/20 text-white placeholder:text-gray-500 mt-1"
-              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
