@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, Search, Edit, Trash2, Dumbbell, Calendar, Users, ChevronRight, UserPlus, X } from 'lucide-react'
+import { Plus, Search, Edit, Trash2, Dumbbell, Calendar, Users, ChevronRight, UserPlus, X, ArrowLeft, BookOpen } from 'lucide-react'
 import Link from 'next/link'
+import * as LucideIcons from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -248,6 +249,22 @@ export default function WorkoutProgramsPage() {
     }
   }
 
+  const getIconComponent = (iconName: string) => {
+    const Icon = (LucideIcons as any)[iconName] || BookOpen
+    return Icon
+  }
+
+  const handleCategoryClick = (categoryId: string) => {
+    setSelectedCategoryId(categoryId)
+    setShowCategoryView(false)
+  }
+
+  const handleBackToCategories = () => {
+    setSelectedCategoryId(null)
+    setShowCategoryView(true)
+    setSearchTerm('')
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -291,9 +308,58 @@ export default function WorkoutProgramsPage() {
         </CardContent>
       </Card>
 
-      {/* Programs Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredPrograms.map((program) => (
+      {/* Category View or Programs View */}
+      {showCategoryView && categories.length > 0 ? (
+        /* Category Cards */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {categories.map((category) => {
+            const Icon = getIconComponent(category.icon)
+            return (
+              <Card
+                key={category.id}
+                onClick={() => handleCategoryClick(category.id)}
+                className="bg-[rgba(30,30,35,0.6)] border border-gray-700 hover:border-gold-primary cursor-pointer transition-all hover:shadow-lg group"
+              >
+                <CardContent className="pt-6 pb-6">
+                  <div className="flex flex-col items-center text-center space-y-4">
+                    <div
+                      className="w-20 h-20 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110"
+                      style={{
+                        background: `linear-gradient(135deg, ${category.color}22, ${category.color}11)`,
+                        border: `1px solid ${category.color}33`
+                      }}
+                    >
+                      <Icon className="w-10 h-10" style={{ color: category.color }} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white group-hover:text-gold-light transition-colors">
+                        {category.name}
+                      </h3>
+                      <p className="text-sm text-gray-400 mt-1">
+                        {category._count.programs} {category._count.programs === 1 ? 'program' : 'program'}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      ) : (
+        /* Programs Grid */
+        <>
+          {selectedCategoryId && (
+            <Button
+              variant="ghost"
+              onClick={handleBackToCategories}
+              className="text-gold-primary hover:text-gold-light hover:bg-gray-800 mb-4"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Tillbaka till kategorier
+            </Button>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredPrograms.map((program) => (
           <Card
             key={program.id}
             className="bg-white border border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all"
@@ -522,24 +588,20 @@ export default function WorkoutProgramsPage() {
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
+            ))}
+          </div>
 
-      {filteredPrograms.length === 0 && (
-        <Card className="bg-white border border-gray-200">
-          <CardContent className="py-12 text-center">
-            <Dumbbell className="w-12 h-12 text-gold-primary mx-auto mb-4" />
-            <p className="text-gray-600 mb-4">
-              Inga träningsprogram hittades. Skapa ditt första program!
-            </p>
-            <Link href="/dashboard/content/workout-programs/create">
-              <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold">
-                <Plus className="w-4 h-4 mr-2" />
-                Skapa program
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+          {filteredPrograms.length === 0 && (
+            <Card className="bg-white border border-gray-200">
+              <CardContent className="py-12 text-center">
+                <Dumbbell className="w-12 h-12 text-gold-primary mx-auto mb-4" />
+                <p className="text-gray-600 mb-4">
+                  Inga träningsprogram hittades i denna kategori.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </>
       )}
     </div>
   )
