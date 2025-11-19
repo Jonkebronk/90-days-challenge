@@ -451,7 +451,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         <Card className="bg-gradient-to-br from-orange-500/10 to-red-500/10 border-2 border-orange-500/30 backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <div className="flex items-start gap-4">
-              <div className="text-4xl">🔥</div>
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-orange-400 mb-3 tracking-wide">
                   UPPVÄRMNING
