@@ -613,22 +613,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   onClick={() => toggleExercise(index)}
                 >
                   <div className="flex items-center gap-3 flex-1">
-                    <div className={`${isExerciseComplete && !isExpanded ? 'w-8 h-8' : 'w-10 h-10'} rounded-lg flex items-center justify-center transition-all ${
-                      isExerciseComplete
-                        ? 'bg-[rgba(34,197,94,0.2)]'
-                        : isCurrent
-                        ? 'bg-gradient-to-br from-gold-light to-orange-500'
-                        : 'bg-[rgba(255,255,255,0.05)]'
-                    }`}>
-                      {isExerciseComplete ? (
-                        <Check className={`${isExerciseComplete && !isExpanded ? 'w-4 h-4' : 'w-5 h-5'} text-green-500 transition-all`} />
-                      ) : (
-                        <Dumbbell className={`w-5 h-5 ${isCurrent ? 'text-[#0a0a0a]' : 'text-gray-500'}`} />
-                      )}
-                    </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <CardTitle className={`${isExerciseComplete && !isExpanded ? 'text-base' : 'text-lg'} text-gray-100 transition-all`}>
+                        <CardTitle className={`${isExerciseComplete && !isExpanded ? 'text-lg' : 'text-xl'} text-gray-100 transition-all font-bold`}>
                           {exercise.exercise.name}
                         </CardTitle>
                         {isExerciseComplete && !isExpanded && (
@@ -637,7 +624,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           </Badge>
                         )}
                       </div>
-                      <div className="text-sm text-gray-400 space-y-0.5 mt-1">
+                      <div className="text-base text-gray-400 space-y-1 mt-2">
                         <p>
                           <span className="font-semibold text-gray-300">Sets:</span> {exercise.sets}
                         </p>
