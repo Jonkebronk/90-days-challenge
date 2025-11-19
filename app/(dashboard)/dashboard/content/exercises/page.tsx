@@ -608,47 +608,31 @@ export default function ExercisesPage() {
 
           <div className="space-y-4">
             <div>
-              <Label className="text-gray-700">Övningsnamn *</Label>
+              <Label className="text-gray-300">Övningsnamn *</Label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="T.ex. Barbell Bench Press"
-                className="bg-white border-gray-300 text-gray-900 mt-1"
+                className="bg-white/5 border-gold-primary/20 text-white placeholder:text-gray-500 mt-1"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-gray-700">Kategori</Label>
-                <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                  <SelectTrigger className="mt-1 bg-white border-gray-300 text-gray-900">
-                    <SelectValue placeholder="Välj kategori" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CATEGORIES.map(cat => (
-                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label className="text-gray-700">Svårighetsgrad</Label>
-                <Select value={formData.difficultyLevel} onValueChange={(value) => setFormData({ ...formData, difficultyLevel: value })}>
-                  <SelectTrigger className="mt-1 bg-white border-gray-300 text-gray-900">
-                    <SelectValue placeholder="Välj svårighet" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DIFFICULTY_LEVELS.map(level => (
-                      <SelectItem key={level} value={level.toLowerCase()}>{level}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div>
+              <Label className="text-gray-300">Kategori</Label>
+              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                <SelectTrigger className="mt-1 bg-white/5 border-gold-primary/20 text-white">
+                  <SelectValue placeholder="Välj kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CATEGORIES.map(cat => (
+                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
-              <Label className="text-gray-700">Muskelgrupper</Label>
+              <Label className="text-gray-300">Muskelgrupper</Label>
               <div className="flex flex-wrap gap-2 mt-2">
                 {MUSCLE_GROUPS.map(muscle => (
                   <Badge
@@ -657,7 +641,7 @@ export default function ExercisesPage() {
                     className={`cursor-pointer transition-all ${
                       formData.muscleGroups.includes(muscle)
                         ? 'bg-[rgba(255,215,0,0.3)] border-[rgba(255,215,0,0.5)] text-gold-light'
-                        : 'bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-gray-500 hover:bg-gold-50'
+                        : 'bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-gray-400 hover:bg-gold-primary/10'
                     }`}
                   >
                     {muscle}
@@ -667,53 +651,34 @@ export default function ExercisesPage() {
             </div>
 
             <div>
-              <Label className="text-gray-700">Utrustning</Label>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {EQUIPMENT_OPTIONS.map(equipment => (
-                  <Badge
-                    key={equipment}
-                    onClick={() => toggleEquipment(equipment)}
-                    className={`cursor-pointer transition-all ${
-                      formData.equipmentNeeded.includes(equipment)
-                        ? 'bg-[rgba(100,150,255,0.3)] border-[rgba(100,150,255,0.5)] text-[#6496ff]'
-                        : 'bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-gray-500 hover:bg-gold-50'
-                    }`}
-                  >
-                    {equipment}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <Label className="text-gray-700">Beskrivning</Label>
+              <Label className="text-gray-300">Beskrivning</Label>
               <Textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Beskriv övningen..."
                 rows={3}
-                className="bg-white border-gray-300 text-gray-900 mt-1"
+                className="bg-white/5 border-gold-primary/20 text-white placeholder:text-gray-500 mt-1"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-gray-700">Video URL</Label>
+                <Label className="text-gray-300">Video URL</Label>
                 <Input
                   value={formData.videoUrl}
                   onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
                   placeholder="YouTube/Vimeo URL"
-                  className="bg-white border-gray-300 text-gray-900 mt-1"
+                  className="bg-white/5 border-gold-primary/20 text-white placeholder:text-gray-500 mt-1"
                 />
               </div>
 
               <div>
-                <Label className="text-gray-700">Thumbnail URL</Label>
+                <Label className="text-gray-300">Thumbnail URL</Label>
                 <Input
                   value={formData.thumbnailUrl}
                   onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })}
                   placeholder="Image URL"
-                  className="bg-white border-gray-300 text-gray-900 mt-1"
+                  className="bg-white/5 border-gold-primary/20 text-white placeholder:text-gray-500 mt-1"
                 />
               </div>
             </div>
@@ -721,7 +686,7 @@ export default function ExercisesPage() {
             {/* Video Preview */}
             {formData.videoUrl && (
               <div>
-                <Label className="text-gray-700 mb-2 block">Videoförhandsvisning:</Label>
+                <Label className="text-gray-300 mb-2 block">Videoförhandsvisning:</Label>
                 <VideoPlayer
                   videoUrl={formData.videoUrl}
                   thumbnailUrl={formData.thumbnailUrl}
@@ -732,14 +697,14 @@ export default function ExercisesPage() {
             )}
 
             <div>
-              <Label className="text-gray-700">Instruktioner</Label>
+              <Label className="text-gray-300">Instruktioner</Label>
               <div className="flex gap-2 mt-1">
                 <Input
                   value={instructionInput}
                   onChange={(e) => setInstructionInput(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addInstruction())}
                   placeholder="Lägg till instruktion..."
-                  className="bg-white border-gray-300 text-gray-900"
+                  className="bg-white/5 border-gold-primary/20 text-white placeholder:text-gray-500"
                 />
                 <Button
                   type="button"
@@ -782,14 +747,14 @@ export default function ExercisesPage() {
             <Button
               variant="outline"
               onClick={handleCloseDialog}
-              className="border-gold-primary/20 text-gray-700 hover:bg-gold-50"
+              className="border-gold-primary/20 text-gray-300 hover:bg-white/10"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={!formData.name}
-              className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
+              className="bg-gradient-to-r from-gold-primary to-gold-secondary text-[#0a0a0a] hover:opacity-90 disabled:opacity-50"
             >
               {editingExercise ? 'Uppdatera' : 'Skapa'} övning
             </Button>
