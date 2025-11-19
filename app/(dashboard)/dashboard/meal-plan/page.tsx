@@ -84,7 +84,7 @@ export default function MealPlanPage() {
   const router = useRouter()
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null)
   const [loading, setLoading] = useState(true)
-  const [expandedMeals, setExpandedMeals] = useState<Set<number>>(new Set([1])) // First meal expanded by default
+  const [expandedMeals, setExpandedMeals] = useState<Set<number>>(new Set()) // All meals closed by default
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
