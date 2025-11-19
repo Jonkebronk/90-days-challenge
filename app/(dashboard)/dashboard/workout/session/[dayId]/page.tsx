@@ -458,26 +458,18 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                 </h3>
                 <div className="space-y-3 text-gray-200">
                   <p className="text-sm leading-relaxed">
-                    Innan du börjar träningen är det viktigt att värma upp kroppen ordentligt:
+                    Inför din första övning så vill jag att du gör lättare uppvärmningsset för att stegra vikten till ditt arbetsset. Under stegringen i vikt ska du ha ett fokus på att börja bana in rörelsen och göra allt så perfekt du kan teknikmässigt.
                   </p>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-start gap-2">
-                      <span className="text-orange-400 mt-1">•</span>
-                      <span><strong className="text-orange-300">5-10 minuter lätt cardio</strong> - Löpband, crosstrainer eller roddmaskin för att höja pulsen</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-orange-400 mt-1">•</span>
-                      <span><strong className="text-orange-300">Dynamisk stretching</strong> - Armcirklar, höftrotationer och bensvingar</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-orange-400 mt-1">•</span>
-                      <span><strong className="text-orange-300">Aktivera muskelgrupper</strong> - Lätta sets med övningarna du ska göra (50% av vikten)</span>
-                    </li>
-                  </ul>
-                  <div className="mt-4 p-3 bg-orange-500/10 border-l-4 border-orange-500 rounded">
-                    <p className="text-xs text-orange-200 italic">
-                      💡 En bra uppvärmning minskar skaderisken och förbättrar din prestation!
-                    </p>
+                  <p className="text-sm leading-relaxed">
+                    Du kan upprepa detta inför muskelgrupper där du inte känner dig tillräcklig varm eller vill finslipa tekniken innan arbetsseten.
+                  </p>
+                  <div className="mt-4">
+                    <Link
+                      href="/dashboard/articles/cmhsau6kk0039qf0qiciv00bt"
+                      className="inline-flex items-center gap-2 text-sm text-orange-300 hover:text-orange-200 underline underline-offset-4 transition-colors"
+                    >
+                      Läs mer om uppvärmning här
+                    </Link>
                   </div>
                 </div>
               </div>
