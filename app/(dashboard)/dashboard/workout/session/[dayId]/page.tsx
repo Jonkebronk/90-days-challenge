@@ -722,7 +722,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           Set {exerciseSets.length + 1} av {exercise.sets}
                         </Label>
                         <Badge variant="outline" className="border-gold-primary/50 text-gold-light">
-                          {exercise.repsMin}-{exercise.repsMax} reps
+                          {exercise.repsMin}-{exercise.repsMax}
                         </Badge>
                       </div>
 
