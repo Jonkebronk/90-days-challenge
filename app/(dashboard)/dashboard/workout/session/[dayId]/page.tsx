@@ -631,11 +631,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         <CardTitle className={`${isExerciseComplete && !isExpanded ? 'text-base' : 'text-lg'} text-gray-100 transition-all`}>
                           {exercise.exercise.name}
                         </CardTitle>
-                        {isCurrent && sessionId && !isExerciseComplete && (
-                          <Badge className="bg-[rgba(255,215,0,0.2)] text-gold-light border-gold-primary/30">
-                            Aktiv
-                          </Badge>
-                        )}
                         {isExerciseComplete && !isExpanded && (
                           <Badge className="bg-[rgba(34,197,94,0.2)] text-green-400 border-green-500/30 text-xs">
                             Klar
