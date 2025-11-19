@@ -294,19 +294,24 @@ export default function ExercisesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
+      <div className="text-center mb-8">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-6 opacity-20" />
+        <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-3">
+          Övningsbank
+        </h1>
+        <p className="text-gray-400 text-sm tracking-[1px]">
+          Hantera övningar för träningsprogram
+        </p>
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
+      </div>
+
+      {/* Action Buttons */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Övningsbank
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Hantera övningar för träningsprogram
-          </p>
-        </div>
+        <div></div>
         <div className="flex gap-2">
-          <div className="flex bg-white border border-gray-200 rounded-lg p-1">
+          <div className="flex bg-white/5 border-2 border-gold-primary/20 rounded-lg p-1">
             <Button
               variant={showCategoryView ? "default" : "ghost"}
               size="sm"
@@ -315,7 +320,7 @@ export default function ExercisesPage() {
                 setSelectedCategory(null)
                 setFilterMuscleGroup('all')
               }}
-              className={showCategoryView ? "bg-gradient-to-r from-gold-primary to-gold-secondary text-white" : "text-gray-600 hover:text-gray-900"}
+              className={showCategoryView ? "bg-gradient-to-r from-gold-primary to-gold-secondary text-[#0a0a0a] hover:opacity-90" : "text-gray-400 hover:text-gray-200"}
             >
               <Grid3x3 className="w-4 h-4 mr-2" />
               Kategorier
@@ -324,7 +329,7 @@ export default function ExercisesPage() {
               variant={!showCategoryView ? "default" : "ghost"}
               size="sm"
               onClick={() => setShowCategoryView(false)}
-              className={!showCategoryView ? "bg-gradient-to-r from-gold-primary to-gold-secondary text-white" : "text-gray-600 hover:text-gray-900"}
+              className={!showCategoryView ? "bg-gradient-to-r from-gold-primary to-gold-secondary text-[#0a0a0a] hover:opacity-90" : "text-gray-400 hover:text-gray-200"}
             >
               <List className="w-4 h-4 mr-2" />
               Alla övningar
@@ -332,7 +337,7 @@ export default function ExercisesPage() {
           </div>
           <Button
             onClick={() => handleOpenDialog()}
-            className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
+            className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-[#0a0a0a] font-semibold"
           >
             <Plus className="w-4 h-4 mr-2" />
             Lägg till övning
@@ -341,26 +346,26 @@ export default function ExercisesPage() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <Label className="text-gray-700">Sök</Label>
+              <Label className="text-gray-300">Sök</Label>
               <div className="relative mt-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
                   placeholder="Sök övning..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-white border-gray-300 text-gray-900"
+                  className="pl-10 bg-white/5 border-gold-primary/20 text-white"
                 />
               </div>
             </div>
 
             <div>
-              <Label className="text-gray-700">Muskelgrupp</Label>
+              <Label className="text-gray-300">Muskelgrupp</Label>
               <Select value={filterMuscleGroup} onValueChange={setFilterMuscleGroup}>
-                <SelectTrigger className="mt-1 bg-white border-gray-300 text-gray-900">
+                <SelectTrigger className="mt-1 bg-white/5 border-gold-primary/20 text-white">
                   <SelectValue placeholder="Alla muskelgrupper" />
                 </SelectTrigger>
                 <SelectContent>
@@ -373,9 +378,9 @@ export default function ExercisesPage() {
             </div>
 
             <div>
-              <Label className="text-gray-700">Utrustning</Label>
+              <Label className="text-gray-300">Utrustning</Label>
               <Select value={filterEquipment} onValueChange={setFilterEquipment}>
-                <SelectTrigger className="mt-1 bg-white border-gray-300 text-gray-900">
+                <SelectTrigger className="mt-1 bg-white/5 border-gold-primary/20 text-white">
                   <SelectValue placeholder="All utrustning" />
                 </SelectTrigger>
                 <SelectContent>
@@ -388,9 +393,9 @@ export default function ExercisesPage() {
             </div>
 
             <div>
-              <Label className="text-gray-700">Svårighet</Label>
+              <Label className="text-gray-300">Svårighet</Label>
               <Select value={filterDifficulty} onValueChange={setFilterDifficulty}>
-                <SelectTrigger className="mt-1 bg-white border-gray-300 text-gray-900">
+                <SelectTrigger className="mt-1 bg-white/5 border-gold-primary/20 text-white">
                   <SelectValue placeholder="Alla nivåer" />
                 </SelectTrigger>
                 <SelectContent>
@@ -416,26 +421,44 @@ export default function ExercisesPage() {
               <Card
                 key={category.id}
                 onClick={() => handleCategoryClick(category.id)}
-                className="bg-white border border-gray-200 hover:border-[rgba(255,215,0,0.4)] cursor-pointer transition-all group hover:shadow-lg"
+                className="group relative bg-white/5 border-2 border-gold-primary/20 hover:border-gold-primary/60 hover:bg-white/10 transition-all duration-300 cursor-pointer backdrop-blur-[10px] overflow-hidden"
               >
-                <CardContent className="p-6">
+                {/* Gradient Overlay */}
+                <div
+                  className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity"
+                  style={{
+                    background: `linear-gradient(135deg, ${category.color}30 0%, transparent 100%)`
+                  }}
+                />
+
+                <CardContent className="relative p-8 flex flex-col items-center text-center">
+                  {/* Icon */}
                   <div
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110"
-                    style={{
-                      background: `linear-gradient(135deg, ${category.color}22, ${category.color}11)`
-                    }}
+                    className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg"
+                    style={{ backgroundColor: `${category.color}20` }}
                   >
                     <Icon
-                      className="w-8 h-8"
+                      className="h-10 w-10"
                       style={{ color: category.color }}
                     />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+
+                  {/* Category Name */}
+                  <h3 className="text-xl font-bold text-gold-light mb-2 tracking-[1px]">
                     {category.name}
                   </h3>
-                  <p className="text-gray-600 text-sm">
-                    {exerciseCount} övningar
+
+                  {/* Exercise Count */}
+                  <p className="text-gray-400 text-sm">
+                    {exerciseCount} {exerciseCount === 1 ? 'övning' : 'övningar'}
                   </p>
+
+                  {/* Arrow indicator */}
+                  <div className="mt-4 text-gold-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </CardContent>
               </Card>
             )
@@ -452,7 +475,7 @@ export default function ExercisesPage() {
                 setSelectedCategory(null)
                 setFilterMuscleGroup('all')
               }}
-              className="mb-4"
+              className="mb-4 border-gold-primary/20 text-gray-300 hover:bg-white/10 hover:text-gold-light"
             >
               ← Tillbaka till kategorier
             </Button>
