@@ -297,10 +297,15 @@ export default function MealPlanPage() {
                           <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
                             <p className="text-xs text-gray-400 mb-2 font-semibold uppercase tracking-wide">🌾 Kolhydratskälla</p>
                             <ul className="text-sm text-gray-300 space-y-1">
-                              {meal.carbSource.split(/ELLER|eller/).map((item, idx) => (
-                                <li key={idx} className="flex items-start gap-2">
-                                  <span className="text-gold-light mt-0.5">•</span>
-                                  <span>{item.trim()}</span>
+                              {meal.carbSource.split(/ELLER|eller/).map((item, idx, arr) => (
+                                <li key={idx}>
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-gold-light mt-0.5">•</span>
+                                    <span>{item.trim()}</span>
+                                  </div>
+                                  {idx < arr.length - 1 && (
+                                    <p className="text-xs text-gold-light font-semibold my-1 ml-6">ELLER</p>
+                                  )}
                                 </li>
                               ))}
                             </ul>
@@ -310,10 +315,15 @@ export default function MealPlanPage() {
                           <div className="bg-[rgba(59,130,246,0.05)] border border-blue-500/20 rounded-lg p-3">
                             <p className="text-xs text-gray-400 mb-2 font-semibold uppercase tracking-wide">🥩 Proteinkälla</p>
                             <ul className="text-sm text-gray-300 space-y-1">
-                              {meal.proteinSource.split(/ELLER|eller/).map((item, idx) => (
-                                <li key={idx} className="flex items-start gap-2">
-                                  <span className="text-blue-400 mt-0.5">•</span>
-                                  <span>{item.trim()}</span>
+                              {meal.proteinSource.split(/ELLER|eller/).map((item, idx, arr) => (
+                                <li key={idx}>
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-blue-400 mt-0.5">•</span>
+                                    <span>{item.trim()}</span>
+                                  </div>
+                                  {idx < arr.length - 1 && (
+                                    <p className="text-xs text-blue-400 font-semibold my-1 ml-6">ELLER</p>
+                                  )}
                                 </li>
                               ))}
                             </ul>
@@ -323,10 +333,15 @@ export default function MealPlanPage() {
                           <div className="bg-[rgba(34,197,94,0.05)] border border-green-500/20 rounded-lg p-3">
                             <p className="text-xs text-gray-400 mb-2 font-semibold uppercase tracking-wide">🥑 Fettkälla</p>
                             <ul className="text-sm text-gray-300 space-y-1">
-                              {meal.fatSource.split(/ELLER|eller/).map((item, idx) => (
-                                <li key={idx} className="flex items-start gap-2">
-                                  <span className="text-green-400 mt-0.5">•</span>
-                                  <span>{item.trim()}</span>
+                              {meal.fatSource.split(/ELLER|eller/).map((item, idx, arr) => (
+                                <li key={idx}>
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-green-400 mt-0.5">•</span>
+                                    <span>{item.trim()}</span>
+                                  </div>
+                                  {idx < arr.length - 1 && (
+                                    <p className="text-xs text-green-400 font-semibold my-1 ml-6">ELLER</p>
+                                  )}
                                 </li>
                               ))}
                             </ul>
