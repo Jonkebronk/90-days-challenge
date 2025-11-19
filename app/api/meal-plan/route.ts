@@ -73,6 +73,7 @@ export async function GET() {
           id: meal.id,
           mealNumber: index + 1,
           name: meal.name,
+          description: meal.description,
           totalProtein: meal.targetProtein ? Number(meal.targetProtein) : null,
           totalFat: meal.targetFat ? Number(meal.targetFat) : null,
           totalCarbs: meal.targetCarbs ? Number(meal.targetCarbs) : null,

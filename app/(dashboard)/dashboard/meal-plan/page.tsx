@@ -29,6 +29,7 @@ interface Meal {
   id: string
   mealNumber: number
   name: string | null
+  description?: string | null
   totalProtein: number | null
   totalFat: number | null
   totalCarbs: number | null
@@ -276,6 +277,19 @@ export default function MealPlanPage() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
+                    {/* Meal Instructions/Description */}
+                    {meal.description && (
+                      <div className="bg-[rgba(59,130,246,0.1)] border border-blue-500/30 rounded-lg p-4 mb-4">
+                        <div className="flex items-start gap-2">
+                          <span className="text-blue-400 text-lg">💡</span>
+                          <div>
+                            <p className="text-sm font-semibold text-blue-300 mb-1">Så här gör du måltiden:</p>
+                            <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">{meal.description}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Ingredient Sources */}
                     {(meal.carbSource || meal.proteinSource || meal.fatSource) && (
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
