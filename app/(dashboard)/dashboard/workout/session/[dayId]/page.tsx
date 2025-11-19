@@ -676,39 +676,43 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Logged Sets */}
                   {exerciseSets.length > 0 && (
-                    <div className="space-y-2">
-                      <Label className="text-sm font-bold text-white">Genomförda sets:</Label>
+                    <div className="space-y-3">
+                      <Label className="text-base font-bold text-white">Genomförda sets:</Label>
                       {exerciseSets.map((set, setIdx) => (
                         <div
                           key={setIdx}
-                          className="flex items-center gap-3 p-2 bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.3)] rounded"
+                          className="flex items-center gap-4 p-3 bg-gradient-to-r from-[rgba(34,197,94,0.15)] to-[rgba(34,197,94,0.08)] border-l-4 border-green-500/50 rounded-lg shadow"
                         >
-                          <Check className="w-4 h-4 text-green-500" />
-                          <span className="text-sm text-gray-200">
-                            Set {set.setNumber}:
-                          </span>
-                          {set.setType === 'TIME' ? (
-                            <span className="text-sm font-semibold text-gray-100">
-                              {set.timeSeconds}s
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                            <Check className="w-5 h-5 text-green-400" />
+                          </div>
+                          <div className="flex items-center gap-3 flex-1">
+                            <span className="text-sm font-bold text-white">
+                              Set {set.setNumber}:
                             </span>
-                          ) : (
-                            <>
-                              <span className="text-sm font-semibold text-gray-100">
-                                {set.reps || 0} reps
+                            {set.setType === 'TIME' ? (
+                              <span className="text-base font-semibold text-gray-100">
+                                {set.timeSeconds}s
                               </span>
-                              {set.setType === 'WEIGHT' && set.weightKg && (
-                                <>
-                                  <span className="text-sm text-gray-500">@</span>
-                                  <span className="text-sm font-semibold text-gray-100">
-                                    {set.weightKg} kg
-                                  </span>
-                                </>
-                              )}
-                              {set.setType === 'BODYWEIGHT' && (
-                                <span className="text-xs text-gray-500 ml-1">(kroppsvikt)</span>
-                              )}
-                            </>
-                          )}
+                            ) : (
+                              <>
+                                <span className="text-base font-semibold text-gray-100">
+                                  {set.reps || 0} reps
+                                </span>
+                                {set.setType === 'WEIGHT' && set.weightKg && (
+                                  <>
+                                    <span className="text-sm text-gray-400">×</span>
+                                    <span className="text-base font-semibold text-gray-100">
+                                      {set.weightKg} kg
+                                    </span>
+                                  </>
+                                )}
+                                {set.setType === 'BODYWEIGHT' && (
+                                  <span className="text-xs text-gray-400 ml-1">(kroppsvikt)</span>
+                                )}
+                              </>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -720,13 +724,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       <Label className="text-lg font-bold text-white">
                         Set {exerciseSets.length + 1} av {exercise.sets}
                       </Label>
-
-                      {/* Show previous set if exists */}
-                      {exerciseSets.length > 0 && (
-                        <div className="text-xs text-gray-400 bg-black/20 p-2 rounded">
-                          Förra set: {exerciseSets[exerciseSets.length - 1].reps} reps × {exerciseSets[exerciseSets.length - 1].weightKg} kg
-                        </div>
-                      )}
 
                       {/* Input Fields */}
                       <div className="grid grid-cols-2 gap-4">
