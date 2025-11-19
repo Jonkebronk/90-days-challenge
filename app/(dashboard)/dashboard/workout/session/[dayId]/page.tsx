@@ -656,19 +656,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           </p>
                         )}
                       </div>
-                      {exercise.exercise.muscleGroups.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {exercise.exercise.muscleGroups.map(mg => (
-                            <Badge
-                              key={mg}
-                              variant="outline"
-                              className="text-xs bg-[rgba(255,215,0,0.05)] border-gold-primary/20 text-[rgba(255,215,0,0.8)]"
-                            >
-                              {mg}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
