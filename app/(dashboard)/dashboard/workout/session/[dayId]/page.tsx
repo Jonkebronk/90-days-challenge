@@ -703,7 +703,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   {/* Logged Sets */}
                   {exerciseSets.length > 0 && (
                     <div className="space-y-2">
-                      <Label className="text-sm text-gray-400">Genomförda sets:</Label>
+                      <Label className="text-sm font-bold text-white">Genomförda sets:</Label>
                       {exerciseSets.map((set, setIdx) => (
                         <div
                           key={setIdx}
