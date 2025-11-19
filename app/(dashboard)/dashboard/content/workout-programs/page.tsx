@@ -24,6 +24,19 @@ import {
 } from '@/components/ui/select'
 import { toast } from 'sonner'
 
+interface WorkoutProgramCategory {
+  id: string
+  name: string
+  description: string | null
+  slug: string
+  icon: string
+  color: string
+  orderIndex: number
+  _count: {
+    programs: number
+  }
+}
+
 interface WorkoutProgram {
   id: string
   name: string
@@ -31,6 +44,8 @@ interface WorkoutProgram {
   difficulty: string | null
   durationWeeks: number | null
   published: boolean
+  categoryId: string | null
+  category: WorkoutProgramCategory | null
   days: any[]
   _count: {
     assignments: number
@@ -41,7 +56,7 @@ interface WorkoutProgram {
 interface Assignment {
   id: string
   userId: string
-  assignedAt: string
+  createdAt: string
   user: {
     id: string
     name: string | null
@@ -397,7 +412,7 @@ export default function WorkoutProgramsPage() {
                                     {assignment.user.email}
                                   </p>
                                   <p className="text-xs text-gray-400 mt-1">
-                                    Tilldelad {new Date(assignment.assignedAt).toLocaleDateString('sv-SE')}
+                                    Tilldelad {new Date(assignment.createdAt).toLocaleDateString('sv-SE')}
                                   </p>
                                 </div>
                                 <Button
