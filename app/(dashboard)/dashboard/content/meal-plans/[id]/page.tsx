@@ -40,6 +40,7 @@ import {
 import { toast } from 'sonner'
 import { AddMealOptionDialog } from '@/components/AddMealOptionDialog'
 import { AssignTemplateDialog } from '@/components/AssignTemplateDialog'
+import { StructuredIngredientInput } from '@/components/StructuredIngredientInput'
 
 type TemplateMealOption = {
   id: string
@@ -857,67 +858,61 @@ export default function MealPlanTemplatePage() {
                       <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Carb Source */}
                         <div>
-                          <Label htmlFor={`carb-${meal.id}`} className="text-gray-200 mb-2 block">
+                          <Label className="text-gray-200 mb-2 block">
                             Kolhydratskälla
                           </Label>
-                          <Textarea
-                            id={`carb-${meal.id}`}
+                          <StructuredIngredientInput
                             value={meal.carbSource || ''}
-                            onChange={(e) => {
-                              const updatedMeal = { ...meal, carbSource: e.target.value }
+                            onChange={(newValue) => {
+                              const updatedMeal = { ...meal, carbSource: newValue }
                               const updated = template!.meals.map((m) =>
                                 m.id === meal.id ? updatedMeal : m
                               )
                               setTemplate({ ...template!, meals: updated })
                               debouncedSaveMeal(updatedMeal)
                             }}
-                            placeholder="50g Havregryn ELLER 4dl Müsli"
-                            rows={4}
-                            className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)] font-mono text-sm"
+                            placeholder="50g Havregryn"
+                            label="Kolhydratskälla"
                           />
                         </div>
 
                         {/* Protein Source */}
                         <div>
-                          <Label htmlFor={`protein-${meal.id}`} className="text-gray-200 mb-2 block">
+                          <Label className="text-gray-200 mb-2 block">
                             Proteinkälla
                           </Label>
-                          <Textarea
-                            id={`protein-${meal.id}`}
+                          <StructuredIngredientInput
                             value={meal.proteinSource || ''}
-                            onChange={(e) => {
-                              const updatedMeal = { ...meal, proteinSource: e.target.value }
+                            onChange={(newValue) => {
+                              const updatedMeal = { ...meal, proteinSource: newValue }
                               const updated = template!.meals.map((m) =>
                                 m.id === meal.id ? updatedMeal : m
                               )
                               setTemplate({ ...template!, meals: updated })
                               debouncedSaveMeal(updatedMeal)
                             }}
-                            placeholder="200g Kvarg ELLER Keso"
-                            rows={4}
-                            className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)] font-mono text-sm"
+                            placeholder="200g Kvarg"
+                            label="Proteinkälla"
                           />
                         </div>
 
                         {/* Fat Source */}
                         <div>
-                          <Label htmlFor={`fat-${meal.id}`} className="text-gray-200 mb-2 block">
+                          <Label className="text-gray-200 mb-2 block">
                             Fettkälla
                           </Label>
-                          <Textarea
-                            id={`fat-${meal.id}`}
+                          <StructuredIngredientInput
                             value={meal.fatSource || ''}
-                            onChange={(e) => {
-                              const updatedMeal = { ...meal, fatSource: e.target.value }
+                            onChange={(newValue) => {
+                              const updatedMeal = { ...meal, fatSource: newValue }
                               const updated = template!.meals.map((m) =>
                                 m.id === meal.id ? updatedMeal : m
                               )
                               setTemplate({ ...template!, meals: updated })
                               debouncedSaveMeal(updatedMeal)
                             }}
-                            placeholder="1 Ägg eller 20g Nötter"
-                            rows={4}
-                            className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)] font-mono text-sm"
+                            placeholder="1 Ägg"
+                            label="Fettkälla"
                           />
                         </div>
                       </div>
