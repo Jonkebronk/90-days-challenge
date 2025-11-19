@@ -22,6 +22,31 @@ import Image from 'next/image'
 import { MacroProgressBar } from '@/components/macro-progress-bar'
 import { MacroBadge } from '@/components/macro-badge'
 
+// Helper function to parse "eller" alternatives into bullet list
+const parseAlternatives = (text: string): Array<{ text: string; isOr: boolean }> => {
+  if (!text) return []
+
+  // Split by "eller" (case insensitive)
+  const parts = text.split(/\s+eller\s+/i)
+
+  // If no "eller" found, return as single item
+  if (parts.length === 1) {
+    return [{ text: text.trim(), isOr: false }]
+  }
+
+  // Build array with "ELLER" items between alternatives
+  const result: Array<{ text: string; isOr: boolean }> = []
+  parts.forEach((part, index) => {
+    result.push({ text: part.trim(), isOr: false })
+    // Add "ELLER" between items (but not after the last one)
+    if (index < parts.length - 1) {
+      result.push({ text: 'ELLER', isOr: true })
+    }
+  })
+
+  return result
+}
+
 type TemplateMealOption = {
   id: string
   optionType: string
@@ -512,20 +537,44 @@ export default function MealPlanTemplateViewPage() {
                               <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
                                 {meal.carbSource && (
                                   <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
-                                    <p className="text-xs text-gray-400 mb-1 font-semibold">Kolhydratskälla</p>
-                                    <p className="text-sm text-gray-300 whitespace-pre-line">{meal.carbSource}</p>
+                                    <p className="text-xs text-gray-400 mb-1 font-semibold flex items-center gap-1">
+                                      <span className="text-green-500">🥗</span> KOLHYDRATKÄLLA
+                                    </p>
+                                    <ul className="space-y-1">
+                                      {parseAlternatives(meal.carbSource).map((item, idx) => (
+                                        <li key={idx} className={item.isOr ? 'text-blue-400 font-semibold text-xs' : 'text-gray-300 text-sm'}>
+                                          • {item.text}
+                                        </li>
+                                      ))}
+                                    </ul>
                                   </div>
                                 )}
                                 {meal.proteinSource && (
                                   <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
-                                    <p className="text-xs text-gray-400 mb-1 font-semibold">Proteinkälla</p>
-                                    <p className="text-sm text-gray-300 whitespace-pre-line">{meal.proteinSource}</p>
+                                    <p className="text-xs text-gray-400 mb-1 font-semibold flex items-center gap-1">
+                                      <span className="text-red-500">🥩</span> PROTEINKÄLLA
+                                    </p>
+                                    <ul className="space-y-1">
+                                      {parseAlternatives(meal.proteinSource).map((item, idx) => (
+                                        <li key={idx} className={item.isOr ? 'text-blue-400 font-semibold text-xs' : 'text-gray-300 text-sm'}>
+                                          • {item.text}
+                                        </li>
+                                      ))}
+                                    </ul>
                                   </div>
                                 )}
                                 {meal.fatSource && (
                                   <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
-                                    <p className="text-xs text-gray-400 mb-1 font-semibold">Fettkälla</p>
-                                    <p className="text-sm text-gray-300 whitespace-pre-line">{meal.fatSource}</p>
+                                    <p className="text-xs text-gray-400 mb-1 font-semibold flex items-center gap-1">
+                                      <span className="text-yellow-500">🥑</span> FETTKÄLLA
+                                    </p>
+                                    <ul className="space-y-1">
+                                      {parseAlternatives(meal.fatSource).map((item, idx) => (
+                                        <li key={idx} className={item.isOr ? 'text-blue-400 font-semibold text-xs' : 'text-gray-300 text-sm'}>
+                                          • {item.text}
+                                        </li>
+                                      ))}
+                                    </ul>
                                   </div>
                                 )}
                               </div>
