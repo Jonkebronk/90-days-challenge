@@ -235,17 +235,17 @@ export default function WorkoutProgramsPage() {
   }
 
   const getDifficultyColor = (difficulty: string | null) => {
-    if (!difficulty) return 'bg-gray-100 text-gray-600'
+    if (!difficulty) return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
 
     switch (difficulty.toLowerCase()) {
       case 'beginner':
-        return 'bg-green-100 text-green-700 border-green-200'
+        return 'bg-green-500/20 text-green-400 border-green-500/30'
       case 'intermediate':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200'
+        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
       case 'advanced':
-        return 'bg-red-100 text-red-700 border-red-200'
+        return 'bg-red-500/20 text-red-400 border-red-500/30'
       default:
-        return 'bg-gray-100 text-gray-600'
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
     }
   }
 
@@ -294,7 +294,7 @@ export default function WorkoutProgramsPage() {
       </div>
 
       {/* Search */}
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
         <CardContent className="pt-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -302,7 +302,7 @@ export default function WorkoutProgramsPage() {
               placeholder="Sök program..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-white border-gray-300 text-gray-900"
+              className="pl-10 bg-white/5 border-gold-primary/20 text-white placeholder:text-gray-500"
             />
           </div>
         </CardContent>
@@ -362,16 +362,16 @@ export default function WorkoutProgramsPage() {
             {filteredPrograms.map((program) => (
           <Card
             key={program.id}
-            className="bg-white border border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all"
+            className="bg-white/5 border-2 border-gold-primary/20 hover:border-gold-primary/60 hover:shadow-lg transition-all backdrop-blur-[10px]"
           >
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3 flex-1">
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center shrink-0">
-                    <Dumbbell className="w-6 h-6 text-white" />
+                    <Dumbbell className="w-6 h-6 text-[#0a0a0a]" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="text-lg text-gray-900 break-words">
+                    <CardTitle className="text-lg text-gray-100 break-words">
                       {program.name}
                     </CardTitle>
                     {program.difficulty && (
@@ -386,7 +386,7 @@ export default function WorkoutProgramsPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-gold-primary hover:text-gold-secondary hover:bg-gray-100"
+                      className="h-8 w-8 text-gold-primary hover:text-gold-secondary hover:bg-white/10"
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
@@ -395,7 +395,7 @@ export default function WorkoutProgramsPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleDelete(program.id)}
-                    className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                    className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-500/10"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -404,35 +404,35 @@ export default function WorkoutProgramsPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               {program.description && (
-                <p className="text-sm text-gray-600 line-clamp-2">
+                <p className="text-sm text-gray-400 line-clamp-2">
                   {program.description}
                 </p>
               )}
 
               <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-1 text-gray-600">
+                <div className="flex items-center gap-1 text-gray-400">
                   <Calendar className="w-4 h-4 text-gold-primary" />
                   <span>{program.days.length} dagar</span>
                 </div>
                 {program.durationWeeks && (
-                  <div className="text-gray-600">
+                  <div className="text-gray-400">
                     {program.durationWeeks} veckor
                   </div>
                 )}
               </div>
 
-              <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                <div className="flex items-center gap-1 text-sm text-gray-600">
+              <div className="flex items-center justify-between pt-2 border-t border-gold-primary/20">
+                <div className="flex items-center gap-1 text-sm text-gray-400">
                   <Users className="w-4 h-4 text-gold-primary" />
                   <span>{program._count.assignments} tilldelade</span>
                 </div>
 
                 {program.published ? (
-                  <Badge className="bg-green-100 text-green-700 border-green-200">
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                     Publicerad
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="bg-gray-50 border-gray-300 text-gray-500">
+                  <Badge variant="outline" className="bg-gray-500/20 border-gray-500/30 text-gray-400">
                     Utkast
                   </Badge>
                 )}
