@@ -660,15 +660,17 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   )}
 
                   {/* Exercise Description/Instructions - Show at top */}
-                  {exercise.exercise.description && (
+                  {exercise.exercise.instructions && exercise.exercise.instructions.length > 0 && (
                     <div className="p-4 bg-[rgba(255,215,0,0.08)] border-l-4 border-gold-primary rounded-lg">
                       <div className="flex items-start gap-2">
                         <div className="text-gold-light mt-0.5">💡</div>
-                        <div>
-                          <Label className="text-sm font-semibold text-gold-light mb-1 block">Instruktioner:</Label>
-                          <p className="text-sm text-gray-200 leading-relaxed whitespace-pre-line">
-                            {exercise.exercise.description}
-                          </p>
+                        <div className="w-full">
+                          <Label className="text-sm font-semibold text-gold-light mb-2 block">Instruktioner:</Label>
+                          <ol className="text-sm text-gray-200 leading-relaxed space-y-1 list-decimal list-inside">
+                            {exercise.exercise.instructions.map((instruction, idx) => (
+                              <li key={idx}>{instruction}</li>
+                            ))}
+                          </ol>
                         </div>
                       </div>
                     </div>
