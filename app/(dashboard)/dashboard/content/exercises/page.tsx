@@ -387,36 +387,6 @@ export default function ExercisesPage() {
                 </SelectContent>
               </Select>
             </div>
-
-            <div>
-              <Label className="text-gray-300">Utrustning</Label>
-              <Select value={filterEquipment} onValueChange={setFilterEquipment}>
-                <SelectTrigger className="mt-1 bg-white/5 border-gold-primary/20 text-white">
-                  <SelectValue placeholder="All utrustning" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All utrustning</SelectItem>
-                  {EQUIPMENT_OPTIONS.map(equip => (
-                    <SelectItem key={equip} value={equip}>{equip}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label className="text-gray-300">Svårighet</Label>
-              <Select value={filterDifficulty} onValueChange={setFilterDifficulty}>
-                <SelectTrigger className="mt-1 bg-white/5 border-gold-primary/20 text-white">
-                  <SelectValue placeholder="Alla nivåer" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alla nivåer</SelectItem>
-                  {DIFFICULTY_LEVELS.map(level => (
-                    <SelectItem key={level} value={level.toLowerCase()}>{level}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
         </CardContent>
       </Card>
@@ -480,14 +450,13 @@ export default function ExercisesPage() {
           {/* Back to Categories Button */}
           {!showCategoryView && selectedCategory && (
             <Button
-              variant="outline"
               onClick={() => {
                 setShowCategoryView(true)
                 setSelectedCategory(null)
                 setFilterMuscleGroup('all')
                 setFilterCategoryMuscleGroups([])
               }}
-              className="mb-4 border-gold-primary/20 text-gray-300 hover:bg-white/10 hover:text-gold-light"
+              className="mb-4 bg-gradient-to-r from-gold-primary to-gold-secondary text-[#0a0a0a] hover:opacity-90 font-semibold"
             >
               ← Tillbaka till kategorier
             </Button>
