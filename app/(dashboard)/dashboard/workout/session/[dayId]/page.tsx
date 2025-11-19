@@ -642,19 +642,19 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           </Badge>
                         )}
                       </div>
-                      <div className="text-sm text-gray-400 space-y-1">
+                      <div className="text-sm text-gray-400 space-y-0.5 mt-1">
                         <p>
                           <span className="font-semibold text-gray-300">Sets:</span> {exercise.sets}
-                          {' • '}
+                        </p>
+                        <p>
                           <span className="font-semibold text-gray-300">Repetitioner:</span> {exercise.repsMin}
                           {exercise.repsMax && exercise.repsMax !== exercise.repsMin ? `-${exercise.repsMax}` : ''}
-                          {exercise.restSeconds > 0 && (
-                            <>
-                              {' • '}
-                              <span className="font-semibold text-gray-300">Vila:</span> {exercise.restSeconds}s
-                            </>
-                          )}
                         </p>
+                        {exercise.restSeconds > 0 && (
+                          <p>
+                            <span className="font-semibold text-gray-300">Vila:</span> {exercise.restSeconds}s
+                          </p>
+                        )}
                       </div>
                       {exercise.exercise.muscleGroups.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
