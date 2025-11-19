@@ -209,56 +209,6 @@ export default function WorkoutPage() {
         </Link>
       </div>
 
-      {/* Program Info Card */}
-      <Card className="bg-white border border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all">
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {workoutProgram.difficulty && (
-              <div>
-                <p className="text-sm text-gray-500 mb-1">Nivå</p>
-                <Badge className={`${
-                  workoutProgram.difficulty === 'BEGINNER'
-                    ? 'bg-green-100 text-green-700 border-green-200'
-                    : workoutProgram.difficulty === 'INTERMEDIATE'
-                    ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
-                    : workoutProgram.difficulty === 'ADVANCED'
-                    ? 'bg-red-100 text-red-700 border-red-200'
-                    : 'bg-purple-100 text-purple-700 border-purple-200'
-                }`}>
-                  {workoutProgram.difficulty}
-                </Badge>
-              </div>
-            )}
-            {programHasWeeks && (
-              <div>
-                <p className="text-sm text-gray-500 mb-1">Nuvarande vecka</p>
-                <p className="text-2xl font-bold text-gold-primary">
-                  {currentWeek} / {workoutProgram.weeks?.length || 0}
-                </p>
-              </div>
-            )}
-            <div>
-              <p className="text-sm text-gray-500 mb-1">{programHasWeeks ? 'Dagar denna vecka' : 'Totalt dagar'}</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {daysToShow.length}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 mb-1">Träningsdagar</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {daysToShow.filter(d => !d.isRestDay).length}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 mb-1">Startdatum</p>
-              <p className="text-gray-900">
-                {new Date(assignment.startDate).toLocaleDateString('sv-SE')}
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Days List */}
       <div className="space-y-3">
         <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
