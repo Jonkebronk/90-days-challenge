@@ -107,7 +107,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       setDayId(id)
       await fetchWorkoutDay(id)
       // Auto-start session when coming from workout list
-      await startSession()
+      await startSession(id)
     }
     loadData()
   }, [])
@@ -211,13 +211,13 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     }
   }
 
-  const startSession = async () => {
+  const startSession = async (programDayId?: string) => {
     try {
       const response = await fetch('/api/workout-sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workoutProgramDayId: dayId
+          workoutProgramDayId: programDayId || dayId
         })
       })
 
