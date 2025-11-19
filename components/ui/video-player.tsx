@@ -49,9 +49,6 @@ export function VideoPlayer({ videoUrl, thumbnailUrl, title, className = '' }: V
             </Button>
           </div>
         </div>
-        {title && (
-          <p className="text-sm text-[rgba(255,255,255,0.7)] mt-2">{title}</p>
-        )}
       </div>
     )
   }
