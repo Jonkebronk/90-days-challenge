@@ -830,6 +830,29 @@ export default function MealPlanTemplatePage() {
                       </div>
                     </CardHeader>
                     <CardContent>
+                      {/* Meal Description/Instructions */}
+                      <div className="mb-6">
+                        <Label htmlFor={`description-${meal.id}`} className="text-gray-200 mb-2 block">
+                          💡 Beskrivning / Instruktioner
+                        </Label>
+                        <Textarea
+                          id={`description-${meal.id}`}
+                          value={meal.description || ''}
+                          onChange={(e) => {
+                            const updatedMeal = { ...meal, description: e.target.value }
+                            const updated = template!.meals.map((m) =>
+                              m.id === meal.id ? updatedMeal : m
+                            )
+                            setTemplate({ ...template!, meals: updated })
+                            debouncedSaveMeal(updatedMeal)
+                          }}
+                          placeholder="T.ex: Du gör en måltid genom att ta en proteinkälla, en kolhydratskälla och fettkälla för att göra en måltid"
+                          rows={3}
+                          className="bg-[rgba(59,130,246,0.1)] border-blue-500/30 text-white placeholder:text-[rgba(255,255,255,0.4)] text-sm"
+                        />
+                        <p className="text-xs text-gray-400 mt-1">Visas för klienten ovanför råvarkällorna med en lightbulb-ikon</p>
+                      </div>
+
                       {/* Ingredient Sources */}
                       <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Carb Source */}
