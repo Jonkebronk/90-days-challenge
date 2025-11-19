@@ -29,8 +29,7 @@
       "Bash(npx prisma migrate:*)",
       "Bash(node -e:*)",
       "Bash(npx tsc:*)",
-      "Bash(head:*)",
-      "Bash(git revert:*)"
+      "Bash(head:*)"
     ],
     "deny": [],
     "ask": []
