@@ -13,14 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { ChefHat, Clock, Users, Flame, ArrowLeft, X, Pencil, Save } from 'lucide-react'
+import { ChefHat, Clock, Users, Flame, ArrowLeft, X, Pencil } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -60,9 +53,6 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
-  const [availableSubcategories, setAvailableSubcategories] = useState<RecipeSubcategory[]>([])
-  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string>('')
-  const [isSaving, setIsSaving] = useState(false)
 
   const isCoach = (session?.user as any)?.role === 'coach'
 
@@ -107,55 +97,11 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
     }
   }
 
-  const fetchSubcategories = async () => {
-    try {
-      const response = await fetch('/api/recipe-subcategories')
-      if (response.ok) {
-        const data = await response.json()
-        setAvailableSubcategories(data.subcategories || [])
-      }
-    } catch (error) {
-      console.error('Error fetching subcategories:', error)
-    }
-  }
-
   const handleRecipeClick = (recipe: Recipe) => {
     if (isCoach) {
       setSelectedRecipe(recipe)
-      setSelectedSubcategoryId(recipe.subcategory?.id || 'none')
-      if (availableSubcategories.length === 0) {
-        fetchSubcategories()
-      }
     } else {
       router.push(`/dashboard/recipes/${recipe.id}`)
-    }
-  }
-
-  const handleSaveSubcategory = async () => {
-    if (!selectedRecipe) return
-
-    try {
-      setIsSaving(true)
-      const response = await fetch(`/api/recipes/${selectedRecipe.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          subcategoryId: selectedSubcategoryId && selectedSubcategoryId !== 'none' ? selectedSubcategoryId : null,
-        }),
-      })
-
-      if (response.ok) {
-        toast.success('Subkategori uppdaterad')
-        setSelectedRecipe(null)
-        fetchCategoryAndRecipes()
-      } else {
-        toast.error('Kunde inte uppdatera')
-      }
-    } catch (error) {
-      console.error('Error updating recipe:', error)
-      toast.error('Ett fel uppstod')
-    } finally {
-      setIsSaving(false)
     }
   }
 
@@ -427,41 +373,14 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
                     )}
                   </div>
 
-                  {/* Subcategory Selection */}
-                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-4">
-                    <p className="text-sm text-gray-400 mb-2">Subkategori</p>
-                    <Select value={selectedSubcategoryId} onValueChange={setSelectedSubcategoryId}>
-                      <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                        <SelectValue placeholder="Välj subkategori (valfritt)" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-900/95 border-gold-primary/30">
-                        <SelectItem value="none" className="text-white">Ingen subkategori</SelectItem>
-                        {availableSubcategories.map((sub) => (
-                          <SelectItem key={sub.id} value={sub.id} className="text-white">
-                            {sub.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
                   {/* Actions */}
-                  <div className="flex gap-2 pt-4 border-t border-gold-primary/20">
-                    <Button
-                      onClick={handleSaveSubcategory}
-                      disabled={isSaving}
-                      className="flex-1 bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
-                    >
-                      <Save className="h-4 w-4 mr-2" />
-                      {isSaving ? 'Sparar...' : 'Spara subkategori'}
-                    </Button>
+                  <div className="flex justify-end pt-4 border-t border-gold-primary/20">
                     <Button
                       onClick={() => {
                         setSelectedRecipe(null)
                         router.push(`/dashboard/recipes/${selectedRecipe.id}/edit`)
                       }}
-                      variant="outline"
-                      className="border-gold-primary/50 text-gold-light hover:bg-gold-50/10"
+                      className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
                     >
                       <Pencil className="h-4 w-4 mr-2" />
                       Redigera recept
