@@ -289,16 +289,22 @@ export default function DashboardLayout({
                       </div>
                     ) : (
                       <div className="py-1">
-                        {notifications.map((notification) => (
-                          <DropdownMenuItem
-                            key={notification.id}
-                            asChild
-                          >
-                            <Link
-                              href={notification.link}
-                              className="flex flex-col gap-1 px-3 py-3 cursor-pointer hover:bg-gray-50 focus:bg-gray-50 border-b border-gray-100 last:border-b-0"
-                              onClick={() => setNotificationsOpen(false)}
+                        {notifications.map((notification) => {
+                          // Validate notification link - must be relative path
+                          const validLink = notification.link && notification.link.startsWith('/')
+                            ? notification.link
+                            : '/dashboard';
+
+                          return (
+                            <DropdownMenuItem
+                              key={notification.id}
+                              asChild
                             >
+                              <Link
+                                href={validLink}
+                                className="flex flex-col gap-1 px-3 py-3 cursor-pointer hover:bg-gray-50 focus:bg-gray-50 border-b border-gray-100 last:border-b-0"
+                                onClick={() => setNotificationsOpen(false)}
+                              >
                               <div className="flex items-start justify-between gap-2">
                                 <p className="text-sm text-gray-900 font-medium leading-tight">
                                   {notification.message}
@@ -322,7 +328,8 @@ export default function DashboardLayout({
                               </p>
                             </Link>
                           </DropdownMenuItem>
-                        ))}
+                        );
+                        })}
                       </div>
                     )}
                   </DropdownMenuContent>
