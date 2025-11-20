@@ -23,18 +23,28 @@ export function StructuredIngredientInput({
   // Parse initial value on mount or when value changes externally
   useEffect(() => {
     if (!value) {
-      setItems([''])
+      // Only reset if items are not already in initial state
+      if (items.length !== 1 || items[0] !== '') {
+        setItems([''])
+      }
       return
     }
 
     // Split by "eller" (case insensitive)
     const parts = value.split(/\s+eller\s+/i).map((p) => p.trim()).filter((p) => p.length > 0)
-    if (parts.length > 0) {
-      setItems(parts)
-    } else {
-      setItems([''])
+
+    // Only update if the parsed parts are different from current items
+    const currentValue = items.filter((item) => item.trim().length > 0).join(' eller ')
+    const newValue = parts.join(' eller ')
+
+    if (currentValue !== newValue) {
+      if (parts.length > 0) {
+        setItems(parts)
+      } else {
+        setItems([''])
+      }
     }
-  }, [value])
+  }, [value, items])
 
   const updateItems = (newItems: string[]) => {
     setItems(newItems)
