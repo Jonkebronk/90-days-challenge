@@ -378,7 +378,7 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
                     <Button
                       onClick={() => {
                         setSelectedRecipe(null)
-                        router.push(`/dashboard/recipes/${selectedRecipe.id}/edit`)
+                        router.push(`/dashboard/content/recipes/${selectedRecipe.id}/edit`)
                       }}
                       className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
                     >
