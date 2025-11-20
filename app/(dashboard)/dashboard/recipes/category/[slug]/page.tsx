@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -375,6 +376,9 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
                       <X className="h-5 w-5" />
                     </Button>
                   </DialogTitle>
+                  <DialogDescription className="text-gray-400">
+                    Visa och redigera receptinformation
+                  </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4">
