@@ -54,6 +54,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
   // Recipe basic info
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [coverImage, setCoverImage] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [subcategoryId, setSubcategoryId] = useState('')
   const [subcategories, setSubcategories] = useState<RecipeSubcategory[]>([])
@@ -116,6 +117,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
 
         setTitle(recipe.title)
         setDescription(recipe.description || '')
+        setCoverImage(recipe.coverImage || '')
         setCategoryId(recipe.categoryId)
         setSubcategoryId(recipe.subcategoryId || '')
         setServings(recipe.servings)
@@ -203,6 +205,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
         body: JSON.stringify({
           title,
           description,
+          coverImage: coverImage || null,
           categoryId,
           subcategoryId: subcategoryId || null,
           servings,
@@ -291,6 +294,16 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Beskriv receptet..."
                 rows={2}
+                className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
+              />
+            </div>
+
+            <div>
+              <Label className="text-sm text-gray-300">Omslagsbild URL</Label>
+              <Input
+                value={coverImage}
+                onChange={(e) => setCoverImage(e.target.value)}
+                placeholder="https://exempel.se/bild.jpg"
                 className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white"
               />
             </div>
