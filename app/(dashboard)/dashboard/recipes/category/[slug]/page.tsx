@@ -122,7 +122,7 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
   const handleRecipeClick = (recipe: Recipe) => {
     if (isCoach) {
       setSelectedRecipe(recipe)
-      setSelectedSubcategoryId(recipe.subcategory?.id || '')
+      setSelectedSubcategoryId(recipe.subcategory?.id || 'none')
       if (availableSubcategories.length === 0) {
         fetchSubcategories()
       }
@@ -140,7 +140,7 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          subcategoryId: selectedSubcategoryId || null,
+          subcategoryId: selectedSubcategoryId && selectedSubcategoryId !== 'none' ? selectedSubcategoryId : null,
         }),
       })
 
@@ -435,7 +435,7 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
                         <SelectValue placeholder="Välj subkategori (valfritt)" />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-900/95 border-gold-primary/30">
-                        <SelectItem value="" className="text-white">Ingen subkategori</SelectItem>
+                        <SelectItem value="none" className="text-white">Ingen subkategori</SelectItem>
                         {availableSubcategories.map((sub) => (
                           <SelectItem key={sub.id} value={sub.id} className="text-white">
                             {sub.name}
