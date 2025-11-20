@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Plus, X } from 'lucide-react'
@@ -19,35 +19,34 @@ export function StructuredIngredientInput({
   label,
 }: StructuredIngredientInputProps) {
   const [items, setItems] = useState<string[]>([''])
+  const isInternalUpdate = useRef(false)
 
   // Parse initial value on mount or when value changes externally
   useEffect(() => {
+    // Skip if this update was triggered by our own onChange
+    if (isInternalUpdate.current) {
+      isInternalUpdate.current = false
+      return
+    }
+
     if (!value) {
-      // Only reset if items are not already in initial state
-      if (items.length !== 1 || items[0] !== '') {
-        setItems([''])
-      }
+      setItems([''])
       return
     }
 
     // Split by "eller" (case insensitive)
     const parts = value.split(/\s+eller\s+/i).map((p) => p.trim()).filter((p) => p.length > 0)
-
-    // Only update if the parsed parts are different from current items
-    const currentValue = items.filter((item) => item.trim().length > 0).join(' eller ')
-    const newValue = parts.join(' eller ')
-
-    if (currentValue !== newValue) {
-      if (parts.length > 0) {
-        setItems(parts)
-      } else {
-        setItems([''])
-      }
+    if (parts.length > 0) {
+      setItems(parts)
+    } else {
+      setItems([''])
     }
-  }, [value, items])
+  }, [value])
 
   const updateItems = (newItems: string[]) => {
     setItems(newItems)
+    // Mark this as an internal update to prevent useEffect from resetting items
+    isInternalUpdate.current = true
     // Join with " eller " and update parent
     const newValue = newItems.filter((item) => item.trim().length > 0).join(' eller ')
     onChange(newValue)
