@@ -209,10 +209,14 @@ export default function DashboardLayout({
                       <DropdownMenuContent>
                         {item.dropdown.map((dropdownItem) => {
                           const DropdownIcon = dropdownItem.icon
+                          // Validate href - must be relative path
+                          const validHref = dropdownItem.href && dropdownItem.href.startsWith('/')
+                            ? dropdownItem.href
+                            : '/dashboard';
                           return (
                             <DropdownMenuItem key={dropdownItem.name} asChild>
                               <Link
-                                href={dropdownItem.href}
+                                href={validHref}
                                 className="flex items-center gap-2 cursor-pointer"
                               >
                                 <DropdownIcon className="w-4 h-4" />
@@ -382,11 +386,15 @@ export default function DashboardLayout({
                       <div className="pl-8 space-y-1">
                         {item.dropdown.map((dropdownItem) => {
                           const DropdownIcon = dropdownItem.icon
-                          const isDropdownActive = pathname === dropdownItem.href
+                          // Validate href - must be relative path
+                          const validHref = dropdownItem.href && dropdownItem.href.startsWith('/')
+                            ? dropdownItem.href
+                            : '/dashboard';
+                          const isDropdownActive = pathname === validHref
                           return (
                             <Link
                               key={dropdownItem.name}
-                              href={dropdownItem.href}
+                              href={validHref}
                               onClick={() => setMobileMenuOpen(false)}
                               className={`
                                 flex items-center gap-3 px-4 py-2 rounded-lg transition-all
