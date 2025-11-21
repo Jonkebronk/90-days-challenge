@@ -45,6 +45,7 @@ export async function GET(request: Request) {
       where,
       include: {
         category: true,
+        subcategory: true,
         ingredients: {
           include: {
             foodItem: true
