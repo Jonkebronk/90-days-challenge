@@ -525,19 +525,19 @@ export default function HomePage() {
                     <ul className="space-y-2 text-gray-300">
                       <li className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-0.5" />
-                        <span>[Certifiering 1, tex "Certifierad Personal Trainer"]</span>
+                        <span>[Certifiering 1, tex Certifierad Personal Trainer]</span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-0.5" />
-                        <span>[Certifiering 2, tex "Nutritionsrådgivare"]</span>
+                        <span>[Certifiering 2, tex Nutritionsrådgivare]</span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-0.5" />
-                        <span>[Erfarenhet, tex "5+ års erfarenhet av online coaching"]</span>
+                        <span>[Erfarenhet, tex 5+ års erfarenhet av online coaching]</span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-0.5" />
-                        <span>[Specialisering, tex "Specialist på viktminskning"]</span>
+                        <span>[Specialisering, tex Specialist på viktminskning]</span>
                       </li>
                     </ul>
                   </div>
