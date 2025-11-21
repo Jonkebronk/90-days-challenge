@@ -234,14 +234,14 @@ export default function HomePage() {
               {/* Left column - Text content */}
               <div className="text-center lg:text-left animate-fadeIn">
                 <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-8 animate-shimmer lg:bg-gradient-to-r lg:from-[#FFD700]" />
-                <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl lg:text-6xl font-black tracking-[4px] md:tracking-[6px] leading-[1.2] uppercase animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-6">
-                  Transform din kropp på 90 dagar
+                <h1 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl lg:text-5xl font-black tracking-[2px] md:tracking-[4px] leading-[1.2] animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-6">
+                  För Dig Som Vill Börja Styrketräna Men Inte Vet Var Du Ska Börja
                 </h1>
-                <p className="text-gray-300 text-lg md:text-xl mb-4 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                  Personlig coaching, träningsprogram och kostschema – allt du behöver för att nå dina hälsomål
+                <p className="text-gold-primary text-base md:text-lg mb-4 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-semibold tracking-[1px]">
+                  Evidensbaserad styrketräning och kost - tryggt, tydligt, utan dumma frågor
                 </p>
-                <p className="text-gray-400 text-base mb-8 max-w-2xl mx-auto lg:mx-0">
-                  Med Friskvårdskompassen får du en dedikerad coach som guidar dig genom hela resan. Inga genvägar, inga modeflungor – bara beprövade metoder som fungerar.
+                <p className="text-gray-300 text-base md:text-lg mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                  Jag heter Johnny och jag hjälper människor som känner sig osäkra på gymmet att komma igång med styrketräning och bygga sunda vanor som håller. Inte genom att kasta dig in i djupa änden - utan genom att ge dig trygghet, kunskap och ett tydligt system som tar dig från &ldquo;jag vet inte ens var jag ska börja&rdquo; till &ldquo;jag vet exakt vad jag ska göra&rdquo;.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                   <button
@@ -275,6 +275,52 @@ export default function HomePage() {
                 {/* Decorative element */}
                 <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-gold-primary to-gold-secondary rounded-2xl opacity-20 blur-2xl" />
                 <div className="absolute -top-6 -left-6 w-32 h-32 bg-gradient-to-br from-gold-primary to-gold-secondary rounded-2xl opacity-20 blur-2xl" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* RECOGNITION SECTION - "Kanske Känner Du Igen Dig?" */}
+        <section className="py-20 lg:py-28 bg-gray-900">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+            <div className="bg-white rounded-2xl p-8 md:p-12 lg:p-16 shadow-2xl animate-fadeIn">
+              <div className="text-center mb-10">
+                <h2 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-4">
+                  Kanske Känner Du Igen Dig?
+                </h2>
+              </div>
+
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start gap-4 text-gray-700 text-base md:text-lg">
+                  <CheckCircle className="w-6 h-6 text-gold-primary flex-shrink-0 mt-1" />
+                  <span>Du har gått på gruppträning/pass men undviker vikterna för du vet inte vad du ska göra</span>
+                </li>
+                <li className="flex items-start gap-4 text-gray-700 text-base md:text-lg">
+                  <CheckCircle className="w-6 h-6 text-gold-primary flex-shrink-0 mt-1" />
+                  <span>Du står i gymmet och känner dig osäker - alla andra verkar veta vad de gör</span>
+                </li>
+                <li className="flex items-start gap-4 text-gray-700 text-base md:text-lg">
+                  <CheckCircle className="w-6 h-6 text-gold-primary flex-shrink-0 mt-1" />
+                  <span>Du vill styrketräna men vet inte var man börjar</span>
+                </li>
+                <li className="flex items-start gap-4 text-gray-700 text-base md:text-lg">
+                  <CheckCircle className="w-6 h-6 text-gold-primary flex-shrink-0 mt-1" />
+                  <span>Du har sett resultat av andra som lyfter vikter och vill också, men törs inte riktigt</span>
+                </li>
+                <li className="flex items-start gap-4 text-gray-700 text-base md:text-lg">
+                  <CheckCircle className="w-6 h-6 text-gold-primary flex-shrink-0 mt-1" />
+                  <span>Du är trött på motstridiga råd om mat och träning - du vill bara veta vad som fungerar</span>
+                </li>
+                <li className="flex items-start gap-4 text-gray-700 text-base md:text-lg">
+                  <CheckCircle className="w-6 h-6 text-gold-primary flex-shrink-0 mt-1" />
+                  <span>Du vill bygga vanor som håller, inte en snabb fix</span>
+                </li>
+              </ul>
+
+              <div className="text-center pt-6 border-t-2 border-gold-primary/30">
+                <p className="text-xl md:text-2xl font-bold text-gray-900">
+                  Om detta stämmer - då är du på rätt plats.
+                </p>
               </div>
             </div>
           </div>
@@ -318,24 +364,24 @@ export default function HomePage() {
                   </h3>
                 </div>
                 <p className="text-gray-300 text-lg mb-6 leading-relaxed">
-                  Din dedikerade coach finns med dig hela vägen. Varje vecka går ni igenom din progress, justerar planen och ser till att du håller dig på rätt spår mot dina mål.
+                  Trygghet och vägledning varje steg på vägen. Du får en dedikerad coach som möter dig där du är - utan press, utan bedömning. Regelbundna check-ins ger dig stöd när du behöver det och firar framstegen tillsammans med dig.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3 text-gray-300">
                     <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
-                    <span>Veckovisa check-ins med personlig feedback</span>
+                    <span>Regelbundna check-ins där vi går igenom din progress</span>
                   </li>
                   <li className="flex items-start gap-3 text-gray-300">
                     <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
-                    <span>Kontinuerliga justeringar av träning och kost</span>
+                    <span>Svar på dina frågor - inga dumma frågor finns</span>
                   </li>
                   <li className="flex items-start gap-3 text-gray-300">
                     <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
-                    <span>Stöd och motivation när du behöver det</span>
+                    <span>Stöd när det blir tufft och motivation hela vägen</span>
                   </li>
                   <li className="flex items-start gap-3 text-gray-300">
                     <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
-                    <span>Direkt tillgång till din coach via plattformen</span>
+                    <span>Community med andra i samma situation</span>
                   </li>
                 </ul>
               </div>
@@ -353,24 +399,24 @@ export default function HomePage() {
                   </h3>
                 </div>
                 <p className="text-gray-300 text-lg mb-6 leading-relaxed">
-                  Få tillgång till professionellt utformade träningsprogram som progressivt ökar i intensitet. Oavsett om du tränar hemma eller på gym har vi program som passar dig.
+                  Professionellt utformade styrketräningsprogram - anpassade för dig. Övningar förklarade med video och text så du aldrig behöver gissa. Oavsett om du tränar hemma eller på gym har vi program som passar.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3 text-gray-300">
                     <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
-                    <span>3 faser med progressiv överbelastning</span>
+                    <span>3-4 dagar/vecka (kvalitet över kvantitet)</span>
                   </li>
                   <li className="flex items-start gap-3 text-gray-300">
                     <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
-                    <span>Video-instruktioner för alla övningar</span>
+                    <span>Video-instruktioner och teknikförklaringar för alla övningar</span>
                   </li>
                   <li className="flex items-start gap-3 text-gray-300">
                     <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
-                    <span>Anpassat efter dina mål och erfarenhetsnivå</span>
+                    <span>Progression inbyggd så du hela tiden blir starkare</span>
                   </li>
                   <li className="flex items-start gap-3 text-gray-300">
                     <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
-                    <span>Flexibelt schema som passar din vardag</span>
+                    <span>Alternativa övningar om något inte fungerar för dig</span>
                   </li>
                 </ul>
               </div>
@@ -410,24 +456,24 @@ export default function HomePage() {
                   </h3>
                 </div>
                 <p className="text-gray-300 text-lg mb-6 leading-relaxed">
-                  Slipp gissa hur du ska äta. Få ett individuellt kostschema baserat på dina mål plus tillgång till över 300 näringsberäknade recept som faktiskt smakar gott.
+                  Evidensbaserad näring utan trenddieter. Slipp gissa hur du ska äta - få ett individuellt kostschema baserat på dina mål plus tillgång till över 300 näringsberäknade recept som faktiskt smakar gott. Flexibel - inget är förbjudet.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3 text-gray-300">
                     <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
-                    <span>314 recept med fullständig näringsberäkning</span>
+                    <span>314 praktiska recept för hela familjen</span>
                   </li>
                   <li className="flex items-start gap-3 text-gray-300">
                     <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
-                    <span>Personligt anpassade makroberäkningar</span>
+                    <span>Lär dig förstå VARFÖR, inte bara vad</span>
                   </li>
                   <li className="flex items-start gap-3 text-gray-300">
                     <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
-                    <span>Flexibla måltidsplaner som passar din livsstil</span>
+                    <span>Veckoplanering och inköpslistor</span>
                   </li>
                   <li className="flex items-start gap-3 text-gray-300">
                     <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
-                    <span>Enkla, goda recept för alla måltider</span>
+                    <span>Flexibelt - inget är förbjudet</span>
                   </li>
                 </ul>
               </div>
@@ -507,15 +553,15 @@ export default function HomePage() {
                       Din personliga coach
                     </p>
                     <h2 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3">
-                      [Ditt Namn]
+                      Johnny
                     </h2>
                     <p className="text-gray-400 text-lg">
-                      Certifierad PT & Nutritionscoach
+                      Certifierad Kost- och Träningskonsult
                     </p>
                   </div>
 
                   <p className="text-gray-300 text-base md:text-lg leading-relaxed mb-6">
-                    Med över [X] års erfarenhet inom personlig träning och kost har jag hjälpt hundratals klienter att nå sina hälsomål. Min filosofi är enkel: ingen quick-fix, bara hållbara resultat genom beprövade metoder och personlig coaching.
+                    För 15 år sedan stod jag själv där i gymmet. Osäker. Överväldigad. Efter att ha byggt upp min egen styrka genom evidensbaserade metoder och tävlat i bodybuilding, insåg jag: Den största utmaningen är inte själva träningen - det är att våga börja. Idag driver jag Friskvårdskompassen och specialiserar mig på att hjälpa människor ta sina första steg in i styrketräningens värld.
                   </p>
 
                   <div className="bg-white/5 border border-gold-primary/20 rounded-xl p-6 mb-6">
@@ -525,25 +571,25 @@ export default function HomePage() {
                     <ul className="space-y-2 text-gray-300">
                       <li className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-0.5" />
-                        <span>[Certifiering 1, tex Certifierad Personal Trainer]</span>
+                        <span>Certifierad Kost- och Träningskonsult</span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-0.5" />
-                        <span>[Certifiering 2, tex Nutritionsrådgivare]</span>
+                        <span>10+ års erfarenhet av styrketräning och kost</span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-0.5" />
-                        <span>[Erfarenhet, tex 5+ års erfarenhet av online coaching]</span>
+                        <span>Bakgrund i competitive bodybuilding</span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-0.5" />
-                        <span>[Specialisering, tex Specialist på viktminskning]</span>
+                        <span>500+ personer coachade från osäkerhet till trygghet</span>
                       </li>
                     </ul>
                   </div>
 
                   <blockquote className="border-l-4 border-gold-primary pl-6 italic text-gray-300 text-lg mb-6">
-                    &ldquo;Min mission är att hjälpa dig bygga en hälsosam livsstil som varar längre än 90 dagar – det här är början på din resa, inte slutet.&rdquo;
+                    &ldquo;Jag brinner för att hjälpa människor ta steget från osäkerhet till trygghet. Att se någon som aldrig vågat gå till frihantelavsnittet stå där med ett leende efter sin första lyckade squat - det är därför jag gör det här.&rdquo;
                   </blockquote>
 
                   <Link
@@ -719,14 +765,17 @@ export default function HomePage() {
 
               {/* Testimonials grid */}
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {/* Testimonial 1 */}
+                {/* Testimonial 1 - Anna S. */}
                 <div className="bg-white border-2 border-gold-primary/20 rounded-xl p-8 shadow-lg transition-all duration-300 hover:border-gold-primary hover:shadow-xl hover:-translate-y-2">
+                  <div className="mb-4">
+                    <p className="text-gold-primary font-bold text-sm uppercase tracking-[1px] mb-2">Jag vågade äntligen börja lyfta vikter</p>
+                  </div>
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-bold text-xl">
-                      K1
+                      AS
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-900 text-lg">Klient 1</h4>
+                      <h4 className="font-bold text-gray-900 text-lg">Anna S., 34 år</h4>
                       <div className="flex gap-1">
                         {[...Array(5)].map((_, i) => (
                           <Star key={i} className="w-4 h-4 fill-gold-primary text-gold-primary" />
@@ -735,23 +784,26 @@ export default function HomePage() {
                     </div>
                   </div>
                   <p className="text-gray-700 italic mb-4 leading-relaxed">
-                    &ldquo;[Testimonial kommer här - beskriv din upplevelse med programmet och vilka resultat du fick]&rdquo;
+                    &ldquo;I två år gick jag på Body Pump men vågade aldrig gå till frihantelavsnittet. Johnnys program gav mig tryggheten att faktiskt börja. Nu älskar jag att träna med vikter och har aldrig känt mig så stark!&rdquo;
                   </p>
                   <div className="pt-4 border-t border-gray-200">
                     <p className="text-gold-primary font-semibold">
-                      Resultat: [X kg på Y veckor]
+                      Från gruppträning till frihantel-älskare
                     </p>
                   </div>
                 </div>
 
-                {/* Testimonial 2 */}
+                {/* Testimonial 2 - Marcus L. */}
                 <div className="bg-white border-2 border-gold-primary/20 rounded-xl p-8 shadow-lg transition-all duration-300 hover:border-gold-primary hover:shadow-xl hover:-translate-y-2">
+                  <div className="mb-4">
+                    <p className="text-gold-primary font-bold text-sm uppercase tracking-[1px] mb-2">Inga dumma frågor, bara tydliga svar</p>
+                  </div>
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-bold text-xl">
-                      K2
+                      ML
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-900 text-lg">Klient 2</h4>
+                      <h4 className="font-bold text-gray-900 text-lg">Marcus L., 41 år</h4>
                       <div className="flex gap-1">
                         {[...Array(5)].map((_, i) => (
                           <Star key={i} className="w-4 h-4 fill-gold-primary text-gold-primary" />
@@ -760,23 +812,26 @@ export default function HomePage() {
                     </div>
                   </div>
                   <p className="text-gray-700 italic mb-4 leading-relaxed">
-                    &ldquo;[Testimonial kommer här - beskriv din upplevelse med programmet och vilka resultat du fick]&rdquo;
+                    &ldquo;Jag hade 1000 frågor om allt från hur man använder skivstången till om jag verkligen får äta pasta. Johnny svarade på allt utan att jag någonsin kände mig dum. Det gav mig självförtroendet att fortsätta.&rdquo;
                   </p>
                   <div className="pt-4 border-t border-gray-200">
                     <p className="text-gold-primary font-semibold">
-                      Resultat: [X kg på Y veckor]
+                      Självförtroende att fortsätta själv
                     </p>
                   </div>
                 </div>
 
-                {/* Testimonial 3 */}
+                {/* Testimonial 3 - Sofia M. */}
                 <div className="bg-white border-2 border-gold-primary/20 rounded-xl p-8 shadow-lg transition-all duration-300 hover:border-gold-primary hover:shadow-xl hover:-translate-y-2 md:col-span-2 lg:col-span-1">
+                  <div className="mb-4">
+                    <p className="text-gold-primary font-bold text-sm uppercase tracking-[1px] mb-2">Jag behövde inte vara perfekt</p>
+                  </div>
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-bold text-xl">
-                      K3
+                      SM
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-900 text-lg">Klient 3</h4>
+                      <h4 className="font-bold text-gray-900 text-lg">Sofia M., 28 år</h4>
                       <div className="flex gap-1">
                         {[...Array(5)].map((_, i) => (
                           <Star key={i} className="w-4 h-4 fill-gold-primary text-gold-primary" />
@@ -785,11 +840,11 @@ export default function HomePage() {
                     </div>
                   </div>
                   <p className="text-gray-700 italic mb-4 leading-relaxed">
-                    &ldquo;[Testimonial kommer här - beskriv din upplevelse med programmet och vilka resultat du fick]&rdquo;
+                    &ldquo;Som mamma med två barn kunde jag inte alltid följa planen exakt. Men Johnny hjälpte mig förstå att det är okej - det handlar om långsiktiga vanor, inte perfekta dagar. Det tog bort all press och gjorde det hållbart.&rdquo;
                   </p>
                   <div className="pt-4 border-t border-gray-200">
                     <p className="text-gold-primary font-semibold">
-                      Resultat: [X kg på Y veckor]
+                      Hållbara vanor trots fullt schema
                     </p>
                   </div>
                 </div>
@@ -798,8 +853,138 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* PASSAR FÖR DIG / PASSAR INTE - Keep existing */}
+        {/* MITT LÖFTE TILL DIG SECTION - NEW */}
         <section className="py-20 lg:py-32 bg-gray-900">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+            <div className="text-center mb-16 animate-fadeIn">
+              <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 animate-shimmer" />
+              <h2 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4">
+                Mitt Löfte Till Dig
+              </h2>
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                Efter 90 dagar kommer du:
+              </p>
+              <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 animate-shimmer" />
+            </div>
+
+            {/* Promise cards - 2x2 grid */}
+            <div className="grid md:grid-cols-2 gap-8 mb-12 animate-fadeIn">
+              {/* Promise 1 - Trygghet */}
+              <div className="bg-white/5 border-2 border-gold-primary/30 rounded-xl p-8 backdrop-blur-sm transition-all duration-300 hover:border-gold-primary hover:shadow-xl hover:shadow-gold-primary/20">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center flex-shrink-0">
+                    <Dumbbell className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-['Orbitron',sans-serif] text-xl md:text-2xl font-bold tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+                    Känna dig trygg på gymmet
+                  </h3>
+                </div>
+                <ul className="space-y-3 text-gray-300">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
+                    <span>Du vet vilka övningar du ska göra</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
+                    <span>Du vet hur man använder utrustningen</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
+                    <span>Du vet hur man progressar säkert</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Promise 2 - Kostvanor */}
+              <div className="bg-white/5 border-2 border-gold-primary/30 rounded-xl p-8 backdrop-blur-sm transition-all duration-300 hover:border-gold-primary hover:shadow-xl hover:shadow-gold-primary/20">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center flex-shrink-0">
+                    <UtensilsCrossed className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-['Orbitron',sans-serif] text-xl md:text-2xl font-bold tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+                    Ha byggt sunda kostvanor
+                  </h3>
+                </div>
+                <ul className="space-y-3 text-gray-300">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
+                    <span>Du förstår hur mycket och vad DU ska äta</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
+                    <span>Du kan göra smarta val utan att räkna allt</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
+                    <span>Du har hittat en balans som fungerar för DIG</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Promise 3 - Starkare */}
+              <div className="bg-white/5 border-2 border-gold-primary/30 rounded-xl p-8 backdrop-blur-sm transition-all duration-300 hover:border-gold-primary hover:shadow-xl hover:shadow-gold-primary/20">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-['Orbitron',sans-serif] text-xl md:text-2xl font-bold tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+                    Vara fysiskt starkare
+                  </h3>
+                </div>
+                <ul className="space-y-3 text-gray-300">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
+                    <span>Mer ork i vardagen</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
+                    <span>Bättre kroppssammansättning</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
+                    <span>Mer energi och bättre sömn</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Promise 4 - Verktyg */}
+              <div className="bg-white/5 border-2 border-gold-primary/30 rounded-xl p-8 backdrop-blur-sm transition-all duration-300 hover:border-gold-primary hover:shadow-xl hover:shadow-gold-primary/20">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-['Orbitron',sans-serif] text-xl md:text-2xl font-bold tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+                    Ha verktygen för livet
+                  </h3>
+                </div>
+                <ul className="space-y-3 text-gray-300">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
+                    <span>Du kan fortsätta själv</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
+                    <span>Du vet hur man anpassar när livet förändras</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-gold-primary flex-shrink-0 mt-1" />
+                    <span>Du har byggt vanor som håller</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Closing promise */}
+            <div className="text-center bg-white/5 border border-gold-primary/20 rounded-xl p-8 backdrop-blur-sm">
+              <p className="text-gray-300 text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
+                Jag lovar inte mirakel. Men jag lovar att om du följer systemet i 90 dagar kommer du se och känna skillnad - både fysiskt och mentalt.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* PASSAR FÖR DIG / PASSAR INTE - Keep existing */}
+        <section className="py-20 lg:py-32 bg-gray-900/50">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-5xl mx-auto animate-fadeIn">
               {/* Section Title */}
@@ -821,31 +1006,27 @@ export default function HomePage() {
                   <ul className="space-y-4 text-left">
                     <li className="flex items-start gap-3 text-gray-700">
                       <span className="text-green-600 text-xl flex-shrink-0">✓</span>
-                      <span>Du som vill gå ner i vikt under 90 dagar med beprövade metoder</span>
+                      <span>Du vill börja styrketräna men känner dig osäker</span>
                     </li>
                     <li className="flex items-start gap-3 text-gray-700">
                       <span className="text-green-600 text-xl flex-shrink-0">✓</span>
-                      <span>Du som är redo att följa en strukturerad plan och lyssna på professionell coachning</span>
+                      <span>Du går på gruppträning men vill komplettera med vikter</span>
                     </li>
                     <li className="flex items-start gap-3 text-gray-700">
                       <span className="text-green-600 text-xl flex-shrink-0">✓</span>
-                      <span>Du som vill ha personlig coaching och stöd genom hela resan med en dedikerad coach</span>
+                      <span>Du är trött på motstridiga råd och vill ha tydliga svar</span>
                     </li>
                     <li className="flex items-start gap-3 text-gray-700">
                       <span className="text-green-600 text-xl flex-shrink-0">✓</span>
-                      <span>Du kan träna 4 gånger i veckan på gym</span>
+                      <span>Du värderar långsiktighet över snabba resultat</span>
                     </li>
                     <li className="flex items-start gap-3 text-gray-700">
                       <span className="text-green-600 text-xl flex-shrink-0">✓</span>
-                      <span>Du som vill lära dig hållbara vanor för livet</span>
+                      <span>Du vill bygga sunda vanor som håller, inte en crash-diet</span>
                     </li>
                     <li className="flex items-start gap-3 text-gray-700">
                       <span className="text-green-600 text-xl flex-shrink-0">✓</span>
-                      <span>Du som är motiverad att checka in varje vecka och följa upp din progress systematiskt</span>
-                    </li>
-                    <li className="flex items-start gap-3 text-gray-700">
-                      <span className="text-green-600 text-xl flex-shrink-0">✓</span>
-                      <span>Du som vill ha tillgång till träningsprogram, kostschemat, verktyg och kunskap i en och samma plattform</span>
+                      <span>Du är redo att lägga 90 dagar på dig själv (3-4 träningspass/vecka)</span>
                     </li>
                   </ul>
                 </div>
@@ -858,19 +1039,19 @@ export default function HomePage() {
                   <ul className="space-y-4 text-left">
                     <li className="flex items-start gap-3 text-gray-700">
                       <span className="text-red-600 text-xl flex-shrink-0">✗</span>
-                      <span>Du som inte är redo att göra livsstilsförändringar och följa ett strukturerat upplägg</span>
+                      <span>Du letar efter en 2-veckors quick fix</span>
                     </li>
                     <li className="flex items-start gap-3 text-gray-700">
                       <span className="text-red-600 text-xl flex-shrink-0">✗</span>
-                      <span>Du som inte är villig att investera tid, energi och pengar i din hälsotransformation</span>
+                      <span>Du vill inte lägga någon tid på träning (3-4 dagar/vecka krävs)</span>
                     </li>
                     <li className="flex items-start gap-3 text-gray-700">
                       <span className="text-red-600 text-xl flex-shrink-0">✗</span>
-                      <span>Du som söker extrema dieter eller andra ohållbara metoder för snabba resultat</span>
+                      <span>Du vill ha någon som pushar dig till extrem träning</span>
                     </li>
                     <li className="flex items-start gap-3 text-gray-700">
                       <span className="text-red-600 text-xl flex-shrink-0">✗</span>
-                      <span>De som &ldquo;vet bäst själv&rdquo;</span>
+                      <span>Du inte är redo att faktiskt göra förändringen</span>
                     </li>
                   </ul>
                 </div>
@@ -1021,6 +1202,118 @@ export default function HomePage() {
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-4 text-gray-700 leading-relaxed">
                     Till skillnad från generiska online-program får du personlig coaching och individuell anpassning. Din coach följer din progress varje vecka och justerar planen efter dina resultat. Du är inte ensam - du har en dedikerad coach som håller dig ansvarig och motiverad hela vägen.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem
+                  value="item-8"
+                  className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
+                >
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
+                    <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
+                      Jag har aldrig lyft vikter - kan jag ändå börja?
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-700 leading-relaxed">
+                    Absolut! De flesta jag jobbar med har aldrig styrketränat tidigare. Vi börjar där du är.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem
+                  value="item-9"
+                  className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
+                >
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
+                    <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
+                      Måste jag gå på gym eller kan jag träna hemma?
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-700 leading-relaxed">
+                    Du väljer! Jag har program för båda. Hemma behöver du minimal utrustning.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem
+                  value="item-10"
+                  className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
+                >
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
+                    <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
+                      Tänk om jag gör fel och skadar mig?
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-700 leading-relaxed">
+                    Därför får du videoguider, teknikinstruktioner och min support. Vi bygger rätt teknik från början.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem
+                  value="item-11"
+                  className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
+                >
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
+                    <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
+                      Jag är inte säker på om jag har tid...
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-700 leading-relaxed">
+                    3-4 träningspass per vecka, 45-60 min/pass. Om du har tid för gruppträning har du tid för detta.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem
+                  value="item-12"
+                  className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
+                >
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
+                    <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
+                      Måste jag räkna kalorier och makron?
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-700 leading-relaxed">
+                    I början hjälper det att få koll på vad du äter. Men målet är att du ska kunna göra smarta val intuitivt.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem
+                  value="item-13"
+                  className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
+                >
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
+                    <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
+                      Vad om jag missar träning eller &ldquo;fuskar&rdquo; med maten?
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-700 leading-relaxed">
+                    Då fortsätter vi nästa dag. Ingen guilt-tripping. Vi bygger vanor, inte perfektion.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem
+                  value="item-14"
+                  className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
+                >
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
+                    <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
+                      Kommer jag bli &ldquo;bulky&rdquo; om jag lyfter vikter?
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-700 leading-relaxed">
+                    Nej. Det kräver år av specifik träning och kost. Du kommer bli stark och tonad.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem
+                  value="item-15"
+                  className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
+                >
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
+                    <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
+                      Är det bara kvinnor/män som tränar med dig?
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-700 leading-relaxed">
+                    Jag jobbar med alla som vill bygga styrka och sunda vanor, oavsett kön eller ålder.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
