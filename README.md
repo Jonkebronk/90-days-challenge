@@ -80,24 +80,36 @@ En komplett coaching-plattform för personlig träning och kost, med interaktiva
 #### 🍳 Receptbanken (Recipe Bank)
 - [x] **Recipe Management (Coach):**
   - Skapa, redigera, ta bort recept
-  - Receptkategorier
+  - Receptkategorier med subkategorier
   - Ingredienser med portioner
   - Steg-för-steg instruktioner
   - Näringsberäkning
   - Svårighetsgrader och dietary tags
   - Måltidstyp-klassificering
 - [x] **Recipe Browser (Client):**
-  - Recept efter kategori
+  - Kort-baserad navigation med subkategorier
+  - Recept efter kategori och subkategori
   - Måltidstyp-filtrering
   - Svårighetsfiltrering
   - Favoritmarkering
   - Näringsinfo och tillagningstid
-- [x] **Recipe Database (205 total recipes):**
-  - **Frukost**: 100 recipes
-  - **Lunch & Middag**: 83 recipes
-  - **Mellanmål**: 15 recipes
-  - **Sås**: 3 recipes (Rebeckas kebabsås, Vitlökssås, etc.)
-  - **Tips på tillagning**: 4 items (Cooking guides & quick recipes)
+- [x] **Recipe Database (314 total recipes, 100% published):**
+  - **Frukost** (138 recipes, 8 subcategories):
+    - Pannkakor & Plättar (32)
+    - Gröt & Overnight Oats (28)
+    - Bröd & Frallor (26)
+    - Muffins & Kakor (24)
+    - Keso & Kvarg & Grekisk yoghurt (13)
+    - Smoothies & Bowls (7)
+    - Våfflor (4)
+    - Ägg & Smörgåsar (1)
+  - **Lunch & Middag** (123 recipes, 7 subcategories):
+    - Kyckling (31), Nötkött (31), Fisk (21), Skaldjur (11)
+    - Fläsk (6), Asiatiskt (4), Grytor & Soppor (3)
+  - **Mellanmål** (16 recipes, 3 subcategories):
+    - Röror & Frutti (8), Proteindessert (6), Övrigt (2)
+  - **Såser**: 23 recipes (all sauces & dips)
+  - **Tips på tillagning**: 14 items (Cooking guides & tips)
 
 #### 📅 90-Dagars Roadmap
 - [x] **Roadmap Management (Coach):**

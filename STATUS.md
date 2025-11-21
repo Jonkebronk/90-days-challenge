@@ -1,6 +1,6 @@
 # Projektstatus - 90-Dagars Challenge
 
-**Senast uppdaterad**: 2025-11-17
+**Senast uppdaterad**: 2025-11-21
 
 ## ✅ Färdigt (Klart att använda)
 
@@ -98,7 +98,7 @@
 #### Recipe Bank System (Receptbanken)
 - [x] **Recipe Management (Coach):**
   - Create, edit, delete recipes
-  - Recipe categories
+  - Recipe categories with subcategories (18 total subcategories)
   - Ingredients with portions and units
   - Step-by-step instructions
   - Automatic nutrition calculation
@@ -106,22 +106,33 @@
   - Dietary tags (vegetarian, vegan, etc.)
   - Meal type classification (breakfast, lunch, dinner, snack)
   - Preparation and cooking time
+  - Cover images with URLs
 
 - [x] **Recipe Browser (Client):**
-  - Recipes grouped by category
+  - **Card-based navigation** with subcategories
+  - Hierarchical browsing: Category → Subcategory → Recipes
+  - Recipes grouped by subcategory within each category
   - Meal type filtering
   - Difficulty filtering
   - Favorite system (toggle favorite/unfavorite)
   - Detailed recipe view with nutrition info
   - Servings calculator
   - Print-friendly layout
+  - Back navigation to category/subcategory
 
-- [x] **Recipe Database (205 total recipes):**
-  - **Frukost**: 100 recipes
-  - **Lunch & Middag**: 83 recipes
-  - **Mellanmål**: 15 recipes
-  - **Sås**: 3 recipes (Rebeckas kebabsås, Vitlökssås, etc.)
-  - **Tips på tillagning**: 4 items (Broccoli guide, Couscous guide, Fisk på en kvart, Fläskfilé helstekt)
+- [x] **Recipe Database (314 total recipes, 100% published):**
+  - **Frukost** (138 recipes, 8 subcategories):
+    - Pannkakor & Plättar (32), Gröt & Overnight Oats (28)
+    - Bröd & Frallor (26), Muffins & Kakor (24)
+    - Keso & Kvarg & Grekisk yoghurt (13), Smoothies & Bowls (7)
+    - Våfflor (4), Ägg & Smörgåsar (1)
+  - **Lunch & Middag** (123 recipes, 7 subcategories):
+    - Kyckling (31), Nötkött (31), Fisk (21), Skaldjur (11)
+    - Fläsk (6), Asiatiskt (4), Grytor & Soppor (3)
+  - **Mellanmål** (16 recipes, 3 subcategories):
+    - Röror & Frutti (8), Proteindessert (6), Övrigt (2)
+  - **Såser**: 23 recipes (all sauces, dips & dressings)
+  - **Tips på tillagning**: 14 items (Cooking guides & tips)
 
 #### Workout Program System
 - [x] **Complete 6-Program System:**
