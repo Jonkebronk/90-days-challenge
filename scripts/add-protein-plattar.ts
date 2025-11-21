@@ -54,10 +54,10 @@ async function main() {
         foodItem = await prisma.foodItem.create({
           data: {
             name: ing.name,
-            caloriesPer100g: 0, // Placeholder
-            proteinPer100g: 0,
-            fatPer100g: 0,
-            carbsPer100g: 0,
+            calories: 0, // Placeholder
+            proteinG: 0,
+            fatG: 0,
+            carbsG: 0,
           }
         })
         console.log(`  → Skapade foodItem: ${foodItem.name}`)
