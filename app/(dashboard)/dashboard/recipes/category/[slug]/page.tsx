@@ -50,6 +50,7 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
   const router = useRouter()
   const [slug, setSlug] = useState<string>('')
   const [category, setCategory] = useState<RecipeCategory | null>(null)
+  const [subcategories, setSubcategories] = useState<RecipeSubcategory[]>([])
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
@@ -70,7 +71,7 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
     try {
       setIsLoading(true)
 
-      // Fetch category info
+      // Fetch category info and subcategories
       const categoryResponse = await fetch('/api/recipe-categories')
       if (categoryResponse.ok) {
         const categoryData = await categoryResponse.json()
@@ -78,7 +79,14 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
         if (foundCategory) {
           setCategory(foundCategory)
 
-          // Fetch recipes for this category
+          // Fetch subcategories for this category
+          const subcategoriesResponse = await fetch(`/api/recipe-subcategories?categoryId=${foundCategory.id}`)
+          if (subcategoriesResponse.ok) {
+            const subcategoriesData = await subcategoriesResponse.json()
+            setSubcategories(subcategoriesData.subcategories || [])
+          }
+
+          // Still fetch recipes for backward compatibility
           const recipesResponse = await fetch(`/api/recipes?categoryId=${foundCategory.id}`)
           if (recipesResponse.ok) {
             const recipesData = await recipesResponse.json()
@@ -176,8 +184,57 @@ export default function RecipeCategoryPage({ params }: { params: Promise<{ slug:
         </div>
       </div>
 
-      {/* Recipes */}
-      {recipes.length === 0 ? (
+      {/* Subcategories or Recipes */}
+      {subcategories.length > 0 ? (
+        // Show subcategory cards
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {subcategories.map((subcategory) => {
+            const subcategoryRecipeCount = recipes.filter(r => r.subcategory?.id === subcategory.id).length
+            return (
+              <Card
+                key={subcategory.id}
+                onClick={() => router.push(`/dashboard/recipes/category/${slug}/${subcategory.slug}`)}
+                className="group relative bg-white/5 border-2 border-gold-primary/20 hover:border-gold-primary/60 hover:bg-white/10 transition-all duration-300 cursor-pointer backdrop-blur-[10px] overflow-hidden"
+              >
+                {/* Gradient Overlay */}
+                <div
+                  className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity"
+                  style={{
+                    background: `linear-gradient(135deg, ${category?.color}30 0%, transparent 100%)`
+                  }}
+                />
+
+                <CardContent className="relative p-8 flex flex-col items-center text-center">
+                  {/* Icon */}
+                  <div
+                    className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg"
+                    style={{ backgroundColor: `${category?.color}20` }}
+                  >
+                    <Icon className="h-10 w-10" style={{ color: category?.color }} />
+                  </div>
+
+                  {/* Subcategory Name */}
+                  <h3 className="text-xl font-bold text-gold-light mb-2 tracking-[1px]">
+                    {subcategory.name}
+                  </h3>
+
+                  {/* Recipe Count */}
+                  <p className="text-gray-400 text-sm">
+                    {subcategoryRecipeCount} {subcategoryRecipeCount === 1 ? 'recept' : 'recept'}
+                  </p>
+
+                  {/* Arrow indicator */}
+                  <div className="mt-4 text-gold-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      ) : recipes.length === 0 ? (
         <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardContent className="text-center py-16">
             <ChefHat className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
