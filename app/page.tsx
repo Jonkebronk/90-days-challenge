@@ -233,11 +233,11 @@ export default function HomePage() {
             <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
               {/* Left column - Text content */}
               <div className="text-center lg:text-left animate-fadeIn">
-                <h1 className="font-['Orbitron',sans-serif] text-xl md:text-4xl lg:text-5xl font-black tracking-tight md:tracking-[2px] lg:tracking-[4px] leading-tight uppercase animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-6 md:mb-8">
+                <h1 className="font-['Orbitron',sans-serif] text-base md:text-4xl lg:text-5xl font-black tracking-tight md:tracking-[2px] lg:tracking-[4px] leading-tight uppercase animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4 md:mb-8 px-2 md:px-0">
                   Friskvårdskompassen - din vägvisare till bättre hälsa
                 </h1>
-                <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 md:mb-8 animate-shimmer lg:bg-gradient-to-r lg:from-[#FFD700]" />
-                <h2 className="font-['Orbitron',sans-serif] text-xl md:text-3xl lg:text-4xl font-black tracking-tight md:tracking-[1px] lg:tracking-[3px] leading-tight animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4 md:mb-6">
+                <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 md:mb-8 animate-shimmer lg:bg-gradient-to-r lg:from-[#FFD700]" />
+                <h2 className="font-['Orbitron',sans-serif] text-base md:text-3xl lg:text-4xl font-black tracking-tight md:tracking-[1px] lg:tracking-[3px] leading-tight animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4 md:mb-6 px-2 md:px-0">
                   För Dig Som Vill Börja Styrketräna Men Inte Vet Var Du Ska Börja
                 </h2>
                 <p className="text-gold-primary text-base md:text-lg mb-4 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-semibold tracking-[1px]">
