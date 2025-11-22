@@ -217,18 +217,18 @@ export default function HomePage() {
             {/* Main heading */}
             <h1 className="font-['Orbitron',sans-serif] text-3xl md:text-5xl lg:text-7xl font-black tracking-tight leading-tight uppercase mb-6">
               <span className="bg-gradient-to-br from-gold-light via-gold-primary to-orange-500 bg-clip-text text-transparent animate-titleGlow">
-                90 Dagar
+                90 Dagars
               </span>
               <br />
               <span className="text-gray-300">
-                Som Förändrar Allt
+                Utmaningen
               </span>
             </h1>
 
             {/* Subheading */}
-            <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
-              Ett exklusivt transformationsprogram för dig som är redo att ta steget.
-              <span className="text-gold-primary font-semibold"> Begränsat antal platser.</span>
+            <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto mb-12 leading-relaxed">
+              För dig som vill bygga en kropp med mer ork, mer energi, mer självförtroende, mer styrka och mindre fett.
+              <span className="block mt-3 text-gold-primary font-semibold">Ta kontroll över din hälsa</span>
             </p>
 
             {/* CTA Button */}
