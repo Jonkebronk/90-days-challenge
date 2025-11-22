@@ -233,27 +233,11 @@ export default function MealPlanPage() {
                   Generella råd för kosten
                 </DialogTitle>
               </DialogHeader>
-              <div className="prose prose-invert prose-lg max-w-none
-                prose-headings:text-amber-500
-                prose-headings:font-bold
-                prose-h1:text-3xl
-                prose-h2:text-2xl
-                prose-h3:text-xl
-                prose-p:text-gray-200
-                prose-p:leading-relaxed
-                prose-strong:text-amber-500
-                prose-strong:font-semibold
-                prose-li:text-gray-200
-                prose-ul:space-y-2
-                prose-a:text-amber-500
-                prose-a:no-underline
-                hover:prose-a:underline">
-                {nutritionTipsContent ? (
-                  <MDXPreview content={nutritionTipsContent} />
-                ) : (
-                  <p className="text-gray-400">Laddar råd...</p>
-                )}
-              </div>
+              {nutritionTipsContent ? (
+                <MDXPreview content={nutritionTipsContent} theme="dark" />
+              ) : (
+                <p className="text-gray-400">Laddar råd...</p>
+              )}
             </DialogContent>
           </Dialog>
         </div>
