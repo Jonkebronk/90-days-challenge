@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Utensils, Dumbbell, Sparkles, Info, Apple, Lightbulb, ChevronUp, ChevronDown } from 'lucide-react'
+import { Utensils, Dumbbell, Sparkles, Lightbulb, ChevronUp, ChevronDown } from 'lucide-react'
 
 interface MealPlanItem {
   id: string
@@ -64,6 +64,7 @@ interface SupplementItem {
 interface MealPlan {
   id: string
   name: string
+  description: string | null
   totalProtein: number | null
   totalFat: number | null
   totalCarbs: number | null
@@ -176,24 +177,14 @@ export default function MealPlanPage() {
           Ditt skräddarsydda kostschema
         </p>
 
+        {mealPlan.description && (
+          <p className="text-gray-700 mt-4 max-w-2xl mx-auto text-sm">
+            {mealPlan.description}
+          </p>
+        )}
+
         {/* Introduction Buttons */}
         <div className="mt-6 flex flex-wrap gap-3 justify-center">
-          <Button
-            onClick={() => router.push('/dashboard/meal-plan/guide')}
-            variant="outline"
-            className="bg-white border-2 border-blue-300 text-blue-600 hover:bg-blue-50 hover:border-blue-400 transition-all"
-          >
-            <Info className="w-4 h-4 mr-2" />
-            Introduktion till kostschema
-          </Button>
-          <Button
-            onClick={() => router.push('/dashboard/meal-plan/food-guide')}
-            variant="outline"
-            className="bg-white border-2 border-green-300 text-green-600 hover:bg-green-50 hover:border-green-400 transition-all"
-          >
-            <Apple className="w-4 h-4 mr-2" />
-            Livsmedelsguide
-          </Button>
           <Button
             onClick={() => router.push('/dashboard/meal-plan/nutrition-tips')}
             variant="outline"
@@ -205,60 +196,8 @@ export default function MealPlanPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Left Sidebar - Totals */}
-        <div className="lg:col-span-1 space-y-4">
-          {/* Daily Totals */}
-          <Card className="bg-white border border-gray-200">
-            <CardHeader>
-              <CardTitle className="text-lg text-gray-900">Totalt för kost</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-700">Protein:</span>
-                <span className="font-bold text-gray-900">{mealPlan.totalProtein?.toFixed(1)}g</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-700">Fett:</span>
-                <span className="font-bold text-gray-900">{mealPlan.totalFat?.toFixed(1)}g</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-700">Kolhydrater:</span>
-                <span className="font-bold text-gray-900">{mealPlan.totalCarbs?.toFixed(1)}g</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-700">Kcal:</span>
-                <span className="font-bold text-gray-900">{mealPlan.totalCalories?.toFixed(0)}</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Total Daily Intake */}
-          <div className="bg-gradient-to-br from-gold-primary to-gold-secondary rounded-xl p-6">
-            <h3 className="text-white font-bold text-lg mb-4">Totalt dagsintag</h3>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-white/90 font-medium">Protein</span>
-                <span className="font-bold text-white">{totalDailyProtein.toFixed(1)}g</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/90 font-medium">Fett</span>
-                <span className="font-bold text-white">{totalDailyFat.toFixed(1)}g</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/90 font-medium">Kolhydrater</span>
-                <span className="font-bold text-white">{totalDailyCarbs.toFixed(1)}g</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/90 font-medium">Kcal</span>
-                <span className="font-bold text-white">{totalDailyCalories.toFixed(0)}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="lg:col-span-3">
+      {/* Main Content */}
+      <div>
           <Tabs defaultValue="meals" className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-white/5 border-2 border-gold-primary/20">
               <TabsTrigger
@@ -607,7 +546,6 @@ export default function MealPlanPage() {
               )}
             </TabsContent>
           </Tabs>
-        </div>
       </div>
     </div>
   )
