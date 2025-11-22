@@ -88,13 +88,13 @@ export default function HomePage() {
             <div className="hidden lg:flex items-center gap-3">
               <Link
                 href="/login?role=client"
-                className="px-4 py-2 text-sm font-semibold text-gray-900 hover:text-gold-primary transition-colors"
+                className="px-4 py-2 text-sm font-semibold text-white bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
               >
                 Klient Login
               </Link>
               <Link
                 href="/login?role=coach"
-                className="px-4 py-2 text-sm font-semibold text-gray-900 hover:text-gold-primary transition-colors"
+                className="px-4 py-2 text-sm font-semibold text-white bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
               >
                 Coach Login
               </Link>
@@ -158,14 +158,14 @@ export default function HomePage() {
               <div className="flex flex-col gap-3 px-4">
                 <Link
                   href="/login?role=client"
-                  className="text-center px-4 py-2 text-sm font-semibold text-gray-900 hover:text-gold-primary transition-colors"
+                  className="text-center px-4 py-2 text-sm font-semibold text-white bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Klient Login
                 </Link>
                 <Link
                   href="/login?role=coach"
-                  className="text-center px-4 py-2 text-sm font-semibold text-gray-900 hover:text-gold-primary transition-colors"
+                  className="text-center px-4 py-2 text-sm font-semibold text-white bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Coach Login
@@ -204,7 +204,6 @@ export default function HomePage() {
             {/* Subheading */}
             <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto mb-12 leading-relaxed">
               För dig som vill bygga en kropp med mer ork, mer energi, mer självförtroende, mer styrka och mindre fett.
-              <span className="block mt-3 text-gold-primary font-semibold">Ta kontroll över din hälsa</span>
             </p>
 
             {/* CTA Button */}
