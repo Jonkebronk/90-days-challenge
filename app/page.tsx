@@ -233,13 +233,13 @@ export default function HomePage() {
             <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
               {/* Left column - Text content */}
               <div className="text-center lg:text-left animate-fadeIn">
-                <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-8 animate-shimmer lg:bg-gradient-to-r lg:from-[#FFD700]" />
-                <p className="text-gold-primary text-sm md:text-base uppercase tracking-[3px] mb-4 font-bold">
+                <h1 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl lg:text-5xl font-black tracking-[2px] md:tracking-[4px] leading-[1.2] uppercase animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-8">
                   Friskvårdskompassen - din vägvisare till bättre hälsa
-                </p>
-                <h1 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl lg:text-5xl font-black tracking-[2px] md:tracking-[4px] leading-[1.2] animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-6">
-                  För Dig Som Vill Börja Styrketräna Men Inte Vet Var Du Ska Börja
                 </h1>
+                <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-8 animate-shimmer lg:bg-gradient-to-r lg:from-[#FFD700]" />
+                <h2 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl lg:text-5xl font-black tracking-[2px] md:tracking-[4px] leading-[1.2] animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-6">
+                  För Dig Som Vill Börja Styrketräna Men Inte Vet Var Du Ska Börja
+                </h2>
                 <p className="text-gold-primary text-base md:text-lg mb-4 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-semibold tracking-[1px]">
                   Evidensbaserad styrketräning och kost - tryggt, tydligt, utan dumma frågor
                 </p>
