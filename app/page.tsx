@@ -233,11 +233,11 @@ export default function HomePage() {
             <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
               {/* Left column - Text content */}
               <div className="text-center lg:text-left animate-fadeIn">
-                <h1 className="font-['Orbitron',sans-serif] text-2xl md:text-4xl lg:text-5xl font-black tracking-[1px] md:tracking-[4px] leading-tight uppercase animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-8">
+                <h1 className="font-['Orbitron',sans-serif] text-xl md:text-4xl lg:text-5xl font-black tracking-tight md:tracking-[2px] lg:tracking-[4px] leading-tight uppercase animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-6 md:mb-8">
                   Friskvårdskompassen - din vägvisare till bättre hälsa
                 </h1>
-                <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-8 animate-shimmer lg:bg-gradient-to-r lg:from-[#FFD700]" />
-                <h2 className="font-['Orbitron',sans-serif] text-2xl md:text-3xl lg:text-4xl font-black tracking-[2px] md:tracking-[3px] leading-[1.2] animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-6">
+                <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 md:mb-8 animate-shimmer lg:bg-gradient-to-r lg:from-[#FFD700]" />
+                <h2 className="font-['Orbitron',sans-serif] text-xl md:text-3xl lg:text-4xl font-black tracking-tight md:tracking-[1px] lg:tracking-[3px] leading-tight animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4 md:mb-6">
                   För Dig Som Vill Börja Styrketräna Men Inte Vet Var Du Ska Börja
                 </h2>
                 <p className="text-gold-primary text-base md:text-lg mb-4 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-semibold tracking-[1px]">
@@ -288,7 +288,7 @@ export default function HomePage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
             <div className="bg-white rounded-2xl p-8 md:p-12 lg:p-16 shadow-2xl animate-fadeIn">
               <div className="text-center mb-10">
-                <h2 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-4">
+                <h2 className="font-['Orbitron',sans-serif] text-2xl md:text-4xl font-black tracking-tight md:tracking-[2px] lg:tracking-[3px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-4">
                   Kanske Känner Du Igen Dig?
                 </h2>
               </div>
@@ -335,7 +335,7 @@ export default function HomePage() {
             {/* Section header */}
             <div className="text-center mb-16 animate-fadeIn">
               <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 animate-shimmer" />
-              <h2 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4">
+              <h2 className="font-['Orbitron',sans-serif] text-2xl md:text-4xl font-black tracking-tight md:tracking-[2px] lg:tracking-[4px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4">
                 Allt du behöver på ett ställe
               </h2>
               <p className="text-gray-400 text-lg max-w-2xl mx-auto">
@@ -362,7 +362,7 @@ export default function HomePage() {
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
                     <Users className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-['Orbitron',sans-serif] text-2xl md:text-3xl font-bold tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+                  <h3 className="font-['Orbitron',sans-serif] text-xl md:text-3xl font-bold tracking-tight md:tracking-[1px] lg:tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
                     Personlig Coaching
                   </h3>
                 </div>
@@ -397,7 +397,7 @@ export default function HomePage() {
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
                     <Dumbbell className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-['Orbitron',sans-serif] text-2xl md:text-3xl font-bold tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+                  <h3 className="font-['Orbitron',sans-serif] text-xl md:text-3xl font-bold tracking-tight md:tracking-[1px] lg:tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
                     Träningsprogram
                   </h3>
                 </div>
@@ -454,7 +454,7 @@ export default function HomePage() {
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
                     <UtensilsCrossed className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-['Orbitron',sans-serif] text-2xl md:text-3xl font-bold tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+                  <h3 className="font-['Orbitron',sans-serif] text-xl md:text-3xl font-bold tracking-tight md:tracking-[1px] lg:tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
                     Kostschema & Recept
                   </h3>
                 </div>
@@ -489,7 +489,7 @@ export default function HomePage() {
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
                     <LineChart className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-['Orbitron',sans-serif] text-2xl md:text-3xl font-bold tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+                  <h3 className="font-['Orbitron',sans-serif] text-xl md:text-3xl font-bold tracking-tight md:tracking-[1px] lg:tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
                     Verktyg & Tracking
                   </h3>
                 </div>
@@ -555,7 +555,7 @@ export default function HomePage() {
                     <p className="text-gold-primary text-sm uppercase tracking-[2px] font-semibold mb-2">
                       Din personliga coach
                     </p>
-                    <h2 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3">
+                    <h2 className="font-['Orbitron',sans-serif] text-2xl md:text-4xl font-black tracking-tight md:tracking-[2px] lg:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3">
                       Johnny
                     </h2>
                     <p className="text-gray-400 text-lg">
@@ -613,7 +613,7 @@ export default function HomePage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-4xl mx-auto animate-fadeIn">
               <div className="mb-12">
-                <h2 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[4px] leading-[1.2] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3">
+                <h2 className="font-['Orbitron',sans-serif] text-2xl md:text-4xl font-black tracking-tight md:tracking-[2px] lg:tracking-[4px] leading-tight uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3">
                   Programmet
                 </h2>
                 <p className="text-gray-400 text-lg">
@@ -675,7 +675,7 @@ export default function HomePage() {
               {/* Section Title */}
               <div className="text-center mb-16">
                 <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 animate-shimmer" />
-                <h2 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[4px] leading-[1.2] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
+                <h2 className="font-['Orbitron',sans-serif] text-2xl md:text-4xl font-black tracking-tight md:tracking-[2px] lg:tracking-[4px] leading-[1.2] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
                   Hur det fungerar
                 </h2>
                 <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 animate-shimmer" />
@@ -757,7 +757,7 @@ export default function HomePage() {
               {/* Section header */}
               <div className="text-center mb-16">
                 <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 animate-shimmer" />
-                <h2 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4">
+                <h2 className="font-['Orbitron',sans-serif] text-2xl md:text-4xl font-black tracking-tight md:tracking-[2px] lg:tracking-[4px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4">
                   Vad säger våra klienter?
                 </h2>
                 <p className="text-gray-400 text-lg max-w-2xl mx-auto">
@@ -861,7 +861,7 @@ export default function HomePage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
             <div className="text-center mb-16 animate-fadeIn">
               <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 animate-shimmer" />
-              <h2 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4">
+              <h2 className="font-['Orbitron',sans-serif] text-2xl md:text-4xl font-black tracking-tight md:tracking-[2px] lg:tracking-[4px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-4">
                 Mitt Löfte Till Dig
               </h2>
               <p className="text-gray-400 text-lg max-w-2xl mx-auto">
@@ -878,7 +878,7 @@ export default function HomePage() {
                   <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center flex-shrink-0">
                     <Dumbbell className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="font-['Orbitron',sans-serif] text-xl md:text-2xl font-bold tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+                  <h3 className="font-['Orbitron',sans-serif] text-lg md:text-2xl font-bold tracking-tight md:tracking-[1px] lg:tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
                     Känna dig trygg på gymmet
                   </h3>
                 </div>
@@ -904,7 +904,7 @@ export default function HomePage() {
                   <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center flex-shrink-0">
                     <UtensilsCrossed className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="font-['Orbitron',sans-serif] text-xl md:text-2xl font-bold tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+                  <h3 className="font-['Orbitron',sans-serif] text-lg md:text-2xl font-bold tracking-tight md:tracking-[1px] lg:tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
                     Ha byggt sunda kostvanor
                   </h3>
                 </div>
@@ -930,7 +930,7 @@ export default function HomePage() {
                   <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center flex-shrink-0">
                     <Sparkles className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="font-['Orbitron',sans-serif] text-xl md:text-2xl font-bold tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+                  <h3 className="font-['Orbitron',sans-serif] text-lg md:text-2xl font-bold tracking-tight md:tracking-[1px] lg:tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
                     Vara fysiskt starkare
                   </h3>
                 </div>
@@ -956,7 +956,7 @@ export default function HomePage() {
                   <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center flex-shrink-0">
                     <CheckCircle className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="font-['Orbitron',sans-serif] text-xl md:text-2xl font-bold tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+                  <h3 className="font-['Orbitron',sans-serif] text-lg md:text-2xl font-bold tracking-tight md:tracking-[1px] lg:tracking-[2px] bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
                     Ha verktygen för livet
                   </h3>
                 </div>
@@ -993,7 +993,7 @@ export default function HomePage() {
               {/* Section Title */}
               <div className="text-center mb-12">
                 <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 animate-shimmer" />
-                <h2 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[4px] leading-[1.3] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
+                <h2 className="font-['Orbitron',sans-serif] text-2xl md:text-4xl font-black tracking-tight md:tracking-[2px] lg:tracking-[4px] leading-[1.3] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
                   Är du redo för<br />90 dagar som<br />förändrar allt?
                 </h2>
                 <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 animate-shimmer" />
@@ -1003,7 +1003,7 @@ export default function HomePage() {
               <div className="grid md:grid-cols-2 gap-8 mb-12">
                 {/* Left column - Passar för dig */}
                 <div className="bg-white border-2 border-green-200 rounded-xl p-8 shadow-md transition-all duration-300 hover:border-green-400 hover:shadow-lg hover:-translate-y-1">
-                  <h3 className="text-2xl font-bold text-green-600 mb-6 tracking-[2px] uppercase font-['Orbitron',sans-serif] text-center md:text-left">
+                  <h3 className="text-xl md:text-2xl font-bold text-green-600 mb-6 tracking-tight md:tracking-[1px] lg:tracking-[2px] uppercase font-['Orbitron',sans-serif] text-center md:text-left">
                     Passar för dig
                   </h3>
                   <ul className="space-y-4 text-left">
@@ -1036,7 +1036,7 @@ export default function HomePage() {
 
                 {/* Right column - Passar INTE */}
                 <div className="bg-white border-2 border-red-200 rounded-xl p-8 shadow-md transition-all duration-300 hover:border-red-400 hover:shadow-lg hover:-translate-y-1">
-                  <h3 className="text-2xl font-bold text-red-600 mb-6 tracking-[2px] uppercase font-['Orbitron',sans-serif] text-center md:text-left">
+                  <h3 className="text-xl md:text-2xl font-bold text-red-600 mb-6 tracking-tight md:tracking-[1px] lg:tracking-[2px] uppercase font-['Orbitron',sans-serif] text-center md:text-left">
                     Passar INTE
                   </h3>
                   <ul className="space-y-4 text-left">
@@ -1095,7 +1095,7 @@ export default function HomePage() {
               {/* Section Title */}
               <div className="text-center mb-12">
                 <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-6 animate-shimmer" />
-                <h2 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl font-black tracking-[4px] leading-[1.2] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
+                <h2 className="font-['Orbitron',sans-serif] text-2xl md:text-4xl font-black tracking-tight md:tracking-[2px] lg:tracking-[4px] leading-[1.2] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
                   Vanliga Frågor
                 </h2>
                 <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-6 animate-shimmer" />
