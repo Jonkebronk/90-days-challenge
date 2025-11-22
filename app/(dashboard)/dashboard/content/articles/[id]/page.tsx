@@ -350,7 +350,7 @@ export default function ArticleEditorPage() {
             variant="ghost"
             size="sm"
             onClick={() => router.push('/dashboard/content/articles')}
-            className="hover:bg-white/10"
+            className="text-gray-300 hover:text-gold-primary hover:bg-white/10"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Tillbaka
@@ -366,7 +366,7 @@ export default function ArticleEditorPage() {
           <Button
             variant="outline"
             onClick={handleTogglePublished}
-            className="border-gold-primary/30 text-gray-300 hover:bg-white/10"
+            className="border-gold-primary/30 text-gray-200 hover:text-white hover:bg-white/10"
           >
             {formData.published ? (
               <>
