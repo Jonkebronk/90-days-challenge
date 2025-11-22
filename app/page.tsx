@@ -100,9 +100,11 @@ export default function HomePage() {
               </Link>
               <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
                 <DialogTrigger asChild>
-                  <button className="flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-gold-primary text-black rounded-lg hover:bg-gold-secondary transition-colors shadow-md">
-                    <Key className="w-4 h-4" />
-                    Har du en kod?
+                  <button
+                    className="flex items-center justify-center p-2.5 bg-gold-primary text-black rounded-lg hover:bg-gold-secondary transition-colors shadow-md"
+                    aria-label="Har du en kod?"
+                  >
+                    <Key className="w-5 h-5" />
                   </button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
@@ -176,6 +178,7 @@ export default function HomePage() {
                     setInviteDialogOpen(true)
                   }}
                   className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold bg-gold-primary text-black rounded-lg hover:bg-gold-secondary transition-colors shadow-md"
+                  aria-label="Har du en kod?"
                 >
                   <Key className="w-4 h-4" />
                   Har du en kod?
