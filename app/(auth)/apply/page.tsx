@@ -27,6 +27,7 @@ export default function ApplyPage() {
     nutrition: false,
     lifestyle: false,
     motivation: false,
+    other: false,
   })
 
   const [formData, setFormData] = useState({
@@ -62,7 +63,10 @@ export default function ApplyPage() {
 
     // Motivation
     whyApply: '',
-    challenges: ''
+    challenges: '',
+
+    // Other
+    other: ''
   })
 
   const toggleSection = (section: keyof typeof expandedSections) => {
@@ -119,6 +123,9 @@ ${formData.challenges || 'Ej angivet'}
 
 Tidigare coaching:
 ${formData.previousCoaching || 'Ej angivet'}
+
+=== ÖVRIGT ===
+${formData.other || 'Ej angivet'}
       `.trim()
 
       // Send application to backend
@@ -518,6 +525,30 @@ ${formData.previousCoaching || 'Ej angivet'}
                     onChange={(e) => setFormData({ ...formData, lifestyle: e.target.value })}
                     className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
                     placeholder="Beskriv din dag..."
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 6. Other */}
+          <div className="space-y-4">
+            <SectionHeader
+              title="Övrigt"
+              section="other"
+              isExpanded={expandedSections.other}
+            />
+            {expandedSections.other && (
+              <div className="space-y-4 bg-[rgba(0,0,0,0.2)] p-6 rounded-lg border border-gold-primary/20">
+                <div>
+                  <Label className="text-gray-200 mb-2 block">
+                    Något annat du vill att vi ska veta?
+                  </Label>
+                  <Textarea
+                    value={formData.other}
+                    onChange={(e) => setFormData({ ...formData, other: e.target.value })}
+                    className="bg-black/30 border-gold-primary/30 text-white min-h-[120px]"
+                    placeholder="Skriv här om det är något ytterligare du vill dela med dig av..."
                   />
                 </div>
               </div>
