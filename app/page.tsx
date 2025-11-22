@@ -190,14 +190,6 @@ export default function HomePage() {
       <main id="start" className="relative z-10 flex items-center justify-center min-h-[calc(100vh-96px)]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center animate-fadeIn">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gold-primary/10 border border-gold-primary/30 rounded-full mb-8">
-              <Lock className="w-4 h-4 text-gold-primary" />
-              <span className="text-sm text-gold-primary font-semibold tracking-wide">
-                Intresseanmälan
-              </span>
-            </div>
-
             {/* Main heading */}
             <h1 className="font-['Orbitron',sans-serif] text-3xl md:text-5xl lg:text-7xl font-black tracking-tight leading-tight uppercase mb-6">
               <span className="bg-gradient-to-br from-gold-light via-gold-primary to-orange-500 bg-clip-text text-transparent animate-titleGlow">
@@ -227,11 +219,6 @@ export default function HomePage() {
               {/* Animated glow effect */}
               <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500" />
             </button>
-
-            {/* Additional mystique text */}
-            <p className="text-gray-600 text-sm mt-8 italic">
-              &ldquo;Inte för alla. Bara för dem som är redo.&rdquo;
-            </p>
           </div>
         </div>
       </main>
