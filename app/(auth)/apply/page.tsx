@@ -542,7 +542,7 @@ ${formData.other || 'Ej angivet'}
               <div className="space-y-4 bg-[rgba(0,0,0,0.2)] p-6 rounded-lg border border-gold-primary/20">
                 <div>
                   <Label className="text-gray-200 mb-2 block">
-                    Något annat du vill att vi ska veta?
+                    Något annat du vill att jag ska veta?
                   </Label>
                   <Textarea
                     value={formData.other}
