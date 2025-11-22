@@ -29,6 +29,8 @@ import {
   Pencil,
   Trash2,
   FolderPlus,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -304,6 +306,81 @@ export default function FaqsPage() {
     }
   }
 
+  const handleMoveCategory = async (category: FaqCategory, direction: 'up' | 'down') => {
+    const currentIndex = categories.findIndex(c => c.id === category.id)
+    if (
+      (direction === 'up' && currentIndex === 0) ||
+      (direction === 'down' && currentIndex === categories.length - 1)
+    ) {
+      return
+    }
+
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    const otherCategory = categories[newIndex]
+
+    try {
+      // Swap order indices
+      await Promise.all([
+        fetch(`/api/faq-categories/${category.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderIndex: otherCategory.orderIndex }),
+        }),
+        fetch(`/api/faq-categories/${otherCategory.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderIndex: category.orderIndex }),
+        }),
+      ])
+
+      fetchCategories()
+      toast.success('Ordning uppdaterad')
+    } catch (error) {
+      console.error('Error moving category:', error)
+      toast.error('Kunde inte ändra ordning')
+    }
+  }
+
+  const handleMoveQuestion = async (question: FaqQuestion, direction: 'up' | 'down') => {
+    // Get questions in same category
+    const categoryQuestions = questions
+      .filter(q => q.categoryId === question.categoryId)
+      .sort((a, b) => a.orderIndex - b.orderIndex)
+
+    const currentIndex = categoryQuestions.findIndex(q => q.id === question.id)
+    if (
+      (direction === 'up' && currentIndex === 0) ||
+      (direction === 'down' && currentIndex === categoryQuestions.length - 1)
+    ) {
+      return
+    }
+
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    const otherQuestion = categoryQuestions[newIndex]
+
+    try {
+      // Swap order indices
+      await Promise.all([
+        fetch(`/api/faq-questions/${question.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderIndex: otherQuestion.orderIndex }),
+        }),
+        fetch(`/api/faq-questions/${otherQuestion.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderIndex: question.orderIndex }),
+        }),
+      ])
+
+      fetchQuestions()
+      toast.success('Ordning uppdaterad')
+    } catch (error) {
+      console.error('Error moving question:', error)
+      toast.error('Kunde inte ändra ordning')
+    }
+  }
+
   const openEditCategoryDialog = (category: FaqCategory) => {
     setEditingCategory(category)
     setCategoryFormData({
@@ -388,7 +465,7 @@ export default function FaqsPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {categories.map((category) => (
+              {categories.map((category, index) => (
                 <div
                   key={category.id}
                   className="p-4 bg-black/30 border border-gold-primary/20 rounded-lg hover:border-[rgba(255,215,0,0.4)] transition-colors"
@@ -396,6 +473,24 @@ export default function FaqsPage() {
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="font-bold text-white">{category.name}</h3>
                     <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleMoveCategory(category, 'up')}
+                        disabled={index === 0}
+                        className="h-8 w-8 text-gray-400 hover:text-gold-light disabled:opacity-30"
+                      >
+                        <ArrowUp className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleMoveCategory(category, 'down')}
+                        disabled={index === categories.length - 1}
+                        className="h-8 w-8 text-gray-400 hover:text-gold-light disabled:opacity-30"
+                      >
+                        <ArrowDown className="h-4 w-4" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -467,49 +562,77 @@ export default function FaqsPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {filteredQuestions.map((question) => (
-                <div
-                  key={question.id}
-                  className="p-4 bg-black/30 border border-gold-primary/20 rounded-lg hover:border-[rgba(255,215,0,0.4)] transition-colors"
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge className="bg-[rgba(100,100,255,0.1)] text-blue-300 border border-[rgba(100,100,255,0.3)] text-xs">
-                          {question.category.name}
-                        </Badge>
-                        {!question.published && (
-                          <Badge className="bg-[rgba(150,150,150,0.1)] text-gray-400 border border-[rgba(150,150,150,0.3)] text-xs">
-                            Opublicerad
+              {filteredQuestions.map((question) => {
+                // Get position of question within its category
+                const categoryQuestions = questions
+                  .filter(q => q.categoryId === question.categoryId)
+                  .sort((a, b) => a.orderIndex - b.orderIndex)
+                const questionIndex = categoryQuestions.findIndex(q => q.id === question.id)
+                const isFirst = questionIndex === 0
+                const isLast = questionIndex === categoryQuestions.length - 1
+
+                return (
+                  <div
+                    key={question.id}
+                    className="p-4 bg-black/30 border border-gold-primary/20 rounded-lg hover:border-[rgba(255,215,0,0.4)] transition-colors"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge className="bg-[rgba(100,100,255,0.1)] text-blue-300 border border-[rgba(100,100,255,0.3)] text-xs">
+                            {question.category.name}
                           </Badge>
-                        )}
+                          {!question.published && (
+                            <Badge className="bg-[rgba(150,150,150,0.1)] text-gray-400 border border-[rgba(150,150,150,0.3)] text-xs">
+                              Opublicerad
+                            </Badge>
+                          )}
+                        </div>
+                        <h4 className="font-bold text-white mb-2">{question.question}</h4>
+                        <p className="text-sm text-gray-400 line-clamp-2">
+                          {question.answer}
+                        </p>
                       </div>
-                      <h4 className="font-bold text-white mb-2">{question.question}</h4>
-                      <p className="text-sm text-gray-400 line-clamp-2">
-                        {question.answer}
-                      </p>
-                    </div>
-                    <div className="flex gap-1 ml-4">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openEditQuestionDialog(question)}
-                        className="h-8 w-8 text-gray-400 hover:text-gold-light"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteQuestion(question)}
-                        className="h-8 w-8 text-gray-400 hover:text-red-400"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex gap-1 ml-4">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleMoveQuestion(question, 'up')}
+                          disabled={isFirst}
+                          className="h-8 w-8 text-gray-400 hover:text-gold-light disabled:opacity-30"
+                        >
+                          <ArrowUp className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleMoveQuestion(question, 'down')}
+                          disabled={isLast}
+                          className="h-8 w-8 text-gray-400 hover:text-gold-light disabled:opacity-30"
+                        >
+                          <ArrowDown className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => openEditQuestionDialog(question)}
+                          className="h-8 w-8 text-gray-400 hover:text-gold-light"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteQuestion(question)}
+                          className="h-8 w-8 text-gray-400 hover:text-red-400"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </CardContent>
