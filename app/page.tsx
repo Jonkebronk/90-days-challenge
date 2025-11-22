@@ -22,10 +22,6 @@ export default function HomePage() {
   const [inviteCode, setInviteCode] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
 
-  const navItems = [
-    { name: 'Start', href: '#start' },
-    { name: 'Intresseanmälan', href: '/apply' },
-  ]
 
   const handleVerifyInviteCode = async () => {
     if (!inviteCode || inviteCode.trim().length < 10) {
@@ -88,26 +84,19 @@ export default function HomePage() {
               />
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-8">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="text-gray-900 hover:text-gold-primary transition-colors text-sm font-medium tracking-[1px] uppercase"
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </nav>
-
             {/* Desktop CTA Buttons */}
-            <div className="hidden lg:flex items-center gap-4">
+            <div className="hidden lg:flex items-center gap-3">
               <Link
-                href="/login"
+                href="/login?role=client"
                 className="px-4 py-2 text-sm font-semibold text-gray-900 hover:text-gold-primary transition-colors"
               >
-                Logga in
+                Klient Login
+              </Link>
+              <Link
+                href="/login?role=coach"
+                className="px-4 py-2 text-sm font-semibold text-gray-900 hover:text-gold-primary transition-colors"
+              >
+                Coach Login
               </Link>
               <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
                 <DialogTrigger asChild>
@@ -166,37 +155,32 @@ export default function HomePage() {
           {/* Mobile Menu */}
           {mobileMenuOpen && (
             <div className="lg:hidden py-4 border-t border-gray-200 animate-fadeIn">
-              <nav className="flex flex-col space-y-4">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="text-gray-900 hover:text-gold-primary transition-colors text-sm font-medium tracking-[1px] uppercase px-4 py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-                <div className="border-t border-gray-200 pt-4 px-4 flex flex-col gap-3">
-                  <Link
-                    href="/login"
-                    className="text-center px-4 py-2 text-sm font-semibold text-gray-900 hover:text-gold-primary transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Logga in
-                  </Link>
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false)
-                      setInviteDialogOpen(true)
-                    }}
-                    className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold bg-gold-primary text-white rounded-lg hover:bg-gold-secondary transition-colors"
-                  >
-                    <Key className="w-4 h-4" />
-                    Har du en kod?
-                  </button>
-                </div>
-              </nav>
+              <div className="flex flex-col gap-3 px-4">
+                <Link
+                  href="/login?role=client"
+                  className="text-center px-4 py-2 text-sm font-semibold text-gray-900 hover:text-gold-primary transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Klient Login
+                </Link>
+                <Link
+                  href="/login?role=coach"
+                  className="text-center px-4 py-2 text-sm font-semibold text-gray-900 hover:text-gold-primary transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Coach Login
+                </Link>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    setInviteDialogOpen(true)
+                  }}
+                  className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold bg-gold-primary text-white rounded-lg hover:bg-gold-secondary transition-colors"
+                >
+                  <Key className="w-4 h-4" />
+                  Har du en kod?
+                </button>
+              </div>
             </div>
           )}
         </div>
