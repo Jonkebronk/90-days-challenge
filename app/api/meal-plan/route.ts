@@ -56,6 +56,7 @@ export async function GET() {
       const transformedMealPlan = {
         id: template.id,
         name: template.name,
+        description: template.description,
         totalProtein: template.targetProtein ? Number(template.targetProtein) : null,
         totalFat: template.targetFat ? Number(template.targetFat) : null,
         totalCarbs: template.targetCarbs ? Number(template.targetCarbs) : null,
