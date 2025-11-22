@@ -75,17 +75,6 @@ const navigation = [
   { name: 'Livsmedelbanken', href: '/dashboard/content/food-items', icon: Apple },
   { name: 'Kostschema', href: '/dashboard/meal-plan', icon: Utensils, clientOnly: true },
   { name: 'Träningsprogram', href: '/dashboard/workout', icon: Dumbbell, clientOnly: true },
-  {
-    name: 'Verktyg',
-    icon: Calculator,
-    coachOnly: true,
-    dropdown: [
-      { name: 'Fas 1: Bas', href: '/dashboard/nutrition-calculator?phase=1', icon: Utensils },
-      { name: 'Fas 2: Ramp Up 1', href: '/dashboard/nutrition-calculator?phase=2', icon: Utensils },
-      { name: 'Fas 3: Ramp Up 2', href: '/dashboard/nutrition-calculator?phase=3', icon: Utensils },
-      { name: 'Fas 4: Underhåll', href: '/dashboard/nutrition-calculator?phase=4', icon: Utensils },
-    ]
-  },
   { name: 'Check-in', href: '/dashboard/check-in', icon: Calendar, clientOnly: true },
   { name: 'Progress', href: '/dashboard/progress', icon: TrendingUp, clientOnly: true },
   { name: 'Meddelanden', href: '/dashboard/messages', icon: MessageSquare },
