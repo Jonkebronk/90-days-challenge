@@ -30,7 +30,12 @@
       "Bash(node -e:*)",
       "Bash(npx tsc:*)",
       "Bash(head:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(recipe-analysis.txt)",
+      "Bash(gh repo edit:*)",
+      "WebFetch(domain:myhapp.se)",
+      "Bash(set NEXT_ESLINT_STRICT=false)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": [],
     "ask": []

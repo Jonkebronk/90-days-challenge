@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Utensils, Dumbbell, Sparkles, Lightbulb, ChevronUp, ChevronDown, Info } from 'lucide-react'
+import { MDXPreview } from '@/components/mdx-preview'
 
 interface MealPlanItem {
   id: string
@@ -87,6 +88,7 @@ export default function MealPlanPage() {
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null)
   const [loading, setLoading] = useState(true)
   const [expandedMeals, setExpandedMeals] = useState<Set<number>>(new Set()) // All meals closed by default
+  const [nutritionTipsContent, setNutritionTipsContent] = useState<string>('')
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
@@ -102,6 +104,7 @@ export default function MealPlanPage() {
 
   useEffect(() => {
     fetchMealPlan()
+    fetchNutritionTips()
   }, [])
 
   const fetchMealPlan = async () => {
@@ -113,6 +116,18 @@ export default function MealPlanPage() {
       console.error('Error fetching meal plan:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchNutritionTips = async () => {
+    try {
+      const response = await fetch('/api/guide-content?type=nutrition_tips')
+      if (response.ok) {
+        const data = await response.json()
+        setNutritionTipsContent(data.guide.content)
+      }
+    } catch (error) {
+      console.error('Error fetching nutrition tips:', error)
     }
   }
 
@@ -201,14 +216,46 @@ export default function MealPlanPage() {
               </DialogContent>
             </Dialog>
           )}
-          <Button
-            onClick={() => router.push('/dashboard/meal-plan/nutrition-tips')}
-            variant="outline"
-            className="bg-white border-2 border-amber-300 text-amber-600 hover:bg-amber-50 hover:border-amber-400 transition-all"
-          >
-            <Lightbulb className="w-4 h-4 mr-2" />
-            Generella råd för kosten
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="bg-white border-2 border-amber-300 text-amber-600 hover:bg-amber-50 hover:border-amber-400 transition-all"
+              >
+                <Lightbulb className="w-4 h-4 mr-2" />
+                Generella råd för kosten
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-gray-200 flex items-center gap-2">
+                  <Lightbulb className="w-6 h-6 text-amber-500" />
+                  Generella råd för kosten
+                </DialogTitle>
+              </DialogHeader>
+              <div className="prose prose-invert prose-lg max-w-none
+                prose-headings:text-amber-500
+                prose-headings:font-bold
+                prose-h1:text-3xl
+                prose-h2:text-2xl
+                prose-h3:text-xl
+                prose-p:text-gray-200
+                prose-p:leading-relaxed
+                prose-strong:text-amber-500
+                prose-strong:font-semibold
+                prose-li:text-gray-200
+                prose-ul:space-y-2
+                prose-a:text-amber-500
+                prose-a:no-underline
+                hover:prose-a:underline">
+                {nutritionTipsContent ? (
+                  <MDXPreview content={nutritionTipsContent} />
+                ) : (
+                  <p className="text-gray-400">Laddar råd...</p>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 

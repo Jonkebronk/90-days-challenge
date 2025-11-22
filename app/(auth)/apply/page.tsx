@@ -567,11 +567,9 @@ ${formData.other || 'Ej angivet'}
               isExpanded={expandedSections.other}
             />
             {expandedSections.other && (
-              <div className="space-y-4 bg-[rgba(0,0,0,0.2)] p-6 rounded-lg border border-gold-primary/20">
+              <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
                 <div>
-                  <Label className="text-gray-200 mb-2 block">
-                    Något annat du vill att jag ska veta?
-                  </Label>
+                  <Label className="text-gray-200">Något annat du vill att jag ska veta?</Label>
                   <Textarea
                     value={formData.other}
                     onChange={(e) => setFormData({ ...formData, other: e.target.value })}
