@@ -48,22 +48,34 @@ export default function ApplyPage() {
     currentWeight: '',
 
     // Training
+    trainingGoal: '',
     currentTraining: '',
-    trainingBackground: '',
+    trainingExperience: '',
     injuries: '',
+    availableTime: '',
+    preferredSchedule: '',
 
     // Nutrition
     dietHistory: '',
-    foodPreferences: '',
+    macroExperience: '',
+    digestionIssues: '',
     allergies: '',
+    favoriteFood: '',
+    dislikedFood: '',
+    supplements: '',
     previousCoaching: '',
 
     // Lifestyle
+    stressLevel: '',
+    sleepHours: '',
+    occupation: '',
     lifestyle: '',
 
     // Motivation
-    whyApply: '',
-    challenges: '',
+    whyJoin: '',
+    canFollowPlan: '',
+    expectations: '',
+    biggestChallenges: '',
 
     // Other
     other: ''
@@ -86,10 +98,7 @@ export default function ApplyPage() {
     try {
       // Create detailed lead notes
       const leadNotes = `
-INTRESSEANMÄLAN - ${formData.serviceType}
-
-=== VALD TJÄNST ===
-${formData.serviceType}
+INTRESSEANMÄLAN - 90-DAGARS UTMANINGEN
 
 === PERSONUPPGIFTER ===
 Ålder: ${formData.age || 'Ej angivet'}
@@ -102,27 +111,34 @@ Längd: ${formData.height || 'Ej angivet'} cm
 Nuvarande vikt: ${formData.currentWeight || 'Ej angivet'} kg
 
 === TRÄNING ===
+Mål: ${formData.trainingGoal || 'Ej angivet'}
 Tränar du idag: ${formData.currentTraining || 'Ej angivet'}
-Träningserfarenhet historiskt: ${formData.trainingBackground || 'Ej angivet'}
+Träningserfarenhet: ${formData.trainingExperience || 'Ej angivet'}
 Skador/Begränsningar: ${formData.injuries || 'Ej angivet'}
+Tillgänglig tid: ${formData.availableTime || 'Ej angivet'}
+Föredragen schema: ${formData.preferredSchedule || 'Ej angivet'}
 
 === KOSTBAKGRUND ===
 Hur äter du idag: ${formData.dietHistory || 'Ej angivet'}
-Matpreferenser: ${formData.foodPreferences || 'Ej angivet'}
+Makroerfarenhet: ${formData.macroExperience || 'Ej angivet'}
+Matsmältningsproblem: ${formData.digestionIssues || 'Ej angivet'}
 Allergier: ${formData.allergies || 'Ej angivet'}
+Favoritmat: ${formData.favoriteFood || 'Ej angivet'}
+Mat du ogillar: ${formData.dislikedFood || 'Ej angivet'}
+Kosttillskott: ${formData.supplements || 'Ej angivet'}
+Tidigare coaching: ${formData.previousCoaching || 'Ej angivet'}
 
 === LIVSSTIL ===
+Stressnivå: ${formData.stressLevel || 'Ej angivet'}
+Sömntimmar: ${formData.sleepHours || 'Ej angivet'}
+Yrke: ${formData.occupation || 'Ej angivet'}
 Livsstil: ${formData.lifestyle || 'Ej angivet'}
 
 === MOTIVATION ===
-Målsättningar:
-${formData.whyApply || 'Ej angivet'}
-
-Största utmaningar:
-${formData.challenges || 'Ej angivet'}
-
-Tidigare coaching:
-${formData.previousCoaching || 'Ej angivet'}
+Varför vill du gå med: ${formData.whyJoin || 'Ej angivet'}
+Kan du följa planen: ${formData.canFollowPlan || 'Ej angivet'}
+Förväntningar: ${formData.expectations || 'Ej angivet'}
+Största utmaningar: ${formData.biggestChallenges || 'Ej angivet'}
 
 === ÖVRIGT ===
 ${formData.other || 'Ej angivet'}
@@ -133,9 +149,6 @@ ${formData.other || 'Ej angivet'}
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          // Service Selection
-          serviceType: formData.serviceType,
-
           // Personal Information
           fullName: formData.name,
           email: formData.email,
@@ -150,22 +163,37 @@ ${formData.other || 'Ej angivet'}
           currentWeight: formData.currentWeight,
 
           // Training
+          trainingGoal: formData.trainingGoal,
           currentTraining: formData.currentTraining,
-          trainingBackground: formData.trainingBackground,
+          trainingExperience: formData.trainingExperience,
           injuries: formData.injuries,
+          availableTime: formData.availableTime,
+          preferredSchedule: formData.preferredSchedule,
 
           // Nutrition
           dietHistory: formData.dietHistory,
-          foodPreferences: formData.foodPreferences,
+          macroExperience: formData.macroExperience,
+          digestionIssues: formData.digestionIssues,
           allergies: formData.allergies,
+          favoriteFood: formData.favoriteFood,
+          dislikedFood: formData.dislikedFood,
+          supplements: formData.supplements,
+          previousCoaching: formData.previousCoaching,
 
           // Lifestyle
+          stressLevel: formData.stressLevel,
+          sleepHours: formData.sleepHours,
+          occupation: formData.occupation,
           lifestyle: formData.lifestyle,
 
           // Motivation
-          whyJoin: formData.whyApply,
-          biggestChallenges: formData.challenges,
-          previousCoaching: formData.previousCoaching,
+          whyJoin: formData.whyJoin,
+          canFollowPlan: formData.canFollowPlan,
+          expectations: formData.expectations,
+          biggestChallenges: formData.biggestChallenges,
+
+          // Other
+          other: formData.other,
 
           // Complete application notes
           notes: leadNotes,
@@ -404,8 +432,8 @@ ${formData.other || 'Ej angivet'}
                 <div>
                   <Label className="text-gray-200">Klientens målsättningar (Stora och små mål)</Label>
                   <Textarea
-                    value={formData.whyApply}
-                    onChange={(e) => setFormData({ ...formData, whyApply: e.target.value })}
+                    value={formData.whyJoin}
+                    onChange={(e) => setFormData({ ...formData, whyJoin: e.target.value })}
                     className="bg-black/30 border-gold-primary/30 text-white min-h-[120px]"
                     placeholder="Beskriv dina stora mål och små delmål..."
                   />
@@ -414,8 +442,8 @@ ${formData.other || 'Ej angivet'}
                 <div>
                   <Label className="text-gray-200">Största utmaningar</Label>
                   <Textarea
-                    value={formData.challenges}
-                    onChange={(e) => setFormData({ ...formData, challenges: e.target.value })}
+                    value={formData.biggestChallenges}
+                    onChange={(e) => setFormData({ ...formData, biggestChallenges: e.target.value })}
                     className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
                     placeholder="Vad har hindrat dig från att nå dina mål tidigare?"
                   />
@@ -453,8 +481,8 @@ ${formData.other || 'Ej angivet'}
                 <div>
                   <Label className="text-gray-200">Träningserfarenhet historiskt</Label>
                   <Textarea
-                    value={formData.trainingBackground}
-                    onChange={(e) => setFormData({ ...formData, trainingBackground: e.target.value })}
+                    value={formData.trainingExperience}
+                    onChange={(e) => setFormData({ ...formData, trainingExperience: e.target.value })}
                     className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
                     placeholder="Vad har du för träningserfarenhet historiskt?"
                   />
@@ -492,8 +520,8 @@ ${formData.other || 'Ej angivet'}
                 <div>
                   <Label className="text-gray-200">Matpreferenser</Label>
                   <Textarea
-                    value={formData.foodPreferences}
-                    onChange={(e) => setFormData({ ...formData, foodPreferences: e.target.value })}
+                    value={formData.favoriteFood}
+                    onChange={(e) => setFormData({ ...formData, favoriteFood: e.target.value })}
                     className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
                     placeholder="Har du några särskilda matpreferenser? Till exempelvis mat som du gillar mer eller mindre?"
                   />
