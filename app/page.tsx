@@ -3,10 +3,17 @@
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Lock } from 'lucide-react'
+import { ArrowRight, Lock, Menu, X } from 'lucide-react'
+import { useState } from 'react'
 
 export default function HomePage() {
   const router = useRouter()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const navItems = [
+    { name: 'Start', href: '#start' },
+    { name: 'Intresseanmälan', href: '/apply' },
+  ]
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-900">
@@ -16,14 +23,14 @@ export default function HomePage() {
         <div className="absolute w-96 h-96 bg-gold-primary/10 rounded-full blur-3xl -bottom-48 -right-48 animate-pulse delay-1000" />
       </div>
 
-      {/* Header */}
-      <header className="relative z-50">
+      {/* Header Navigation */}
+      <header className="relative z-50 bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20 lg:h-24">
             {/* Logo */}
-            <Link href="/" className="flex flex-row items-center group">
+            <Link href="/" className="flex flex-row items-center group flex-shrink-0">
               <Image
-                src="/images/compass-icon-gold.svg"
+                src="/images/compass-icon-black.svg"
                 alt="Friskvårdskompassen"
                 width={60}
                 height={60}
@@ -32,19 +39,74 @@ export default function HomePage() {
               />
             </Link>
 
-            {/* Login button */}
-            <Link
-              href="/login"
-              className="px-4 py-2 text-sm font-semibold text-gold-primary border border-gold-primary/30 rounded-lg hover:bg-gold-primary/10 transition-all duration-300"
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center space-x-8">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="text-gray-900 hover:text-gold-primary transition-colors text-sm font-medium tracking-[1px] uppercase"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </nav>
+
+            {/* Desktop CTA Buttons */}
+            <div className="hidden lg:flex items-center gap-4">
+              <Link
+                href="/login"
+                className="px-4 py-2 text-sm font-semibold text-gray-900 hover:text-gold-primary transition-colors"
+              >
+                Logga in
+              </Link>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="lg:hidden p-2 text-gray-900 hover:text-gold-primary transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
             >
-              Logga in
-            </Link>
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
           </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden py-4 border-t border-gray-200 animate-fadeIn">
+              <nav className="flex flex-col space-y-4">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="text-gray-900 hover:text-gold-primary transition-colors text-sm font-medium tracking-[1px] uppercase px-4 py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+                <div className="border-t border-gray-200 pt-4 px-4 flex flex-col gap-3">
+                  <Link
+                    href="/login"
+                    className="text-center px-4 py-2 text-sm font-semibold text-gray-900 hover:text-gold-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Logga in
+                  </Link>
+                </div>
+              </nav>
+            </div>
+          )}
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="relative z-10 flex items-center justify-center min-h-[calc(100vh-96px)]">
+      <main id="start" className="relative z-10 flex items-center justify-center min-h-[calc(100vh-96px)]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center animate-fadeIn">
             {/* Badge */}
