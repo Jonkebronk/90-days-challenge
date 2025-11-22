@@ -1,5 +1,5 @@
 // Service Worker for 90 Days Challenge PWA
-const CACHE_NAME = '90-days-v4'
+const CACHE_NAME = '90-days-v5'
 const urlsToCache = [
   '/',
   '/dashboard',
@@ -57,43 +57,76 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          return response
-        }
+  // Use network-first strategy for navigation (HTML) requests
+  // Use cache-first for static assets (images, CSS, JS)
+  const isNavigationRequest = event.request.mode === 'navigate' ||
+                               event.request.headers.get('accept')?.includes('text/html')
 
-        return fetch(event.request).then(
-          (response) => {
-            // Check if valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response
-            }
-
-            // Clone response for caching
+  if (isNavigationRequest) {
+    // Network first for HTML pages - always get fresh content
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Clone and cache the fresh response
+          if (response && response.status === 200) {
             const responseToCache = response.clone()
-
             caches.open(CACHE_NAME)
               .then((cache) => {
                 cache.put(event.request, responseToCache).catch(err => {
-                  // Ignore cache put errors (e.g., for opaque responses)
                   console.log('Failed to cache:', event.request.url, err)
                 })
               })
-              .catch(err => {
-                console.log('Failed to open cache:', err)
-              })
-
+          }
+          return response
+        })
+        .catch(() => {
+          // Fallback to cache if network fails
+          return caches.match(event.request)
+            .then((cachedResponse) => {
+              return cachedResponse || caches.match('/offline.html')
+            })
+        })
+    )
+  } else {
+    // Cache first for static assets (faster loading)
+    event.respondWith(
+      caches.match(event.request)
+        .then((response) => {
+          // Cache hit - return response
+          if (response) {
             return response
           }
-        ).catch(() => {
-          // Return offline page if fetch fails
-          return caches.match('/offline.html')
+
+          return fetch(event.request).then(
+            (response) => {
+              // Check if valid response
+              if (!response || response.status !== 200 || response.type !== 'basic') {
+                return response
+              }
+
+              // Clone response for caching
+              const responseToCache = response.clone()
+
+              caches.open(CACHE_NAME)
+                .then((cache) => {
+                  cache.put(event.request, responseToCache).catch(err => {
+                    // Ignore cache put errors (e.g., for opaque responses)
+                    console.log('Failed to cache:', event.request.url, err)
+                  })
+                })
+                .catch(err => {
+                  console.log('Failed to open cache:', err)
+                })
+
+              return response
+            }
+          ).catch(() => {
+            // Return offline page if fetch fails
+            return caches.match('/offline.html')
+          })
         })
-      })
-  )
+    )
+  }
 })
 
 // Activate event - clean up old caches
