@@ -124,7 +124,13 @@ export default function MealPlanPage() {
       const response = await fetch('/api/guide-content?type=nutrition_tips')
       if (response.ok) {
         const data = await response.json()
-        setNutritionTipsContent(data.guide.content)
+        // Convert bullet characters to markdown list syntax and remove duplicate title
+        let content = data.guide.content
+          .replace(/^\s*•\s*$/gm, '') // Remove standalone bullets
+          .replace(/^•\s*/gm, '- ') // Convert bullets at start of line to markdown
+          .replace(/^#\s*Generella råd för kosten\s*$/mi, '') // Remove duplicate H1 title
+          .trim()
+        setNutritionTipsContent(content)
       }
     } catch (error) {
       console.error('Error fetching nutrition tips:', error)
