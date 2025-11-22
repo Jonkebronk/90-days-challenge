@@ -80,12 +80,10 @@ const navigation = [
     icon: Calculator,
     coachOnly: true,
     dropdown: [
-      { name: 'Klientplan Workspace', href: '/dashboard/tools/workspace', icon: Zap },
-      { name: 'Kaloriverktyg', href: '/dashboard/tools', icon: Calculator },
-      { name: 'Kostschema Kalkylator', href: '/dashboard/nutrition-calculator', icon: Utensils },
-      { name: 'Måltidsfördelning', href: '/dashboard/tools/meal-distribution', icon: Utensils },
-      { name: 'Stegkalkylator', href: '/dashboard/tools/steps', icon: Activity },
-      { name: 'Viktspårning', href: '/dashboard/weight-tracker', icon: Scale },
+      { name: 'Fas 1 Kalkylator', href: '/dashboard/nutrition-calculator?phase=1', icon: Utensils },
+      { name: 'Fas 2 Kalkylator', href: '/dashboard/nutrition-calculator?phase=2', icon: Utensils },
+      { name: 'Fas 3 Kalkylator', href: '/dashboard/nutrition-calculator?phase=3', icon: Utensils },
+      { name: 'Generell Kalkylator', href: '/dashboard/nutrition-calculator', icon: Utensils },
     ]
   },
   { name: 'Check-in', href: '/dashboard/check-in', icon: Calendar, clientOnly: true },
