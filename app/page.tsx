@@ -1319,6 +1319,20 @@ export default function HomePage() {
                     Jag jobbar med alla som vill bygga styrka och sunda vanor, oavsett kön eller ålder.
                   </AccordionContent>
                 </AccordionItem>
+
+                <AccordionItem
+                  value="item-16"
+                  className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
+                >
+                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline hover:bg-gray-50 transition-colors">
+                    <span className="text-lg font-bold text-gold-primary tracking-[1px] font-['Orbitron',sans-serif]">
+                      Varför måste jag träna på gym och inte hemma?
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-700 leading-relaxed">
+                    Om du siktar på att verkligen förändra och forma din kropp krävs mer än enbart hemmaträning. Utmaningen med träning hemma är att du sällan har möjlighet att utmana musklerna tillräckligt hårt. Muskler kräver motstånd för att utvecklas och växa. På gymmet kan du arbeta med progressiv överbelastning – du kan gradvis öka motståndet över tid och ge musklerna den stimulans de behöver. Dessa förutsättningar har du normalt inte tillgång till hemma.
+                  </AccordionContent>
+                </AccordionItem>
               </Accordion>
             </div>
           </div>
