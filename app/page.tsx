@@ -194,7 +194,7 @@ export default function HomePage() {
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gold-primary/10 border border-gold-primary/30 rounded-full mb-8">
               <Lock className="w-4 h-4 text-gold-primary" />
               <span className="text-sm text-gold-primary font-semibold tracking-wide">
-                Exklusiv Platsansökan
+                Intresseanmälan
               </span>
             </div>
 
@@ -221,7 +221,7 @@ export default function HomePage() {
               className="group relative px-8 md:px-12 py-4 md:py-6 text-base md:text-lg font-bold tracking-[2px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary text-black rounded-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-gold-primary/50 active:scale-95"
             >
               <span className="relative z-10 flex items-center gap-3">
-                Ansök Om Plats
+                Intresseanmälan
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
               {/* Animated glow effect */}
