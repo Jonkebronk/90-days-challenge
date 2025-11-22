@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Utensils, Dumbbell, Sparkles, Lightbulb, ChevronUp, ChevronDown } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Utensils, Dumbbell, Sparkles, Lightbulb, ChevronUp, ChevronDown, Info } from 'lucide-react'
 
 interface MealPlanItem {
   id: string
@@ -177,14 +178,29 @@ export default function MealPlanPage() {
           Ditt skräddarsydda kostschema
         </p>
 
-        {mealPlan.description && (
-          <p className="text-gray-700 mt-4 max-w-2xl mx-auto text-sm">
-            {mealPlan.description}
-          </p>
-        )}
-
         {/* Introduction Buttons */}
         <div className="mt-6 flex flex-wrap gap-3 justify-center">
+          {mealPlan.description && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="bg-white border-2 border-blue-300 text-blue-600 hover:bg-blue-50 hover:border-blue-400 transition-all"
+                >
+                  <Info className="w-4 h-4 mr-2" />
+                  Om kostschemat
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle className="text-gray-200">Om {mealPlan.name}</DialogTitle>
+                </DialogHeader>
+                <div className="text-gray-300 whitespace-pre-wrap">
+                  {mealPlan.description}
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
           <Button
             onClick={() => router.push('/dashboard/meal-plan/nutrition-tips')}
             variant="outline"
