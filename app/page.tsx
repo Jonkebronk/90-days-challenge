@@ -88,19 +88,19 @@ export default function HomePage() {
             <div className="hidden lg:flex items-center gap-3">
               <Link
                 href="/login?role=client"
-                className="px-4 py-2 text-sm font-semibold text-white bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                className="px-4 py-2 text-sm font-semibold text-gray-900 border-2 border-gray-300 rounded-lg hover:border-gold-primary hover:text-gold-primary transition-all"
               >
                 Klient Login
               </Link>
               <Link
                 href="/login?role=coach"
-                className="px-4 py-2 text-sm font-semibold text-white bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                className="px-4 py-2 text-sm font-semibold text-gray-900 border-2 border-gray-300 rounded-lg hover:border-gold-primary hover:text-gold-primary transition-all"
               >
                 Coach Login
               </Link>
               <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
                 <DialogTrigger asChild>
-                  <button className="flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-gold-primary text-white rounded-lg hover:bg-gold-secondary transition-colors">
+                  <button className="flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-gold-primary text-black rounded-lg hover:bg-gold-secondary transition-colors shadow-md">
                     <Key className="w-4 h-4" />
                     Har du en kod?
                   </button>
@@ -158,14 +158,14 @@ export default function HomePage() {
               <div className="flex flex-col gap-3 px-4">
                 <Link
                   href="/login?role=client"
-                  className="text-center px-4 py-2 text-sm font-semibold text-white bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                  className="text-center px-4 py-2 text-sm font-semibold text-gray-900 border-2 border-gray-300 rounded-lg hover:border-gold-primary hover:text-gold-primary transition-all"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Klient Login
                 </Link>
                 <Link
                   href="/login?role=coach"
-                  className="text-center px-4 py-2 text-sm font-semibold text-white bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                  className="text-center px-4 py-2 text-sm font-semibold text-gray-900 border-2 border-gray-300 rounded-lg hover:border-gold-primary hover:text-gold-primary transition-all"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Coach Login
@@ -175,7 +175,7 @@ export default function HomePage() {
                     setMobileMenuOpen(false)
                     setInviteDialogOpen(true)
                   }}
-                  className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold bg-gold-primary text-white rounded-lg hover:bg-gold-secondary transition-colors"
+                  className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold bg-gold-primary text-black rounded-lg hover:bg-gold-secondary transition-colors shadow-md"
                 >
                   <Key className="w-4 h-4" />
                   Har du en kod?
