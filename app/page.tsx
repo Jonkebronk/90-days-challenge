@@ -234,9 +234,12 @@ export default function HomePage() {
               {/* Left column - Text content */}
               <div className="text-center lg:text-left animate-fadeIn">
                 <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-8 animate-shimmer lg:bg-gradient-to-r lg:from-[#FFD700]" />
-                <h1 className="font-['Orbitron',sans-serif] text-3xl md:text-4xl lg:text-5xl font-black tracking-[2px] md:tracking-[4px] leading-[1.2] animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-6">
-                  För Dig Som Vill Börja Styrketräna Men Inte Vet Var Du Ska Börja
+                <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl lg:text-6xl font-black tracking-[4px] md:tracking-[6px] leading-[1.2] uppercase animate-titleGlow bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-6">
+                  Friskvårdskompassen - din vägvisare till bättre hälsa
                 </h1>
+                <p className="text-gray-300 text-lg md:text-xl mb-4 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                  För dig som vill börja styrketräna men inte vet var du ska börja
+                </p>
                 <p className="text-gold-primary text-base md:text-lg mb-4 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-semibold tracking-[1px]">
                   Evidensbaserad styrketräning och kost - tryggt, tydligt, utan dumma frågor
                 </p>
