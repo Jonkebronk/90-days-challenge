@@ -27,7 +27,6 @@ export default function ApplyPage() {
     nutrition: false,
     lifestyle: false,
     motivation: false,
-    agreement: false
   })
 
   const [formData, setFormData] = useState({
@@ -63,11 +62,7 @@ export default function ApplyPage() {
 
     // Motivation
     whyApply: '',
-    challenges: '',
-
-    // Agreement
-    termsAccepted: false,
-    signature: ''
+    challenges: ''
   })
 
   const toggleSection = (section: keyof typeof expandedSections) => {
@@ -79,16 +74,6 @@ export default function ApplyPage() {
 
     if (!formData.name || !formData.email || !formData.phone) {
       toast.error('Vänligen fyll i alla obligatoriska fält')
-      return
-    }
-
-    if (!formData.termsAccepted) {
-      toast.error('Du måste acceptera villkoren för att fortsätta')
-      return
-    }
-
-    if (!formData.signature || formData.signature.trim().length < 2) {
-      toast.error('Vänligen signera genom att skriva ditt namn')
       return
     }
 
@@ -134,11 +119,6 @@ ${formData.challenges || 'Ej angivet'}
 
 Tidigare coaching:
 ${formData.previousCoaching || 'Ej angivet'}
-
-=== AVTAL & SIGNATUR ===
-Villkor accepterade: ${formData.termsAccepted ? 'Ja' : 'Nej'}
-Signatur: ${formData.signature}
-Datum: ${new Date().toLocaleDateString('sv-SE')}
       `.trim()
 
       // Send application to backend
@@ -539,210 +519,6 @@ Datum: ${new Date().toLocaleDateString('sv-SE')}
                     className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
                     placeholder="Beskriv din dag..."
                   />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* 6. Customer Agreement */}
-          <div className="space-y-4">
-            <SectionHeader
-              title="Kundavtal & Villkor"
-              section="agreement"
-              isExpanded={expandedSections.agreement}
-            />
-            {expandedSections.agreement && (
-              <div className="space-y-6 bg-[rgba(0,0,0,0.2)] p-6 rounded-lg border border-gold-primary/20">
-                {/* Header */}
-                <div className="text-center mb-4">
-                  <h3 className="text-gold-light font-bold text-xl mb-2">Allmänna villkor och avtal för Friskvårdskompassen</h3>
-                  <p className="text-gray-500 text-xs">Läs igenom villkoren noggrant innan du accepterar</p>
-                </div>
-
-                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
-
-                {/* 1. Tjänstens omfattning och hälsodeklaration */}
-                <div className="space-y-3">
-                  <h3 className="text-gold-light font-semibold text-lg">1. Tjänstens omfattning och hälsodeklaration</h3>
-                  <div className="text-gray-300 text-sm space-y-2 leading-relaxed">
-                    <p>
-                      Friskvårdskompassen erbjuder onlinebaserad coachning inom fysisk träning, kost och hälsa.
-                      Tjänsten kan inkludera, men är inte begränsad till, styrketräning, konditionsträning, kostråd och livsstilscoachning.
-                    </p>
-                    <p className="font-medium text-gray-200">Genom att acceptera dessa villkor bekräftar du att:</p>
-                    <ul className="list-disc list-inside space-y-1 ml-4">
-                      <li>Du är fullt fysiskt kapabel att delta i programmet</li>
-                      <li>Du inte lider av någon sjukdom, skada eller funktionsnedsättning som utgör hinder för säker träning</li>
-                      <li>Du vid osäkerhet om din hälsa konsulterat läkare innan programmets start</li>
-                      <li>Du informerat din coach om eventuella hälsotillstånd som kan påverka din träning</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
-
-                {/* 2. Ansvar och säkerhet */}
-                <div className="space-y-3">
-                  <h3 className="text-gold-light font-semibold text-lg">2. Ansvar och säkerhet</h3>
-                  <div className="text-gray-300 text-sm space-y-2 leading-relaxed">
-                    <p className="font-medium text-gray-200">Eget ansvar:</p>
-                    <p>
-                      Du deltar i programmet och utför alla tränings- och kostaktiviteter på eget ansvar.
-                      Du ansvarar själv för att utföra övningar korrekt och anpassa träningen efter din individuella förmåga.
-                    </p>
-                    <p className="font-medium text-gray-200">Ansvarsfriskrivning:</p>
-                    <p>Friskvårdskompassen, inklusive dess ägare, coacher och samarbetspartners, ansvarar inte för:</p>
-                    <ul className="list-disc list-inside space-y-1 ml-4">
-                      <li>Skador som uppstår under eller efter träning</li>
-                      <li>Negativa hälsoeffekter till följd av programmet</li>
-                      <li>Skador vid användning av träningsutrustning</li>
-                      <li>Medicinska komplikationer relaterade till träning eller kosthållning</li>
-                    </ul>
-                    <p>Detta gäller oavsett orsak, inklusive eventuella fel, försummelser eller rådgivning från Friskvårdskompassen.</p>
-                    <p className="font-semibold text-yellow-400 bg-yellow-500/10 p-2 rounded border border-yellow-500/30">
-                      ⚠ Viktigt: Vid minsta tveksamhet om din hälsa rekommenderar vi starkt att du konsulterar läkare innan du påbörjar programmet.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
-
-                {/* 3. Betalningsvillkor */}
-                <div className="space-y-3">
-                  <h3 className="text-gold-light font-semibold text-lg">3. Betalningsvillkor</h3>
-                  <div className="text-gray-300 text-sm space-y-2 leading-relaxed">
-                    <p className="font-medium text-gray-200">Förskottsbetalning:</p>
-                    <p>Full betalning för minimum 4 veckors coachning krävs i förskott för att säkra din plats i programmet.</p>
-                    <p className="font-medium text-gray-200">Fortsatt betalning:</p>
-                    <p>Efter de första 4 veckorna kan betalning ske via:</p>
-                    <ul className="list-disc list-inside space-y-1 ml-4">
-                      <li>Banköverföring</li>
-                      <li>Swish</li>
-                      <li>Annan överenskommen betalningsmetod</li>
-                    </ul>
-                    <p>Betalning ska erläggas senast samma veckodag som avtalets start, 2 veckor i förskott.</p>
-                    <p className="font-medium text-gray-200">Försenad betalning:</p>
-                    <p>Utebliven betalning inom överenskommen tid kan leda till att tjänsten pausas eller avslutas.</p>
-                  </div>
-                </div>
-
-                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
-
-                {/* 4. Uppsägning och återbetalning */}
-                <div className="space-y-3">
-                  <h3 className="text-gold-light font-semibold text-lg">4. Uppsägning och återbetalning</h3>
-                  <div className="text-gray-300 text-sm space-y-2 leading-relaxed">
-                    <p className="font-medium text-gray-200">Bindningstid:</p>
-                    <p>Avtalet löper på 4 veckor i taget från förskottsbetalningen. Du förbinder dig att fullfölja den betalade perioden.</p>
-                    <p className="font-medium text-gray-200">Uppsägning från klient:</p>
-                    <p>Du kan säga upp tjänsten när som helst genom att meddela din coach minst 2 veckor i förskott. Uppsägningen träder i kraft vid nästa betalningsperiods utgång.</p>
-                    <p className="font-medium text-gray-200">Ingen återbetalning:</p>
-                    <p className="font-semibold text-gray-100">
-                      Betalning som redan erlagts återbetalas inte, oavsett orsak till uppsägning. Detta gäller även om du väljer att avbryta programmet i förtid.
-                    </p>
-                    <p className="font-medium text-gray-200">Uppsägning från Friskvårdskompassen:</p>
-                    <p>Vi förbehåller oss rätten att omedelbart avsluta avtalet utan återbetalning om du:</p>
-                    <ul className="list-disc list-inside space-y-1 ml-4">
-                      <li>Inte följer överenskommet träningsschema och rapportering</li>
-                      <li>Inte svarar på meddelanden och uppföljning inom skälig tid</li>
-                      <li>Inte lämnar in krävda uppgifter (träningslogg, kostdagbok etc.) senast överenskommet datum</li>
-                      <li>Uppvisar ett beteende som är olämpligt eller respektlöst mot coacher</li>
-                      <li>Bryter mot dessa villkor på annat sätt</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
-
-                {/* 5. Klientens åtaganden */}
-                <div className="space-y-3">
-                  <h3 className="text-gold-light font-semibold text-lg">5. Klientens åtaganden</h3>
-                  <div className="text-gray-300 text-sm space-y-2 leading-relaxed">
-                    <p>För att tjänsten ska fungera optimalt förbinder du dig att:</p>
-                    <ul className="list-disc list-inside space-y-1 ml-4">
-                      <li>Kommunicera regelbundet med din coach</li>
-                      <li>Följa överenskommet upplägg för träning och rapportering</li>
-                      <li>Svara på meddelanden inom 48 timmar</li>
-                      <li>Skicka in träningslogg och kostdagbok enligt överenskomna tider</li>
-                      <li>Vara ärlig om din situation, framsteg och eventuella svårigheter</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
-
-                {/* 6. Personuppgifter och sekretess */}
-                <div className="space-y-3">
-                  <h3 className="text-gold-light font-semibold text-lg">6. Personuppgifter och sekretess</h3>
-                  <div className="text-gray-300 text-sm space-y-2 leading-relaxed">
-                    <p>
-                      Friskvårdskompassen behandlar dina personuppgifter i enlighet med GDPR. Den information du delar med din coach
-                      hanteras konfidentiellt och används endast för att leverera tjänsten. Läs vår integritetspolicy för mer information.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
-
-                {/* 7. Ändringar av villkor */}
-                <div className="space-y-3">
-                  <h3 className="text-gold-light font-semibold text-lg">7. Ändringar av villkor</h3>
-                  <div className="text-gray-300 text-sm space-y-2 leading-relaxed">
-                    <p>
-                      Friskvårdskompassen förbehåller sig rätten att ändra dessa villkor. Du kommer att informeras om
-                      väsentliga ändringar via e-post eller i plattformen.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
-
-                {/* 8. Godkännande */}
-                <div className="space-y-3">
-                  <h3 className="text-gold-light font-semibold text-lg">8. Godkännande</h3>
-                  <div className="text-gray-300 text-sm space-y-2 leading-relaxed">
-                    <p>Genom att registrera dig och betala för tjänsten bekräftar du att du:</p>
-                    <ul className="list-disc list-inside space-y-1 ml-4">
-                      <li>Läst och förstått dessa villkor</li>
-                      <li>Accepterar villkoren i sin helhet</li>
-                      <li>Är minst 18 år gammal (alternativt har vårdnadshavares godkännande)</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,215,0,0.3)] to-transparent" />
-
-                {/* Accept Terms Checkbox */}
-                <div className="flex items-start gap-3 p-4 bg-[rgba(255,215,0,0.05)] border-2 border-gold-primary/30 rounded-lg">
-                  <input
-                    type="checkbox"
-                    id="termsAccepted"
-                    checked={formData.termsAccepted}
-                    onChange={(e) => setFormData({ ...formData, termsAccepted: e.target.checked })}
-                    className="mt-1 w-5 h-5 rounded border-[rgba(255,215,0,0.5)] bg-black/30 text-gold-light focus:ring-[#FFD700] focus:ring-2 cursor-pointer"
-                    required
-                  />
-                  <label htmlFor="termsAccepted" className="text-gray-100 font-medium cursor-pointer select-none">
-                    Ja, jag accepterar ovanstående villkor. *
-                  </label>
-                </div>
-
-                {/* Signature Field */}
-                <div>
-                  <Label className="text-gray-200 mb-2 block">
-                    Signatur (skriv ditt fullständiga namn) *
-                  </Label>
-                  <Input
-                    type="text"
-                    value={formData.signature}
-                    onChange={(e) => setFormData({ ...formData, signature: e.target.value })}
-                    className="bg-black/30 border-gold-primary/30 text-white font-['Brush_Script_MT',cursive] text-2xl"
-                    placeholder="Ditt fullständiga namn"
-                    required
-                  />
-                  <p className="text-xs text-gray-500 mt-2">
-                    Genom att skriva ditt namn ovan bekräftar du att du har läst och accepterat alla villkor.
-                  </p>
                 </div>
               </div>
             )}
