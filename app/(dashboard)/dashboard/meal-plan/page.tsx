@@ -126,9 +126,10 @@ export default function MealPlanPage() {
         const data = await response.json()
         // Convert bullet characters to markdown list syntax and remove duplicate title
         let content = data.guide.content
-          .replace(/^\s*•\s*$/gm, '') // Remove standalone bullets
-          .replace(/^•\s*/gm, '- ') // Convert bullets at start of line to markdown
           .replace(/^#\s*Generella råd för kosten\s*$/mi, '') // Remove duplicate H1 title
+          .replace(/^\s*•\s*\n/gm, '- ') // Convert bullet on its own line followed by text
+          .replace(/^•\s*/gm, '- ') // Convert bullets at start of line to markdown
+          .replace(/^\s*\n\s*\n/gm, '\n\n') // Clean up multiple blank lines
           .trim()
         setNutritionTipsContent(content)
       }
