@@ -36,6 +36,14 @@ export async function POST(request: Request) {
 
     const body = await request.json()
 
+    // Validate required fields
+    if (!body.name || body.name.trim().length === 0) {
+      return NextResponse.json(
+        { error: 'Kategorinamn är obligatoriskt' },
+        { status: 400 }
+      )
+    }
+
     // Auto-generate slug from name
     const slug = body.slug || body.name.toLowerCase()
       .replace(/å/g, 'a')
@@ -44,11 +52,23 @@ export async function POST(request: Request) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '')
 
+    // Check if slug already exists
+    const existing = await prisma.faqCategory.findUnique({
+      where: { slug }
+    })
+
+    if (existing) {
+      return NextResponse.json(
+        { error: `En kategori med namnet "${body.name}" finns redan` },
+        { status: 409 }
+      )
+    }
+
     const category = await prisma.faqCategory.create({
       data: {
-        name: body.name,
+        name: body.name.trim(),
         slug,
-        description: body.description || null,
+        description: body.description?.trim() || null,
         orderIndex: body.orderIndex || 0,
       },
     })
@@ -57,7 +77,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error creating FAQ category:', error)
     return NextResponse.json(
-      { error: 'Failed to create FAQ category' },
+      { error: 'Ett fel uppstod när kategorin skulle skapas' },
       { status: 500 }
     )
   }
