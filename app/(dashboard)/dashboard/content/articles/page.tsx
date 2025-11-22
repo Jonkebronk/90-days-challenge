@@ -351,9 +351,9 @@ export default function ArticlesPage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <Card className="bg-white border border-gray-200">
+        <Card className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]">
           <CardContent className="p-6">
-            <p className="text-gray-600">Du har inte behörighet att se denna sida.</p>
+            <p className="text-gray-400">Du har inte behörighet att se denna sida.</p>
           </CardContent>
         </Card>
       </div>
@@ -364,14 +364,14 @@ export default function ArticlesPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Skapa Artiklar</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-gray-200">Skapa Artiklar</h1>
+          <p className="text-gray-400 mt-1">
             Skapa och hantera artiklar för Kunskapsbanken
           </p>
         </div>
         <Button
           onClick={() => setIsCreateDialogOpen(true)}
-          className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
+          className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-black font-semibold"
         >
           <Plus className="h-4 w-4 mr-2" />
           Ny artikel
@@ -379,15 +379,15 @@ export default function ArticlesPage() {
       </div>
 
       {/* Filters */}
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]">
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
             <Filter className="h-5 w-5 text-gold-primary" />
             <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label className="text-xs text-gray-600 mb-1 block">Kategori</Label>
+                <Label className="text-xs text-gray-400 mb-1 block">Kategori</Label>
                 <Select value={filterCategory} onValueChange={setFilterCategory}>
-                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                     <SelectValue placeholder="Välj kategori" />
                   </SelectTrigger>
                   <SelectContent>
@@ -401,9 +401,9 @@ export default function ArticlesPage() {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs text-gray-600 mb-1 block">Fas</Label>
+                <Label className="text-xs text-gray-400 mb-1 block">Fas</Label>
                 <Select value={filterPhase} onValueChange={setFilterPhase}>
-                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                     <SelectValue placeholder="Välj fas" />
                   </SelectTrigger>
                   <SelectContent>
@@ -415,9 +415,9 @@ export default function ArticlesPage() {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs text-gray-600 mb-1 block">Status</Label>
+                <Label className="text-xs text-gray-400 mb-1 block">Status</Label>
                 <Select value={filterPublished} onValueChange={setFilterPublished}>
-                  <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                  <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                     <SelectValue placeholder="Välj status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -434,7 +434,7 @@ export default function ArticlesPage() {
 
       <div className="space-y-6">
         {isLoading ? (
-          <Card className="bg-white border border-gray-200">
+          <Card className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]">
             <CardContent className="py-8">
               <div className="flex items-center justify-center">
                 <div className="w-8 h-8 border-4 border-gold-primary border-t-transparent rounded-full animate-spin" />
@@ -442,12 +442,12 @@ export default function ArticlesPage() {
             </CardContent>
           </Card>
         ) : filteredArticles.length === 0 ? (
-          <Card className="bg-white border border-gray-200">
+          <Card className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]">
             <CardContent className="py-8">
               <div className="text-center">
                 <FileText className="h-12 w-12 mx-auto text-gold-primary mb-4" />
-                <p className="text-gray-700">Inga artiklar ännu.</p>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-gray-200">Inga artiklar ännu.</p>
+                <p className="text-sm text-gray-400 mt-1">
                   Skapa din första artikel för att komma igång.
                 </p>
               </div>
@@ -459,10 +459,10 @@ export default function ArticlesPage() {
             return (
             <Card
               key={group.category.id}
-              className="overflow-hidden bg-white border border-gray-200"
+              className="overflow-hidden bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]"
             >
               <CardHeader
-                className="border-b border-gray-200"
+                className="border-b border-gold-primary/20"
                 style={{
                   background: `linear-gradient(to right, ${group.category.color}15, transparent)`
                 }}
@@ -475,7 +475,7 @@ export default function ArticlesPage() {
                         backgroundColor: group.category.color || '#D4AF37'
                       }}
                     />
-                    <span className="text-gray-900 uppercase tracking-[1px] font-semibold">
+                    <span className="text-gray-200 uppercase tracking-[1px] font-semibold">
                       {group.category.name}
                     </span>
                     <Badge className="bg-gold-primary/10 text-gold-primary border border-gold-primary/30">
@@ -488,18 +488,18 @@ export default function ArticlesPage() {
                       size="icon"
                       onClick={() => handleMoveCategory(group.category, 'up')}
                       disabled={categoryIndex === 0}
-                      className="hover:bg-gray-100"
+                      className="hover:bg-white/10"
                     >
-                      <ArrowUp className="h-4 w-4 text-gray-600" />
+                      <ArrowUp className="h-4 w-4 text-gray-400" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => handleMoveCategory(group.category, 'down')}
                       disabled={categoryIndex === categories.length - 1}
-                      className="hover:bg-gray-100"
+                      className="hover:bg-white/10"
                     >
-                      <ArrowDown className="h-4 w-4 text-gray-600" />
+                      <ArrowDown className="h-4 w-4 text-gray-400" />
                     </Button>
                   </div>
                 </CardTitle>
@@ -507,35 +507,35 @@ export default function ArticlesPage() {
               <CardContent className="p-0">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-b border-gray-200 hover:bg-transparent">
-                      <TableHead className="text-gray-600 font-semibold">Titel</TableHead>
-                      <TableHead className="text-gray-600 font-semibold">Fas</TableHead>
-                      <TableHead className="text-gray-600 font-semibold">Svårighetsgrad</TableHead>
-                      <TableHead className="text-gray-600 font-semibold">Tid</TableHead>
-                      <TableHead className="text-gray-600 font-semibold">Status</TableHead>
-                      <TableHead className="text-right text-gray-600 font-semibold">Åtgärder</TableHead>
+                    <TableRow className="border-b border-gold-primary/20 hover:bg-transparent">
+                      <TableHead className="text-gray-400 font-semibold">Titel</TableHead>
+                      <TableHead className="text-gray-400 font-semibold">Fas</TableHead>
+                      <TableHead className="text-gray-400 font-semibold">Svårighetsgrad</TableHead>
+                      <TableHead className="text-gray-400 font-semibold">Tid</TableHead>
+                      <TableHead className="text-gray-400 font-semibold">Status</TableHead>
+                      <TableHead className="text-right text-gray-400 font-semibold">Åtgärder</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {group.articles.map((article, index) => (
-                      <TableRow key={article.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <TableCell className="font-medium text-gray-900">{article.title}</TableCell>
-                        <TableCell className="text-gray-700">
+                      <TableRow key={article.id} className="border-b border-white/10 hover:bg-white/5">
+                        <TableCell className="font-medium text-gray-200">{article.title}</TableCell>
+                        <TableCell className="text-gray-300">
                           {article.phase ? `Fas ${article.phase}` : '-'}
                         </TableCell>
-                        <TableCell className="text-gray-700">
+                        <TableCell className="text-gray-300">
                           {article.difficulty ? (
-                            <Badge variant="secondary" className="bg-gray-100 text-gray-700">{article.difficulty}</Badge>
+                            <Badge variant="secondary" className="bg-white/10 text-gray-300">{article.difficulty}</Badge>
                           ) : '-'}
                         </TableCell>
-                        <TableCell className="text-gray-700">
+                        <TableCell className="text-gray-300">
                           {article.estimatedReadingMinutes ? `${article.estimatedReadingMinutes} min` : '-'}
                         </TableCell>
-                        <TableCell className="text-gray-700">
+                        <TableCell className="text-gray-300">
                           {article.published ? (
-                            <Badge className="bg-green-100 text-green-700 border-green-200">Publicerad</Badge>
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Publicerad</Badge>
                           ) : (
-                            <Badge variant="secondary" className="bg-gray-100 text-gray-600">Utkast</Badge>
+                            <Badge variant="secondary" className="bg-white/10 text-gray-400">Utkast</Badge>
                           )}
                         </TableCell>
                         <TableCell className="text-right">
@@ -556,18 +556,18 @@ export default function ArticlesPage() {
                                     size="icon"
                                     onClick={() => handleMoveArticle(article, 'up')}
                                     disabled={isFirst}
-                                    className="hover:bg-gray-100"
+                                    className="hover:bg-white/10"
                                   >
-                                    <ArrowUp className="h-4 w-4 text-gray-600" />
+                                    <ArrowUp className="h-4 w-4 text-gray-400" />
                                   </Button>
                                   <Button
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => handleMoveArticle(article, 'down')}
                                     disabled={isLast}
-                                    className="hover:bg-gray-100"
+                                    className="hover:bg-white/10"
                                   >
-                                    <ArrowDown className="h-4 w-4 text-gray-600" />
+                                    <ArrowDown className="h-4 w-4 text-gray-400" />
                                   </Button>
                                 </>
                               )
@@ -577,19 +577,19 @@ export default function ArticlesPage() {
                               size="icon"
                               onClick={() => handleTogglePublished(article)}
                               title={article.published ? 'Avpublicera' : 'Publicera'}
-                              className="hover:bg-gray-100"
+                              className="hover:bg-white/10"
                             >
                               {article.published ? (
-                                <EyeOff className="h-4 w-4 text-gray-600" />
+                                <EyeOff className="h-4 w-4 text-gray-400" />
                               ) : (
-                                <Eye className="h-4 w-4 text-gray-600" />
+                                <Eye className="h-4 w-4 text-gray-400" />
                               )}
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
-                              className="hover:bg-gray-100"
+                              className="hover:bg-white/10"
                             >
                               <Pencil className="h-4 w-4 text-gold-primary" />
                             </Button>
@@ -597,9 +597,9 @@ export default function ArticlesPage() {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleDeleteArticle(article)}
-                              className="hover:bg-red-50"
+                              className="hover:bg-red-500/10"
                             >
-                              <Trash2 className="h-4 w-4 text-red-500" />
+                              <Trash2 className="h-4 w-4 text-red-400" />
                             </Button>
                           </div>
                         </TableCell>
@@ -616,41 +616,41 @@ export default function ArticlesPage() {
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="bg-white border border-gray-200">
+        <DialogContent className="bg-gray-900 border border-gold-primary/30">
           <DialogHeader>
-            <DialogTitle className="text-gray-900">Skapa ny artikel</DialogTitle>
-            <DialogDescription className="text-gray-600">
+            <DialogTitle className="text-gray-200">Skapa ny artikel</DialogTitle>
+            <DialogDescription className="text-gray-400">
               Lägg till en ny artikel till artikel banken.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="title" className="text-gray-700">Titel *</Label>
+              <Label htmlFor="title" className="text-gray-200">Titel *</Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 placeholder="t.ex. Varför protein är viktigt"
-                className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-gray-500"
               />
             </div>
             <div>
-              <Label htmlFor="slug" className="text-gray-700">Slug *</Label>
+              <Label htmlFor="slug" className="text-gray-200">Slug *</Label>
               <Input
                 id="slug"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                 placeholder="t.ex. varfor-protein-ar-viktigt"
-                className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-gray-500"
               />
             </div>
             <div>
-              <Label htmlFor="category" className="text-gray-700">Kategori *</Label>
+              <Label htmlFor="category" className="text-gray-200">Kategori *</Label>
               <Select
                 value={formData.categoryId}
                 onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
               >
-                <SelectTrigger className="bg-white border-gray-300 text-gray-900">
+                <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                   <SelectValue placeholder="Välj kategori" />
                 </SelectTrigger>
                 <SelectContent>
@@ -667,14 +667,14 @@ export default function ArticlesPage() {
             <Button
               variant="outline"
               onClick={() => setIsCreateDialogOpen(false)}
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              className="border-gold-primary/30 text-gray-300 hover:bg-white/10"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleCreateArticle}
               disabled={isSaving}
-              className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
+              className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-black font-semibold"
             >
               {isSaving ? 'Skapar...' : 'Skapa artikel'}
             </Button>

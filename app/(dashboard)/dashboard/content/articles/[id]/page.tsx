@@ -312,9 +312,9 @@ export default function ArticleEditorPage() {
   if (!session?.user || (session.user as any).role !== 'coach') {
     return (
       <div className="container mx-auto p-6">
-        <Card>
+        <Card className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]">
           <CardContent className="p-6">
-            <p className="text-muted-foreground">Du har inte behörighet att se denna sida.</p>
+            <p className="text-gray-400">Du har inte behörighet att se denna sida.</p>
           </CardContent>
         </Card>
       </div>
@@ -324,7 +324,7 @@ export default function ArticleEditorPage() {
   if (isLoading) {
     return (
       <div className="container mx-auto p-6">
-        <p className="text-muted-foreground">Laddar...</p>
+        <p className="text-gray-400">Laddar...</p>
       </div>
     )
   }
@@ -332,9 +332,9 @@ export default function ArticleEditorPage() {
   if (!article) {
     return (
       <div className="container mx-auto p-6">
-        <Card>
+        <Card className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]">
           <CardContent className="p-6">
-            <p className="text-muted-foreground">Artikel hittades inte.</p>
+            <p className="text-gray-400">Artikel hittades inte.</p>
           </CardContent>
         </Card>
       </div>
@@ -350,13 +350,14 @@ export default function ArticleEditorPage() {
             variant="ghost"
             size="sm"
             onClick={() => router.push('/dashboard/content/articles')}
+            className="hover:bg-white/10"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Tillbaka
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{article.title}</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-2xl font-bold text-gray-200">{article.title}</h1>
+            <p className="text-sm text-gray-400">
               {article.category.name}
             </p>
           </div>
@@ -365,6 +366,7 @@ export default function ArticleEditorPage() {
           <Button
             variant="outline"
             onClick={handleTogglePublished}
+            className="border-gold-primary/30 text-gray-300 hover:bg-white/10"
           >
             {formData.published ? (
               <>
@@ -378,7 +380,7 @@ export default function ArticleEditorPage() {
               </>
             )}
           </Button>
-          <Button onClick={handleSave} disabled={isSaving}>
+          <Button onClick={handleSave} disabled={isSaving} className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-black font-semibold">
             <Save className="h-4 w-4 mr-2" />
             {isSaving ? 'Sparar...' : 'Spara'}
           </Button>
@@ -386,38 +388,40 @@ export default function ArticleEditorPage() {
       </div>
 
       {/* Metadata */}
-      <Card>
+      <Card className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]">
         <CardHeader>
-          <CardTitle>Metadata</CardTitle>
+          <CardTitle className="text-gray-200">Metadata</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="title">Titel</Label>
+              <Label htmlFor="title" className="text-gray-200">Titel</Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
             <div>
-              <Label htmlFor="slug">Slug</Label>
+              <Label htmlFor="slug" className="text-gray-200">Slug</Label>
               <Input
                 id="slug"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="category">Kategori</Label>
+              <Label htmlFor="category" className="text-gray-200">Kategori</Label>
               <Select
                 value={formData.categoryId}
                 onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -430,12 +434,12 @@ export default function ArticleEditorPage() {
               </Select>
             </div>
             <div>
-              <Label htmlFor="phase">Fas</Label>
+              <Label htmlFor="phase" className="text-gray-200">Fas</Label>
               <Select
                 value={formData.phase || 'none'}
                 onValueChange={(value) => setFormData({ ...formData, phase: value === 'none' ? '' : value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                   <SelectValue placeholder="Välj fas" />
                 </SelectTrigger>
                 <SelectContent>
@@ -447,12 +451,12 @@ export default function ArticleEditorPage() {
               </Select>
             </div>
             <div>
-              <Label htmlFor="difficulty">Svårighetsgrad</Label>
+              <Label htmlFor="difficulty" className="text-gray-200">Svårighetsgrad</Label>
               <Select
                 value={formData.difficulty || 'none'}
                 onValueChange={(value) => setFormData({ ...formData, difficulty: value === 'none' ? '' : value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                   <SelectValue placeholder="Välj nivå" />
                 </SelectTrigger>
                 <SelectContent>
@@ -467,32 +471,34 @@ export default function ArticleEditorPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="readingTime">Läsningstid (minuter)</Label>
+              <Label htmlFor="readingTime" className="text-gray-200">Läsningstid (minuter)</Label>
               <Input
                 id="readingTime"
                 type="number"
                 value={formData.estimatedReadingMinutes}
                 onChange={(e) => setFormData({ ...formData, estimatedReadingMinutes: e.target.value })}
                 placeholder="t.ex. 5"
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
             <div>
-              <Label htmlFor="coverImage">Omslagsbild URL</Label>
+              <Label htmlFor="coverImage" className="text-gray-200">Omslagsbild URL</Label>
               <Input
                 id="coverImage"
                 value={formData.coverImage}
                 onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
                 placeholder="https://example.com/image.jpg"
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
             </div>
           </div>
 
           {/* Tags */}
           <div>
-            <Label>Taggar</Label>
+            <Label className="text-gray-200">Taggar</Label>
             <div className="flex flex-wrap gap-2 mt-2 mb-3">
               {formData.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="gap-1">
+                <Badge key={tag} variant="secondary" className="gap-1 bg-white/10 text-gray-300">
                   {tag}
                   <X
                     className="h-3 w-3 cursor-pointer"
@@ -512,8 +518,9 @@ export default function ArticleEditorPage() {
                   }
                 }}
                 placeholder="Lägg till tagg..."
+                className="bg-black/30 border-gold-primary/30 text-white"
               />
-              <Button variant="outline" onClick={handleAddTag}>
+              <Button variant="outline" onClick={handleAddTag} className="border-gold-primary/30 text-gray-300 hover:bg-white/10">
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
@@ -522,9 +529,9 @@ export default function ArticleEditorPage() {
       </Card>
 
       {/* Content Editor */}
-      <Card>
+      <Card className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]">
         <CardHeader>
-          <CardTitle>Innehåll</CardTitle>
+          <CardTitle className="text-gray-200">Innehåll</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'edit' | 'preview')}>
@@ -552,7 +559,7 @@ export default function ArticleEditorPage() {
                       variant="outline"
                       size="sm"
                       disabled={isImporting}
-                      className="border-[rgba(255,215,0,0.4)] hover:bg-gold-50 text-gold-light"
+                      className="border-gold-primary/40 hover:bg-white/10 text-gold-light"
                       onClick={() => document.getElementById('file-import')?.click()}
                     >
                       <Upload className="w-4 h-4 mr-2" />
@@ -576,11 +583,11 @@ export default function ArticleEditorPage() {
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 placeholder="Skriv artikelinnehåll här med MDX-formatering... eller importera från fil ovan"
-                className="min-h-[500px] font-mono"
+                className="min-h-[500px] font-mono bg-black/30 border-gold-primary/30 text-white"
               />
-              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm font-medium text-blue-900 mb-2">MDX Tips:</p>
-                <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+              <div className="mt-4 p-4 bg-gold-primary/10 border border-gold-primary/30 rounded-lg">
+                <p className="text-sm font-medium text-gold-light mb-2">MDX Tips:</p>
+                <ul className="text-sm text-gray-300 space-y-1 list-disc list-inside">
                   <li># för rubriker (H1)</li>
                   <li>## för underrubriker (H2)</li>
                   <li>**text** för fet text</li>
@@ -592,8 +599,8 @@ export default function ArticleEditorPage() {
             </TabsContent>
 
             <TabsContent value="preview">
-              <div className="min-h-[500px] border rounded-lg p-6 bg-white">
-                <div className="prose prose-lg max-w-none">
+              <div className="min-h-[500px] border border-gold-primary/30 rounded-lg p-6 bg-white/5">
+                <div className="prose prose-lg max-w-none prose-invert">
                   <MDXPreview content={formData.content} />
                 </div>
               </div>
