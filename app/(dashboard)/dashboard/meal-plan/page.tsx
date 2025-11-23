@@ -144,7 +144,7 @@ export default function MealPlanPage() {
 
   const fetchMealPlanDescription = async () => {
     try {
-      const response = await fetch('/api/guide-content?type=meal_plan_intro')
+      const response = await fetch('/api/guide-content?type=meal_plan')
       if (response.ok) {
         const data = await response.json()
         setMealPlanDescriptionContent(data.guide.content)
