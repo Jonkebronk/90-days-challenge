@@ -127,6 +127,8 @@ export default function MealPlanPage() {
         // Convert bullet characters to markdown list syntax and remove duplicate title
         let content = data.guide.content
           .replace(/^#\s*Generella råd för kosten\s*$/mi, '') // Remove duplicate H1 title
+          .replace(/^Här hittar du viktiga tips.*$/mi, '') // Remove intro line
+          .replace(/^Generella råd för kosten\s*$/mi, '') // Remove plain text title
           .replace(/^\s*•\s*\n/gm, '- ') // Convert bullet on its own line followed by text
           .replace(/^•\s*/gm, '- ') // Convert bullets at start of line to markdown
           .replace(/^\s*\n\s*\n/gm, '\n\n') // Clean up multiple blank lines
