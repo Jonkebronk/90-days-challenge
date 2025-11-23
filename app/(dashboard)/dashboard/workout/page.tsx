@@ -209,55 +209,71 @@ export default function WorkoutPage() {
           return (
           <Card
             key={day.id}
-            className={`bg-white border-2 transition-all ${
+            className={`bg-white rounded-xl shadow-md transition-all duration-300 overflow-hidden ${
               day.isRestDay
-                ? 'border-gray-200 hover:border-gray-300'
-                : 'border-gray-200 hover:border-gold-primary hover:shadow-lg'
+                ? 'border-2 border-gray-200 hover:border-gray-300 hover:shadow-lg'
+                : 'border-2 border-gray-200 hover:border-gold-primary/50 hover:shadow-xl'
             }`}
           >
             <CardHeader
-              className="cursor-pointer hover:bg-gray-50 transition-colors"
+              className="cursor-pointer hover:bg-gradient-to-r hover:from-gold-primary/5 hover:to-transparent transition-all duration-200"
               onClick={() => toggleDay(day.id)}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-500">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4 flex-1">
+                  {/* Day Number Badge */}
+                  <div className={`flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm ${
+                    day.isRestDay
+                      ? 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-600'
+                      : 'bg-gradient-to-br from-gold-primary to-gold-secondary text-white'
+                  }`}>
+                    {day.dayNumber}
+                  </div>
+
+                  {/* Day Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                         Dag {day.dayNumber}
                       </span>
                       {day.isRestDay && (
-                        <Badge variant="outline" className="bg-gray-50 border-gray-300 text-gray-600">
+                        <Badge variant="outline" className="bg-gray-50 border-gray-300 text-gray-600 text-xs">
+                          <Coffee className="w-3 h-3 mr-1" />
                           Vilodag
                         </Badge>
                       )}
                     </div>
-                    <CardTitle className="text-lg text-gray-900">
+                    <CardTitle className="text-xl font-bold text-gray-900 truncate">
                       {day.name}
                     </CardTitle>
                     {day.description && (
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-gray-600 mt-1 line-clamp-1">
                         {day.description}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                {/* Action Buttons */}
+                <div className="flex items-center gap-3 flex-shrink-0">
                   {!day.isRestDay && (
                     <div onClick={(e) => e.stopPropagation()}>
                       <Link href={`/dashboard/workout/session/${day.id}`}>
-                        <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white">
+                        <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white shadow-lg hover:shadow-xl transition-all">
                           <Play className="w-4 h-4 mr-2" />
                           Starta
                         </Button>
                       </Link>
                     </div>
                   )}
-                  {isExpanded ? (
-                    <ChevronUp className="w-6 h-6 text-gold-primary" />
-                  ) : (
-                    <ChevronDown className="w-6 h-6 text-gold-primary" />
+                  {!day.isRestDay && (
+                    <button className="p-2 rounded-lg hover:bg-gold-primary/10 transition-colors">
+                      {isExpanded ? (
+                        <ChevronUp className="w-5 h-5 text-gold-primary" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-gold-primary" />
+                      )}
+                    </button>
                   )}
                 </div>
               </div>
