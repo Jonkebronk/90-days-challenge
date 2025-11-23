@@ -229,13 +229,14 @@ export default function MealPlanPage() {
                   Om kostschemat
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-2xl">
+              <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle className="text-gray-200">Om kostschemat</DialogTitle>
+                  <DialogTitle className="text-gray-200 flex items-center gap-2">
+                    <Info className="w-6 h-6 text-blue-500" />
+                    Om kostschemat
+                  </DialogTitle>
                 </DialogHeader>
-                <div className="text-gray-300 whitespace-pre-wrap">
-                  {mealPlanDescriptionContent}
-                </div>
+                <MDXPreview content={mealPlanDescriptionContent} theme="dark" />
               </DialogContent>
             </Dialog>
           )}
