@@ -89,6 +89,7 @@ export default function MealPlanPage() {
   const [loading, setLoading] = useState(true)
   const [expandedMeals, setExpandedMeals] = useState<Set<number>>(new Set()) // All meals closed by default
   const [nutritionTipsContent, setNutritionTipsContent] = useState<string>('')
+  const [mealPlanDescriptionContent, setMealPlanDescriptionContent] = useState<string>('')
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
@@ -105,6 +106,7 @@ export default function MealPlanPage() {
   useEffect(() => {
     fetchMealPlan()
     fetchNutritionTips()
+    fetchMealPlanDescription()
   }, [])
 
   const fetchMealPlan = async () => {
@@ -137,6 +139,18 @@ export default function MealPlanPage() {
       }
     } catch (error) {
       console.error('Error fetching nutrition tips:', error)
+    }
+  }
+
+  const fetchMealPlanDescription = async () => {
+    try {
+      const response = await fetch('/api/guide-content?type=meal_plan_intro')
+      if (response.ok) {
+        const data = await response.json()
+        setMealPlanDescriptionContent(data.guide.content)
+      }
+    } catch (error) {
+      console.error('Error fetching meal plan description:', error)
     }
   }
 
@@ -204,7 +218,7 @@ export default function MealPlanPage() {
 
         {/* Introduction Buttons */}
         <div className="mt-6 flex flex-wrap gap-3 justify-center">
-          {mealPlan.description && (
+          {mealPlanDescriptionContent && (
             <Dialog>
               <DialogTrigger asChild>
                 <Button
@@ -217,10 +231,10 @@ export default function MealPlanPage() {
               </DialogTrigger>
               <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle className="text-gray-200">Om {mealPlan.name}</DialogTitle>
+                  <DialogTitle className="text-gray-200">Om kostschemat</DialogTitle>
                 </DialogHeader>
                 <div className="text-gray-300 whitespace-pre-wrap">
-                  {mealPlan.description}
+                  {mealPlanDescriptionContent}
                 </div>
               </DialogContent>
             </Dialog>
