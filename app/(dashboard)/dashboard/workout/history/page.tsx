@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calendar, Clock, Dumbbell, TrendingUp, ChevronRight, Star } from 'lucide-react'
+import { Calendar, Clock, Dumbbell, TrendingUp, ChevronRight, Star, Search, Filter, ChevronDown, ChevronUp } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 interface Exercise {
   name: string
@@ -40,6 +42,7 @@ interface WorkoutSession {
 export default function WorkoutHistoryPage() {
   const router = useRouter()
   const [sessions, setSessions] = useState<WorkoutSession[]>([])
+  const [filteredSessions, setFilteredSessions] = useState<WorkoutSession[]>([])
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
     totalWorkouts: 0,
@@ -48,13 +51,25 @@ export default function WorkoutHistoryPage() {
     avgDuration: 0
   })
 
+  // Filtering state
+  const [searchQuery, setSearchQuery] = useState('')
+  const [dateFilter, setDateFilter] = useState<'all' | '7days' | '30days' | '90days'>('all')
+  const [showFilters, setShowFilters] = useState(false)
+
+  // Expansion state
+  const [expandedSessions, setExpandedSessions] = useState<Set<string>>(new Set())
+
   useEffect(() => {
     fetchSessions()
   }, [])
 
+  useEffect(() => {
+    applyFilters()
+  }, [sessions, searchQuery, dateFilter])
+
   const fetchSessions = async () => {
     try {
-      const response = await fetch('/api/workout-sessions?limit=50')
+      const response = await fetch('/api/workout-sessions?limit=100')
       if (response.ok) {
         const data = await response.json()
         setSessions(data.sessions)
@@ -65,6 +80,44 @@ export default function WorkoutHistoryPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const applyFilters = () => {
+    let filtered = [...sessions]
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(session =>
+        session.workoutProgramDay.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }
+
+    // Apply date filter
+    if (dateFilter !== 'all') {
+      const now = new Date()
+      const daysAgo = dateFilter === '7days' ? 7 : dateFilter === '30days' ? 30 : 90
+      const cutoffDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
+
+      filtered = filtered.filter(session => {
+        const sessionDate = new Date(session.startedAt)
+        return sessionDate >= cutoffDate
+      })
+    }
+
+    setFilteredSessions(filtered)
+  }
+
+  const toggleSessionExpansion = (sessionId: string, event: React.MouseEvent) => {
+    event.stopPropagation()
+    setExpandedSessions(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(sessionId)) {
+        newSet.delete(sessionId)
+      } else {
+        newSet.add(sessionId)
+      }
+      return newSet
+    })
   }
 
   const calculateStats = (sessions: WorkoutSession[]) => {
@@ -199,9 +252,86 @@ export default function WorkoutHistoryPage() {
           </div>
         </div>
 
+        {/* Search and Filters */}
+        <div className="mb-6 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Sök träningspass..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-12 bg-white/5 border-2 border-gold-primary/20 text-white placeholder:text-gray-500 h-12 focus:border-gold-primary/50"
+              />
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+              className="h-12 px-6 bg-white/5 border-2 border-gold-primary/20 text-white hover:bg-white/10 hover:border-gold-primary/50"
+            >
+              <Filter className="w-5 h-5 mr-2" />
+              Filter
+              {showFilters ? <ChevronUp className="w-4 h-4 ml-2" /> : <ChevronDown className="w-4 h-4 ml-2" />}
+            </Button>
+          </div>
+
+          {showFilters && (
+            <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-4 backdrop-blur-[10px]">
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  variant={dateFilter === 'all' ? 'default' : 'outline'}
+                  onClick={() => setDateFilter('all')}
+                  className={dateFilter === 'all'
+                    ? 'bg-gradient-to-r from-gold-light to-orange-500 text-black hover:opacity-90'
+                    : 'bg-white/5 border-gold-primary/20 text-white hover:bg-white/10'
+                  }
+                >
+                  Alla pass
+                </Button>
+                <Button
+                  variant={dateFilter === '7days' ? 'default' : 'outline'}
+                  onClick={() => setDateFilter('7days')}
+                  className={dateFilter === '7days'
+                    ? 'bg-gradient-to-r from-gold-light to-orange-500 text-black hover:opacity-90'
+                    : 'bg-white/5 border-gold-primary/20 text-white hover:bg-white/10'
+                  }
+                >
+                  Senaste 7 dagarna
+                </Button>
+                <Button
+                  variant={dateFilter === '30days' ? 'default' : 'outline'}
+                  onClick={() => setDateFilter('30days')}
+                  className={dateFilter === '30days'
+                    ? 'bg-gradient-to-r from-gold-light to-orange-500 text-black hover:opacity-90'
+                    : 'bg-white/5 border-gold-primary/20 text-white hover:bg-white/10'
+                  }
+                >
+                  Senaste 30 dagarna
+                </Button>
+                <Button
+                  variant={dateFilter === '90days' ? 'default' : 'outline'}
+                  onClick={() => setDateFilter('90days')}
+                  className={dateFilter === '90days'
+                    ? 'bg-gradient-to-r from-gold-light to-orange-500 text-black hover:opacity-90'
+                    : 'bg-white/5 border-gold-primary/20 text-white hover:bg-white/10'
+                  }
+                >
+                  Senaste 90 dagarna
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Results count */}
+          <div className="text-gray-400 text-sm">
+            Visar {filteredSessions.length} av {sessions.length} pass
+          </div>
+        </div>
+
         {/* Session List */}
         <div className="space-y-4">
-          {sessions.length === 0 ? (
+          {filteredSessions.length === 0 ? (
             <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-12 backdrop-blur-[10px] text-center">
               <Dumbbell className="w-16 h-16 text-[rgba(255,255,255,0.3)] mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-100 mb-2">
@@ -218,11 +348,20 @@ export default function WorkoutHistoryPage() {
               </button>
             </div>
           ) : (
-            sessions.map((session) => (
+            filteredSessions.map((session) => {
+              const isExpanded = expandedSessions.has(session.id)
+              const exercisesBySets: Record<string, WorkoutSet[]> = {}
+              session.sets.forEach(set => {
+                if (!exercisesBySets[set.exercise.name]) {
+                  exercisesBySets[set.exercise.name] = []
+                }
+                exercisesBySets[set.exercise.name].push(set)
+              })
+
+              return (
               <div
                 key={session.id}
-                className="group bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all cursor-pointer"
-                onClick={() => router.push(`/dashboard/workout/session/completed/${session.id}`)}
+                className="group bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
@@ -329,8 +468,68 @@ export default function WorkoutHistoryPage() {
                     )}
                   </div>
                 )}
+
+                {/* Expansion Toggle */}
+                <div className="mt-4 pt-4 border-t border-[rgba(255,255,255,0.1)] flex items-center justify-between">
+                  <button
+                    onClick={(e) => toggleSessionExpansion(session.id, e)}
+                    className="flex items-center gap-2 text-gold-light hover:text-gold-primary transition-colors"
+                  >
+                    {isExpanded ? (
+                      <>
+                        <ChevronUp className="w-5 h-5" />
+                        <span className="text-sm font-medium">Dölj detaljer</span>
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-5 h-5" />
+                        <span className="text-sm font-medium">Visa detaljer</span>
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => router.push(`/dashboard/workout/session/completed/${session.id}`)}
+                    className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-gold-primary/30 hover:border-gold-primary/60 rounded-lg text-white text-sm font-medium transition-all"
+                  >
+                    Se fullständig sammanfattning
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Expanded Details */}
+                {isExpanded && (
+                  <div className="mt-4 space-y-4">
+                    {Object.entries(exercisesBySets).map(([exerciseName, sets]) => (
+                      <div key={exerciseName} className="bg-black/20 rounded-xl p-4">
+                        <h4 className="text-white font-semibold mb-3">{exerciseName}</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                          {sets.map((set, idx) => (
+                            <div
+                              key={idx}
+                              className="bg-white/5 rounded-lg p-3 border border-gold-primary/20"
+                            >
+                              <div className="text-xs text-gray-400 mb-1">Set {set.setNumber}</div>
+                              <div className="text-white font-medium">
+                                {set.reps && set.weightKg && (
+                                  <span>{set.reps} reps × {set.weightKg} kg</span>
+                                )}
+                                {set.timeSeconds && (
+                                  <span>{set.timeSeconds}s</span>
+                                )}
+                                {!set.reps && !set.weightKg && !set.timeSeconds && (
+                                  <span className="text-gray-500">-</span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            ))
+              )
+            })
           )}
         </div>
       </div>
