@@ -24,7 +24,6 @@ import {
   SkipForward,
   Plus,
   RotateCcw,
-  MessageSquare,
   UserCircle
 } from 'lucide-react'
 import Link from 'next/link'
@@ -105,7 +104,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [sessionRatingComment, setSessionRatingComment] = useState('')
 
   const [isCompleting, setIsCompleting] = useState(false)
-  const [clientNotes, setClientNotes] = useState<Record<string, string>>({})
 
   useEffect(() => {
     const loadData = async () => {
@@ -185,45 +183,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       if (response.ok) {
         const data = await response.json()
         setWorkoutDay(data.day)
-        // Load user exercise notes
-        await fetchUserExerciseNotes()
       }
     } catch (error) {
       console.error('Error fetching workout day:', error)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const fetchUserExerciseNotes = async () => {
-    try {
-      const response = await fetch('/api/user-exercise-notes')
-      if (response.ok) {
-        const data = await response.json()
-        // Map notes by exerciseId for easy lookup
-        const notesMap: Record<string, string> = {}
-        data.notes.forEach((note: any) => {
-          notesMap[note.workoutProgramExerciseId] = note.notes || ''
-        })
-        setClientNotes(notesMap)
-      }
-    } catch (error) {
-      console.error('Error fetching user exercise notes:', error)
-    }
-  }
-
-  const saveExerciseNote = async (exerciseId: string, notes: string) => {
-    try {
-      await fetch('/api/user-exercise-notes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          workoutProgramExerciseId: exerciseId,
-          notes
-        })
-      })
-    } catch (error) {
-      console.error('Error saving exercise note:', error)
     }
   }
 
@@ -725,35 +689,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     </div>
                   )}
 
-                  {/* Client Notes */}
-                  <div className="p-5 bg-gradient-to-br from-green-500/10 to-green-600/5 border-l-4 border-green-500 rounded-lg shadow-lg">
-                    <div className="w-full space-y-3">
-                      <div className="flex items-center gap-2">
-                        <MessageSquare className="w-5 h-5 text-green-400" />
-                        <Label className="text-base font-bold text-green-300 block">Mina anteckningar:</Label>
-                      </div>
-                      <Textarea
-                        value={clientNotes[exercise.id] || ''}
-                        onChange={(e) => {
-                          const newValue = e.target.value
-                          setClientNotes(prev => ({
-                            ...prev,
-                            [exercise.id]: newValue
-                          }))
-                        }}
-                        onBlur={(e) => {
-                          // Save notes when user clicks away
-                          saveExerciseNote(exercise.id, e.target.value)
-                        }}
-                        placeholder="Lägg till egna anteckningar om övningen (t.ex. form, känsla, justeringar)..."
-                        className="min-h-[80px] bg-black/30 border-green-500/30 text-gray-100 placeholder:text-gray-500 focus:border-green-500 focus:ring-green-500/20 resize-none"
-                        maxLength={200}
-                      />
-                      <div className="text-xs text-gray-400 text-right">
-                        {(clientNotes[exercise.id] || '').length}/200 tecken
-                      </div>
-                    </div>
-                  </div>
 
                   {/* Logged Sets */}
                   {exerciseSets.length > 0 && (
