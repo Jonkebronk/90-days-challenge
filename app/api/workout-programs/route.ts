@@ -64,7 +64,11 @@ export async function GET() {
         },
         _count: {
           select: {
-            assignments: true
+            assignments: {
+              where: {
+                active: true
+              }
+            }
           }
         }
       },
