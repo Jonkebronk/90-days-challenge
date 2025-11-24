@@ -288,8 +288,7 @@ export default function DashboardPage() {
           <Link href="/dashboard/onboarding/guide">
             <Button
               size="lg"
-              variant="outline"
-              className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all px-4 py-2 md:px-6 md:py-3 text-sm md:text-base"
+              className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-bold px-4 py-2 md:px-6 md:py-3 hover:shadow-lg transition-all animate-pulse hover:animate-none text-sm md:text-base"
             >
               <Info className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
               <span className="hidden sm:inline">Läs Introduktion</span>

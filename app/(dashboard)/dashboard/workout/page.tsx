@@ -175,7 +175,7 @@ export default function WorkoutPage() {
           <Button
             onClick={() => router.push('/dashboard/workout/guide')}
             variant="outline"
-            className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all"
+            className="bg-white border-2 border-blue-300 text-blue-600 hover:bg-blue-50 hover:border-blue-400 transition-all"
           >
             <Info className="w-4 h-4 mr-2" />
             Introduktion till träningsprogram
