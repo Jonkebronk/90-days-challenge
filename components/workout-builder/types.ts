@@ -15,6 +15,7 @@ export interface ProgramExercise {
   repsMax: number | null
   restSeconds: number
   notes: string
+  coachNotes: string
   targetWeight: number | null
   supersetGroupId?: string
   supersetColor?: string

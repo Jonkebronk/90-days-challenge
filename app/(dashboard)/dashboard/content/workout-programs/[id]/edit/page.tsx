@@ -74,6 +74,7 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
             repsMax: ex.repsMax,
             restSeconds: ex.restSeconds,
             notes: ex.notes || '',
+            coachNotes: ex.coachNotes || '',
             targetWeight: ex.targetWeight,
             supersetGroupId: ex.supersetGroupId,
             supersetColor: ex.supersetColor
@@ -133,6 +134,7 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
       repsMax: 12,
       restSeconds: 60,
       notes: '',
+      coachNotes: '',
       targetWeight: null
     }
     const updated = [...days]
@@ -186,6 +188,7 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
               repsMax: ex.repsMax,
               restSeconds: ex.restSeconds,
               notes: ex.notes,
+              coachNotes: ex.coachNotes,
               targetWeight: ex.targetWeight,
               supersetGroupId: ex.supersetGroupId,
               supersetColor: ex.supersetColor,

@@ -109,6 +109,7 @@ export async function PUT(
                 restSeconds: ex.restSeconds || 60,
                 tempo: ex.tempo,
                 notes: ex.notes,
+                coachNotes: ex.coachNotes,
                 targetWeight: ex.targetWeight,
                 targetRPE: ex.targetRPE,
                 orderIndex: ex.orderIndex || exIndex
