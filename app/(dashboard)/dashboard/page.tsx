@@ -80,7 +80,7 @@ export default function DashboardPage() {
 
   const fetchOnboardingGuide = async () => {
     try {
-      const response = await fetch('/api/guide-content?type=onboarding_guide')
+      const response = await fetch('/api/guide-content?type=onboarding')
       if (response.ok) {
         const data = await response.json()
         setOnboardingGuideContent(data.guide.content)

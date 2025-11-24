@@ -109,7 +109,7 @@ export default function WorkoutPage() {
 
   const fetchWorkoutGuide = async () => {
     try {
-      const response = await fetch('/api/guide-content?type=workout_guide')
+      const response = await fetch('/api/guide-content?type=workout')
       if (response.ok) {
         const data = await response.json()
         setWorkoutGuideContent(data.guide.content)
