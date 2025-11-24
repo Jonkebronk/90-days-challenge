@@ -75,13 +75,21 @@ export default function WorkoutPage() {
   }
 
   useEffect(() => {
-    fetchAssignment()
-  }, [])
+    if (session?.user) {
+      fetchAssignment()
+    } else if (session === null) {
+      // Session loaded but no user, stop loading
+      setLoading(false)
+    }
+  }, [session])
 
   const fetchAssignment = async () => {
     try {
       const userId = (session?.user as any)?.id
-      if (!userId) return
+      if (!userId) {
+        setLoading(false)
+        return
+      }
 
       const response = await fetch(`/api/clients/${userId}/workout`)
       if (response.ok) {
