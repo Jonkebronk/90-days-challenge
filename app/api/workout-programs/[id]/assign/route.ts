@@ -58,6 +58,17 @@ export async function POST(
       )
     }
 
+    // Deactivate all other active assignments for this client
+    await prisma.assignedWorkoutProgram.updateMany({
+      where: {
+        userId: clientId,
+        active: true
+      },
+      data: {
+        active: false
+      }
+    })
+
     // Create assignment
     const assignment = await prisma.assignedWorkoutProgram.create({
       data: {
