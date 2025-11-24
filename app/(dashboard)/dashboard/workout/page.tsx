@@ -6,8 +6,10 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, BarChart3, Plus, Info, ChevronUp, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
+import { MDXPreview } from '@/components/mdx-preview'
 
 interface WorkoutDay {
   id: string
@@ -61,6 +63,7 @@ export default function WorkoutPage() {
   const [assignment, setAssignment] = useState<AssignedWorkout | null>(null)
   const [loading, setLoading] = useState(true)
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set()) // All days closed by default
+  const [workoutGuideContent, setWorkoutGuideContent] = useState<string>('')
 
   const toggleDay = (dayId: string) => {
     setExpandedDays(prev => {
@@ -77,6 +80,7 @@ export default function WorkoutPage() {
   useEffect(() => {
     if (session?.user) {
       fetchAssignment()
+      fetchWorkoutGuide()
     } else if (session === null) {
       // Session loaded but no user, stop loading
       setLoading(false)
@@ -100,6 +104,18 @@ export default function WorkoutPage() {
       console.error('Error fetching workout:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchWorkoutGuide = async () => {
+    try {
+      const response = await fetch('/api/guide-content?type=workout_guide')
+      if (response.ok) {
+        const data = await response.json()
+        setWorkoutGuideContent(data.guide.content)
+      }
+    } catch (error) {
+      console.error('Error fetching workout guide:', error)
     }
   }
 
@@ -172,14 +188,30 @@ export default function WorkoutPage() {
 
         {/* Introduction Button */}
         <div className="mt-6">
-          <Button
-            onClick={() => router.push('/dashboard/workout/guide')}
-            variant="outline"
-            className="bg-white border-2 border-blue-300 text-blue-600 hover:bg-blue-50 hover:border-blue-400 transition-all"
-          >
-            <Info className="w-4 h-4 mr-2" />
-            Introduktion till träningsprogram
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-bold hover:shadow-lg transition-all animate-pulse hover:animate-none"
+              >
+                <Info className="w-4 h-4 mr-2" />
+                Introduktion till träningsprogram
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-gray-200 flex items-center gap-2">
+                  <Info className="w-6 h-6 text-blue-400" />
+                  Träningsprogram Guide
+                </DialogTitle>
+              </DialogHeader>
+              {workoutGuideContent ? (
+                <MDXPreview content={workoutGuideContent} theme="dark" />
+              ) : (
+                <p className="text-gray-400">Laddar guide...</p>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 

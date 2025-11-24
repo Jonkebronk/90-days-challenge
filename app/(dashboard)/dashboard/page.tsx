@@ -5,6 +5,8 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { MDXPreview } from '@/components/mdx-preview'
 import {
   Calendar,
   TrendingUp,
@@ -33,6 +35,7 @@ export default function DashboardPage() {
     checkIns: 0,
     content: 0
   })
+  const [onboardingGuideContent, setOnboardingGuideContent] = useState<string>('')
   const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
 
   // Debug logging
@@ -51,6 +54,7 @@ export default function DashboardPage() {
     if (isCoach) {
       fetchCoachStats()
     }
+    fetchOnboardingGuide()
   }, [isCoach])
 
   const fetchCoachStats = async () => {
@@ -71,6 +75,18 @@ export default function DashboardPage() {
       })
     } catch (error) {
       console.error('Error fetching stats:', error)
+    }
+  }
+
+  const fetchOnboardingGuide = async () => {
+    try {
+      const response = await fetch('/api/guide-content?type=onboarding_guide')
+      if (response.ok) {
+        const data = await response.json()
+        setOnboardingGuideContent(data.guide.content)
+      }
+    } catch (error) {
+      console.error('Error fetching onboarding guide:', error)
     }
   }
 
@@ -285,28 +301,60 @@ export default function DashboardPage() {
             <h2 className="text-xl font-bold text-gray-900">Kom Igång</h2>
             <p className="text-gray-600 text-sm mt-1">Tips för att få ut det mesta av programmet</p>
           </div>
-          <Link href="/dashboard/onboarding/guide">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-bold px-4 py-2 md:px-6 md:py-3 hover:shadow-lg transition-all animate-pulse hover:animate-none text-sm md:text-base"
-            >
-              <Info className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
-              <span className="hidden sm:inline">Läs Introduktion</span>
-              <span className="sm:hidden">Introduktion</span>
-            </Button>
-          </Link>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-bold px-4 py-2 md:px-6 md:py-3 hover:shadow-lg transition-all animate-pulse hover:animate-none text-sm md:text-base"
+              >
+                <Info className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">Läs Introduktion</span>
+                <span className="sm:hidden">Introduktion</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-gray-200 flex items-center gap-2">
+                  <Info className="w-6 h-6 text-blue-400" />
+                  Kom Igång Guide
+                </DialogTitle>
+              </DialogHeader>
+              {onboardingGuideContent ? (
+                <MDXPreview content={onboardingGuideContent} theme="dark" />
+              ) : (
+                <p className="text-gray-400">Laddar guide...</p>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Link href="/dashboard/onboarding/guide" className="flex items-start gap-3 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                <span className="text-white font-bold text-sm">1</span>
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-gold-primary transition-colors">Läs introduktionen</h4>
-                <p className="text-gray-600 text-xs">Viktigt - börja här!</p>
-              </div>
-            </Link>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="flex items-start gap-3 group cursor-pointer text-left">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <span className="text-white font-bold text-sm">1</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-gold-primary transition-colors">Läs introduktionen</h4>
+                    <p className="text-gray-600 text-xs">Viktigt - börja här!</p>
+                  </div>
+                </button>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-gray-200 flex items-center gap-2">
+                    <Info className="w-6 h-6 text-blue-400" />
+                    Kom Igång Guide
+                  </DialogTitle>
+                </DialogHeader>
+                {onboardingGuideContent ? (
+                  <MDXPreview content={onboardingGuideContent} theme="dark" />
+                ) : (
+                  <p className="text-gray-400">Laddar guide...</p>
+                )}
+              </DialogContent>
+            </Dialog>
 
             <Link href="/dashboard/check-in" className="flex items-start gap-3 group">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
