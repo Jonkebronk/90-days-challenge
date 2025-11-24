@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
+import { Textarea } from '@/components/ui/textarea'
 import { VideoPlayer } from '@/components/ui/video-player'
 import {
   Dumbbell,
@@ -22,7 +23,9 @@ import {
   X,
   SkipForward,
   Plus,
-  RotateCcw
+  RotateCcw,
+  MessageSquare,
+  UserCircle
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -34,6 +37,7 @@ interface Exercise {
   repsMax: number | null
   restSeconds: number
   notes: string | null
+  coachNotes: string | null
   exercise: {
     id: string
     name: string
@@ -101,6 +105,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [sessionRatingComment, setSessionRatingComment] = useState('')
 
   const [isCompleting, setIsCompleting] = useState(false)
+  const [clientNotes, setClientNotes] = useState<Record<string, string>>({})
 
   useEffect(() => {
     const loadData = async () => {
@@ -670,6 +675,44 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       </div>
                     </div>
                   )}
+
+                  {/* Coach Notes */}
+                  {exercise.coachNotes && (
+                    <div className="p-5 bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-l-4 border-blue-500 rounded-lg shadow-lg">
+                      <div className="w-full space-y-2">
+                        <div className="flex items-center gap-2">
+                          <UserCircle className="w-5 h-5 text-blue-400" />
+                          <Label className="text-base font-bold text-blue-300 block">Coach Notes:</Label>
+                        </div>
+                        <p className="text-sm text-gray-100 leading-relaxed whitespace-pre-wrap">
+                          {exercise.coachNotes}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Client Notes */}
+                  <div className="p-5 bg-gradient-to-br from-green-500/10 to-green-600/5 border-l-4 border-green-500 rounded-lg shadow-lg">
+                    <div className="w-full space-y-3">
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="w-5 h-5 text-green-400" />
+                        <Label className="text-base font-bold text-green-300 block">Mina anteckningar:</Label>
+                      </div>
+                      <Textarea
+                        value={clientNotes[exercise.id] || ''}
+                        onChange={(e) => setClientNotes(prev => ({
+                          ...prev,
+                          [exercise.id]: e.target.value
+                        }))}
+                        placeholder="Lägg till egna anteckningar om övningen (t.ex. form, känsla, justeringar)..."
+                        className="min-h-[80px] bg-black/30 border-green-500/30 text-gray-100 placeholder:text-gray-500 focus:border-green-500 focus:ring-green-500/20 resize-none"
+                        maxLength={200}
+                      />
+                      <div className="text-xs text-gray-400 text-right">
+                        {(clientNotes[exercise.id] || '').length}/200 tecken
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Logged Sets */}
                   {exerciseSets.length > 0 && (

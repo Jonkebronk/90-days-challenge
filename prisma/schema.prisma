@@ -562,6 +562,7 @@ model WorkoutProgramExercise {
   restSeconds Int     @default(60) // Rest between sets
   tempo       String? // "3-0-1-0" tempo notation
   notes       String? // "Drop set", "Superset with X", etc.
+  coachNotes  String? // Coach instructions - read-only for clients
 
   // Targeting (optional overrides)
   targetWeight Decimal? @db.Decimal(5, 2) // Suggested weight in kg
