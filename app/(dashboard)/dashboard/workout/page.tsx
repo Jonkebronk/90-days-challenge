@@ -209,23 +209,30 @@ export default function WorkoutPage() {
           return (
           <Card
             key={day.id}
-            className={`bg-white rounded-xl shadow-md transition-all duration-300 overflow-hidden ${
+            className={`group relative bg-white/5 border-2 transition-all duration-300 cursor-pointer backdrop-blur-[10px] overflow-hidden ${
               day.isRestDay
-                ? 'border-2 border-gray-200 hover:border-gray-300 hover:shadow-lg'
-                : 'border-2 border-gray-200 hover:border-gold-primary/50 hover:shadow-xl'
+                ? 'border-gray-400/30 hover:border-gray-400/50 hover:bg-white/10'
+                : 'border-gold-primary/20 hover:border-gold-primary/60 hover:bg-white/10'
             }`}
           >
+            {/* Gradient Overlay */}
+            <div
+              className={`absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity ${
+                day.isRestDay ? '' : 'bg-gradient-to-br from-gold-primary/30 to-transparent'
+              }`}
+            />
+
             <CardHeader
-              className="cursor-pointer hover:bg-gradient-to-r hover:from-gold-primary/5 hover:to-transparent transition-all duration-200"
+              className="relative cursor-pointer transition-all duration-200"
               onClick={() => toggleDay(day.id)}
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4 flex-1">
-                  {/* Day Number Badge */}
-                  <div className={`flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm ${
+                  {/* Day Number Icon Container */}
+                  <div className={`flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg group-hover:scale-110 transition-transform ${
                     day.isRestDay
-                      ? 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-600'
-                      : 'bg-gradient-to-br from-gold-primary to-gold-secondary text-white'
+                      ? 'bg-gray-400/20 text-gray-400'
+                      : 'bg-gold-primary/20 text-gold-primary'
                   }`}>
                     {day.dayNumber}
                   </div>
@@ -233,21 +240,21 @@ export default function WorkoutPage() {
                   {/* Day Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
                         Dag {day.dayNumber}
                       </span>
                       {day.isRestDay && (
-                        <Badge variant="outline" className="bg-gray-50 border-gray-300 text-gray-600 text-xs">
+                        <Badge variant="outline" className="bg-gray-400/10 border-gray-400/30 text-gray-400 text-xs">
                           <Coffee className="w-3 h-3 mr-1" />
                           Vilodag
                         </Badge>
                       )}
                     </div>
-                    <CardTitle className="text-xl font-bold text-gray-900 truncate">
+                    <CardTitle className="text-xl font-bold text-gold-light truncate tracking-[1px]">
                       {day.name}
                     </CardTitle>
                     {day.description && (
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-1">
+                      <p className="text-sm text-gray-400 mt-1 line-clamp-1">
                         {day.description}
                       </p>
                     )}
