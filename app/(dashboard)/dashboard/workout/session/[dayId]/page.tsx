@@ -486,7 +486,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           <CardHeader>
             <CardTitle className="text-gold-light flex items-center gap-2 text-lg font-bold tracking-[1px]">
               <Clock className="w-5 h-5 text-gold-primary" />
-              Previous Session
+              Föregående Pass
               <span className="text-sm text-gray-400 font-normal tracking-normal">
                 {new Date(previousSessionData.startedAt).toLocaleDateString('sv-SE', {
                   year: 'numeric',
