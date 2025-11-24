@@ -479,18 +479,22 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
       {/* Previous Session Data */}
       {sessionId && previousSessionData && workoutDay && (
-        <Card className="bg-white/5 border-2 border-blue-500/30">
+        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
           <CardHeader>
-            <CardTitle className="text-gray-100 flex items-center gap-2 text-lg">
-              <Clock className="w-5 h-5 text-blue-400" />
+            <CardTitle className="text-gold-light flex items-center gap-2 text-lg font-bold tracking-[1px]">
+              <Clock className="w-5 h-5 text-gold-primary" />
               Previous Session
-              <span className="text-sm text-gray-400 font-normal">
-                {new Date(previousSessionData.startedAt).toLocaleDateString()}
+              <span className="text-sm text-gray-400 font-normal tracking-normal">
+                {new Date(previousSessionData.startedAt).toLocaleDateString('sv-SE', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
               </span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {workoutDay.exercises[currentExerciseIndex] && (() => {
                 const currentExercise = workoutDay.exercises[currentExerciseIndex]
                 const previousSets = previousSessionData.sets?.filter(
@@ -499,36 +503,38 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                 if (previousSets.length === 0) {
                   return (
-                    <p className="text-sm text-gray-500">
-                      No data from previous session for {currentExercise.exercise.name}
+                    <p className="text-sm text-gray-400 italic">
+                      Ingen data från förra passet för {currentExercise.exercise.name}
                     </p>
                   )
                 }
 
                 return (
                   <>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-gray-300 font-medium">
                       {currentExercise.exercise.name}
                     </p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       {previousSets.map((set: any, idx: number) => (
                         <div
                           key={idx}
-                          className="p-2 bg-blue-500/10 border border-blue-500/20 rounded text-center"
+                          className="p-4 bg-gold-primary/10 border-2 border-gold-primary/20 rounded-xl text-center hover:bg-gold-primary/15 hover:border-gold-primary/30 transition-all"
                         >
-                          <div className="text-xs text-gray-500 mb-1">Set {set.setNumber}</div>
+                          <div className="text-xs text-gold-primary/70 font-semibold uppercase tracking-wide mb-2">
+                            Set {set.setNumber}
+                          </div>
                           {set.setType === 'TIME' ? (
-                            <div className="text-sm font-semibold text-gray-200">
+                            <div className="text-xl font-bold text-gold-light">
                               {set.timeSeconds}s
                             </div>
                           ) : (
                             <>
-                              <div className="text-sm font-semibold text-gray-200">
-                                {set.reps || 0} reps
+                              <div className="text-xl font-bold text-gold-light">
+                                {set.reps || 0} <span className="text-sm text-gray-400">reps</span>
                               </div>
                               {set.setType === 'WEIGHT' && set.weightKg && (
-                                <div className="text-xs text-gray-400">
-                                  @ {set.weightKg}kg
+                                <div className="text-sm text-gray-300 mt-1">
+                                  @ <span className="font-semibold">{set.weightKg}</span>kg
                                 </div>
                               )}
                             </>
