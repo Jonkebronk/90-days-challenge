@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Eye, EyeOff } from 'lucide-react'
 
 export default function ProfilePage() {
   const { data: session, update } = useSession()
@@ -15,29 +17,92 @@ export default function ProfilePage() {
     email: session?.user?.email || '',
   })
 
+  // Password change state
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false)
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
+
   const handleSave = async () => {
     try {
-      // TODO: Add API endpoint to update profile
-      toast.success('Profil uppdaterad!')
-      setIsEditing(false)
-      // Update session
-      await update()
+      const response = await fetch('/api/user/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        toast.success('Profil uppdaterad!')
+        setIsEditing(false)
+        await update()
+      } else {
+        toast.error('Kunde inte uppdatera profil')
+      }
     } catch (error) {
       console.error('Error updating profile:', error)
       toast.error('Kunde inte uppdatera profil')
     }
   }
 
+  const handlePasswordChange = async () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error('Lösenorden matchar inte')
+      return
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      toast.error('Lösenordet måste vara minst 6 tecken')
+      return
+    }
+
+    setIsChangingPassword(true)
+    try {
+      const response = await fetch('/api/user/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      })
+
+      if (response.ok) {
+        toast.success('Lösenordet har ändrats!')
+        setShowPasswordDialog(false)
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        })
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Kunde inte ändra lösenord')
+      }
+    } catch (error) {
+      console.error('Error changing password:', error)
+      toast.error('Ett fel uppstod')
+    } finally {
+      setIsChangingPassword(false)
+    }
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
-          MIN PROFIL
+      <div className="text-center mb-6 sm:mb-8">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
+        <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3 sm:mb-4">
+          Profil
         </h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
           Hantera dina uppgifter och inställningar
         </p>
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
 
       <div className="space-y-6 max-w-4xl mx-auto">
@@ -115,7 +180,7 @@ export default function ProfilePage() {
               <div>
                 <Label className="text-gold-primary text-sm">Roll</Label>
                 <p className="text-lg font-medium text-gray-900 capitalize mt-1">
-                  {(session?.user as any)?.role || 'Client'}
+                  {(session?.user as any)?.role === 'COACH' ? 'Coach' : 'Klient'}
                 </p>
               </div>
               <div>
@@ -136,11 +201,92 @@ export default function ProfilePage() {
             <h2 className="text-xl font-bold text-gray-900">Säkerhet</h2>
           </div>
           <div className="p-6">
-            <Button
-              className="bg-gray-100 border border-gray-300 hover:bg-gray-200 hover:border-gold-primary text-gray-900"
-            >
-              Ändra Lösenord
-            </Button>
+            <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+              <DialogTrigger asChild>
+                <Button
+                  className="bg-gray-100 border border-gray-300 hover:bg-gray-200 hover:border-gold-primary text-gray-900"
+                >
+                  Ändra Lösenord
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-white">
+                <DialogHeader>
+                  <DialogTitle className="text-gray-900">Ändra Lösenord</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 pt-4">
+                  <div>
+                    <Label htmlFor="currentPassword" className="text-gray-700">Nuvarande lösenord</Label>
+                    <div className="relative">
+                      <Input
+                        id="currentPassword"
+                        type={showCurrentPassword ? 'text' : 'password'}
+                        value={passwordData.currentPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                        className="bg-white border-gray-300 text-gray-900 pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      >
+                        {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="newPassword" className="text-gray-700">Nytt lösenord</Label>
+                    <div className="relative">
+                      <Input
+                        id="newPassword"
+                        type={showNewPassword ? 'text' : 'password'}
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                        className="bg-white border-gray-300 text-gray-900 pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      >
+                        {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="confirmPassword" className="text-gray-700">Bekräfta nytt lösenord</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={passwordData.confirmPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                      className="bg-white border-gray-300 text-gray-900"
+                    />
+                  </div>
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      onClick={handlePasswordChange}
+                      disabled={isChangingPassword}
+                      className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
+                    >
+                      {isChangingPassword ? 'Sparar...' : 'Spara nytt lösenord'}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setShowPasswordDialog(false)
+                        setPasswordData({
+                          currentPassword: '',
+                          newPassword: '',
+                          confirmPassword: '',
+                        })
+                      }}
+                      className="bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-900"
+                    >
+                      Avbryt
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>
