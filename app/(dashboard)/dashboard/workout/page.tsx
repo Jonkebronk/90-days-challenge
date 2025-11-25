@@ -217,7 +217,7 @@ export default function WorkoutPage() {
           <DialogTrigger asChild>
             <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
               <Info className="w-4 h-4 mr-2" />
-              Introduktion
+              Introduktion Träning
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">

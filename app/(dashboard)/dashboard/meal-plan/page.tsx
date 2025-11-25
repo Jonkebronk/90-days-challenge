@@ -230,7 +230,7 @@ export default function MealPlanPage() {
                   className="bg-white border-2 border-blue-300 text-blue-600 hover:bg-blue-50 hover:border-blue-400 transition-all"
                 >
                   <Info className="w-4 h-4 mr-2" />
-                  Om kostschemat
+                  Introduktion Kost
                 </Button>
               </DialogTrigger>
               <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
