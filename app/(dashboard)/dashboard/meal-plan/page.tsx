@@ -172,13 +172,15 @@ export default function MealPlanPage() {
     return (
       <div className="space-y-6">
         {/* Header */}
-        <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
-            KOSTSCHEMA
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
+          <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3 sm:mb-4">
+            Kostschema
           </h1>
-          <p className="text-gray-600 mt-2">
-            Ditt skräddarsydda kosttillskott
+          <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
+            Ditt skräddarsydda kostschema
           </p>
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
         </div>
 
         {/* Empty State */}
@@ -208,13 +210,15 @@ export default function MealPlanPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
-          {mealPlan.name.toUpperCase()}
+      <div className="text-center mb-6 sm:mb-8">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
+        <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3 sm:mb-4">
+          {mealPlan.name}
         </h1>
-        <p className="text-gray-600 mt-2">
+        <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
           Ditt skräddarsydda kostschema
         </p>
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
 
         {/* Introduction Buttons */}
         <div className="mt-6 flex flex-wrap gap-3 justify-center">
