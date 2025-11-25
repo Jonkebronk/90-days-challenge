@@ -225,10 +225,7 @@ export default function MealPlanPage() {
           {mealPlanDescriptionContent && (
             <Dialog>
               <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="bg-white border-2 border-blue-300 text-blue-600 hover:bg-blue-50 hover:border-blue-400 transition-all"
-                >
+                <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
                   <Info className="w-4 h-4 mr-2" />
                   Introduktion Kost
                 </Button>
@@ -246,10 +243,7 @@ export default function MealPlanPage() {
           )}
           <Dialog>
             <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="bg-white border-2 border-amber-300 text-amber-600 hover:bg-amber-50 hover:border-amber-400 transition-all"
-              >
+              <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
                 <Lightbulb className="w-4 h-4 mr-2" />
                 Generella råd för kosten
               </Button>
