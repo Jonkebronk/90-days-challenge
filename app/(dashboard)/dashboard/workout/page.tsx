@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, BarChart3, Plus, Info, ChevronUp, ChevronDown } from 'lucide-react'
+import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, BarChart3, Plus, Info, ChevronUp, ChevronDown, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
 import { MDXPreview } from '@/components/mdx-preview'
 
@@ -64,6 +64,7 @@ export default function WorkoutPage() {
   const [loading, setLoading] = useState(true)
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set()) // All days closed by default
   const [workoutGuideContent, setWorkoutGuideContent] = useState<string>('')
+  const [incompleteSessions, setIncompleteSessions] = useState<Record<string, boolean>>({}) // dayId -> has incomplete session
 
   const toggleDay = (dayId: string) => {
     setExpandedDays(prev => {
@@ -81,6 +82,7 @@ export default function WorkoutPage() {
     if (session?.user) {
       fetchAssignment()
       fetchWorkoutGuide()
+      fetchIncompleteSessions()
     } else if (session === null) {
       // Session loaded but no user, stop loading
       setLoading(false)
@@ -116,6 +118,24 @@ export default function WorkoutPage() {
       }
     } catch (error) {
       console.error('Error fetching workout guide:', error)
+    }
+  }
+
+  const fetchIncompleteSessions = async () => {
+    try {
+      const response = await fetch('/api/workout-sessions?status=incomplete&limit=50')
+      if (response.ok) {
+        const data = await response.json()
+        const incomplete: Record<string, boolean> = {}
+        for (const session of data.sessions || []) {
+          if (session.workoutProgramDayId) {
+            incomplete[session.workoutProgramDayId] = true
+          }
+        }
+        setIncompleteSessions(incomplete)
+      }
+    } catch (error) {
+      console.error('Error fetching incomplete sessions:', error)
     }
   }
 
@@ -304,9 +324,15 @@ export default function WorkoutPage() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <div onClick={(e) => e.stopPropagation()}>
                       <Link href={`/dashboard/workout/session/${day.id}`}>
-                        <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white shadow-lg hover:shadow-xl transition-all text-sm py-2 px-3">
-                          <Play className="w-4 h-4" />
-                        </Button>
+                        {incompleteSessions[day.id] ? (
+                          <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg hover:shadow-xl transition-all text-sm py-2 px-3 animate-pulse hover:animate-none">
+                            <RotateCcw className="w-4 h-4" />
+                          </Button>
+                        ) : (
+                          <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white shadow-lg hover:shadow-xl transition-all text-sm py-2 px-3">
+                            <Play className="w-4 h-4" />
+                          </Button>
+                        )}
                       </Link>
                     </div>
                     <button className="p-2 rounded-lg hover:bg-gold-primary/10 transition-colors flex-shrink-0">

@@ -72,10 +72,22 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '10')
     const dayId = searchParams.get('dayId')
     const excludeSessionId = searchParams.get('excludeSessionId')
+    const status = searchParams.get('status') // 'incomplete' | 'completed' | null (default: completed)
 
     const whereClause: any = {
-      userId,
-      completed: true // Only get completed sessions
+      userId
+    }
+
+    // Filter by session status
+    if (status === 'incomplete') {
+      // Get incomplete sessions from today only
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      whereClause.completed = false
+      whereClause.startedAt = { gte: today }
+    } else {
+      // Default: only completed sessions
+      whereClause.completed = true
     }
 
     // Filter by specific workout day if provided

@@ -24,7 +24,9 @@ import {
   SkipForward,
   Plus,
   RotateCcw,
-  UserCircle
+  UserCircle,
+  Pencil,
+  Trash2
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -57,6 +59,7 @@ interface WorkoutDay {
 }
 
 interface SetLog {
+  id?: string
   exerciseId: string
   setNumber: number
   setType?: 'WEIGHT' | 'TIME' | 'BODYWEIGHT' | 'REPS'
@@ -106,13 +109,24 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
   const [isCompleting, setIsCompleting] = useState(false)
 
+  // Edit/Delete set state
+  const [editingSet, setEditingSet] = useState<SetLog | null>(null)
+  const [editReps, setEditReps] = useState<string>('')
+  const [editWeight, setEditWeight] = useState<string>('')
+  const [editNotes, setEditNotes] = useState<string>('')
+  const [deletingSet, setDeletingSet] = useState<SetLog | null>(null)
+  const [isUpdatingSet, setIsUpdatingSet] = useState(false)
+
   useEffect(() => {
     const loadData = async () => {
       const { dayId: id } = await params
       setDayId(id)
       await fetchWorkoutDay(id)
-      // Auto-start session when coming from workout list
-      await startSession(id)
+      // Check for incomplete session first, otherwise start new
+      const resumed = await checkAndResumeSession(id)
+      if (!resumed) {
+        await startSession(id)
+      }
     }
     loadData()
   }, [])
@@ -216,6 +230,60 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     }
   }
 
+  // Check for and resume an incomplete session from today
+  const checkAndResumeSession = async (programDayId: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`/api/workout-sessions?dayId=${programDayId}&status=incomplete&limit=1`)
+
+      if (response.ok) {
+        const data = await response.json()
+        if (data.sessions && data.sessions.length > 0) {
+          const incompleteSession = data.sessions[0]
+
+          // Resume the session
+          setSessionId(incompleteSession.id)
+          setStartTime(new Date(incompleteSession.startedAt))
+          setIsRunning(true)
+
+          // Restore logged sets from the incomplete session
+          if (incompleteSession.sets && incompleteSession.sets.length > 0) {
+            const restoredLogs: Record<string, SetLog[]> = {}
+
+            for (const set of incompleteSession.sets) {
+              if (!restoredLogs[set.exerciseId]) {
+                restoredLogs[set.exerciseId] = []
+              }
+              restoredLogs[set.exerciseId].push({
+                id: set.id,
+                exerciseId: set.exerciseId,
+                setNumber: set.setNumber,
+                setType: set.setType,
+                reps: set.reps,
+                weightKg: set.weightKg ? Number(set.weightKg) : null,
+                notes: set.notes,
+                timeSeconds: set.timeSeconds,
+                completed: set.completed
+              })
+            }
+
+            setSetLogs(restoredLogs)
+
+            // Find current exercise index (first incomplete or first with remaining sets)
+            // This is handled by the existing UI logic
+          }
+
+          // Fetch previous completed session for reference
+          await fetchPreviousSession()
+
+          return true
+        }
+      }
+    } catch (error) {
+      console.error('Error checking for incomplete session:', error)
+    }
+    return false
+  }
+
   const startSession = async (programDayId?: string) => {
     try {
       const response = await fetch('/api/workout-sessions', {
@@ -273,12 +341,13 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       if (response.ok) {
         const data = await response.json()
 
-        // Update local state
+        // Update local state with the ID from the server
         setSetLogs(prev => ({
           ...prev,
           [exerciseId]: [
             ...(prev[exerciseId] || []),
             {
+              id: data.set.id,
               exerciseId,
               setNumber,
               setType: currentSetType,
@@ -324,6 +393,91 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       }
     } catch (error) {
       console.error('Error logging set:', error)
+    }
+  }
+
+  // Edit a set
+  const openEditModal = (set: SetLog) => {
+    setEditingSet(set)
+    setEditReps(set.reps?.toString() || '')
+    setEditWeight(set.weightKg?.toString() || set.notes || '')
+    setEditNotes(set.notes || '')
+  }
+
+  const updateSet = async () => {
+    if (!sessionId || !editingSet?.id) return
+
+    setIsUpdatingSet(true)
+    try {
+      const weightNum = parseFloat(editWeight)
+      const weight = !isNaN(weightNum) ? weightNum : null
+      const weightNotes = editWeight && (isNaN(weightNum) || /[^\d.\s]/.test(editWeight.replace(String(weightNum), '')))
+        ? editWeight
+        : null
+
+      const response = await fetch(`/api/workout-sessions/${sessionId}/sets/${editingSet.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reps: parseInt(editReps) || null,
+          weightKg: weight,
+          notes: weightNotes
+        })
+      })
+
+      if (response.ok) {
+        // Update local state
+        setSetLogs(prev => {
+          const updated = { ...prev }
+          const exerciseSets = updated[editingSet.exerciseId]
+          if (exerciseSets) {
+            const idx = exerciseSets.findIndex(s => s.id === editingSet.id)
+            if (idx !== -1) {
+              exerciseSets[idx] = {
+                ...exerciseSets[idx],
+                reps: parseInt(editReps) || null,
+                weightKg: weight,
+                notes: weightNotes
+              }
+            }
+          }
+          return updated
+        })
+        setEditingSet(null)
+      }
+    } catch (error) {
+      console.error('Error updating set:', error)
+    } finally {
+      setIsUpdatingSet(false)
+    }
+  }
+
+  // Delete a set
+  const deleteSet = async () => {
+    if (!sessionId || !deletingSet?.id) return
+
+    setIsUpdatingSet(true)
+    try {
+      const response = await fetch(`/api/workout-sessions/${sessionId}/sets/${deletingSet.id}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        // Update local state - remove the set
+        setSetLogs(prev => {
+          const updated = { ...prev }
+          const exerciseSets = updated[deletingSet.exerciseId]
+          if (exerciseSets) {
+            updated[deletingSet.exerciseId] = exerciseSets.filter(s => s.id !== deletingSet.id)
+          }
+          return updated
+        })
+        setDeletingSet(null)
+      }
+    } catch (error) {
+      console.error('Error deleting set:', error)
+    } finally {
+      setIsUpdatingSet(false)
     }
   }
 
@@ -705,7 +859,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       <Label className="text-base font-bold text-white">Genomförda sets:</Label>
                       {exerciseSets.map((set, setIdx) => (
                         <div
-                          key={setIdx}
+                          key={set.id || setIdx}
                           className="flex items-center gap-4 p-3 bg-gradient-to-r from-[rgba(34,197,94,0.15)] to-[rgba(34,197,94,0.08)] border-l-4 border-green-500/50 rounded-lg shadow"
                         >
                           <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
@@ -738,6 +892,25 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                               </>
                             )}
                           </div>
+                          {/* Edit/Delete buttons */}
+                          {set.id && (
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => openEditModal(set)}
+                                className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                                title="Redigera set"
+                              >
+                                <Pencil className="w-4 h-4 text-gray-400 hover:text-white" />
+                              </button>
+                              <button
+                                onClick={() => setDeletingSet(set)}
+                                className="p-2 rounded-lg hover:bg-red-500/20 transition-colors"
+                                title="Ta bort set"
+                              >
+                                <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-400" />
+                              </button>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -910,6 +1083,121 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   disabled={isCompleting || !sessionRating}
                 >
                   {isCompleting ? 'Sparar...' : 'Spara betyg'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Edit Set Modal */}
+      {editingSet && (
+        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-gold-primary/30 backdrop-blur-[10px] w-full max-w-md">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Pencil className="w-5 h-5 text-gold-light" />
+                  Redigera Set {editingSet.setNumber}
+                </CardTitle>
+                <button
+                  onClick={() => setEditingSet(null)}
+                  className="text-gray-500 hover:text-gray-200"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-gray-200">Reps</Label>
+                  <Input
+                    type="number"
+                    value={editReps}
+                    onChange={(e) => setEditReps(e.target.value)}
+                    className="h-12 text-lg font-semibold bg-black/40 border-2 border-gold-primary/40 text-white focus:border-gold-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-gray-200">Vikt (kg)</Label>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    value={editWeight}
+                    onChange={(e) => setEditWeight(e.target.value)}
+                    className="h-12 text-lg font-semibold bg-black/40 border-2 border-gold-primary/40 text-white focus:border-gold-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  onClick={() => setEditingSet(null)}
+                  variant="outline"
+                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-gray-200 hover:bg-[rgba(255,255,255,0.1)]"
+                  disabled={isUpdatingSet}
+                >
+                  Avbryt
+                </Button>
+                <Button
+                  onClick={updateSet}
+                  className="flex-1 bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
+                  disabled={isUpdatingSet}
+                >
+                  {isUpdatingSet ? 'Sparar...' : 'Spara'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Delete Set Confirmation Modal */}
+      {deletingSet && (
+        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-red-500/30 backdrop-blur-[10px] w-full max-w-md">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Trash2 className="w-5 h-5 text-red-400" />
+                  Ta bort Set {deletingSet.setNumber}?
+                </CardTitle>
+                <button
+                  onClick={() => setDeletingSet(null)}
+                  className="text-gray-500 hover:text-gray-200"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-gray-300">
+                Är du säker på att du vill ta bort detta set? Detta kan inte ångras.
+              </p>
+              <div className="p-3 bg-white/5 rounded-lg">
+                <span className="text-sm text-gray-400">Set {deletingSet.setNumber}: </span>
+                <span className="text-white font-semibold">
+                  {deletingSet.reps} reps
+                  {deletingSet.weightKg && ` × ${deletingSet.weightKg} kg`}
+                </span>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  onClick={() => setDeletingSet(null)}
+                  variant="outline"
+                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-gray-500/30 text-gray-200 hover:bg-[rgba(255,255,255,0.1)]"
+                  disabled={isUpdatingSet}
+                >
+                  Avbryt
+                </Button>
+                <Button
+                  onClick={deleteSet}
+                  className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white hover:opacity-90"
+                  disabled={isUpdatingSet}
+                >
+                  {isUpdatingSet ? 'Tar bort...' : 'Ta bort'}
                 </Button>
               </div>
             </CardContent>

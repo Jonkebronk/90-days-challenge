@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Calendar, Clock, Dumbbell, TrendingUp, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, Calendar, Clock, Dumbbell, TrendingUp, CheckCircle2, Pencil, Trash2, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 interface Exercise {
   id: string
@@ -54,11 +57,20 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
   const router = useRouter()
   const [session, setSession] = useState<WorkoutSession | null>(null)
   const [loading, setLoading] = useState(true)
+  const [sessionId, setSessionId] = useState<string>('')
+
+  // Edit/Delete set state
+  const [editingSet, setEditingSet] = useState<WorkoutSet | null>(null)
+  const [editReps, setEditReps] = useState<string>('')
+  const [editWeight, setEditWeight] = useState<string>('')
+  const [deletingSet, setDeletingSet] = useState<WorkoutSet | null>(null)
+  const [isUpdatingSet, setIsUpdatingSet] = useState(false)
 
   useEffect(() => {
     const loadSession = async () => {
-      const { sessionId } = await params
-      fetchSession(sessionId)
+      const { sessionId: id } = await params
+      setSessionId(id)
+      fetchSession(id)
     }
     loadSession()
   }, [params])
@@ -74,6 +86,68 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
       console.error('Error fetching session:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Edit a set
+  const openEditModal = (set: WorkoutSet) => {
+    setEditingSet(set)
+    setEditReps(set.reps?.toString() || '')
+    setEditWeight(set.weightKg?.toString() || set.notes || '')
+  }
+
+  const updateSet = async () => {
+    if (!sessionId || !editingSet?.id) return
+
+    setIsUpdatingSet(true)
+    try {
+      const weightNum = parseFloat(editWeight)
+      const weight = !isNaN(weightNum) ? weightNum : null
+      const weightNotes = editWeight && (isNaN(weightNum) || /[^\d.\s]/.test(editWeight.replace(String(weightNum), '')))
+        ? editWeight
+        : null
+
+      const response = await fetch(`/api/workout-sessions/${sessionId}/sets/${editingSet.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reps: parseInt(editReps) || null,
+          weightKg: weight,
+          notes: weightNotes
+        })
+      })
+
+      if (response.ok) {
+        // Refresh session data
+        await fetchSession(sessionId)
+        setEditingSet(null)
+      }
+    } catch (error) {
+      console.error('Error updating set:', error)
+    } finally {
+      setIsUpdatingSet(false)
+    }
+  }
+
+  // Delete a set
+  const deleteSet = async () => {
+    if (!sessionId || !deletingSet?.id) return
+
+    setIsUpdatingSet(true)
+    try {
+      const response = await fetch(`/api/workout-sessions/${sessionId}/sets/${deletingSet.id}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        // Refresh session data
+        await fetchSession(sessionId)
+        setDeletingSet(null)
+      }
+    } catch (error) {
+      console.error('Error deleting set:', error)
+    } finally {
+      setIsUpdatingSet(false)
     }
   }
 
@@ -262,7 +336,7 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
                   {sets.map((set) => (
                     <div
                       key={set.id}
-                      className="bg-white/5 rounded-xl p-4 flex items-center justify-between"
+                      className="bg-white/5 rounded-xl p-4 flex items-center justify-between group"
                     >
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center">
@@ -278,7 +352,7 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
                           {set.weightKg !== null && (
                             <div>
                               <div className="text-gray-500 text-sm">Vikt (kg)</div>
-                              <div className="text-gray-100 font-semibold">{set.weightKg}</div>
+                              <div className="text-gray-100 font-semibold">{set.notes || set.weightKg}</div>
                             </div>
                           )}
                           {set.timeSeconds !== null && (
@@ -299,11 +373,27 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
                           )}
                         </div>
                       </div>
-                      {set.notes && (
-                        <div className="text-gray-400 text-sm italic">
-                          {set.notes}
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {set.notes && !set.weightKg && (
+                          <div className="text-gray-400 text-sm italic mr-2">
+                            {set.notes}
+                          </div>
+                        )}
+                        <button
+                          onClick={() => openEditModal(set)}
+                          className="p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-white/10 transition-all"
+                          title="Redigera set"
+                        >
+                          <Pencil className="w-4 h-4 text-gray-400 hover:text-white" />
+                        </button>
+                        <button
+                          onClick={() => setDeletingSet(set)}
+                          className="p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/20 transition-all"
+                          title="Ta bort set"
+                        >
+                          <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-400" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -312,6 +402,121 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
           })}
         </div>
       </div>
+
+      {/* Edit Set Modal */}
+      {editingSet && (
+        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-gold-primary/30 backdrop-blur-[10px] w-full max-w-md">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Pencil className="w-5 h-5 text-gold-light" />
+                  Redigera Set {editingSet.setNumber}
+                </CardTitle>
+                <button
+                  onClick={() => setEditingSet(null)}
+                  className="text-gray-500 hover:text-gray-200"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-gray-200">Reps</Label>
+                  <Input
+                    type="number"
+                    value={editReps}
+                    onChange={(e) => setEditReps(e.target.value)}
+                    className="h-12 text-lg font-semibold bg-black/40 border-2 border-gold-primary/40 text-white focus:border-gold-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold text-gray-200">Vikt (kg)</Label>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    value={editWeight}
+                    onChange={(e) => setEditWeight(e.target.value)}
+                    className="h-12 text-lg font-semibold bg-black/40 border-2 border-gold-primary/40 text-white focus:border-gold-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  onClick={() => setEditingSet(null)}
+                  variant="outline"
+                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-gray-200 hover:bg-[rgba(255,255,255,0.1)]"
+                  disabled={isUpdatingSet}
+                >
+                  Avbryt
+                </Button>
+                <Button
+                  onClick={updateSet}
+                  className="flex-1 bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
+                  disabled={isUpdatingSet}
+                >
+                  {isUpdatingSet ? 'Sparar...' : 'Spara'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Delete Set Confirmation Modal */}
+      {deletingSet && (
+        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-red-500/30 backdrop-blur-[10px] w-full max-w-md">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Trash2 className="w-5 h-5 text-red-400" />
+                  Ta bort Set {deletingSet.setNumber}?
+                </CardTitle>
+                <button
+                  onClick={() => setDeletingSet(null)}
+                  className="text-gray-500 hover:text-gray-200"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-gray-300">
+                Är du säker på att du vill ta bort detta set? Detta kan inte ångras.
+              </p>
+              <div className="p-3 bg-white/5 rounded-lg">
+                <span className="text-sm text-gray-400">Set {deletingSet.setNumber}: </span>
+                <span className="text-white font-semibold">
+                  {deletingSet.reps} reps
+                  {deletingSet.weightKg && ` × ${deletingSet.weightKg} kg`}
+                </span>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  onClick={() => setDeletingSet(null)}
+                  variant="outline"
+                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-gray-500/30 text-gray-200 hover:bg-[rgba(255,255,255,0.1)]"
+                  disabled={isUpdatingSet}
+                >
+                  Avbryt
+                </Button>
+                <Button
+                  onClick={deleteSet}
+                  className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white hover:opacity-90"
+                  disabled={isUpdatingSet}
+                >
+                  {isUpdatingSet ? 'Tar bort...' : 'Ta bort'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }
