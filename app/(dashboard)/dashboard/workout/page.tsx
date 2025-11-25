@@ -151,13 +151,15 @@ export default function WorkoutPage() {
     return (
       <div className="space-y-6">
         {/* Header */}
-        <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
-            TRÄNINGSPROGRAM
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
+          <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3 sm:mb-4">
+            Träningsprogram
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
             Ditt personliga träningsprogram
           </p>
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
         </div>
 
         <Card className="bg-white border border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all">
@@ -190,21 +192,23 @@ export default function WorkoutPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="relative text-center py-8 bg-gradient-to-br from-gold-primary/5 to-transparent border border-gray-200 rounded-xl">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
-          {workoutProgram.name.toUpperCase()}
+      <div className="text-center mb-6 sm:mb-8">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
+        <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3 sm:mb-4">
+          {workoutProgram.name}
         </h1>
         {programHasWeeks && currentWeekData && (
-          <p className="text-purple-600 font-semibold mt-2">
+          <p className="text-purple-400 font-semibold text-sm sm:text-base">
             {currentWeekData.title || `Vecka ${currentWeek}`}
             {currentWeekData.description && ` - ${currentWeekData.description}`}
           </p>
         )}
         {workoutProgram.description && (
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
             {workoutProgram.description}
           </p>
         )}
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
 
         {/* Introduction Button */}
         <div className="mt-6">
