@@ -637,9 +637,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         </div>
         {sessionId && (
           <Button
-            variant="ghost"
             onClick={() => setShowCancelModal(true)}
-            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+            className="bg-red-500/20 border-2 border-red-500/50 text-red-400 hover:bg-red-500/30 hover:text-red-300 hover:border-red-400"
           >
             <X className="w-4 h-4 mr-2" />
             Avbryt pass
@@ -1242,7 +1241,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
       {/* Cancel Session Confirmation Modal */}
       {showCancelModal && (
-        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-start justify-center p-4 pt-20">
           <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-red-500/30 backdrop-blur-[10px] w-full max-w-md">
             <CardHeader>
               <div className="flex items-center justify-between">
