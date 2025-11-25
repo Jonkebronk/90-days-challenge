@@ -64,17 +64,17 @@ export default function ArticlesPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="text-center mb-8">
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-6 opacity-20" />
-        <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-3">
+      <div className="text-center mb-6 sm:mb-8">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-4 sm:mb-6 opacity-20" />
+        <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-4xl md:text-5xl font-black tracking-[2px] sm:tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-2 sm:mb-3">
           Kunskapsbanken
         </h1>
-        <p className="text-gray-400 text-sm tracking-[1px]">
+        <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
           Utforska artiklar organiserade efter kategori
         </p>
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-4 sm:mt-6 opacity-20" />
       </div>
 
       {/* Category Grid */}
@@ -95,7 +95,7 @@ export default function ArticlesPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
           {categories.map((category) => {
             const Icon = getIconComponent(category.icon, category.name)
             const categoryColor = category.color || '#FFD700'
@@ -114,28 +114,28 @@ export default function ArticlesPage() {
                   }}
                 />
 
-                <CardContent className="relative p-8 flex flex-col items-center text-center">
+                <CardContent className="relative p-4 sm:p-8 flex flex-col items-center text-center">
                   {/* Icon */}
                   <div
-                    className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg"
+                    className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform shadow-lg"
                     style={{ backgroundColor: `${categoryColor}20` }}
                   >
-                    <Icon className="h-10 w-10" style={{ color: categoryColor }} />
+                    <Icon className="h-7 w-7 sm:h-10 sm:w-10" style={{ color: categoryColor }} />
                   </div>
 
                   {/* Category Name */}
-                  <h3 className="text-xl font-bold text-gold-light mb-2 tracking-[1px]">
+                  <h3 className="text-sm sm:text-xl font-bold text-gold-light mb-1 sm:mb-2 tracking-[0.5px] sm:tracking-[1px]">
                     {category.name}
                   </h3>
 
                   {/* Article Count */}
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-400 text-xs sm:text-sm">
                     {category._count.articles} {category._count.articles === 1 ? 'artikel' : 'artiklar'}
                   </p>
 
                   {/* Arrow indicator */}
-                  <div className="mt-4 text-gold-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="mt-2 sm:mt-4 text-gold-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
