@@ -221,16 +221,34 @@ export default function WorkoutPage() {
             {currentWeekData.description && ` - ${currentWeekData.description}`}
           </p>
         )}
-        {workoutProgram.description && (
-          <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
-            {workoutProgram.description}
-          </p>
-        )}
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
 
       {/* Action buttons row */}
       <div className="flex flex-wrap gap-2 justify-center">
+        {/* Program-specific info button */}
+        {workoutProgram.description && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
+                <Dumbbell className="w-4 h-4 mr-2" />
+                Om programmet
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-gray-200 flex items-center gap-2">
+                  <Dumbbell className="w-6 h-6 text-gold-primary" />
+                  {workoutProgram.name}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="text-gray-300 whitespace-pre-line leading-relaxed">
+                {workoutProgram.description}
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+        {/* General workout guide button */}
         <Dialog>
           <DialogTrigger asChild>
             <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
