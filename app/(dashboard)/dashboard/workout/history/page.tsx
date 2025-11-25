@@ -189,135 +189,139 @@ export default function WorkoutHistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 p-8">
+    <div className="min-h-screen bg-gray-900 p-4 sm:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-4xl font-bold text-white mb-1 sm:mb-2">
             Träningshistorik
           </h1>
-          <p className="text-gray-400">
+          <p className="text-sm sm:text-base text-gray-400">
             Följ din utveckling och se dina tidigare pass
           </p>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
-                <Dumbbell className="w-5 h-5 text-black" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-6 backdrop-blur-[10px]">
+            <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
+                <Dumbbell className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
               </div>
-              <div className="text-gray-400 text-sm">Totalt Pass</div>
+              <div className="text-gray-400 text-xs sm:text-sm">Pass</div>
             </div>
-            <div className="text-3xl font-bold text-white">
+            <div className="text-2xl sm:text-3xl font-bold text-white">
               {stats.totalWorkouts}
             </div>
           </div>
 
-          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-white" />
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-6 backdrop-blur-[10px]">
+            <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center">
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <div className="text-gray-400 text-sm">Totala Set</div>
+              <div className="text-gray-400 text-xs sm:text-sm">Set</div>
             </div>
-            <div className="text-3xl font-bold text-white">
+            <div className="text-2xl sm:text-3xl font-bold text-white">
               {stats.totalSets}
             </div>
           </div>
 
-          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-white" />
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-6 backdrop-blur-[10px]">
+            <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center">
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <div className="text-gray-400 text-sm">Total Volym (kg)</div>
+              <div className="text-gray-400 text-xs sm:text-sm">Volym</div>
             </div>
-            <div className="text-3xl font-bold text-white">
+            <div className="text-xl sm:text-3xl font-bold text-white">
               {stats.totalVolume.toLocaleString('sv-SE')}
             </div>
           </div>
 
-          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center">
-                <Clock className="w-5 h-5 text-white" />
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-6 backdrop-blur-[10px]">
+            <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center">
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <div className="text-gray-400 text-sm">Snitt Tid (min)</div>
+              <div className="text-gray-400 text-xs sm:text-sm">Tid</div>
             </div>
-            <div className="text-3xl font-bold text-white">
-              {stats.avgDuration}
+            <div className="text-2xl sm:text-3xl font-bold text-white">
+              {stats.avgDuration}<span className="text-sm sm:text-base text-gray-400 ml-1">min</span>
             </div>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="mb-6 space-y-4">
-          <div className="flex items-center gap-3">
+        <div className="mb-4 sm:mb-6 space-y-3 sm:space-y-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Sök träningspass..."
+                placeholder="Sök pass..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 bg-white/5 border-2 border-gold-primary/20 text-white placeholder:text-gray-500 h-12 focus:border-gold-primary/50"
+                className="pl-10 sm:pl-12 bg-white/5 border-2 border-gold-primary/20 text-white placeholder:text-gray-500 h-10 sm:h-12 text-sm sm:text-base focus:border-gold-primary/50"
               />
             </div>
             <Button
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
-              className="h-12 px-6 bg-white/5 border-2 border-gold-primary/20 text-white hover:bg-white/10 hover:border-gold-primary/50"
+              className="h-10 sm:h-12 px-3 sm:px-6 bg-white/5 border-2 border-gold-primary/20 text-white hover:bg-white/10 hover:border-gold-primary/50"
             >
-              <Filter className="w-5 h-5 mr-2" />
-              Filter
-              {showFilters ? <ChevronUp className="w-4 h-4 ml-2" /> : <ChevronDown className="w-4 h-4 ml-2" />}
+              <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline ml-2">Filter</span>
+              {showFilters ? <ChevronUp className="w-4 h-4 ml-1 sm:ml-2" /> : <ChevronDown className="w-4 h-4 ml-1 sm:ml-2" />}
             </Button>
           </div>
 
           {showFilters && (
-            <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-4 backdrop-blur-[10px]">
-              <div className="flex flex-wrap gap-3">
+            <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-3 sm:p-4 backdrop-blur-[10px]">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 <Button
                   variant={dateFilter === 'all' ? 'default' : 'outline'}
                   onClick={() => setDateFilter('all')}
-                  className={dateFilter === 'all'
+                  size="sm"
+                  className={`text-xs sm:text-sm ${dateFilter === 'all'
                     ? 'bg-gradient-to-r from-gold-light to-orange-500 text-black hover:opacity-90'
                     : 'bg-white/5 border-gold-primary/20 text-white hover:bg-white/10'
-                  }
+                  }`}
                 >
-                  Alla pass
+                  Alla
                 </Button>
                 <Button
                   variant={dateFilter === '7days' ? 'default' : 'outline'}
                   onClick={() => setDateFilter('7days')}
-                  className={dateFilter === '7days'
+                  size="sm"
+                  className={`text-xs sm:text-sm ${dateFilter === '7days'
                     ? 'bg-gradient-to-r from-gold-light to-orange-500 text-black hover:opacity-90'
                     : 'bg-white/5 border-gold-primary/20 text-white hover:bg-white/10'
-                  }
+                  }`}
                 >
-                  Senaste 7 dagarna
+                  7 dagar
                 </Button>
                 <Button
                   variant={dateFilter === '30days' ? 'default' : 'outline'}
                   onClick={() => setDateFilter('30days')}
-                  className={dateFilter === '30days'
+                  size="sm"
+                  className={`text-xs sm:text-sm ${dateFilter === '30days'
                     ? 'bg-gradient-to-r from-gold-light to-orange-500 text-black hover:opacity-90'
                     : 'bg-white/5 border-gold-primary/20 text-white hover:bg-white/10'
-                  }
+                  }`}
                 >
-                  Senaste 30 dagarna
+                  30 dagar
                 </Button>
                 <Button
                   variant={dateFilter === '90days' ? 'default' : 'outline'}
                   onClick={() => setDateFilter('90days')}
-                  className={dateFilter === '90days'
+                  size="sm"
+                  className={`text-xs sm:text-sm ${dateFilter === '90days'
                     ? 'bg-gradient-to-r from-gold-light to-orange-500 text-black hover:opacity-90'
                     : 'bg-white/5 border-gold-primary/20 text-white hover:bg-white/10'
-                  }
+                  }`}
                 >
-                  Senaste 90 dagarna
+                  90 dagar
                 </Button>
               </div>
             </div>
@@ -332,17 +336,17 @@ export default function WorkoutHistoryPage() {
         {/* Session List */}
         <div className="space-y-4">
           {filteredSessions.length === 0 ? (
-            <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-12 backdrop-blur-[10px] text-center">
-              <Dumbbell className="w-16 h-16 text-[rgba(255,255,255,0.3)] mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-100 mb-2">
+            <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-8 sm:p-12 backdrop-blur-[10px] text-center">
+              <Dumbbell className="w-12 h-12 sm:w-16 sm:h-16 text-[rgba(255,255,255,0.3)] mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-100 mb-2">
                 Ingen träningshistorik ännu
               </h3>
-              <p className="text-gray-400 mb-6">
+              <p className="text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">
                 Starta ditt första träningspass för att börja spåra din utveckling
               </p>
               <button
                 onClick={() => router.push('/dashboard/workout')}
-                className="px-6 py-3 bg-gradient-to-r from-gold-light to-orange-500 text-black font-semibold rounded-xl hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] transition-all"
+                className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-gold-light to-orange-500 text-black font-semibold rounded-lg sm:rounded-xl hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] transition-all text-sm sm:text-base"
               >
                 Gå till Träningsprogram
               </button>
@@ -361,20 +365,20 @@ export default function WorkoutHistoryPage() {
               return (
               <div
                 key={session.id}
-                className="group bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all"
+                className="group bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-1">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-base sm:text-xl font-semibold text-white mb-1 truncate">
                       {session.workoutProgramDay.name}
                     </h3>
-                    <div className="flex items-center gap-4 text-sm text-gray-400">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-400">
                       <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
+                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                         {formatDate(session.startedAt)}
                       </div>
                       <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
+                        <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                         {formatTime(session.startedAt)}
                       </div>
                       {session.durationMinutes && (
@@ -384,13 +388,13 @@ export default function WorkoutHistoryPage() {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
                     {session.rating && (
-                      <div className="flex items-center gap-1 px-3 py-1 bg-[rgba(255,215,0,0.1)] border border-gold-primary/30 rounded-full">
+                      <div className="flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1 bg-[rgba(255,215,0,0.1)] border border-gold-primary/30 rounded-full">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-3 h-3 ${
+                            className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${
                               i < session.rating!
                                 ? 'fill-[#FFD700] text-gold-light'
                                 : 'text-[rgba(255,215,0,0.3)]'
@@ -400,118 +404,119 @@ export default function WorkoutHistoryPage() {
                       </div>
                     )}
                     {session.completed ? (
-                      <div className="px-3 py-1 bg-[rgba(34,197,94,0.2)] border border-[rgba(34,197,94,0.4)] rounded-full text-green-500 text-sm font-medium">
-                        Genomfört
+                      <div className="px-2 sm:px-3 py-1 bg-[rgba(34,197,94,0.2)] border border-[rgba(34,197,94,0.4)] rounded-full text-green-500 text-xs sm:text-sm font-medium">
+                        Klar
                       </div>
                     ) : (
-                      <div className="px-3 py-1 bg-[rgba(251,191,36,0.2)] border border-[rgba(251,191,36,0.4)] rounded-full text-[#fbbf24] text-sm font-medium">
+                      <div className="px-2 sm:px-3 py-1 bg-[rgba(251,191,36,0.2)] border border-[rgba(251,191,36,0.4)] rounded-full text-[#fbbf24] text-xs sm:text-sm font-medium">
                         Påbörjat
                       </div>
                     )}
-                    <ChevronRight className="w-5 h-5 text-[rgba(255,215,0,0.5)] group-hover:translate-x-1 group-hover:text-gold-light transition-all" />
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[rgba(255,215,0,0.5)] group-hover:translate-x-1 group-hover:text-gold-light transition-all hidden sm:block" />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <div className="bg-white/5 rounded-xl p-4">
-                    <div className="text-gray-400 text-sm mb-1">Övningar</div>
-                    <div className="text-lg font-semibold text-white">
+                <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-3 sm:mb-4">
+                  <div className="bg-white/5 rounded-lg sm:rounded-xl p-2 sm:p-4">
+                    <div className="text-gray-400 text-xs sm:text-sm mb-0.5 sm:mb-1">Övningar</div>
+                    <div className="text-base sm:text-lg font-semibold text-white">
                       {getUniqueExercises(session.sets).length}
                     </div>
                   </div>
-                  <div className="bg-white/5 rounded-xl p-4">
-                    <div className="text-gray-400 text-sm mb-1">Totala Set</div>
-                    <div className="text-lg font-semibold text-white">
+                  <div className="bg-white/5 rounded-lg sm:rounded-xl p-2 sm:p-4">
+                    <div className="text-gray-400 text-xs sm:text-sm mb-0.5 sm:mb-1">Set</div>
+                    <div className="text-base sm:text-lg font-semibold text-white">
                       {session.sets.filter(s => s.completed).length}
                     </div>
                   </div>
-                  <div className="bg-white/5 rounded-xl p-4">
-                    <div className="text-gray-400 text-sm mb-1">Volym (kg)</div>
-                    <div className="text-lg font-semibold text-white">
+                  <div className="bg-white/5 rounded-lg sm:rounded-xl p-2 sm:p-4">
+                    <div className="text-gray-400 text-xs sm:text-sm mb-0.5 sm:mb-1">Volym</div>
+                    <div className="text-sm sm:text-lg font-semibold text-white">
                       {calculateSessionVolume(session.sets).toLocaleString('sv-SE')}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                  {getUniqueExercises(session.sets).slice(0, 5).map((exercise, idx) => (
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                  {getUniqueExercises(session.sets).slice(0, 3).map((exercise, idx) => (
                     <div
                       key={idx}
-                      className="px-3 py-1 bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.3)] rounded-full text-[rgba(139,92,246,0.9)] text-sm"
+                      className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.3)] rounded-full text-[rgba(139,92,246,0.9)] text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none"
                     >
                       {exercise}
                     </div>
                   ))}
-                  {getUniqueExercises(session.sets).length > 5 && (
-                    <div className="px-3 py-1 bg-[rgba(255,255,255,0.05)] rounded-full text-gray-400 text-sm">
-                      +{getUniqueExercises(session.sets).length - 5} till
+                  {getUniqueExercises(session.sets).length > 3 && (
+                    <div className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[rgba(255,255,255,0.05)] rounded-full text-gray-400 text-xs sm:text-sm">
+                      +{getUniqueExercises(session.sets).length - 3} till
                     </div>
                   )}
                 </div>
 
                 {(session.notes || session.ratingComment) && (
-                  <div className="mt-4 pt-4 border-t border-[rgba(255,255,255,0.1)] space-y-3">
+                  <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-[rgba(255,255,255,0.1)] space-y-2 sm:space-y-3">
                     {session.notes && (
                       <div>
-                        <div className="text-gray-400 text-sm mb-1">Anteckningar</div>
-                        <div className="text-gray-200 text-sm">{session.notes}</div>
+                        <div className="text-gray-400 text-xs sm:text-sm mb-0.5 sm:mb-1">Anteckningar</div>
+                        <div className="text-gray-200 text-xs sm:text-sm">{session.notes}</div>
                       </div>
                     )}
                     {session.ratingComment && (
                       <div>
-                        <div className="text-gray-400 text-sm mb-1 flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-[#FFD700] text-gold-light" />
+                        <div className="text-gray-400 text-xs sm:text-sm mb-0.5 sm:mb-1 flex items-center gap-1">
+                          <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-[#FFD700] text-gold-light" />
                           Passkommentar
                         </div>
-                        <div className="text-gray-200 text-sm italic">{session.ratingComment}</div>
+                        <div className="text-gray-200 text-xs sm:text-sm italic">{session.ratingComment}</div>
                       </div>
                     )}
                   </div>
                 )}
 
                 {/* Expansion Toggle */}
-                <div className="mt-4 pt-4 border-t border-[rgba(255,255,255,0.1)] flex items-center justify-between">
+                <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-[rgba(255,255,255,0.1)] flex items-center justify-between gap-2">
                   <button
                     onClick={(e) => toggleSessionExpansion(session.id, e)}
-                    className="flex items-center gap-2 text-gold-light hover:text-gold-primary transition-colors"
+                    className="flex items-center gap-1 sm:gap-2 text-gold-light hover:text-gold-primary transition-colors"
                   >
                     {isExpanded ? (
                       <>
-                        <ChevronUp className="w-5 h-5" />
-                        <span className="text-sm font-medium">Dölj detaljer</span>
+                        <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="text-xs sm:text-sm font-medium">Dölj</span>
                       </>
                     ) : (
                       <>
-                        <ChevronDown className="w-5 h-5" />
-                        <span className="text-sm font-medium">Visa detaljer</span>
+                        <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="text-xs sm:text-sm font-medium">Detaljer</span>
                       </>
                     )}
                   </button>
                   <button
                     onClick={() => router.push(`/dashboard/workout/session/completed/${session.id}`)}
-                    className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-gold-primary/30 hover:border-gold-primary/60 rounded-lg text-white text-sm font-medium transition-all"
+                    className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-white/5 hover:bg-white/10 border border-gold-primary/30 hover:border-gold-primary/60 rounded-lg text-white text-xs sm:text-sm font-medium transition-all"
                   >
-                    Se fullständig sammanfattning
-                    <ChevronRight className="w-4 h-4" />
+                    <span className="sm:hidden">Sammanfattning</span>
+                    <span className="hidden sm:inline">Se fullständig sammanfattning</span>
+                    <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
                   </button>
                 </div>
 
                 {/* Expanded Details */}
                 {isExpanded && (
-                  <div className="mt-4 space-y-4">
+                  <div className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
                     {Object.entries(exercisesBySets).map(([exerciseName, sets]) => (
-                      <div key={exerciseName} className="bg-black/20 rounded-xl p-4">
-                        <h4 className="text-white font-semibold mb-3">{exerciseName}</h4>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div key={exerciseName} className="bg-black/20 rounded-lg sm:rounded-xl p-3 sm:p-4">
+                        <h4 className="text-white font-semibold mb-2 sm:mb-3 text-sm sm:text-base">{exerciseName}</h4>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
                           {sets.map((set, idx) => (
                             <div
                               key={idx}
-                              className="bg-white/5 rounded-lg p-3 border border-gold-primary/20"
+                              className="bg-white/5 rounded-lg p-2 sm:p-3 border border-gold-primary/20"
                             >
-                              <div className="text-xs text-gray-400 mb-1">Set {set.setNumber}</div>
-                              <div className="text-white font-medium">
+                              <div className="text-[10px] sm:text-xs text-gray-400 mb-0.5 sm:mb-1">Set {set.setNumber}</div>
+                              <div className="text-white font-medium text-xs sm:text-sm">
                                 {set.reps && set.weightKg && (
-                                  <span>{set.reps} reps × {set.weightKg} kg</span>
+                                  <span>{set.reps}×{set.weightKg}kg</span>
                                 )}
                                 {set.timeSeconds && (
                                   <span>{set.timeSeconds}s</span>

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, BarChart3, Plus, Info, ChevronUp, ChevronDown, RotateCcw } from 'lucide-react'
+import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, Plus, Info, ChevronUp, ChevronDown, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
 import { MDXPreview } from '@/components/mdx-preview'
 
@@ -240,13 +240,7 @@ export default function WorkoutPage() {
         <Link href="/dashboard/workout/records">
           <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
             <Trophy className="w-4 h-4 mr-2" />
-            Rekord
-          </Button>
-        </Link>
-        <Link href="/dashboard/analytics">
-          <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
-            <BarChart3 className="w-4 h-4 mr-2" />
-            Analytics
+            Personbästa
           </Button>
         </Link>
         <Link href="/dashboard/workout/history">
