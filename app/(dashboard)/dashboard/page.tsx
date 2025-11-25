@@ -106,15 +106,15 @@ export default function DashboardPage() {
     return (
       <div className="space-y-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-6 opacity-20" />
-          <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-3">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-4 sm:mb-6 opacity-20" />
+          <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-3 sm:mb-4">
             Dashboard
           </h1>
-          <p className="text-gray-400 text-sm tracking-[1px]">
+          <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
             Översikt över din coaching-verksamhet
           </p>
-          <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-4 sm:mt-6 opacity-20" />
         </div>
 
         {/* Quick Stats */}
@@ -283,15 +283,15 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
-      <div className="text-center">
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-6 opacity-20" />
-        <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-3">
+      <div className="text-center mb-6 sm:mb-8">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-4 sm:mb-6 opacity-20" />
+        <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-3 sm:mb-4">
           Välkommen {session?.user?.name?.split(' ')[0] || 'Champion'}!
         </h1>
-        <p className="text-gray-400 text-sm tracking-[1px]">
+        <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
           Din översikt för 90-Dagars Challenge
         </p>
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-4 sm:mt-6 opacity-20" />
       </div>
 
       {/* Quick Tips Section */}
