@@ -7,9 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, Plus, Info, ChevronUp, ChevronDown, RotateCcw, Flame } from 'lucide-react'
+import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, Plus, Info, ChevronUp, ChevronDown, RotateCcw, Flame, X } from 'lucide-react'
 import Link from 'next/link'
 import { MDXPreview } from '@/components/mdx-preview'
+import { VideoPlayer } from '@/components/ui/video-player'
 
 interface WorkoutDay {
   id: string
@@ -81,6 +82,7 @@ export default function WorkoutPage() {
   const [loading, setLoading] = useState(true)
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set()) // All days closed by default
   const [warmupExpanded, setWarmupExpanded] = useState(false)
+  const [activeWarmupVideo, setActiveWarmupVideo] = useState<string | null>(null) // Track which warmup video is playing
   const [workoutGuideContent, setWorkoutGuideContent] = useState<string>('')
   const [incompleteSessions, setIncompleteSessions] = useState<Record<string, boolean>>({}) // dayId -> has incomplete session
 
@@ -346,34 +348,59 @@ export default function WorkoutPage() {
 
                   {/* Exercise list */}
                   {workoutProgram.warmupRoutine.exercises.length > 0 && (
-                    <div className="space-y-2 my-3">
+                    <div className="space-y-3 my-3">
                       {workoutProgram.warmupRoutine.exercises.map((exercise, idx) => (
                         <div
                           key={exercise.id}
-                          className="flex items-center justify-between p-3 bg-black/20 rounded-lg border border-orange-500/20"
+                          className="bg-black/20 rounded-lg border border-orange-500/20 overflow-hidden"
                         >
-                          <span className="text-gray-200 flex items-center gap-3">
-                            <span className="flex items-center justify-center w-7 h-7 rounded-full bg-orange-500/30 text-orange-300 font-bold text-sm">
-                              {idx + 1}
+                          <div className="flex items-center justify-between p-3">
+                            <span className="text-gray-200 flex items-center gap-3">
+                              <span className="flex items-center justify-center w-7 h-7 rounded-full bg-orange-500/30 text-orange-300 font-bold text-sm">
+                                {idx + 1}
+                              </span>
+                              <span>
+                                {exercise.name}
+                                {exercise.reps && (
+                                  <span className="text-orange-300 ml-2">{exercise.reps}</span>
+                                )}
+                              </span>
                             </span>
-                            <span>
-                              {exercise.name}
-                              {exercise.reps && (
-                                <span className="text-orange-300 ml-2">{exercise.reps}</span>
-                              )}
-                            </span>
-                          </span>
-                          {exercise.videoUrl && (
-                            <a
-                              href={exercise.videoUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/20 border border-purple-500/40 text-purple-300 rounded-md text-xs font-semibold hover:bg-purple-500/30 transition-colors"
-                            >
-                              <Play className="w-3 h-3" />
-                              VIDEO
-                            </a>
+                            {exercise.videoUrl && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setActiveWarmupVideo(activeWarmupVideo === exercise.id ? null : exercise.id)
+                                }}
+                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-md text-xs font-semibold transition-colors ${
+                                  activeWarmupVideo === exercise.id
+                                    ? 'bg-purple-500/40 border-purple-400 text-purple-200'
+                                    : 'bg-purple-500/20 border-purple-500/40 text-purple-300 hover:bg-purple-500/30'
+                                }`}
+                              >
+                                {activeWarmupVideo === exercise.id ? (
+                                  <>
+                                    <X className="w-3 h-3" />
+                                    STÄNG
+                                  </>
+                                ) : (
+                                  <>
+                                    <Play className="w-3 h-3" />
+                                    VIDEO
+                                  </>
+                                )}
+                              </button>
+                            )}
+                          </div>
+                          {/* Inline video player */}
+                          {activeWarmupVideo === exercise.id && exercise.videoUrl && (
+                            <div className="px-3 pb-3">
+                              <VideoPlayer
+                                videoUrl={exercise.videoUrl}
+                                title={exercise.name}
+                                className="w-full rounded-lg overflow-hidden"
+                              />
+                            </div>
                           )}
                         </div>
                       ))}
