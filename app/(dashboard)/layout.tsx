@@ -76,7 +76,7 @@ const navigation = [
   { name: 'Kostschema', href: '/dashboard/meal-plan', icon: Utensils, clientOnly: true },
   { name: 'Träningsprogram', href: '/dashboard/workout', icon: Dumbbell, clientOnly: true },
   { name: 'Check-in', href: '/dashboard/check-in', icon: Calendar, clientOnly: true },
-  { name: 'Progress', href: '/dashboard/progress', icon: TrendingUp, clientOnly: true },
+  { name: 'Framsteg', href: '/dashboard/progress', icon: TrendingUp, clientOnly: true },
   { name: 'Meddelanden', href: '/dashboard/messages', icon: MessageSquare },
   { name: 'Profile', href: '/dashboard/profile', icon: User },
 ]
