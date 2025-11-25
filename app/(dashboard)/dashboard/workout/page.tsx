@@ -430,6 +430,7 @@ export default function WorkoutPage() {
                                 videoUrl={exercise.videoUrl}
                                 title={exercise.name}
                                 className="w-full rounded-lg overflow-hidden"
+                                autoPlay={true}
                               />
                             </div>
                           )}

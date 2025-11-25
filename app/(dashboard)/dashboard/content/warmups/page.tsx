@@ -112,17 +112,17 @@ export default function WarmupsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-4">
           <Link href="/dashboard/content">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-white/10">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Tillbaka
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
               <Flame className="w-7 h-7 text-orange-500" />
               Uppvärmningar
             </h1>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-400 text-sm">
               Hantera uppvärmningsrutiner för träningsprogram
             </p>
           </div>

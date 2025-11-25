@@ -9,10 +9,11 @@ interface VideoPlayerProps {
   thumbnailUrl?: string | null
   title?: string
   className?: string
+  autoPlay?: boolean
 }
 
-export function VideoPlayer({ videoUrl, thumbnailUrl, title, className = '' }: VideoPlayerProps) {
-  const [isPlaying, setIsPlaying] = useState(false)
+export function VideoPlayer({ videoUrl, thumbnailUrl, title, className = '', autoPlay = false }: VideoPlayerProps) {
+  const [isPlaying, setIsPlaying] = useState(autoPlay)
 
   if (!videoUrl) return null
 
