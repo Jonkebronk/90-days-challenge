@@ -67,14 +67,17 @@ export default function ArticlesPage() {
     <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="text-center mb-6 sm:mb-8">
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-4 sm:mb-6 opacity-20" />
-        <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-4xl md:text-5xl font-black tracking-[2px] sm:tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent mb-2 sm:mb-3">
-          Kunskapsbanken
-        </h1>
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
+        <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+          <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 text-gold-light" />
+          <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
+            Kunskapsbanken
+          </h1>
+        </div>
         <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
           Utforska artiklar organiserade efter kategori
         </p>
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-4 sm:mt-6 opacity-20" />
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
 
       {/* Category Grid */}
