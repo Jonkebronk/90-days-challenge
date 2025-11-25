@@ -24,7 +24,6 @@ type CheckIn = {
 
 export default function CheckInPage() {
   const { data: session } = useSession()
-  const [showCheckIn, setShowCheckIn] = useState(false)
   const [showStartCheckIn, setShowStartCheckIn] = useState(false)
   const [hasStartCheckIn, setHasStartCheckIn] = useState(false)
   const [checkIns, setCheckIns] = useState<CheckIn[]>([])
@@ -130,16 +129,6 @@ export default function CheckInPage() {
     )
   }
 
-  // Client view - Allow regular check-in after start check-in
-  if (showCheckIn && session?.user) {
-    return (
-      <CheckInFlow
-        userId={session.user.id!}
-        userName={session.user.name || 'User'}
-        onClose={() => setShowCheckIn(false)}
-      />
-    )
-  }
 
   if (isLoading) {
     return (
@@ -197,19 +186,14 @@ export default function CheckInPage() {
             </Button>
           </div>
         ) : (
-          // Show regular check-in card if start check-in is completed
-          <div className="bg-white border border-gray-200 rounded-xl hover:border-gold-primary hover:shadow-lg transition-all p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Veckovis Check-in</h2>
-            <p className="text-gray-600 mb-6">
-              Det är dags för din veckovisa check-in. Klicka nedan för att börja.
-            </p>
-            <Button
-              onClick={() => setShowCheckIn(true)}
-              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-500 text-white font-semibold"
-            >
-              Starta Check-in
-            </Button>
-          </div>
+          // Show CheckInFlow directly if start check-in is completed
+          <CheckInFlow
+            userId={session?.user?.id!}
+            userName={session?.user?.name || 'User'}
+            onClose={() => {
+              // Stay on page when closing
+            }}
+          />
         )}
       </div>
     </div>
