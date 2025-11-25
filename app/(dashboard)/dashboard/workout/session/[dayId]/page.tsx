@@ -50,31 +50,12 @@ interface Exercise {
   }
 }
 
-interface WarmupExercise {
-  id: string
-  orderIndex: number
-  name: string
-  reps: string | null
-  videoUrl: string | null
-}
-
-interface WarmupRoutine {
-  id: string
-  name: string
-  introText: string | null
-  outroText: string | null
-  exercises: WarmupExercise[]
-}
-
 interface WorkoutDay {
   id: string
   name: string
   dayNumber: number
   description: string | null
   exercises: Exercise[]
-  workoutProgram?: {
-    warmupRoutine: WarmupRoutine | null
-  }
 }
 
 interface SetLog {
@@ -664,71 +645,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           </Button>
         )}
       </div>
-
-      {/* Warm-up Instructions - Dynamic from program's warmup routine */}
-      {sessionId && workoutDay?.workoutProgram?.warmupRoutine && (
-        <Card className="bg-gradient-to-br from-orange-500/10 to-red-500/10 border-2 border-orange-500/30 backdrop-blur-[10px]">
-          <CardContent className="pt-6">
-            <div className="flex items-start gap-4">
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-orange-400 mb-3 tracking-wide">
-                  UPPVÄRMNING
-                </h3>
-                <div className="space-y-4 text-gray-200">
-                  {/* Intro text */}
-                  {workoutDay.workoutProgram.warmupRoutine.introText && (
-                    <p className="text-sm leading-relaxed whitespace-pre-line">
-                      {workoutDay.workoutProgram.warmupRoutine.introText}
-                    </p>
-                  )}
-
-                  {/* Exercise list with video buttons */}
-                  {workoutDay.workoutProgram.warmupRoutine.exercises.length > 0 && (
-                    <div className="space-y-2 my-4">
-                      {workoutDay.workoutProgram.warmupRoutine.exercises.map((exercise, idx) => (
-                        <div
-                          key={exercise.id}
-                          className="flex items-center justify-between p-3 bg-black/20 rounded-lg border border-orange-500/20"
-                        >
-                          <span className="text-gray-200 flex items-center gap-3">
-                            <span className="flex items-center justify-center w-7 h-7 rounded-full bg-orange-500/30 text-orange-300 font-bold text-sm">
-                              {idx + 1}
-                            </span>
-                            <span>
-                              {exercise.name}
-                              {exercise.reps && (
-                                <span className="text-orange-300 ml-2">{exercise.reps}</span>
-                              )}
-                            </span>
-                          </span>
-                          {exercise.videoUrl && (
-                            <a
-                              href={exercise.videoUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/20 border border-purple-500/40 text-purple-300 rounded-md text-xs font-semibold hover:bg-purple-500/30 transition-colors"
-                            >
-                              <Play className="w-3 h-3" />
-                              VIDEO
-                            </a>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Outro text */}
-                  {workoutDay.workoutProgram.warmupRoutine.outroText && (
-                    <p className="text-sm leading-relaxed whitespace-pre-line">
-                      {workoutDay.workoutProgram.warmupRoutine.outroText}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Previous Session Data */}
       {sessionId && previousSessionData && workoutDay && (
