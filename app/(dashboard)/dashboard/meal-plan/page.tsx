@@ -330,19 +330,24 @@ export default function MealPlanPage() {
 
                     {/* Ingredient Sources */}
                     {(meal.carbSource || meal.proteinSource || meal.fatSource) && (
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         {meal.carbSource && (
-                          <div className="bg-[rgba(255,215,0,0.05)] border border-gold-primary/20 rounded-lg p-3">
-                            <p className="text-xs text-gray-400 mb-2 font-semibold uppercase tracking-wide">🌾 Kolhydratskälla</p>
-                            <ul className="text-sm text-gray-300 space-y-1">
+                          <div className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/30 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                              <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                                <span className="text-lg">🌾</span>
+                              </div>
+                              <p className="text-sm font-bold text-amber-400 uppercase tracking-wide">Kolhydrater</p>
+                            </div>
+                            <ul className="text-sm text-gray-200 space-y-2">
                               {meal.carbSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                 <li key={idx}>
                                   <div className="flex items-start gap-2">
-                                    <span className="text-gold-light mt-0.5">•</span>
-                                    <span>{item.trim()}</span>
+                                    <span className="text-amber-400 mt-0.5">•</span>
+                                    <span className="leading-tight">{item.trim()}</span>
                                   </div>
                                   {idx < arr.length - 1 && (
-                                    <p className="text-xs text-gold-light font-semibold my-1 ml-6">ELLER</p>
+                                    <p className="text-xs text-amber-400/70 font-medium my-2 ml-4 uppercase">eller</p>
                                   )}
                                 </li>
                               ))}
@@ -350,17 +355,22 @@ export default function MealPlanPage() {
                           </div>
                         )}
                         {meal.proteinSource && (
-                          <div className="bg-[rgba(59,130,246,0.05)] border border-blue-500/20 rounded-lg p-3">
-                            <p className="text-xs text-gray-400 mb-2 font-semibold uppercase tracking-wide">🥩 Proteinkälla</p>
-                            <ul className="text-sm text-gray-300 space-y-1">
+                          <div className="bg-gradient-to-br from-red-500/10 to-red-600/5 border border-red-500/30 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                              <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center">
+                                <span className="text-lg">🥩</span>
+                              </div>
+                              <p className="text-sm font-bold text-red-400 uppercase tracking-wide">Protein</p>
+                            </div>
+                            <ul className="text-sm text-gray-200 space-y-2">
                               {meal.proteinSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                 <li key={idx}>
                                   <div className="flex items-start gap-2">
-                                    <span className="text-blue-400 mt-0.5">•</span>
-                                    <span>{item.trim()}</span>
+                                    <span className="text-red-400 mt-0.5">•</span>
+                                    <span className="leading-tight">{item.trim()}</span>
                                   </div>
                                   {idx < arr.length - 1 && (
-                                    <p className="text-xs text-blue-400 font-semibold my-1 ml-6">ELLER</p>
+                                    <p className="text-xs text-red-400/70 font-medium my-2 ml-4 uppercase">eller</p>
                                   )}
                                 </li>
                               ))}
@@ -368,17 +378,22 @@ export default function MealPlanPage() {
                           </div>
                         )}
                         {meal.fatSource && (
-                          <div className="bg-[rgba(34,197,94,0.05)] border border-green-500/20 rounded-lg p-3">
-                            <p className="text-xs text-gray-400 mb-2 font-semibold uppercase tracking-wide">🥑 Fettkälla</p>
-                            <ul className="text-sm text-gray-300 space-y-1">
+                          <div className="bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/30 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                              <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                                <span className="text-lg">🥑</span>
+                              </div>
+                              <p className="text-sm font-bold text-green-400 uppercase tracking-wide">Fett</p>
+                            </div>
+                            <ul className="text-sm text-gray-200 space-y-2">
                               {meal.fatSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                 <li key={idx}>
                                   <div className="flex items-start gap-2">
                                     <span className="text-green-400 mt-0.5">•</span>
-                                    <span>{item.trim()}</span>
+                                    <span className="leading-tight">{item.trim()}</span>
                                   </div>
                                   {idx < arr.length - 1 && (
-                                    <p className="text-xs text-green-400 font-semibold my-1 ml-6">ELLER</p>
+                                    <p className="text-xs text-green-400/70 font-medium my-2 ml-4 uppercase">eller</p>
                                   )}
                                 </li>
                               ))}
@@ -457,24 +472,24 @@ export default function MealPlanPage() {
                     ))}
 
                     {/* Meal Totals */}
-                    <div className="bg-[rgba(255,215,0,0.05)] rounded-lg p-3 mt-4">
-                      <p className="text-xs text-gray-400 mb-2">Totalt för måltid {meal.mealNumber}</p>
-                      <div className="grid grid-cols-4 gap-2 text-sm">
-                        <div>
-                          <span className="text-gray-400 text-xs">Protein:</span>
-                          <p className="font-bold text-gray-100">{meal.totalProtein?.toFixed(1)}g</p>
+                    <div className="bg-gradient-to-r from-gold-primary/10 to-transparent border border-gold-primary/20 rounded-xl p-4 mt-6">
+                      <p className="text-sm font-semibold text-gold-light mb-3">Näringsvärden för måltid {meal.mealNumber}</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div className="text-center p-3 bg-black/20 rounded-lg">
+                          <span className="text-red-400 text-xs font-medium block mb-1">Protein</span>
+                          <p className="text-xl font-bold text-white">{meal.totalProtein?.toFixed(0) || 0}<span className="text-sm text-gray-400 ml-0.5">g</span></p>
                         </div>
-                        <div>
-                          <span className="text-gray-400 text-xs">Fett:</span>
-                          <p className="font-bold text-gray-100">{meal.totalFat?.toFixed(1)}g</p>
+                        <div className="text-center p-3 bg-black/20 rounded-lg">
+                          <span className="text-green-400 text-xs font-medium block mb-1">Fett</span>
+                          <p className="text-xl font-bold text-white">{meal.totalFat?.toFixed(0) || 0}<span className="text-sm text-gray-400 ml-0.5">g</span></p>
                         </div>
-                        <div>
-                          <span className="text-gray-400 text-xs">Kolhydrater:</span>
-                          <p className="font-bold text-gray-100">{meal.totalCarbs?.toFixed(1)}g</p>
+                        <div className="text-center p-3 bg-black/20 rounded-lg">
+                          <span className="text-amber-400 text-xs font-medium block mb-1">Kolhydrater</span>
+                          <p className="text-xl font-bold text-white">{meal.totalCarbs?.toFixed(0) || 0}<span className="text-sm text-gray-400 ml-0.5">g</span></p>
                         </div>
-                        <div>
-                          <span className="text-gray-400 text-xs">Kcal:</span>
-                          <p className="font-bold text-gray-100">{meal.totalCalories?.toFixed(0)}</p>
+                        <div className="text-center p-3 bg-black/20 rounded-lg">
+                          <span className="text-gold-light text-xs font-medium block mb-1">Kalorier</span>
+                          <p className="text-xl font-bold text-white">{meal.totalCalories?.toFixed(0) || 0}<span className="text-sm text-gray-400 ml-0.5">kcal</span></p>
                         </div>
                       </div>
                     </div>
