@@ -149,7 +149,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 1: Welcome
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <div className="relative mb-6">
@@ -192,7 +192,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 2: Status
   if (step === 2) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(1)} />
@@ -247,7 +247,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     ]
 
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(2)} />
@@ -333,7 +333,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     ]
 
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(3)} />
@@ -398,7 +398,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 5: Formbilder
   if (step === 5) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(4)} />
@@ -625,7 +625,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 6: Training Adherence
   if (step === 6) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(5)} />
@@ -678,7 +678,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 7: Training Comments
   if (step === 7) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(6)} />
@@ -723,7 +723,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 8: Diet Adherence
   if (step === 8) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(7)} />
@@ -776,7 +776,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 9: Diet Comments
   if (step === 9) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(8)} />
@@ -821,7 +821,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   // Step 10: Other Comments & Submit
   if (step === 10) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(9)} />
