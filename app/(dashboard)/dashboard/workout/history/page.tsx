@@ -202,7 +202,7 @@ export default function WorkoutHistoryPage() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+        <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
           <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-6 backdrop-blur-[10px]">
             <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
@@ -224,18 +224,6 @@ export default function WorkoutHistoryPage() {
             </div>
             <div className="text-2xl sm:text-3xl font-bold text-white">
               {stats.totalSets}
-            </div>
-          </div>
-
-          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-6 backdrop-blur-[10px]">
-            <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center">
-                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              </div>
-              <div className="text-gray-400 text-xs sm:text-sm">Volym</div>
-            </div>
-            <div className="text-xl sm:text-3xl font-bold text-white">
-              {stats.totalVolume.toLocaleString('sv-SE')}
             </div>
           </div>
 
@@ -427,12 +415,6 @@ export default function WorkoutHistoryPage() {
                     <div className="text-gray-400 text-xs sm:text-sm mb-0.5 sm:mb-1">Set</div>
                     <div className="text-base sm:text-lg font-semibold text-white">
                       {session.sets.filter(s => s.completed).length}
-                    </div>
-                  </div>
-                  <div className="bg-white/5 rounded-lg sm:rounded-xl p-2 sm:p-4">
-                    <div className="text-gray-400 text-xs sm:text-sm mb-0.5 sm:mb-1">Volym</div>
-                    <div className="text-sm sm:text-lg font-semibold text-white">
-                      {calculateSessionVolume(session.sets).toLocaleString('sv-SE')}
                     </div>
                   </div>
                 </div>
