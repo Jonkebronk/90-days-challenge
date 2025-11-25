@@ -94,3 +94,47 @@ export async function PATCH(
     )
   }
 }
+
+// Delete/cancel a workout session
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const userId = (session.user as any).id
+    const { id } = await params
+
+    // Verify session belongs to user
+    const workoutSession = await prisma.workoutSessionLog.findUnique({
+      where: { id },
+      select: { userId: true }
+    })
+
+    if (!workoutSession) {
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+    }
+
+    if (workoutSession.userId !== userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    }
+
+    // Delete the session (sets are cascade deleted via Prisma schema)
+    await prisma.workoutSessionLog.delete({
+      where: { id }
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting workout session:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete workout session' },
+      { status: 500 }
+    )
+  }
+}

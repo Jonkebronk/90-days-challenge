@@ -117,6 +117,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [deletingSet, setDeletingSet] = useState<SetLog | null>(null)
   const [isUpdatingSet, setIsUpdatingSet] = useState(false)
 
+  // Cancel/abandon session state
+  const [showCancelModal, setShowCancelModal] = useState(false)
+  const [isCancelling, setIsCancelling] = useState(false)
+
   useEffect(() => {
     const loadData = async () => {
       const { dayId: id } = await params
@@ -481,6 +485,27 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     }
   }
 
+  // Cancel/abandon the current session
+  const cancelSession = async () => {
+    if (!sessionId) return
+
+    setIsCancelling(true)
+    try {
+      const response = await fetch(`/api/workout-sessions/${sessionId}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        setShowCancelModal(false)
+        router.push('/dashboard/workout')
+      }
+    } catch (error) {
+      console.error('Error cancelling session:', error)
+    } finally {
+      setIsCancelling(false)
+    }
+  }
+
   const completeWorkout = () => {
     // Show rating modal instead of directly completing
     setShowRatingModal(true)
@@ -610,6 +635,16 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             </p>
           </div>
         </div>
+        {sessionId && (
+          <Button
+            variant="ghost"
+            onClick={() => setShowCancelModal(true)}
+            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+          >
+            <X className="w-4 h-4 mr-2" />
+            Avbryt pass
+          </Button>
+        )}
       </div>
 
       {/* Warm-up Instructions */}
@@ -1198,6 +1233,58 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   disabled={isUpdatingSet}
                 >
                   {isUpdatingSet ? 'Tar bort...' : 'Ta bort'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Cancel Session Confirmation Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-red-500/30 backdrop-blur-[10px] w-full max-w-md">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-white flex items-center gap-2">
+                  <X className="w-5 h-5 text-red-400" />
+                  Avbryt träningspass?
+                </CardTitle>
+                <button
+                  onClick={() => setShowCancelModal(false)}
+                  className="text-gray-500 hover:text-gray-200"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-gray-300">
+                Är du säker på att du vill avbryta detta pass? Alla loggade sets kommer att tas bort.
+              </p>
+              {Object.values(setLogs).flat().length > 0 && (
+                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                  <p className="text-red-300 text-sm">
+                    Du har loggat {Object.values(setLogs).flat().length} set som kommer att raderas.
+                  </p>
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  onClick={() => setShowCancelModal(false)}
+                  variant="outline"
+                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-gray-500/30 text-gray-200 hover:bg-[rgba(255,255,255,0.1)]"
+                  disabled={isCancelling}
+                >
+                  Fortsätt träna
+                </Button>
+                <Button
+                  onClick={cancelSession}
+                  className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white hover:opacity-90"
+                  disabled={isCancelling}
+                >
+                  {isCancelling ? 'Avbryter...' : 'Avbryt pass'}
                 </Button>
               </div>
             </CardContent>
