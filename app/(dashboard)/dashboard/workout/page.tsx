@@ -12,6 +12,37 @@ import Link from 'next/link'
 import { MDXPreview } from '@/components/mdx-preview'
 import { VideoPlayer } from '@/components/ui/video-player'
 
+// Helper to render text with markdown links [text](url)
+function renderTextWithLinks(text: string) {
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
+  const parts: (string | JSX.Element)[] = []
+  let lastIndex = 0
+  let match
+
+  while ((match = linkRegex.exec(text)) !== null) {
+    // Add text before the link
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index))
+    }
+    // Add the link
+    parts.push(
+      <Link
+        key={match.index}
+        href={match[2]}
+        className="text-orange-400 hover:text-orange-300 underline underline-offset-2"
+      >
+        {match[1]}
+      </Link>
+    )
+    lastIndex = match.index + match[0].length
+  }
+  // Add remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex))
+  }
+  return parts.length > 0 ? parts : text
+}
+
 interface WorkoutDay {
   id: string
   dayNumber: number
@@ -341,9 +372,9 @@ export default function WorkoutPage() {
                 <div className="space-y-3">
                   {/* Intro text */}
                   {workoutProgram.warmupRoutine.introText && (
-                    <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
-                      {workoutProgram.warmupRoutine.introText}
-                    </p>
+                    <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                      {renderTextWithLinks(workoutProgram.warmupRoutine.introText)}
+                    </div>
                   )}
 
                   {/* Exercise list */}
@@ -409,9 +440,9 @@ export default function WorkoutPage() {
 
                   {/* Outro text */}
                   {workoutProgram.warmupRoutine.outroText && (
-                    <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
-                      {workoutProgram.warmupRoutine.outroText}
-                    </p>
+                    <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                      {renderTextWithLinks(workoutProgram.warmupRoutine.outroText)}
+                    </div>
                   )}
                 </div>
               </CardContent>
