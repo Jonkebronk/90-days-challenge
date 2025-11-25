@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "sonner";
 import SessionProvider from "@/components/providers/SessionProvider";
 import { constructMetadata } from "@/lib/metadata";
 import { PWARegister } from "@/components/pwa-register";
+import { PullToRefresh } from "@/components/pull-to-refresh";
 
 export const metadata: Metadata = constructMetadata({
   title: "90-Dagars Utmaningen - Transform Din Kropp & Hälsa",
@@ -34,7 +35,9 @@ export default function RootLayout({
         <SessionProvider>
           {/* <PWARegister /> */}
           {/* Temporarily disabled to fix cache issues */}
-          {children}
+          <PullToRefresh>
+            {children}
+          </PullToRefresh>
           <Toaster />
           <Sonner />
         </SessionProvider>
