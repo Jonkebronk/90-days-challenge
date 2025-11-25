@@ -50,12 +50,31 @@ interface Exercise {
   }
 }
 
+interface WarmupExercise {
+  id: string
+  orderIndex: number
+  name: string
+  reps: string | null
+  videoUrl: string | null
+}
+
+interface WarmupRoutine {
+  id: string
+  name: string
+  introText: string | null
+  outroText: string | null
+  exercises: WarmupExercise[]
+}
+
 interface WorkoutDay {
   id: string
   name: string
   dayNumber: number
   description: string | null
   exercises: Exercise[]
+  workoutProgram?: {
+    warmupRoutine: WarmupRoutine | null
+  }
 }
 
 interface SetLog {
@@ -646,8 +665,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         )}
       </div>
 
-      {/* Warm-up Instructions */}
-      {sessionId && (
+      {/* Warm-up Instructions - Dynamic from program's warmup routine */}
+      {sessionId && workoutDay?.workoutProgram?.warmupRoutine && (
         <Card className="bg-gradient-to-br from-orange-500/10 to-red-500/10 border-2 border-orange-500/30 backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <div className="flex items-start gap-4">
@@ -655,21 +674,55 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                 <h3 className="text-xl font-bold text-orange-400 mb-3 tracking-wide">
                   UPPVÄRMNING
                 </h3>
-                <div className="space-y-3 text-gray-200">
-                  <p className="text-sm leading-relaxed">
-                    Inför din första övning så vill jag att du gör lättare uppvärmningsset för att stegra vikten till ditt arbetsset. Under stegringen i vikt ska du ha ett fokus på att börja bana in rörelsen och göra allt så perfekt du kan teknikmässigt.
-                  </p>
-                  <p className="text-sm leading-relaxed">
-                    Du kan upprepa detta inför muskelgrupper där du inte känner dig tillräcklig varm eller vill finslipa tekniken innan arbetsseten.
-                  </p>
-                  <div className="mt-4">
-                    <Link
-                      href="/dashboard/articles/cmhsau6kk0039qf0qiciv00bt"
-                      className="inline-flex items-center gap-2 text-sm text-orange-300 hover:text-orange-200 underline underline-offset-4 transition-colors"
-                    >
-                      Läs mer om uppvärmning här
-                    </Link>
-                  </div>
+                <div className="space-y-4 text-gray-200">
+                  {/* Intro text */}
+                  {workoutDay.workoutProgram.warmupRoutine.introText && (
+                    <p className="text-sm leading-relaxed whitespace-pre-line">
+                      {workoutDay.workoutProgram.warmupRoutine.introText}
+                    </p>
+                  )}
+
+                  {/* Exercise list with video buttons */}
+                  {workoutDay.workoutProgram.warmupRoutine.exercises.length > 0 && (
+                    <div className="space-y-2 my-4">
+                      {workoutDay.workoutProgram.warmupRoutine.exercises.map((exercise, idx) => (
+                        <div
+                          key={exercise.id}
+                          className="flex items-center justify-between p-3 bg-black/20 rounded-lg border border-orange-500/20"
+                        >
+                          <span className="text-gray-200 flex items-center gap-3">
+                            <span className="flex items-center justify-center w-7 h-7 rounded-full bg-orange-500/30 text-orange-300 font-bold text-sm">
+                              {idx + 1}
+                            </span>
+                            <span>
+                              {exercise.name}
+                              {exercise.reps && (
+                                <span className="text-orange-300 ml-2">{exercise.reps}</span>
+                              )}
+                            </span>
+                          </span>
+                          {exercise.videoUrl && (
+                            <a
+                              href={exercise.videoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/20 border border-purple-500/40 text-purple-300 rounded-md text-xs font-semibold hover:bg-purple-500/30 transition-colors"
+                            >
+                              <Play className="w-3 h-3" />
+                              VIDEO
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Outro text */}
+                  {workoutDay.workoutProgram.warmupRoutine.outroText && (
+                    <p className="text-sm leading-relaxed whitespace-pre-line">
+                      {workoutDay.workoutProgram.warmupRoutine.outroText}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

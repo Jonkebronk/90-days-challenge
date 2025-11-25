@@ -12,7 +12,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ProgramInfo } from './types'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Flame } from 'lucide-react'
+import Link from 'next/link'
 
 interface ProgramInfoStepProps {
   data: ProgramInfo
@@ -23,9 +24,11 @@ interface ProgramInfoStepProps {
 export function ProgramInfoStep({ data, onChange, onNext }: ProgramInfoStepProps) {
   const canProceed = data.name.trim().length > 0
   const [categories, setCategories] = useState<any[]>([])
+  const [warmups, setWarmups] = useState<any[]>([])
 
   useEffect(() => {
     fetchCategories()
+    fetchWarmups()
   }, [])
 
   const fetchCategories = async () => {
@@ -37,6 +40,18 @@ export function ProgramInfoStep({ data, onChange, onNext }: ProgramInfoStepProps
       }
     } catch (error) {
       console.error('Error fetching categories:', error)
+    }
+  }
+
+  const fetchWarmups = async () => {
+    try {
+      const response = await fetch('/api/admin/warmups')
+      if (response.ok) {
+        const data = await response.json()
+        setWarmups(data.warmups || [])
+      }
+    } catch (error) {
+      console.error('Error fetching warmups:', error)
     }
   }
 
@@ -121,6 +136,41 @@ export function ProgramInfoStep({ data, onChange, onNext }: ProgramInfoStepProps
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <Label className="text-[rgba(255,255,255,0.7)] flex items-center gap-2">
+              <Flame className="w-4 h-4 text-orange-500" />
+              Uppvärmning
+            </Label>
+            <div className="flex gap-2 mt-1">
+              <Select value={data.warmupRoutineId || 'none'} onValueChange={(value) => onChange('warmupRoutineId', value === 'none' ? undefined : value)}>
+                <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                  <SelectValue placeholder="Välj uppvärmning (valfritt)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Ingen uppvärmning</SelectItem>
+                  {warmups.map((warmup) => (
+                    <SelectItem key={warmup.id} value={warmup.id}>
+                      {warmup.name} ({warmup.exercises.length} övningar)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Link href="/dashboard/content/warmups">
+                <Button variant="outline" size="icon" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-orange-400 hover:bg-orange-500/20">
+                  <Flame className="w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
+            {warmups.length === 0 && (
+              <p className="text-xs text-gray-400 mt-1">
+                Inga uppvärmningar skapade ännu.{' '}
+                <Link href="/dashboard/content/warmups/create" className="text-orange-400 hover:underline">
+                  Skapa en uppvärmning
+                </Link>
+              </p>
+            )}
           </div>
 
           <div className="flex items-center gap-2">

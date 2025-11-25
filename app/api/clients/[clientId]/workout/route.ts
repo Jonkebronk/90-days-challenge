@@ -25,6 +25,15 @@ export async function GET(
       include: {
         workoutProgram: {
           include: {
+            warmupRoutine: {
+              include: {
+                exercises: {
+                  orderBy: {
+                    orderIndex: 'asc'
+                  }
+                }
+              }
+            },
             weeks: {
               include: {
                 days: {

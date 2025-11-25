@@ -41,6 +41,7 @@ export interface ProgramInfo {
   description: string
   difficulty: string
   categoryId?: string
+  warmupRoutineId?: string
   durationWeeks: number | null
   published: boolean
 }

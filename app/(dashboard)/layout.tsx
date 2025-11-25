@@ -34,7 +34,8 @@ import {
   MessageSquare,
   HelpCircle,
   ShoppingCart,
-  Apple
+  Apple,
+  Flame
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
@@ -67,6 +68,7 @@ const navigation = [
       { name: 'Vanliga frågor', href: '/dashboard/content/faqs', icon: HelpCircle },
       { name: 'Övningar', href: '/dashboard/content/exercises', icon: Activity },
       { name: 'Träningsprogram', href: '/dashboard/content/workout-programs', icon: Zap },
+      { name: 'Uppvärmningar', href: '/dashboard/content/warmups', icon: Flame },
       { name: 'Träningskategorier', href: '/dashboard/content/workout-categories', icon: FolderOpen },
     ]
   },

@@ -19,6 +19,19 @@ export async function GET(
     const day = await prisma.workoutProgramDay.findUnique({
       where: { id },
       include: {
+        workoutProgram: {
+          include: {
+            warmupRoutine: {
+              include: {
+                exercises: {
+                  orderBy: {
+                    orderIndex: 'asc'
+                  }
+                }
+              }
+            }
+          }
+        },
         exercises: {
           include: {
             exercise: true

@@ -501,6 +501,10 @@ model WorkoutProgram {
   published  Boolean @default(false)
   isTemplate Boolean @default(true) // True for reusable templates
 
+  // Warmup routine
+  warmupRoutineId String?
+  warmupRoutine   WarmupRoutine? @relation(fields: [warmupRoutineId], references: [id], onDelete: SetNull)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1827,4 +1831,41 @@ model NutritionItem {
 
   @@index([categoryId, order])
   @@map("nutrition_items")
+}
+
+// ========================================
+// Warmup Routines (Uppvärmning)
+// ========================================
+
+model WarmupRoutine {
+  id          String  @id @default(cuid())
+  name        String // "Standard Uppvärmning", "Bendag Uppvärmning"
+  description String? @db.Text
+  introText   String? @db.Text // Inledande text om uppvärmning
+  outroText   String? @db.Text // Avslutande instruktioner
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  exercises WarmupExercise[]
+  programs  WorkoutProgram[] // Programs using this warmup
+
+  @@map("warmup_routines")
+}
+
+model WarmupExercise {
+  id              String @id @default(cuid())
+  warmupRoutineId String
+  warmupRoutine   WarmupRoutine @relation(fields: [warmupRoutineId], references: [id], onDelete: Cascade)
+
+  orderIndex Int
+  name       String // "Kettlebell Squats"
+  reps       String? // "x 10" eller "x 10 Each Leg"
+  videoUrl   String? // YouTube-länk
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([warmupRoutineId])
+  @@map("warmup_exercises")
 }

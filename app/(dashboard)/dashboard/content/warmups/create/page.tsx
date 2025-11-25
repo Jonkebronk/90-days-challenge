@@ -1,0 +1,307 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { ArrowLeft, Plus, Trash2, GripVertical, Video, Save, Flame } from 'lucide-react'
+import Link from 'next/link'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { toast } from 'sonner'
+
+interface WarmupExercise {
+  id: string
+  orderIndex: number
+  name: string
+  reps: string
+  videoUrl: string
+}
+
+export default function CreateWarmupPage() {
+  const router = useRouter()
+  const [saving, setSaving] = useState(false)
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+  const [introText, setIntroText] = useState('')
+  const [outroText, setOutroText] = useState('')
+  const [exercises, setExercises] = useState<WarmupExercise[]>([])
+
+  const addExercise = () => {
+    const newExercise: WarmupExercise = {
+      id: `temp-${Date.now()}`,
+      orderIndex: exercises.length,
+      name: '',
+      reps: '',
+      videoUrl: ''
+    }
+    setExercises([...exercises, newExercise])
+  }
+
+  const updateExercise = (index: number, field: keyof WarmupExercise, value: string) => {
+    const updated = [...exercises]
+    updated[index] = { ...updated[index], [field]: value }
+    setExercises(updated)
+  }
+
+  const removeExercise = (index: number) => {
+    setExercises(exercises.filter((_, i) => i !== index))
+  }
+
+  const moveExercise = (index: number, direction: 'up' | 'down') => {
+    if (
+      (direction === 'up' && index === 0) ||
+      (direction === 'down' && index === exercises.length - 1)
+    ) {
+      return
+    }
+
+    const newIndex = direction === 'up' ? index - 1 : index + 1
+    const updated = [...exercises]
+    const temp = updated[index]
+    updated[index] = updated[newIndex]
+    updated[newIndex] = temp
+    setExercises(updated)
+  }
+
+  const handleSave = async () => {
+    if (!name.trim()) {
+      toast.error('Namn är obligatoriskt')
+      return
+    }
+
+    setSaving(true)
+    try {
+      const response = await fetch('/api/admin/warmups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          description: description || null,
+          introText: introText || null,
+          outroText: outroText || null,
+          exercises: exercises.map((ex, index) => ({
+            orderIndex: index,
+            name: ex.name,
+            reps: ex.reps || null,
+            videoUrl: ex.videoUrl || null
+          }))
+        })
+      })
+
+      if (response.ok) {
+        toast.success('Uppvärmning skapad!')
+        router.push('/dashboard/content/warmups')
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Kunde inte skapa uppvärmning')
+      }
+    } catch (error) {
+      console.error('Error creating warmup:', error)
+      toast.error('Något gick fel')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link href="/dashboard/content/warmups">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Tillbaka
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <Flame className="w-7 h-7 text-orange-500" />
+              Ny Uppvärmning
+            </h1>
+          </div>
+        </div>
+        <Button
+          onClick={handleSave}
+          disabled={saving}
+          className="bg-orange-500 hover:bg-orange-600 text-white"
+        >
+          <Save className="w-4 h-4 mr-2" />
+          {saving ? 'Sparar...' : 'Spara'}
+        </Button>
+      </div>
+
+      {/* Basic info */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Grundläggande information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="name">Namn *</Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="t.ex. Standard Uppvärmning"
+            />
+          </div>
+          <div>
+            <Label htmlFor="description">Beskrivning</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Kort beskrivning av uppvärmningen"
+              rows={2}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Intro text */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Inledande text</CardTitle>
+          <p className="text-sm text-gray-500">
+            Text som visas innan övningslistan
+          </p>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            value={introText}
+            onChange={(e) => setIntroText(e.target.value)}
+            placeholder="Uppvärmning är viktigt, men inte den typ av uppvärmning vi generellt tänker på..."
+            rows={6}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Exercises */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Övningar</CardTitle>
+            <p className="text-sm text-gray-500">
+              Lägg till uppvärmningsövningar med video-länkar
+            </p>
+          </div>
+          <Button onClick={addExercise} variant="outline">
+            <Plus className="w-4 h-4 mr-2" />
+            Lägg till övning
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {exercises.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <p>Inga övningar ännu</p>
+              <Button onClick={addExercise} variant="outline" className="mt-4">
+                <Plus className="w-4 h-4 mr-2" />
+                Lägg till första övningen
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {exercises.map((exercise, index) => (
+                <div
+                  key={exercise.id}
+                  className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200"
+                >
+                  <div className="flex flex-col items-center gap-1 text-gray-400">
+                    <span className="font-bold text-orange-500">{index + 1}</span>
+                    <button
+                      onClick={() => moveExercise(index, 'up')}
+                      disabled={index === 0}
+                      className="hover:text-gray-600 disabled:opacity-30"
+                    >
+                      ▲
+                    </button>
+                    <button
+                      onClick={() => moveExercise(index, 'down')}
+                      disabled={index === exercises.length - 1}
+                      className="hover:text-gray-600 disabled:opacity-30"
+                    >
+                      ▼
+                    </button>
+                  </div>
+
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <Label className="text-xs">Övningsnamn</Label>
+                      <Input
+                        value={exercise.name}
+                        onChange={(e) => updateExercise(index, 'name', e.target.value)}
+                        placeholder="Kettlebell Squats"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Reps/Tid</Label>
+                      <Input
+                        value={exercise.reps}
+                        onChange={(e) => updateExercise(index, 'reps', e.target.value)}
+                        placeholder="x 10"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Video URL</Label>
+                      <div className="relative">
+                        <Video className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Input
+                          value={exercise.videoUrl}
+                          onChange={(e) => updateExercise(index, 'videoUrl', e.target.value)}
+                          placeholder="https://youtube.com/..."
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                    onClick={() => removeExercise(index)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Outro text */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Avslutande text</CardTitle>
+          <p className="text-sm text-gray-500">
+            Text som visas efter övningslistan
+          </p>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            value={outroText}
+            onChange={(e) => setOutroText(e.target.value)}
+            placeholder="Gå sedan till din första övning och då vill jag att du gör 2-3 lättare uppvärmningsset..."
+            rows={6}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Save button */}
+      <div className="flex justify-end">
+        <Button
+          onClick={handleSave}
+          disabled={saving}
+          className="bg-orange-500 hover:bg-orange-600 text-white"
+        >
+          <Save className="w-4 h-4 mr-2" />
+          {saving ? 'Sparar...' : 'Spara Uppvärmning'}
+        </Button>
+      </div>
+    </div>
+  )
+}
