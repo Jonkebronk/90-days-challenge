@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, Plus, Info, ChevronUp, ChevronDown, RotateCcw } from 'lucide-react'
+import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, Plus, Info, ChevronUp, ChevronDown, RotateCcw, Flame } from 'lucide-react'
 import Link from 'next/link'
 import { MDXPreview } from '@/components/mdx-preview'
 
@@ -41,6 +41,22 @@ interface WorkoutWeek {
   days: WorkoutDay[]
 }
 
+interface WarmupExercise {
+  id: string
+  orderIndex: number
+  name: string
+  reps: string | null
+  videoUrl: string | null
+}
+
+interface WarmupRoutine {
+  id: string
+  name: string
+  introText: string | null
+  outroText: string | null
+  exercises: WarmupExercise[]
+}
+
 interface AssignedWorkout {
   id: string
   startDate: string
@@ -54,6 +70,7 @@ interface AssignedWorkout {
     durationWeeks: number | null
     weeks?: WorkoutWeek[]
     days: WorkoutDay[]
+    warmupRoutine?: WarmupRoutine | null
   }
 }
 
@@ -63,6 +80,7 @@ export default function WorkoutPage() {
   const [assignment, setAssignment] = useState<AssignedWorkout | null>(null)
   const [loading, setLoading] = useState(true)
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set()) // All days closed by default
+  const [warmupExpanded, setWarmupExpanded] = useState(false)
   const [workoutGuideContent, setWorkoutGuideContent] = useState<string>('')
   const [incompleteSessions, setIncompleteSessions] = useState<Record<string, boolean>>({}) // dayId -> has incomplete session
 
@@ -254,6 +272,107 @@ export default function WorkoutPage() {
           <Calendar className="w-6 h-6 text-gold-primary" />
           {programHasWeeks ? 'Denna veckans schema' : 'Träningsschema'}
         </h2>
+
+        {/* Warmup Card - shown first if program has warmup */}
+        {workoutProgram.warmupRoutine && (
+          <Card
+            className="group relative bg-gradient-to-br from-orange-500/10 to-red-500/10 border-2 border-orange-500/30 transition-all duration-300 cursor-pointer backdrop-blur-[10px] overflow-hidden hover:border-orange-500/60 hover:from-orange-500/15 hover:to-red-500/15"
+          >
+            <CardHeader
+              className="relative cursor-pointer transition-all duration-200 px-3 sm:px-6"
+              onClick={() => setWarmupExpanded(!warmupExpanded)}
+            >
+              <div className="flex items-center gap-3 sm:gap-4">
+                {/* Flame Icon Container */}
+                <div className="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center bg-orange-500/20 shadow-lg group-hover:scale-110 transition-transform">
+                  <Flame className="w-6 h-6 sm:w-8 sm:h-8 text-orange-400" />
+                </div>
+
+                {/* Warmup Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="text-xs font-semibold text-orange-400 uppercase tracking-wide">
+                      UPPVÄRMNING
+                    </span>
+                  </div>
+                  <CardTitle className="text-base sm:text-xl font-bold text-orange-300 tracking-[1px] pr-2">
+                    {workoutProgram.warmupRoutine.name}
+                  </CardTitle>
+                  <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                    {workoutProgram.warmupRoutine.exercises.length} övningar • Gör detta innan ditt pass
+                  </p>
+                </div>
+
+                {/* Expand Button */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button className="p-2 rounded-lg hover:bg-orange-500/20 transition-colors flex-shrink-0">
+                    {warmupExpanded ? (
+                      <ChevronUp className="w-5 h-5 text-orange-400" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-orange-400" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </CardHeader>
+
+            {warmupExpanded && (
+              <CardContent className="pt-0">
+                <div className="space-y-3">
+                  {/* Intro text */}
+                  {workoutProgram.warmupRoutine.introText && (
+                    <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                      {workoutProgram.warmupRoutine.introText}
+                    </p>
+                  )}
+
+                  {/* Exercise list */}
+                  {workoutProgram.warmupRoutine.exercises.length > 0 && (
+                    <div className="space-y-2 my-3">
+                      {workoutProgram.warmupRoutine.exercises.map((exercise, idx) => (
+                        <div
+                          key={exercise.id}
+                          className="flex items-center justify-between p-3 bg-black/20 rounded-lg border border-orange-500/20"
+                        >
+                          <span className="text-gray-200 flex items-center gap-3">
+                            <span className="flex items-center justify-center w-7 h-7 rounded-full bg-orange-500/30 text-orange-300 font-bold text-sm">
+                              {idx + 1}
+                            </span>
+                            <span>
+                              {exercise.name}
+                              {exercise.reps && (
+                                <span className="text-orange-300 ml-2">{exercise.reps}</span>
+                              )}
+                            </span>
+                          </span>
+                          {exercise.videoUrl && (
+                            <a
+                              href={exercise.videoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/20 border border-purple-500/40 text-purple-300 rounded-md text-xs font-semibold hover:bg-purple-500/30 transition-colors"
+                            >
+                              <Play className="w-3 h-3" />
+                              VIDEO
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Outro text */}
+                  {workoutProgram.warmupRoutine.outroText && (
+                    <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                      {workoutProgram.warmupRoutine.outroText}
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        )}
 
         {daysToShow.map((day) => {
           const isExpanded = expandedDays.has(day.id)
