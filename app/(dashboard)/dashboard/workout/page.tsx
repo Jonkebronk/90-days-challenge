@@ -209,38 +209,31 @@ export default function WorkoutPage() {
           </p>
         )}
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
-
-        {/* Introduction Button */}
-        <div className="mt-6">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-bold hover:shadow-lg transition-all animate-pulse hover:animate-none"
-              >
-                <Info className="w-4 h-4 mr-2" />
-                Introduktion till träningsprogram
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-gray-200 flex items-center gap-2">
-                  <Info className="w-6 h-6 text-blue-400" />
-                  Träningsprogram Guide
-                </DialogTitle>
-              </DialogHeader>
-              {workoutGuideContent ? (
-                <MDXPreview content={workoutGuideContent} theme="dark" />
-              ) : (
-                <p className="text-gray-400">Laddar guide...</p>
-              )}
-            </DialogContent>
-          </Dialog>
-        </div>
       </div>
 
       {/* Action buttons row */}
       <div className="flex flex-wrap gap-2 justify-center">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
+              <Info className="w-4 h-4 mr-2" />
+              Introduktion
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-gray-200 flex items-center gap-2">
+                <Info className="w-6 h-6 text-blue-400" />
+                Träningsprogram Guide
+              </DialogTitle>
+            </DialogHeader>
+            {workoutGuideContent ? (
+              <MDXPreview content={workoutGuideContent} theme="dark" />
+            ) : (
+              <p className="text-gray-400">Laddar guide...</p>
+            )}
+          </DialogContent>
+        </Dialog>
         <Link href="/dashboard/workout/records">
           <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
             <Trophy className="w-4 h-4 mr-2" />
