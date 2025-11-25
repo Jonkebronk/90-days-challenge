@@ -62,6 +62,7 @@ interface SetLog {
   setType?: 'WEIGHT' | 'TIME' | 'BODYWEIGHT' | 'REPS'
   reps: number | null
   weightKg: number | null
+  notes: string | null
   timeSeconds: number | null
   completed: boolean
 }
@@ -243,7 +244,13 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     if (!sessionId) return
 
     const reps = currentSetType !== 'TIME' ? (parseInt(currentReps) || null) : null
-    const weight = currentSetType === 'WEIGHT' ? (parseFloat(currentWeight) || null) : null
+    // Parse weight - extract number if possible, keep original text as note
+    const weightNum = parseFloat(currentWeight)
+    const weight = currentSetType === 'WEIGHT' && !isNaN(weightNum) ? weightNum : null
+    // Store the original text if it contains non-numeric characters (like "20+band", "bodyweight")
+    const weightNotes = currentSetType === 'WEIGHT' && currentWeight && (isNaN(weightNum) || /[^\d.\s]/.test(currentWeight.replace(String(weightNum), '')))
+      ? currentWeight
+      : null
     const timeSeconds = currentSetType === 'TIME' ? (parseInt(currentTimeSeconds) || null) : null
 
     try {
@@ -257,6 +264,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           setType: currentSetType,
           reps,
           weightKg: weight,
+          notes: weightNotes,
           timeSeconds,
           completed: true
         })
@@ -276,6 +284,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
               setType: currentSetType,
               reps,
               weightKg: weight,
+              notes: weightNotes,
               timeSeconds,
               completed: true
             }
@@ -715,11 +724,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                 <span className="text-base font-semibold text-gray-100">
                                   {set.reps || 0} reps
                                 </span>
-                                {set.setType === 'WEIGHT' && set.weightKg && (
+                                {set.setType === 'WEIGHT' && (set.weightKg || set.notes) && (
                                   <>
                                     <span className="text-sm text-gray-400">×</span>
                                     <span className="text-base font-semibold text-gray-100">
-                                      {set.weightKg} kg
+                                      {set.notes || `${set.weightKg} kg`}
                                     </span>
                                   </>
                                 )}
@@ -757,12 +766,12 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         <div className="space-y-2">
                           <Label className="text-sm font-semibold text-gray-200">Vikt (kg)</Label>
                           <Input
-                            type="number"
-                            step="0.5"
+                            type="text"
+                            inputMode="decimal"
                             value={currentWeight}
                             onChange={(e) => setCurrentWeight(e.target.value)}
                             placeholder={exerciseSets.length > 0 ? exerciseSets[exerciseSets.length - 1].weightKg?.toString() : "0"}
-                            className="h-12 text-lg font-semibold bg-black/40 border-2 border-gold-primary/40 text-white focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-12 text-lg font-semibold bg-black/40 border-2 border-gold-primary/40 text-white focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20"
                           />
                         </div>
                       </div>
