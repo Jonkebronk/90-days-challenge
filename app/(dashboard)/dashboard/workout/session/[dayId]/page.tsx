@@ -658,8 +658,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
               className={`bg-white border-2 transition-all shadow-md rounded-lg ${
                 isCurrent && sessionId
                   ? 'border-gold-primary'
-                  : 'border-gray-300'
-              } ${isExerciseComplete && !isExpanded ? 'opacity-60 scale-95' : isExerciseComplete ? 'opacity-80' : ''}`}
+                  : isExerciseComplete && !isExpanded
+                    ? 'border-green-300'
+                    : 'border-gray-300'
+              } ${isExerciseComplete && !isExpanded ? 'opacity-60 scale-95' : ''}`}
             >
               <CardHeader className={isExerciseComplete && !isExpanded ? 'py-3' : ''}>
                 <div
@@ -811,62 +813,112 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   {exerciseSets.length > 0 && (
                     <div className="p-4 bg-green-100 border-2 border-green-300 rounded-lg space-y-3">
                       <Label className="text-sm font-bold text-gray-900">Genomförda sets</Label>
-                      {exerciseSets.map((set, setIdx) => (
-                        <div
-                          key={set.id || setIdx}
-                          className="flex items-center gap-4 p-3 bg-white border-2 border-green-300 rounded-md"
-                        >
-                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
-                            <Check className="w-5 h-5 text-white" />
-                          </div>
-                          <div className="flex items-center gap-3 flex-1">
-                            <span className="text-sm font-bold text-gray-900">
-                              Set {set.setNumber}:
-                            </span>
-                            {set.setType === 'TIME' ? (
-                              <span className="text-base font-semibold text-gray-700">
-                                {set.timeSeconds}s
-                              </span>
+                      {exerciseSets.map((set, setIdx) => {
+                        const isEditing = editingSet?.id === set.id
+                        return (
+                          <div
+                            key={set.id || setIdx}
+                            className="bg-white border-2 border-green-300 rounded-md overflow-hidden"
+                          >
+                            {isEditing ? (
+                              /* Inline edit mode */
+                              <div className="p-3 space-y-3">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                                    <Check className="w-5 h-5 text-white" />
+                                  </div>
+                                  <span className="text-sm font-bold text-gray-900">Set {set.setNumber}:</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    type="number"
+                                    value={editReps}
+                                    onChange={(e) => setEditReps(e.target.value)}
+                                    placeholder="Reps"
+                                    className="w-20 h-10 text-center font-semibold bg-white border-2 border-gray-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  />
+                                  <span className="text-gray-500">×</span>
+                                  <Input
+                                    type="text"
+                                    value={editWeight}
+                                    onChange={(e) => setEditWeight(e.target.value)}
+                                    placeholder="Vikt"
+                                    className="flex-1 h-10 font-semibold bg-white border-2 border-gray-300"
+                                  />
+                                  <button
+                                    onClick={updateSet}
+                                    disabled={isUpdatingSet}
+                                    className="p-2 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors disabled:opacity-50"
+                                    title="Spara"
+                                  >
+                                    <Check className="w-5 h-5" />
+                                  </button>
+                                  <button
+                                    onClick={() => setEditingSet(null)}
+                                    className="p-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-600 transition-colors"
+                                    title="Avbryt"
+                                  >
+                                    <X className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              </div>
                             ) : (
-                              <>
-                                <span className="text-base font-semibold text-gray-700">
-                                  {set.reps || 0} reps
-                                </span>
-                                {set.setType === 'WEIGHT' && (set.weightKg || set.notes) && (
-                                  <>
-                                    <span className="text-sm text-gray-500">×</span>
+                              /* Display mode */
+                              <div className="flex items-center gap-4 p-3">
+                                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                                  <Check className="w-5 h-5 text-white" />
+                                </div>
+                                <div className="flex items-center gap-3 flex-1">
+                                  <span className="text-sm font-bold text-gray-900">
+                                    Set {set.setNumber}:
+                                  </span>
+                                  {set.setType === 'TIME' ? (
                                     <span className="text-base font-semibold text-gray-700">
-                                      {set.notes || `${set.weightKg} kg`}
+                                      {set.timeSeconds}s
                                     </span>
-                                  </>
+                                  ) : (
+                                    <>
+                                      <span className="text-base font-semibold text-gray-700">
+                                        {set.reps || 0} reps
+                                      </span>
+                                      {set.setType === 'WEIGHT' && (set.weightKg || set.notes) && (
+                                        <>
+                                          <span className="text-sm text-gray-500">×</span>
+                                          <span className="text-base font-semibold text-gray-700">
+                                            {set.notes || `${set.weightKg} kg`}
+                                          </span>
+                                        </>
+                                      )}
+                                      {set.setType === 'BODYWEIGHT' && (
+                                        <span className="text-xs text-gray-500 ml-1">(kroppsvikt)</span>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
+                                {/* Edit/Delete buttons */}
+                                {set.id && (
+                                  <div className="flex items-center gap-1">
+                                    <button
+                                      onClick={() => openEditModal(set)}
+                                      className="p-2 rounded-lg hover:bg-green-100 transition-colors"
+                                      title="Redigera set"
+                                    >
+                                      <Pencil className="w-4 h-4 text-gray-400 hover:text-gray-700" />
+                                    </button>
+                                    <button
+                                      onClick={() => setDeletingSet(set)}
+                                      className="p-2 rounded-lg hover:bg-red-50 transition-colors"
+                                      title="Ta bort set"
+                                    >
+                                      <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-500" />
+                                    </button>
+                                  </div>
                                 )}
-                                {set.setType === 'BODYWEIGHT' && (
-                                  <span className="text-xs text-gray-500 ml-1">(kroppsvikt)</span>
-                                )}
-                              </>
+                              </div>
                             )}
                           </div>
-                          {/* Edit/Delete buttons */}
-                          {set.id && (
-                            <div className="flex items-center gap-1">
-                              <button
-                                onClick={() => openEditModal(set)}
-                                className="p-2 rounded-lg hover:bg-green-100 transition-colors"
-                                title="Redigera set"
-                              >
-                                <Pencil className="w-4 h-4 text-gray-400 hover:text-gray-700" />
-                              </button>
-                              <button
-                                onClick={() => setDeletingSet(set)}
-                                className="p-2 rounded-lg hover:bg-red-50 transition-colors"
-                                title="Ta bort set"
-                              >
-                                <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-500" />
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   )}
 
@@ -986,69 +1038,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             </Button>
           </CardContent>
         </Card>
-      )}
-
-      {/* Edit Set Modal */}
-      {editingSet && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="bg-white border-2 border-gray-300 shadow-xl w-full max-w-md">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-gray-900 flex items-center gap-2">
-                  <Pencil className="w-5 h-5 text-gold-primary" />
-                  Redigera Set {editingSet.setNumber}
-                </CardTitle>
-                <button
-                  onClick={() => setEditingSet(null)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-gray-700">Reps</Label>
-                  <Input
-                    type="number"
-                    value={editReps}
-                    onChange={(e) => setEditReps(e.target.value)}
-                    className="h-12 text-lg font-semibold bg-gray-50 border-2 border-gray-300 text-gray-900 focus:border-gold-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-gray-700">Vikt (kg)</Label>
-                  <Input
-                    type="text"
-                    inputMode="decimal"
-                    value={editWeight}
-                    onChange={(e) => setEditWeight(e.target.value)}
-                    className="h-12 text-lg font-semibold bg-gray-50 border-2 border-gray-300 text-gray-900 focus:border-gold-primary"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <Button
-                  onClick={() => setEditingSet(null)}
-                  variant="outline"
-                  className="flex-1 bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100"
-                  disabled={isUpdatingSet}
-                >
-                  Avbryt
-                </Button>
-                <Button
-                  onClick={updateSet}
-                  className="flex-1 bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
-                  disabled={isUpdatingSet}
-                >
-                  {isUpdatingSet ? 'Sparar...' : 'Spara'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       )}
 
       {/* Delete Set Confirmation Modal */}
