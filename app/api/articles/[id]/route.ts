@@ -37,9 +37,22 @@ export async function GET(
       return NextResponse.json({ error: 'Article not found' }, { status: 404 })
     }
 
+    const isCoach = (session.user as any).role === 'coach'
+
     // Clients can only view published articles
-    if ((session.user as any).role !== 'coach' && !article.published) {
+    if (!isCoach && !article.published) {
       return NextResponse.json({ error: 'Article not found' }, { status: 404 })
+    }
+
+    // Check if this is a coach-only article (category audience = 'coach')
+    const categoryWithAudience = await prisma.articleCategory.findUnique({
+      where: { id: article.categoryId },
+      select: { audience: true }
+    })
+
+    // Non-coaches cannot view coach articles
+    if (!isCoach && categoryWithAudience?.audience === 'coach') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     return NextResponse.json({ article })

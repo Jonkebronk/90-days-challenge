@@ -58,8 +58,8 @@ export default function ArticleCategoryPage({ params }: { params: Promise<{ slug
     try {
       setIsLoading(true)
 
-      // Fetch category info
-      const categoryResponse = await fetch('/api/article-categories')
+      // Fetch category info (client categories only)
+      const categoryResponse = await fetch('/api/article-categories?audience=client')
       if (categoryResponse.ok) {
         const categoryData = await categoryResponse.json()
         const foundCategory = categoryData.categories.find((c: ArticleCategory) => c.slug === slug)
@@ -67,7 +67,7 @@ export default function ArticleCategoryPage({ params }: { params: Promise<{ slug
           setCategory(foundCategory)
 
           // Fetch articles for this category
-          const articlesResponse = await fetch(`/api/articles?categoryId=${foundCategory.id}&published=true`)
+          const articlesResponse = await fetch(`/api/articles?categoryId=${foundCategory.id}&published=true&audience=client`)
           if (articlesResponse.ok) {
             const articlesData = await articlesResponse.json()
             setArticles(articlesData.articles)

@@ -35,7 +35,7 @@ export default function ArticlesPage() {
   const fetchCategories = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/article-categories')
+      const response = await fetch('/api/article-categories?audience=client')
       if (response.ok) {
         const data = await response.json()
         setCategories(data.categories)
