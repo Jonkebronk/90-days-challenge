@@ -15,7 +15,7 @@ import { VideoPlayer } from '@/components/ui/video-player'
 // Helper to render text with markdown links [text](url)
 function renderTextWithLinks(text: string) {
   const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g
-  const parts: (string | JSX.Element)[] = []
+  const parts: (string | React.ReactElement)[] = []
   let lastIndex = 0
   let match
 
