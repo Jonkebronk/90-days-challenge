@@ -121,6 +121,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [showCancelModal, setShowCancelModal] = useState(false)
   const [isCancelling, setIsCancelling] = useState(false)
 
+  // Video visibility per exercise
+  const [activeVideoIndex, setActiveVideoIndex] = useState<number | null>(null)
+
   useEffect(() => {
     const loadData = async () => {
       const { dayId: id } = await params
@@ -646,77 +649,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         )}
       </div>
 
-      {/* Previous Session Data - Minimalistisk */}
-      {sessionId && previousSessionData && workoutDay && workoutDay.exercises[currentExerciseIndex] && (() => {
-        const currentExercise = workoutDay.exercises[currentExerciseIndex]
-        const previousSets = previousSessionData.sets?.filter(
-          (set: any) => set.exerciseId === currentExercise.exercise.id
-        ) || []
-
-        if (previousSets.length === 0) return null
-
-        return (
-          <div className="bg-white/5 border border-gold-primary/20 rounded-lg px-4 py-3">
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <div className="flex items-center gap-2 text-sm text-gray-400">
-                <Clock className="w-4 h-4 text-gold-primary" />
-                <span className="font-medium text-gold-light">Föregående Pass</span>
-                <span>
-                  {new Date(previousSessionData.startedAt).toLocaleDateString('sv-SE', {
-                    day: 'numeric',
-                    month: 'short'
-                  })}
-                </span>
-              </div>
-              <span className="text-gray-600">|</span>
-              <div className="flex flex-wrap items-center gap-1 text-sm">
-                {previousSets.map((set: any, idx: number) => (
-                  <span key={idx} className="flex items-center">
-                    {set.setType === 'TIME' ? (
-                      <span className="text-gold-light font-semibold">{set.timeSeconds}s</span>
-                    ) : (
-                      <span className="text-gold-light font-semibold">
-                        {set.reps || 0}{set.setType === 'WEIGHT' && set.weightKg ? `×${set.weightKg}kg` : ' reps'}
-                      </span>
-                    )}
-                    {idx < previousSets.length - 1 && (
-                      <span className="text-gray-500 mx-1.5">•</span>
-                    )}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        )
-      })()}
-
-      {/* Exercises - Split View on Desktop */}
-      <div className="lg:grid lg:grid-cols-[400px_1fr] lg:gap-6">
-        {/* Left Column: Video (Desktop only, sticky) */}
-        {sessionId && workoutDay.exercises[currentExerciseIndex]?.exercise.videoUrl && (
-          <div className="hidden lg:block">
-            <div className="sticky top-6">
-              <Card className="bg-white/5 border-2 border-gold-primary/20 overflow-hidden">
-                <CardContent className="p-0">
-                  <VideoPlayer
-                    videoUrl={workoutDay.exercises[currentExerciseIndex].exercise.videoUrl}
-                    thumbnailUrl={workoutDay.exercises[currentExerciseIndex].exercise.thumbnailUrl}
-                    title={workoutDay.exercises[currentExerciseIndex].exercise.name}
-                    className="w-full aspect-video"
-                  />
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-100">
-                      {workoutDay.exercises[currentExerciseIndex].exercise.name}
-                    </h3>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )}
-
-        {/* Right Column: Exercises List */}
-        <div className="space-y-3">
+      {/* Exercises List */}
+      <div className="space-y-3">
           {workoutDay.exercises.map((exercise, index) => {
             const isExpanded = expandedExercises.has(index)
             const isCurrent = index === currentExerciseIndex
@@ -763,6 +697,57 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           </p>
                         )}
                       </div>
+
+                      {/* Video button + Previous session inline */}
+                      <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-gold-primary/10">
+                        {exercise.exercise.videoUrl && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setActiveVideoIndex(activeVideoIndex === index ? null : index)
+                            }}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                              activeVideoIndex === index
+                                ? 'bg-purple-500/40 border border-purple-400 text-purple-200'
+                                : 'bg-purple-500/20 border border-purple-500/40 text-purple-300 hover:bg-purple-500/30'
+                            }`}
+                          >
+                            {activeVideoIndex === index ? (
+                              <>
+                                <X className="w-3 h-3" />
+                                STÄNG
+                              </>
+                            ) : (
+                              <>
+                                <Play className="w-3 h-3" />
+                                VIDEO
+                              </>
+                            )}
+                          </button>
+                        )}
+                        {/* Previous session data for this exercise */}
+                        {previousSessionData && (() => {
+                          const prevSets = previousSessionData.sets?.filter(
+                            (set: any) => set.exerciseId === exercise.exercise.id
+                          ) || []
+                          if (prevSets.length === 0) return null
+                          return (
+                            <span className="text-xs text-gray-400">
+                              Föreg:{' '}
+                              <span className="text-gold-light font-semibold">
+                                {prevSets.map((set: any, idx: number) => (
+                                  <span key={idx}>
+                                    {set.setType === 'TIME'
+                                      ? `${set.timeSeconds}s`
+                                      : `${set.reps || 0}${set.setType === 'WEIGHT' && set.weightKg ? `×${set.weightKg}kg` : ''}`}
+                                    {idx < prevSets.length - 1 ? ' • ' : ''}
+                                  </span>
+                                ))}
+                              </span>
+                            </span>
+                          )
+                        })()}
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -778,19 +763,21 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                 </div>
               </CardHeader>
 
+              {/* Video Player - shown when VIDEO button is clicked */}
+              {activeVideoIndex === index && exercise.exercise.videoUrl && (
+                <div className="px-4 pb-4">
+                  <VideoPlayer
+                    videoUrl={exercise.exercise.videoUrl}
+                    thumbnailUrl={exercise.exercise.thumbnailUrl}
+                    title={exercise.exercise.name}
+                    className="w-full rounded-lg overflow-hidden"
+                    autoPlay={true}
+                  />
+                </div>
+              )}
+
               {isExpanded && (
                 <CardContent className="space-y-4">
-                  {/* Exercise Video - Mobile only (desktop shows in sticky left column) */}
-                  {exercise.exercise.videoUrl && (
-                    <div className="mb-4 lg:hidden">
-                      <VideoPlayer
-                        videoUrl={exercise.exercise.videoUrl}
-                        thumbnailUrl={exercise.exercise.thumbnailUrl}
-                        title={exercise.exercise.name}
-                        className="w-full rounded-lg overflow-hidden"
-                      />
-                    </div>
-                  )}
 
                   {/* Exercise Instructions */}
                   {exercise.exercise.instructions && exercise.exercise.instructions.length > 0 && (
@@ -938,7 +925,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             </Card>
             )
           })}
-        </div>
       </div>
 
       {/* Workout Notes & Complete */}
