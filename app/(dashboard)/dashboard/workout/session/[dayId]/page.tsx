@@ -634,9 +634,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           {sessionId && (
             <Button
               onClick={() => setShowCancelModal(true)}
-              variant="ghost"
               size="sm"
-              className="text-red-500 hover:text-red-600 hover:bg-red-50"
+              className="bg-red-500 hover:bg-red-600 text-white"
             >
               <X className="w-4 h-4 sm:mr-1" />
               <span className="hidden sm:inline">Avbryt</span>
@@ -656,7 +655,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             return (
             <Card
               key={exercise.id}
-              className={`bg-white border-2 transition-all shadow-sm ${
+              className={`bg-gray-50 border-2 transition-all shadow-sm ${
                 isCurrent && sessionId
                   ? 'border-gold-primary shadow-lg'
                   : 'border-gray-300'
@@ -715,7 +714,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                               </>
                             ) : (
                               <>
-                                <Play className="w-3 h-3 fill-gold-primary text-gold-primary" />
+                                <Play className="w-3 h-3 fill-white text-white" />
                                 VIDEO
                               </>
                             )}
@@ -777,7 +776,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Exercise Instructions */}
                   {exercise.exercise.instructions && exercise.exercise.instructions.length > 0 && (
-                    <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div className="p-4 bg-white border-2 border-gray-200 rounded-xl shadow-sm">
                       <Label className="text-sm font-bold text-gray-900 block mb-3">Instruktioner</Label>
                       <ol className="space-y-2">
                         {exercise.exercise.instructions.map((instruction, idx) => (
@@ -794,11 +793,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Coach Notes */}
                   {exercise.coachNotes && (
-                    <div className="p-5 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
+                    <div className="p-4 bg-white border-2 border-blue-200 rounded-xl shadow-sm">
                       <div className="w-full space-y-2">
                         <div className="flex items-center gap-2">
                           <UserCircle className="w-5 h-5 text-blue-500" />
-                          <Label className="text-base font-bold text-gray-900 block">Coach Notes:</Label>
+                          <Label className="text-sm font-bold text-gray-900 block">Coach Notes</Label>
                         </div>
                         <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
                           {exercise.coachNotes}
@@ -810,15 +809,15 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Logged Sets */}
                   {exerciseSets.length > 0 && (
-                    <div className="space-y-3">
-                      <Label className="text-base font-bold text-gray-900">Genomförda sets:</Label>
+                    <div className="p-4 bg-white border-2 border-green-200 rounded-xl shadow-sm space-y-3">
+                      <Label className="text-sm font-bold text-gray-900">Genomförda sets</Label>
                       {exerciseSets.map((set, setIdx) => (
                         <div
                           key={set.id || setIdx}
-                          className="flex items-center gap-4 p-3 bg-green-50 border-l-4 border-green-500 rounded-lg shadow-sm"
+                          className="flex items-center gap-4 p-3 bg-green-50 border border-green-200 rounded-lg"
                         >
-                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                            <Check className="w-5 h-5 text-green-600" />
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                            <Check className="w-5 h-5 text-white" />
                           </div>
                           <div className="flex items-center gap-3 flex-1">
                             <span className="text-sm font-bold text-gray-900">
@@ -852,7 +851,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => openEditModal(set)}
-                                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                                className="p-2 rounded-lg hover:bg-green-100 transition-colors"
                                 title="Redigera set"
                               >
                                 <Pencil className="w-4 h-4 text-gray-400 hover:text-gray-700" />
@@ -873,7 +872,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Log Next Set */}
                   {sessionId && !isExerciseComplete && (
-                    <div className="space-y-4 p-5 bg-white border-2 border-gray-200 rounded-xl shadow-sm">
+                    <div className="space-y-4 p-4 bg-white border-2 border-gold-primary rounded-xl shadow-sm">
                       <Label className="text-base font-bold text-gray-900">
                         Set {exerciseSets.length + 1} av {exercise.sets}
                       </Label>
