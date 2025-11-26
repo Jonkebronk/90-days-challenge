@@ -4,8 +4,9 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight, Lock, Menu, X, Key } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
+import { useSession } from 'next-auth/react'
 import {
   Dialog,
   DialogContent,
@@ -17,10 +18,18 @@ import {
 
 export default function HomePage() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
   const [inviteCode, setInviteCode] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
+
+  // Redirect logged-in users to dashboard (for PWA experience)
+  useEffect(() => {
+    if (status === 'authenticated' && session) {
+      router.replace('/dashboard')
+    }
+  }, [status, session, router])
 
 
   const handleVerifyInviteCode = async () => {
@@ -58,6 +67,15 @@ export default function HomePage() {
     } finally {
       setIsVerifying(false)
     }
+  }
+
+  // Show loading while checking session (prevents flash of landing page)
+  if (status === 'loading' || status === 'authenticated') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900">
+        <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
   }
 
   return (
