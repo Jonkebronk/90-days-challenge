@@ -204,12 +204,9 @@ export default function WorkoutPage() {
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
-          <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3 sm:mb-4">
+          <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
             Träningsprogram
           </h1>
-          <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
-            Ditt personliga träningsprogram
-          </p>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
         </div>
 
@@ -327,7 +324,7 @@ export default function WorkoutPage() {
         {/* Warmup Card - shown first if program has warmup */}
         {workoutProgram.warmupRoutine && (
           <Card
-            className="group relative bg-gradient-to-br from-orange-500/10 to-red-500/10 border-2 border-orange-500/30 transition-all duration-300 cursor-pointer backdrop-blur-[10px] overflow-hidden hover:border-orange-500/60 hover:from-orange-500/15 hover:to-red-500/15"
+            className="group relative bg-white border-2 border-orange-300 transition-all duration-300 cursor-pointer overflow-hidden shadow-sm hover:border-orange-500"
           >
             <CardHeader
               className="relative cursor-pointer transition-all duration-200 px-3 sm:px-6"
@@ -335,32 +332,32 @@ export default function WorkoutPage() {
             >
               <div className="flex items-center gap-3 sm:gap-4">
                 {/* Flame Icon Container */}
-                <div className="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center bg-orange-500/20 shadow-lg group-hover:scale-110 transition-transform">
-                  <Flame className="w-6 h-6 sm:w-8 sm:h-8 text-orange-400" />
+                <div className="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center bg-orange-100 shadow-sm group-hover:scale-105 transition-transform">
+                  <Flame className="w-6 h-6 sm:w-8 sm:h-8 text-orange-500" />
                 </div>
 
                 {/* Warmup Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="text-xs font-semibold text-orange-400 uppercase tracking-wide">
+                    <span className="text-xs font-semibold text-orange-500 uppercase tracking-wide">
                       UPPVÄRMNING
                     </span>
                   </div>
-                  <CardTitle className="text-base sm:text-xl font-bold text-orange-300 tracking-[1px] pr-2">
+                  <CardTitle className="text-base sm:text-xl font-bold text-gray-900 tracking-[1px] pr-2">
                     {workoutProgram.warmupRoutine.name}
                   </CardTitle>
-                  <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                  <p className="text-xs sm:text-sm text-gray-500 mt-1">
                     Gör detta innan ditt pass
                   </p>
                 </div>
 
                 {/* Expand Button */}
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <button className="p-2 rounded-lg hover:bg-orange-500/20 transition-colors flex-shrink-0">
+                  <button className="p-2 rounded-lg hover:bg-orange-100 transition-colors flex-shrink-0">
                     {warmupExpanded ? (
-                      <ChevronUp className="w-5 h-5 text-orange-400" />
+                      <ChevronUp className="w-5 h-5 text-orange-500" />
                     ) : (
-                      <ChevronDown className="w-5 h-5 text-orange-400" />
+                      <ChevronDown className="w-5 h-5 text-orange-500" />
                     )}
                   </button>
                 </div>
@@ -372,7 +369,7 @@ export default function WorkoutPage() {
                 <div className="space-y-3">
                   {/* Intro text */}
                   {workoutProgram.warmupRoutine.introText && (
-                    <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                    <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
                       {renderTextWithLinks(workoutProgram.warmupRoutine.introText)}
                     </div>
                   )}
@@ -383,17 +380,17 @@ export default function WorkoutPage() {
                       {workoutProgram.warmupRoutine.exercises.map((exercise, idx) => (
                         <div
                           key={exercise.id}
-                          className="bg-black/20 rounded-lg border border-orange-500/20 overflow-hidden"
+                          className="bg-orange-50 rounded-lg border border-orange-200 overflow-hidden"
                         >
                           <div className="flex items-center justify-between p-3">
-                            <span className="text-gray-200 flex items-center gap-3">
-                              <span className="flex items-center justify-center w-7 h-7 rounded-full bg-orange-500/30 text-orange-300 font-bold text-sm">
+                            <span className="text-gray-700 flex items-center gap-3">
+                              <span className="flex items-center justify-center w-7 h-7 rounded-full bg-orange-200 text-orange-600 font-bold text-sm">
                                 {idx + 1}
                               </span>
                               <span>
                                 {exercise.name}
                                 {exercise.reps && (
-                                  <span className="text-orange-300 ml-2">{exercise.reps}</span>
+                                  <span className="text-orange-600 ml-2 font-medium">{exercise.reps}</span>
                                 )}
                               </span>
                             </span>
@@ -405,8 +402,8 @@ export default function WorkoutPage() {
                                 }}
                                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-md text-xs font-semibold transition-colors ${
                                   activeWarmupVideo === exercise.id
-                                    ? 'bg-purple-500/40 border-purple-400 text-purple-200'
-                                    : 'bg-purple-500/20 border-purple-500/40 text-purple-300 hover:bg-purple-500/30'
+                                    ? 'bg-purple-100 border-purple-300 text-purple-700'
+                                    : 'bg-purple-50 border-purple-200 text-purple-600 hover:bg-purple-100'
                                 }`}
                               >
                                 {activeWarmupVideo === exercise.id ? (
@@ -441,7 +438,7 @@ export default function WorkoutPage() {
 
                   {/* Outro text */}
                   {workoutProgram.warmupRoutine.outroText && (
-                    <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                    <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
                       {renderTextWithLinks(workoutProgram.warmupRoutine.outroText)}
                     </div>
                   )}
@@ -456,18 +453,12 @@ export default function WorkoutPage() {
           return (
           <Card
             key={day.id}
-            className={`group relative bg-white/5 border-2 transition-all duration-300 cursor-pointer backdrop-blur-[10px] overflow-hidden ${
+            className={`group relative bg-white border-2 transition-all duration-300 cursor-pointer overflow-hidden shadow-sm ${
               day.isRestDay
-                ? 'border-gray-400/30 hover:border-gray-400/50 hover:bg-white/10'
-                : 'border-gold-primary/20 hover:border-gold-primary/60 hover:bg-white/10'
+                ? 'border-gray-300 hover:border-gray-400'
+                : 'border-gray-300 hover:border-gold-primary'
             }`}
           >
-            {/* Gradient Overlay */}
-            <div
-              className={`absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity ${
-                day.isRestDay ? '' : 'bg-gradient-to-br from-gold-primary/30 to-transparent'
-              }`}
-            />
 
             <CardHeader
               className="relative cursor-pointer transition-all duration-200 px-3 sm:px-6"
@@ -475,9 +466,9 @@ export default function WorkoutPage() {
             >
               <div className="flex items-center gap-3 sm:gap-4">
                 {/* Day Number Icon Container */}
-                <div className={`flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center font-bold text-xl sm:text-2xl shadow-lg group-hover:scale-110 transition-transform ${
+                <div className={`flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center font-bold text-xl sm:text-2xl shadow-sm group-hover:scale-105 transition-transform ${
                   day.isRestDay
-                    ? 'bg-gray-400/20 text-gray-400'
+                    ? 'bg-gray-100 text-gray-500'
                     : 'bg-gold-primary/20 text-gold-primary'
                 }`}>
                   {day.dayNumber}
@@ -486,21 +477,21 @@ export default function WorkoutPage() {
                 {/* Day Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                       Dag {day.dayNumber}
                     </span>
                     {day.isRestDay && (
-                      <Badge variant="outline" className="bg-gray-400/10 border-gray-400/30 text-gray-400 text-xs">
+                      <Badge variant="outline" className="bg-gray-100 border-gray-300 text-gray-500 text-xs">
                         <Coffee className="w-3 h-3 mr-1" />
                         Vilodag
                       </Badge>
                     )}
                   </div>
-                  <CardTitle className="text-base sm:text-xl font-bold text-gold-light tracking-[1px] pr-2">
+                  <CardTitle className="text-base sm:text-xl font-bold text-gray-900 tracking-[1px] pr-2">
                     {day.name}
                   </CardTitle>
                   {day.description && (
-                    <p className="text-xs sm:text-sm text-gray-400 mt-1 line-clamp-2 pr-2">
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1 line-clamp-2 pr-2">
                       {day.description}
                     </p>
                   )}
