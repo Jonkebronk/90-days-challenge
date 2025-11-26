@@ -1,6 +1,6 @@
 # Projektstatus - 90-Dagars Challenge
 
-**Senast uppdaterad**: 2025-11-21
+**Senast uppdaterad**: 2025-11-26
 
 ## ✅ Färdigt (Klart att använda)
 
@@ -574,6 +574,32 @@
   - Keyboard navigation support for all components
   - Mobile touch targets: minimum 44x44px
 
+- [x] **Light Theme Update (2025-11-26):**
+  - **Complete Light Theme Migration** - All major components updated
+  - **CheckInFlow Component:**
+    - All 10 steps converted from dark to light theme
+    - Progress bar with gold gradient and gray inactive segments
+    - White cards with gray borders and shadow
+    - Light inputs/textareas with gold focus rings
+    - Gold-accented yes/no selection buttons
+    - Light photo upload areas with dashed borders
+  - **Profile Page:**
+    - 3 cards (Personal Info, Account Info, Security) converted to white
+    - Gray headers with border separation
+    - Light inputs with gray borders
+    - Password dialog updated to light theme
+  - **Messages Page:**
+    - Mobile responsive design
+    - Pull-to-refresh disabled for better UX
+    - Unified chat bubbles with sender names above
+    - Light theme with gray message bubbles
+  - **Workout Session Page:**
+    - Exercise cards with distinct sections
+    - Inline set editing (no dialog)
+    - Gold-themed workout complete card
+    - Video preview buttons on exercise list
+    - Warmup exercises matching regular styling
+
 - [x] **Mobile Responsiveness (2025-11-17):**
   - **100% Mobile-Ready** - Complete optimization for all device sizes
   - **Phase 1 - Critical Table Fixes:**
@@ -624,6 +650,16 @@
   - Standardized 3,178+ color instances to Tailwind classes
   - Enhanced accessibility with WCAG AA compliance
   - Complete UX consistency across all pages
+- ✅ Food Items Null Value Error - FIXAT (2025-11-26)
+  - Added null coalescing for proteinG, fatG, carbsG when calling toFixed()
+  - Updated FoodItem type to allow null for nutrition fields
+  - Removed nutrition info display from food item dialog (simplified UI)
+- ✅ Messages Page Deployment Errors - FIXAT (2025-11-26)
+  - Fixed React hooks conditional call error (useCallback before early return)
+  - Fixed TypeScript dataset error (HTMLDivElement type)
+- ✅ Workout Exercise Navigation Bug - FIXAT (2025-11-26)
+  - Fixed exercise jumping to wrong position when completing exercises out of order
+  - Now finds actual exercise index via exerciseId instead of using currentExerciseIndex
 
 ### Måste Fixas
 - Inga kritiska buggar just nu! 🎉
