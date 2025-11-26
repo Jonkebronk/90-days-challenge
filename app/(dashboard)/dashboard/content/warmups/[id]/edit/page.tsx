@@ -17,6 +17,7 @@ interface WarmupExercise {
   name: string
   reps: string
   videoUrl: string
+  instructions: string
 }
 
 export default function EditWarmupPage() {
@@ -51,7 +52,8 @@ export default function EditWarmupPage() {
           orderIndex: ex.orderIndex,
           name: ex.name,
           reps: ex.reps || '',
-          videoUrl: ex.videoUrl || ''
+          videoUrl: ex.videoUrl || '',
+          instructions: ex.instructions || ''
         })))
       } else {
         toast.error('Kunde inte hämta uppvärmning')
@@ -71,7 +73,8 @@ export default function EditWarmupPage() {
       orderIndex: exercises.length,
       name: '',
       reps: '',
-      videoUrl: ''
+      videoUrl: '',
+      instructions: ''
     }
     setExercises([...exercises, newExercise])
   }
@@ -122,7 +125,8 @@ export default function EditWarmupPage() {
             orderIndex: index,
             name: ex.name,
             reps: ex.reps || null,
-            videoUrl: ex.videoUrl || null
+            videoUrl: ex.videoUrl || null,
+            instructions: ex.instructions || null
           }))
         })
       })
@@ -272,34 +276,46 @@ export default function EditWarmupPage() {
                     </button>
                   </div>
 
-                  <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div>
-                      <Label className="text-xs">Övningsnamn</Label>
-                      <Input
-                        value={exercise.name}
-                        onChange={(e) => updateExercise(index, 'name', e.target.value)}
-                        placeholder="Kettlebell Squats"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs">Reps/Tid</Label>
-                      <Input
-                        value={exercise.reps}
-                        onChange={(e) => updateExercise(index, 'reps', e.target.value)}
-                        placeholder="x 10"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs">Video URL</Label>
-                      <div className="relative">
-                        <Video className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <div className="flex-1 space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div>
+                        <Label className="text-xs">Övningsnamn</Label>
                         <Input
-                          value={exercise.videoUrl}
-                          onChange={(e) => updateExercise(index, 'videoUrl', e.target.value)}
-                          placeholder="https://youtube.com/..."
-                          className="pl-10"
+                          value={exercise.name}
+                          onChange={(e) => updateExercise(index, 'name', e.target.value)}
+                          placeholder="Kettlebell Squats"
                         />
                       </div>
+                      <div>
+                        <Label className="text-xs">Reps/Tid</Label>
+                        <Input
+                          value={exercise.reps}
+                          onChange={(e) => updateExercise(index, 'reps', e.target.value)}
+                          placeholder="x 10"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Video URL</Label>
+                        <div className="relative">
+                          <Video className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <Input
+                            value={exercise.videoUrl}
+                            onChange={(e) => updateExercise(index, 'videoUrl', e.target.value)}
+                            placeholder="https://youtube.com/..."
+                            className="pl-10"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Instruktioner</Label>
+                      <Textarea
+                        value={exercise.instructions}
+                        onChange={(e) => updateExercise(index, 'instructions', e.target.value)}
+                        placeholder="Skriv instruktioner för övningen här..."
+                        rows={2}
+                        className="text-sm"
+                      />
                     </div>
                   </div>
 

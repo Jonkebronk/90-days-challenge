@@ -83,7 +83,8 @@ export async function POST(request: Request) {
             orderIndex: ex.orderIndex ?? index,
             name: ex.name,
             reps: ex.reps,
-            videoUrl: ex.videoUrl
+            videoUrl: ex.videoUrl,
+            instructions: ex.instructions
           }))
         } : undefined
       },

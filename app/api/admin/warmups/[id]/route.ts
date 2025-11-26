@@ -107,7 +107,8 @@ export async function PATCH(
               orderIndex: ex.orderIndex ?? index,
               name: ex.name,
               reps: ex.reps,
-              videoUrl: ex.videoUrl
+              videoUrl: ex.videoUrl,
+              instructions: ex.instructions
             }))
           } : undefined
         },
