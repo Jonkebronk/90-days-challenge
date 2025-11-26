@@ -612,9 +612,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const isWorkoutComplete = totalSetsCompleted >= totalSets
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto -m-6 p-6 min-h-screen bg-[#0a0a0a]">
+    <div className="space-y-6 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="bg-white border-2 border-gray-200 rounded-xl p-4 shadow-sm">
+      <div className="bg-white border-2 border-gray-300 rounded-lg p-4 shadow-md">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/dashboard/workout">
@@ -655,10 +655,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             return (
             <Card
               key={exercise.id}
-              className={`bg-white border-2 transition-all shadow-lg ${
+              className={`bg-white border-2 transition-all shadow-md rounded-lg ${
                 isCurrent && sessionId
                   ? 'border-gold-primary'
-                  : 'border-gray-200'
+                  : 'border-gray-300'
               } ${isExerciseComplete && !isExpanded ? 'opacity-60 scale-95' : isExerciseComplete ? 'opacity-80' : ''}`}
             >
               <CardHeader className={isExerciseComplete && !isExpanded ? 'py-3' : ''}>
@@ -776,7 +776,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Exercise Instructions */}
                   {exercise.exercise.instructions && exercise.exercise.instructions.length > 0 && (
-                    <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                    <div className="p-4 bg-gray-100 border-2 border-gray-300 rounded-lg">
                       <Label className="text-sm font-bold text-gray-900 block mb-3">Instruktioner</Label>
                       <ol className="space-y-2">
                         {exercise.exercise.instructions.map((instruction, idx) => (
@@ -793,7 +793,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Coach Notes */}
                   {exercise.coachNotes && (
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                    <div className="p-4 bg-blue-100 border-2 border-blue-300 rounded-lg">
                       <div className="w-full space-y-2">
                         <div className="flex items-center gap-2">
                           <UserCircle className="w-5 h-5 text-blue-500" />
@@ -809,12 +809,12 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Logged Sets */}
                   {exerciseSets.length > 0 && (
-                    <div className="p-4 bg-green-50 border border-green-200 rounded-xl space-y-3">
+                    <div className="p-4 bg-green-100 border-2 border-green-300 rounded-lg space-y-3">
                       <Label className="text-sm font-bold text-gray-900">Genomförda sets</Label>
                       {exerciseSets.map((set, setIdx) => (
                         <div
                           key={set.id || setIdx}
-                          className="flex items-center gap-4 p-3 bg-white border border-green-200 rounded-lg"
+                          className="flex items-center gap-4 p-3 bg-white border-2 border-green-300 rounded-md"
                         >
                           <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
                             <Check className="w-5 h-5 text-white" />
@@ -872,7 +872,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Log Next Set */}
                   {sessionId && !isExerciseComplete && (
-                    <div className="space-y-4 p-4 bg-amber-50 border border-gold-primary rounded-xl">
+                    <div className="space-y-4 p-4 bg-amber-100 border-2 border-gold-primary rounded-lg">
                       <Label className="text-base font-bold text-gray-900">
                         Set {exerciseSets.length + 1} av {exercise.sets}
                       </Label>
@@ -886,18 +886,17 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             value={currentReps}
                             onChange={(e) => setCurrentReps(e.target.value)}
                             placeholder={`${exercise.repsMin}-${exercise.repsMax}`}
-                            className="h-12 text-lg font-semibold bg-gray-50 border-2 border-gray-300 text-gray-900 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 focus:bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-12 text-lg font-semibold bg-white border-2 border-gray-300 text-gray-900 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>
                         <div className="space-y-1.5">
                           <Label className="text-sm font-medium text-gray-600">Vikt (kg)</Label>
                           <Input
                             type="text"
-                            inputMode="decimal"
                             value={currentWeight}
                             onChange={(e) => setCurrentWeight(e.target.value)}
                             placeholder={exerciseSets.length > 0 ? exerciseSets[exerciseSets.length - 1].weightKg?.toString() : "0"}
-                            className="h-12 text-lg font-semibold bg-gray-50 border-2 border-gray-300 text-gray-900 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 focus:bg-white"
+                            className="h-12 text-lg font-semibold bg-white border-2 border-gray-300 text-gray-900 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20"
                           />
                         </div>
                       </div>
