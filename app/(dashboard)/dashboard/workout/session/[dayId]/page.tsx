@@ -590,9 +590,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   if (!workoutDay) {
     return (
       <div className="space-y-6">
-        <Card className="bg-white/5 border-2 border-gold-primary/20">
+        <Card className="bg-white border-2 border-gray-300">
           <CardContent className="py-12 text-center">
-            <p className="text-gray-400">
+            <p className="text-gray-500">
               Workout day not found
             </p>
             <Link href="/dashboard/workout">
@@ -617,12 +617,12 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href="/dashboard/workout">
-            <Button variant="ghost" size="icon" className="text-gray-300">
+            <Button variant="ghost" size="icon" className="text-gray-600 hover:text-gray-900">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-100">
+            <h1 className="text-2xl font-bold text-gray-900">
               {workoutDay.name}
             </h1>
             <p className="text-sm text-gray-500">
@@ -633,7 +633,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         {sessionId && (
           <Button
             onClick={() => setShowCancelModal(true)}
-            className="bg-red-500/20 border-2 border-red-500/50 text-red-400 hover:bg-red-500/30 hover:text-red-300 hover:border-red-400"
+            className="bg-red-50 border-2 border-red-300 text-red-600 hover:bg-red-100 hover:text-red-700 hover:border-red-400"
           >
             <X className="w-4 h-4 mr-2" />
             Avbryt pass
@@ -652,11 +652,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             return (
             <Card
               key={exercise.id}
-              className={`bg-white/5 border-2 backdrop-blur-[10px] transition-all ${
+              className={`bg-white border-2 transition-all shadow-sm ${
                 isCurrent && sessionId
-                  ? 'border-[rgba(255,215,0,0.5)] shadow-[0_0_20px_rgba(255,215,0,0.3)]'
-                  : 'border-gold-primary/20'
-              } ${isExerciseComplete && !isExpanded ? 'opacity-50 scale-95' : isExerciseComplete ? 'opacity-60' : ''}`}
+                  ? 'border-gold-primary shadow-lg'
+                  : 'border-gray-300'
+              } ${isExerciseComplete && !isExpanded ? 'opacity-60 scale-95' : isExerciseComplete ? 'opacity-70' : ''}`}
             >
               <CardHeader className={isExerciseComplete && !isExpanded ? 'py-3' : ''}>
                 <div
@@ -666,32 +666,32 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   <div className="flex items-center gap-3 flex-1">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <CardTitle className={`${isExerciseComplete && !isExpanded ? 'text-lg' : 'text-xl'} text-gray-100 transition-all font-bold`}>
+                        <CardTitle className={`${isExerciseComplete && !isExpanded ? 'text-lg' : 'text-xl'} text-gray-900 transition-all font-bold`}>
                           {exercise.exercise.name}
                         </CardTitle>
                         {isExerciseComplete && !isExpanded && (
-                          <Badge className="bg-[rgba(34,197,94,0.2)] text-green-400 border-green-500/30 text-xs">
+                          <Badge className="bg-green-100 text-green-600 border-green-300 text-xs">
                             Klar
                           </Badge>
                         )}
                       </div>
-                      <div className="text-base text-gray-400 space-y-1 mt-2">
+                      <div className="text-base text-gray-500 space-y-1 mt-2">
                         <p>
-                          <span className="font-semibold text-gray-300">Sets:</span> {exercise.sets}
+                          <span className="font-semibold text-gray-700">Sets:</span> {exercise.sets}
                         </p>
                         <p>
-                          <span className="font-semibold text-gray-300">Repetitioner:</span> {exercise.repsMin}
+                          <span className="font-semibold text-gray-700">Repetitioner:</span> {exercise.repsMin}
                           {exercise.repsMax && exercise.repsMax !== exercise.repsMin ? `-${exercise.repsMax}` : ''}
                         </p>
                         {exercise.restSeconds > 0 && (
                           <p>
-                            <span className="font-semibold text-gray-300">Vila:</span> {exercise.restSeconds}s
+                            <span className="font-semibold text-gray-700">Vila:</span> {exercise.restSeconds}s
                           </p>
                         )}
                       </div>
 
                       {/* Video button + Previous session inline */}
-                      <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-gold-primary/10">
+                      <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-gray-200">
                         {exercise.exercise.videoUrl && (
                           <button
                             onClick={(e) => {
@@ -700,8 +700,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             }}
                             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                               activeVideoIndex === index
-                                ? 'bg-purple-500/40 border border-purple-400 text-purple-200'
-                                : 'bg-purple-500/20 border border-purple-500/40 text-purple-300 hover:bg-purple-500/30'
+                                ? 'bg-purple-100 border border-purple-300 text-purple-700'
+                                : 'bg-purple-50 border border-purple-200 text-purple-600 hover:bg-purple-100'
                             }`}
                           >
                             {activeVideoIndex === index ? (
@@ -724,9 +724,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           ) || []
                           if (prevSets.length === 0) return null
                           return (
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-gray-500">
                               Föreg:{' '}
-                              <span className="text-gold-light font-semibold">
+                              <span className="text-gold-primary font-semibold">
                                 {prevSets.map((set: any, idx: number) => (
                                   <span key={idx}>
                                     {set.setType === 'TIME'
@@ -773,13 +773,13 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Exercise Instructions */}
                   {exercise.exercise.instructions && exercise.exercise.instructions.length > 0 && (
-                    <div className="p-5 bg-gradient-to-br from-[rgba(255,215,0,0.12)] to-[rgba(255,140,0,0.08)] border-l-4 border-gold-primary rounded-lg shadow-lg">
+                    <div className="p-5 bg-amber-50 border-l-4 border-gold-primary rounded-lg">
                       <div className="w-full space-y-3">
-                        <Label className="text-base font-bold text-gold-light block">Instruktioner:</Label>
+                        <Label className="text-base font-bold text-gray-900 block">Instruktioner:</Label>
                         <ol className="space-y-2.5">
                           {exercise.exercise.instructions.map((instruction, idx) => (
-                            <li key={idx} className="flex items-start gap-3 text-sm text-gray-100 leading-relaxed">
-                              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gold-primary/20 text-gold-light font-semibold text-xs flex items-center justify-center mt-0.5">
+                            <li key={idx} className="flex items-start gap-3 text-sm text-gray-700 leading-relaxed">
+                              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gold-primary/20 text-gold-primary font-semibold text-xs flex items-center justify-center mt-0.5">
                                 {idx + 1}
                               </span>
                               <span className="flex-1 pt-0.5">{instruction}</span>
@@ -792,13 +792,13 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Coach Notes */}
                   {exercise.coachNotes && (
-                    <div className="p-5 bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-l-4 border-blue-500 rounded-lg shadow-lg">
+                    <div className="p-5 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
                       <div className="w-full space-y-2">
                         <div className="flex items-center gap-2">
-                          <UserCircle className="w-5 h-5 text-blue-400" />
-                          <Label className="text-base font-bold text-blue-300 block">Coach Notes:</Label>
+                          <UserCircle className="w-5 h-5 text-blue-500" />
+                          <Label className="text-base font-bold text-gray-900 block">Coach Notes:</Label>
                         </div>
-                        <p className="text-sm text-gray-100 leading-relaxed whitespace-pre-wrap">
+                        <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
                           {exercise.coachNotes}
                         </p>
                       </div>
@@ -809,38 +809,38 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   {/* Logged Sets */}
                   {exerciseSets.length > 0 && (
                     <div className="space-y-3">
-                      <Label className="text-base font-bold text-white">Genomförda sets:</Label>
+                      <Label className="text-base font-bold text-gray-900">Genomförda sets:</Label>
                       {exerciseSets.map((set, setIdx) => (
                         <div
                           key={set.id || setIdx}
-                          className="flex items-center gap-4 p-3 bg-gradient-to-r from-[rgba(34,197,94,0.15)] to-[rgba(34,197,94,0.08)] border-l-4 border-green-500/50 rounded-lg shadow"
+                          className="flex items-center gap-4 p-3 bg-green-50 border-l-4 border-green-500 rounded-lg shadow-sm"
                         >
-                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                            <Check className="w-5 h-5 text-green-400" />
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                            <Check className="w-5 h-5 text-green-600" />
                           </div>
                           <div className="flex items-center gap-3 flex-1">
-                            <span className="text-sm font-bold text-white">
+                            <span className="text-sm font-bold text-gray-900">
                               Set {set.setNumber}:
                             </span>
                             {set.setType === 'TIME' ? (
-                              <span className="text-base font-semibold text-gray-100">
+                              <span className="text-base font-semibold text-gray-700">
                                 {set.timeSeconds}s
                               </span>
                             ) : (
                               <>
-                                <span className="text-base font-semibold text-gray-100">
+                                <span className="text-base font-semibold text-gray-700">
                                   {set.reps || 0} reps
                                 </span>
                                 {set.setType === 'WEIGHT' && (set.weightKg || set.notes) && (
                                   <>
-                                    <span className="text-sm text-gray-400">×</span>
-                                    <span className="text-base font-semibold text-gray-100">
+                                    <span className="text-sm text-gray-500">×</span>
+                                    <span className="text-base font-semibold text-gray-700">
                                       {set.notes || `${set.weightKg} kg`}
                                     </span>
                                   </>
                                 )}
                                 {set.setType === 'BODYWEIGHT' && (
-                                  <span className="text-xs text-gray-400 ml-1">(kroppsvikt)</span>
+                                  <span className="text-xs text-gray-500 ml-1">(kroppsvikt)</span>
                                 )}
                               </>
                             )}
@@ -850,17 +850,17 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => openEditModal(set)}
-                                className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
                                 title="Redigera set"
                               >
-                                <Pencil className="w-4 h-4 text-gray-400 hover:text-white" />
+                                <Pencil className="w-4 h-4 text-gray-400 hover:text-gray-700" />
                               </button>
                               <button
                                 onClick={() => setDeletingSet(set)}
-                                className="p-2 rounded-lg hover:bg-red-500/20 transition-colors"
+                                className="p-2 rounded-lg hover:bg-red-50 transition-colors"
                                 title="Ta bort set"
                               >
-                                <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-400" />
+                                <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-500" />
                               </button>
                             </div>
                           )}
@@ -871,32 +871,32 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Log Next Set */}
                   {sessionId && !isExerciseComplete && (
-                    <div className="space-y-4 p-6 bg-gradient-to-br from-[rgba(255,215,0,0.1)] to-[rgba(255,140,0,0.05)] border-2 border-gold-primary/30 rounded-xl shadow-lg">
-                      <Label className="text-lg font-bold text-white">
+                    <div className="space-y-4 p-6 bg-amber-50 border-2 border-gold-primary rounded-xl shadow-sm">
+                      <Label className="text-lg font-bold text-gray-900">
                         Set {exerciseSets.length + 1} av {exercise.sets}
                       </Label>
 
                       {/* Input Fields */}
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label className="text-sm font-semibold text-gray-200">Reps</Label>
+                          <Label className="text-sm font-semibold text-gray-700">Reps</Label>
                           <Input
                             type="number"
                             value={currentReps}
                             onChange={(e) => setCurrentReps(e.target.value)}
                             placeholder={`${exercise.repsMin}-${exercise.repsMax}`}
-                            className="h-12 text-lg font-semibold bg-black/40 border-2 border-gold-primary/40 text-white focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-12 text-lg font-semibold bg-white border-2 border-gray-300 text-gray-900 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-semibold text-gray-200">Vikt (kg)</Label>
+                          <Label className="text-sm font-semibold text-gray-700">Vikt (kg)</Label>
                           <Input
                             type="text"
                             inputMode="decimal"
                             value={currentWeight}
                             onChange={(e) => setCurrentWeight(e.target.value)}
                             placeholder={exerciseSets.length > 0 ? exerciseSets[exerciseSets.length - 1].weightKg?.toString() : "0"}
-                            className="h-12 text-lg font-semibold bg-black/40 border-2 border-gold-primary/40 text-white focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20"
+                            className="h-12 text-lg font-semibold bg-white border-2 border-gray-300 text-gray-900 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20"
                           />
                         </div>
                       </div>
@@ -920,17 +920,17 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
       {/* Workout Complete - Combined card with rating */}
       {sessionId && isWorkoutComplete && (
-        <Card className="bg-white/5 border-2 border-[rgba(34,197,94,0.3)]">
+        <Card className="bg-white border-2 border-green-300 shadow-sm">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Trophy className="w-6 h-6 text-green-500" />
+            <CardTitle className="text-gray-900 flex items-center gap-2">
+              <Trophy className="w-6 h-6 text-green-600" />
               Bra jobbat! Alla övningar klara
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Star Rating */}
             <div>
-              <Label className="text-gray-200 mb-3 block">
+              <Label className="text-gray-700 mb-3 block">
                 Hur var träningen?
               </Label>
               <div className="flex gap-2 justify-center">
@@ -943,34 +943,34 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     <Star
                       className={`w-10 h-10 ${
                         sessionRating && star <= sessionRating
-                          ? 'fill-[#FFD700] text-gold-light'
-                          : 'text-[rgba(255,215,0,0.3)] hover:text-[rgba(255,215,0,0.5)]'
+                          ? 'fill-gold-primary text-gold-light'
+                          : 'text-gray-300 hover:text-gray-400'
                       }`}
                     />
                   </button>
                 ))}
               </div>
               {sessionRating && (
-                <p className="text-center text-sm text-gray-400 mt-2">
-                  {sessionRating === 5 && '🔥 Fantastiskt!'}
-                  {sessionRating === 4 && '💪 Riktigt bra!'}
-                  {sessionRating === 3 && '👍 Bra jobbat!'}
-                  {sessionRating === 2 && '😊 Okej pass'}
-                  {sessionRating === 1 && '😔 Kunde varit bättre'}
+                <p className="text-center text-sm text-gray-500 mt-2">
+                  {sessionRating === 5 && 'Fantastiskt!'}
+                  {sessionRating === 4 && 'Riktigt bra!'}
+                  {sessionRating === 3 && 'Bra jobbat!'}
+                  {sessionRating === 2 && 'Okej pass'}
+                  {sessionRating === 1 && 'Kunde varit bättre'}
                 </p>
               )}
             </div>
 
             {/* Notes */}
             <div>
-              <Label className="text-gray-200">
+              <Label className="text-gray-700">
                 Anteckningar (valfritt)
               </Label>
               <textarea
                 value={workoutNotes}
                 onChange={(e) => setWorkoutNotes(e.target.value)}
                 placeholder="Hur kändes passet? Några nya personliga rekord?"
-                className="w-full mt-2 p-3 bg-black/30 border-2 border-gold-primary/30 rounded-xl text-white placeholder-[rgba(255,255,255,0.4)] focus:border-[rgba(255,215,0,0.5)] outline-none min-h-[80px] resize-y"
+                className="w-full mt-2 p-3 bg-gray-50 border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:border-gold-primary outline-none min-h-[80px] resize-y"
                 rows={3}
               />
             </div>
@@ -979,7 +979,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             <Button
               onClick={completeWorkout}
               disabled={isCompleting}
-              className="w-full bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white hover:opacity-90 text-lg py-6"
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white hover:opacity-90 text-lg py-6"
             >
               <Trophy className="w-5 h-5 mr-2" />
               {isCompleting ? 'Sparar...' : 'Avsluta träning'}
@@ -990,17 +990,17 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
       {/* Edit Set Modal */}
       {editingSet && (
-        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-gold-primary/30 backdrop-blur-[10px] w-full max-w-md">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="bg-white border-2 border-gray-300 shadow-xl w-full max-w-md">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Pencil className="w-5 h-5 text-gold-light" />
+                <CardTitle className="text-gray-900 flex items-center gap-2">
+                  <Pencil className="w-5 h-5 text-gold-primary" />
                   Redigera Set {editingSet.setNumber}
                 </CardTitle>
                 <button
                   onClick={() => setEditingSet(null)}
-                  className="text-gray-500 hover:text-gray-200"
+                  className="text-gray-400 hover:text-gray-600"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1009,22 +1009,22 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-gray-200">Reps</Label>
+                  <Label className="text-sm font-semibold text-gray-700">Reps</Label>
                   <Input
                     type="number"
                     value={editReps}
                     onChange={(e) => setEditReps(e.target.value)}
-                    className="h-12 text-lg font-semibold bg-black/40 border-2 border-gold-primary/40 text-white focus:border-gold-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="h-12 text-lg font-semibold bg-gray-50 border-2 border-gray-300 text-gray-900 focus:border-gold-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-semibold text-gray-200">Vikt (kg)</Label>
+                  <Label className="text-sm font-semibold text-gray-700">Vikt (kg)</Label>
                   <Input
                     type="text"
                     inputMode="decimal"
                     value={editWeight}
                     onChange={(e) => setEditWeight(e.target.value)}
-                    className="h-12 text-lg font-semibold bg-black/40 border-2 border-gold-primary/40 text-white focus:border-gold-primary"
+                    className="h-12 text-lg font-semibold bg-gray-50 border-2 border-gray-300 text-gray-900 focus:border-gold-primary"
                   />
                 </div>
               </div>
@@ -1033,7 +1033,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                 <Button
                   onClick={() => setEditingSet(null)}
                   variant="outline"
-                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-gray-200 hover:bg-[rgba(255,255,255,0.1)]"
+                  className="flex-1 bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100"
                   disabled={isUpdatingSet}
                 >
                   Avbryt
@@ -1053,29 +1053,29 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
       {/* Delete Set Confirmation Modal */}
       {deletingSet && (
-        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-red-500/30 backdrop-blur-[10px] w-full max-w-md">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="bg-white border-2 border-red-300 shadow-xl w-full max-w-md">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Trash2 className="w-5 h-5 text-red-400" />
+                <CardTitle className="text-gray-900 flex items-center gap-2">
+                  <Trash2 className="w-5 h-5 text-red-500" />
                   Ta bort Set {deletingSet.setNumber}?
                 </CardTitle>
                 <button
                   onClick={() => setDeletingSet(null)}
-                  className="text-gray-500 hover:text-gray-200"
+                  className="text-gray-400 hover:text-gray-600"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-gray-300">
+              <p className="text-gray-600">
                 Är du säker på att du vill ta bort detta set? Detta kan inte ångras.
               </p>
-              <div className="p-3 bg-white/5 rounded-lg">
-                <span className="text-sm text-gray-400">Set {deletingSet.setNumber}: </span>
-                <span className="text-white font-semibold">
+              <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                <span className="text-sm text-gray-500">Set {deletingSet.setNumber}: </span>
+                <span className="text-gray-900 font-semibold">
                   {deletingSet.reps} reps
                   {deletingSet.weightKg && ` × ${deletingSet.weightKg} kg`}
                 </span>
@@ -1085,7 +1085,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                 <Button
                   onClick={() => setDeletingSet(null)}
                   variant="outline"
-                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-gray-500/30 text-gray-200 hover:bg-[rgba(255,255,255,0.1)]"
+                  className="flex-1 bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100"
                   disabled={isUpdatingSet}
                 >
                   Avbryt
@@ -1105,29 +1105,29 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
       {/* Cancel Session Confirmation Modal */}
       {showCancelModal && (
-        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-start justify-center p-4 pt-20">
-          <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-red-500/30 backdrop-blur-[10px] w-full max-w-md">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-start justify-center p-4 pt-20">
+          <Card className="bg-white border-2 border-red-300 shadow-xl w-full max-w-md">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-white flex items-center gap-2">
-                  <X className="w-5 h-5 text-red-400" />
+                <CardTitle className="text-gray-900 flex items-center gap-2">
+                  <X className="w-5 h-5 text-red-500" />
                   Avbryt träningspass?
                 </CardTitle>
                 <button
                   onClick={() => setShowCancelModal(false)}
-                  className="text-gray-500 hover:text-gray-200"
+                  className="text-gray-400 hover:text-gray-600"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-gray-300">
+              <p className="text-gray-600">
                 Är du säker på att du vill avbryta detta pass? Alla loggade sets kommer att tas bort.
               </p>
               {Object.values(setLogs).flat().length > 0 && (
-                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                  <p className="text-red-300 text-sm">
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-600 text-sm">
                     Du har loggat {Object.values(setLogs).flat().length} set som kommer att raderas.
                   </p>
                 </div>
@@ -1137,7 +1137,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                 <Button
                   onClick={() => setShowCancelModal(false)}
                   variant="outline"
-                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-gray-500/30 text-gray-200 hover:bg-[rgba(255,255,255,0.1)]"
+                  className="flex-1 bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100"
                   disabled={isCancelling}
                 >
                   Fortsätt träna
