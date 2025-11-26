@@ -372,19 +372,28 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         // setCurrentTimeSeconds('') - Keep the value
 
         // Check if we should move to next exercise
-        const exercise = workoutDay?.exercises[currentExerciseIndex]
+        // Find the actual index of the exercise that was just completed
+        const completedExerciseIndex = workoutDay?.exercises.findIndex(ex => ex.exercise.id === exerciseId) ?? -1
+        const exercise = completedExerciseIndex >= 0 ? workoutDay?.exercises[completedExerciseIndex] : null
+
         if (exercise && setLogs[exerciseId]?.length + 1 >= exercise.sets) {
           // All sets complete for this exercise - collapse it immediately
           const newExpanded = new Set(expandedExercises)
-          newExpanded.delete(currentExerciseIndex)
+          newExpanded.delete(completedExerciseIndex)
           setExpandedExercises(newExpanded)
 
-          if (currentExerciseIndex < (workoutDay?.exercises.length || 0) - 1) {
-            // Move to next exercise after a short delay
+          // Find the next incomplete exercise
+          const nextIncompleteIndex = workoutDay?.exercises.findIndex((ex, idx) => {
+            if (idx <= completedExerciseIndex) return false
+            const exSets = setLogs[ex.exercise.id] || []
+            return exSets.length < ex.sets
+          }) ?? -1
+
+          if (nextIncompleteIndex >= 0) {
+            // Move to next incomplete exercise after a short delay
             setTimeout(() => {
-              setCurrentExerciseIndex(prev => prev + 1)
-              const newIndex = currentExerciseIndex + 1
-              setExpandedExercises(new Set([newIndex]))
+              setCurrentExerciseIndex(nextIncompleteIndex)
+              setExpandedExercises(new Set([nextIncompleteIndex]))
             }, 500)
           }
         } else {
