@@ -216,41 +216,43 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 p-8">
+    <div className="min-h-screen bg-gray-900 p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <Button
             variant="ghost"
             onClick={() => router.push('/dashboard/workout/history')}
-            className="mb-4 text-gray-300 hover:text-gray-100"
+            className="mb-3 sm:mb-4 text-gray-300 hover:text-gray-100 text-sm sm:text-base px-2 sm:px-4"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Tillbaka till historik
+            <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
+            Tillbaka
           </Button>
 
-          <div className="flex items-start gap-4 mb-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
-              <Dumbbell className="w-8 h-8 text-black" />
-            </div>
-            <div className="flex-1">
-              <h1 className="text-4xl font-bold text-white mb-2">
-                {session.workoutProgramDay.name}
-              </h1>
-              <div className="flex items-center gap-4 text-gray-400">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  {formatDate(session.startedAt)}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  {formatTime(session.startedAt)}
+          <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 mb-4">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center flex-shrink-0">
+                <Dumbbell className="w-6 h-6 sm:w-8 sm:h-8 text-black" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl sm:text-4xl font-bold text-white mb-1 sm:mb-2">
+                  {session.workoutProgramDay.name}
+                </h1>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-400">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
+                    {formatDate(session.startedAt)}
+                  </div>
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+                    {formatTime(session.startedAt)}
+                  </div>
                 </div>
               </div>
             </div>
             {session.completed && (
-              <div className="px-4 py-2 bg-[rgba(34,197,94,0.2)] border-2 border-[rgba(34,197,94,0.4)] rounded-xl text-green-500 font-semibold flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5" />
+              <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[rgba(34,197,94,0.2)] border-2 border-[rgba(34,197,94,0.4)] rounded-lg sm:rounded-xl text-green-500 font-semibold flex items-center gap-1.5 sm:gap-2 text-sm sm:text-base self-start sm:self-auto">
+                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 Genomfört
               </div>
             )}
@@ -258,55 +260,55 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-black" />
+        <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-6 backdrop-blur-[10px]">
+            <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
               </div>
-              <div className="text-gray-400 text-sm">Tid</div>
+              <div className="text-gray-400 text-xs sm:text-sm">Tid</div>
             </div>
-            <div className="text-3xl font-bold text-white">
-              {session.durationMinutes ? `${session.durationMinutes} min` : '-'}
+            <div className="text-xl sm:text-3xl font-bold text-white">
+              {session.durationMinutes ? `${session.durationMinutes}` : '-'}<span className="text-xs sm:text-sm text-gray-400 ml-1">min</span>
             </div>
           </div>
 
-          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center">
-                <Dumbbell className="w-5 h-5 text-white" />
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-6 backdrop-blur-[10px]">
+            <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center">
+                <Dumbbell className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <div className="text-gray-400 text-sm">Totala Set</div>
+              <div className="text-gray-400 text-xs sm:text-sm">Set</div>
             </div>
-            <div className="text-3xl font-bold text-white">
+            <div className="text-xl sm:text-3xl font-bold text-white">
               {session.sets.filter(s => s.completed).length}
             </div>
           </div>
 
-          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-white" />
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-6 backdrop-blur-[10px]">
+            <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center">
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <div className="text-gray-400 text-sm">Total Volym</div>
+              <div className="text-gray-400 text-xs sm:text-sm">Volym</div>
             </div>
-            <div className="text-3xl font-bold text-white">
-              {calculateTotalVolume().toLocaleString('sv-SE')} kg
+            <div className="text-xl sm:text-3xl font-bold text-white">
+              {calculateTotalVolume().toLocaleString('sv-SE')}<span className="text-xs sm:text-sm text-gray-400 ml-1">kg</span>
             </div>
           </div>
         </div>
 
         {/* Notes */}
         {session.notes && (
-          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px] mb-8">
-            <h3 className="text-lg font-semibold text-gray-100 mb-3">Anteckningar</h3>
-            <p className="text-gray-300">{session.notes}</p>
+          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-[10px] mb-6 sm:mb-8">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-100 mb-2 sm:mb-3">Anteckningar</h3>
+            <p className="text-gray-300 text-sm sm:text-base">{session.notes}</p>
           </div>
         )}
 
         {/* Exercises */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-white">Övningar</h2>
+        <div className="space-y-4 sm:space-y-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-white">Övningar</h2>
 
           {getUniqueExercises().map((exercise) => {
             const sets = getExerciseSets(exercise.id)
@@ -314,17 +316,17 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
             return (
               <div
                 key={exercise.id}
-                className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-6 backdrop-blur-[10px]"
+                className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-[10px]"
               >
-                <div className="mb-4">
-                  <h3 className="text-xl font-semibold text-white mb-2">
+                <div className="mb-3 sm:mb-4">
+                  <h3 className="text-base sm:text-xl font-semibold text-white mb-2">
                     {exercise.name}
                   </h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     {exercise.muscleGroups.map((muscle: string, idx: number) => (
                       <div
                         key={idx}
-                        className="px-3 py-1 bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.3)] rounded-full text-[rgba(139,92,246,0.9)] text-sm"
+                        className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.3)] rounded-full text-[rgba(139,92,246,0.9)] text-xs sm:text-sm"
                       >
                         {muscle}
                       </div>
@@ -332,63 +334,63 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {sets.map((set) => (
                     <div
                       key={set.id}
-                      className="bg-white/5 rounded-xl p-4 flex items-center justify-between group"
+                      className="bg-white/5 rounded-lg sm:rounded-xl p-3 sm:p-4 flex items-center justify-between group"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center">
-                          <span className="text-white font-bold">{set.setNumber}</span>
+                      <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-bold text-sm sm:text-base">{set.setNumber}</span>
                         </div>
-                        <div className="flex gap-8">
+                        <div className="flex flex-wrap gap-3 sm:gap-8 flex-1 min-w-0">
                           {set.reps !== null && (
                             <div>
-                              <div className="text-gray-500 text-sm">Reps</div>
-                              <div className="text-gray-100 font-semibold">{set.reps}</div>
+                              <div className="text-gray-500 text-xs sm:text-sm">Reps</div>
+                              <div className="text-gray-100 font-semibold text-sm sm:text-base">{set.reps}</div>
                             </div>
                           )}
                           {set.weightKg !== null && (
                             <div>
-                              <div className="text-gray-500 text-sm">Vikt (kg)</div>
-                              <div className="text-gray-100 font-semibold">{set.notes || set.weightKg}</div>
+                              <div className="text-gray-500 text-xs sm:text-sm">Vikt</div>
+                              <div className="text-gray-100 font-semibold text-sm sm:text-base">{set.notes || set.weightKg}kg</div>
                             </div>
                           )}
                           {set.timeSeconds !== null && (
                             <div>
-                              <div className="text-gray-500 text-sm">Tid</div>
-                              <div className="text-gray-100 font-semibold">
+                              <div className="text-gray-500 text-xs sm:text-sm">Tid</div>
+                              <div className="text-gray-100 font-semibold text-sm sm:text-base">
                                 {formatDuration(set.timeSeconds)}
                               </div>
                             </div>
                           )}
                           {set.reps && set.weightKg && (
-                            <div>
-                              <div className="text-gray-500 text-sm">Volym</div>
-                              <div className="text-gray-100 font-semibold">
+                            <div className="hidden sm:block">
+                              <div className="text-gray-500 text-xs sm:text-sm">Volym</div>
+                              <div className="text-gray-100 font-semibold text-sm sm:text-base">
                                 {(set.reps * Number(set.weightKg)).toFixed(0)} kg
                               </div>
                             </div>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                         {set.notes && !set.weightKg && (
-                          <div className="text-gray-400 text-sm italic mr-2">
+                          <div className="text-gray-400 text-xs sm:text-sm italic mr-1 sm:mr-2 hidden sm:block">
                             {set.notes}
                           </div>
                         )}
                         <button
                           onClick={() => openEditModal(set)}
-                          className="p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-white/10 transition-all"
+                          className="p-1.5 sm:p-2 rounded-lg sm:opacity-0 sm:group-hover:opacity-100 hover:bg-white/10 transition-all"
                           title="Redigera set"
                         >
                           <Pencil className="w-4 h-4 text-gray-400 hover:text-white" />
                         </button>
                         <button
                           onClick={() => setDeletingSet(set)}
-                          className="p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/20 transition-all"
+                          className="p-1.5 sm:p-2 rounded-lg sm:opacity-0 sm:group-hover:opacity-100 hover:bg-red-500/20 transition-all"
                           title="Ta bort set"
                         >
                           <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-400" />

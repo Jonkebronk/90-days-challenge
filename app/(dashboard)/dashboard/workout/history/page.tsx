@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calendar, Clock, Dumbbell, TrendingUp, ChevronRight, Star, Search, Filter, ChevronDown, ChevronUp } from 'lucide-react'
+import { Calendar, Clock, Dumbbell, TrendingUp, ChevronRight, Star, Search, Filter, ChevronDown, ChevronUp, Trash2, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
@@ -58,6 +58,10 @@ export default function WorkoutHistoryPage() {
 
   // Expansion state
   const [expandedSessions, setExpandedSessions] = useState<Set<string>>(new Set())
+
+  // Delete confirmation state
+  const [deletingSession, setDeletingSession] = useState<WorkoutSession | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     fetchSessions()
@@ -118,6 +122,27 @@ export default function WorkoutHistoryPage() {
       }
       return newSet
     })
+  }
+
+  const deleteSession = async () => {
+    if (!deletingSession) return
+
+    setIsDeleting(true)
+    try {
+      const response = await fetch(`/api/workout-sessions/${deletingSession.id}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        // Remove from local state
+        setSessions(prev => prev.filter(s => s.id !== deletingSession.id))
+        setDeletingSession(null)
+      }
+    } catch (error) {
+      console.error('Error deleting session:', error)
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   const calculateStats = (sessions: WorkoutSession[]) => {
@@ -457,22 +482,34 @@ export default function WorkoutHistoryPage() {
 
                 {/* Expansion Toggle */}
                 <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-[rgba(255,255,255,0.1)] flex items-center justify-between gap-2">
-                  <button
-                    onClick={(e) => toggleSessionExpansion(session.id, e)}
-                    className="flex items-center gap-1 sm:gap-2 text-gold-light hover:text-gold-primary transition-colors"
-                  >
-                    {isExpanded ? (
-                      <>
-                        <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" />
-                        <span className="text-xs sm:text-sm font-medium">Dölj</span>
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
-                        <span className="text-xs sm:text-sm font-medium">Detaljer</span>
-                      </>
-                    )}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={(e) => toggleSessionExpansion(session.id, e)}
+                      className="flex items-center gap-1 sm:gap-2 text-gold-light hover:text-gold-primary transition-colors"
+                    >
+                      {isExpanded ? (
+                        <>
+                          <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" />
+                          <span className="text-xs sm:text-sm font-medium">Dölj</span>
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
+                          <span className="text-xs sm:text-sm font-medium">Detaljer</span>
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setDeletingSession(session)
+                      }}
+                      className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+                      title="Ta bort pass"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                   <button
                     onClick={() => router.push(`/dashboard/workout/session/completed/${session.id}`)}
                     className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-white/5 hover:bg-white/10 border border-gold-primary/30 hover:border-gold-primary/60 rounded-lg text-white text-xs sm:text-sm font-medium transition-all"
@@ -520,6 +557,53 @@ export default function WorkoutHistoryPage() {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deletingSession && (
+        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[rgba(10,10,10,0.98)] border-2 border-red-500/30 backdrop-blur-[10px] w-full max-w-md rounded-2xl">
+            <div className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-white font-semibold flex items-center gap-2">
+                  <Trash2 className="w-5 h-5 text-red-400" />
+                  Ta bort träningspass?
+                </h3>
+                <button
+                  onClick={() => setDeletingSession(null)}
+                  className="text-gray-500 hover:text-gray-200"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <p className="text-gray-300 mb-4 text-sm sm:text-base">
+                Är du säker på att du vill ta bort detta pass? Detta kan inte ångras.
+              </p>
+              <div className="p-3 bg-white/5 rounded-lg mb-6">
+                <p className="text-white font-medium text-sm sm:text-base">{deletingSession.workoutProgramDay.name}</p>
+                <p className="text-gray-400 text-xs sm:text-sm">{formatDate(deletingSession.startedAt)}</p>
+              </div>
+
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setDeletingSession(null)}
+                  variant="outline"
+                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-gray-500/30 text-gray-200 hover:bg-[rgba(255,255,255,0.1)]"
+                  disabled={isDeleting}
+                >
+                  Avbryt
+                </Button>
+                <Button
+                  onClick={deleteSession}
+                  className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white hover:opacity-90"
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? 'Tar bort...' : 'Ta bort'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
