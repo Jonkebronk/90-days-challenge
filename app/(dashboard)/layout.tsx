@@ -50,7 +50,7 @@ import { Badge } from '@/components/ui/badge'
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Klienter', href: '/dashboard/clients', icon: Users, coachOnly: true },
-  { name: 'Journal', href: '/dashboard/journal', icon: ClipboardList },
+  { name: 'Journal', href: '/dashboard/journal', icon: ClipboardList, coachOnly: true },
   { name: 'Intresseanmälningar', href: '/dashboard/leads', icon: UserPlus, coachOnly: true },
   {
     name: 'Innehåll',
