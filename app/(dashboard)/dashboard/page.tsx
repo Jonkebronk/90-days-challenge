@@ -23,7 +23,8 @@ import {
   HelpCircle,
   Clock,
   Info,
-  Apple
+  Apple,
+  Smartphone
 } from 'lucide-react'
 
 export default function DashboardPage() {
@@ -325,12 +326,89 @@ export default function DashboardPage() {
           </Dialog>
         </div>
         <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {/* 1. Installera som app */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="flex items-start gap-3 group cursor-pointer text-left">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <span className="text-white font-bold text-sm">1</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-green-600 transition-colors">Installera som app</h4>
+                    <p className="text-gray-600 text-xs">Få app-upplevelsen</p>
+                  </div>
+                </button>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-lg">
+                <DialogHeader>
+                  <DialogTitle className="text-gray-200 flex items-center gap-2">
+                    <Smartphone className="w-6 h-6 text-green-400" />
+                    Installera som app
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6 text-gray-300">
+                  <div>
+                    <h3 className="font-semibold text-white flex items-center gap-2 mb-3">
+                      <Apple className="w-5 h-5" />
+                      iPhone (Safari)
+                    </h3>
+                    <ol className="space-y-2 text-sm">
+                      <li className="flex gap-2">
+                        <span className="text-green-400 font-bold">1.</span>
+                        Öppna denna sida i Safari
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-green-400 font-bold">2.</span>
+                        Tryck på dela-ikonen (fyrkant med pil uppåt)
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-green-400 font-bold">3.</span>
+                        Scrolla ner och tryck "Lägg till på hemskärmen"
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-green-400 font-bold">4.</span>
+                        Tryck "Lägg till"
+                      </li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-white flex items-center gap-2 mb-3">
+                      <Smartphone className="w-5 h-5" />
+                      Android (Chrome)
+                    </h3>
+                    <ol className="space-y-2 text-sm">
+                      <li className="flex gap-2">
+                        <span className="text-green-400 font-bold">1.</span>
+                        Öppna denna sida i Chrome
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-green-400 font-bold">2.</span>
+                        Tryck på menyn (tre prickar uppe till höger)
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-green-400 font-bold">3.</span>
+                        Tryck "Lägg till på startskärmen" eller "Installera app"
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-green-400 font-bold">4.</span>
+                        Tryck "Lägg till"
+                      </li>
+                    </ol>
+                  </div>
+                  <p className="text-xs text-gray-500 border-t border-gray-700 pt-4">
+                    Efter installation öppnas appen i helskärm och du förblir inloggad!
+                  </p>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            {/* 2. Läs introduktionen */}
             <Dialog>
               <DialogTrigger asChild>
                 <button className="flex items-start gap-3 group cursor-pointer text-left">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <span className="text-white font-bold text-sm">1</span>
+                    <span className="text-white font-bold text-sm">2</span>
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-gold-primary transition-colors">Läs introduktionen</h4>
@@ -353,9 +431,10 @@ export default function DashboardPage() {
               </DialogContent>
             </Dialog>
 
+            {/* 3. Start check-in */}
             <Link href="/dashboard/check-in" className="flex items-start gap-3 group">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                <span className="text-white font-bold text-sm">2</span>
+                <span className="text-white font-bold text-sm">3</span>
               </div>
               <div>
                 <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-blue-600 transition-colors">Gör din start-check in</h4>
@@ -363,9 +442,10 @@ export default function DashboardPage() {
               </div>
             </Link>
 
+            {/* 4. Kunskapsbanken */}
             <Link href="/dashboard/articles" className="flex items-start gap-3 group">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                <span className="text-white font-bold text-sm">3</span>
+                <span className="text-white font-bold text-sm">4</span>
               </div>
               <div>
                 <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-purple-600 transition-colors">Utforska kunskapsbanken</h4>
@@ -373,10 +453,11 @@ export default function DashboardPage() {
               </div>
             </Link>
 
+            {/* 5. Dina planer */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold text-sm">4</span>
+                  <span className="text-white font-bold text-sm">5</span>
                 </div>
                 <h4 className="font-semibold text-gray-900 text-sm">Gå igenom dina planer</h4>
               </div>
