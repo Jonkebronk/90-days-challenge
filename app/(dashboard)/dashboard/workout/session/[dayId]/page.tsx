@@ -103,9 +103,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [workoutNotes, setWorkoutNotes] = useState<string>('')
 
   // Session rating
-  const [showRatingModal, setShowRatingModal] = useState(false)
   const [sessionRating, setSessionRating] = useState<number | null>(null)
-  const [sessionRatingComment, setSessionRatingComment] = useState('')
 
   const [isCompleting, setIsCompleting] = useState(false)
 
@@ -509,12 +507,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     }
   }
 
-  const completeWorkout = () => {
-    // Show rating modal instead of directly completing
-    setShowRatingModal(true)
-  }
-
-  const submitRating = async (skipRating = false) => {
+  const completeWorkout = async () => {
     if (!sessionId) return
 
     setIsCompleting(true)
@@ -526,14 +519,13 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           completed: true,
           durationMinutes: Math.floor(elapsedSeconds / 60),
           notes: workoutNotes || null,
-          rating: !skipRating && sessionRating ? sessionRating : null,
-          ratingComment: !skipRating && sessionRatingComment ? sessionRatingComment : null
+          rating: sessionRating || null,
+          ratingComment: null
         })
       })
 
       if (response.ok) {
         setIsRunning(false)
-        setShowRatingModal(false)
         // Show success and redirect
         setTimeout(() => {
           router.push('/dashboard/workout')
@@ -926,7 +918,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           })}
       </div>
 
-      {/* Workout Notes & Complete */}
+      {/* Workout Complete - Combined card with rating */}
       {sessionId && isWorkoutComplete && (
         <Card className="bg-white/5 border-2 border-[rgba(34,197,94,0.3)]">
           <CardHeader>
@@ -935,7 +927,41 @@ export default function WorkoutSessionPage({ params }: PageProps) {
               Bra jobbat! Alla övningar klara
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
+            {/* Star Rating */}
+            <div>
+              <Label className="text-gray-200 mb-3 block">
+                Hur var träningen?
+              </Label>
+              <div className="flex gap-2 justify-center">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => setSessionRating(star)}
+                    className="transition-all hover:scale-110"
+                  >
+                    <Star
+                      className={`w-10 h-10 ${
+                        sessionRating && star <= sessionRating
+                          ? 'fill-[#FFD700] text-gold-light'
+                          : 'text-[rgba(255,215,0,0.3)] hover:text-[rgba(255,215,0,0.5)]'
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+              {sessionRating && (
+                <p className="text-center text-sm text-gray-400 mt-2">
+                  {sessionRating === 5 && '🔥 Fantastiskt!'}
+                  {sessionRating === 4 && '💪 Riktigt bra!'}
+                  {sessionRating === 3 && '👍 Bra jobbat!'}
+                  {sessionRating === 2 && '😊 Okej pass'}
+                  {sessionRating === 1 && '😔 Kunde varit bättre'}
+                </p>
+              )}
+            </div>
+
+            {/* Notes */}
             <div>
               <Label className="text-gray-200">
                 Anteckningar (valfritt)
@@ -943,110 +969,23 @@ export default function WorkoutSessionPage({ params }: PageProps) {
               <textarea
                 value={workoutNotes}
                 onChange={(e) => setWorkoutNotes(e.target.value)}
-                placeholder="Hur kändes passet? Några nya personliga rekord eller observationer?"
-                className="w-full mt-2 p-3 bg-black/30 border-2 border-gold-primary/30 rounded-xl text-white placeholder-[rgba(255,255,255,0.4)] focus:border-[rgba(255,215,0,0.5)] outline-none min-h-[100px] resize-y"
-                rows={4}
+                placeholder="Hur kändes passet? Några nya personliga rekord?"
+                className="w-full mt-2 p-3 bg-black/30 border-2 border-gold-primary/30 rounded-xl text-white placeholder-[rgba(255,255,255,0.4)] focus:border-[rgba(255,215,0,0.5)] outline-none min-h-[80px] resize-y"
+                rows={3}
               />
             </div>
+
+            {/* Complete Button */}
             <Button
               onClick={completeWorkout}
               disabled={isCompleting}
               className="w-full bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white hover:opacity-90 text-lg py-6"
             >
               <Trophy className="w-5 h-5 mr-2" />
-              {isCompleting ? 'Avslutar träning...' : 'Avsluta träning'}
+              {isCompleting ? 'Sparar...' : 'Avsluta träning'}
             </Button>
           </CardContent>
         </Card>
-      )}
-
-      {/* Rating Modal */}
-      {showRatingModal && (
-        <div className="fixed inset-0 bg-gray-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="bg-[rgba(10,10,10,0.98)] border-2 border-gold-primary/30 backdrop-blur-[10px] w-full max-w-md">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Trophy className="w-6 h-6 text-gold-light" />
-                  Hur var träningen?
-                </CardTitle>
-                <button
-                  onClick={() => submitRating(true)}
-                  className="text-gray-500 hover:text-gray-200"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Star Rating */}
-              <div>
-                <Label className="text-gray-200 mb-3 block">
-                  Betygsätt ditt pass
-                </Label>
-                <div className="flex gap-2 justify-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      onClick={() => setSessionRating(star)}
-                      className="transition-all hover:scale-110"
-                    >
-                      <Star
-                        className={`w-10 h-10 ${
-                          sessionRating && star <= sessionRating
-                            ? 'fill-[#FFD700] text-gold-light'
-                            : 'text-[rgba(255,215,0,0.3)] hover:text-[rgba(255,215,0,0.5)]'
-                        }`}
-                      />
-                    </button>
-                  ))}
-                </div>
-                {sessionRating && (
-                  <p className="text-center text-sm text-gray-400 mt-2">
-                    {sessionRating === 5 && '🔥 Fantastiskt!'}
-                    {sessionRating === 4 && '💪 Riktigt bra!'}
-                    {sessionRating === 3 && '👍 Bra jobbat!'}
-                    {sessionRating === 2 && '😊 Okej pass'}
-                    {sessionRating === 1 && '😔 Kunde varit bättre'}
-                  </p>
-                )}
-              </div>
-
-              {/* Optional Comment */}
-              <div>
-                <Label className="text-gray-200">
-                  Kommentar (valfritt)
-                </Label>
-                <textarea
-                  value={sessionRatingComment}
-                  onChange={(e) => setSessionRatingComment(e.target.value)}
-                  placeholder="Vad gjorde passet bra eller dåligt?"
-                  className="w-full mt-2 p-3 bg-black/30 border-2 border-gold-primary/30 rounded-xl text-white placeholder-[rgba(255,255,255,0.4)] focus:border-[rgba(255,215,0,0.5)] outline-none min-h-[80px] resize-y"
-                  rows={3}
-                />
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-3">
-                <Button
-                  onClick={() => submitRating(true)}
-                  variant="outline"
-                  className="flex-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-gray-200 hover:bg-[rgba(255,255,255,0.1)]"
-                  disabled={isCompleting}
-                >
-                  Hoppa över
-                </Button>
-                <Button
-                  onClick={() => submitRating(false)}
-                  className="flex-1 bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
-                  disabled={isCompleting || !sessionRating}
-                >
-                  {isCompleting ? 'Sparar...' : 'Spara betyg'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       )}
 
       {/* Edit Set Modal */}
