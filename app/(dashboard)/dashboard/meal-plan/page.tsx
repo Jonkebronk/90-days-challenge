@@ -345,15 +345,12 @@ export default function MealPlanPage() {
                                 <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
                                   <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Protein</p>
                                 </div>
-                                <ul className="text-sm text-gray-700 p-4 space-y-3">
+                                <ul className="text-sm text-gray-700 p-4 space-y-3 list-disc list-inside marker:text-gray-900 marker:font-bold">
                                   {meal.proteinSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                     <li key={idx}>
-                                      <div className="flex items-center gap-3">
-                                        <span className="text-gray-900 font-bold text-lg leading-none">•</span>
-                                        <span>{item.trim()}</span>
-                                      </div>
+                                      <span className="ml-1">{item.trim()}</span>
                                       {idx < arr.length - 1 && (
-                                        <div className="my-3 ml-5 flex items-center gap-2">
+                                        <div className="my-3 flex items-center gap-2">
                                           <div className="h-px flex-1 bg-gray-200" />
                                           <span className="text-sm text-gold-primary font-bold uppercase px-2">ELLER</span>
                                           <div className="h-px flex-1 bg-gray-200" />
@@ -369,15 +366,12 @@ export default function MealPlanPage() {
                                 <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
                                   <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Kolhydrater</p>
                                 </div>
-                                <ul className="text-sm text-gray-700 p-4 space-y-3">
+                                <ul className="text-sm text-gray-700 p-4 space-y-3 list-disc list-inside marker:text-gray-900 marker:font-bold">
                                   {meal.carbSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                     <li key={idx}>
-                                      <div className="flex items-center gap-3">
-                                        <span className="text-gray-900 font-bold text-lg leading-none">•</span>
-                                        <span>{item.trim()}</span>
-                                      </div>
+                                      <span className="ml-1">{item.trim()}</span>
                                       {idx < arr.length - 1 && (
-                                        <div className="my-3 ml-5 flex items-center gap-2">
+                                        <div className="my-3 flex items-center gap-2">
                                           <div className="h-px flex-1 bg-gray-200" />
                                           <span className="text-sm text-gold-primary font-bold uppercase px-2">ELLER</span>
                                           <div className="h-px flex-1 bg-gray-200" />
@@ -393,15 +387,12 @@ export default function MealPlanPage() {
                                 <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
                                   <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Fett</p>
                                 </div>
-                                <ul className="text-sm text-gray-700 p-4 space-y-3">
+                                <ul className="text-sm text-gray-700 p-4 space-y-3 list-disc list-inside marker:text-gray-900 marker:font-bold">
                                   {meal.fatSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                     <li key={idx}>
-                                      <div className="flex items-center gap-3">
-                                        <span className="text-gray-900 font-bold text-lg leading-none">•</span>
-                                        <span>{item.trim()}</span>
-                                      </div>
+                                      <span className="ml-1">{item.trim()}</span>
                                       {idx < arr.length - 1 && (
-                                        <div className="my-3 ml-5 flex items-center gap-2">
+                                        <div className="my-3 flex items-center gap-2">
                                           <div className="h-px flex-1 bg-gray-200" />
                                           <span className="text-sm text-gold-primary font-bold uppercase px-2">ELLER</span>
                                           <div className="h-px flex-1 bg-gray-200" />
