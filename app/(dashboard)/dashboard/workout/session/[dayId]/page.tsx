@@ -612,7 +612,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const isWorkoutComplete = totalSetsCompleted >= totalSets
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto -m-6 p-6 min-h-screen bg-[#0a0a0a]">
       {/* Header */}
       <div className="bg-white border-2 border-gray-200 rounded-xl p-4 shadow-sm">
         <div className="flex items-center justify-between">
@@ -655,11 +655,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             return (
             <Card
               key={exercise.id}
-              className={`bg-gray-50 border-2 transition-all shadow-sm ${
+              className={`bg-white border-2 transition-all shadow-lg ${
                 isCurrent && sessionId
-                  ? 'border-gold-primary shadow-lg'
-                  : 'border-gray-300'
-              } ${isExerciseComplete && !isExpanded ? 'opacity-60 scale-95' : isExerciseComplete ? 'opacity-70' : ''}`}
+                  ? 'border-gold-primary'
+                  : 'border-gray-200'
+              } ${isExerciseComplete && !isExpanded ? 'opacity-60 scale-95' : isExerciseComplete ? 'opacity-80' : ''}`}
             >
               <CardHeader className={isExerciseComplete && !isExpanded ? 'py-3' : ''}>
                 <div
@@ -776,7 +776,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Exercise Instructions */}
                   {exercise.exercise.instructions && exercise.exercise.instructions.length > 0 && (
-                    <div className="p-4 bg-white border-2 border-gray-200 rounded-xl shadow-sm">
+                    <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
                       <Label className="text-sm font-bold text-gray-900 block mb-3">Instruktioner</Label>
                       <ol className="space-y-2">
                         {exercise.exercise.instructions.map((instruction, idx) => (
@@ -793,7 +793,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Coach Notes */}
                   {exercise.coachNotes && (
-                    <div className="p-4 bg-white border-2 border-blue-200 rounded-xl shadow-sm">
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
                       <div className="w-full space-y-2">
                         <div className="flex items-center gap-2">
                           <UserCircle className="w-5 h-5 text-blue-500" />
@@ -809,12 +809,12 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Logged Sets */}
                   {exerciseSets.length > 0 && (
-                    <div className="p-4 bg-white border-2 border-green-200 rounded-xl shadow-sm space-y-3">
+                    <div className="p-4 bg-green-50 border border-green-200 rounded-xl space-y-3">
                       <Label className="text-sm font-bold text-gray-900">Genomförda sets</Label>
                       {exerciseSets.map((set, setIdx) => (
                         <div
                           key={set.id || setIdx}
-                          className="flex items-center gap-4 p-3 bg-green-50 border border-green-200 rounded-lg"
+                          className="flex items-center gap-4 p-3 bg-white border border-green-200 rounded-lg"
                         >
                           <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
                             <Check className="w-5 h-5 text-white" />
@@ -872,7 +872,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Log Next Set */}
                   {sessionId && !isExerciseComplete && (
-                    <div className="space-y-4 p-4 bg-white border-2 border-gold-primary rounded-xl shadow-sm">
+                    <div className="space-y-4 p-4 bg-amber-50 border border-gold-primary rounded-xl">
                       <Label className="text-base font-bold text-gray-900">
                         Set {exerciseSets.length + 1} av {exercise.sets}
                       </Label>
