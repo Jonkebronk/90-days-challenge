@@ -268,17 +268,17 @@ export default function MealPlanPage() {
       {/* Main Content */}
       <div>
           <Tabs defaultValue="meals" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-white/5 border-2 border-gold-primary/20">
+            <TabsList className="grid w-full grid-cols-2 bg-gray-100 border border-gray-200 rounded-xl">
               <TabsTrigger
                 value="meals"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a]"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] rounded-lg"
               >
                 <Utensils className="w-4 h-4 mr-2" />
                 Kostschema
               </TabsTrigger>
               <TabsTrigger
                 value="supplements"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a]"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] rounded-lg"
               >
                 <Dumbbell className="w-4 h-4 mr-2" />
                 Träning
@@ -287,26 +287,26 @@ export default function MealPlanPage() {
 
             <TabsContent value="meals" className="space-y-6 mt-6">
               {/* Daily Macro Overview */}
-              <div className="bg-white/5 border border-gold-primary/20 rounded-xl p-4">
+              <div className="bg-white border border-gray-200 rounded-xl p-4">
                 <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
                   <div className="flex items-center gap-2">
-                    <span className="text-gold-light font-semibold">Totalt:</span>
-                    <span className="text-white font-bold text-lg">{totalDailyCalories.toFixed(0)} kcal</span>
+                    <span className="text-gold-primary font-semibold">Totalt:</span>
+                    <span className="text-gray-900 font-bold text-lg">{totalDailyCalories.toFixed(0)} kcal</span>
                   </div>
-                  <div className="h-4 w-px bg-gold-primary/30 hidden sm:block" />
+                  <div className="h-4 w-px bg-gray-300 hidden sm:block" />
                   <div className="flex items-center gap-2">
-                    <span className="text-red-400">Protein:</span>
-                    <span className="text-white font-semibold">{totalDailyProtein.toFixed(0)}g</span>
+                    <span className="text-red-500">Protein:</span>
+                    <span className="text-gray-900 font-semibold">{totalDailyProtein.toFixed(0)}g</span>
                   </div>
-                  <div className="h-4 w-px bg-gold-primary/30 hidden sm:block" />
+                  <div className="h-4 w-px bg-gray-300 hidden sm:block" />
                   <div className="flex items-center gap-2">
-                    <span className="text-amber-400">Kolhydrater:</span>
-                    <span className="text-white font-semibold">{totalDailyCarbs.toFixed(0)}g</span>
+                    <span className="text-amber-500">Kolhydrater:</span>
+                    <span className="text-gray-900 font-semibold">{totalDailyCarbs.toFixed(0)}g</span>
                   </div>
-                  <div className="h-4 w-px bg-gold-primary/30 hidden sm:block" />
+                  <div className="h-4 w-px bg-gray-300 hidden sm:block" />
                   <div className="flex items-center gap-2">
-                    <span className="text-green-400">Fett:</span>
-                    <span className="text-white font-semibold">{totalDailyFat.toFixed(0)}g</span>
+                    <span className="text-green-500">Fett:</span>
+                    <span className="text-gray-900 font-semibold">{totalDailyFat.toFixed(0)}g</span>
                   </div>
                 </div>
               </div>
@@ -316,33 +316,33 @@ export default function MealPlanPage() {
                 const recipeCount = meal.options?.filter(o => o.recipe).length || 0
                 const isExpanded = expandedMeals.has(meal.mealNumber)
                 return (
-                <div key={meal.id} className="bg-white/5 border border-gold-primary/20 rounded-xl overflow-hidden">
+                <div key={meal.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
                   {/* Meal Header with Macros - Clickable */}
                   <div
-                    className="p-4 cursor-pointer hover:bg-white/5 transition-colors"
+                    className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                     onClick={() => toggleMeal(meal.mealNumber)}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                          <Utensils className="w-5 h-5 text-gold-light" />
+                        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                          <Utensils className="w-5 h-5 text-gold-primary" />
                           {meal.name || `Måltid ${meal.mealNumber}`}
                         </h3>
                         {recipeCount > 0 && (
-                          <span className="text-sm text-gray-400">({recipeCount} recept)</span>
+                          <span className="text-sm text-gray-500">({recipeCount} recept)</span>
                         )}
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="flex flex-wrap items-center gap-3 text-sm">
-                          <span className="text-white font-semibold">{meal.totalCalories?.toFixed(0) || 0} kcal</span>
-                          <span className="text-red-400">P: {meal.totalProtein?.toFixed(0) || 0}g</span>
-                          <span className="text-amber-400">K: {meal.totalCarbs?.toFixed(0) || 0}g</span>
-                          <span className="text-green-400">F: {meal.totalFat?.toFixed(0) || 0}g</span>
+                          <span className="text-gray-900 font-semibold">{meal.totalCalories?.toFixed(0) || 0} kcal</span>
+                          <span className="text-red-500">P: {meal.totalProtein?.toFixed(0) || 0}g</span>
+                          <span className="text-amber-500">K: {meal.totalCarbs?.toFixed(0) || 0}g</span>
+                          <span className="text-green-500">F: {meal.totalFat?.toFixed(0) || 0}g</span>
                         </div>
                         {isExpanded ? (
-                          <ChevronUp className="w-5 h-5 text-gold-light" />
+                          <ChevronUp className="w-5 h-5 text-gold-primary" />
                         ) : (
-                          <ChevronDown className="w-5 h-5 text-gold-light" />
+                          <ChevronDown className="w-5 h-5 text-gold-primary" />
                         )}
                       </div>
                     </div>
@@ -350,15 +350,15 @@ export default function MealPlanPage() {
 
                   {/* Expandable Content */}
                   {isExpanded && (
-                    <div className="border-t border-gold-primary/10">
+                    <div className="border-t border-gray-200">
                       {/* Meal Description (if exists) */}
                       {meal.description && (
                         <div className="px-4 pt-4">
-                          <h4 className="text-sm font-semibold text-gray-200 uppercase tracking-wide mb-2">
+                          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">
                             Instruktioner
                           </h4>
-                          <div className="bg-[rgba(59,130,246,0.1)] border border-blue-500/30 rounded-lg p-3">
-                            <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">{meal.description}</p>
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{meal.description}</p>
                           </div>
                         </div>
                       )}
@@ -368,19 +368,19 @@ export default function MealPlanPage() {
                         <div className="p-4">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {meal.proteinSource && (
-                              <div className="bg-gradient-to-br from-red-500/10 to-red-600/5 border border-red-500/30 rounded-xl p-4">
+                              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
                                 <div className="flex items-center gap-2 mb-3">
-                                  <p className="text-sm font-bold text-red-400 uppercase tracking-wide">Protein</p>
+                                  <p className="text-sm font-bold text-red-600 uppercase tracking-wide">Protein</p>
                                 </div>
-                                <ul className="text-sm text-gray-200 space-y-2">
+                                <ul className="text-sm text-gray-700 space-y-2">
                                   {meal.proteinSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                     <li key={idx}>
                                       <div className="flex items-start gap-2">
-                                        <span className="text-red-400 mt-0.5">•</span>
+                                        <span className="text-red-500 mt-0.5">•</span>
                                         <span className="leading-tight">{item.trim()}</span>
                                       </div>
                                       {idx < arr.length - 1 && (
-                                        <p className="text-xs text-red-400/70 font-medium my-2 ml-4 uppercase">eller</p>
+                                        <p className="text-xs text-red-500 font-medium my-2 ml-4 uppercase">eller</p>
                                       )}
                                     </li>
                                   ))}
@@ -388,19 +388,19 @@ export default function MealPlanPage() {
                               </div>
                             )}
                             {meal.carbSource && (
-                              <div className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/30 rounded-xl p-4">
+                              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
                                 <div className="flex items-center gap-2 mb-3">
-                                  <p className="text-sm font-bold text-amber-400 uppercase tracking-wide">Kolhydrater</p>
+                                  <p className="text-sm font-bold text-amber-600 uppercase tracking-wide">Kolhydrater</p>
                                 </div>
-                                <ul className="text-sm text-gray-200 space-y-2">
+                                <ul className="text-sm text-gray-700 space-y-2">
                                   {meal.carbSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                     <li key={idx}>
                                       <div className="flex items-start gap-2">
-                                        <span className="text-amber-400 mt-0.5">•</span>
+                                        <span className="text-amber-500 mt-0.5">•</span>
                                         <span className="leading-tight">{item.trim()}</span>
                                       </div>
                                       {idx < arr.length - 1 && (
-                                        <p className="text-xs text-amber-400/70 font-medium my-2 ml-4 uppercase">eller</p>
+                                        <p className="text-xs text-amber-500 font-medium my-2 ml-4 uppercase">eller</p>
                                       )}
                                     </li>
                                   ))}
@@ -408,19 +408,19 @@ export default function MealPlanPage() {
                               </div>
                             )}
                             {meal.fatSource && (
-                              <div className="bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/30 rounded-xl p-4">
+                              <div className="bg-green-50 border border-green-200 rounded-xl p-4">
                                 <div className="flex items-center gap-2 mb-3">
-                                  <p className="text-sm font-bold text-green-400 uppercase tracking-wide">Fett</p>
+                                  <p className="text-sm font-bold text-green-600 uppercase tracking-wide">Fett</p>
                                 </div>
-                                <ul className="text-sm text-gray-200 space-y-2">
+                                <ul className="text-sm text-gray-700 space-y-2">
                                   {meal.fatSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                     <li key={idx}>
                                       <div className="flex items-start gap-2">
-                                        <span className="text-green-400 mt-0.5">•</span>
+                                        <span className="text-green-500 mt-0.5">•</span>
                                         <span className="leading-tight">{item.trim()}</span>
                                       </div>
                                       {idx < arr.length - 1 && (
-                                        <p className="text-xs text-green-400/70 font-medium my-2 ml-4 uppercase">eller</p>
+                                        <p className="text-xs text-green-500 font-medium my-2 ml-4 uppercase">eller</p>
                                       )}
                                     </li>
                                   ))}
@@ -433,9 +433,9 @@ export default function MealPlanPage() {
 
                       {/* Recipe Thumbnails - Horizontal Row (at the bottom) */}
                       {recipeCount > 0 && (
-                        <div className="p-4 border-t border-gold-primary/10">
-                          <h4 className="text-sm font-semibold text-gray-200 uppercase tracking-wide mb-3">
-                            📖 Receptförslag
+                        <div className="p-4 border-t border-gray-200">
+                          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+                            Receptförslag
                           </h4>
                           <div className="flex gap-3 overflow-x-auto pb-2">
                             {meal.options?.map((option) => option.recipe && (
@@ -449,14 +449,14 @@ export default function MealPlanPage() {
                                     <img
                                       src={option.recipe.coverImage}
                                       alt={option.recipe.title}
-                                      className="w-full h-[100px] object-cover rounded-lg border border-gold-primary/20 group-hover:border-gold-primary/50 group-hover:scale-105 transition-all"
+                                      className="w-full h-[100px] object-cover rounded-lg border border-gray-200 group-hover:border-gold-primary group-hover:scale-105 transition-all"
                                     />
                                   ) : (
-                                    <div className="w-full h-[100px] bg-[rgba(255,215,0,0.1)] rounded-lg flex items-center justify-center border border-gold-primary/20 group-hover:border-gold-primary/50 transition-all">
+                                    <div className="w-full h-[100px] bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 group-hover:border-gold-primary transition-all">
                                       <span className="text-3xl">🍽️</span>
                                     </div>
                                   )}
-                                  <p className="text-xs text-gray-300 mt-2 line-clamp-2 group-hover:text-gold-light transition-colors">
+                                  <p className="text-xs text-gray-600 mt-2 line-clamp-2 group-hover:text-gold-primary transition-colors">
                                     {option.recipe.title}
                                   </p>
                                 </div>
@@ -475,29 +475,29 @@ export default function MealPlanPage() {
             <TabsContent value="supplements" className="space-y-6 mt-6">
               {/* Pre Workout */}
               {preWorkoutItems.length > 0 && (
-                <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
+                <Card className="bg-white border border-gray-200">
                   <CardHeader>
-                    <CardTitle className="text-xl text-gray-100 flex items-center gap-2">
-                      <Dumbbell className="w-5 h-5 text-[#3b82f6]" />
+                    <CardTitle className="text-xl text-gray-900 flex items-center gap-2">
+                      <Dumbbell className="w-5 h-5 text-blue-500" />
                       Före styrketräning
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {preWorkoutItems.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between py-2 border-b border-gold-primary/10 last:border-0">
+                      <div key={item.id} className="flex items-center justify-between py-2 border-b border-gray-200 last:border-0">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-[rgba(59,130,246,0.1)] flex items-center justify-center">
-                            <span className="text-[#3b82f6]">💊</span>
+                          <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                            <span className="text-blue-500">💊</span>
                           </div>
-                          <p className="text-gray-100 font-medium">{item.name}</p>
+                          <p className="text-gray-900 font-medium">{item.name}</p>
                         </div>
                         <div className="flex items-center gap-3">
                           {item.supplementBadge && (
-                            <Badge className="bg-gradient-to-r from-[#3b82f6] to-[#2563eb] text-white border-none">
+                            <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-none">
                               {item.supplementBadge}
                             </Badge>
                           )}
-                          <span className="text-gray-100 font-semibold">
+                          <span className="text-gray-900 font-semibold">
                             {item.amountG}{item.amountUnit || 'g'}
                           </span>
                         </div>
@@ -506,24 +506,24 @@ export default function MealPlanPage() {
 
                     {/* Pre Workout Totals */}
                     {(mealPlan.preWorkoutProtein || mealPlan.preWorkoutCalories) && (
-                      <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-3 mt-4">
-                        <p className="text-xs text-gray-400 mb-2">Totalt före träning</p>
+                      <div className="bg-blue-50 rounded-lg p-3 mt-4">
+                        <p className="text-xs text-gray-500 mb-2">Totalt före träning</p>
                         <div className="grid grid-cols-4 gap-2 text-sm">
                           <div>
-                            <span className="text-gray-400 text-xs">Protein:</span>
-                            <p className="font-bold text-gray-100">{mealPlan.preWorkoutProtein?.toFixed(1) || 0}g</p>
+                            <span className="text-gray-500 text-xs">Protein:</span>
+                            <p className="font-bold text-gray-900">{mealPlan.preWorkoutProtein?.toFixed(1) || 0}g</p>
                           </div>
                           <div>
-                            <span className="text-gray-400 text-xs">Fett:</span>
-                            <p className="font-bold text-gray-100">{mealPlan.preWorkoutFat?.toFixed(1) || 0}g</p>
+                            <span className="text-gray-500 text-xs">Fett:</span>
+                            <p className="font-bold text-gray-900">{mealPlan.preWorkoutFat?.toFixed(1) || 0}g</p>
                           </div>
                           <div>
-                            <span className="text-gray-400 text-xs">Kolhydrater:</span>
-                            <p className="font-bold text-gray-100">{mealPlan.preWorkoutCarbs?.toFixed(1) || 0}g</p>
+                            <span className="text-gray-500 text-xs">Kolhydrater:</span>
+                            <p className="font-bold text-gray-900">{mealPlan.preWorkoutCarbs?.toFixed(1) || 0}g</p>
                           </div>
                           <div>
-                            <span className="text-gray-400 text-xs">Kcal:</span>
-                            <p className="font-bold text-gray-100">{mealPlan.preWorkoutCalories?.toFixed(0) || 0}</p>
+                            <span className="text-gray-500 text-xs">Kcal:</span>
+                            <p className="font-bold text-gray-900">{mealPlan.preWorkoutCalories?.toFixed(0) || 0}</p>
                           </div>
                         </div>
                       </div>
@@ -534,29 +534,29 @@ export default function MealPlanPage() {
 
               {/* Post Workout */}
               {postWorkoutItems.length > 0 && (
-                <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
+                <Card className="bg-white border border-gray-200">
                   <CardHeader>
-                    <CardTitle className="text-xl text-gray-100 flex items-center gap-2">
+                    <CardTitle className="text-xl text-gray-900 flex items-center gap-2">
                       <Dumbbell className="w-5 h-5 text-green-500" />
                       Efter styrketräning
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {postWorkoutItems.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between py-2 border-b border-gold-primary/10 last:border-0">
+                      <div key={item.id} className="flex items-center justify-between py-2 border-b border-gray-200 last:border-0">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-[rgba(34,197,94,0.1)] flex items-center justify-center">
+                          <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
                             <span className="text-green-500">💊</span>
                           </div>
-                          <p className="text-gray-100 font-medium">{item.name}</p>
+                          <p className="text-gray-900 font-medium">{item.name}</p>
                         </div>
                         <div className="flex items-center gap-3">
                           {item.supplementBadge && (
-                            <Badge className="bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white border-none">
+                            <Badge className="bg-gradient-to-r from-green-500 to-green-600 text-white border-none">
                               {item.supplementBadge}
                             </Badge>
                           )}
-                          <span className="text-gray-100 font-semibold">
+                          <span className="text-gray-900 font-semibold">
                             {item.amountG}{item.amountUnit || 'g'}
                           </span>
                         </div>
@@ -565,24 +565,24 @@ export default function MealPlanPage() {
 
                     {/* Post Workout Totals */}
                     {(mealPlan.postWorkoutProtein || mealPlan.postWorkoutCalories) && (
-                      <div className="bg-[rgba(34,197,94,0.05)] rounded-lg p-3 mt-4">
-                        <p className="text-xs text-gray-400 mb-2">Totalt efter träning</p>
+                      <div className="bg-green-50 rounded-lg p-3 mt-4">
+                        <p className="text-xs text-gray-500 mb-2">Totalt efter träning</p>
                         <div className="grid grid-cols-4 gap-2 text-sm">
                           <div>
-                            <span className="text-gray-400 text-xs">Protein:</span>
-                            <p className="font-bold text-gray-100">{mealPlan.postWorkoutProtein?.toFixed(1) || 0}g</p>
+                            <span className="text-gray-500 text-xs">Protein:</span>
+                            <p className="font-bold text-gray-900">{mealPlan.postWorkoutProtein?.toFixed(1) || 0}g</p>
                           </div>
                           <div>
-                            <span className="text-gray-400 text-xs">Fett:</span>
-                            <p className="font-bold text-gray-100">{mealPlan.postWorkoutFat?.toFixed(1) || 0}g</p>
+                            <span className="text-gray-500 text-xs">Fett:</span>
+                            <p className="font-bold text-gray-900">{mealPlan.postWorkoutFat?.toFixed(1) || 0}g</p>
                           </div>
                           <div>
-                            <span className="text-gray-400 text-xs">Kolhydrater:</span>
-                            <p className="font-bold text-gray-100">{mealPlan.postWorkoutCarbs?.toFixed(1) || 0}g</p>
+                            <span className="text-gray-500 text-xs">Kolhydrater:</span>
+                            <p className="font-bold text-gray-900">{mealPlan.postWorkoutCarbs?.toFixed(1) || 0}g</p>
                           </div>
                           <div>
-                            <span className="text-gray-400 text-xs">Kcal:</span>
-                            <p className="font-bold text-gray-100">{mealPlan.postWorkoutCalories?.toFixed(0) || 0}</p>
+                            <span className="text-gray-500 text-xs">Kcal:</span>
+                            <p className="font-bold text-gray-900">{mealPlan.postWorkoutCalories?.toFixed(0) || 0}</p>
                           </div>
                         </div>
                       </div>
@@ -592,14 +592,14 @@ export default function MealPlanPage() {
               )}
 
               {preWorkoutItems.length === 0 && postWorkoutItems.length === 0 && (
-                <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
+                <Card className="bg-white border border-gray-200">
                   <CardContent className="py-16">
                     <div className="text-center">
-                      <Sparkles className="w-16 h-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-                      <h3 className="text-xl font-bold text-gray-100 mb-2">
+                      <Sparkles className="w-16 h-16 mx-auto text-gold-primary mb-4" />
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">
                         Inga träningskosttillskott tilldelade
                       </h3>
-                      <p className="text-gray-400">
+                      <p className="text-gray-500">
                         Din coach kan lägga till pre- och post-workout kosttillskott om det behövs
                       </p>
                     </div>
