@@ -354,11 +354,15 @@ export default function MealPlanPage() {
                       {/* Meal Description (if exists) */}
                       {meal.description && (
                         <div className="px-4 pt-4">
-                          <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">
-                            Instruktioner
-                          </h4>
-                          <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{meal.description}</p>
+                          <div className="bg-white border-2 border-gray-300 rounded-xl overflow-hidden shadow-sm">
+                            <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
+                              <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide">
+                                Instruktioner
+                              </h4>
+                            </div>
+                            <div className="p-4">
+                              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{meal.description}</p>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -368,11 +372,11 @@ export default function MealPlanPage() {
                         <div className="p-4">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {meal.proteinSource && (
-                              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                                <div className="flex items-center gap-2 mb-3">
+                              <div className="bg-white border-2 border-gray-300 rounded-xl overflow-hidden shadow-sm">
+                                <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
                                   <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Protein</p>
                                 </div>
-                                <ul className="text-sm text-gray-700 space-y-2">
+                                <ul className="text-sm text-gray-700 p-4 space-y-2">
                                   {meal.proteinSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                     <li key={idx}>
                                       <div className="flex items-start gap-2">
@@ -380,7 +384,7 @@ export default function MealPlanPage() {
                                         <span className="leading-tight">{item.trim()}</span>
                                       </div>
                                       {idx < arr.length - 1 && (
-                                        <p className="text-xs text-gray-400 font-medium my-2 ml-4 uppercase">eller</p>
+                                        <p className="text-xs text-gold-primary font-semibold my-2 ml-4 uppercase">eller</p>
                                       )}
                                     </li>
                                   ))}
@@ -388,11 +392,11 @@ export default function MealPlanPage() {
                               </div>
                             )}
                             {meal.carbSource && (
-                              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                                <div className="flex items-center gap-2 mb-3">
+                              <div className="bg-white border-2 border-gray-300 rounded-xl overflow-hidden shadow-sm">
+                                <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
                                   <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Kolhydrater</p>
                                 </div>
-                                <ul className="text-sm text-gray-700 space-y-2">
+                                <ul className="text-sm text-gray-700 p-4 space-y-2">
                                   {meal.carbSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                     <li key={idx}>
                                       <div className="flex items-start gap-2">
@@ -400,7 +404,7 @@ export default function MealPlanPage() {
                                         <span className="leading-tight">{item.trim()}</span>
                                       </div>
                                       {idx < arr.length - 1 && (
-                                        <p className="text-xs text-gray-400 font-medium my-2 ml-4 uppercase">eller</p>
+                                        <p className="text-xs text-gold-primary font-semibold my-2 ml-4 uppercase">eller</p>
                                       )}
                                     </li>
                                   ))}
@@ -408,11 +412,11 @@ export default function MealPlanPage() {
                               </div>
                             )}
                             {meal.fatSource && (
-                              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                                <div className="flex items-center gap-2 mb-3">
+                              <div className="bg-white border-2 border-gray-300 rounded-xl overflow-hidden shadow-sm">
+                                <div className="bg-gray-100 px-4 py-2 border-b border-gray-300">
                                   <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Fett</p>
                                 </div>
-                                <ul className="text-sm text-gray-700 space-y-2">
+                                <ul className="text-sm text-gray-700 p-4 space-y-2">
                                   {meal.fatSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                     <li key={idx}>
                                       <div className="flex items-start gap-2">
@@ -420,7 +424,7 @@ export default function MealPlanPage() {
                                         <span className="leading-tight">{item.trim()}</span>
                                       </div>
                                       {idx < arr.length - 1 && (
-                                        <p className="text-xs text-gray-400 font-medium my-2 ml-4 uppercase">eller</p>
+                                        <p className="text-xs text-gold-primary font-semibold my-2 ml-4 uppercase">eller</p>
                                       )}
                                     </li>
                                   ))}
