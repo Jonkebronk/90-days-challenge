@@ -354,11 +354,11 @@ export default function MealPlanPage() {
                       {/* Meal Description (if exists) */}
                       {meal.description && (
                         <div className="px-4 pt-4">
+                          <h4 className="text-sm font-semibold text-gray-200 uppercase tracking-wide mb-2">
+                            Instruktioner
+                          </h4>
                           <div className="bg-[rgba(59,130,246,0.1)] border border-blue-500/30 rounded-lg p-3">
-                            <div className="flex items-start gap-2">
-                              <span className="text-blue-400">💡</span>
-                              <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">{meal.description}</p>
-                            </div>
+                            <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">{meal.description}</p>
                           </div>
                         </div>
                       )}
