@@ -114,8 +114,12 @@ export function DualPanelWorkoutBuilder({
     const { active, over } = event
 
     if (isDraggingFromLibrary && activeExercise) {
-      // Check if dropped on workout drop zone
-      if (over?.id === 'workout-drop-zone') {
+      // Add exercise when dropped - either on drop zone or if over is null (dropped outside)
+      // but not if dropped back on another library item
+      const droppedOnLibrary = over?.id?.toString().startsWith('library-')
+
+      if (!droppedOnLibrary) {
+        // Dropped on workout area (or anywhere that's not the library)
         onAddExercise(selectedDayIndex, activeExercise)
         if (window.innerWidth < 1024) {
           setMobileTab('workout')
