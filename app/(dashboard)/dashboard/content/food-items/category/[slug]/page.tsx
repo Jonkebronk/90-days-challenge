@@ -36,10 +36,10 @@ type FoodItem = {
   id: string
   name: string
   categoryId?: string | null
-  calories: number
-  proteinG: number
-  carbsG: number
-  fatG: number
+  calories: number | null
+  proteinG: number | null
+  carbsG: number | null
+  fatG: number | null
   commonServingSize?: string | null
   imageUrl?: string | null
   isRecommended: boolean
@@ -421,19 +421,19 @@ export default function CategoryFoodItemsPage({
                 <div className="grid grid-cols-4 gap-2">
                   <div className="bg-gray-50 rounded-lg p-2 text-center">
                     <p className="text-xs text-gray-500">Kalorier</p>
-                    <p className="font-bold text-gray-900">{Math.round(selectedItem.calories)}</p>
+                    <p className="font-bold text-gray-900">{Math.round(selectedItem.calories || 0)}</p>
                   </div>
                   <div className="bg-blue-50 rounded-lg p-2 text-center">
                     <p className="text-xs text-gray-500">Protein</p>
-                    <p className="font-bold text-blue-600">{selectedItem.proteinG.toFixed(1)}g</p>
+                    <p className="font-bold text-blue-600">{(selectedItem.proteinG ?? 0).toFixed(1)}g</p>
                   </div>
                   <div className="bg-yellow-50 rounded-lg p-2 text-center">
                     <p className="text-xs text-gray-500">Fett</p>
-                    <p className="font-bold text-yellow-600">{selectedItem.fatG.toFixed(1)}g</p>
+                    <p className="font-bold text-yellow-600">{(selectedItem.fatG ?? 0).toFixed(1)}g</p>
                   </div>
                   <div className="bg-orange-50 rounded-lg p-2 text-center">
                     <p className="text-xs text-gray-500">Kolh.</p>
-                    <p className="font-bold text-orange-600">{selectedItem.carbsG.toFixed(1)}g</p>
+                    <p className="font-bold text-orange-600">{(selectedItem.carbsG ?? 0).toFixed(1)}g</p>
                   </div>
                 </div>
 
