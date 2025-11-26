@@ -373,34 +373,32 @@ export default function WorkoutPage() {
 
                   {/* Exercise list */}
                   {workoutProgram.warmupRoutine.exercises.length > 0 && (
-                    <div className="space-y-3 my-3">
+                    <div className="space-y-2 my-3">
                       {workoutProgram.warmupRoutine.exercises.map((exercise, idx) => (
                         <div
                           key={exercise.id}
-                          className="bg-orange-50 rounded-lg border border-orange-200 overflow-hidden"
+                          className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden"
                         >
-                          <div className="flex items-center justify-between p-3">
-                            <span className="text-gray-700 flex items-center gap-3">
-                              <span className="flex items-center justify-center w-7 h-7 rounded-full bg-orange-200 text-orange-600 font-bold text-sm">
-                                {idx + 1}
-                              </span>
-                              <span>
-                                {exercise.name}
-                                {exercise.reps && (
-                                  <span className="text-orange-600 ml-2 font-medium">{exercise.reps}</span>
-                                )}
-                              </span>
-                            </span>
+                          <div className="flex items-center gap-3 p-3">
+                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white text-sm font-bold">
+                              {idx + 1}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-gray-900">{exercise.name}</p>
+                              {exercise.reps && (
+                                <p className="text-sm text-gray-600">{exercise.reps}</p>
+                              )}
+                            </div>
                             {exercise.videoUrl && (
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   setActiveWarmupVideo(activeWarmupVideo === exercise.id ? null : exercise.id)
                                 }}
-                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-md text-xs font-semibold transition-colors ${
+                                className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                                   activeWarmupVideo === exercise.id
-                                    ? 'bg-purple-100 border-purple-300 text-purple-700'
-                                    : 'bg-purple-50 border-purple-200 text-purple-600 hover:bg-purple-100'
+                                    ? 'bg-red-600 border border-red-700 text-white'
+                                    : 'bg-red-600 border border-red-700 text-white hover:bg-red-700'
                                 }`}
                               >
                                 {activeWarmupVideo === exercise.id ? (
@@ -410,7 +408,7 @@ export default function WorkoutPage() {
                                   </>
                                 ) : (
                                   <>
-                                    <Play className="w-3 h-3" />
+                                    <Play className="w-3 h-3 fill-white" />
                                     VIDEO
                                   </>
                                 )}
