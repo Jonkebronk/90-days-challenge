@@ -24,6 +24,13 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Plus, Pencil, Trash2, FolderOpen, ArrowUp, ArrowDown, Check, ChevronsUpDown } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { toast } from 'sonner'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command'
@@ -51,6 +58,7 @@ type ArticleCategory = {
   section?: string | null
   slug: string
   color: string
+  audience: 'client' | 'coach'
   orderIndex: number
   _count: {
     articles: number
@@ -71,7 +79,8 @@ export default function CategoriesPage() {
     description: '',
     section: '',
     slug: '',
-    color: '#FFD700'
+    color: '#FFD700',
+    audience: 'client' as 'client' | 'coach'
   })
 
   const [sectionComboboxOpen, setSectionComboboxOpen] = useState(false)
@@ -128,7 +137,7 @@ export default function CategoriesPage() {
         toast.success('Kategori skapad')
         setIsCreateDialogOpen(false)
         setSectionComboboxOpen(false)
-        setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
+        setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700', audience: 'client' })
         fetchCategories()
       } else {
         const data = await response.json()
@@ -161,7 +170,7 @@ export default function CategoriesPage() {
         setIsEditDialogOpen(false)
         setSectionComboboxOpen(false)
         setSelectedCategory(null)
-        setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
+        setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700', audience: 'client' })
         fetchCategories()
       } else{
         const data = await response.json()
@@ -244,7 +253,8 @@ export default function CategoriesPage() {
       description: category.description || '',
       section: category.section || '',
       slug: category.slug,
-      color: category.color || '#FFD700'
+      color: category.color || '#FFD700',
+      audience: category.audience || 'client'
     })
     setIsEditDialogOpen(true)
   }
@@ -396,7 +406,7 @@ export default function CategoriesPage() {
         setIsCreateDialogOpen(open)
         if (!open) {
           setSectionComboboxOpen(false)
-          setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
+          setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700', audience: 'client' })
         }
       }}>
         <DialogContent className="max-w-2xl bg-gray-900 border-2 border-gold-primary/30">
@@ -483,6 +493,24 @@ export default function CategoriesPage() {
               </p>
             </div>
             <div>
+              <Label htmlFor="audience" className="text-gray-200">Målgrupp *</Label>
+              <Select
+                value={formData.audience}
+                onValueChange={(value: 'client' | 'coach') => setFormData({ ...formData, audience: value })}
+              >
+                <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
+                  <SelectValue placeholder="Välj målgrupp" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="client">Klient (Kunskapsbanken)</SelectItem>
+                  <SelectItem value="coach">Coach (Coach Kunskapsbanken)</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-gray-500 mt-1">
+                Avgör var kategorin visas
+              </p>
+            </div>
+            <div>
               <Label htmlFor="slug" className="text-gray-200">Slug *</Label>
               <Input
                 id="slug"
@@ -556,7 +584,7 @@ export default function CategoriesPage() {
         if (!open) {
           setSectionComboboxOpen(false)
           setSelectedCategory(null)
-          setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700' })
+          setFormData({ name: '', description: '', section: '', slug: '', color: '#FFD700', audience: 'client' })
         }
       }}>
         <DialogContent className="max-w-2xl bg-gray-900 border-2 border-gold-primary/30">
@@ -639,6 +667,24 @@ export default function CategoriesPage() {
               )}
               <p className="text-xs text-gray-500 mt-1">
                 Grupperar kategorier under en rubrik i Kunskapsbanken
+              </p>
+            </div>
+            <div>
+              <Label htmlFor="edit-audience" className="text-gray-200">Målgrupp *</Label>
+              <Select
+                value={formData.audience}
+                onValueChange={(value: 'client' | 'coach') => setFormData({ ...formData, audience: value })}
+              >
+                <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
+                  <SelectValue placeholder="Välj målgrupp" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="client">Klient (Kunskapsbanken)</SelectItem>
+                  <SelectItem value="coach">Coach (Coach Kunskapsbanken)</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-gray-500 mt-1">
+                Avgör var kategorin visas
               </p>
             </div>
             <div>

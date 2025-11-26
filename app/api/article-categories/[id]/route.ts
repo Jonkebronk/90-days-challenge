@@ -51,7 +51,7 @@ export async function PATCH(
 
     const { id } = await params
     const body = await request.json()
-    const { name, description, section, slug, color, orderIndex } = body
+    const { name, description, section, slug, color, orderIndex, audience } = body
 
     const updateData: any = {}
     if (name !== undefined) updateData.name = name
@@ -60,6 +60,9 @@ export async function PATCH(
     if (slug !== undefined) updateData.slug = slug
     if (color !== undefined) updateData.color = color
     if (orderIndex !== undefined) updateData.orderIndex = orderIndex
+    if (audience !== undefined && (audience === 'client' || audience === 'coach')) {
+      updateData.audience = audience
+    }
 
     const category = await prisma.articleCategory.update({
       where: { id },
