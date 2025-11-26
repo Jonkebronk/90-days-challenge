@@ -226,7 +226,7 @@ export default function MessagesPage() {
             )}
 
             {/* Messages List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-4">
               {messages.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-gray-400">Inga meddelanden än. Skicka det första!</p>
