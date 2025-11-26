@@ -89,7 +89,7 @@ export default function WorkoutProgramsPage() {
 
   useEffect(() => {
     filterPrograms()
-  }, [programs, searchTerm])
+  }, [programs, searchTerm, selectedCategoryId])
 
   const fetchPrograms = async () => {
     try {
