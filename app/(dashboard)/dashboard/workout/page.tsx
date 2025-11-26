@@ -331,11 +331,6 @@ export default function WorkoutPage() {
               onClick={() => setWarmupExpanded(!warmupExpanded)}
             >
               <div className="flex items-center gap-3 sm:gap-4">
-                {/* Flame Icon Container */}
-                <div className="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center bg-orange-100 shadow-sm group-hover:scale-105 transition-transform">
-                  <Flame className="w-6 h-6 sm:w-8 sm:h-8 text-orange-500" />
-                </div>
-
                 {/* Warmup Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -343,7 +338,7 @@ export default function WorkoutPage() {
                       UPPVÄRMNING
                     </span>
                   </div>
-                  <CardTitle className="text-base sm:text-xl font-bold text-gray-900 tracking-[1px] pr-2">
+                  <CardTitle className="text-lg sm:text-2xl font-bold text-gray-900 tracking-[1px] pr-2">
                     {workoutProgram.warmupRoutine.name}
                   </CardTitle>
                   <p className="text-xs sm:text-sm text-gray-500 mt-1">
@@ -465,15 +460,6 @@ export default function WorkoutPage() {
               onClick={() => toggleDay(day.id)}
             >
               <div className="flex items-center gap-3 sm:gap-4">
-                {/* Day Number Icon Container */}
-                <div className={`flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center font-bold text-xl sm:text-2xl shadow-sm group-hover:scale-105 transition-transform ${
-                  day.isRestDay
-                    ? 'bg-gray-100 text-gray-500'
-                    : 'bg-gold-primary/20 text-gold-primary'
-                }`}>
-                  {day.dayNumber}
-                </div>
-
                 {/* Day Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -487,7 +473,7 @@ export default function WorkoutPage() {
                       </Badge>
                     )}
                   </div>
-                  <CardTitle className="text-base sm:text-xl font-bold text-gray-900 tracking-[1px] pr-2">
+                  <CardTitle className="text-lg sm:text-2xl font-bold text-gray-900 tracking-[1px] pr-2">
                     {day.name}
                   </CardTitle>
                   {day.description && (
