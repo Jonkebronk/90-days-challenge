@@ -272,62 +272,114 @@ export default function CategoryFoodItemsPage({
             )}
           </CardContent>
         </Card>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
-          {foodItems.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => setSelectedItem(item)}
-              className="group relative bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer"
-            >
-              {item.imageUrl ? (
-                <div className="h-20 sm:h-24 w-full bg-gray-100 overflow-hidden">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                    className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none'
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="h-20 sm:h-24 w-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center">
-                  <Apple className="h-8 w-8 text-green-300" />
-                </div>
-              )}
-              <div className="p-2 sm:p-3">
-                <h3 className="text-xs sm:text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-gold-primary transition-colors">
-                  {item.name}
-                </h3>
-                <p className="text-gray-500 text-[10px] sm:text-xs mt-0.5">
-                  {Math.round(item.calories)} kcal / 100g
-                </p>
-              </div>
-              {isCoach && (
-                <div className="absolute top-1 right-1 flex gap-0.5" onClick={(e) => e.stopPropagation()}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 bg-white/80 hover:bg-white text-gray-600 hover:text-gold-primary rounded-full"
-                    onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit?categorySlug=${categorySlug}`)}
+      ) : (() => {
+        // Group items by subcategory
+        const grouped = foodItems.reduce((acc, item) => {
+          const key = (item as any).subcategory || 'Övrigt'
+          if (!acc[key]) acc[key] = []
+          acc[key].push(item)
+          return acc
+        }, {} as Record<string, FoodItem[]>)
+
+        const subcategoryNames = Object.keys(grouped).sort((a, b) => {
+          if (a === 'Övrigt') return 1
+          if (b === 'Övrigt') return -1
+          return a.localeCompare(b, 'sv')
+        })
+
+        const hasSubcategories = subcategoryNames.length > 1 || !grouped['Övrigt']
+
+        // If we have subcategories, show them as clickable cards first
+        if (hasSubcategories && !search) {
+          return (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
+              {subcategoryNames.map((subcategoryName) => {
+                const items = grouped[subcategoryName]
+                const categoryColor = category?.color || '#22c55e'
+                return (
+                  <div
+                    key={subcategoryName}
+                    onClick={() => setSearch(subcategoryName === 'Övrigt' ? '' : subcategoryName)}
+                    className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center"
                   >
-                    <Pencil className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 bg-white/80 hover:bg-white text-gray-600 hover:text-red-500 rounded-full"
-                    onClick={() => handleDelete(item.id, item.name)}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
-              )}
+                    <div
+                      className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md"
+                      style={{ background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}dd)` }}
+                    >
+                      <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                    </div>
+                    <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">
+                      {subcategoryName}
+                    </h3>
+                    <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5">
+                      {items.length} livsmedel
+                    </p>
+                  </div>
+                )
+              })}
             </div>
-          ))}
-        </div>
-      )}
+          )
+        }
+
+        // Show individual food items (when searching or no subcategories)
+        const itemsToShow = search && hasSubcategories
+          ? foodItems.filter(item => (item as any).subcategory === search || item.name.toLowerCase().includes(search.toLowerCase()))
+          : foodItems
+
+        return (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
+            {itemsToShow.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => setSelectedItem(item)}
+                className="group relative bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer"
+              >
+                {item.imageUrl ? (
+                  <div className="h-20 sm:h-24 w-full bg-gray-100 overflow-hidden">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.name}
+                      className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none'
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="h-20 sm:h-24 w-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center">
+                    <Apple className="h-8 w-8 text-green-300" />
+                  </div>
+                )}
+                <div className="p-2 sm:p-3">
+                  <h3 className="text-xs sm:text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-gold-primary transition-colors">
+                    {item.name}
+                  </h3>
+                </div>
+                {isCoach && (
+                  <div className="absolute top-1 right-1 flex gap-0.5" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 bg-white/80 hover:bg-white text-gray-600 hover:text-gold-primary rounded-full"
+                      onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit?categorySlug=${categorySlug}`)}
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 bg-white/80 hover:bg-white text-gray-600 hover:text-red-500 rounded-full"
+                      onClick={() => handleDelete(item.id, item.name)}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )
+      })()}
 
       {/* Food Item Detail Dialog */}
       <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
