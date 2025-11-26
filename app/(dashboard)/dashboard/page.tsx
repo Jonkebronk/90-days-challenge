@@ -364,11 +364,11 @@ export default function DashboardPage() {
                       </li>
                       <li className="flex gap-2">
                         <span className="text-green-400 font-bold">3.</span>
-                        Scrolla ner och tryck "Lägg till på hemskärmen"
+                        Scrolla ner och tryck &quot;Lägg till på hemskärmen&quot;
                       </li>
                       <li className="flex gap-2">
                         <span className="text-green-400 font-bold">4.</span>
-                        Tryck "Lägg till"
+                        Tryck &quot;Lägg till&quot;
                       </li>
                     </ol>
                   </div>
@@ -388,11 +388,11 @@ export default function DashboardPage() {
                       </li>
                       <li className="flex gap-2">
                         <span className="text-green-400 font-bold">3.</span>
-                        Tryck "Lägg till på startskärmen" eller "Installera app"
+                        Tryck &quot;Lägg till på startskärmen&quot; eller &quot;Installera app&quot;
                       </li>
                       <li className="flex gap-2">
                         <span className="text-green-400 font-bold">4.</span>
-                        Tryck "Lägg till"
+                        Tryck &quot;Lägg till&quot;
                       </li>
                     </ol>
                   </div>
