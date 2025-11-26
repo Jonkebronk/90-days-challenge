@@ -107,31 +107,31 @@ export default function ProfilePage() {
 
       <div className="space-y-6 max-w-4xl mx-auto">
         {/* User Info Card */}
-        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl hover:border-gold-primary/40 transition-all backdrop-blur-[10px]">
-          <div className="p-6 border-b border-gold-primary/20">
-            <h2 className="text-xl font-bold text-gold-light">Personlig Information</h2>
+        <div className="bg-white border-2 border-gray-300 rounded-xl shadow-lg">
+          <div className="p-6 border-b-2 border-gray-200 bg-gray-50 rounded-t-xl">
+            <h2 className="text-xl font-bold text-gray-900">Personlig Information</h2>
           </div>
           <div className="p-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="name" className="text-gold-primary">Namn</Label>
+                <Label htmlFor="name" className="text-gray-700 font-medium">Namn</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   disabled={!isEditing}
-                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-gray-500 focus:border-gold-primary disabled:bg-black/20 disabled:opacity-60"
+                  className="bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-gold-primary disabled:bg-gray-100 disabled:text-gray-500"
                 />
               </div>
               <div>
-                <Label htmlFor="email" className="text-gold-primary">E-post</Label>
+                <Label htmlFor="email" className="text-gray-700 font-medium">E-post</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   disabled={!isEditing}
-                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-gray-500 focus:border-gold-primary disabled:bg-black/20 disabled:opacity-60"
+                  className="bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-gold-primary disabled:bg-gray-100 disabled:text-gray-500"
                 />
               </div>
             </div>
@@ -140,7 +140,7 @@ export default function ProfilePage() {
               {!isEditing ? (
                 <Button
                   onClick={() => setIsEditing(true)}
-                  className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-black font-semibold"
+                  className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
                 >
                   Redigera
                 </Button>
@@ -160,7 +160,7 @@ export default function ProfilePage() {
                         email: session?.user?.email || '',
                       })
                     }}
-                    className="bg-white/10 border border-gold-primary/30 hover:bg-white/20 text-gray-200"
+                    className="bg-gray-100 border-2 border-gray-300 hover:bg-gray-200 text-gray-700"
                   >
                     Avbryt
                   </Button>
@@ -171,20 +171,20 @@ export default function ProfilePage() {
         </div>
 
         {/* Account Info Card */}
-        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl hover:border-gold-primary/40 transition-all backdrop-blur-[10px]">
-          <div className="p-6 border-b border-gold-primary/20">
-            <h2 className="text-xl font-bold text-gold-light">Kontoinformation</h2>
+        <div className="bg-white border-2 border-gray-300 rounded-xl shadow-lg">
+          <div className="p-6 border-b-2 border-gray-200 bg-gray-50 rounded-t-xl">
+            <h2 className="text-xl font-bold text-gray-900">Kontoinformation</h2>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label className="text-gold-primary text-sm">Roll</Label>
-                <p className="text-lg font-medium text-white capitalize mt-1">
+                <Label className="text-gray-600 text-sm">Roll</Label>
+                <p className="text-lg font-semibold text-gray-900 capitalize mt-1">
                   {(session?.user as any)?.role === 'COACH' ? 'Coach' : 'Klient'}
                 </p>
               </div>
               <div>
-                <Label className="text-gold-primary text-sm">Status</Label>
+                <Label className="text-gray-600 text-sm">Status</Label>
                 <p className="text-lg font-medium mt-1">
                   <span className="inline-block px-3 py-1 rounded-full text-sm bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold">
                     Aktiv
@@ -196,77 +196,77 @@ export default function ProfilePage() {
         </div>
 
         {/* Security Card */}
-        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl hover:border-gold-primary/40 transition-all backdrop-blur-[10px]">
-          <div className="p-6 border-b border-gold-primary/20">
-            <h2 className="text-xl font-bold text-gold-light">Säkerhet</h2>
+        <div className="bg-white border-2 border-gray-300 rounded-xl shadow-lg">
+          <div className="p-6 border-b-2 border-gray-200 bg-gray-50 rounded-t-xl">
+            <h2 className="text-xl font-bold text-gray-900">Säkerhet</h2>
           </div>
           <div className="p-6">
             <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
               <DialogTrigger asChild>
                 <Button
-                  className="bg-white/10 border border-gold-primary/30 hover:bg-white/20 hover:border-gold-primary text-gray-200"
+                  className="bg-gray-100 border-2 border-gray-300 hover:bg-gray-200 hover:border-gray-400 text-gray-700 font-medium"
                 >
                   Ändra Lösenord
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-[#1a1a1a] border-gold-primary/30">
+              <DialogContent className="bg-white border-2 border-gray-300">
                 <DialogHeader>
-                  <DialogTitle className="text-gold-light">Ändra Lösenord</DialogTitle>
+                  <DialogTitle className="text-gray-900">Ändra Lösenord</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 pt-4">
                   <div>
-                    <Label htmlFor="currentPassword" className="text-gold-primary">Nuvarande lösenord</Label>
+                    <Label htmlFor="currentPassword" className="text-gray-700 font-medium">Nuvarande lösenord</Label>
                     <div className="relative">
                       <Input
                         id="currentPassword"
                         type={showCurrentPassword ? 'text' : 'password'}
                         value={passwordData.currentPassword}
                         onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                        className="bg-black/30 border-gold-primary/30 text-white pr-10"
+                        className="bg-white border-2 border-gray-300 text-gray-900 pr-10 focus:border-gold-primary"
                       />
                       <button
                         type="button"
                         onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gold-light"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                       >
                         {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="newPassword" className="text-gold-primary">Nytt lösenord</Label>
+                    <Label htmlFor="newPassword" className="text-gray-700 font-medium">Nytt lösenord</Label>
                     <div className="relative">
                       <Input
                         id="newPassword"
                         type={showNewPassword ? 'text' : 'password'}
                         value={passwordData.newPassword}
                         onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                        className="bg-black/30 border-gold-primary/30 text-white pr-10"
+                        className="bg-white border-2 border-gray-300 text-gray-900 pr-10 focus:border-gold-primary"
                       />
                       <button
                         type="button"
                         onClick={() => setShowNewPassword(!showNewPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gold-light"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                       >
                         {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="confirmPassword" className="text-gold-primary">Bekräfta nytt lösenord</Label>
+                    <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">Bekräfta nytt lösenord</Label>
                     <Input
                       id="confirmPassword"
                       type="password"
                       value={passwordData.confirmPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                      className="bg-black/30 border-gold-primary/30 text-white"
+                      className="bg-white border-2 border-gray-300 text-gray-900 focus:border-gold-primary"
                     />
                   </div>
                   <div className="flex gap-2 pt-2">
                     <Button
                       onClick={handlePasswordChange}
                       disabled={isChangingPassword}
-                      className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-black font-semibold"
+                      className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
                     >
                       {isChangingPassword ? 'Sparar...' : 'Spara nytt lösenord'}
                     </Button>
@@ -279,7 +279,7 @@ export default function ProfilePage() {
                           confirmPassword: '',
                         })
                       }}
-                      className="bg-white/10 border border-gold-primary/30 hover:bg-white/20 text-gray-200"
+                      className="bg-gray-100 border-2 border-gray-300 hover:bg-gray-200 text-gray-700"
                     >
                       Avbryt
                     </Button>
