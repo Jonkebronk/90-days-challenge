@@ -700,8 +700,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             }}
                             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                               activeVideoIndex === index
-                                ? 'bg-purple-100 border border-purple-300 text-purple-700'
-                                : 'bg-purple-50 border border-purple-200 text-purple-600 hover:bg-purple-100'
+                                ? 'bg-red-600 border border-red-700 text-white'
+                                : 'bg-red-600 border border-red-700 text-white hover:bg-red-700'
                             }`}
                           >
                             {activeVideoIndex === index ? (
@@ -711,7 +711,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                               </>
                             ) : (
                               <>
-                                <Play className="w-3 h-3" />
+                                <Play className="w-3 h-3 fill-gold-primary text-gold-primary" />
                                 VIDEO
                               </>
                             )}
@@ -773,20 +773,18 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Exercise Instructions */}
                   {exercise.exercise.instructions && exercise.exercise.instructions.length > 0 && (
-                    <div className="p-5 bg-amber-50 border-l-4 border-gold-primary rounded-lg">
-                      <div className="w-full space-y-3">
-                        <Label className="text-base font-bold text-gray-900 block">Instruktioner:</Label>
-                        <ol className="space-y-2.5">
-                          {exercise.exercise.instructions.map((instruction, idx) => (
-                            <li key={idx} className="flex items-start gap-3 text-sm text-gray-700 leading-relaxed">
-                              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gold-primary/20 text-gold-primary font-semibold text-xs flex items-center justify-center mt-0.5">
-                                {idx + 1}
-                              </span>
-                              <span className="flex-1 pt-0.5">{instruction}</span>
-                            </li>
-                          ))}
-                        </ol>
-                      </div>
+                    <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                      <Label className="text-sm font-bold text-gray-900 block mb-3">Instruktioner</Label>
+                      <ol className="space-y-2">
+                        {exercise.exercise.instructions.map((instruction, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5 text-sm text-gray-700 leading-relaxed">
+                            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-gold-primary text-white font-bold text-xs flex items-center justify-center mt-0.5">
+                              {idx + 1}
+                            </span>
+                            <span className="flex-1">{instruction}</span>
+                          </li>
+                        ))}
+                      </ol>
                     </div>
                   )}
 
@@ -871,32 +869,32 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Log Next Set */}
                   {sessionId && !isExerciseComplete && (
-                    <div className="space-y-4 p-6 bg-amber-50 border-2 border-gold-primary rounded-xl shadow-sm">
-                      <Label className="text-lg font-bold text-gray-900">
+                    <div className="space-y-4 p-5 bg-white border-2 border-gray-200 rounded-xl shadow-sm">
+                      <Label className="text-base font-bold text-gray-900">
                         Set {exerciseSets.length + 1} av {exercise.sets}
                       </Label>
 
                       {/* Input Fields */}
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label className="text-sm font-semibold text-gray-700">Reps</Label>
+                        <div className="space-y-1.5">
+                          <Label className="text-sm font-medium text-gray-600">Reps</Label>
                           <Input
                             type="number"
                             value={currentReps}
                             onChange={(e) => setCurrentReps(e.target.value)}
                             placeholder={`${exercise.repsMin}-${exercise.repsMax}`}
-                            className="h-12 text-lg font-semibold bg-white border-2 border-gray-300 text-gray-900 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-12 text-lg font-semibold bg-gray-50 border-2 border-gray-300 text-gray-900 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 focus:bg-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm font-semibold text-gray-700">Vikt (kg)</Label>
+                        <div className="space-y-1.5">
+                          <Label className="text-sm font-medium text-gray-600">Vikt (kg)</Label>
                           <Input
                             type="text"
                             inputMode="decimal"
                             value={currentWeight}
                             onChange={(e) => setCurrentWeight(e.target.value)}
                             placeholder={exerciseSets.length > 0 ? exerciseSets[exerciseSets.length - 1].weightKg?.toString() : "0"}
-                            className="h-12 text-lg font-semibold bg-white border-2 border-gray-300 text-gray-900 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20"
+                            className="h-12 text-lg font-semibold bg-gray-50 border-2 border-gray-300 text-gray-900 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 focus:bg-white"
                           />
                         </div>
                       </div>
@@ -904,7 +902,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       <Button
                         onClick={() => logSet(exercise.exercise.id, exercise.id, exerciseSets.length + 1)}
                         disabled={!currentReps}
-                        className="w-full h-14 text-lg font-bold bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90 disabled:opacity-50 shadow-lg"
+                        className="w-full h-12 text-base font-bold bg-gold-primary hover:bg-gold-primary/90 text-white disabled:opacity-50 shadow-sm"
                       >
                         <Check className="w-5 h-5 mr-2" />
                         Logga set
