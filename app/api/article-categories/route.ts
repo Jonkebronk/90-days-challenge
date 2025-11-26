@@ -4,7 +4,8 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/article-categories - Get all categories
-export async function GET() {
+// Query params: ?audience=client|coach (optional, defaults to 'client')
+export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -12,7 +13,16 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { searchParams } = new URL(request.url)
+    const audience = searchParams.get('audience') || 'client'
+
+    // If requesting coach articles, verify user is a coach
+    if (audience === 'coach' && (session.user as any).role !== 'coach') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const categories = await prisma.articleCategory.findMany({
+      where: { audience },
       orderBy: { orderIndex: 'asc' },
       include: {
         _count: {
@@ -38,14 +48,18 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { name, description, section, slug, color } = body
+    const { name, description, section, slug, color, audience } = body
 
     if (!name || !slug) {
       return NextResponse.json({ error: 'Name and slug are required' }, { status: 400 })
     }
 
-    // Get all categories to calculate next orderIndex (handles duplicates)
+    // Validate audience value
+    const validAudience = audience === 'coach' ? 'coach' : 'client'
+
+    // Get all categories for the same audience to calculate next orderIndex
     const existingCategories = await prisma.articleCategory.findMany({
+      where: { audience: validAudience },
       select: { orderIndex: true }
     })
 
@@ -61,6 +75,7 @@ export async function POST(request: Request) {
         section: section || null,
         slug,
         color: color || '#FFD700',
+        audience: validAudience,
         orderIndex: maxOrderIndex + 1
       }
     })

@@ -50,6 +50,7 @@ type ArticleCategory = {
   slug: string
   color?: string
   orderIndex: number
+  audience: string
 }
 
 type Article = {
@@ -78,9 +79,11 @@ export default function ArticlesPage() {
   const [categories, setCategories] = useState<ArticleCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isCreateCategoryDialogOpen, setIsCreateCategoryDialogOpen] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
   // Filters
+  const [filterAudience, setFilterAudience] = useState<string>('client')
   const [filterCategory, setFilterCategory] = useState<string>('all')
   const [filterPhase, setFilterPhase] = useState<string>('all')
   const [filterPublished, setFilterPublished] = useState<string>('all')
@@ -91,17 +94,23 @@ export default function ArticlesPage() {
     categoryId: ''
   })
 
+  const [categoryFormData, setCategoryFormData] = useState({
+    name: '',
+    slug: '',
+    color: '#FFD700'
+  })
+
   useEffect(() => {
     if (session?.user) {
       fetchArticles()
       fetchCategories()
     }
-  }, [session])
+  }, [session, filterAudience])
 
   const fetchArticles = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/articles', {
+      const response = await fetch(`/api/articles?audience=${filterAudience}`, {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache'
@@ -123,7 +132,7 @@ export default function ArticlesPage() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/article-categories')
+      const response = await fetch(`/api/article-categories?audience=${filterAudience}`)
       if (response.ok) {
         const data = await response.json()
         setCategories(data.categories)
@@ -227,6 +236,44 @@ export default function ArticlesPage() {
 
   const handleTitleChange = (title: string) => {
     setFormData({ ...formData, title, slug: generateSlug(title) })
+  }
+
+  const handleCategoryNameChange = (name: string) => {
+    setCategoryFormData({ ...categoryFormData, name, slug: generateSlug(name) })
+  }
+
+  const handleCreateCategory = async () => {
+    if (!categoryFormData.name || !categoryFormData.slug) {
+      toast.error('Namn och slug krävs')
+      return
+    }
+
+    try {
+      setIsSaving(true)
+      const response = await fetch('/api/article-categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...categoryFormData,
+          audience: filterAudience
+        })
+      })
+
+      if (response.ok) {
+        toast.success('Kategori skapad')
+        setIsCreateCategoryDialogOpen(false)
+        setCategoryFormData({ name: '', slug: '', color: '#FFD700' })
+        fetchCategories()
+      } else {
+        const data = await response.json()
+        toast.error(data.error || 'Kunde inte skapa kategori')
+      }
+    } catch (error) {
+      console.error('Error creating category:', error)
+      toast.error('Ett fel uppstod')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const handleMoveArticle = async (article: Article, direction: 'up' | 'down') => {
@@ -375,6 +422,46 @@ export default function ArticlesPage() {
         >
           <Plus className="h-4 w-4 mr-2" />
           Ny artikel
+        </Button>
+      </div>
+
+      {/* Audience Tabs */}
+      <div className="flex gap-2 flex-wrap items-center justify-between">
+        <div className="flex gap-2">
+          <Button
+            variant={filterAudience === 'client' ? 'default' : 'outline'}
+            onClick={() => {
+              setFilterAudience('client')
+              setFilterCategory('all')
+            }}
+            className={filterAudience === 'client'
+              ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-black font-semibold'
+              : 'border-gold-primary/30 text-gray-300 hover:bg-white/10'
+            }
+          >
+            Klient Kunskapsbank
+          </Button>
+          <Button
+            variant={filterAudience === 'coach' ? 'default' : 'outline'}
+            onClick={() => {
+              setFilterAudience('coach')
+              setFilterCategory('all')
+            }}
+            className={filterAudience === 'coach'
+              ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold'
+              : 'border-purple-500/30 text-gray-300 hover:bg-purple-500/10'
+            }
+          >
+            Coach Kunskapsbank
+          </Button>
+        </div>
+        <Button
+          variant="outline"
+          onClick={() => setIsCreateCategoryDialogOpen(true)}
+          className="border-gold-primary/30 text-gray-300 hover:bg-white/10"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Ny kategori
         </Button>
       </div>
 
@@ -677,6 +764,81 @@ export default function ArticlesPage() {
               className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-black font-semibold"
             >
               {isSaving ? 'Skapar...' : 'Skapa artikel'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Category Dialog */}
+      <Dialog open={isCreateCategoryDialogOpen} onOpenChange={setIsCreateCategoryDialogOpen}>
+        <DialogContent className="bg-gray-900 border border-gold-primary/30">
+          <DialogHeader>
+            <DialogTitle className="text-gray-200">Skapa ny kategori</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Skapa en ny kategori för {filterAudience === 'coach' ? 'Coach' : 'Klient'} Kunskapsbanken.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="categoryName" className="text-gray-200">Namn *</Label>
+              <Input
+                id="categoryName"
+                value={categoryFormData.name}
+                onChange={(e) => handleCategoryNameChange(e.target.value)}
+                placeholder="t.ex. Träning"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-gray-500"
+              />
+            </div>
+            <div>
+              <Label htmlFor="categorySlug" className="text-gray-200">Slug *</Label>
+              <Input
+                id="categorySlug"
+                value={categoryFormData.slug}
+                onChange={(e) => setCategoryFormData({ ...categoryFormData, slug: e.target.value })}
+                placeholder="t.ex. traning"
+                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-gray-500"
+              />
+            </div>
+            <div>
+              <Label htmlFor="categoryColor" className="text-gray-200">Färg</Label>
+              <div className="flex gap-2 items-center">
+                <Input
+                  id="categoryColor"
+                  type="color"
+                  value={categoryFormData.color}
+                  onChange={(e) => setCategoryFormData({ ...categoryFormData, color: e.target.value })}
+                  className="w-16 h-10 p-1 bg-black/30 border-gold-primary/30"
+                />
+                <Input
+                  value={categoryFormData.color}
+                  onChange={(e) => setCategoryFormData({ ...categoryFormData, color: e.target.value })}
+                  placeholder="#FFD700"
+                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-gray-500"
+                />
+              </div>
+            </div>
+            <div className="p-3 bg-black/20 rounded-lg border border-gold-primary/20">
+              <p className="text-sm text-gray-400">
+                Kategorin skapas i: <span className={filterAudience === 'coach' ? 'text-purple-400 font-semibold' : 'text-gold-primary font-semibold'}>
+                  {filterAudience === 'coach' ? 'Coach Kunskapsbank' : 'Klient Kunskapsbank'}
+                </span>
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsCreateCategoryDialogOpen(false)}
+              className="border-gold-primary/30 text-gray-300 hover:bg-white/10"
+            >
+              Avbryt
+            </Button>
+            <Button
+              onClick={handleCreateCategory}
+              disabled={isSaving}
+              className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-black font-semibold"
+            >
+              {isSaving ? 'Skapar...' : 'Skapa kategori'}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/articles - Get all articles
+// Query params: ?audience=client|coach (optional, filters by category audience)
 export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions)
@@ -16,11 +17,21 @@ export async function GET(request: Request) {
     const categoryId = searchParams.get('categoryId')
     const published = searchParams.get('published')
     const phase = searchParams.get('phase')
+    const audience = searchParams.get('audience')
 
     const where: any = {}
 
     if (categoryId) {
       where.categoryId = categoryId
+    }
+
+    // Filter by audience (via category)
+    if (audience) {
+      // If requesting coach articles, verify user is a coach
+      if (audience === 'coach' && (session.user as any).role !== 'coach') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+      where.category = { audience }
     }
 
     if (published !== null && published !== undefined) {

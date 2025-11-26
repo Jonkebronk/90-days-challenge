@@ -966,6 +966,7 @@ model ArticleCategory {
   icon        String  @default("BookOpen") // Lucide icon name
   section     String? // Section/group name for organizing categories (e.g., "INNAN DU BÖRJAR", "GENOMGÅNG AV 90 DAGARS CHALLENGEN")
   orderIndex  Int     @default(0) // For sorting categories
+  audience    String  @default("client") // "client" | "coach" - determines which knowledge base this category belongs to
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

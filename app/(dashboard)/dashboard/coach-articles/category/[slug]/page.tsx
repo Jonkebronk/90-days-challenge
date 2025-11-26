@@ -1,0 +1,252 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { BookOpen, Clock, ArrowLeft, CheckCircle, ShieldCheck } from 'lucide-react'
+import * as LucideIcons from 'lucide-react'
+import { toast } from 'sonner'
+import { getCategoryIcon } from '@/lib/icons/category-icons'
+import { getPhaseColors, type Phase } from '@/lib/utils/phase-colors'
+
+type ArticleCategory = {
+  id: string
+  name: string
+  slug: string
+  color?: string
+  icon?: string
+}
+
+type ArticleProgress = {
+  completed: boolean
+}
+
+type Article = {
+  id: string
+  title: string
+  slug: string
+  description?: string | null
+  difficulty?: string | null
+  phase?: number | null
+  estimatedReadingMinutes?: number | null
+  coverImage?: string | null
+  category: ArticleCategory
+  progress?: ArticleProgress[]
+}
+
+export default function CoachArticleCategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { data: session } = useSession()
+  const router = useRouter()
+  const [slug, setSlug] = useState<string>('')
+  const [category, setCategory] = useState<ArticleCategory | null>(null)
+  const [articles, setArticles] = useState<Article[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Check if user is a coach
+  const isCoach = (session?.user as any)?.role === 'coach'
+
+  useEffect(() => {
+    params.then(p => setSlug(p.slug))
+  }, [params])
+
+  useEffect(() => {
+    if (session?.user && slug && isCoach) {
+      fetchCategoryAndArticles()
+    } else if (session && !isCoach) {
+      router.push('/dashboard')
+    }
+  }, [session, slug, isCoach])
+
+  const fetchCategoryAndArticles = async () => {
+    try {
+      setIsLoading(true)
+
+      // Fetch category info (coach categories)
+      const categoryResponse = await fetch('/api/article-categories?audience=coach')
+      if (categoryResponse.ok) {
+        const categoryData = await categoryResponse.json()
+        const foundCategory = categoryData.categories.find((c: ArticleCategory) => c.slug === slug)
+        if (foundCategory) {
+          setCategory(foundCategory)
+
+          // Fetch articles for this category
+          const articlesResponse = await fetch(`/api/articles?categoryId=${foundCategory.id}&published=true&audience=coach`)
+          if (articlesResponse.ok) {
+            const articlesData = await articlesResponse.json()
+            setArticles(articlesData.articles)
+          }
+        } else {
+          toast.error('Kategori hittades inte')
+          router.push('/dashboard/coach-articles')
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      toast.error('Ett fel uppstod')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const getIconComponent = (iconName?: string, categoryName?: string) => {
+    if (iconName) {
+      const Icon = (LucideIcons as any)[iconName]
+      if (Icon) return Icon
+    }
+    return getCategoryIcon(iconName, categoryName || '')
+  }
+
+  const isArticleCompleted = (article: Article) => {
+    return article.progress && article.progress.length > 0 && article.progress[0].completed
+  }
+
+  const getDifficultyLabel = (difficulty?: string | null) => {
+    if (!difficulty) return null
+    const labels: Record<string, string> = {
+      beginner: 'Nybörjare',
+      intermediate: 'Medel',
+      advanced: 'Avancerad'
+    }
+    return labels[difficulty] || difficulty
+  }
+
+  if (!session?.user || !isCoach) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card className="bg-white/5 border border-purple-500/20 backdrop-blur-[10px]">
+          <CardContent className="p-6 text-center">
+            <ShieldCheck className="h-12 w-12 mx-auto text-purple-400 mb-4" />
+            <p className="text-gray-400">Du har inte behörighet att se denna sida.</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="text-center py-12">
+          <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto" />
+        </div>
+      </div>
+    )
+  }
+
+  if (!category) {
+    return null
+  }
+
+  const Icon = getIconComponent(category.icon, category.name)
+  const categoryColor = category.color || '#A855F7'
+
+  return (
+    <div className="container mx-auto p-6 space-y-6">
+      {/* Header */}
+      <div className="space-y-4">
+        <button
+          onClick={() => router.push('/dashboard/coach-articles')}
+          className="flex items-center gap-2 text-gray-400 hover:text-purple-400 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Tillbaka till kategorier</span>
+        </button>
+
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent mb-4 sm:mb-6 opacity-30" />
+          <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-purple-400 to-purple-600 bg-clip-text text-transparent mb-3 sm:mb-4">
+            {category.name}
+          </h1>
+          <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
+            {articles.length} {articles.length === 1 ? 'artikel' : 'artiklar'}
+          </p>
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent mt-4 sm:mt-6 opacity-30" />
+        </div>
+      </div>
+
+      {/* Articles */}
+      {articles.length === 0 ? (
+        <Card className="bg-white/5 border-2 border-purple-500/20 backdrop-blur-[10px]">
+          <CardContent className="text-center py-16">
+            <BookOpen className="h-16 w-16 mx-auto text-purple-400/50 mb-4" />
+            <p className="text-gray-400 text-lg mb-2">
+              Inga artiklar i denna kategori ännu
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {articles.map((article) => {
+            const isCompleted = isArticleCompleted(article)
+            const phaseColors = getPhaseColors(article.phase as Phase)
+
+            return (
+              <Card
+                key={article.id}
+                onClick={() => router.push(`/dashboard/coach-articles/${article.id}`)}
+                className="group relative bg-white/5 border-2 border-purple-500/20 hover:border-purple-500/60 hover:bg-white/10 transition-all cursor-pointer backdrop-blur-[10px] overflow-hidden"
+              >
+                {/* Cover Image */}
+                {article.coverImage ? (
+                  <div className="h-48 w-full bg-gray-900 overflow-hidden">
+                    <img
+                      src={article.coverImage}
+                      alt={article.title}
+                      className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-48 w-full bg-gradient-to-br from-purple-500/10 to-purple-600/10 flex items-center justify-center">
+                    <BookOpen className="h-16 w-16 text-purple-400/30" />
+                  </div>
+                )}
+
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold text-purple-300 mb-2 tracking-[1px] group-hover:text-purple-400 transition-colors">
+                    {article.title}
+                  </h3>
+
+                  {article.description && (
+                    <p className="text-sm text-gray-400 mb-4 line-clamp-2">
+                      {article.description}
+                    </p>
+                  )}
+
+                  <div className="flex items-center gap-4 text-sm text-gray-400">
+                    {article.estimatedReadingMinutes && (
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        <span>{article.estimatedReadingMinutes} min</span>
+                      </div>
+                    )}
+                    {article.difficulty && (
+                      <span className="text-xs">
+                        {getDifficultyLabel(article.difficulty)}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-3 flex items-center gap-2">
+                    {article.phase && (
+                      <Badge className={`text-xs ${phaseColors.badge}`}>
+                        Fas {article.phase}
+                      </Badge>
+                    )}
+                    {isCompleted && (
+                      <Badge className="text-xs bg-green-100 text-green-700 border-green-200">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Läst
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}

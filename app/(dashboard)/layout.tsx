@@ -73,6 +73,7 @@ const navigation = [
     ]
   },
   { name: 'Kunskapsbanken', href: '/dashboard/articles', icon: Library },
+  { name: 'Coach Kunskapsbank', href: '/dashboard/coach-articles', icon: GraduationCap, coachOnly: true },
   { name: 'Recept', href: '/dashboard/recipes', icon: ChefHat },
   { name: 'Livsmedelbanken', href: '/dashboard/content/food-items', icon: Apple },
   { name: 'Kostschema', href: '/dashboard/meal-plan', icon: Utensils, clientOnly: true },
