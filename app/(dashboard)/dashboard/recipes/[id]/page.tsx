@@ -271,17 +271,17 @@ export default function RecipeDetailPage() {
                     <div>
                       <span className="text-white">{Math.round((totalCalories * 100) / totalWeight)} kcal</span>
                     </div>
-                    {recipe.proteinPerServing && (
+                    {totalProtein > 0 && (
                       <div>
                         <span className="text-white">{((totalProtein * 100) / totalWeight).toFixed(1)}g protein</span>
                       </div>
                     )}
-                    {recipe.fatPerServing && (
+                    {totalFat > 0 && (
                       <div>
                         <span className="text-white">{((totalFat * 100) / totalWeight).toFixed(1)}g fett</span>
                       </div>
                     )}
-                    {recipe.carbsPerServing && (
+                    {totalCarbs > 0 && (
                       <div>
                         <span className="text-white">{((totalCarbs * 100) / totalWeight).toFixed(1)}g kolh.</span>
                       </div>
@@ -296,19 +296,19 @@ export default function RecipeDetailPage() {
                     <div>
                       <span className="text-white">{Math.round(recipe.caloriesPerServing)} kcal</span>
                     </div>
-                    {recipe.proteinPerServing && (
+                    {recipe.proteinPerServing != null && (
                       <div>
-                        <span className="text-white">{recipe.proteinPerServing.toFixed(1)}g protein</span>
+                        <span className="text-white">{Number(recipe.proteinPerServing).toFixed(1)}g protein</span>
                       </div>
                     )}
-                    {recipe.fatPerServing && (
+                    {recipe.fatPerServing != null && (
                       <div>
-                        <span className="text-white">{recipe.fatPerServing.toFixed(1)}g fett</span>
+                        <span className="text-white">{Number(recipe.fatPerServing).toFixed(1)}g fett</span>
                       </div>
                     )}
-                    {recipe.carbsPerServing && (
+                    {recipe.carbsPerServing != null && (
                       <div>
-                        <span className="text-white">{recipe.carbsPerServing.toFixed(1)}g kolh.</span>
+                        <span className="text-white">{Number(recipe.carbsPerServing).toFixed(1)}g kolh.</span>
                       </div>
                     )}
                   </div>
