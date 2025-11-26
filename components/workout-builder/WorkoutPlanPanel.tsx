@@ -243,7 +243,6 @@ export function WorkoutPlanPanel({
 
   return (
     <div
-      ref={setNodeRef}
       className={`flex flex-col h-full ${className} ${
         isDropTarget || isOver
           ? 'ring-2 ring-[#FFD700] ring-inset bg-[rgba(255,215,0,0.05)]'
@@ -343,7 +342,7 @@ export function WorkoutPlanPanel({
 
       {/* Exercises */}
       <ScrollArea className="flex-1">
-        <div className="p-4">
+        <div ref={setNodeRef} className="p-4 min-h-full">
           {day.exercises.length > 0 ? (
               <SortableContext
                 items={day.exercises.map(ex => ex.exerciseId)}

@@ -4,14 +4,13 @@ import { useState, useCallback } from 'react'
 import {
   DndContext,
   DragOverlay,
-  closestCenter,
+  pointerWithin,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
   DragStartEvent,
   DragEndEvent,
-  DragOverEvent,
 } from '@dnd-kit/core'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -115,10 +114,9 @@ export function DualPanelWorkoutBuilder({
     const { active, over } = event
 
     if (isDraggingFromLibrary && activeExercise) {
-      // Dropped from library to workout panel
-      if (over?.id === 'workout-drop-zone' || over?.id.toString().startsWith('exercise-')) {
+      // Check if dropped on workout drop zone
+      if (over?.id === 'workout-drop-zone') {
         onAddExercise(selectedDayIndex, activeExercise)
-        // Switch to workout tab on mobile
         if (window.innerWidth < 1024) {
           setMobileTab('workout')
         }
@@ -200,7 +198,7 @@ export function DualPanelWorkoutBuilder({
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={pointerWithin}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
