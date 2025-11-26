@@ -110,10 +110,15 @@ export async function DELETE(
     const userId = (session.user as any).id
     const { id } = await params
 
-    // Verify session belongs to user
+    // Verify session belongs to user and get the sets
     const workoutSession = await prisma.workoutSessionLog.findUnique({
       where: { id },
-      select: { userId: true }
+      select: {
+        userId: true,
+        sets: {
+          select: { id: true }
+        }
+      }
     })
 
     if (!workoutSession) {
@@ -122,6 +127,18 @@ export async function DELETE(
 
     if (workoutSession.userId !== userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    }
+
+    // Get set IDs to delete related personal records
+    const setIds = workoutSession.sets.map(s => s.id)
+
+    // Delete personal records linked to these sets
+    if (setIds.length > 0) {
+      await prisma.personalRecord.deleteMany({
+        where: {
+          setLogId: { in: setIds }
+        }
+      })
     }
 
     // Delete the session (sets are cascade deleted via Prisma schema)

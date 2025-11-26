@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calendar, Clock, Dumbbell, TrendingUp, ChevronRight, Star, Search, Filter, ChevronDown, ChevronUp, Trash2, X } from 'lucide-react'
+import { Calendar, Clock, Dumbbell, TrendingUp, ChevronRight, Star, Search, Filter, ChevronDown, ChevronUp, Trash2, X, ArrowLeft } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 interface Exercise {
   name: string
@@ -218,10 +219,17 @@ export default function WorkoutHistoryPage() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-4xl font-bold text-white mb-1 sm:mb-2">
-            Träningshistorik
-          </h1>
-          <p className="text-sm sm:text-base text-gray-400">
+          <div className="flex items-center gap-3 mb-2">
+            <Link href="/dashboard/workout">
+              <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-white/10">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
+            <h1 className="text-2xl sm:text-4xl font-bold text-white">
+              Träningshistorik
+            </h1>
+          </div>
+          <p className="text-sm sm:text-base text-gray-400 ml-12">
             Följ din utveckling och se dina tidigare pass
           </p>
         </div>
