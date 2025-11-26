@@ -350,7 +350,7 @@ export default function WorkoutPage() {
                     {workoutProgram.warmupRoutine.name}
                   </CardTitle>
                   <p className="text-xs sm:text-sm text-gray-400 mt-1">
-                    {workoutProgram.warmupRoutine.exercises.length} övningar • Gör detta innan ditt pass
+                    Gör detta innan ditt pass
                   </p>
                 </div>
 

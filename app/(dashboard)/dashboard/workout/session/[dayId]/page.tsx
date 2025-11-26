@@ -646,78 +646,49 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         )}
       </div>
 
-      {/* Previous Session Data */}
-      {sessionId && previousSessionData && workoutDay && (
-        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-          <CardHeader>
-            <CardTitle className="text-gold-light flex items-center gap-2 text-lg font-bold tracking-[1px]">
-              <Clock className="w-5 h-5 text-gold-primary" />
-              Föregående Pass
-              <span className="text-sm text-gray-400 font-normal tracking-normal">
-                {new Date(previousSessionData.startedAt).toLocaleDateString('sv-SE', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric'
-                })}
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {workoutDay.exercises[currentExerciseIndex] && (() => {
-                const currentExercise = workoutDay.exercises[currentExerciseIndex]
-                const previousSets = previousSessionData.sets?.filter(
-                  (set: any) => set.exerciseId === currentExercise.exercise.id
-                ) || []
+      {/* Previous Session Data - Minimalistisk */}
+      {sessionId && previousSessionData && workoutDay && workoutDay.exercises[currentExerciseIndex] && (() => {
+        const currentExercise = workoutDay.exercises[currentExerciseIndex]
+        const previousSets = previousSessionData.sets?.filter(
+          (set: any) => set.exerciseId === currentExercise.exercise.id
+        ) || []
 
-                if (previousSets.length === 0) {
-                  return (
-                    <p className="text-sm text-gray-400 italic">
-                      Ingen data från förra passet för {currentExercise.exercise.name}
-                    </p>
-                  )
-                }
+        if (previousSets.length === 0) return null
 
-                return (
-                  <>
-                    <p className="text-sm text-gray-300 font-medium">
-                      {currentExercise.exercise.name}
-                    </p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                      {previousSets.map((set: any, idx: number) => (
-                        <div
-                          key={idx}
-                          className="p-4 bg-gold-primary/10 border-2 border-gold-primary/20 rounded-xl text-center hover:bg-gold-primary/15 hover:border-gold-primary/30 transition-all"
-                        >
-                          <div className="text-xs text-gold-primary/70 font-semibold uppercase tracking-wide mb-2">
-                            Set {set.setNumber}
-                          </div>
-                          {set.setType === 'TIME' ? (
-                            <div className="text-xl font-bold text-gold-light">
-                              {set.timeSeconds}s
-                            </div>
-                          ) : (
-                            <>
-                              <div className="text-xl font-bold text-gold-light">
-                                {set.reps || 0} <span className="text-sm text-gray-400">reps</span>
-                              </div>
-                              {set.setType === 'WEIGHT' && set.weightKg && (
-                                <div className="text-sm text-gray-300 mt-1">
-                                  @ <span className="font-semibold">{set.weightKg}</span>kg
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )
-              })()}
+        return (
+          <div className="bg-white/5 border border-gold-primary/20 rounded-lg px-4 py-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <Clock className="w-4 h-4 text-gold-primary" />
+                <span className="font-medium text-gold-light">Föregående Pass</span>
+                <span>
+                  {new Date(previousSessionData.startedAt).toLocaleDateString('sv-SE', {
+                    day: 'numeric',
+                    month: 'short'
+                  })}
+                </span>
+              </div>
+              <span className="text-gray-600">|</span>
+              <div className="flex flex-wrap items-center gap-1 text-sm">
+                {previousSets.map((set: any, idx: number) => (
+                  <span key={idx} className="flex items-center">
+                    {set.setType === 'TIME' ? (
+                      <span className="text-gold-light font-semibold">{set.timeSeconds}s</span>
+                    ) : (
+                      <span className="text-gold-light font-semibold">
+                        {set.reps || 0}{set.setType === 'WEIGHT' && set.weightKg ? `×${set.weightKg}kg` : ' reps'}
+                      </span>
+                    )}
+                    {idx < previousSets.length - 1 && (
+                      <span className="text-gray-500 mx-1.5">•</span>
+                    )}
+                  </span>
+                ))}
+              </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )
+      })()}
 
       {/* Exercises - Split View on Desktop */}
       <div className="lg:grid lg:grid-cols-[400px_1fr] lg:gap-6">

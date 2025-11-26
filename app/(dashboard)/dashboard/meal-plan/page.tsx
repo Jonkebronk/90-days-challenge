@@ -370,9 +370,6 @@ export default function MealPlanPage() {
                             {meal.proteinSource && (
                               <div className="bg-gradient-to-br from-red-500/10 to-red-600/5 border border-red-500/30 rounded-xl p-4">
                                 <div className="flex items-center gap-2 mb-3">
-                                  <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center">
-                                    <span className="text-lg">🥩</span>
-                                  </div>
                                   <p className="text-sm font-bold text-red-400 uppercase tracking-wide">Protein</p>
                                 </div>
                                 <ul className="text-sm text-gray-200 space-y-2">
@@ -393,9 +390,6 @@ export default function MealPlanPage() {
                             {meal.carbSource && (
                               <div className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/30 rounded-xl p-4">
                                 <div className="flex items-center gap-2 mb-3">
-                                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                                    <span className="text-lg">🌾</span>
-                                  </div>
                                   <p className="text-sm font-bold text-amber-400 uppercase tracking-wide">Kolhydrater</p>
                                 </div>
                                 <ul className="text-sm text-gray-200 space-y-2">
@@ -416,9 +410,6 @@ export default function MealPlanPage() {
                             {meal.fatSource && (
                               <div className="bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/30 rounded-xl p-4">
                                 <div className="flex items-center gap-2 mb-3">
-                                  <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
-                                    <span className="text-lg">🥑</span>
-                                  </div>
                                   <p className="text-sm font-bold text-green-400 uppercase tracking-wide">Fett</p>
                                 </div>
                                 <ul className="text-sm text-gray-200 space-y-2">
