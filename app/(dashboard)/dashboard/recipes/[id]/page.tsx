@@ -10,16 +10,8 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import {
   ArrowLeft,
-  Clock,
-  Users,
   Heart,
-  Flame,
-  Plus,
-  Minus,
-  ChefHat,
-  Play,
   Printer,
-  Download
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -81,7 +73,6 @@ export default function RecipeDetailPage() {
 
   const [recipe, setRecipe] = useState<Recipe | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [servings, setServings] = useState(1)
   const printRef = useRef<HTMLDivElement>(null)
 
   const handlePrint = useReactToPrint({
@@ -102,7 +93,6 @@ export default function RecipeDetailPage() {
       if (response.ok) {
         const data = await response.json()
         setRecipe(data.recipe)
-        setServings(data.recipe.servings)
       } else {
         toast.error('Kunde inte hämta recept')
         router.push('/dashboard/recipes')
@@ -131,36 +121,6 @@ export default function RecipeDetailPage() {
 
   const isFavorited = () => {
     return recipe?.favorites && recipe.favorites.length > 0
-  }
-
-  const scaleIngredient = (amount: number) => {
-    if (!recipe) return amount
-    return (amount * servings) / recipe.servings
-  }
-
-  const scaleNutrition = (value?: number | null) => {
-    if (!recipe || !value) return 0
-    return (value * servings) / recipe.servings
-  }
-
-  const getDifficultyLabel = (difficulty?: string | null) => {
-    const labels: Record<string, string> = {
-      easy: 'Lätt',
-      medium: 'Medel',
-      hard: 'Svår'
-    }
-    return difficulty ? labels[difficulty] || difficulty : null
-  }
-
-  const getMealTypeLabel = (mealType?: string | null) => {
-    const labels: Record<string, string> = {
-      breakfast: 'Frukost',
-      lunch: 'Lunch',
-      dinner: 'Middag',
-      snack: 'Mellanmål',
-      dessert: 'Dessert'
-    }
-    return mealType ? labels[mealType] || mealType : null
   }
 
   if (!session?.user) {
@@ -194,8 +154,6 @@ export default function RecipeDetailPage() {
       </div>
     )
   }
-
-  const totalTime = (recipe.prepTimeMinutes || 0) + (recipe.cookTimeMinutes || 0)
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -236,7 +194,7 @@ export default function RecipeDetailPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-3xl pb-32 sm:pb-40" ref={printRef}>
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-3xl" ref={printRef}>
         {/* Cover Image */}
         {recipe.coverImage && (
           <div className="mb-4 sm:mb-8 rounded-lg overflow-hidden">
@@ -250,7 +208,7 @@ export default function RecipeDetailPage() {
 
         {/* Recipe Title */}
         <h1 className="text-xl sm:text-3xl font-bold mb-1 sm:mb-2 bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">{recipe.title}</h1>
-        <p className="text-sm sm:text-base text-gray-400 mb-4 sm:mb-8">{servings} {servings === 1 ? 'portion' : 'portioner'}</p>
+        <p className="text-sm sm:text-base text-gray-400 mb-4 sm:mb-8">{recipe.servings} {recipe.servings === 1 ? 'portion' : 'portioner'}</p>
 
         {/* Ingredients Section */}
         <div className="mb-6 sm:mb-10">
@@ -260,7 +218,7 @@ export default function RecipeDetailPage() {
               <li key={ingredient.id} className="text-sm sm:text-base text-white">
                 {ingredient.displayAmount && ingredient.displayUnit
                   ? `${ingredient.displayAmount} ${ingredient.displayUnit}`
-                  : `${Math.round(scaleIngredient(ingredient.amount))} g`}{' '}
+                  : `${Math.round(ingredient.amount)} g`}{' '}
                 {ingredient.foodItem.name}
                 {ingredient.notes && `, ${ingredient.notes}`}
                 {ingredient.optional && ' (valfri)'}
@@ -336,21 +294,21 @@ export default function RecipeDetailPage() {
                   <h3 className="font-bold text-xs sm:text-sm uppercase mb-2 sm:mb-4 text-gold-light">PER PORTION</h3>
                   <div className="space-y-0.5 sm:space-y-1 text-xs sm:text-sm">
                     <div>
-                      <span className="text-white">{Math.round(scaleNutrition(recipe.caloriesPerServing))} kcal</span>
+                      <span className="text-white">{Math.round(recipe.caloriesPerServing)} kcal</span>
                     </div>
                     {recipe.proteinPerServing && (
                       <div>
-                        <span className="text-white">{scaleNutrition(recipe.proteinPerServing).toFixed(1)}g protein</span>
+                        <span className="text-white">{recipe.proteinPerServing.toFixed(1)}g protein</span>
                       </div>
                     )}
                     {recipe.fatPerServing && (
                       <div>
-                        <span className="text-white">{scaleNutrition(recipe.fatPerServing).toFixed(1)}g fett</span>
+                        <span className="text-white">{recipe.fatPerServing.toFixed(1)}g fett</span>
                       </div>
                     )}
                     {recipe.carbsPerServing && (
                       <div>
-                        <span className="text-white">{scaleNutrition(recipe.carbsPerServing).toFixed(1)}g kolh.</span>
+                        <span className="text-white">{recipe.carbsPerServing.toFixed(1)}g kolh.</span>
                       </div>
                     )}
                   </div>
@@ -359,31 +317,6 @@ export default function RecipeDetailPage() {
             </div>
           )
         })()}
-
-        {/* Portion Adjuster - Floating */}
-        <div className="no-print fixed bottom-4 sm:bottom-8 left-4 right-4 sm:left-auto sm:right-8 bg-gray-900/95 shadow-lg rounded-lg border-2 border-gold-primary/30 p-3 sm:p-4 backdrop-blur-[10px] sm:w-auto">
-          <p className="text-xs sm:text-sm font-medium mb-2 text-gold-light">Antal portioner</p>
-          <div className="flex items-center justify-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setServings(Math.max(1, servings - 1))}
-              disabled={servings <= 1}
-              className="border-gold-primary/30 text-white hover:bg-gold-50 h-10 w-10 sm:h-8 sm:w-8"
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
-            <span className="text-xl sm:text-xl font-bold w-8 text-center text-white">{servings}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setServings(servings + 1)}
-              className="border-gold-primary/30 text-white hover:bg-gold-50 h-10 w-10 sm:h-8 sm:w-8"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
       </div>
 
       {/* Print Styles */}
