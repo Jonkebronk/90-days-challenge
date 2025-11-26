@@ -348,9 +348,9 @@ export default function MealPlanPage() {
                                 <ul className="text-sm text-gray-700 p-4 space-y-3">
                                   {meal.proteinSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                     <li key={idx}>
-                                      <div className="flex items-start gap-3">
-                                        <span className="text-gray-900 font-bold mt-0.5">•</span>
-                                        <span className="leading-tight">{item.trim()}</span>
+                                      <div className="flex items-center gap-3">
+                                        <span className="text-gray-900 font-bold text-lg leading-none">•</span>
+                                        <span>{item.trim()}</span>
                                       </div>
                                       {idx < arr.length - 1 && (
                                         <div className="my-3 ml-5 flex items-center gap-2">
@@ -372,9 +372,9 @@ export default function MealPlanPage() {
                                 <ul className="text-sm text-gray-700 p-4 space-y-3">
                                   {meal.carbSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                     <li key={idx}>
-                                      <div className="flex items-start gap-3">
-                                        <span className="text-gray-900 font-bold mt-0.5">•</span>
-                                        <span className="leading-tight">{item.trim()}</span>
+                                      <div className="flex items-center gap-3">
+                                        <span className="text-gray-900 font-bold text-lg leading-none">•</span>
+                                        <span>{item.trim()}</span>
                                       </div>
                                       {idx < arr.length - 1 && (
                                         <div className="my-3 ml-5 flex items-center gap-2">
@@ -396,9 +396,9 @@ export default function MealPlanPage() {
                                 <ul className="text-sm text-gray-700 p-4 space-y-3">
                                   {meal.fatSource.split(/ELLER|eller/).map((item, idx, arr) => (
                                     <li key={idx}>
-                                      <div className="flex items-start gap-3">
-                                        <span className="text-gray-900 font-bold mt-0.5">•</span>
-                                        <span className="leading-tight">{item.trim()}</span>
+                                      <div className="flex items-center gap-3">
+                                        <span className="text-gray-900 font-bold text-lg leading-none">•</span>
+                                        <span>{item.trim()}</span>
                                       </div>
                                       {idx < arr.length - 1 && (
                                         <div className="my-3 ml-5 flex items-center gap-2">
