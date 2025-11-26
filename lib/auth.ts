@@ -54,6 +54,10 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: 'jwt',
+    maxAge: 90 * 24 * 60 * 60, // 90 dagar - perfekt för PWA användning
+  },
+  jwt: {
+    maxAge: 90 * 24 * 60 * 60, // 90 dagar
   },
   pages: {
     signIn: '/login',
