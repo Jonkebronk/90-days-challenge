@@ -1,9 +1,22 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import {
+  DndContext,
+  DragOverlay,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragStartEvent,
+  DragEndEvent,
+  DragOverEvent,
+} from '@dnd-kit/core'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft, Library, Dumbbell } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { ArrowLeft, Library, Dumbbell, GripVertical } from 'lucide-react'
 import {
   ProgramDay,
   Exercise,
@@ -47,6 +60,8 @@ export function DualPanelWorkoutBuilder({
 }: DualPanelWorkoutBuilderProps) {
   const [selectedDayIndex, setSelectedDayIndex] = useState(0)
   const [mobileTab, setMobileTab] = useState<'library' | 'workout'>('workout')
+  const [activeExercise, setActiveExercise] = useState<Exercise | null>(null)
+  const [isDraggingFromLibrary, setIsDraggingFromLibrary] = useState(false)
 
   // Superset and dropset state per day
   const [supersetsMap, setSupersetsMap] = useState<Record<number, SupersetGroup[]>>({})
@@ -55,6 +70,15 @@ export function DualPanelWorkoutBuilder({
   const currentDay = days[selectedDayIndex]
   const currentSupersets = supersetsMap[selectedDayIndex] || []
   const currentDropsets = dropsetsMap[selectedDayIndex] || []
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor)
+  )
 
   // Auto-save functionality
   const handleAutoSave = useCallback(async (data: ProgramDay[]) => {
@@ -66,14 +90,48 @@ export function DualPanelWorkoutBuilder({
   const { hasUnsavedChanges, triggerSave, markAsSaved } = useAutoSave(
     days,
     handleAutoSave,
-    30000, // 30 seconds
+    30000,
     !!onSave
   )
 
-  // Handle adding exercise
+  // Handle drag start
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event
+    const exerciseId = active.id as string
+
+    // Check if dragging from library (id starts with "library-")
+    if (exerciseId.startsWith('library-')) {
+      const actualId = exerciseId.replace('library-', '')
+      const exercise = exercises.find(e => e.id === actualId)
+      if (exercise) {
+        setActiveExercise(exercise)
+        setIsDraggingFromLibrary(true)
+      }
+    }
+  }
+
+  // Handle drag end
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+
+    if (isDraggingFromLibrary && activeExercise) {
+      // Dropped from library to workout panel
+      if (over?.id === 'workout-drop-zone' || over?.id.toString().startsWith('exercise-')) {
+        onAddExercise(selectedDayIndex, activeExercise)
+        // Switch to workout tab on mobile
+        if (window.innerWidth < 1024) {
+          setMobileTab('workout')
+        }
+      }
+    }
+
+    setActiveExercise(null)
+    setIsDraggingFromLibrary(false)
+  }
+
+  // Handle adding exercise (click)
   const handleAddExercise = (exercise: Exercise) => {
     onAddExercise(selectedDayIndex, exercise)
-    // On mobile, switch to workout tab after adding
     if (window.innerWidth < 1024) {
       setMobileTab('workout')
     }
@@ -140,137 +198,167 @@ export function DualPanelWorkoutBuilder({
   }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-[rgba(255,215,0,0.1)]">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onPrevious}
-            className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
-              Bygg träningsdagar
-            </h1>
-            <p className="text-sm text-[rgba(255,255,255,0.6)]">
-              Skapa och organisera övningar för varje dag
-            </p>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="flex flex-col h-full">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-[rgba(255,215,0,0.1)]">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onPrevious}
+              className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
+                Bygg träningsdagar
+              </h1>
+              <p className="text-sm text-[rgba(255,255,255,0.6)]">
+                Dra övningar från biblioteket till passet
+              </p>
+            </div>
           </div>
+        </div>
+
+        {/* Day Tabs */}
+        <div className="p-4 border-b border-[rgba(255,215,0,0.1)]">
+          <DayTabs
+            days={days.map(d => ({ dayNumber: d.dayNumber, name: d.name }))}
+            selectedIndex={selectedDayIndex}
+            onSelectDay={setSelectedDayIndex}
+            onAddDay={onAddDay}
+            onRemoveDay={onRemoveDay}
+          />
+        </div>
+
+        {/* Desktop Layout: Side-by-side panels */}
+        <div className="hidden lg:flex flex-1 overflow-hidden">
+          {/* Exercise Library Panel - Left */}
+          <ExerciseLibraryPanel
+            exercises={exercises}
+            onSelectExercise={handleAddExercise}
+            className="w-[340px] flex-shrink-0"
+            enableDrag={true}
+          />
+
+          {/* Workout Plan Panel - Right */}
+          <WorkoutPlanPanel
+            day={currentDay}
+            exercises={exercises}
+            supersets={currentSupersets}
+            dropsets={currentDropsets}
+            onUpdateDay={(field, value) => onUpdateDay(selectedDayIndex, field, value)}
+            onUpdateExercise={(exerciseIndex, field, value) =>
+              onUpdateExercise(selectedDayIndex, exerciseIndex, field, value)
+            }
+            onRemoveExercise={(exerciseIndex) => onRemoveExercise(selectedDayIndex, exerciseIndex)}
+            onReorderExercises={(oldIndex, newIndex) =>
+              onReorderExercises(selectedDayIndex, oldIndex, newIndex)
+            }
+            onCreateSuperset={handleCreateSuperset}
+            onRemoveSuperset={handleRemoveSuperset}
+            onCreateDropset={handleCreateDropset}
+            onRemoveDropset={handleRemoveDropset}
+            onUpdateDropset={handleUpdateDropset}
+            hasUnsavedChanges={hasUnsavedChanges()}
+            onManualSave={triggerSave}
+            className="flex-1 border-l border-[rgba(255,215,0,0.1)]"
+            isDropTarget={isDraggingFromLibrary}
+          />
+        </div>
+
+        {/* Mobile/Tablet Layout: Tabs */}
+        <div className="lg:hidden flex flex-col flex-1 overflow-hidden">
+          <Tabs
+            value={mobileTab}
+            onValueChange={(v) => setMobileTab(v as 'library' | 'workout')}
+            className="flex flex-col flex-1"
+          >
+            <TabsList className="mx-4 mt-2 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.2)]">
+              <TabsTrigger
+                value="library"
+                className="flex-1 data-[state=active]:bg-[rgba(255,215,0,0.2)] data-[state=active]:text-[#FFD700]"
+              >
+                <Library className="w-4 h-4 mr-2" />
+                Bibliotek
+              </TabsTrigger>
+              <TabsTrigger
+                value="workout"
+                className="flex-1 data-[state=active]:bg-[rgba(255,215,0,0.2)] data-[state=active]:text-[#FFD700]"
+              >
+                <Dumbbell className="w-4 h-4 mr-2" />
+                Träning
+                {currentDay.exercises.length > 0 && (
+                  <span className="ml-1 px-1.5 py-0.5 text-xs bg-[rgba(255,215,0,0.3)] rounded-full">
+                    {currentDay.exercises.length}
+                  </span>
+                )}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="library" className="flex-1 mt-0 overflow-hidden">
+              <ExerciseLibraryPanel
+                exercises={exercises}
+                onSelectExercise={handleAddExercise}
+                className="h-full"
+                enableDrag={false}
+              />
+            </TabsContent>
+
+            <TabsContent value="workout" className="flex-1 mt-0 overflow-hidden">
+              <WorkoutPlanPanel
+                day={currentDay}
+                exercises={exercises}
+                supersets={currentSupersets}
+                dropsets={currentDropsets}
+                onUpdateDay={(field, value) => onUpdateDay(selectedDayIndex, field, value)}
+                onUpdateExercise={(exerciseIndex, field, value) =>
+                  onUpdateExercise(selectedDayIndex, exerciseIndex, field, value)
+                }
+                onRemoveExercise={(exerciseIndex) => onRemoveExercise(selectedDayIndex, exerciseIndex)}
+                onReorderExercises={(oldIndex, newIndex) =>
+                  onReorderExercises(selectedDayIndex, oldIndex, newIndex)
+                }
+                onCreateSuperset={handleCreateSuperset}
+                onRemoveSuperset={handleRemoveSuperset}
+                onCreateDropset={handleCreateDropset}
+                onRemoveDropset={handleRemoveDropset}
+                onUpdateDropset={handleUpdateDropset}
+                hasUnsavedChanges={hasUnsavedChanges()}
+                onManualSave={triggerSave}
+                className="h-full"
+                isDropTarget={false}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
-      {/* Day Tabs */}
-      <div className="p-4 border-b border-[rgba(255,215,0,0.1)]">
-        <DayTabs
-          days={days.map(d => ({ dayNumber: d.dayNumber, name: d.name }))}
-          selectedIndex={selectedDayIndex}
-          onSelectDay={setSelectedDayIndex}
-          onAddDay={onAddDay}
-          onRemoveDay={onRemoveDay}
-        />
-      </div>
-
-      {/* Desktop Layout: Side-by-side panels */}
-      <div className="hidden lg:flex flex-1 overflow-hidden">
-        {/* Exercise Library Panel - Left */}
-        <ExerciseLibraryPanel
-          exercises={exercises}
-          onSelectExercise={handleAddExercise}
-          className="w-[340px] flex-shrink-0"
-        />
-
-        {/* Workout Plan Panel - Right */}
-        <WorkoutPlanPanel
-          day={currentDay}
-          exercises={exercises}
-          supersets={currentSupersets}
-          dropsets={currentDropsets}
-          onUpdateDay={(field, value) => onUpdateDay(selectedDayIndex, field, value)}
-          onUpdateExercise={(exerciseIndex, field, value) =>
-            onUpdateExercise(selectedDayIndex, exerciseIndex, field, value)
-          }
-          onRemoveExercise={(exerciseIndex) => onRemoveExercise(selectedDayIndex, exerciseIndex)}
-          onReorderExercises={(oldIndex, newIndex) =>
-            onReorderExercises(selectedDayIndex, oldIndex, newIndex)
-          }
-          onCreateSuperset={handleCreateSuperset}
-          onRemoveSuperset={handleRemoveSuperset}
-          onCreateDropset={handleCreateDropset}
-          onRemoveDropset={handleRemoveDropset}
-          onUpdateDropset={handleUpdateDropset}
-          hasUnsavedChanges={hasUnsavedChanges()}
-          onManualSave={triggerSave}
-          className="flex-1 border-l border-[rgba(255,215,0,0.1)]"
-        />
-      </div>
-
-      {/* Mobile/Tablet Layout: Tabs */}
-      <div className="lg:hidden flex flex-col flex-1 overflow-hidden">
-        <Tabs
-          value={mobileTab}
-          onValueChange={(v) => setMobileTab(v as 'library' | 'workout')}
-          className="flex flex-col flex-1"
-        >
-          <TabsList className="mx-4 mt-2 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.2)]">
-            <TabsTrigger
-              value="library"
-              className="flex-1 data-[state=active]:bg-[rgba(255,215,0,0.2)] data-[state=active]:text-[#FFD700]"
-            >
-              <Library className="w-4 h-4 mr-2" />
-              Bibliotek
-            </TabsTrigger>
-            <TabsTrigger
-              value="workout"
-              className="flex-1 data-[state=active]:bg-[rgba(255,215,0,0.2)] data-[state=active]:text-[#FFD700]"
-            >
-              <Dumbbell className="w-4 h-4 mr-2" />
-              Träning
-              {currentDay.exercises.length > 0 && (
-                <span className="ml-1 px-1.5 py-0.5 text-xs bg-[rgba(255,215,0,0.3)] rounded-full">
-                  {currentDay.exercises.length}
-                </span>
-              )}
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="library" className="flex-1 mt-0 overflow-hidden">
-            <ExerciseLibraryPanel
-              exercises={exercises}
-              onSelectExercise={handleAddExercise}
-              className="h-full"
-            />
-          </TabsContent>
-
-          <TabsContent value="workout" className="flex-1 mt-0 overflow-hidden">
-            <WorkoutPlanPanel
-              day={currentDay}
-              exercises={exercises}
-              supersets={currentSupersets}
-              dropsets={currentDropsets}
-              onUpdateDay={(field, value) => onUpdateDay(selectedDayIndex, field, value)}
-              onUpdateExercise={(exerciseIndex, field, value) =>
-                onUpdateExercise(selectedDayIndex, exerciseIndex, field, value)
-              }
-              onRemoveExercise={(exerciseIndex) => onRemoveExercise(selectedDayIndex, exerciseIndex)}
-              onReorderExercises={(oldIndex, newIndex) =>
-                onReorderExercises(selectedDayIndex, oldIndex, newIndex)
-              }
-              onCreateSuperset={handleCreateSuperset}
-              onRemoveSuperset={handleRemoveSuperset}
-              onCreateDropset={handleCreateDropset}
-              onRemoveDropset={handleRemoveDropset}
-              onUpdateDropset={handleUpdateDropset}
-              hasUnsavedChanges={hasUnsavedChanges()}
-              onManualSave={triggerSave}
-              className="h-full"
-            />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+      {/* Drag Overlay */}
+      <DragOverlay>
+        {activeExercise && (
+          <div className="bg-[rgba(255,215,0,0.15)] border-2 border-[#FFD700] rounded-lg p-3 shadow-xl backdrop-blur-sm">
+            <div className="flex items-center gap-2">
+              <GripVertical className="w-4 h-4 text-[#FFD700]" />
+              <span className="text-white font-medium">{activeExercise.name}</span>
+            </div>
+            <div className="flex gap-1 mt-1">
+              {activeExercise.muscleGroups.slice(0, 2).map(mg => (
+                <Badge key={mg} variant="outline" className="text-xs bg-[rgba(255,215,0,0.2)] border-[#FFD700] text-[#FFD700]">
+                  {mg}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+      </DragOverlay>
+    </DndContext>
   )
 }

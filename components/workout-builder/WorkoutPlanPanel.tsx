@@ -2,17 +2,11 @@
 
 import { useState } from 'react'
 import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
+  useDroppable,
   DragEndEvent,
 } from '@dnd-kit/core'
 import {
   SortableContext,
-  sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
@@ -53,6 +47,7 @@ interface WorkoutPlanPanelProps {
   hasUnsavedChanges?: boolean
   onManualSave?: () => void
   className?: string
+  isDropTarget?: boolean
 }
 
 // Sortable Exercise Item
@@ -126,31 +121,17 @@ export function WorkoutPlanPanel({
   onUpdateDropset,
   hasUnsavedChanges = false,
   onManualSave,
-  className = ''
+  className = '',
+  isDropTarget = false
 }: WorkoutPlanPanelProps) {
   const [selectedForSuperset, setSelectedForSuperset] = useState<Set<number>>(new Set())
   const [selectedForDropset, setSelectedForDropset] = useState<Set<number>>(new Set())
   const [groupingMode, setGroupingMode] = useState<'none' | 'superset' | 'dropset'>('none')
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  )
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
-
-    if (over && active.id !== over.id) {
-      const oldIndex = day.exercises.findIndex(ex => ex.exerciseId === active.id)
-      const newIndex = day.exercises.findIndex(ex => ex.exerciseId === over.id)
-
-      if (oldIndex !== -1 && newIndex !== -1) {
-        onReorderExercises(oldIndex, newIndex)
-      }
-    }
-  }
+  // Make the panel a drop target
+  const { setNodeRef, isOver } = useDroppable({
+    id: 'workout-drop-zone'
+  })
 
   const handleToggleSuperset = (index: number, selected: boolean) => {
     if (groupingMode !== 'superset') {
@@ -261,7 +242,14 @@ export function WorkoutPlanPanel({
   })
 
   return (
-    <div className={`flex flex-col h-full ${className}`}>
+    <div
+      ref={setNodeRef}
+      className={`flex flex-col h-full ${className} ${
+        isDropTarget || isOver
+          ? 'ring-2 ring-[#FFD700] ring-inset bg-[rgba(255,215,0,0.05)]'
+          : ''
+      } transition-all`}
+    >
       {/* Header */}
       <div className="p-4 border-b border-[rgba(255,215,0,0.1)]">
         <div className="flex items-center justify-between mb-3">
@@ -357,11 +345,6 @@ export function WorkoutPlanPanel({
       <ScrollArea className="flex-1">
         <div className="p-4">
           {day.exercises.length > 0 ? (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
               <SortableContext
                 items={day.exercises.map(ex => ex.exerciseId)}
                 strategy={verticalListSortingStrategy}
@@ -447,15 +430,16 @@ export function WorkoutPlanPanel({
                   })}
                 </div>
               </SortableContext>
-            </DndContext>
           ) : (
-            <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-dashed border-[rgba(255,215,0,0.2)]">
+            <Card className={`bg-[rgba(255,255,255,0.03)] border-2 border-dashed transition-all ${
+              isOver ? 'border-[#FFD700] bg-[rgba(255,215,0,0.1)]' : 'border-[rgba(255,215,0,0.2)]'
+            }`}>
               <CardContent className="py-12 text-center">
-                <p className="text-[rgba(255,255,255,0.5)] mb-2">
-                  Inga övningar än
+                <p className={`mb-2 ${isOver ? 'text-[#FFD700]' : 'text-[rgba(255,255,255,0.5)]'}`}>
+                  {isOver ? 'Släpp för att lägga till' : 'Inga övningar än'}
                 </p>
                 <p className="text-sm text-[rgba(255,255,255,0.4)]">
-                  Välj övningar från biblioteket till vänster
+                  Dra övningar från biblioteket eller klicka för att lägga till
                 </p>
               </CardContent>
             </Card>
