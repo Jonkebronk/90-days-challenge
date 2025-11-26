@@ -16,10 +16,18 @@ export async function GET() {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
+    const userId = (session.user as any).id
+
     const categories = await prisma.workoutProgramCategory.findMany({
       include: {
         _count: {
-          select: { programs: true }
+          select: {
+            programs: {
+              where: {
+                coachId: userId
+              }
+            }
+          }
         }
       },
       orderBy: { orderIndex: 'asc' }

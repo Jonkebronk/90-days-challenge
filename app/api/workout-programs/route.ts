@@ -77,11 +77,17 @@ export async function GET() {
       }
     })
 
-    // Also get all categories with program counts
+    // Also get all categories with program counts (filtered by coach)
     const categories = await prisma.workoutProgramCategory.findMany({
       include: {
         _count: {
-          select: { programs: true }
+          select: {
+            programs: {
+              where: {
+                coachId: userId
+              }
+            }
+          }
         }
       },
       orderBy: { orderIndex: 'asc' }
