@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
-import { ChefHat } from 'lucide-react'
+import { ChefHat, Heart } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -23,13 +23,27 @@ export default function RecipesPage() {
   const { data: session } = useSession()
   const router = useRouter()
   const [categories, setCategories] = useState<RecipeCategory[]>([])
+  const [favoriteCount, setFavoriteCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     if (session?.user) {
       fetchCategories()
+      fetchFavorites()
     }
   }, [session])
+
+  const fetchFavorites = async () => {
+    try {
+      const response = await fetch('/api/recipes/favorites')
+      if (response.ok) {
+        const data = await response.json()
+        setFavoriteCount(data.recipes?.length || 0)
+      }
+    } catch (error) {
+      console.error('Error fetching favorites:', error)
+    }
+  }
 
   const fetchCategories = async () => {
     try {
@@ -115,6 +129,24 @@ export default function RecipesPage() {
           })}
         </div>
       )}
+
+      {/* Favorites Link */}
+      <div className="max-w-6xl mx-auto">
+        <div
+          onClick={() => router.push('/dashboard/recipes/favorites')}
+          className="group bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-red-400 hover:shadow-lg transition-all duration-300 cursor-pointer flex items-center justify-between"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+              <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-sm sm:text-base font-bold text-gray-900">Mina favoriter</h3>
+              <p className="text-gray-500 text-[10px] sm:text-xs">{favoriteCount} sparade recept</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

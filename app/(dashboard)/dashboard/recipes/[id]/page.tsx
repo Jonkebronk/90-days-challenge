@@ -201,72 +201,63 @@ export default function RecipeDetailPage() {
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <div className="bg-gray-900/95 border-b border-gold-primary/30 sticky top-0 z-10 no-print backdrop-blur-[10px]">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-3 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => router.push('/dashboard/recipes')}
-              className="text-white hover:bg-gold-50"
+              onClick={() => router.back()}
+              className="text-white hover:bg-gold-50 px-2 sm:px-4"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Tillbaka
+              <ArrowLeft className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Tillbaka</span>
             </Button>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handlePrint}
-                className="text-white hover:bg-gold-50"
+                className="text-white hover:bg-gold-50 px-2 sm:px-4"
               >
-                <Printer className="h-4 w-4 mr-2" />
-                Skriv ut
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handlePrint}
-                className="text-white hover:bg-gold-50"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                PDF
+                <Printer className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Skriv ut</span>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleToggleFavorite}
-                className="text-white hover:bg-gold-50"
+                className="text-white hover:bg-gold-50 px-2 sm:px-4"
               >
-                <Heart className={`h-4 w-4 mr-2 ${isFavorited() ? 'fill-red-500 text-red-500' : ''}`} />
-                Favorit
+                <Heart className={`h-4 w-4 sm:mr-2 ${isFavorited() ? 'fill-red-500 text-red-500' : ''}`} />
+                <span className="hidden sm:inline">Favorit</span>
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-12 max-w-3xl" ref={printRef}>
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 max-w-3xl pb-32 sm:pb-40" ref={printRef}>
         {/* Cover Image */}
         {recipe.coverImage && (
-          <div className="mb-8 rounded-lg overflow-hidden">
+          <div className="mb-4 sm:mb-8 rounded-lg overflow-hidden">
             <img
               src={recipe.coverImage}
               alt={recipe.title}
-              className="w-full h-64 object-cover"
+              className="w-full h-40 sm:h-64 object-cover"
             />
           </div>
         )}
 
         {/* Recipe Title */}
-        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">{recipe.title}</h1>
-        <p className="text-base text-gray-400 mb-8">{servings} {servings === 1 ? 'portion' : 'portioner'}</p>
+        <h1 className="text-xl sm:text-3xl font-bold mb-1 sm:mb-2 bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">{recipe.title}</h1>
+        <p className="text-sm sm:text-base text-gray-400 mb-4 sm:mb-8">{servings} {servings === 1 ? 'portion' : 'portioner'}</p>
 
         {/* Ingredients Section */}
-        <div className="mb-10">
-          <h2 className="text-xl font-bold mb-4 bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">Ingredienser</h2>
-          <ul className="space-y-2">
+        <div className="mb-6 sm:mb-10">
+          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">Ingredienser</h2>
+          <ul className="space-y-1.5 sm:space-y-2">
             {recipe.ingredients.map((ingredient) => (
-              <li key={ingredient.id} className="text-base text-white">
+              <li key={ingredient.id} className="text-sm sm:text-base text-white">
                 {ingredient.displayAmount && ingredient.displayUnit
                   ? `${ingredient.displayAmount} ${ingredient.displayUnit}`
                   : `${Math.round(scaleIngredient(ingredient.amount))} g`}{' '}
@@ -280,14 +271,14 @@ export default function RecipeDetailPage() {
 
         {/* Instructions Section */}
         {recipe.instructions.length > 0 && (
-          <div className="mb-10">
-            <h2 className="text-xl font-bold mb-4 bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">Tillagningsinstruktioner</h2>
+          <div className="mb-6 sm:mb-10">
+            <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">Tillagningsinstruktioner</h2>
             {recipe.description && (
-              <p className="text-sm text-gray-400 mb-4 italic">({recipe.description})</p>
+              <p className="text-xs sm:text-sm text-gray-400 mb-3 sm:mb-4 italic">({recipe.description})</p>
             )}
-            <ol className="space-y-3 list-decimal list-inside">
+            <ol className="space-y-2 sm:space-y-3 list-decimal list-inside">
               {recipe.instructions.map((instruction) => (
-                <li key={instruction.id} className="text-base text-white">
+                <li key={instruction.id} className="text-sm sm:text-base text-white">
                   {instruction.instruction}
                   {instruction.duration && ` (${instruction.duration} min)`}
                 </li>
@@ -298,7 +289,7 @@ export default function RecipeDetailPage() {
 
         {/* Recipe Credit */}
         {recipe.category && (
-          <p className="text-sm italic text-[rgba(255,255,255,0.4)] mb-8">
+          <p className="text-xs sm:text-sm italic text-[rgba(255,255,255,0.4)] mb-6 sm:mb-8">
             Recept: {recipe.category.name}
           </p>
         )}
@@ -313,28 +304,28 @@ export default function RecipeDetailPage() {
           const totalCarbs = (recipe.carbsPerServing || 0) * recipe.servings
 
           return (
-            <div className="border-t border-gold-primary/30 pt-8">
-              <div className="grid grid-cols-2 gap-8">
+            <div className="border-t border-gold-primary/30 pt-6 sm:pt-8">
+              <div className="grid grid-cols-2 gap-4 sm:gap-8">
                 {/* Per 100g */}
                 <div>
-                  <h3 className="font-bold text-sm uppercase mb-4 text-gold-light">NÄRING PER 100 G</h3>
-                  <div className="space-y-1 text-sm">
+                  <h3 className="font-bold text-xs sm:text-sm uppercase mb-2 sm:mb-4 text-gold-light">PER 100 G</h3>
+                  <div className="space-y-0.5 sm:space-y-1 text-xs sm:text-sm">
                     <div>
                       <span className="text-white">{Math.round((totalCalories * 100) / totalWeight)} kcal</span>
                     </div>
                     {recipe.proteinPerServing && (
                       <div>
-                        <span className="text-white">{((totalProtein * 100) / totalWeight).toFixed(1)} g protein</span>
+                        <span className="text-white">{((totalProtein * 100) / totalWeight).toFixed(1)}g protein</span>
                       </div>
                     )}
                     {recipe.fatPerServing && (
                       <div>
-                        <span className="text-white">{((totalFat * 100) / totalWeight).toFixed(1)} g fett</span>
+                        <span className="text-white">{((totalFat * 100) / totalWeight).toFixed(1)}g fett</span>
                       </div>
                     )}
                     {recipe.carbsPerServing && (
                       <div>
-                        <span className="text-white">{((totalCarbs * 100) / totalWeight).toFixed(1)} g kolh.</span>
+                        <span className="text-white">{((totalCarbs * 100) / totalWeight).toFixed(1)}g kolh.</span>
                       </div>
                     )}
                   </div>
@@ -342,24 +333,24 @@ export default function RecipeDetailPage() {
 
                 {/* Per Portion */}
                 <div>
-                  <h3 className="font-bold text-sm uppercase mb-4 text-gold-light">NÄRING PER PORTION</h3>
-                  <div className="space-y-1 text-sm">
+                  <h3 className="font-bold text-xs sm:text-sm uppercase mb-2 sm:mb-4 text-gold-light">PER PORTION</h3>
+                  <div className="space-y-0.5 sm:space-y-1 text-xs sm:text-sm">
                     <div>
                       <span className="text-white">{Math.round(scaleNutrition(recipe.caloriesPerServing))} kcal</span>
                     </div>
                     {recipe.proteinPerServing && (
                       <div>
-                        <span className="text-white">{scaleNutrition(recipe.proteinPerServing).toFixed(1)} g protein</span>
+                        <span className="text-white">{scaleNutrition(recipe.proteinPerServing).toFixed(1)}g protein</span>
                       </div>
                     )}
                     {recipe.fatPerServing && (
                       <div>
-                        <span className="text-white">{scaleNutrition(recipe.fatPerServing).toFixed(1)} g fett</span>
+                        <span className="text-white">{scaleNutrition(recipe.fatPerServing).toFixed(1)}g fett</span>
                       </div>
                     )}
                     {recipe.carbsPerServing && (
                       <div>
-                        <span className="text-white">{scaleNutrition(recipe.carbsPerServing).toFixed(1)} g kolh.</span>
+                        <span className="text-white">{scaleNutrition(recipe.carbsPerServing).toFixed(1)}g kolh.</span>
                       </div>
                     )}
                   </div>
@@ -370,24 +361,24 @@ export default function RecipeDetailPage() {
         })()}
 
         {/* Portion Adjuster - Floating */}
-        <div className="no-print fixed bottom-8 right-8 bg-gray-900/95 shadow-lg rounded-lg border-2 border-gold-primary/30 p-4 backdrop-blur-[10px]">
-          <p className="text-sm font-medium mb-2 text-gold-light">Antal portioner</p>
-          <div className="flex items-center gap-3">
+        <div className="no-print fixed bottom-4 sm:bottom-8 left-4 right-4 sm:left-auto sm:right-8 bg-gray-900/95 shadow-lg rounded-lg border-2 border-gold-primary/30 p-3 sm:p-4 backdrop-blur-[10px] sm:w-auto">
+          <p className="text-xs sm:text-sm font-medium mb-2 text-gold-light">Antal portioner</p>
+          <div className="flex items-center justify-center gap-3">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setServings(Math.max(1, servings - 1))}
               disabled={servings <= 1}
-              className="border-gold-primary/30 text-white hover:bg-gold-50"
+              className="border-gold-primary/30 text-white hover:bg-gold-50 h-10 w-10 sm:h-8 sm:w-8"
             >
               <Minus className="h-4 w-4" />
             </Button>
-            <span className="text-xl font-bold w-8 text-center text-white">{servings}</span>
+            <span className="text-xl sm:text-xl font-bold w-8 text-center text-white">{servings}</span>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setServings(servings + 1)}
-              className="border-gold-primary/30 text-white hover:bg-gold-50"
+              className="border-gold-primary/30 text-white hover:bg-gold-50 h-10 w-10 sm:h-8 sm:w-8"
             >
               <Plus className="h-4 w-4" />
             </Button>
