@@ -1,10 +1,11 @@
+'use client'
+
+import { useState } from 'react'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
+import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Textarea } from '@/components/ui/textarea'
-import { GripVertical, Trash2, UserCircle } from 'lucide-react'
+import { GripVertical, Trash2, MoreHorizontal, ChevronDown, ChevronUp } from 'lucide-react'
 import { ProgramExercise, Exercise } from './types'
 import { cn } from '@/lib/utils'
 
@@ -31,147 +32,157 @@ export function ExerciseCard({
   dragHandleProps,
   isDragging = false
 }: ExerciseCardProps) {
+  const [showNotes, setShowNotes] = useState(
+    !!(exercise.notes || exercise.coachNotes)
+  )
+
+  // Format reps as "min-max" or just "min" if same
+  const getRepsValue = () => {
+    if (exercise.repsMin && exercise.repsMax && exercise.repsMin !== exercise.repsMax) {
+      return `${exercise.repsMin}-${exercise.repsMax}`
+    }
+    return exercise.repsMin?.toString() || ''
+  }
+
+  // Parse reps input like "12-15" or "10"
+  const handleRepsChange = (value: string) => {
+    if (value.includes('-')) {
+      const [min, max] = value.split('-').map(v => parseInt(v.trim()) || null)
+      onChange('repsMin', min)
+      onChange('repsMax', max)
+    } else {
+      const reps = parseInt(value) || null
+      onChange('repsMin', reps)
+      onChange('repsMax', reps)
+    }
+  }
+
   return (
     <div
       className={cn(
-        "p-4 bg-[rgba(255,255,255,0.02)] border border-[rgba(255,215,0,0.1)] rounded-lg space-y-3 transition-all",
-        isDragging && "opacity-50 scale-95",
+        "group bg-[rgba(255,255,255,0.02)] hover:bg-[rgba(255,255,255,0.04)] rounded-xl transition-all",
+        isDragging && "opacity-50 scale-[0.98]",
         supersetColor && "border-l-4",
-        isSelected && "ring-2 ring-[rgba(255,215,0,0.5)]"
+        isSelected && "ring-2 ring-[rgba(255,215,0,0.4)]"
       )}
       style={supersetColor ? { borderLeftColor: supersetColor } : undefined}
     >
-      <div className="flex items-start gap-3">
+      {/* Main Row */}
+      <div className="flex items-center gap-3 p-3">
         {/* Drag Handle */}
         <div
           {...dragHandleProps}
-          className="cursor-grab active:cursor-grabbing pt-1 touch-none"
+          className="cursor-grab active:cursor-grabbing touch-none opacity-30 group-hover:opacity-60 transition-opacity"
         >
-          <GripVertical className="w-5 h-5 text-[rgba(255,255,255,0.3)] hover:text-[rgba(255,215,0,0.8)]" />
+          <GripVertical className="w-5 h-5 text-white" />
         </div>
 
-        {/* Exercise Info */}
+        {/* Exercise Name */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <div>
-              <h4 className="text-[rgba(255,255,255,0.9)] font-medium">
-                {exerciseData?.name || 'Välj övning'}
-              </h4>
-              {exerciseData && (
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {exerciseData.muscleGroups.map(mg => (
-                    <Badge
-                      key={mg}
-                      variant="outline"
-                      className="text-xs bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.3)] text-[#FFD700]"
-                    >
-                      {mg}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
+          <h4 className="text-white font-medium truncate">
+            {exerciseData?.name || 'Välj övning'}
+          </h4>
+          {!showNotes && (
+            <button
+              onClick={() => setShowNotes(true)}
+              className="text-xs text-[rgba(255,255,255,0.4)] hover:text-[rgba(255,215,0,0.8)] transition-colors"
+            >
+              Lägg till anteckning
+            </button>
+          )}
+        </div>
 
-            <div className="flex items-center gap-2">
-              {/* Superset Selection */}
-              {onToggleSuperset && (
-                <div className="flex items-center gap-1">
-                  <Checkbox
-                    checked={isSelected}
-                    onCheckedChange={onToggleSuperset}
-                    id={`superset-${exercise.exerciseId}`}
-                  />
-                  <Label
-                    htmlFor={`superset-${exercise.exerciseId}`}
-                    className="text-xs text-[rgba(255,255,255,0.6)] cursor-pointer whitespace-nowrap"
-                  >
-                    Superset
-                  </Label>
-                </div>
-              )}
-
-              {/* Delete Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onRemove}
-                className="text-[rgba(255,100,100,0.8)] hover:text-[#ff6464] hover:bg-[rgba(255,100,100,0.1)]"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Sets/Reps Table */}
-          <div className="grid grid-cols-4 gap-2">
-            <div>
-              <Label className="text-xs text-[rgba(255,255,255,0.6)]">Sets</Label>
-              <Input
-                type="number"
-                value={exercise.sets}
-                onChange={(e) => onChange('sets', parseInt(e.target.value) || 0)}
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm mt-1"
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-[rgba(255,255,255,0.6)]">Reps Min</Label>
-              <Input
-                type="number"
-                value={exercise.repsMin || ''}
-                onChange={(e) => onChange('repsMin', e.target.value ? parseInt(e.target.value) : null)}
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm mt-1"
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-[rgba(255,255,255,0.6)]">Reps Max</Label>
-              <Input
-                type="number"
-                value={exercise.repsMax || ''}
-                onChange={(e) => onChange('repsMax', e.target.value ? parseInt(e.target.value) : null)}
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm mt-1"
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-[rgba(255,255,255,0.6)]">Vila (s)</Label>
-              <Input
-                type="number"
-                value={exercise.restSeconds}
-                onChange={(e) => onChange('restSeconds', parseInt(e.target.value) || 60)}
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm mt-1"
-              />
-            </div>
-          </div>
-
-          {/* Notes */}
-          <div>
-            <Label className="text-xs text-[rgba(255,255,255,0.6)]">Anteckningar</Label>
+        {/* Compact Stats */}
+        <div className="flex items-center gap-2">
+          {/* Sets */}
+          <div className="text-center">
+            <span className="text-[10px] text-[rgba(255,255,255,0.4)] block">Sets</span>
             <Input
-              value={exercise.notes}
-              onChange={(e) => onChange('notes', e.target.value)}
-              placeholder="T.ex. Drop set, superset..."
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm mt-1"
+              type="number"
+              value={exercise.sets}
+              onChange={(e) => onChange('sets', parseInt(e.target.value) || 0)}
+              className="w-14 h-8 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-sm px-1"
             />
           </div>
 
-          {/* Coach Notes */}
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <UserCircle className="w-4 h-4 text-blue-400" />
-              <Label className="text-xs text-blue-300">Coach Notes (visas för klienten)</Label>
+          {/* Reps */}
+          <div className="text-center">
+            <span className="text-[10px] text-[rgba(255,255,255,0.4)] block">Reps</span>
+            <Input
+              value={getRepsValue()}
+              onChange={(e) => handleRepsChange(e.target.value)}
+              placeholder="8-12"
+              className="w-16 h-8 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-sm px-1"
+            />
+          </div>
+
+          {/* Rest */}
+          <div className="text-center">
+            <span className="text-[10px] text-[rgba(255,255,255,0.4)] block">Vila</span>
+            <Input
+              type="number"
+              value={exercise.restSeconds}
+              onChange={(e) => onChange('restSeconds', parseInt(e.target.value) || 60)}
+              className="w-14 h-8 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-sm px-1"
+            />
+          </div>
+
+          {/* Superset Toggle */}
+          {onToggleSuperset && (
+            <div className="flex items-center pl-2 border-l border-[rgba(255,255,255,0.1)]">
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={onToggleSuperset}
+                className="border-[rgba(255,215,0,0.3)] data-[state=checked]:bg-[#FFD700] data-[state=checked]:border-[#FFD700]"
+              />
+              <span className="text-[10px] text-[rgba(255,255,255,0.4)] ml-1">S</span>
             </div>
+          )}
+
+          {/* Delete */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onRemove}
+            className="w-8 h-8 text-[rgba(255,255,255,0.3)] hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Expandable Notes Section */}
+      {showNotes && (
+        <div className="px-3 pb-3 pt-0 space-y-2 border-t border-[rgba(255,255,255,0.05)]">
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-xs text-[rgba(255,255,255,0.5)]">Anteckningar</span>
+            <button
+              onClick={() => setShowNotes(false)}
+              className="text-xs text-[rgba(255,255,255,0.3)] hover:text-white"
+            >
+              <ChevronUp className="w-4 h-4" />
+            </button>
+          </div>
+
+          <Input
+            value={exercise.notes}
+            onChange={(e) => onChange('notes', e.target.value)}
+            placeholder="T.ex. Tempo 3-1-2, dropset..."
+            className="bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.08)] text-white text-sm placeholder:text-[rgba(255,255,255,0.3)]"
+          />
+
+          <div>
+            <span className="text-xs text-blue-400">Coach Notes</span>
             <Textarea
               value={exercise.coachNotes || ''}
               onChange={(e) => onChange('coachNotes', e.target.value)}
-              placeholder="Instruktioner från coach som klienten kommer se under träningspasset..."
-              className="bg-[rgba(255,255,255,0.05)] border-blue-500/30 text-white text-sm min-h-[60px] resize-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500"
+              placeholder="Instruktioner till klienten..."
+              className="mt-1 bg-[rgba(255,255,255,0.03)] border-blue-500/20 text-white text-sm min-h-[50px] resize-none placeholder:text-[rgba(255,255,255,0.3)]"
               maxLength={300}
             />
-            <div className="text-xs text-gray-500 text-right mt-1">
-              {(exercise.coachNotes || '').length}/300 tecken
-            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
