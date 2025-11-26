@@ -84,6 +84,7 @@ export default function CategoriesPage() {
   })
 
   const [sectionComboboxOpen, setSectionComboboxOpen] = useState(false)
+  const [audienceFilter, setAudienceFilter] = useState<'all' | 'client' | 'coach'>('all')
 
   useEffect(() => {
     if (session?.user) {
@@ -94,10 +95,16 @@ export default function CategoriesPage() {
   const fetchCategories = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/article-categories')
-      if (response.ok) {
-        const data = await response.json()
-        setCategories(data.categories)
+      // Fetch both client and coach categories
+      const [clientRes, coachRes] = await Promise.all([
+        fetch('/api/article-categories?audience=client'),
+        fetch('/api/article-categories?audience=coach')
+      ])
+
+      if (clientRes.ok && coachRes.ok) {
+        const clientData = await clientRes.json()
+        const coachData = await coachRes.json()
+        setCategories([...clientData.categories, ...coachData.categories])
       } else {
         toast.error('Kunde inte hämta kategorier')
       }
@@ -108,6 +115,12 @@ export default function CategoriesPage() {
       setIsLoading(false)
     }
   }
+
+  // Filter categories by audience
+  const filteredCategories = categories.filter(cat => {
+    if (audienceFilter === 'all') return true
+    return cat.audience === audienceFilter
+  })
 
   // Get unique sections from existing categories
   const getUniqueSections = () => {
@@ -312,13 +325,46 @@ export default function CategoriesPage() {
         </div>
 
         <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px]">
-          <div className="p-6 border-b border-gold-primary/10">
+          <div className="p-6 border-b border-gold-primary/10 flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-100">Alla kategorier</h2>
+            {/* Audience Filter */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setAudienceFilter('all')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  audienceFilter === 'all'
+                    ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-[#0a0a0a]'
+                    : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-gold-primary/20'
+                }`}
+              >
+                Alla ({categories.length})
+              </button>
+              <button
+                onClick={() => setAudienceFilter('client')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  audienceFilter === 'client'
+                    ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-[#0a0a0a]'
+                    : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-gold-primary/20'
+                }`}
+              >
+                Kunskapsbanken ({categories.filter(c => c.audience === 'client').length})
+              </button>
+              <button
+                onClick={() => setAudienceFilter('coach')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  audienceFilter === 'coach'
+                    ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white'
+                    : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-purple-500/20'
+                }`}
+              >
+                Coach ({categories.filter(c => c.audience === 'coach').length})
+              </button>
+            </div>
           </div>
           <div className="p-6">
           {isLoading ? (
             <p className="text-gray-500 text-center py-8">Laddar...</p>
-          ) : categories.length === 0 ? (
+          ) : filteredCategories.length === 0 ? (
             <div className="text-center py-8">
               <FolderOpen className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
               <p className="text-gray-300">Inga kategorier ännu.</p>
@@ -331,15 +377,16 @@ export default function CategoriesPage() {
               {/* Table header */}
               <div className="grid grid-cols-12 gap-4 pb-3 border-b border-gold-primary/20 font-semibold text-sm text-[rgba(255,215,0,0.8)]">
                 <div className="col-span-2">Namn</div>
-                <div className="col-span-3">Beskrivning</div>
+                <div className="col-span-2">Beskrivning</div>
                 <div className="col-span-2">Sektion</div>
+                <div className="col-span-1">Målgrupp</div>
                 <div className="col-span-2">Slug</div>
                 <div className="col-span-1 text-center">Artiklar</div>
                 <div className="col-span-2 text-right">Åtgärder</div>
               </div>
 
               {/* Table rows */}
-              {categories.map((category, index) => (
+              {filteredCategories.map((category, index) => (
                 <div
                   key={category.id}
                   className="grid grid-cols-12 gap-4 py-3 border-b border-gold-primary/10 items-center hover:bg-[rgba(255,215,0,0.05)] transition-colors rounded-lg px-2"
@@ -347,11 +394,20 @@ export default function CategoriesPage() {
                   <div className="col-span-2 font-medium text-gray-100">
                     {category.name}
                   </div>
-                  <div className="col-span-3 text-gray-400 text-sm">
+                  <div className="col-span-2 text-gray-400 text-sm truncate">
                     {category.description || '-'}
                   </div>
                   <div className="col-span-2 text-gray-400 text-sm">
                     {category.section || '-'}
+                  </div>
+                  <div className="col-span-1">
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      category.audience === 'coach'
+                        ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                        : 'bg-gold-primary/20 text-gold-light border border-gold-primary/30'
+                    }`}>
+                      {category.audience === 'coach' ? 'Coach' : 'Klient'}
+                    </span>
                   </div>
                   <div className="col-span-2">
                     <code className="text-xs bg-[rgba(255,215,0,0.1)] text-gold-light px-2 py-1 rounded border border-gold-primary/20">
