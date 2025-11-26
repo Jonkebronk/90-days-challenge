@@ -160,14 +160,14 @@ export function ExerciseCard({
               <Label className="text-xs text-blue-300">Coach Notes (visas för klienten)</Label>
             </div>
             <Textarea
-              value={exercise.coachNotes}
+              value={exercise.coachNotes || ''}
               onChange={(e) => onChange('coachNotes', e.target.value)}
               placeholder="Instruktioner från coach som klienten kommer se under träningspasset..."
-              className="bg-[rgba(255,255,255,0.05)] border-blue-500/30 text-white text-sm min-h-[60px] resize-none"
+              className="bg-[rgba(255,255,255,0.05)] border-blue-500/30 text-white text-sm min-h-[60px] resize-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500"
               maxLength={300}
             />
             <div className="text-xs text-gray-500 text-right mt-1">
-              {exercise.coachNotes.length}/300 tecken
+              {(exercise.coachNotes || '').length}/300 tecken
             </div>
           </div>
         </div>
