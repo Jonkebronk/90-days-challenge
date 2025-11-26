@@ -614,31 +614,35 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/dashboard/workout">
-            <Button variant="ghost" size="icon" className="text-gray-600 hover:text-gray-900">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              {workoutDay.name}
-            </h1>
-            <p className="text-sm text-gray-500">
-              Dag {workoutDay.dayNumber}
-            </p>
+      <div className="bg-white border-2 border-gray-200 rounded-xl p-4 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link href="/dashboard/workout">
+              <Button variant="ghost" size="icon" className="text-gray-500 hover:text-gray-900 hover:bg-gray-100">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-gold-primary">DAG {workoutDay.dayNumber}</span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+                {workoutDay.name}
+              </h1>
+            </div>
           </div>
+          {sessionId && (
+            <Button
+              onClick={() => setShowCancelModal(true)}
+              variant="ghost"
+              size="sm"
+              className="text-red-500 hover:text-red-600 hover:bg-red-50"
+            >
+              <X className="w-4 h-4 sm:mr-1" />
+              <span className="hidden sm:inline">Avbryt</span>
+            </Button>
+          )}
         </div>
-        {sessionId && (
-          <Button
-            onClick={() => setShowCancelModal(true)}
-            className="bg-red-50 border-2 border-red-300 text-red-600 hover:bg-red-100 hover:text-red-700 hover:border-red-400"
-          >
-            <X className="w-4 h-4 mr-2" />
-            Avbryt pass
-          </Button>
-        )}
       </div>
 
       {/* Exercises List */}
