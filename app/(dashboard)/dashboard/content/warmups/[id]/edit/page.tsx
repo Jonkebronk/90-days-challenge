@@ -160,13 +160,13 @@ export default function EditWarmupPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/dashboard/content/warmups">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="text-orange-400 hover:text-orange-300 hover:bg-orange-500/10">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Tillbaka
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
               <Flame className="w-7 h-7 text-orange-500" />
               Redigera Uppvärmning
             </h1>
