@@ -157,22 +157,7 @@ export default function MessagesPage() {
     }
   }
 
-  if (loading && messages.length === 0) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Laddar meddelanden...</p>
-        </div>
-      </div>
-    )
-  }
-
-  const selectedContact = isCoach
-    ? clients.find(c => c.id === otherUserId)
-    : coach
-
-  // Prevent pull-to-refresh on message scroll
+  // Prevent pull-to-refresh on message scroll - must be before early return
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     const target = e.currentTarget
     if (target.scrollTop === 0) {
@@ -180,6 +165,21 @@ export default function MessagesPage() {
       target.scrollTop = 1
     }
   }, [])
+
+  const selectedContact = isCoach
+    ? clients.find(c => c.id === otherUserId)
+    : coach
+
+  if (loading && messages.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-500">Laddar meddelanden...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] sm:h-[calc(100vh-10rem)] max-w-full overflow-hidden">
