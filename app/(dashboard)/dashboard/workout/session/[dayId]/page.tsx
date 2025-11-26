@@ -894,7 +894,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             onChange={(e) => setCurrentReps(e.target.value)}
                             placeholder={`${exercise.repsMin}-${exercise.repsMax}`}
                             className="h-12 text-lg font-semibold bg-black/40 border-2 border-gold-primary/40 text-white focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                            autoFocus
                           />
                         </div>
                         <div className="space-y-2">
