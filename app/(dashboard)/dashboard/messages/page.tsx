@@ -158,10 +158,9 @@ export default function MessagesPage() {
   }
 
   // Prevent pull-to-refresh on message scroll - must be before early return
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     const target = e.currentTarget
     if (target.scrollTop === 0) {
-      target.dataset.scrollTop = '1'
       target.scrollTop = 1
     }
   }, [])
