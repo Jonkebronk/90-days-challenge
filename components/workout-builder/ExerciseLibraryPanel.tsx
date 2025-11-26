@@ -9,7 +9,6 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Search,
   Filter,
-  Clock,
   ChevronDown,
   ChevronUp,
   X,
@@ -18,7 +17,6 @@ import {
 import { Exercise, ExerciseFilter } from './types'
 import { useDebounce } from './hooks/useDebounce'
 import { useExerciseFilter, getUniqueMuscleGroups, getUniqueEquipment } from './hooks/useExerciseFilter'
-import { useRecentExercises } from './hooks/useRecentExercises'
 
 interface ExerciseLibraryPanelProps {
   exercises: Exercise[]
@@ -108,13 +106,9 @@ export function ExerciseLibraryPanel({
   const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<string[]>([])
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([])
   const [showFilters, setShowFilters] = useState(false)
-  const [showRecent, setShowRecent] = useState(true)
 
   // Debounce search for performance
   const debouncedSearchTerm = useDebounce(searchTerm, 300)
-
-  // Get recent exercises
-  const { recentExercises, addRecentExercise, clearRecentExercises } = useRecentExercises(exercises)
 
   // Build filter object
   const filter: ExerciseFilter = useMemo(() => ({
@@ -131,7 +125,6 @@ export function ExerciseLibraryPanel({
   const allEquipment = useMemo(() => getUniqueEquipment(exercises), [exercises])
 
   const handleSelectExercise = (exercise: Exercise) => {
-    addRecentExercise(exercise.id)
     onSelectExercise(exercise)
   }
 
@@ -276,43 +269,6 @@ export function ExerciseLibraryPanel({
             </p>
           )}
 
-          {/* Recent Exercises */}
-          {!hasActiveFilters && recentExercises.length > 0 && (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <button
-                  onClick={() => setShowRecent(!showRecent)}
-                  className="flex items-center gap-2 text-sm text-[rgba(255,255,255,0.7)] hover:text-white"
-                >
-                  <Clock className="w-4 h-4" />
-                  <span>Senast använda</span>
-                  {showRecent ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                </button>
-                {showRecent && (
-                  <button
-                    onClick={clearRecentExercises}
-                    className="text-xs text-[rgba(255,255,255,0.4)] hover:text-red-400 transition-colors"
-                  >
-                    Rensa
-                  </button>
-                )}
-              </div>
-
-              {showRecent && (
-                <div className="space-y-1.5 mb-4">
-                  {recentExercises.map(exercise => (
-                    <DraggableExerciseItem
-                      key={`recent-${exercise.id}`}
-                      exercise={exercise}
-                      onClick={() => handleSelectExercise(exercise)}
-                      isRecent
-                      enableDrag={enableDrag}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
 
           {/* All/Filtered Exercises */}
           <div>
