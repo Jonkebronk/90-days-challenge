@@ -18,6 +18,7 @@ import {
   Utensils,
   Dumbbell,
   ChevronRight,
+  ChevronDown,
   Sparkles,
   MessageSquare,
   HelpCircle,
@@ -37,6 +38,7 @@ export default function DashboardPage() {
     content: 0
   })
   const [onboardingGuideContent, setOnboardingGuideContent] = useState<string>('')
+  const [isGettingStartedOpen, setIsGettingStartedOpen] = useState(false)
   const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
 
   // Debug logging
@@ -292,40 +294,17 @@ export default function DashboardPage() {
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
 
-      {/* Quick Tips Section */}
+      {/* Quick Tips Section - Collapsible */}
       <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto">
-        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">Kom Igång</h2>
-            <p className="text-gray-600 text-sm mt-1">Tips för att få ut det mesta av programmet</p>
-          </div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-bold px-4 py-2 md:px-6 md:py-3 hover:shadow-lg transition-all text-sm md:text-base"
-              >
-                <Info className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
-                <span className="hidden sm:inline">Läs Introduktion</span>
-                <span className="sm:hidden">Introduktion</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-gray-200 flex items-center gap-2">
-                  <Info className="w-6 h-6 text-blue-400" />
-                  Kom Igång Guide
-                </DialogTitle>
-              </DialogHeader>
-              {onboardingGuideContent ? (
-                <MDXPreview content={onboardingGuideContent} theme="dark" />
-              ) : (
-                <p className="text-gray-400">Laddar guide...</p>
-              )}
-            </DialogContent>
-          </Dialog>
-        </div>
-        <div className="p-6">
+        <button
+          onClick={() => setIsGettingStartedOpen(!isGettingStartedOpen)}
+          className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-xl"
+        >
+          <h2 className="text-base font-semibold text-gray-900">Kom igång</h2>
+          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${isGettingStartedOpen ? 'rotate-180' : ''}`} />
+        </button>
+        {isGettingStartedOpen && (
+        <div className="p-6 pt-2 border-t border-gray-100">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* 1. Installera som app */}
             <Dialog>
@@ -474,6 +453,7 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+        )}
       </div>
 
       {/* Main Action Cards Grid */}
