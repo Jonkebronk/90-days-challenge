@@ -79,93 +79,42 @@ export default function RecipesPage() {
           <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto" />
         </div>
       ) : categories.length === 0 ? (
-        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-          <CardContent className="text-center py-16">
-            <ChefHat className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-            <p className="text-gray-400 text-lg mb-2">
+        <Card className="bg-white border border-gray-200">
+          <CardContent className="text-center py-12">
+            <ChefHat className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+            <p className="text-gray-500 mb-2">
               Inga receptkategorier ännu
-            </p>
-            <p className="text-sm text-[rgba(255,255,255,0.4)]">
-              Kategorier kommer att visas här när de skapas
             </p>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
           {categories.map((category) => {
             const Icon = getIconComponent(category.icon)
+            const categoryColor = category.color || '#f97316'
             return (
-              <Card
+              <div
                 key={category.id}
                 onClick={() => router.push(`/dashboard/recipes/category/${category.slug}`)}
-                className="group relative bg-white/5 border-2 border-gold-primary/20 hover:border-gold-primary/60 hover:bg-white/10 transition-all duration-300 cursor-pointer backdrop-blur-[10px] overflow-hidden"
+                className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center"
               >
-                {/* Gradient Overlay */}
                 <div
-                  className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity"
-                  style={{
-                    background: `linear-gradient(135deg, ${category.color}30 0%, transparent 100%)`
-                  }}
-                />
-
-                <CardContent className="relative p-4 sm:p-8 flex flex-col items-center text-center">
-                  {/* Icon */}
-                  <div
-                    className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform shadow-lg"
-                    style={{ backgroundColor: `${category.color}20` }}
-                  >
-                    <Icon className="h-7 w-7 sm:h-10 sm:w-10" style={{ color: category.color }} />
-                  </div>
-
-                  {/* Category Name */}
-                  <h3 className="text-sm sm:text-xl font-bold text-gold-light mb-1 sm:mb-2 tracking-[0.5px] sm:tracking-[1px]">
-                    {category.name}
-                  </h3>
-
-                  {/* Recipe Count */}
-                  <p className="text-gray-400 text-xs sm:text-sm">
-                    {category._count.recipes} {category._count.recipes === 1 ? 'recept' : 'recept'}
-                  </p>
-
-                  {/* Arrow indicator */}
-                  <div className="mt-2 sm:mt-4 text-gold-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </CardContent>
-              </Card>
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md"
+                  style={{ background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}dd)` }}
+                >
+                  <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                </div>
+                <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">
+                  {category.name}
+                </h3>
+                <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5">
+                  {category._count.recipes} recept
+                </p>
+              </div>
             )
           })}
         </div>
       )}
-
-      {/* Quick Navigation Tabs */}
-      <div className="mt-12 pt-8 border-t border-gold-primary/20">
-        <h2 className="text-2xl font-bold text-gold-light tracking-[1px] mb-4 text-center">
-          Snabbnavigering
-        </h2>
-        <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
-          {[
-            { name: 'Alla Recept', icon: 'ChefHat', count: categories.reduce((sum, cat) => sum + cat._count.recipes, 0) },
-            { name: 'Favoriter', icon: 'Heart', count: '—' },
-          ].map((item) => {
-            const Icon = getIconComponent(item.icon)
-            return (
-              <Card
-                key={item.name}
-                className="bg-white/5 border border-gold-primary/20 hover:border-gold-primary/40 hover:bg-white/10 transition-all cursor-pointer backdrop-blur-[10px]"
-              >
-                <CardContent className="p-4 text-center">
-                  <Icon className="h-8 w-8 mx-auto text-gold-primary mb-2" />
-                  <p className="text-sm font-medium text-gray-300">{item.name}</p>
-                  <p className="text-xs text-gray-500 mt-1">{item.count}</p>
-                </CardContent>
-              </Card>
-            )
-          })}
-        </div>
-      </div>
     </div>
   )
 }

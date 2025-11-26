@@ -155,101 +155,80 @@ export default function RecipeSubcategoryPage({
   const Icon = getIconComponent(category.icon)
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="space-y-4">
         <button
           onClick={() => router.push(`/dashboard/recipes/category/${slug}`)}
-          className="flex items-center gap-2 text-gray-400 hover:text-gold-primary transition-colors"
+          className="flex items-center gap-2 text-gray-500 hover:text-gold-primary transition-colors text-sm"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Tillbaka till {category.name}</span>
+          <span>Tillbaka</span>
         </button>
 
-        <div className="text-center">
-          <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mb-6 opacity-20" />
-
-          <div className="flex items-center justify-center gap-4 mb-3">
-            <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center"
-              style={{ backgroundColor: `${category.color}20` }}
-            >
-              <Icon className="h-8 w-8" style={{ color: category.color }} />
-            </div>
-            <h1 className="font-['Orbitron',sans-serif] text-4xl md:text-5xl font-black tracking-[4px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
-              {subcategory.name}
-            </h1>
-          </div>
-
-          <p className="text-gray-400 text-sm tracking-[1px]">
+        <div className="text-center mb-4 sm:mb-6">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-3 sm:mb-4 opacity-30" />
+          <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl md:text-3xl font-black tracking-[1px] sm:tracking-[2px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-2">
+            {subcategory.name}
+          </h1>
+          <p className="text-gray-400 text-xs">
             {recipes.length} {recipes.length === 1 ? 'recept' : 'recept'}
           </p>
-
-          <div className="h-[2px] bg-gradient-to-r from-transparent via-gold-primary to-transparent mt-6 opacity-20" />
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-3 sm:mt-4 opacity-30" />
         </div>
       </div>
 
       {/* Recipes Grid */}
       {recipes.length === 0 ? (
-        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-          <CardContent className="text-center py-16">
-            <ChefHat className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-            <p className="text-gray-400 text-lg mb-2">
-              Inga recept i denna subkategori ännu
+        <Card className="bg-white border border-gray-200">
+          <CardContent className="text-center py-12">
+            <ChefHat className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+            <p className="text-gray-500 mb-2">
+              Inga recept i denna kategori ännu
             </p>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
           {recipes.map((recipe) => (
-            <Card
+            <div
               key={recipe.id}
               onClick={() => handleRecipeClick(recipe)}
-              className="group relative bg-white/5 border-2 border-gold-primary/20 hover:border-gold-primary/60 hover:bg-white/10 transition-all cursor-pointer backdrop-blur-[10px] overflow-hidden"
+              className="group relative bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer"
             >
-              {/* Cover Image */}
-              {recipe.coverImage && (
-                <div className="relative h-48 overflow-hidden">
+              {recipe.coverImage ? (
+                <div className="h-20 sm:h-24 w-full bg-gray-100 overflow-hidden">
                   <img
                     src={recipe.coverImage}
                     alt={recipe.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                </div>
+              ) : (
+                <div className="h-20 sm:h-24 w-full bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center">
+                  <ChefHat className="h-8 w-8 text-orange-300" />
                 </div>
               )}
-
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-gold-light mb-2 group-hover:text-gold-primary transition-colors">
+              <div className="p-2 sm:p-3">
+                <h3 className="text-xs sm:text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-gold-primary transition-colors">
                   {recipe.title}
                 </h3>
-
-                {recipe.description && (
-                  <p className="text-sm text-gray-400 mb-4 line-clamp-2">
-                    {recipe.description}
-                  </p>
-                )}
-
-                <div className="flex items-center gap-4 text-sm text-gray-400">
+                <div className="flex items-center gap-2 mt-1.5">
                   {(recipe.prepTimeMinutes || recipe.cookTimeMinutes) && (
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      <span>{(recipe.prepTimeMinutes || 0) + (recipe.cookTimeMinutes || 0)} min</span>
+                    <div className="flex items-center gap-0.5 text-gray-400">
+                      <Clock className="h-3 w-3" />
+                      <span className="text-[10px]">{(recipe.prepTimeMinutes || 0) + (recipe.cookTimeMinutes || 0)}m</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    <span>{recipe.servings}</span>
-                  </div>
                   {recipe.caloriesPerServing && (
-                    <div className="flex items-center gap-1">
-                      <Flame className="h-4 w-4" />
-                      <span>{Math.round(recipe.caloriesPerServing)} kcal</span>
+                    <div className="flex items-center gap-0.5 text-gray-400">
+                      <Flame className="h-3 w-3" />
+                      <span className="text-[10px]">{Math.round(recipe.caloriesPerServing)}</span>
                     </div>
                   )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       )}
