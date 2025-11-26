@@ -40,7 +40,14 @@ export async function GET(
                   include: {
                     exercises: {
                       include: {
-                        exercise: true
+                        exercise: {
+                          select: {
+                            id: true,
+                            name: true,
+                            muscleGroups: true,
+                            videoUrl: true
+                          }
+                        }
                       },
                       orderBy: {
                         orderIndex: 'asc'
@@ -60,7 +67,14 @@ export async function GET(
               include: {
                 exercises: {
                   include: {
-                    exercise: true
+                    exercise: {
+                      select: {
+                        id: true,
+                        name: true,
+                        muscleGroups: true,
+                        videoUrl: true
+                      }
+                    }
                   },
                   orderBy: {
                     orderIndex: 'asc'
