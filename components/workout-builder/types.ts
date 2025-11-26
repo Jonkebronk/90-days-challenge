@@ -54,3 +54,37 @@ export const SUPERSET_COLORS = [
   { value: '#A78BFA', label: 'Lila' },
   { value: '#F87171', label: 'Röd' },
 ]
+
+// Exercise filter criteria for library panel
+export interface ExerciseFilter {
+  muscleGroups?: string[]
+  equipment?: string[]
+  difficulty?: 'beginner' | 'intermediate' | 'advanced'
+  searchTerm?: string
+  favorites?: boolean
+}
+
+// Exercise with additional metadata
+export interface ExerciseWithMeta extends Exercise {
+  difficulty?: 'beginner' | 'intermediate' | 'advanced'
+  isFavorite?: boolean
+  lastUsedDate?: string
+  usageCount?: number
+}
+
+// Dropset configuration
+export interface Dropset {
+  id: string
+  exerciseIndices: number[]
+  weights: number[]
+  reps: number[]
+  sequence: 'descending' | 'ascending'
+  notes?: string
+}
+
+// Dropset colors (blue theme to differentiate from supersets)
+export const DROPSET_COLORS = [
+  { value: '#3B82F6', label: 'Blå' },
+  { value: '#06B6D4', label: 'Cyan' },
+  { value: '#8B5CF6', label: 'Violett' },
+]
