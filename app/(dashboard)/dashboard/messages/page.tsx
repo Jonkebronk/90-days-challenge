@@ -257,73 +257,67 @@ export default function MessagesPage() {
                 messages.map((message) => {
                   const isMine = message.senderId === userId
                   const isCheckIn = message.isCheckInSummary
+                  const senderName = message.sender?.name || message.sender?.email || 'Okänd'
 
                   return (
                     <div
                       key={message.id}
-                      className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
+                      className="space-y-1"
                     >
-                      <div
-                        className={`max-w-[85%] sm:max-w-[70%] ${
-                          isCheckIn
-                            ? 'bg-blue-50 border-2 border-blue-200'
-                            : isMine
-                            ? 'bg-gradient-to-r from-gold-primary to-gold-secondary'
-                            : 'bg-gray-100 border border-gray-200'
-                        } rounded-2xl p-3 sm:p-4`}
-                      >
-                        {/* Check-in header */}
-                        {isCheckIn && (
-                          <div className="mb-2 pb-2 border-b border-blue-200">
-                            <p className="text-xs font-bold text-blue-600">VECKORAPPORT</p>
-                          </div>
-                        )}
+                      {/* Sender name */}
+                      <p className={`text-xs font-semibold ${isMine ? 'text-right' : 'text-left'} ${
+                        isMine ? 'text-gold-primary' : 'text-blue-600'
+                      }`}>
+                        {senderName}
+                      </p>
 
-                        {/* Message content */}
-                        <p
-                          className={`whitespace-pre-wrap text-sm sm:text-base ${
-                            isMine && !isCheckIn
-                              ? 'text-white font-medium'
-                              : isCheckIn
-                              ? 'text-gray-700'
-                              : 'text-gray-700'
-                          }`}
+                      <div className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+                        <div
+                          className={`max-w-[85%] sm:max-w-[70%] ${
+                            isCheckIn
+                              ? 'bg-blue-50 border-2 border-blue-200'
+                              : 'bg-gray-100 border border-gray-200'
+                          } rounded-2xl p-3 sm:p-4`}
                         >
-                          {message.content}
-                        </p>
+                          {/* Check-in header */}
+                          {isCheckIn && (
+                            <div className="mb-2 pb-2 border-b border-blue-200">
+                              <p className="text-xs font-bold text-blue-600">VECKORAPPORT</p>
+                            </div>
+                          )}
 
-                        {/* Images */}
-                        {message.images && message.images.length > 0 && (
-                          <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            {message.images.map((img, idx) => (
-                              <div
-                                key={idx}
-                                className="relative group cursor-pointer"
-                                onClick={() => setSelectedImage(img)}
-                              >
-                                <img
-                                  src={img}
-                                  alt={`Bild ${idx + 1}`}
-                                  className="w-full h-20 sm:h-24 object-cover rounded-lg"
-                                />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all rounded-lg flex items-center justify-center">
-                                  <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                          {/* Message content */}
+                          <p className="whitespace-pre-wrap text-sm sm:text-base text-gray-700">
+                            {message.content}
+                          </p>
+
+                          {/* Images */}
+                          {message.images && message.images.length > 0 && (
+                            <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                              {message.images.map((img, idx) => (
+                                <div
+                                  key={idx}
+                                  className="relative group cursor-pointer"
+                                  onClick={() => setSelectedImage(img)}
+                                >
+                                  <img
+                                    src={img}
+                                    alt={`Bild ${idx + 1}`}
+                                    className="w-full h-20 sm:h-24 object-cover rounded-lg"
+                                  />
+                                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all rounded-lg flex items-center justify-center">
+                                    <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                  </div>
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                              ))}
+                            </div>
+                          )}
 
-                        {/* Timestamp */}
-                        <p
-                          className={`text-xs mt-2 ${
-                            isMine && !isCheckIn
-                              ? 'text-white/70'
-                              : 'text-gray-400'
-                          }`}
-                        >
-                          {format(new Date(message.createdAt), 'PPp', { locale: sv })}
-                        </p>
+                          {/* Timestamp */}
+                          <p className="text-xs mt-2 text-gray-400">
+                            {format(new Date(message.createdAt), 'PPp', { locale: sv })}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   )
