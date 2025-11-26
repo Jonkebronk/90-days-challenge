@@ -981,38 +981,40 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
       {/* Workout Complete - Combined card with rating */}
       {sessionId && isWorkoutComplete && (
-        <Card className="bg-white border-2 border-green-300 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-gray-900 flex items-center gap-2">
-              <Trophy className="w-6 h-6 text-green-600" />
-              Bra jobbat! Alla övningar klara
+        <Card className="bg-white border-2 border-gold-primary shadow-lg rounded-lg">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-gray-900 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
+                <Trophy className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-xl font-bold">Bra jobbat! Alla övningar klara</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-5">
             {/* Star Rating */}
-            <div>
-              <Label className="text-gray-700 mb-3 block">
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <Label className="text-gray-700 mb-3 block text-center font-medium">
                 Hur var träningen?
               </Label>
-              <div className="flex gap-2 justify-center">
+              <div className="flex gap-3 justify-center">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
                     onClick={() => setSessionRating(star)}
-                    className="transition-all hover:scale-110"
+                    className="transition-all hover:scale-125"
                   >
                     <Star
                       className={`w-10 h-10 ${
                         sessionRating && star <= sessionRating
-                          ? 'fill-gold-primary text-gold-light'
-                          : 'text-gray-300 hover:text-gray-400'
+                          ? 'fill-gold-primary text-gold-primary'
+                          : 'text-gray-300 hover:text-gold-primary/50'
                       }`}
                     />
                   </button>
                 ))}
               </div>
               {sessionRating && (
-                <p className="text-center text-sm text-gray-500 mt-2">
+                <p className="text-center text-sm text-gold-primary font-semibold mt-3">
                   {sessionRating === 5 && 'Fantastiskt!'}
                   {sessionRating === 4 && 'Riktigt bra!'}
                   {sessionRating === 3 && 'Bra jobbat!'}
@@ -1024,14 +1026,14 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
             {/* Notes */}
             <div>
-              <Label className="text-gray-700">
+              <Label className="text-gray-700 font-medium">
                 Anteckningar (valfritt)
               </Label>
               <textarea
                 value={workoutNotes}
                 onChange={(e) => setWorkoutNotes(e.target.value)}
                 placeholder="Hur kändes passet? Några nya personliga rekord?"
-                className="w-full mt-2 p-3 bg-gray-50 border-2 border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:border-gold-primary outline-none min-h-[80px] resize-y"
+                className="w-full mt-2 p-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:border-gold-primary outline-none min-h-[80px] resize-y"
                 rows={3}
               />
             </div>
@@ -1040,7 +1042,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             <Button
               onClick={completeWorkout}
               disabled={isCompleting}
-              className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white hover:opacity-90 text-lg py-6"
+              className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-bold text-lg py-6 shadow-md"
             >
               <Trophy className="w-5 h-5 mr-2" />
               {isCompleting ? 'Sparar...' : 'Avsluta träning'}
