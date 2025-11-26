@@ -62,6 +62,7 @@ interface WorkoutExercise {
     id: string
     name: string
     muscleGroups: string[]
+    videoUrl: string | null
   }
 }
 
@@ -114,6 +115,7 @@ export default function WorkoutPage() {
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set()) // All days closed by default
   const [warmupExpanded, setWarmupExpanded] = useState(false)
   const [activeWarmupVideo, setActiveWarmupVideo] = useState<string | null>(null) // Track which warmup video is playing
+  const [activeExerciseVideo, setActiveExerciseVideo] = useState<string | null>(null) // Track which exercise video is playing
   const [workoutGuideContent, setWorkoutGuideContent] = useState<string>('')
   const [incompleteSessions, setIncompleteSessions] = useState<Record<string, boolean>>({}) // dayId -> has incomplete session
 
@@ -518,22 +520,63 @@ export default function WorkoutPage() {
                     {day.exercises.length} övningar
                   </p>
                   <div className="space-y-2">
-                    {day.exercises.map((ex, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
-                      >
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white text-sm font-bold">
-                          {idx + 1}
+                    {day.exercises.map((ex, idx) => {
+                      const videoKey = `${day.id}-${ex.id}`
+                      return (
+                        <div
+                          key={idx}
+                          className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden"
+                        >
+                          <div className="flex items-center gap-3 p-3">
+                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white text-sm font-bold">
+                              {idx + 1}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-gray-900">{ex.exercise.name}</p>
+                              <p className="text-sm text-gray-600">
+                                {ex.sets} set × {ex.repsMin}{ex.repsMax && ex.repsMax !== ex.repsMin ? `-${ex.repsMax}` : ''} reps
+                              </p>
+                            </div>
+                            {ex.exercise.videoUrl && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setActiveExerciseVideo(activeExerciseVideo === videoKey ? null : videoKey)
+                                }}
+                                className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+                                  activeExerciseVideo === videoKey
+                                    ? 'bg-red-600 border border-red-700 text-white'
+                                    : 'bg-red-600 border border-red-700 text-white hover:bg-red-700'
+                                }`}
+                              >
+                                {activeExerciseVideo === videoKey ? (
+                                  <>
+                                    <X className="w-3 h-3" />
+                                    STÄNG
+                                  </>
+                                ) : (
+                                  <>
+                                    <Play className="w-3 h-3 fill-white" />
+                                    VIDEO
+                                  </>
+                                )}
+                              </button>
+                            )}
+                          </div>
+                          {/* Inline video player */}
+                          {activeExerciseVideo === videoKey && ex.exercise.videoUrl && (
+                            <div className="px-3 pb-3">
+                              <VideoPlayer
+                                videoUrl={ex.exercise.videoUrl}
+                                title={ex.exercise.name}
+                                className="w-full rounded-lg overflow-hidden"
+                                autoPlay={true}
+                              />
+                            </div>
+                          )}
                         </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-900">{ex.exercise.name}</p>
-                          <p className="text-sm text-gray-600 mt-1">
-                            {ex.sets} set × {ex.repsMin}{ex.repsMax && ex.repsMax !== ex.repsMin ? `-${ex.repsMax}` : ''} reps
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </div>
               </CardContent>
