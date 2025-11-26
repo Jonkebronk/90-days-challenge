@@ -63,6 +63,7 @@ export default function CategoryFoodItemsPage({
   const [foodItems, setFoodItems] = useState<FoodItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
   const [total, setTotal] = useState(0)
   const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null)
 
@@ -208,7 +209,13 @@ export default function CategoryFoodItemsPage({
       {/* Header */}
       <div className="space-y-4">
         <button
-          onClick={() => router.push('/dashboard/content/food-items')}
+          onClick={() => {
+            if (selectedSubcategory) {
+              setSelectedSubcategory(null)
+            } else {
+              router.push('/dashboard/content/food-items')
+            }
+          }}
           className="flex items-center gap-2 text-gray-500 hover:text-gold-primary transition-colors text-sm"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -218,10 +225,10 @@ export default function CategoryFoodItemsPage({
         <div className="text-center mb-4 sm:mb-6">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-3 sm:mb-4 opacity-30" />
           <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl md:text-3xl font-black tracking-[1px] sm:tracking-[2px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-2">
-            {category.name}
+            {selectedSubcategory || category.name}
           </h1>
           <p className="text-gray-400 text-xs">
-            {total} livsmedel
+            {selectedSubcategory ? `${foodItems.filter(item => (item as any).subcategory === selectedSubcategory).length} livsmedel` : `${total} livsmedel`}
           </p>
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-3 sm:mt-4 opacity-30" />
         </div>
@@ -289,8 +296,8 @@ export default function CategoryFoodItemsPage({
 
         const hasSubcategories = subcategoryNames.length > 1 || !grouped['Övrigt']
 
-        // If we have subcategories, show them as clickable cards first
-        if (hasSubcategories && !search) {
+        // If we have subcategories and none is selected, show them as clickable cards first
+        if (hasSubcategories && !selectedSubcategory && !search) {
           return (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
               {subcategoryNames.map((subcategoryName) => {
@@ -299,7 +306,7 @@ export default function CategoryFoodItemsPage({
                 return (
                   <div
                     key={subcategoryName}
-                    onClick={() => setSearch(subcategoryName === 'Övrigt' ? '' : subcategoryName)}
+                    onClick={() => setSelectedSubcategory(subcategoryName)}
                     className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center"
                   >
                     <div
@@ -321,10 +328,13 @@ export default function CategoryFoodItemsPage({
           )
         }
 
-        // Show individual food items (when searching or no subcategories)
-        const itemsToShow = search && hasSubcategories
-          ? foodItems.filter(item => (item as any).subcategory === search || item.name.toLowerCase().includes(search.toLowerCase()))
-          : foodItems
+        // Show individual food items (when a subcategory is selected or searching)
+        let itemsToShow = foodItems
+        if (selectedSubcategory) {
+          itemsToShow = grouped[selectedSubcategory] || []
+        } else if (search) {
+          itemsToShow = foodItems.filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
+        }
 
         return (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
