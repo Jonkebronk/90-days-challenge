@@ -286,31 +286,6 @@ export default function MealPlanPage() {
             </TabsList>
 
             <TabsContent value="meals" className="space-y-6 mt-6">
-              {/* Daily Macro Overview */}
-              <div className="bg-white border border-gray-200 rounded-xl p-4">
-                <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500 font-semibold">Totalt:</span>
-                    <span className="text-gray-900 font-bold text-lg">{totalDailyCalories.toFixed(0)} kcal</span>
-                  </div>
-                  <div className="h-4 w-px bg-gray-300 hidden sm:block" />
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500">Protein:</span>
-                    <span className="text-gray-900 font-semibold">{totalDailyProtein.toFixed(0)}g</span>
-                  </div>
-                  <div className="h-4 w-px bg-gray-300 hidden sm:block" />
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500">Kolhydrater:</span>
-                    <span className="text-gray-900 font-semibold">{totalDailyCarbs.toFixed(0)}g</span>
-                  </div>
-                  <div className="h-4 w-px bg-gray-300 hidden sm:block" />
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500">Fett:</span>
-                    <span className="text-gray-900 font-semibold">{totalDailyFat.toFixed(0)}g</span>
-                  </div>
-                </div>
-              </div>
-
               {/* Meals */}
               {mealPlan.meals.map((meal) => {
                 const recipeCount = meal.options?.filter(o => o.recipe).length || 0
@@ -332,13 +307,7 @@ export default function MealPlanPage() {
                           <span className="text-sm text-gray-500">({recipeCount} recept)</span>
                         )}
                       </div>
-                      <div className="flex items-center gap-3">
-                        <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
-                          <span className="text-gray-900 font-semibold">{meal.totalCalories?.toFixed(0) || 0} kcal</span>
-                          <span>P: {meal.totalProtein?.toFixed(0) || 0}g</span>
-                          <span>K: {meal.totalCarbs?.toFixed(0) || 0}g</span>
-                          <span>F: {meal.totalFat?.toFixed(0) || 0}g</span>
-                        </div>
+                      <div className="flex items-center">
                         {isExpanded ? (
                           <ChevronUp className="w-5 h-5 text-gold-primary" />
                         ) : (
