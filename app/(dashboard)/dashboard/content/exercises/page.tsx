@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, Search, Edit, Trash2, Dumbbell, X, Grid3x3, List, Activity, Heart, Zap, Target } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Plus, Search, Edit, Trash2, Dumbbell, X, Video, ImageIcon } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,7 +14,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import {
   Select,
@@ -23,6 +22,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 interface Exercise {
   id: string
@@ -51,12 +58,13 @@ const CATEGORIES = ['Strength', 'Cardio', 'Flexibility', 'Mobility', 'Plyometric
 const DIFFICULTY_LEVELS = ['Beginner', 'Intermediate', 'Advanced']
 
 const MUSCLE_GROUP_CATEGORIES = [
-  { id: 'chest', name: 'Bröst', icon: 'Activity', color: '#FF6B6B', muscleGroups: ['Chest'] },
-  { id: 'back', name: 'Rygg', icon: 'Dumbbell', color: '#4ECDC4', muscleGroups: ['Back'] },
-  { id: 'shoulders', name: 'Axlar', icon: 'Zap', color: '#95E1D3', muscleGroups: ['Shoulders'] },
-  { id: 'arms', name: 'Armar', icon: 'Target', color: '#F38181', muscleGroups: ['Biceps', 'Triceps'] },
-  { id: 'legs', name: 'Ben', icon: 'Heart', color: '#AA96DA', muscleGroups: ['Legs', 'Quads', 'Hamstrings', 'Glutes', 'Calves'] },
-  { id: 'core', name: 'Core & Mage', icon: 'Activity', color: '#FCBAD3', muscleGroups: ['Abs', 'Core'] }
+  { id: 'all', name: 'Alla', muscleGroups: [] },
+  { id: 'chest', name: 'Bröst', muscleGroups: ['Chest'] },
+  { id: 'back', name: 'Rygg', muscleGroups: ['Back'] },
+  { id: 'shoulders', name: 'Axlar', muscleGroups: ['Shoulders'] },
+  { id: 'arms', name: 'Armar', muscleGroups: ['Biceps', 'Triceps'] },
+  { id: 'legs', name: 'Ben', muscleGroups: ['Legs', 'Quads', 'Hamstrings', 'Glutes', 'Calves'] },
+  { id: 'core', name: 'Core', muscleGroups: ['Abs', 'Core'] }
 ]
 
 export default function ExercisesPage() {
@@ -67,9 +75,7 @@ export default function ExercisesPage() {
   const [filterMuscleGroup, setFilterMuscleGroup] = useState<string>('all')
   const [filterCategoryMuscleGroups, setFilterCategoryMuscleGroups] = useState<string[]>([])
   const [filterEquipment, setFilterEquipment] = useState<string>('all')
-  const [filterDifficulty, setFilterDifficulty] = useState<string>('all')
-  const [showCategoryView, setShowCategoryView] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>('all')
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -94,7 +100,7 @@ export default function ExercisesPage() {
 
   useEffect(() => {
     filterExercises()
-  }, [exercises, searchTerm, filterMuscleGroup, filterCategoryMuscleGroups, filterEquipment, filterDifficulty])
+  }, [exercises, searchTerm, filterMuscleGroup, filterCategoryMuscleGroups, filterEquipment, selectedCategoryTab])
 
   const fetchExercises = async () => {
     try {
@@ -119,17 +125,22 @@ export default function ExercisesPage() {
       )
     }
 
-    // Check category muscle groups first (when viewing a category)
-    if (filterCategoryMuscleGroups.length > 0) {
-      filtered = filtered.filter(ex =>
-        ex.muscleGroups.some(muscle =>
-          filterCategoryMuscleGroups.some(catMuscle =>
-            muscle.toLowerCase() === catMuscle.toLowerCase()
+    // Filter by category tab
+    if (selectedCategoryTab && selectedCategoryTab !== 'all') {
+      const category = MUSCLE_GROUP_CATEGORIES.find(c => c.id === selectedCategoryTab)
+      if (category && category.muscleGroups.length > 0) {
+        filtered = filtered.filter(ex =>
+          ex.muscleGroups.some(muscle =>
+            category.muscleGroups.some(catMuscle =>
+              muscle.toLowerCase() === catMuscle.toLowerCase()
+            )
           )
         )
-      )
-    } else if (filterMuscleGroup && filterMuscleGroup !== 'all') {
-      // Fall back to single muscle group filter
+      }
+    }
+
+    // Additional muscle group filter (dropdown)
+    if (filterMuscleGroup && filterMuscleGroup !== 'all') {
       filtered = filtered.filter(ex =>
         ex.muscleGroups.some(muscle =>
           muscle.toLowerCase() === filterMuscleGroup.toLowerCase()
@@ -145,38 +156,19 @@ export default function ExercisesPage() {
       )
     }
 
-    if (filterDifficulty && filterDifficulty !== 'all') {
-      filtered = filtered.filter(ex =>
-        ex.difficultyLevel?.toLowerCase() === filterDifficulty.toLowerCase()
-      )
-    }
-
     setFilteredExercises(filtered)
   }
 
-  const handleCategoryClick = (categoryId: string) => {
-    const category = MUSCLE_GROUP_CATEGORIES.find(c => c.id === categoryId)
-    if (category) {
-      setSelectedCategory(categoryId)
-      setShowCategoryView(false)
-      // Set filter to ALL muscle groups in the category
-      setFilterCategoryMuscleGroups(category.muscleGroups)
-      setFilterMuscleGroup('all')
-    }
-  }
-
-  const getIconComponent = (iconName: string) => {
-    const icons: Record<string, any> = {
-      Activity,
-      Dumbbell,
-      Zap,
-      Target,
-      Heart
-    }
-    return icons[iconName] || Activity
+  const handleCategoryTabClick = (categoryId: string) => {
+    setSelectedCategoryTab(categoryId)
+    // Reset other filters when changing category
+    setFilterMuscleGroup('all')
   }
 
   const getCategoryExerciseCount = (category: typeof MUSCLE_GROUP_CATEGORIES[0]) => {
+    if (category.id === 'all') {
+      return exercises.length
+    }
     return exercises.filter(ex =>
       category.muscleGroups.some(mg =>
         ex.muscleGroups.some(emg => emg.toLowerCase() === mg.toLowerCase())
@@ -317,213 +309,210 @@ export default function ExercisesPage() {
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex items-center justify-between">
-        <div></div>
-        <div className="flex gap-2">
-          <div className="flex bg-white/5 border-2 border-gold-primary/20 rounded-lg p-1">
-            <Button
-              variant={showCategoryView ? "default" : "ghost"}
-              size="sm"
-              onClick={() => {
-                setShowCategoryView(true)
-                setSelectedCategory(null)
-                setFilterMuscleGroup('all')
-                setFilterCategoryMuscleGroups([])
-              }}
-              className={showCategoryView ? "bg-gradient-to-r from-gold-primary to-gold-secondary text-[#0a0a0a] hover:opacity-90" : "text-gray-400 hover:text-gray-200"}
+      {/* Category Tabs */}
+      <div className="flex flex-wrap gap-2">
+        {MUSCLE_GROUP_CATEGORIES.map((category) => {
+          const count = getCategoryExerciseCount(category)
+          const isActive = selectedCategoryTab === category.id
+
+          return (
+            <button
+              key={category.id}
+              onClick={() => handleCategoryTabClick(category.id)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                isActive
+                  ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-[#0a0a0a]'
+                  : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-gray-200 border border-gold-primary/20'
+              }`}
             >
-              <Grid3x3 className="w-4 h-4 mr-2" />
-              Kategorier
-            </Button>
-            <Button
-              variant={!showCategoryView ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setShowCategoryView(false)}
-              className={!showCategoryView ? "bg-gradient-to-r from-gold-primary to-gold-secondary text-[#0a0a0a] hover:opacity-90" : "text-gray-400 hover:text-gray-200"}
-            >
-              <List className="w-4 h-4 mr-2" />
-              Alla övningar
-            </Button>
-          </div>
-          <Button
-            onClick={() => handleOpenDialog()}
-            className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-[#0a0a0a] font-semibold"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Lägg till övning
-          </Button>
-        </div>
+              {category.name}
+              <span className={`ml-2 px-1.5 py-0.5 rounded text-xs ${
+                isActive ? 'bg-black/20' : 'bg-white/10'
+              }`}>
+                {count}
+              </span>
+            </button>
+          )
+        })}
       </div>
 
-      {/* Filters */}
-      <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <Label className="text-gray-300">Sök</Label>
-              <div className="relative mt-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <Input
-                  placeholder="Sök övning..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-white/5 border-gold-primary/20 text-white"
-                />
-              </div>
-            </div>
+      {/* Filter Bar */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white/5 border border-gold-primary/20 rounded-lg p-4">
+        {/* Exercise Count */}
+        <span className="text-gray-400 text-sm whitespace-nowrap">
+          Visar {filteredExercises.length} övningar
+        </span>
 
-            <div>
-              <Label className="text-gray-300">Muskelgrupp</Label>
-              <Select value={filterMuscleGroup} onValueChange={setFilterMuscleGroup}>
-                <SelectTrigger className="mt-1 bg-white/5 border-gold-primary/20 text-white">
-                  <SelectValue placeholder="Alla muskelgrupper" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alla muskelgrupper</SelectItem>
-                  {MUSCLE_GROUPS.map(muscle => (
-                    <SelectItem key={muscle} value={muscle}>{muscle}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Category Cards View */}
-      {showCategoryView && !selectedCategory ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {MUSCLE_GROUP_CATEGORIES.map((category) => {
-            const Icon = getIconComponent(category.icon)
-            const exerciseCount = getCategoryExerciseCount(category)
-
-            return (
-              <Card
-                key={category.id}
-                onClick={() => handleCategoryClick(category.id)}
-                className="group relative bg-white/5 border-2 border-gold-primary/20 hover:border-gold-primary/60 hover:bg-white/10 transition-all duration-300 cursor-pointer backdrop-blur-[10px] overflow-hidden"
-              >
-                {/* Gradient Overlay */}
-                <div
-                  className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity"
-                  style={{
-                    background: `linear-gradient(135deg, ${category.color}30 0%, transparent 100%)`
-                  }}
-                />
-
-                <CardContent className="relative p-8 flex flex-col items-center text-center">
-                  {/* Icon */}
-                  <div
-                    className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg"
-                    style={{ backgroundColor: `${category.color}20` }}
-                  >
-                    <Icon
-                      className="h-10 w-10"
-                      style={{ color: category.color }}
-                    />
-                  </div>
-
-                  {/* Category Name */}
-                  <h3 className="text-xl font-bold text-gold-light mb-2 tracking-[1px]">
-                    {category.name}
-                  </h3>
-
-                  {/* Exercise Count */}
-                  <p className="text-gray-400 text-sm">
-                    {exerciseCount} {exerciseCount === 1 ? 'övning' : 'övningar'}
-                  </p>
-
-                  {/* Arrow indicator */}
-                  <div className="mt-4 text-gold-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })}
+        {/* Search */}
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            placeholder="Sök övning..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-white/5 border-gold-primary/20 text-white h-9"
+          />
         </div>
-      ) : (
-        <>
-          {/* Back to Categories Button */}
-          {!showCategoryView && selectedCategory && (
-            <Button
-              onClick={() => {
-                setShowCategoryView(true)
-                setSelectedCategory(null)
-                setFilterMuscleGroup('all')
-                setFilterCategoryMuscleGroups([])
-              }}
-              className="mb-4 bg-gradient-to-r from-gold-primary to-gold-secondary text-[#0a0a0a] hover:opacity-90 font-semibold"
-            >
-              ← Tillbaka till kategorier
-            </Button>
-          )}
 
-          {/* Exercises Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredExercises.map((exercise) => (
-          <Card
-            key={exercise.id}
-            className="bg-white/5 border-2 border-gold-primary/20 hover:border-gold-primary/60 transition-all backdrop-blur-[10px]"
-          >
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-3 flex-1">
-                  <div className="flex-1 min-w-0">
-                    <CardTitle className="text-lg text-gray-100 break-words">
-                      {exercise.name}
-                    </CardTitle>
-                  </div>
-                </div>
-                <div className="flex gap-1 shrink-0">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleOpenDialog(exercise)}
-                    className="h-8 w-8 text-[rgba(255,215,0,0.8)] hover:text-gold-light hover:bg-white/10"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDelete(exercise.id)}
-                    className="h-8 w-8 text-[rgba(255,100,100,0.8)] hover:text-[#ff6464] hover:bg-[rgba(255,100,100,0.1)]"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {exercise.videoUrl && (
-                <VideoPlayer
-                  videoUrl={exercise.videoUrl}
-                  thumbnailUrl={exercise.thumbnailUrl}
-                  title={exercise.name}
-                  className="w-full rounded-lg overflow-hidden"
-                />
-              )}
-            </CardContent>
-          </Card>
+        {/* Muscle Group Filter */}
+        <Select value={filterMuscleGroup} onValueChange={setFilterMuscleGroup}>
+          <SelectTrigger className="w-[180px] bg-white/5 border-gold-primary/20 text-white h-9">
+            <SelectValue placeholder="Muskelgrupp" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Alla muskelgrupper</SelectItem>
+            {MUSCLE_GROUPS.map(muscle => (
+              <SelectItem key={muscle} value={muscle}>{muscle}</SelectItem>
             ))}
-          </div>
+          </SelectContent>
+        </Select>
 
-          {filteredExercises.length === 0 && (
-            <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-              <CardContent className="py-12 text-center">
-                <Dumbbell className="w-12 h-12 text-[rgba(255,215,0,0.3)] mx-auto mb-4" />
-                <p className="text-gray-400">
-                  Inga övningar hittades. Skapa din första övning!
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </>
-      )}
+        {/* Equipment Filter */}
+        <Select value={filterEquipment} onValueChange={setFilterEquipment}>
+          <SelectTrigger className="w-[180px] bg-white/5 border-gold-primary/20 text-white h-9">
+            <SelectValue placeholder="Utrustning" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All utrustning</SelectItem>
+            {EQUIPMENT_OPTIONS.map(equip => (
+              <SelectItem key={equip} value={equip}>{equip}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* Add Exercise Button */}
+        <Button
+          onClick={() => handleOpenDialog()}
+          className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-[#0a0a0a] font-semibold h-9"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Lägg till övning
+        </Button>
+      </div>
+
+      {/* Exercise Table */}
+      <Card className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px] overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-gold-primary/20 hover:bg-transparent">
+              <TableHead className="text-gray-400 font-medium">Namn</TableHead>
+              <TableHead className="text-gray-400 font-medium w-[100px]">Content</TableHead>
+              <TableHead className="text-gray-400 font-medium">Muskelgrupp</TableHead>
+              <TableHead className="text-gray-400 font-medium">Utrustning</TableHead>
+              <TableHead className="text-gray-400 font-medium w-[100px] text-right">Åtgärder</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredExercises.map((exercise) => (
+              <TableRow
+                key={exercise.id}
+                className="border-gold-primary/10 hover:bg-white/5 transition-colors"
+              >
+                {/* Name with Thumbnail */}
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-3">
+                    {exercise.thumbnailUrl ? (
+                      <img
+                        src={exercise.thumbnailUrl}
+                        alt={exercise.name}
+                        className="w-10 h-10 rounded object-cover bg-white/10"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded bg-white/10 flex items-center justify-center">
+                        <Dumbbell className="w-5 h-5 text-gray-500" />
+                      </div>
+                    )}
+                    <span className="text-gray-100">{exercise.name}</span>
+                  </div>
+                </TableCell>
+
+                {/* Content Icons */}
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    {exercise.videoUrl && (
+                      <Video className="w-4 h-4 text-gold-primary" />
+                    )}
+                    {exercise.thumbnailUrl && (
+                      <ImageIcon className="w-4 h-4 text-blue-400" />
+                    )}
+                    {!exercise.videoUrl && !exercise.thumbnailUrl && (
+                      <span className="text-gray-500">-</span>
+                    )}
+                  </div>
+                </TableCell>
+
+                {/* Muscle Groups */}
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {exercise.muscleGroups.slice(0, 2).map(mg => (
+                      <Badge
+                        key={mg}
+                        variant="outline"
+                        className="text-xs bg-gold-primary/10 border-gold-primary/30 text-gold-light"
+                      >
+                        {mg}
+                      </Badge>
+                    ))}
+                    {exercise.muscleGroups.length > 2 && (
+                      <Badge
+                        variant="outline"
+                        className="text-xs bg-white/5 border-gray-600 text-gray-400"
+                      >
+                        +{exercise.muscleGroups.length - 2}
+                      </Badge>
+                    )}
+                    {exercise.muscleGroups.length === 0 && (
+                      <span className="text-gray-500">-</span>
+                    )}
+                  </div>
+                </TableCell>
+
+                {/* Equipment */}
+                <TableCell className="text-gray-300">
+                  {exercise.equipmentNeeded.length > 0
+                    ? exercise.equipmentNeeded.join(', ')
+                    : <span className="text-gray-500">-</span>
+                  }
+                </TableCell>
+
+                {/* Actions */}
+                <TableCell className="text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleOpenDialog(exercise)}
+                      className="h-8 w-8 text-gold-primary/80 hover:text-gold-light hover:bg-white/10"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(exercise.id)}
+                      className="h-8 w-8 text-red-400/80 hover:text-red-400 hover:bg-red-500/10"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+
+        {filteredExercises.length === 0 && (
+          <div className="py-12 text-center">
+            <Dumbbell className="w-12 h-12 text-gold-primary/30 mx-auto mb-4" />
+            <p className="text-gray-400">
+              Inga övningar hittades. Skapa din första övning!
+            </p>
+          </div>
+        )}
+      </Card>
 
       {/* Exercise Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
