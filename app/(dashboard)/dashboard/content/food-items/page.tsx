@@ -77,164 +77,97 @@ export default function FoodItemsCategoriesPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
+      <div className="text-center mb-4 sm:mb-6">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-3 sm:mb-4 opacity-30" />
+        <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl md:text-3xl font-black tracking-[1px] sm:tracking-[2px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-2">
           Livsmedelbanken
         </h1>
-        <p className="text-gray-400 mt-1">
+        <p className="text-gray-400 text-xs">
           Välj en kategori för att se livsmedel
         </p>
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-3 sm:mt-4 opacity-30" />
       </div>
 
       {/* Categories Grid */}
       {categories.length === 0 ? (
-        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-          <CardContent className="text-center py-16">
-            <Apple className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-            <p className="text-gray-400 text-lg mb-2">
+        <Card className="bg-white border border-gray-200">
+          <CardContent className="text-center py-12">
+            <Apple className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+            <p className="text-gray-500 mb-2">
               Inga kategorier ännu
             </p>
-            <p className="text-sm text-[rgba(255,255,255,0.4)] mb-6">
-              Skapa kategorier för att organisera dina livsmedel
-            </p>
-            <Button
-              onClick={() => router.push('/dashboard/content/categories')}
-              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
-            >
-              Skapa kategorier
-            </Button>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
           {categories.map((category) => {
             const Icon = getIconComponent(category.icon)
+            const categoryColor = category.color || '#22c55e'
             return (
-              <Card
+              <div
                 key={category.id}
-                className="bg-white/5 border-2 border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
                 onClick={() => router.push(`/dashboard/content/food-items/category/${category.slug}`)}
+                className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center"
               >
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div
-                      className="w-14 h-14 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: `${category.color}20` }}
-                    >
-                      <Icon
-                        className="h-7 w-7"
-                        style={{ color: category.color }}
-                      />
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-[rgba(255,255,255,0.4)]" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2">
-                    {category.name}
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      className="text-xs"
-                      style={{
-                        backgroundColor: `${category.color}15`,
-                        color: category.color,
-                        borderColor: `${category.color}40`,
-                      }}
-                    >
-                      {category._count?.foodItems || 0} livsmedel
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
+                <div
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md"
+                  style={{ background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}dd)` }}
+                >
+                  <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                </div>
+                <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">
+                  {category.name}
+                </h3>
+                <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5">
+                  {category._count?.foodItems || 0} livsmedel
+                </p>
+              </div>
             )
           })}
         </div>
       )}
 
       {/* Nutrition Overviews Section */}
-      <div className="mt-8 space-y-4">
-        <div>
-          <h2 className="text-2xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
-            Näringsöversikter
-          </h2>
-          <p className="text-gray-400 mt-1">
-            Detaljerade tabeller med näringsinnehåll
-          </p>
-        </div>
+      <div className="mt-6 sm:mt-8 space-y-3 sm:space-y-4 max-w-6xl mx-auto">
+        <h2 className="text-base sm:text-lg font-bold text-gray-900 text-center">
+          Näringsöversikter
+        </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
           {/* Protein Overview Card */}
-          <Card
-            className="bg-white/5 border-2 border-[rgba(59,130,246,0.2)] hover:border-[rgba(59,130,246,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
+          <div
             onClick={() => router.push('/dashboard/content/food-items/overviews/protein')}
+            className="group relative bg-white border border-gray-200 rounded-xl p-2 sm:p-4 hover:border-blue-400 hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center"
           >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
-                >
-                  <Beef className="h-7 w-7 text-blue-400" />
-                </div>
-                <ChevronRight className="h-5 w-5 text-[rgba(255,255,255,0.4)]" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">
-                Protein källor
-              </h3>
-              <p className="text-sm text-gray-400">
-                Komplett översikt med näringsinnehåll för olika portioner
-              </p>
-            </CardContent>
-          </Card>
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform shadow-md">
+              <Beef className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            </div>
+            <h3 className="text-xs sm:text-sm font-bold text-gray-900 text-center">Protein</h3>
+          </div>
 
           {/* Fat Overview Card */}
-          <Card
-            className="bg-white/5 border-2 border-[rgba(234,179,8,0.2)] hover:border-[rgba(234,179,8,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
+          <div
             onClick={() => router.push('/dashboard/content/food-items/overviews/fett')}
+            className="group relative bg-white border border-gray-200 rounded-xl p-2 sm:p-4 hover:border-yellow-400 hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center"
           >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: 'rgba(234, 179, 8, 0.1)' }}
-                >
-                  <Droplet className="h-7 w-7 text-yellow-500" />
-                </div>
-                <ChevronRight className="h-5 w-5 text-[rgba(255,255,255,0.4)]" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">
-                Fett källor
-              </h3>
-              <p className="text-sm text-gray-400">
-                Komplett översikt med näringsinnehåll för olika portioner
-              </p>
-            </CardContent>
-          </Card>
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform shadow-md">
+              <Droplet className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            </div>
+            <h3 className="text-xs sm:text-sm font-bold text-gray-900 text-center">Fett</h3>
+          </div>
 
           {/* Carbs Overview Card */}
-          <Card
-            className="bg-white/5 border-2 border-[rgba(249,115,22,0.2)] hover:border-[rgba(249,115,22,0.4)] hover:scale-105 transition-all cursor-pointer backdrop-blur-[10px]"
+          <div
             onClick={() => router.push('/dashboard/content/food-items/overviews/kolhydrater')}
+            className="group relative bg-white border border-gray-200 rounded-xl p-2 sm:p-4 hover:border-orange-400 hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center"
           >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: 'rgba(249, 115, 22, 0.1)' }}
-                >
-                  <Wheat className="h-7 w-7 text-orange-500" />
-                </div>
-                <ChevronRight className="h-5 w-5 text-[rgba(255,255,255,0.4)]" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">
-                Kolhydrat källor
-              </h3>
-              <p className="text-sm text-gray-400">
-                Komplett översikt med näringsinnehåll för olika portioner
-              </p>
-            </CardContent>
-          </Card>
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform shadow-md">
+              <Wheat className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            </div>
+            <h3 className="text-xs sm:text-sm font-bold text-gray-900 text-center">Kolhydrater</h3>
+          </div>
         </div>
       </div>
     </div>

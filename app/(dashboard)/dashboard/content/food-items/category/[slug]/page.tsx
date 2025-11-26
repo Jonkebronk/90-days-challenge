@@ -204,224 +204,146 @@ export default function CategoryFoodItemsPage({
   const Icon = getIconComponent(category.icon)
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
+      <div className="space-y-4">
+        <button
           onClick={() => router.push('/dashboard/content/food-items')}
-          className="text-gray-400 hover:text-gold-light"
+          className="flex items-center gap-2 text-gray-500 hover:text-gold-primary transition-colors text-sm"
         >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div className="flex items-center gap-3 flex-1">
-          <div
-            className="w-12 h-12 rounded-full flex items-center justify-center"
-            style={{ backgroundColor: `${category.color}20` }}
-          >
-            <Icon className="h-6 w-6" style={{ color: category.color }} />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
-              {category.name}
-            </h1>
-            <p className="text-gray-400 mt-0.5">
-              {total} livsmedel
-            </p>
-          </div>
+          <ArrowLeft className="h-4 w-4" />
+          <span>Tillbaka</span>
+        </button>
+
+        <div className="text-center mb-4 sm:mb-6">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-3 sm:mb-4 opacity-30" />
+          <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl md:text-3xl font-black tracking-[1px] sm:tracking-[2px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-2">
+            {category.name}
+          </h1>
+          <p className="text-gray-400 text-xs">
+            {total} livsmedel
+          </p>
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-3 sm:mt-4 opacity-30" />
+        </div>
+      </div>
+
+      {/* Search and Add Button */}
+      <div className="flex gap-2 max-w-6xl mx-auto">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Sök livsmedel..."
+            className="pl-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400"
+          />
         </div>
         {isCoach && (
           <Button
             onClick={() => router.push('/dashboard/content/food-items/create')}
             className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
           >
-            <Plus className="h-4 w-4 mr-2" />
-            Nytt livsmedel
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Nytt livsmedel</span>
           </Button>
         )}
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Sök livsmedel..."
-          className="pl-10 bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
-        />
-      </div>
-
       {/* Food Items Grid */}
       {isLoading ? (
-        <p className="text-gray-400 text-center py-8">Laddar...</p>
+        <div className="text-center py-12">
+          <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto" />
+        </div>
       ) : foodItems.length === 0 ? (
-        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-          <CardContent className="text-center py-16">
-            <Apple className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-            <p className="text-gray-400 text-lg mb-2">
+        <Card className="bg-white border border-gray-200 max-w-6xl mx-auto">
+          <CardContent className="text-center py-12">
+            <Apple className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+            <p className="text-gray-500 mb-2">
               Inga livsmedel i denna kategori
             </p>
-            <p className="text-sm text-[rgba(255,255,255,0.4)] mb-6">
-              Börja lägga till livsmedel för att bygga din databas
-            </p>
-            <Button
-              onClick={() => router.push('/dashboard/content/food-items/create')}
-              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Lägg till livsmedel
-            </Button>
+            {isCoach && (
+              <Button
+                onClick={() => router.push('/dashboard/content/food-items/create')}
+                className="mt-4 bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Lägg till livsmedel
+              </Button>
+            )}
           </CardContent>
         </Card>
-      ) : (() => {
-        // Group items by subcategory
-        const grouped = foodItems.reduce((acc, item) => {
-          const key = (item as any).subcategory || 'Övrigt'
-          if (!acc[key]) acc[key] = []
-          acc[key].push(item)
-          return acc
-        }, {} as Record<string, FoodItem[]>)
-
-        const hasSubcategories = Object.keys(grouped).length > 1 || !grouped['Övrigt']
-
-        if (!hasSubcategories) {
-          // No subcategories, show regular grid
-          return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {foodItems.map((item) => (
-                <Card
-                  key={item.id}
-                  className="bg-white/5 border border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)] transition-all backdrop-blur-[10px] cursor-pointer"
-                  onClick={() => setSelectedItem(item)}
-                >
-                  <CardContent className="p-4">
-                    {item.imageUrl && (
-                      <div className="mb-3 -mx-4 -mt-4">
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                          className="w-full h-32 object-cover rounded-t-lg"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none'
-                          }}
-                        />
-                      </div>
-                    )}
-                    <div className="mb-3">
-                      <h3 className="font-semibold text-white text-lg">{item.name}</h3>
-                    </div>
-
-                    {isCoach && (
-                      <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-gray-400 hover:text-gold-light hover:bg-gold-50/10"
-                          onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit?categorySlug=${categorySlug}`)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-gray-400 hover:text-red-400 hover:bg-red-900/20"
-                          onClick={() => handleDelete(item.id, item.name)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )
-        }
-
-        // Show grouped by subcategory in columns
-        return (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {Object.entries(grouped)
-              .sort(([a], [b]) => a.localeCompare(b, 'sv'))
-              .map(([subcategory, items]) => (
-                <Card key={subcategory} className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-                  <CardContent className="p-4">
-                    <h3 className="text-lg font-bold text-gold-light mb-4">{subcategory}</h3>
-                    <div className="space-y-2">
-                      {items.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center justify-between p-2 bg-white/5 border border-gold-primary/20 rounded-lg hover:bg-gold-primary/10 transition-colors cursor-pointer"
-                          onClick={() => setSelectedItem(item)}
-                        >
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
-                            {item.imageUrl && (
-                              <img
-                                src={item.imageUrl}
-                                alt={item.name}
-                                className="w-8 h-8 rounded object-cover flex-shrink-0"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).style.display = 'none'
-                                }}
-                              />
-                            )}
-                            <span className="text-gray-100 text-sm truncate">{item.name}</span>
-                          </div>
-                          {isCoach && (
-                            <div className="flex gap-0.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 text-gray-400 hover:text-gold-light hover:bg-gold-50/10"
-                                onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit?categorySlug=${categorySlug}`)}
-                              >
-                                <Pencil className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 text-gray-400 hover:text-red-400 hover:bg-red-900/20"
-                                onClick={() => handleDelete(item.id, item.name)}
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-          </div>
-        )
-      })()}
-
-      {/* Food Item Detail Dialog */}
-      <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
-        <DialogContent className="bg-[#0a0a0a] border-2 border-gold-primary/30 text-white max-w-2xl">
-          {selectedItem && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-bold text-gold-light flex items-center justify-between">
-                  {selectedItem.name}
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
+          {foodItems.map((item) => (
+            <div
+              key={item.id}
+              onClick={() => setSelectedItem(item)}
+              className="group relative bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer"
+            >
+              {item.imageUrl ? (
+                <div className="h-20 sm:h-24 w-full bg-gray-100 overflow-hidden">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.name}
+                    className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none'
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="h-20 sm:h-24 w-full bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center">
+                  <Apple className="h-8 w-8 text-green-300" />
+                </div>
+              )}
+              <div className="p-2 sm:p-3">
+                <h3 className="text-xs sm:text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-gold-primary transition-colors">
+                  {item.name}
+                </h3>
+                <p className="text-gray-500 text-[10px] sm:text-xs mt-0.5">
+                  {Math.round(item.calories)} kcal / 100g
+                </p>
+              </div>
+              {isCoach && (
+                <div className="absolute top-1 right-1 flex gap-0.5" onClick={(e) => e.stopPropagation()}>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => setSelectedItem(null)}
-                    className="text-gray-400 hover:text-gold-light"
+                    className="h-6 w-6 bg-white/80 hover:bg-white text-gray-600 hover:text-gold-primary rounded-full"
+                    onClick={() => router.push(`/dashboard/content/food-items/${item.id}/edit?categorySlug=${categorySlug}`)}
                   >
-                    <X className="h-5 w-5" />
+                    <Pencil className="h-3 w-3" />
                   </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 bg-white/80 hover:bg-white text-gray-600 hover:text-red-500 rounded-full"
+                    onClick={() => handleDelete(item.id, item.name)}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Food Item Detail Dialog */}
+      <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
+        <DialogContent className="bg-white border border-gray-200 max-w-md sm:max-w-lg">
+          {selectedItem && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold text-gray-900 pr-8">
+                  {selectedItem.name}
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-4">
                 {/* Image */}
                 {selectedItem.imageUrl && (
-                  <div className="w-full h-64 rounded-lg overflow-hidden border-2 border-gold-primary/20">
+                  <div className="w-full h-48 rounded-lg overflow-hidden">
                     <img
                       src={selectedItem.imageUrl}
                       alt={selectedItem.name}
@@ -433,23 +355,43 @@ export default function CategoryFoodItemsPage({
                   </div>
                 )}
 
+                {/* Nutrition Info */}
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="bg-gray-50 rounded-lg p-2 text-center">
+                    <p className="text-xs text-gray-500">Kalorier</p>
+                    <p className="font-bold text-gray-900">{Math.round(selectedItem.calories)}</p>
+                  </div>
+                  <div className="bg-blue-50 rounded-lg p-2 text-center">
+                    <p className="text-xs text-gray-500">Protein</p>
+                    <p className="font-bold text-blue-600">{selectedItem.proteinG.toFixed(1)}g</p>
+                  </div>
+                  <div className="bg-yellow-50 rounded-lg p-2 text-center">
+                    <p className="text-xs text-gray-500">Fett</p>
+                    <p className="font-bold text-yellow-600">{selectedItem.fatG.toFixed(1)}g</p>
+                  </div>
+                  <div className="bg-orange-50 rounded-lg p-2 text-center">
+                    <p className="text-xs text-gray-500">Kolh.</p>
+                    <p className="font-bold text-orange-600">{selectedItem.carbsG.toFixed(1)}g</p>
+                  </div>
+                </div>
+
                 {/* Notes */}
                 {selectedItem.notes && (
-                  <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-4">
-                    <p className="text-sm text-gray-400 mb-2">Anteckningar</p>
-                    <p className="text-white leading-relaxed">{selectedItem.notes}</p>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-xs text-gray-500 mb-1">Anteckningar</p>
+                    <p className="text-sm text-gray-700">{selectedItem.notes}</p>
                   </div>
                 )}
 
                 {/* Actions */}
                 {isCoach && (
-                  <div className="flex gap-2 pt-4 border-t border-gold-primary/20">
+                  <div className="flex gap-2 pt-2 border-t border-gray-100">
                     <Button
                       onClick={() => {
                         setSelectedItem(null)
                         router.push(`/dashboard/content/food-items/${selectedItem.id}/edit?categorySlug=${categorySlug}`)
                       }}
-                      className="flex-1 bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+                      className="flex-1 bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
                     >
                       <Pencil className="h-4 w-4 mr-2" />
                       Redigera
@@ -460,10 +402,9 @@ export default function CategoryFoodItemsPage({
                         handleDelete(selectedItem.id, selectedItem.name)
                         setSelectedItem(null)
                       }}
-                      className="border-red-500/50 text-red-400 hover:bg-red-900/20"
+                      className="border-red-200 text-red-600 hover:bg-red-50"
                     >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Ta bort
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 )}
