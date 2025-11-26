@@ -256,10 +256,10 @@ export default function RecipeDetailPage() {
         {recipe.caloriesPerServing && (() => {
           // Calculate total recipe weight from ingredients
           const totalWeight = recipe.ingredients.reduce((sum, ing) => sum + ing.amount, 0)
-          const totalCalories = recipe.caloriesPerServing * recipe.servings
-          const totalProtein = (recipe.proteinPerServing || 0) * recipe.servings
-          const totalFat = (recipe.fatPerServing || 0) * recipe.servings
-          const totalCarbs = (recipe.carbsPerServing || 0) * recipe.servings
+          const totalCalories = Number(recipe.caloriesPerServing) * recipe.servings
+          const totalProtein = Number(recipe.proteinPerServing || 0) * recipe.servings
+          const totalFat = Number(recipe.fatPerServing || 0) * recipe.servings
+          const totalCarbs = Number(recipe.carbsPerServing || 0) * recipe.servings
 
           return (
             <div className="border-t border-gold-primary/30 pt-6 sm:pt-8">
