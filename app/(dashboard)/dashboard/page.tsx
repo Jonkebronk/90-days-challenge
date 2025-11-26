@@ -457,244 +457,95 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Action Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
 
         {/* Check-in Card */}
         <Link href="/dashboard/check-in">
-          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-50" />
-
-            {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-              <Calendar className="w-10 h-10 text-white" />
+          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
+              <Calendar className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
             </div>
-
-            {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Check-in</h3>
-            <p className="text-gray-600 text-center text-sm relative z-10">
-              Gör din veckocheckning
-            </p>
-
-            {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
+            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Check-in</h3>
+            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Veckocheckning</p>
           </div>
         </Link>
 
         {/* Progress Card */}
         <Link href="/dashboard/progress">
-          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-pink-50 to-transparent opacity-50" />
-
-            {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-              <TrendingUp className="w-10 h-10 text-white" />
+          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
+              <TrendingUp className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
             </div>
-
-            {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Framsteg</h3>
-            <p className="text-gray-600 text-center text-sm relative z-10">
-              Se din utveckling & statistik
-            </p>
-
-            {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
-          </div>
-        </Link>
-
-        {/* Kunskapsbanken Card */}
-        <Link href="/dashboard/articles">
-          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-transparent opacity-50" />
-
-            {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-              <BookOpen className="w-10 h-10 text-white" />
-            </div>
-
-            {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Kunskapsbanken</h3>
-            <p className="text-gray-600 text-center text-sm relative z-10">
-              Läs artiklar & guider
-            </p>
-
-            {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
-          </div>
-        </Link>
-
-        {/* Recept Card */}
-        <Link href="/dashboard/recipes">
-          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-transparent opacity-50" />
-
-            {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-              <ChefHat className="w-10 h-10 text-white" />
-            </div>
-
-            {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Recept</h3>
-            <p className="text-gray-600 text-center text-sm relative z-10">
-              Hitta matinspiration
-            </p>
-
-            {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
-          </div>
-        </Link>
-
-        {/* Livsmedelbanken Card */}
-        <Link href="/dashboard/content/food-items">
-          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent opacity-50" />
-
-            {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-              <Apple className="w-10 h-10 text-white" />
-            </div>
-
-            {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Livsmedelbanken</h3>
-            <p className="text-gray-600 text-center text-sm relative z-10">
-              Utforska näringsinnehåll
-            </p>
-
-            {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
+            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Framsteg</h3>
+            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Din utveckling</p>
           </div>
         </Link>
 
         {/* Kostschema Card */}
         <Link href="/dashboard/meal-plan">
-          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-transparent opacity-50" />
-
-            {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-              <Utensils className="w-10 h-10 text-white" />
+          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
+              <Utensils className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
             </div>
-
-            {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Kostschema</h3>
-            <p className="text-gray-600 text-center text-sm relative z-10">
-              Din personliga måltidsplan
-            </p>
-
-            {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
+            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Kostschema</h3>
+            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Måltidsplan</p>
           </div>
         </Link>
 
         {/* Träningsprogram Card */}
         <Link href="/dashboard/workout">
-          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-transparent opacity-50" />
-
-            {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-500 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-              <Dumbbell className="w-10 h-10 text-white" />
+          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-purple-400 to-purple-500 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
+              <Dumbbell className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
             </div>
+            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Träning</h3>
+            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Träningsprogram</p>
+          </div>
+        </Link>
 
-            {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Träningsprogram</h3>
-            <p className="text-gray-600 text-center text-sm relative z-10">
-              Ditt personliga träningsschema
-            </p>
+        {/* Kunskapsbanken Card */}
+        <Link href="/dashboard/articles">
+          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
+              <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+            </div>
+            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Kunskap</h3>
+            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Artiklar & guider</p>
+          </div>
+        </Link>
 
-            {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
+        {/* Recept Card */}
+        <Link href="/dashboard/recipes">
+          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
+              <ChefHat className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+            </div>
+            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Recept</h3>
+            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Matinspiration</p>
+          </div>
+        </Link>
+
+        {/* Livsmedelbanken Card */}
+        <Link href="/dashboard/content/food-items">
+          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
+              <Apple className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+            </div>
+            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Livsmedel</h3>
+            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Näringsinnehåll</p>
           </div>
         </Link>
 
         {/* Meddelanden Card */}
         <Link href="/dashboard/messages">
-          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-50" />
-
-            {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-              <MessageSquare className="w-10 h-10 text-white" />
+          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
+              <MessageSquare className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
             </div>
-
-            {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Meddelanden</h3>
-            <p className="text-gray-600 text-center text-sm relative z-10">
-              Kommunicera med din coach
-            </p>
-
-            {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
+            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Meddelanden</h3>
+            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Kontakta coach</p>
           </div>
         </Link>
-
-        {/* Profile Card */}
-        <Link href="/dashboard/profile">
-          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent opacity-50" />
-
-            {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-              <Users className="w-10 h-10 text-white" />
-            </div>
-
-            {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Min Profil</h3>
-            <p className="text-gray-600 text-center text-sm relative z-10">
-              Hantera dina uppgifter
-            </p>
-
-            {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
-          </div>
-        </Link>
-
-        {/* FAQ Card */}
-        <Link href="/dashboard/faqs">
-          <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 hover:border-gold-primary hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer overflow-hidden h-[280px] flex flex-col items-center justify-center">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-50" />
-
-            {/* Icon */}
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-              <HelpCircle className="w-10 h-10 text-white" />
-            </div>
-
-            {/* Title & Description */}
-            <h3 className="text-2xl font-bold text-gray-900 mb-2 relative z-10">Vanliga frågor</h3>
-            <p className="text-gray-600 text-center text-sm relative z-10">
-              Svar på vanliga frågor
-            </p>
-
-            {/* Arrow indicator */}
-            <ChevronRight className="absolute bottom-4 right-4 w-6 h-6 text-gold-primary group-hover:translate-x-2 transition-all" />
-          </div>
-        </Link>
-
-        {/* Recent Activity Card (Coming Soon) */}
-        <div className="group relative bg-white border border-gray-200 rounded-2xl p-8 overflow-hidden h-[280px] flex flex-col items-center justify-center opacity-60">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-transparent opacity-30" />
-
-          {/* Icon */}
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center mb-6">
-            <Clock className="w-10 h-10 text-gray-500" />
-          </div>
-
-          {/* Title & Description */}
-          <h3 className="text-2xl font-bold text-gray-500 mb-2 relative z-10">Senaste aktivitet</h3>
-          <p className="text-gray-400 text-center text-sm relative z-10">
-            Coachens uppdateringar
-          </p>
-        </div>
       </div>
     </div>
   )
