@@ -132,7 +132,7 @@ export function ExerciseCard({
             <div className="flex items-center pl-2 border-l border-[rgba(255,255,255,0.1)]">
               <Checkbox
                 checked={isSelected}
-                onCheckedChange={onToggleSuperset}
+                onCheckedChange={(checked) => onToggleSuperset(checked === true)}
                 className="border-[rgba(255,215,0,0.3)] data-[state=checked]:bg-[#FFD700] data-[state=checked]:border-[#FFD700]"
               />
               <span className="text-[10px] text-[rgba(255,255,255,0.4)] ml-1">S</span>
