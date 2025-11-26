@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
-import { Send, Image as ImageIcon, X, ZoomIn } from 'lucide-react'
+import { Send, Image as ImageIcon, X, ZoomIn, MessageCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { sv } from 'date-fns/locale'
@@ -172,24 +172,35 @@ export default function MessagesPage() {
     ? clients.find(c => c.id === otherUserId)
     : coach
 
+  // Prevent pull-to-refresh on message scroll
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const target = e.currentTarget
+    if (target.scrollTop === 0) {
+      target.dataset.scrollTop = '1'
+      target.scrollTop = 1
+    }
+  }, [])
+
   return (
-    <div className="space-y-6 h-[calc(100vh-12rem)] max-w-full overflow-x-hidden">
+    <div className="flex flex-col h-[calc(100vh-8rem)] sm:h-[calc(100vh-10rem)] max-w-full overflow-hidden">
       {/* Header */}
-      <div className="relative text-center py-8 bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px]">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent tracking-[1px]">
-          MEDDELANDEN
+      <div className="flex-shrink-0 text-center mb-4 sm:mb-6">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 opacity-30" />
+        <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
+          Meddelanden
         </h1>
-        <p className="text-gray-400 mt-2">
+        <p className="text-gray-500 mt-1 text-sm">
           Kommunicera med din {isCoach ? 'klient' : 'coach'}
         </p>
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 opacity-30" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100%-12rem)] max-w-full">
+      <div className="flex-1 flex flex-col lg:flex-row gap-4 min-h-0 overflow-hidden">
         {/* Sidebar - Contact List (Coach only) */}
         {isCoach && (
-          <div className="lg:col-span-1">
-            <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] p-4 h-full overflow-y-auto">
-              <h3 className="text-lg font-bold text-gold-light mb-4">Klienter</h3>
+          <div className="flex-shrink-0 lg:w-64">
+            <Card className="bg-white border-2 border-gray-300 rounded-lg p-3 h-full overflow-y-auto">
+              <h3 className="text-sm font-bold text-gray-900 mb-3">Klienter</h3>
               <div className="space-y-2">
                 {clients.map(client => (
                   <button
@@ -197,12 +208,12 @@ export default function MessagesPage() {
                     onClick={() => setOtherUserId(client.id)}
                     className={`w-full text-left p-3 rounded-lg transition-all ${
                       otherUserId === client.id
-                        ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-gray-900 font-semibold'
-                        : 'bg-white/5 hover:bg-gold-primary/10 text-gray-100 border border-gold-primary/20'
+                        ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-semibold'
+                        : 'bg-gray-50 hover:bg-gray-100 text-gray-900 border border-gray-200'
                     }`}
                   >
-                    <p className="font-medium">{client.name}</p>
-                    <p className={`text-sm ${otherUserId === client.id ? 'text-gray-800' : 'text-gray-400'}`}>
+                    <p className="font-medium text-sm">{client.name}</p>
+                    <p className={`text-xs ${otherUserId === client.id ? 'text-white/80' : 'text-gray-500'}`}>
                       {client.email}
                     </p>
                   </button>
@@ -213,23 +224,35 @@ export default function MessagesPage() {
         )}
 
         {/* Messages Area */}
-        <div className={`${isCoach ? 'lg:col-span-3' : 'lg:col-span-4'} flex flex-col`}>
-          <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <Card className="bg-white border-2 border-gray-300 rounded-lg flex-1 flex flex-col min-h-0 overflow-hidden">
             {/* Contact Header */}
             {selectedContact && (
-              <div className="p-4 border-b border-gold-primary/20">
-                <h3 className="text-lg font-bold text-gold-light">
-                  {selectedContact.name}
-                </h3>
-                <p className="text-sm text-gray-400">{selectedContact.email}</p>
+              <div className="flex-shrink-0 p-3 sm:p-4 border-b-2 border-gray-200 bg-gray-50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
+                    <MessageCircle className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-gray-900">
+                      {selectedContact.name}
+                    </h3>
+                    <p className="text-xs text-gray-500">{selectedContact.email}</p>
+                  </div>
+                </div>
               </div>
             )}
 
             {/* Messages List */}
-            <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-4">
+            <div
+              className="flex-1 overflow-y-auto overscroll-none p-3 sm:p-4 space-y-3"
+              onTouchStart={handleTouchStart}
+              style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'none' }}
+            >
               {messages.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-gray-400">Inga meddelanden än. Skicka det första!</p>
+                  <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">Inga meddelanden än. Skicka det första!</p>
                 </div>
               ) : (
                 messages.map((message) => {
@@ -242,29 +265,29 @@ export default function MessagesPage() {
                       className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
-                        className={`max-w-[70%] ${
+                        className={`max-w-[85%] sm:max-w-[70%] ${
                           isCheckIn
-                            ? 'bg-gradient-to-br from-[rgba(30,58,138,0.8)] to-[rgba(30,58,138,0.6)] border-2 border-[rgba(96,165,250,0.5)]'
+                            ? 'bg-blue-50 border-2 border-blue-200'
                             : isMine
                             ? 'bg-gradient-to-r from-gold-primary to-gold-secondary'
-                            : 'bg-white/10 border border-gold-primary/20'
-                        } rounded-2xl p-4`}
+                            : 'bg-gray-100 border border-gray-200'
+                        } rounded-2xl p-3 sm:p-4`}
                       >
                         {/* Check-in header */}
                         {isCheckIn && (
-                          <div className="mb-2 pb-2 border-b border-[rgba(147,197,253,0.5)]">
-                            <p className="text-xs font-bold text-[rgba(147,197,253,1)]">VECKORAPPORT</p>
+                          <div className="mb-2 pb-2 border-b border-blue-200">
+                            <p className="text-xs font-bold text-blue-600">VECKORAPPORT</p>
                           </div>
                         )}
 
                         {/* Message content */}
                         <p
-                          className={`whitespace-pre-wrap ${
+                          className={`whitespace-pre-wrap text-sm sm:text-base ${
                             isMine && !isCheckIn
-                              ? 'text-gray-900 font-medium'
+                              ? 'text-white font-medium'
                               : isCheckIn
-                              ? 'text-gray-100'
-                              : 'text-gray-100'
+                              ? 'text-gray-700'
+                              : 'text-gray-700'
                           }`}
                         >
                           {message.content}
@@ -272,7 +295,7 @@ export default function MessagesPage() {
 
                         {/* Images */}
                         {message.images && message.images.length > 0 && (
-                          <div className="mt-3 grid grid-cols-3 gap-2">
+                          <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
                             {message.images.map((img, idx) => (
                               <div
                                 key={idx}
@@ -282,9 +305,9 @@ export default function MessagesPage() {
                                 <img
                                   src={img}
                                   alt={`Bild ${idx + 1}`}
-                                  className="w-full h-24 object-cover rounded-lg"
+                                  className="w-full h-20 sm:h-24 object-cover rounded-lg"
                                 />
-                                <div className="absolute inset-0 bg-gray-900 bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded-lg flex items-center justify-center">
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all rounded-lg flex items-center justify-center">
                                   <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
                               </div>
@@ -296,9 +319,7 @@ export default function MessagesPage() {
                         <p
                           className={`text-xs mt-2 ${
                             isMine && !isCheckIn
-                              ? 'text-gray-800'
-                              : isCheckIn
-                              ? 'text-gray-400'
+                              ? 'text-white/70'
                               : 'text-gray-400'
                           }`}
                         >
@@ -313,20 +334,20 @@ export default function MessagesPage() {
             </div>
 
             {/* Input Area */}
-            <div className="p-4 border-t border-gold-primary/20">
+            <div className="flex-shrink-0 p-3 sm:p-4 border-t-2 border-gray-200 bg-gray-50">
               <div className="flex gap-2">
                 <Input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Skriv ett meddelande..."
-                  className="flex-1 bg-black/30 border-gold-primary/30 text-white placeholder:text-gray-400 focus:border-gold-primary"
+                  className="flex-1 bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-gold-primary h-10 sm:h-12"
                   disabled={sending}
                 />
                 <Button
                   onClick={sendMessage}
                   disabled={sending || !newMessage.trim()}
-                  className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-gray-900 font-semibold disabled:opacity-50"
+                  className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold disabled:opacity-50 h-10 sm:h-12 px-4"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
@@ -339,11 +360,11 @@ export default function MessagesPage() {
       {/* Image Lightbox */}
       {selectedImage && (
         <div
-          className="fixed inset-0 bg-gray-900 bg-opacity-90 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedImage(null)}
         >
           <button
-            className="absolute top-4 right-4 text-white hover:text-gold-light transition-colors"
+            className="absolute top-4 right-4 text-white hover:text-gold-primary transition-colors"
             onClick={() => setSelectedImage(null)}
           >
             <X className="w-8 h-8" />
