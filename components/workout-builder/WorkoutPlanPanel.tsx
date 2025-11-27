@@ -349,83 +349,30 @@ export function WorkoutPlanPanel({
                 strategy={verticalListSortingStrategy}
               >
                 <div className="space-y-3">
-                  {groupedExercises.map((item, idx) => {
-                    if (item.type === 'superset') {
-                      return (
-                        <SupersetGroupComponent
-                          key={item.content.group.id}
-                          group={item.content.group}
-                          onRemove={() => onRemoveSuperset(item.content.group.id)}
-                        >
-                          <div className="space-y-2">
-                            {item.content.exercises.map(({ exercise, index }: any) => {
-                              const exerciseData = exercises.find(e => e.id === exercise.exerciseId)
-                              return (
-                                <SortableExerciseItem
-                                  key={exercise.id}
-                                  exercise={exercise}
-                                  exerciseData={exerciseData}
-                                  onUpdate={(field, value) => onUpdateExercise(index, field, value)}
-                                  onRemove={() => onRemoveExercise(index)}
-                                  supersetColor={item.content.group.color}
-                                />
-                              )
-                            })}
-                          </div>
-                        </SupersetGroupComponent>
-                      )
-                    } else if (item.type === 'dropset') {
-                      const exerciseNames = item.content.exercises.map(({ exercise }: any) => {
-                        const data = exercises.find(e => e.id === exercise.exerciseId)
-                        return data?.name || 'Okänd'
-                      })
-                      return (
-                        <DropsetGroup
-                          key={item.content.dropset.id}
-                          dropset={item.content.dropset}
-                          exerciseNames={exerciseNames}
-                          onRemove={() => onRemoveDropset(item.content.dropset.id)}
-                          onUpdate={onUpdateDropset}
-                        >
-                          <div className="space-y-2">
-                            {item.content.exercises.map(({ exercise, index }: any) => {
-                              const exerciseData = exercises.find(e => e.id === exercise.exerciseId)
-                              return (
-                                <SortableExerciseItem
-                                  key={exercise.id}
-                                  exercise={exercise}
-                                  exerciseData={exerciseData}
-                                  onUpdate={(field, value) => onUpdateExercise(index, field, value)}
-                                  onRemove={() => onRemoveExercise(index)}
-                                  dropsetColor={DROPSET_COLORS[0].value}
-                                />
-                              )
-                            })}
-                          </div>
-                        </DropsetGroup>
-                      )
-                    } else {
-                      const { exercise, index } = item.content
-                      const exerciseData = exercises.find(e => e.id === exercise.exerciseId)
-                      const isInSuperset = supersets.some(s => s.exerciseIndices.includes(index))
-                      const isInDropset = dropsets.some(d => d.exerciseIndices.includes(index))
+                  {day.exercises.map((exercise, index) => {
+                    const exerciseData = exercises.find(e => e.id === exercise.exerciseId)
+                    const superset = getExerciseSuperset(index)
+                    const dropset = getExerciseDropset(index)
+                    const isInSuperset = !!superset
+                    const isInDropset = !!dropset
 
-                      return (
-                        <SortableExerciseItem
-                          key={exercise.id}
-                          exercise={exercise}
-                          exerciseData={exerciseData}
-                          onUpdate={(field, value) => onUpdateExercise(index, field, value)}
-                          onRemove={() => onRemoveExercise(index)}
-                          onToggleSuperset={
-                            !isInDropset
-                              ? (selected) => handleToggleSuperset(index, selected)
-                              : undefined
-                          }
-                          isSelectedForSuperset={selectedForSuperset.has(index)}
-                        />
-                      )
-                    }
+                    return (
+                      <SortableExerciseItem
+                        key={exercise.id}
+                        exercise={exercise}
+                        exerciseData={exerciseData}
+                        onUpdate={(field, value) => onUpdateExercise(index, field, value)}
+                        onRemove={() => onRemoveExercise(index)}
+                        onToggleSuperset={
+                          !isInDropset
+                            ? (selected) => handleToggleSuperset(index, selected)
+                            : undefined
+                        }
+                        isSelectedForSuperset={selectedForSuperset.has(index)}
+                        supersetColor={superset?.color}
+                        dropsetColor={dropset ? DROPSET_COLORS[0].value : undefined}
+                      />
+                    )
                   })}
                 </div>
               </SortableContext>
