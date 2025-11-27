@@ -520,24 +520,43 @@ export default function WorkoutPage() {
                   <div className="space-y-2">
                     {day.exercises.map((ex, idx) => {
                       const videoKey = `${day.id}-${ex.id}`
+
+                      // Check if this exercise is part of a superset
+                      const isSuperset = !!ex.supersetGroupId
+                      const supersetExercises = isSuperset
+                        ? day.exercises.filter(e => e.supersetGroupId === ex.supersetGroupId)
+                        : []
+                      const isFirstInSuperset = isSuperset && supersetExercises[0]?.id === ex.id
+
                       return (
+                        <div key={idx}>
+                          {/* Superset banner - only show before first exercise */}
+                          {isFirstInSuperset && (
+                            <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-3 rounded-lg mb-2 shadow">
+                              <p className="font-bold text-sm mb-1">⚡ SUPERSET</p>
+                              <div className="flex flex-wrap items-center gap-1 mb-1">
+                                {supersetExercises.map((ssEx, ssIdx) => (
+                                  <span key={ssEx.id} className="flex items-center">
+                                    <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-medium">{ssEx.exercise.name}</span>
+                                    {ssIdx < supersetExercises.length - 1 && <span className="mx-1 text-amber-200">+</span>}
+                                  </span>
+                                ))}
+                              </div>
+                              <p className="text-xs text-amber-100">Kör direkt efter varandra utan vila.</p>
+                            </div>
+                          )}
+
                         <div
-                          key={idx}
-                          className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden"
+                          className={`bg-gray-50 rounded-lg border overflow-hidden ${
+                            isSuperset ? 'border-l-4 border-l-amber-500 border-gray-200' : 'border-gray-200'
+                          }`}
                         >
                           <div className="flex items-center gap-3 p-3">
                             <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white text-sm font-bold">
                               {idx + 1}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <p className="font-medium text-gray-900">{ex.exercise.name}</p>
-                                {ex.supersetGroupId && (
-                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700">
-                                    Superset
-                                  </span>
-                                )}
-                              </div>
+                              <p className="font-medium text-gray-900">{ex.exercise.name}</p>
                               <p className="text-sm text-gray-600">
                                 {ex.sets} set × {ex.reps || '-'} reps
                               </p>
@@ -579,6 +598,7 @@ export default function WorkoutPage() {
                               />
                             </div>
                           )}
+                        </div>
                         </div>
                       )
                     })}
