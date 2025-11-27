@@ -217,6 +217,15 @@ export default function WorkoutHistoryPage() {
   return (
     <div className="min-h-screen bg-gray-900 p-4 sm:p-8">
       <div className="max-w-6xl mx-auto">
+        {/* Back Button */}
+        <button
+          onClick={() => router.push('/dashboard/workout')}
+          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4 sm:mb-6"
+        >
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="text-sm sm:text-base">Tillbaka</span>
+        </button>
+
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
