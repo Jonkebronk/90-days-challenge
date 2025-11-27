@@ -625,18 +625,11 @@ export default function CreateWorkoutProgramPage() {
                                       <div>
                                         <Label className="text-[10px] text-gray-500">Sets</Label>
                                         <Input
-                                          type="text"
-                                          inputMode="numeric"
-                                          value={exercise.sets?.toString() || ''}
-                                          onChange={(e) => {
-                                            const val = e.target.value
-                                            updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'sets', val === '' ? 0 : parseInt(val) || exercise.sets)
-                                          }}
-                                          onBlur={(e) => {
-                                            const val = parseInt(e.target.value)
-                                            if (!isNaN(val)) updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'sets', val)
-                                          }}
-                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
+                                          type="number"
+                                          min="1"
+                                          value={exercise.sets || ''}
+                                          onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'sets', parseInt(e.target.value) || 0)}
+                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                         />
                                       </div>
                                       <div>
@@ -665,18 +658,11 @@ export default function CreateWorkoutProgramPage() {
                                       <div>
                                         <Label className="text-[10px] text-gray-500">Vila (s)</Label>
                                         <Input
-                                          type="text"
-                                          inputMode="numeric"
-                                          value={exercise.restSeconds?.toString() || ''}
-                                          onChange={(e) => {
-                                            const val = e.target.value
-                                            updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'restSeconds', val === '' ? 60 : parseInt(val) || exercise.restSeconds)
-                                          }}
-                                          onBlur={(e) => {
-                                            const val = parseInt(e.target.value)
-                                            if (!isNaN(val)) updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'restSeconds', val)
-                                          }}
-                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
+                                          type="number"
+                                          min="0"
+                                          value={exercise.restSeconds || ''}
+                                          onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 0)}
+                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                         />
                                       </div>
                                       <div>
@@ -898,18 +884,11 @@ export default function CreateWorkoutProgramPage() {
                             <div>
                               <Label className="text-xs text-gray-400">Sets</Label>
                               <Input
-                                type="text"
-                                inputMode="numeric"
-                                value={exercise.sets?.toString() || ''}
-                                onChange={(e) => {
-                                  const val = e.target.value
-                                  updateExercise(dayIndex, exIndex, 'sets', val === '' ? 0 : parseInt(val) || exercise.sets)
-                                }}
-                                onBlur={(e) => {
-                                  const val = parseInt(e.target.value)
-                                  if (!isNaN(val)) updateExercise(dayIndex, exIndex, 'sets', val)
-                                }}
-                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
+                                type="number"
+                                min="1"
+                                value={exercise.sets || ''}
+                                onChange={(e) => updateExercise(dayIndex, exIndex, 'sets', parseInt(e.target.value) || 0)}
+                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               />
                             </div>
                             <div>
@@ -938,18 +917,11 @@ export default function CreateWorkoutProgramPage() {
                             <div>
                               <Label className="text-xs text-gray-400">Vila (s)</Label>
                               <Input
-                                type="text"
-                                inputMode="numeric"
-                                value={exercise.restSeconds?.toString() || ''}
-                                onChange={(e) => {
-                                  const val = e.target.value
-                                  updateExercise(dayIndex, exIndex, 'restSeconds', val === '' ? 60 : parseInt(val) || exercise.restSeconds)
-                                }}
-                                onBlur={(e) => {
-                                  const val = parseInt(e.target.value)
-                                  if (!isNaN(val)) updateExercise(dayIndex, exIndex, 'restSeconds', val)
-                                }}
-                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
+                                type="number"
+                                min="0"
+                                value={exercise.restSeconds || ''}
+                                onChange={(e) => updateExercise(dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 0)}
+                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               />
                             </div>
                             <div>
