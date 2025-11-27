@@ -651,7 +651,7 @@ export default function CreateWorkoutProgramPage() {
                                       </div>
                                     )}
 
-                                    <div className="grid grid-cols-5 gap-2">
+                                    <div className="grid grid-cols-4 gap-2">
                                       <div>
                                         <Label className="text-[10px] text-gray-500">Sets</Label>
                                         <Input
@@ -662,20 +662,24 @@ export default function CreateWorkoutProgramPage() {
                                         />
                                       </div>
                                       <div>
-                                        <Label className="text-[10px] text-gray-500">Reps Min</Label>
+                                        <Label className="text-[10px] text-gray-500">Reps</Label>
                                         <Input
-                                          type="number"
-                                          value={exercise.repsMin || ''}
-                                          onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMin', e.target.value ? parseInt(e.target.value) : null)}
-                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
-                                        />
-                                      </div>
-                                      <div>
-                                        <Label className="text-[10px] text-gray-500">Reps Max</Label>
-                                        <Input
-                                          type="number"
-                                          value={exercise.repsMax || ''}
-                                          onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMax', e.target.value ? parseInt(e.target.value) : null)}
+                                          value={exercise.repsMin && exercise.repsMax && exercise.repsMin !== exercise.repsMax
+                                            ? `${exercise.repsMin}-${exercise.repsMax}`
+                                            : exercise.repsMin?.toString() || ''}
+                                          onChange={(e) => {
+                                            const value = e.target.value
+                                            if (value.includes('-')) {
+                                              const [min, max] = value.split('-').map(v => parseInt(v.trim()) || null)
+                                              updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMin', min)
+                                              updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMax', max)
+                                            } else {
+                                              const reps = parseInt(value) || null
+                                              updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMin', reps)
+                                              updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMax', reps)
+                                            }
+                                          }}
+                                          placeholder="8-12"
                                           className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
                                         />
                                       </div>
@@ -902,7 +906,7 @@ export default function CreateWorkoutProgramPage() {
                             </div>
                           )}
 
-                          <div className="grid grid-cols-5 gap-2">
+                          <div className="grid grid-cols-4 gap-2">
                             <div>
                               <Label className="text-xs text-gray-400">Sets</Label>
                               <Input
@@ -913,20 +917,24 @@ export default function CreateWorkoutProgramPage() {
                               />
                             </div>
                             <div>
-                              <Label className="text-xs text-gray-400">Reps Min</Label>
+                              <Label className="text-xs text-gray-400">Reps</Label>
                               <Input
-                                type="number"
-                                value={exercise.repsMin || ''}
-                                onChange={(e) => updateExercise(dayIndex, exIndex, 'repsMin', e.target.value ? parseInt(e.target.value) : null)}
-                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
-                              />
-                            </div>
-                            <div>
-                              <Label className="text-xs text-gray-400">Reps Max</Label>
-                              <Input
-                                type="number"
-                                value={exercise.repsMax || ''}
-                                onChange={(e) => updateExercise(dayIndex, exIndex, 'repsMax', e.target.value ? parseInt(e.target.value) : null)}
+                                value={exercise.repsMin && exercise.repsMax && exercise.repsMin !== exercise.repsMax
+                                  ? `${exercise.repsMin}-${exercise.repsMax}`
+                                  : exercise.repsMin?.toString() || ''}
+                                onChange={(e) => {
+                                  const value = e.target.value
+                                  if (value.includes('-')) {
+                                    const [min, max] = value.split('-').map(v => parseInt(v.trim()) || null)
+                                    updateExercise(dayIndex, exIndex, 'repsMin', min)
+                                    updateExercise(dayIndex, exIndex, 'repsMax', max)
+                                  } else {
+                                    const reps = parseInt(value) || null
+                                    updateExercise(dayIndex, exIndex, 'repsMin', reps)
+                                    updateExercise(dayIndex, exIndex, 'repsMax', reps)
+                                  }
+                                }}
+                                placeholder="8-12"
                                 className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                               />
                             </div>
