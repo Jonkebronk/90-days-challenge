@@ -350,8 +350,8 @@ export default function CreateWorkoutProgramPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Beskriv programmet och dess mål..."
-              rows={3}
-              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1"
+              rows={6}
+              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1 resize-y"
             />
           </div>
 
