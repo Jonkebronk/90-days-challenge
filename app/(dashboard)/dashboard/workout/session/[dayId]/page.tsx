@@ -662,15 +662,46 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             const exerciseSets = setLogs[exercise.exercise.id] || []
             const isExerciseComplete = exerciseSets.length >= exercise.sets
 
+            // Check if this exercise is part of a superset
+            const isSuperset = !!exercise.supersetGroupId
+            const supersetExercises = isSuperset
+              ? workoutDay.exercises.filter(ex => ex.supersetGroupId === exercise.supersetGroupId)
+              : []
+            const isFirstInSuperset = isSuperset && supersetExercises[0]?.id === exercise.id
+            const isLastInSuperset = isSuperset && supersetExercises[supersetExercises.length - 1]?.id === exercise.id
+
             return (
-            <Card
-              key={exercise.id}
-              className={`bg-white border-2 transition-all shadow-md rounded-lg ${
+              <div key={exercise.id}>
+                {/* Superset header - only show before first exercise in superset */}
+                {isFirstInSuperset && (
+                  <div className="bg-amber-50 border-2 border-amber-300 border-b-0 rounded-t-xl p-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">SS</span>
+                      </div>
+                      <div>
+                        <span className="font-bold text-amber-700 text-sm">SUPERSET</span>
+                        <p className="text-xs text-amber-600">Kör dessa övningar direkt efter varandra utan vila. Vila först efter båda är klara.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <Card
+              className={`bg-white border-2 transition-all shadow-md ${
+                isSuperset
+                  ? isFirstInSuperset
+                    ? 'rounded-none border-amber-300 border-t-0'
+                    : isLastInSuperset
+                      ? 'rounded-none rounded-b-xl border-amber-300 border-t-0'
+                      : 'rounded-none border-amber-300 border-t-0'
+                  : 'rounded-lg'
+              } ${
                 isCurrent && sessionId
-                  ? 'border-gold-primary'
+                  ? isSuperset ? 'border-amber-500' : 'border-gold-primary'
                   : isExerciseComplete && !isExpanded
-                    ? 'border-green-300'
-                    : 'border-gray-300'
+                    ? isSuperset ? 'border-amber-300' : 'border-green-300'
+                    : isSuperset ? 'border-amber-300' : 'border-gray-300'
               } ${isExerciseComplete && !isExpanded ? 'opacity-60 scale-95' : ''}`}
             >
               <CardHeader className={isExerciseComplete && !isExpanded ? 'py-3' : ''}>
@@ -684,11 +715,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         <CardTitle className={`${isExerciseComplete && !isExpanded ? 'text-lg' : 'text-xl'} text-gray-900 transition-all font-bold`}>
                           {exercise.exercise.name}
                         </CardTitle>
-                        {exercise.supersetGroupId && (
-                          <Badge className="bg-amber-100 text-amber-700 border-amber-300 text-xs">
-                            Superset
-                          </Badge>
-                        )}
                         {isExerciseComplete && !isExpanded && (
                           <Badge className="bg-green-100 text-green-600 border-green-300 text-xs">
                             Klar
@@ -986,6 +1012,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                 </CardContent>
               )}
             </Card>
+              </div>
             )
           })}
       </div>
