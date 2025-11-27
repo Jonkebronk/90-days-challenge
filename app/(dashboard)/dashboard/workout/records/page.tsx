@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Trophy, Dumbbell, Calendar } from 'lucide-react'
+import { Trophy, Dumbbell, Calendar, ArrowLeft } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -66,6 +66,15 @@ export default function PersonalRecordsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      <button
+        onClick={() => router.push('/dashboard/workout')}
+        className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+        <span className="text-sm sm:text-base">Tillbaka</span>
+      </button>
+
       {/* Header */}
       <div className="text-center mb-6 sm:mb-8">
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
