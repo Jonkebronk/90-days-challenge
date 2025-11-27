@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { useDraggable } from '@dnd-kit/core'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -11,8 +10,7 @@ import {
   Filter,
   ChevronDown,
   ChevronUp,
-  X,
-  GripVertical
+  X
 } from 'lucide-react'
 import { Exercise, ExerciseFilter } from './types'
 import { useDebounce } from './hooks/useDebounce'
@@ -22,102 +20,61 @@ interface ExerciseLibraryPanelProps {
   exercises: Exercise[]
   onSelectExercise: (exercise: Exercise) => void
   className?: string
-  enableDrag?: boolean
 }
 
-// Draggable Exercise Item
-function DraggableExerciseItem({
+// Exercise Item (click to add)
+function ExerciseItem({
   exercise,
   onClick,
-  isRecent = false,
-  enableDrag = false
+  isRecent = false
 }: {
   exercise: Exercise
   onClick: () => void
   isRecent?: boolean
-  enableDrag?: boolean
 }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: `library-${exercise.id}`,
-    disabled: !enableDrag,
-    data: { exercise }
-  })
-
-  const style = transform ? {
-    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-    zIndex: isDragging ? 1000 : undefined,
-  } : undefined
-
-  // Don't render dragging item in place - DragOverlay handles it
-  if (isDragging) {
-    return (
-      <div
-        ref={setNodeRef}
-        className="w-full p-3 rounded-lg border border-dashed border-[rgba(255,215,0,0.3)] bg-[rgba(255,215,0,0.05)]"
-      >
-        <div className="opacity-30">
-          <h4 className="text-[rgba(255,255,255,0.9)] font-medium text-sm truncate">
-            {exercise.name}
-          </h4>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
+    <button
+      type="button"
+      onClick={onClick}
       className={`
-        w-full p-3 rounded-lg text-left transition-all flex items-center gap-2
+        w-full p-3 rounded-lg text-left transition-all
         ${isRecent
           ? 'bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.15)] hover:bg-[rgba(255,215,0,0.1)] hover:border-[rgba(255,215,0,0.3)]'
           : 'bg-[rgba(255,255,255,0.02)] border border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.08)] hover:border-[rgba(255,215,0,0.25)]'
         }
-        ${enableDrag ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}
+        cursor-pointer
       `}
-      onClick={!enableDrag ? onClick : undefined}
-      {...(enableDrag ? { ...attributes, ...listeners } : {})}
     >
-      {enableDrag && (
-        <GripVertical className="w-4 h-4 text-[rgba(255,255,255,0.3)] flex-shrink-0" />
-      )}
-      <div
-        className="flex-1 min-w-0"
-        onClick={enableDrag ? (e) => { e.stopPropagation(); onClick(); } : undefined}
-      >
-        <h4 className="text-[rgba(255,255,255,0.9)] font-medium text-sm mb-1.5 truncate">
-          {exercise.name}
-        </h4>
-        <div className="flex flex-wrap gap-1">
-          {exercise.muscleGroups?.slice(0, 3).map(mg => (
-            <Badge
-              key={mg}
-              variant="outline"
-              className="text-xs bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.2)] text-[#FFD700] py-0"
-            >
-              {mg}
-            </Badge>
-          ))}
-          {exercise.muscleGroups?.length > 3 && (
-            <Badge
-              variant="outline"
-              className="text-xs bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.5)] py-0"
-            >
-              +{exercise.muscleGroups.length - 3}
-            </Badge>
-          )}
-        </div>
+      <h4 className="text-[rgba(255,255,255,0.9)] font-medium text-sm mb-1.5 truncate">
+        {exercise.name}
+      </h4>
+      <div className="flex flex-wrap gap-1">
+        {exercise.muscleGroups?.slice(0, 3).map(mg => (
+          <Badge
+            key={mg}
+            variant="outline"
+            className="text-xs bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.2)] text-[#FFD700] py-0"
+          >
+            {mg}
+          </Badge>
+        ))}
+        {exercise.muscleGroups?.length > 3 && (
+          <Badge
+            variant="outline"
+            className="text-xs bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.5)] py-0"
+          >
+            +{exercise.muscleGroups.length - 3}
+          </Badge>
+        )}
       </div>
-    </div>
+    </button>
   )
 }
 
 export function ExerciseLibraryPanel({
   exercises,
   onSelectExercise,
-  className = '',
-  enableDrag = false
+  className = ''
 }: ExerciseLibraryPanelProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<string[]>([])
@@ -279,13 +236,10 @@ export function ExerciseLibraryPanel({
       {/* Content */}
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
-          {/* Drag hint */}
-          {enableDrag && (
-            <p className="text-xs text-[rgba(255,255,255,0.4)] text-center pb-2">
-              Dra övningar till höger eller klicka för att lägga till
-            </p>
-          )}
-
+          {/* Hint */}
+          <p className="text-xs text-[rgba(255,255,255,0.4)] text-center pb-2">
+            Klicka på en övning för att lägga till
+          </p>
 
           {/* All/Filtered Exercises */}
           <div>
@@ -298,11 +252,10 @@ export function ExerciseLibraryPanel({
             <div className="space-y-1.5">
               {filteredExercises.length > 0 ? (
                 filteredExercises.map(exercise => (
-                  <DraggableExerciseItem
+                  <ExerciseItem
                     key={exercise.id}
                     exercise={exercise}
                     onClick={() => handleSelectExercise(exercise)}
-                    enableDrag={enableDrag}
                   />
                 ))
               ) : (

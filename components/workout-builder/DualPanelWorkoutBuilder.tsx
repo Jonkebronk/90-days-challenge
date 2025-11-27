@@ -247,7 +247,6 @@ export function DualPanelWorkoutBuilder({
             exercises={exercises}
             onSelectExercise={handleAddExercise}
             className="w-[340px] flex-shrink-0"
-            enableDrag={true}
           />
 
           {/* Workout Plan Panel - Right */}
@@ -310,7 +309,6 @@ export function DualPanelWorkoutBuilder({
                 exercises={exercises}
                 onSelectExercise={handleAddExercise}
                 className="h-full"
-                enableDrag={false}
               />
             </TabsContent>
 
