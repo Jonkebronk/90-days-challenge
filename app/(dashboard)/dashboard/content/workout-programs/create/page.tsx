@@ -350,8 +350,8 @@ export default function CreateWorkoutProgramPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Beskriv programmet och dess mål..."
-              rows={6}
-              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1 resize-y"
+              rows={10}
+              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1 resize-y min-h-[200px]"
             />
           </div>
 
@@ -625,10 +625,10 @@ export default function CreateWorkoutProgramPage() {
                                       <div>
                                         <Label className="text-[10px] text-gray-500">Sets</Label>
                                         <Input
-                                          type="number"
+                                          inputMode="numeric"
                                           value={exercise.sets}
                                           onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'sets', parseInt(e.target.value) || 0)}
-                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
+                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                         />
                                       </div>
                                       <div>
@@ -656,10 +656,10 @@ export default function CreateWorkoutProgramPage() {
                                       <div>
                                         <Label className="text-[10px] text-gray-500">Vila (s)</Label>
                                         <Input
-                                          type="number"
+                                          inputMode="numeric"
                                           value={exercise.restSeconds}
                                           onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 60)}
-                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
+                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                         />
                                       </div>
                                       <div>
@@ -880,10 +880,10 @@ export default function CreateWorkoutProgramPage() {
                             <div>
                               <Label className="text-xs text-gray-400">Sets</Label>
                               <Input
-                                type="number"
+                                inputMode="numeric"
                                 value={exercise.sets}
                                 onChange={(e) => updateExercise(dayIndex, exIndex, 'sets', parseInt(e.target.value) || 0)}
-                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
+                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               />
                             </div>
                             <div>
@@ -911,10 +911,10 @@ export default function CreateWorkoutProgramPage() {
                             <div>
                               <Label className="text-xs text-gray-400">Vila (s)</Label>
                               <Input
-                                type="number"
+                                inputMode="numeric"
                                 value={exercise.restSeconds}
                                 onChange={(e) => updateExercise(dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 60)}
-                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
+                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               />
                             </div>
                             <div>
