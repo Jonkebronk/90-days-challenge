@@ -886,22 +886,13 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
                 Tack för din veckorapport. Din coach kommer att granska den och återkoppla till dig.
               </p>
 
-              {/* Action Buttons */}
-              <div className="space-y-3">
-                <Button
-                  onClick={onClose}
-                  className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold h-12"
-                >
-                  Stäng
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => router.push('/dashboard')}
-                  className="w-full border-2 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold h-12"
-                >
-                  Gå till Dashboard
-                </Button>
-              </div>
+              {/* Action Button */}
+              <Button
+                onClick={() => router.push('/dashboard')}
+                className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold h-12"
+              >
+                Gå till Dashboard
+              </Button>
             </div>
           </CardContent>
         </Card>
