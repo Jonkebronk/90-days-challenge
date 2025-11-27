@@ -37,6 +37,7 @@ interface Exercise {
   repsMin: number | null
   repsMax: number | null
   restSeconds: number
+  tempo: string | null
   notes: string | null
   coachNotes: string | null
   exercise: {
@@ -700,6 +701,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         {exercise.restSeconds > 0 && (
                           <p>
                             <span className="font-semibold text-gray-700">Vila:</span> {exercise.restSeconds}s
+                          </p>
+                        )}
+                        {exercise.tempo && (
+                          <p>
+                            <span className="font-semibold text-gray-700">Tempo:</span> {exercise.tempo}
                           </p>
                         )}
                       </div>
