@@ -355,31 +355,15 @@ export default function CreateWorkoutProgramPage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-gray-300">Svårighetsgrad</Label>
-              <Select value={difficulty} onValueChange={setDifficulty}>
-                <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white">
-                  <SelectValue placeholder="Välj nivå" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="beginner">Beginner</SelectItem>
-                  <SelectItem value="intermediate">Intermediate</SelectItem>
-                  <SelectItem value="advanced">Advanced</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label className="text-gray-300">Varaktighet (veckor)</Label>
-              <Input
-                type="number"
-                value={durationWeeks || ''}
-                onChange={(e) => setDurationWeeks(e.target.value ? parseInt(e.target.value) : null)}
-                placeholder="T.ex. 8"
-                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1"
-              />
-            </div>
+          <div>
+            <Label className="text-gray-300">Varaktighet (veckor)</Label>
+            <Input
+              type="number"
+              value={durationWeeks || ''}
+              onChange={(e) => setDurationWeeks(e.target.value ? parseInt(e.target.value) : null)}
+              placeholder="T.ex. 8"
+              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white mt-1"
+            />
           </div>
 
           <div>
