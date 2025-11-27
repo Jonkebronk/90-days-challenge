@@ -219,7 +219,7 @@ export default function WorkoutPage() {
               Inget träningsprogram tilldelat
             </h3>
             <p className="text-gray-600 max-w-md mx-auto">
-              Din coach har inte tilldelat ett träningsprogram till dig ännu. Kontakta din coach för att få ett program.
+              Inget träningsprogram har tilldelats ännu.
             </p>
           </CardContent>
         </Card>

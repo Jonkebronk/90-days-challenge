@@ -319,7 +319,7 @@ export default function MealPlanTemplateViewPage() {
           <UtensilsCrossed className="h-16 w-16 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
           <h2 className="text-2xl font-bold text-white mb-2">Ingen måltidsplan ännu</h2>
           <p className="text-gray-400">
-            Din coach har inte tilldelat dig en måltidsplan än.
+            Ingen måltidsplan har tilldelats ännu.
           </p>
         </div>
       </div>

@@ -236,7 +236,6 @@ export default function MessagesPage() {
                     <h3 className="text-base font-bold text-gray-900">
                       {selectedContact.name}
                     </h3>
-                    <p className="text-xs text-gray-500">{selectedContact.email}</p>
                   </div>
                 </div>
               </div>
