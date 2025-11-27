@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { notifyCheckInSubmitted } from '@/lib/push-notifications'
 
 export async function POST(request: NextRequest) {
   try {
@@ -189,6 +190,12 @@ export async function POST(request: NextRequest) {
           checkInId: checkIn.id,
           images: progressPhotos
         }
+      })
+
+      // Send push notification to coach (async, don't wait)
+      const clientName = user.name || 'En klient'
+      notifyCheckInSubmitted(user.coachId, clientName, checkIn.id).catch((err) => {
+        console.error('Failed to send push notification:', err)
       })
 
       console.log('Check-in summary message sent to coach')

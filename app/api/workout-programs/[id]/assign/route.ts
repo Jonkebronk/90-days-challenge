@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { notifyWorkoutAssigned } from '@/lib/push-notifications'
 
 export async function POST(
   request: Request,
@@ -93,6 +94,12 @@ export async function POST(
           }
         }
       }
+    })
+
+    // Send push notification to client (async, don't wait)
+    const programName = assignment.workoutProgram.name || 'ett träningsprogram'
+    notifyWorkoutAssigned(clientId, programName).catch((err) => {
+      console.error('Failed to send push notification:', err)
     })
 
     return NextResponse.json({ assignment }, { status: 201 })

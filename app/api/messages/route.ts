@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { notifyNewMessage } from '@/lib/push-notifications'
 
 // GET - Fetch messages between user and their coach/client
 export async function GET(request: Request) {
@@ -135,6 +136,12 @@ export async function POST(request: Request) {
           }
         }
       }
+    })
+
+    // Send push notification to receiver (async, don't wait)
+    const senderName = message.sender.name || message.sender.email || 'Någon'
+    notifyNewMessage(receiverId, senderName).catch((err) => {
+      console.error('Failed to send push notification:', err)
     })
 
     return NextResponse.json({ message })

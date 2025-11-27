@@ -46,6 +46,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
+import { PushNotificationPrompt } from '@/components/push-notification-prompt'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -429,6 +430,9 @@ export default function DashboardLayout({
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Push Notification Prompt */}
+        <PushNotificationPrompt className="mb-6" />
+
         {children}
       </main>
     </div>

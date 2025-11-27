@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { notifyMealPlanAssigned } from '@/lib/push-notifications'
 
 // POST /api/meal-plan-templates/[id]/assign - Assign template to client(s)
 export async function POST(
@@ -97,6 +98,14 @@ export async function POST(
         })
       })
     )
+
+    // Send push notifications to all assigned clients (async, don't wait)
+    const planName = template.name || 'ett kostschema'
+    clientIds.forEach((clientId: string) => {
+      notifyMealPlanAssigned(clientId, planName).catch((err) => {
+        console.error('Failed to send push notification:', err)
+      })
+    })
 
     return NextResponse.json({ assignments })
   } catch (error: any) {
