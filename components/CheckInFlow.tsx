@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
+import { CheckCircle2 } from 'lucide-react'
 
 interface CheckInFlowProps {
   userId: string
@@ -97,8 +98,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
       })
 
       if (response.ok) {
-        toast.success('Check-in skickad!')
-        onClose()
+        setStep(11) // Go to success screen
         router.refresh()
       } else {
         toast.error('Något gick fel')
@@ -858,6 +858,51 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
             >
               {isLoading ? 'Skickar...' : 'Skicka in'}
             </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // Step 11: Success Screen
+  if (step === 11) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
+          <CardContent className="pt-8 pb-8">
+            <div className="text-center">
+              {/* Success Icon */}
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-green-500 flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <CheckCircle2 className="w-10 h-10 text-white" />
+              </div>
+
+              {/* Success Title */}
+              <h1 className="text-2xl font-bold text-gray-900 mb-3">
+                Din check-in är skickad!
+              </h1>
+
+              {/* Success Message */}
+              <p className="text-gray-600 mb-8 max-w-sm mx-auto">
+                Tack för din veckorapport. Din coach kommer att granska den och återkoppla till dig.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="space-y-3">
+                <Button
+                  onClick={onClose}
+                  className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold h-12"
+                >
+                  Stäng
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => router.push('/dashboard')}
+                  className="w-full border-2 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold h-12"
+                >
+                  Gå till Dashboard
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
