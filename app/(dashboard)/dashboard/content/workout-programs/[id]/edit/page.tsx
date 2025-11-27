@@ -62,7 +62,7 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
           published: program.published
         })
 
-        setDays(program.days.map((day: any) => ({
+        const loadedDays = program.days.map((day: any) => ({
           dayNumber: day.dayNumber,
           name: day.name,
           description: day.description || '',
@@ -81,7 +81,20 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
             supersetGroupId: ex.supersetGroupId,
             supersetColor: ex.supersetColor
           }))
-        })))
+        }))
+
+        // If no days exist, add a default one
+        if (loadedDays.length === 0) {
+          loadedDays.push({
+            dayNumber: 1,
+            name: 'Dag 1',
+            description: '',
+            isRestDay: false,
+            exercises: []
+          })
+        }
+
+        setDays(loadedDays)
       }
     } catch (error) {
       console.error('Error fetching program:', error)
