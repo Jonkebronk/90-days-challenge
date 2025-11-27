@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
@@ -56,6 +56,39 @@ export function DualPanelWorkoutBuilder({
   const currentDay = days[selectedDayIndex] || { dayNumber: 1, name: '', description: '', isRestDay: false, exercises: [] }
   const currentSupersets = supersetsMap[selectedDayIndex] || []
   const currentDropsets = dropsetsMap[selectedDayIndex] || []
+
+  // Initialize supersets from existing exercises when days change
+  useEffect(() => {
+    const newSupersetsMap: Record<number, SupersetGroup[]> = {}
+
+    days.forEach((day, dayIndex) => {
+      const supersetGroups: Record<string, number[]> = {}
+
+      // Group exercises by supersetGroupId
+      day.exercises.forEach((exercise, exIndex) => {
+        if (exercise.supersetGroupId) {
+          if (!supersetGroups[exercise.supersetGroupId]) {
+            supersetGroups[exercise.supersetGroupId] = []
+          }
+          supersetGroups[exercise.supersetGroupId].push(exIndex)
+        }
+      })
+
+      // Convert to SupersetGroup array
+      const supersets: SupersetGroup[] = Object.entries(supersetGroups).map(([id, indices], groupIndex) => ({
+        id,
+        exerciseIndices: indices,
+        color: SUPERSET_COLORS[groupIndex % SUPERSET_COLORS.length].value,
+        label: `Superset ${String.fromCharCode(65 + groupIndex)}`
+      }))
+
+      if (supersets.length > 0) {
+        newSupersetsMap[dayIndex] = supersets
+      }
+    })
+
+    setSupersetsMap(newSupersetsMap)
+  }, [days])
 
   // Auto-save functionality
   const handleAutoSave = useCallback(async (data: ProgramDay[]) => {
