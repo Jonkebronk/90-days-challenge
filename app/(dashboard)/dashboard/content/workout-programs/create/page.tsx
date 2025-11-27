@@ -31,8 +31,16 @@ export default function CreateWorkoutProgramPage() {
     published: true
   })
 
-  // Days (Step 2)
-  const [days, setDays] = useState<ProgramDay[]>([])
+  // Days (Step 2) - Start with one day
+  const [days, setDays] = useState<ProgramDay[]>([
+    {
+      dayNumber: 1,
+      name: 'Dag 1',
+      description: '',
+      isRestDay: false,
+      exercises: []
+    }
+  ])
 
   useEffect(() => {
     fetchExercises()
