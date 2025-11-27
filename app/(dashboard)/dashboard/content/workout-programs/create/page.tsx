@@ -65,7 +65,7 @@ export default function CreateWorkoutProgramPage() {
   const [difficulty, setDifficulty] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [durationWeeks, setDurationWeeks] = useState<number | null>(null)
-  const [published, setPublished] = useState(false)
+  const [published, setPublished] = useState(true)
   const [useMultiWeek, setUseMultiWeek] = useState(false)
   const [weeks, setWeeks] = useState<ProgramWeek[]>([])
   const [days, setDays] = useState<ProgramDay[]>([]) // For non-multi-week programs
@@ -383,31 +383,17 @@ export default function CreateWorkoutProgramPage() {
             </Select>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="published"
-                checked={published}
-                onChange={(e) => setPublished(e.target.checked)}
-                className="w-4 h-4 rounded border-gold-primary/30"
-              />
-              <Label htmlFor="published" className="text-gray-300 cursor-pointer">
-                Publicera direkt
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="multiWeek"
-                checked={useMultiWeek}
-                onChange={(e) => setUseMultiWeek(e.target.checked)}
-                className="w-4 h-4 rounded border-gold-primary/30"
-              />
-              <Label htmlFor="multiWeek" className="text-gray-300 cursor-pointer">
-                Flerveckoprogram (organisera dagar i veckor)
-              </Label>
-            </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="multiWeek"
+              checked={useMultiWeek}
+              onChange={(e) => setUseMultiWeek(e.target.checked)}
+              className="w-4 h-4 rounded border-gold-primary/30"
+            />
+            <Label htmlFor="multiWeek" className="text-gray-300 cursor-pointer">
+              Flerveckoprogram (organisera dagar i veckor)
+            </Label>
           </div>
         </CardContent>
       </Card>
