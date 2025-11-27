@@ -9,6 +9,7 @@ export interface Exercise {
 }
 
 export interface ProgramExercise {
+  id: string  // Unique ID for this exercise instance (for drag-and-drop)
   exerciseId: string
   exercise?: Exercise
   sets: number | string

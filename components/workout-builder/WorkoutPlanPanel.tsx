@@ -81,7 +81,7 @@ function SortableExerciseItem({
     transform,
     transition,
     isDragging
-  } = useSortable({ id: exercise.exerciseId })
+  } = useSortable({ id: exercise.id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -345,7 +345,7 @@ export function WorkoutPlanPanel({
         <div ref={setNodeRef} className="p-4 min-h-full">
           {day.exercises.length > 0 ? (
               <SortableContext
-                items={day.exercises.map(ex => ex.exerciseId)}
+                items={day.exercises.map(ex => ex.id)}
                 strategy={verticalListSortingStrategy}
               >
                 <div className="space-y-3">
@@ -362,7 +362,7 @@ export function WorkoutPlanPanel({
                               const exerciseData = exercises.find(e => e.id === exercise.exerciseId)
                               return (
                                 <SortableExerciseItem
-                                  key={exercise.exerciseId}
+                                  key={exercise.id}
                                   exercise={exercise}
                                   exerciseData={exerciseData}
                                   onUpdate={(field, value) => onUpdateExercise(index, field, value)}
@@ -392,7 +392,7 @@ export function WorkoutPlanPanel({
                               const exerciseData = exercises.find(e => e.id === exercise.exerciseId)
                               return (
                                 <SortableExerciseItem
-                                  key={exercise.exerciseId}
+                                  key={exercise.id}
                                   exercise={exercise}
                                   exerciseData={exerciseData}
                                   onUpdate={(field, value) => onUpdateExercise(index, field, value)}
@@ -412,7 +412,7 @@ export function WorkoutPlanPanel({
 
                       return (
                         <SortableExerciseItem
-                          key={exercise.exerciseId}
+                          key={exercise.id}
                           exercise={exercise}
                           exerciseData={exerciseData}
                           onUpdate={(field, value) => onUpdateExercise(index, field, value)}

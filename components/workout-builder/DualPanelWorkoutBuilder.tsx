@@ -11,7 +11,9 @@ import {
   useSensors,
   DragStartEvent,
   DragEndEvent,
+  closestCenter,
 } from '@dnd-kit/core'
+import { arrayMove } from '@dnd-kit/sortable'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
@@ -113,6 +115,7 @@ export function DualPanelWorkoutBuilder({
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
+    // Handle drag from library
     if (isDraggingFromLibrary && activeExercise) {
       // Add exercise when dropped - either on drop zone or if over is null (dropped outside)
       // but not if dropped back on another library item
@@ -123,6 +126,25 @@ export function DualPanelWorkoutBuilder({
         onAddExercise(selectedDayIndex, activeExercise)
         if (window.innerWidth < 1024) {
           setMobileTab('workout')
+        }
+      }
+    }
+    // Handle reordering within workout panel
+    else if (active && over && active.id !== over.id) {
+      const activeId = active.id as string
+      const overId = over.id as string
+
+      // Check if both are workout exercises (not library items)
+      const isActiveLibrary = activeId.startsWith('library-')
+      const isOverLibrary = overId.startsWith('library-')
+
+      if (!isActiveLibrary && !isOverLibrary) {
+        // Find indices in the exercises array using the unique id
+        const oldIndex = currentDay.exercises.findIndex(ex => ex.id === activeId)
+        const newIndex = currentDay.exercises.findIndex(ex => ex.id === overId)
+
+        if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+          onReorderExercises(selectedDayIndex, oldIndex, newIndex)
         }
       }
     }

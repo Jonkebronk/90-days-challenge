@@ -67,10 +67,12 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
           name: day.name,
           description: day.description || '',
           isRestDay: day.isRestDay,
-          exercises: day.exercises.map((ex: any) => ({
+          exercises: day.exercises.map((ex: any, exIndex: number) => ({
+            id: ex.id || `${ex.exerciseId}-${day.dayNumber}-${exIndex}-${Date.now()}`,
             exerciseId: ex.exerciseId,
             exercise: ex.exercise,
             sets: ex.sets,
+            reps: ex.reps || '',
             repsMin: ex.repsMin,
             repsMax: ex.repsMax,
             restSeconds: ex.restSeconds,
@@ -142,6 +144,7 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
 
   const handleAddExercise = (dayIndex: number, exercise: Exercise) => {
     const newExercise: ProgramExercise = {
+      id: `${exercise.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       exerciseId: exercise.id,
       exercise,
       sets: 3,

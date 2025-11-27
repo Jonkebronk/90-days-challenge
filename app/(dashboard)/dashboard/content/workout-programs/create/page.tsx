@@ -85,6 +85,7 @@ export default function CreateWorkoutProgramPage() {
 
   const handleAddExercise = (dayIndex: number, exercise: Exercise) => {
     const newExercise: ProgramExercise = {
+      id: `${exercise.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       exerciseId: exercise.id,
       exercise,
       sets: 3,
