@@ -143,10 +143,10 @@ export async function POST(request: Request) {
       coachId: userId,
       name,
       description,
-      difficulty,
+      difficulty: difficulty || null, // Empty string should be null
       categoryId: categoryId || null,
       durationWeeks,
-      published: published || false
+      published: published !== false // Default to true
     }
 
     if (useMultiWeek && weeks) {
