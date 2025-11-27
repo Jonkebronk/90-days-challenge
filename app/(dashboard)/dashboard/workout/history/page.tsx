@@ -218,20 +218,15 @@ export default function WorkoutHistoryPage() {
     <div className="min-h-screen bg-gray-900 p-4 sm:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <Link href="/dashboard/workout">
-              <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-white/10">
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-            </Link>
-            <h1 className="text-2xl sm:text-4xl font-bold text-white">
-              Träningshistorik
-            </h1>
-          </div>
-          <p className="text-sm sm:text-base text-gray-400 ml-12">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
+          <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3 sm:mb-4">
+            Träningshistorik
+          </h1>
+          <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
             Följ din utveckling och se dina tidigare pass
           </p>
+          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
         </div>
 
         {/* Stats Overview */}
