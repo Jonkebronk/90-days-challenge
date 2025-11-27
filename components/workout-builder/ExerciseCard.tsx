@@ -93,60 +93,64 @@ export function ExerciseCard({
         </div>
 
         {/* Compact Stats */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {/* Sets */}
           <div className="text-center">
-            <span className="text-[10px] text-[rgba(255,255,255,0.4)] block">Sets</span>
+            <span className="text-xs text-[rgba(255,255,255,0.5)] block mb-1">Sets</span>
             <Input
-              type="number"
-              value={exercise.sets}
-              onChange={(e) => onChange('sets', parseInt(e.target.value) || 0)}
-              className="w-14 h-8 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-sm px-1"
+              type="text"
+              inputMode="numeric"
+              value={exercise.sets || ''}
+              onChange={(e) => onChange('sets', e.target.value === '' ? 0 : parseInt(e.target.value) || exercise.sets)}
+              className="w-16 h-10 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
             />
           </div>
 
           {/* Reps */}
           <div className="text-center">
-            <span className="text-[10px] text-[rgba(255,255,255,0.4)] block">Reps</span>
+            <span className="text-xs text-[rgba(255,255,255,0.5)] block mb-1">Reps</span>
             <Input
+              type="text"
               value={getRepsValue()}
               onChange={(e) => handleRepsChange(e.target.value)}
               placeholder="8-12"
-              className="w-16 h-8 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-sm px-1"
+              className="w-20 h-10 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
             />
           </div>
 
           {/* Rest */}
           <div className="text-center">
-            <span className="text-[10px] text-[rgba(255,255,255,0.4)] block">Vila</span>
+            <span className="text-xs text-[rgba(255,255,255,0.5)] block mb-1">Vila</span>
             <Input
-              type="number"
-              value={exercise.restSeconds}
-              onChange={(e) => onChange('restSeconds', parseInt(e.target.value) || 60)}
-              className="w-14 h-8 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-sm px-1"
+              type="text"
+              inputMode="numeric"
+              value={exercise.restSeconds || ''}
+              onChange={(e) => onChange('restSeconds', e.target.value === '' ? 60 : parseInt(e.target.value) || exercise.restSeconds)}
+              className="w-16 h-10 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
             />
           </div>
 
           {/* Tempo */}
           <div className="text-center">
-            <span className="text-[10px] text-[rgba(255,255,255,0.4)] block">Tempo</span>
+            <span className="text-xs text-[rgba(255,255,255,0.5)] block mb-1">Tempo</span>
             <Input
+              type="text"
               value={exercise.tempo || ''}
               onChange={(e) => onChange('tempo', e.target.value)}
               placeholder="3-0-1-0"
-              className="w-20 h-8 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-sm px-1"
+              className="w-24 h-10 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
             />
           </div>
 
           {/* Superset Toggle */}
           {onToggleSuperset && (
-            <div className="flex items-center pl-2 border-l border-[rgba(255,255,255,0.1)]">
+            <div className="flex items-center gap-2 pl-3 border-l border-[rgba(255,255,255,0.1)]">
               <Checkbox
                 checked={isSelected}
                 onCheckedChange={(checked) => onToggleSuperset(checked === true)}
-                className="border-[rgba(255,215,0,0.3)] data-[state=checked]:bg-[#FFD700] data-[state=checked]:border-[#FFD700]"
+                className="w-5 h-5 border-[rgba(255,215,0,0.3)] data-[state=checked]:bg-[#FFD700] data-[state=checked]:border-[#FFD700]"
               />
-              <span className="text-[10px] text-[rgba(255,255,255,0.4)] ml-1">S</span>
+              <span className="text-xs text-[rgba(255,255,255,0.5)]">Superset</span>
             </div>
           )}
 
