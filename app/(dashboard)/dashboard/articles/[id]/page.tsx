@@ -216,11 +216,11 @@ export default function ArticleReaderPage() {
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <div className="bg-black/30 backdrop-blur-sm border-b border-gold-primary/20 sticky top-0 z-10">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
           {/* Category Progress Bar */}
           {categoryProgress && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center justify-between text-xs sm:text-sm">
                 <span className="text-gray-400">{article.category.name}</span>
                 <span className="font-medium text-gold-light">
                   {categoryProgress.completed} av {categoryProgress.total} artiklar lästa
@@ -233,43 +233,43 @@ export default function ArticleReaderPage() {
       </div>
 
       {/* Article Content */}
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
         <div className="max-w-4xl mx-auto">
           {/* Cover Image */}
           {article.coverImage && (
-            <div className="mb-8 rounded-lg overflow-hidden border border-gold-primary/20">
+            <div className="mb-4 sm:mb-8 rounded-lg overflow-hidden border border-gold-primary/20">
               <img
                 src={article.coverImage}
                 alt={article.title}
-                className="w-full h-64 object-cover"
+                className="w-full h-40 sm:h-64 object-cover"
               />
             </div>
           )}
 
           {/* Article Header */}
-          <div className="mb-8">
-            <div className="flex flex-wrap gap-2 mb-4">
-              <Badge className="bg-[rgba(255,215,0,0.2)] text-gold-light border-gold-primary/30">{article.category.name}</Badge>
+          <div className="mb-4 sm:mb-8">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
+              <Badge className="bg-[rgba(255,215,0,0.2)] text-gold-light border-gold-primary/30 text-xs">{article.category.name}</Badge>
               {article.phase && (
-                <Badge className="bg-[rgba(255,255,255,0.05)] text-gray-300 border-[rgba(255,255,255,0.2)]">Fas {article.phase}</Badge>
+                <Badge className="bg-[rgba(255,255,255,0.05)] text-gray-300 border-[rgba(255,255,255,0.2)] text-xs">Fas {article.phase}</Badge>
               )}
               {article.difficulty && (
-                <Badge className="bg-[rgba(255,255,255,0.05)] text-gray-300 border-[rgba(255,255,255,0.2)]">{getDifficultyLabel(article.difficulty)}</Badge>
+                <Badge className="bg-[rgba(255,255,255,0.05)] text-gray-300 border-[rgba(255,255,255,0.2)] text-xs">{getDifficultyLabel(article.difficulty)}</Badge>
               )}
               {article.estimatedReadingMinutes && (
-                <Badge className="bg-[rgba(255,255,255,0.05)] text-gray-300 border-[rgba(255,255,255,0.2)] flex items-center gap-1">
+                <Badge className="bg-[rgba(255,255,255,0.05)] text-gray-300 border-[rgba(255,255,255,0.2)] flex items-center gap-1 text-xs">
                   <Clock className="h-3 w-3" />
-                  {article.estimatedReadingMinutes} min läsning
+                  {article.estimatedReadingMinutes} min
                 </Badge>
               )}
               {isCompleted && (
-                <Badge className="bg-[rgba(34,197,94,0.2)] text-green-500 border-[#22c55e] flex items-center gap-1">
+                <Badge className="bg-[rgba(34,197,94,0.2)] text-green-500 border-[#22c55e] flex items-center gap-1 text-xs">
                   <CheckCircle className="h-3 w-3" />
                   Läst
                 </Badge>
               )}
             </div>
-            <h1 className="text-4xl font-bold mb-4 text-white">{article.title}</h1>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-white">{article.title}</h1>
 
             {/* Article Metadata */}
             <ArticleMetadata
@@ -277,28 +277,28 @@ export default function ArticleReaderPage() {
               updatedAt={new Date(article.updatedAt)}
               lastReviewed={article.lastReviewed ? new Date(article.lastReviewed) : null}
               version={article.version}
-              className="mb-6"
+              className="mb-4 sm:mb-6"
             />
           </div>
 
           {/* Article Content */}
           <Card className="bg-white border-gold-primary/30">
-            <CardContent className="p-8">
-              <div className="prose prose-lg max-w-none prose-headings:text-[#1a0933] prose-headings:font-bold prose-p:text-gray-800 prose-p:leading-relaxed prose-strong:text-[#1a0933] prose-strong:font-semibold prose-li:text-gray-800 prose-a:text-[#1a0933] prose-a:hover:text-orange-500 prose-a:underline prose-blockquote:border-l-[#FFD700] prose-blockquote:text-gray-700 prose-code:text-[#1a0933] prose-code:bg-gray-100 prose-pre:bg-gray-100 prose-pre:text-gray-900">
+            <CardContent className="p-4 sm:p-6 md:p-8">
+              <div className="prose prose-sm sm:prose-base md:prose-lg max-w-none prose-headings:text-[#1a0933] prose-headings:font-bold prose-p:text-gray-800 prose-p:leading-relaxed prose-strong:text-[#1a0933] prose-strong:font-semibold prose-li:text-gray-800 prose-a:text-[#1a0933] prose-a:hover:text-orange-500 prose-a:underline prose-blockquote:border-l-[#FFD700] prose-blockquote:text-gray-700 prose-code:text-[#1a0933] prose-code:bg-gray-100 prose-pre:bg-gray-100 prose-pre:text-gray-900 prose-img:rounded-lg">
                 <MDXPreview content={article.content} />
               </div>
             </CardContent>
           </Card>
 
           {/* Bottom Actions */}
-          <div className="mt-8">
+          <div className="mt-4 sm:mt-8">
             {/* Mark as Complete Button */}
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center mb-4 sm:mb-6">
               <Button
                 onClick={handleToggleComplete}
                 disabled={isMarkingComplete}
                 size="lg"
-                className={`min-w-[200px] ${isCompleted
+                className={`w-full sm:w-auto sm:min-w-[200px] text-sm sm:text-base ${isCompleted
                   ? 'bg-[rgba(34,197,94,0.2)] text-green-500 border-[#22c55e] hover:bg-[rgba(34,197,94,0.3)]'
                   : 'bg-[#FFD700] text-black hover:bg-[#FFA500]'
                 }`}
@@ -318,11 +318,11 @@ export default function ArticleReaderPage() {
             </div>
 
             {/* Navigation */}
-            <div className="flex items-center justify-between pt-6 border-t border-gold-primary/20">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 sm:pt-6 border-t border-gold-primary/20">
               {previousCategoryArticle ? (
                 <Button
                   onClick={() => router.push(`/dashboard/articles/${previousCategoryArticle.id}`)}
-                  className="bg-[#FFD700] text-black hover:bg-[#FFA500]"
+                  className="bg-[#FFD700] text-black hover:bg-[#FFA500] text-sm sm:text-base order-2 sm:order-1"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Föregående
@@ -330,17 +330,18 @@ export default function ArticleReaderPage() {
               ) : (
                 <Button
                   onClick={() => router.push('/dashboard/articles')}
-                  className="bg-[#FFD700] text-black hover:bg-[#FFA500]"
+                  className="bg-[#FFD700] text-black hover:bg-[#FFA500] text-sm sm:text-base order-2 sm:order-1"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Tillbaka till artiklar
+                  <span className="hidden sm:inline">Tillbaka till artiklar</span>
+                  <span className="sm:hidden">Tillbaka</span>
                 </Button>
               )}
 
               {nextCategoryArticle ? (
                 <Button
                   onClick={() => router.push(`/dashboard/articles/${nextCategoryArticle.id}`)}
-                  className="bg-[#FFD700] text-black hover:bg-[#FFA500]"
+                  className="bg-[#FFD700] text-black hover:bg-[#FFA500] text-sm sm:text-base order-1 sm:order-2"
                 >
                   Nästa artikel
                   <ArrowRight className="h-4 w-4 ml-2" />
@@ -348,9 +349,10 @@ export default function ArticleReaderPage() {
               ) : (
                 <Button
                   onClick={() => router.push('/dashboard/articles')}
-                  className="bg-[#FFD700] text-black hover:bg-[#FFA500]"
+                  className="bg-[#FFD700] text-black hover:bg-[#FFA500] text-sm sm:text-base order-1 sm:order-2"
                 >
-                  Tillbaka till artiklar
+                  <span className="hidden sm:inline">Tillbaka till artiklar</span>
+                  <span className="sm:hidden">Alla artiklar</span>
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               )}
