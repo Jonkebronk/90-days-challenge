@@ -570,6 +570,9 @@ model WorkoutProgramExercise {
   notes       String? // "Drop set", "Superset with X", etc.
   coachNotes  String? // Coach instructions - read-only for clients
 
+  // Superset grouping
+  supersetGroupId String? // Exercises with same ID are in a superset
+
   // Targeting (optional overrides)
   targetWeight Decimal? @db.Decimal(5, 2) // Suggested weight in kg
   targetRPE    Int? // Rate of Perceived Exertion (1-10)

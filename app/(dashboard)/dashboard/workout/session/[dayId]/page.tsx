@@ -34,12 +34,14 @@ interface Exercise {
   id: string
   exerciseId: string
   sets: number
+  reps: string | null
   repsMin: number | null
   repsMax: number | null
   restSeconds: number
   tempo: string | null
   notes: string | null
   coachNotes: string | null
+  supersetGroupId?: string | null
   exercise: {
     id: string
     name: string
@@ -680,10 +682,15 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                 >
                   <div className="flex items-center gap-3 flex-1">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <CardTitle className={`${isExerciseComplete && !isExpanded ? 'text-lg' : 'text-xl'} text-gray-900 transition-all font-bold`}>
                           {exercise.exercise.name}
                         </CardTitle>
+                        {exercise.supersetGroupId && (
+                          <Badge className="bg-amber-100 text-amber-700 border-amber-300 text-xs">
+                            Superset
+                          </Badge>
+                        )}
                         {isExerciseComplete && !isExpanded && (
                           <Badge className="bg-green-100 text-green-600 border-green-300 text-xs">
                             Klar
@@ -695,8 +702,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           <span className="font-semibold text-gray-700">Sets:</span> {exercise.sets}
                         </p>
                         <p>
-                          <span className="font-semibold text-gray-700">Repetitioner:</span> {exercise.repsMin}
-                          {exercise.repsMax && exercise.repsMax !== exercise.repsMin ? `-${exercise.repsMax}` : ''}
+                          <span className="font-semibold text-gray-700">Repetitioner:</span>{' '}
+                          {exercise.reps || (exercise.repsMin && exercise.repsMax && exercise.repsMin !== exercise.repsMax
+                            ? `${exercise.repsMin}-${exercise.repsMax}`
+                            : exercise.repsMin || exercise.repsMax || '-')}
                         </p>
                         {exercise.restSeconds > 0 && (
                           <p>

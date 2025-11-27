@@ -122,6 +122,7 @@ export async function PUT(
                 tempo: ex.tempo || null,
                 notes: ex.notes || null,
                 coachNotes: ex.coachNotes || null,
+                supersetGroupId: ex.supersetGroupId || null,
                 targetWeight: ex.targetWeight,
                 targetRPE: ex.targetRPE,
                 orderIndex: ex.orderIndex || exIndex
