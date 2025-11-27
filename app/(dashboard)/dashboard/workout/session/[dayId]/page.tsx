@@ -672,36 +672,23 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
             return (
               <div key={exercise.id}>
-                {/* Superset header - only show before first exercise in superset */}
+                {/* Superset banner - only show before first exercise in superset */}
                 {isFirstInSuperset && (
-                  <div className="bg-amber-50 border-2 border-amber-300 border-b-0 rounded-t-xl p-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">SS</span>
-                      </div>
-                      <div>
-                        <span className="font-bold text-amber-700 text-sm">SUPERSET</span>
-                        <p className="text-xs text-amber-600">Kör dessa övningar direkt efter varandra utan vila. Vila först efter båda är klara.</p>
-                      </div>
-                    </div>
+                  <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-4 rounded-xl mb-3 shadow-lg">
+                    <p className="font-bold text-lg mb-1">⚡ SUPERSET</p>
+                    <p className="text-sm text-amber-100">Kör dessa {supersetExercises.length} övningar direkt efter varandra utan vila. Vila först när alla är klara.</p>
                   </div>
                 )}
 
                 <Card
-              className={`bg-white border-2 transition-all shadow-md ${
-                isSuperset
-                  ? isFirstInSuperset
-                    ? 'rounded-none border-amber-300 border-t-0'
-                    : isLastInSuperset
-                      ? 'rounded-none rounded-b-xl border-amber-300 border-t-0'
-                      : 'rounded-none border-amber-300 border-t-0'
-                  : 'rounded-lg'
+              className={`bg-white border-2 transition-all shadow-md rounded-lg ${
+                isSuperset ? 'border-l-4 border-l-amber-500' : ''
               } ${
                 isCurrent && sessionId
-                  ? isSuperset ? 'border-amber-500' : 'border-gold-primary'
+                  ? 'border-gold-primary'
                   : isExerciseComplete && !isExpanded
-                    ? isSuperset ? 'border-amber-300' : 'border-green-300'
-                    : isSuperset ? 'border-amber-300' : 'border-gray-300'
+                    ? 'border-green-300'
+                    : 'border-gray-300'
               } ${isExerciseComplete && !isExpanded ? 'opacity-60 scale-95' : ''}`}
             >
               <CardHeader className={isExerciseComplete && !isExpanded ? 'py-3' : ''}>
