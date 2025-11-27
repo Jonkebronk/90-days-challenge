@@ -114,13 +114,14 @@ export async function PUT(
             exercises: day.exercises ? {
               create: day.exercises.map((ex: any, exIndex: number) => ({
                 exerciseId: ex.exerciseId,
-                sets: ex.sets,
+                sets: typeof ex.sets === 'string' ? parseInt(ex.sets) || 3 : ex.sets,
+                reps: ex.reps || null,
                 repsMin: ex.repsMin,
                 repsMax: ex.repsMax,
-                restSeconds: ex.restSeconds || 60,
-                tempo: ex.tempo,
-                notes: ex.notes,
-                coachNotes: ex.coachNotes,
+                restSeconds: typeof ex.restSeconds === 'string' ? parseInt(ex.restSeconds) || 60 : (ex.restSeconds || 60),
+                tempo: ex.tempo || null,
+                notes: ex.notes || null,
+                coachNotes: ex.coachNotes || null,
                 targetWeight: ex.targetWeight,
                 targetRPE: ex.targetRPE,
                 orderIndex: ex.orderIndex || exIndex
