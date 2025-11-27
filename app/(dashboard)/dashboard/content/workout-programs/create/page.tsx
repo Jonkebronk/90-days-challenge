@@ -625,15 +625,17 @@ export default function CreateWorkoutProgramPage() {
                                       <div>
                                         <Label className="text-[10px] text-gray-500">Sets</Label>
                                         <Input
+                                          type="text"
                                           inputMode="numeric"
                                           value={exercise.sets}
                                           onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'sets', parseInt(e.target.value) || 0)}
-                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
                                         />
                                       </div>
                                       <div>
                                         <Label className="text-[10px] text-gray-500">Reps</Label>
                                         <Input
+                                          type="text"
                                           value={exercise.repsMin && exercise.repsMax && exercise.repsMin !== exercise.repsMax
                                             ? `${exercise.repsMin}-${exercise.repsMax}`
                                             : exercise.repsMin?.toString() || ''}
@@ -656,15 +658,17 @@ export default function CreateWorkoutProgramPage() {
                                       <div>
                                         <Label className="text-[10px] text-gray-500">Vila (s)</Label>
                                         <Input
+                                          type="text"
                                           inputMode="numeric"
                                           value={exercise.restSeconds}
                                           onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 60)}
-                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
                                         />
                                       </div>
                                       <div>
                                         <Label className="text-[10px] text-gray-500">Tempo</Label>
                                         <Input
+                                          type="text"
                                           value={exercise.tempo}
                                           onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'tempo', e.target.value)}
                                           placeholder="3-0-1-0"
@@ -880,15 +884,17 @@ export default function CreateWorkoutProgramPage() {
                             <div>
                               <Label className="text-xs text-gray-400">Sets</Label>
                               <Input
+                                type="text"
                                 inputMode="numeric"
                                 value={exercise.sets}
                                 onChange={(e) => updateExercise(dayIndex, exIndex, 'sets', parseInt(e.target.value) || 0)}
-                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                               />
                             </div>
                             <div>
                               <Label className="text-xs text-gray-400">Reps</Label>
                               <Input
+                                type="text"
                                 value={exercise.repsMin && exercise.repsMax && exercise.repsMin !== exercise.repsMax
                                   ? `${exercise.repsMin}-${exercise.repsMax}`
                                   : exercise.repsMin?.toString() || ''}
@@ -911,15 +917,17 @@ export default function CreateWorkoutProgramPage() {
                             <div>
                               <Label className="text-xs text-gray-400">Vila (s)</Label>
                               <Input
+                                type="text"
                                 inputMode="numeric"
                                 value={exercise.restSeconds}
                                 onChange={(e) => updateExercise(dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 60)}
-                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                               />
                             </div>
                             <div>
                               <Label className="text-xs text-gray-400">Tempo</Label>
                               <Input
+                                type="text"
                                 value={exercise.tempo}
                                 onChange={(e) => updateExercise(dayIndex, exIndex, 'tempo', e.target.value)}
                                 placeholder="3-0-1-0"
