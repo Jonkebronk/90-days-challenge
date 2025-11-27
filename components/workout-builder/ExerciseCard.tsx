@@ -36,25 +36,13 @@ export function ExerciseCard({
     !!(exercise.notes || exercise.coachNotes)
   )
 
-  // Format reps as "min-max" or just "min" if same
+  // Get reps value - use reps string if available, otherwise format from min/max
   const getRepsValue = () => {
+    if (exercise.reps) return exercise.reps
     if (exercise.repsMin && exercise.repsMax && exercise.repsMin !== exercise.repsMax) {
       return `${exercise.repsMin}-${exercise.repsMax}`
     }
     return exercise.repsMin?.toString() || ''
-  }
-
-  // Parse reps input like "12-15" or "10"
-  const handleRepsChange = (value: string) => {
-    if (value.includes('-')) {
-      const [min, max] = value.split('-').map(v => parseInt(v.trim()) || null)
-      onChange('repsMin', min)
-      onChange('repsMax', max)
-    } else {
-      const reps = parseInt(value) || null
-      onChange('repsMin', reps)
-      onChange('repsMax', reps)
-    }
   }
 
   return (
@@ -99,10 +87,10 @@ export function ExerciseCard({
             <span className="text-sm text-[rgba(255,255,255,0.6)] block mb-1">Sets</span>
             <Input
               type="text"
-              inputMode="numeric"
               value={exercise.sets || ''}
-              onChange={(e) => onChange('sets', e.target.value === '' ? 0 : parseInt(e.target.value) || exercise.sets)}
-              className="w-20 h-12 text-center text-lg bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white font-medium"
+              onChange={(e) => onChange('sets', e.target.value)}
+              placeholder="3"
+              className="w-24 h-14 text-center text-xl bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white font-medium"
             />
           </div>
 
@@ -112,9 +100,9 @@ export function ExerciseCard({
             <Input
               type="text"
               value={getRepsValue()}
-              onChange={(e) => handleRepsChange(e.target.value)}
+              onChange={(e) => onChange('reps', e.target.value)}
               placeholder="8-12"
-              className="w-24 h-12 text-center text-lg bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white font-medium"
+              className="w-28 h-14 text-center text-xl bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white font-medium"
             />
           </div>
 
@@ -123,10 +111,10 @@ export function ExerciseCard({
             <span className="text-sm text-[rgba(255,255,255,0.6)] block mb-1">Vila</span>
             <Input
               type="text"
-              inputMode="numeric"
               value={exercise.restSeconds || ''}
-              onChange={(e) => onChange('restSeconds', e.target.value === '' ? 60 : parseInt(e.target.value) || exercise.restSeconds)}
-              className="w-20 h-12 text-center text-lg bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white font-medium"
+              onChange={(e) => onChange('restSeconds', e.target.value)}
+              placeholder="60"
+              className="w-24 h-14 text-center text-xl bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white font-medium"
             />
           </div>
 
@@ -138,7 +126,7 @@ export function ExerciseCard({
               value={exercise.tempo || ''}
               onChange={(e) => onChange('tempo', e.target.value)}
               placeholder="3-0-1-0"
-              className="w-28 h-12 text-center text-lg bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white font-medium"
+              className="w-32 h-14 text-center text-xl bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white font-medium"
             />
           </div>
 

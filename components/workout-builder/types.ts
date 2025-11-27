@@ -11,10 +11,11 @@ export interface Exercise {
 export interface ProgramExercise {
   exerciseId: string
   exercise?: Exercise
-  sets: number
+  sets: number | string
+  reps?: string
   repsMin: number | null
   repsMax: number | null
-  restSeconds: number
+  restSeconds: number | string
   tempo: string
   notes: string
   coachNotes: string
