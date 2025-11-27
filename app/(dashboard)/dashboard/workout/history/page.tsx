@@ -236,39 +236,39 @@ export default function WorkoutHistoryPage() {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
-          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-6 backdrop-blur-[10px]">
+          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-3 sm:p-6 hover:border-gold-primary hover:shadow-lg transition-all">
             <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center shadow-md">
                 <Dumbbell className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
               </div>
-              <div className="text-gray-400 text-xs sm:text-sm">Pass</div>
+              <div className="text-gray-500 text-xs sm:text-sm">Pass</div>
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">
+            <div className="text-2xl sm:text-3xl font-bold text-gray-900">
               {stats.totalWorkouts}
             </div>
           </div>
 
-          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-6 backdrop-blur-[10px]">
+          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-3 sm:p-6 hover:border-gold-primary hover:shadow-lg transition-all">
             <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center shadow-md">
                 <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <div className="text-gray-400 text-xs sm:text-sm">Set</div>
+              <div className="text-gray-500 text-xs sm:text-sm">Set</div>
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">
+            <div className="text-2xl sm:text-3xl font-bold text-gray-900">
               {stats.totalSets}
             </div>
           </div>
 
-          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-3 sm:p-6 backdrop-blur-[10px]">
+          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-3 sm:p-6 hover:border-gold-primary hover:shadow-lg transition-all">
             <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center shadow-md">
                 <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <div className="text-gray-400 text-xs sm:text-sm">Tid</div>
+              <div className="text-gray-500 text-xs sm:text-sm">Tid</div>
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-white">
-              {stats.avgDuration}<span className="text-sm sm:text-base text-gray-400 ml-1">min</span>
+            <div className="text-2xl sm:text-3xl font-bold text-gray-900">
+              {stats.avgDuration}<span className="text-sm sm:text-base text-gray-500 ml-1">min</span>
             </div>
           </div>
         </div>
@@ -283,13 +283,13 @@ export default function WorkoutHistoryPage() {
                 placeholder="Sök pass..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 sm:pl-12 bg-white/5 border-2 border-gold-primary/20 text-white placeholder:text-gray-500 h-10 sm:h-12 text-sm sm:text-base focus:border-gold-primary/50"
+                className="pl-10 sm:pl-12 bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400 h-10 sm:h-12 text-sm sm:text-base focus:border-gold-primary"
               />
             </div>
             <Button
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
-              className="h-10 sm:h-12 px-3 sm:px-6 bg-white/5 border-2 border-gold-primary/20 text-white hover:bg-white/10 hover:border-gold-primary/50"
+              className="h-10 sm:h-12 px-3 sm:px-6 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gold-primary"
             >
               <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline ml-2">Filter</span>
@@ -298,7 +298,7 @@ export default function WorkoutHistoryPage() {
           </div>
 
           {showFilters && (
-            <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-3 sm:p-4 backdrop-blur-[10px]">
+            <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4">
               <div className="flex flex-wrap gap-2 sm:gap-3">
                 <Button
                   variant={dateFilter === 'all' ? 'default' : 'outline'}
@@ -306,7 +306,7 @@ export default function WorkoutHistoryPage() {
                   size="sm"
                   className={`text-xs sm:text-sm ${dateFilter === 'all'
                     ? 'bg-gradient-to-r from-gold-light to-orange-500 text-black hover:opacity-90'
-                    : 'bg-white/5 border-gold-primary/20 text-white hover:bg-white/10'
+                    : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   Alla
@@ -317,7 +317,7 @@ export default function WorkoutHistoryPage() {
                   size="sm"
                   className={`text-xs sm:text-sm ${dateFilter === '7days'
                     ? 'bg-gradient-to-r from-gold-light to-orange-500 text-black hover:opacity-90'
-                    : 'bg-white/5 border-gold-primary/20 text-white hover:bg-white/10'
+                    : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   7 dagar
@@ -328,7 +328,7 @@ export default function WorkoutHistoryPage() {
                   size="sm"
                   className={`text-xs sm:text-sm ${dateFilter === '30days'
                     ? 'bg-gradient-to-r from-gold-light to-orange-500 text-black hover:opacity-90'
-                    : 'bg-white/5 border-gold-primary/20 text-white hover:bg-white/10'
+                    : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   30 dagar
@@ -339,7 +339,7 @@ export default function WorkoutHistoryPage() {
                   size="sm"
                   className={`text-xs sm:text-sm ${dateFilter === '90days'
                     ? 'bg-gradient-to-r from-gold-light to-orange-500 text-black hover:opacity-90'
-                    : 'bg-white/5 border-gold-primary/20 text-white hover:bg-white/10'
+                    : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   90 dagar
@@ -349,7 +349,7 @@ export default function WorkoutHistoryPage() {
           )}
 
           {/* Results count */}
-          <div className="text-gray-400 text-sm">
+          <div className="text-gray-500 text-sm">
             Visar {filteredSessions.length} av {sessions.length} pass
           </div>
         </div>
@@ -357,17 +357,17 @@ export default function WorkoutHistoryPage() {
         {/* Session List */}
         <div className="space-y-4">
           {filteredSessions.length === 0 ? (
-            <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-8 sm:p-12 backdrop-blur-[10px] text-center">
-              <Dumbbell className="w-12 h-12 sm:w-16 sm:h-16 text-[rgba(255,255,255,0.3)] mx-auto mb-3 sm:mb-4" />
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-100 mb-2">
+            <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-8 sm:p-12 text-center">
+              <Dumbbell className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
                 Ingen träningshistorik ännu
               </h3>
-              <p className="text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">
+              <p className="text-gray-500 mb-4 sm:mb-6 text-sm sm:text-base">
                 Starta ditt första träningspass för att börja spåra din utveckling
               </p>
               <button
                 onClick={() => router.push('/dashboard/workout')}
-                className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-gold-light to-orange-500 text-black font-semibold rounded-lg sm:rounded-xl hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] transition-all text-sm sm:text-base"
+                className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-gold-light to-orange-500 text-black font-semibold rounded-lg sm:rounded-xl hover:shadow-lg transition-all text-sm sm:text-base"
               >
                 Gå till Träningsprogram
               </button>
@@ -386,14 +386,14 @@ export default function WorkoutHistoryPage() {
               return (
               <div
                 key={session.id}
-                className="group bg-white/5 border-2 border-gold-primary/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.5)] hover:shadow-[0_0_30px_rgba(255,215,0,0.2)] transition-all"
+                className="group bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 hover:border-gold-primary hover:shadow-lg transition-all"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-base sm:text-xl font-semibold text-white mb-1 truncate">
+                    <h3 className="text-base sm:text-xl font-semibold text-gray-900 mb-1 truncate">
                       {session.workoutProgramDay.name}
                     </h3>
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-400">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                         {formatDate(session.startedAt)}
@@ -411,7 +411,7 @@ export default function WorkoutHistoryPage() {
                   </div>
                   <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
                     {session.rating && (
-                      <div className="flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1 bg-[rgba(255,215,0,0.1)] border border-gold-primary/30 rounded-full">
+                      <div className="flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-1 bg-gold-50 border border-gold-primary/30 rounded-full">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
@@ -425,28 +425,28 @@ export default function WorkoutHistoryPage() {
                       </div>
                     )}
                     {session.completed ? (
-                      <div className="px-2 sm:px-3 py-1 bg-[rgba(34,197,94,0.2)] border border-[rgba(34,197,94,0.4)] rounded-full text-green-500 text-xs sm:text-sm font-medium">
+                      <div className="px-2 sm:px-3 py-1 bg-green-50 border border-green-200 rounded-full text-green-600 text-xs sm:text-sm font-medium">
                         Klar
                       </div>
                     ) : (
-                      <div className="px-2 sm:px-3 py-1 bg-[rgba(251,191,36,0.2)] border border-[rgba(251,191,36,0.4)] rounded-full text-[#fbbf24] text-xs sm:text-sm font-medium">
+                      <div className="px-2 sm:px-3 py-1 bg-amber-50 border border-amber-200 rounded-full text-amber-600 text-xs sm:text-sm font-medium">
                         Påbörjat
                       </div>
                     )}
-                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-[rgba(255,215,0,0.5)] group-hover:translate-x-1 group-hover:text-gold-light transition-all hidden sm:block" />
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gold-primary/50 group-hover:translate-x-1 group-hover:text-gold-primary transition-all hidden sm:block" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-3 sm:mb-4">
-                  <div className="bg-white/5 rounded-lg sm:rounded-xl p-2 sm:p-4">
-                    <div className="text-gray-400 text-xs sm:text-sm mb-0.5 sm:mb-1">Övningar</div>
-                    <div className="text-base sm:text-lg font-semibold text-white">
+                  <div className="bg-gray-50 rounded-lg sm:rounded-xl p-2 sm:p-4">
+                    <div className="text-gray-500 text-xs sm:text-sm mb-0.5 sm:mb-1">Övningar</div>
+                    <div className="text-base sm:text-lg font-semibold text-gray-900">
                       {getUniqueExercises(session.sets).length}
                     </div>
                   </div>
-                  <div className="bg-white/5 rounded-lg sm:rounded-xl p-2 sm:p-4">
-                    <div className="text-gray-400 text-xs sm:text-sm mb-0.5 sm:mb-1">Set</div>
-                    <div className="text-base sm:text-lg font-semibold text-white">
+                  <div className="bg-gray-50 rounded-lg sm:rounded-xl p-2 sm:p-4">
+                    <div className="text-gray-500 text-xs sm:text-sm mb-0.5 sm:mb-1">Set</div>
+                    <div className="text-base sm:text-lg font-semibold text-gray-900">
                       {session.sets.filter(s => s.completed).length}
                     </div>
                   </div>
@@ -456,44 +456,44 @@ export default function WorkoutHistoryPage() {
                   {getUniqueExercises(session.sets).slice(0, 3).map((exercise, idx) => (
                     <div
                       key={idx}
-                      className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.3)] rounded-full text-[rgba(139,92,246,0.9)] text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none"
+                      className="px-2 sm:px-3 py-0.5 sm:py-1 bg-purple-50 border border-purple-200 rounded-full text-purple-600 text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none"
                     >
                       {exercise}
                     </div>
                   ))}
                   {getUniqueExercises(session.sets).length > 3 && (
-                    <div className="px-2 sm:px-3 py-0.5 sm:py-1 bg-[rgba(255,255,255,0.05)] rounded-full text-gray-400 text-xs sm:text-sm">
+                    <div className="px-2 sm:px-3 py-0.5 sm:py-1 bg-gray-100 rounded-full text-gray-500 text-xs sm:text-sm">
                       +{getUniqueExercises(session.sets).length - 3} till
                     </div>
                   )}
                 </div>
 
                 {(session.notes || session.ratingComment) && (
-                  <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-[rgba(255,255,255,0.1)] space-y-2 sm:space-y-3">
+                  <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 space-y-2 sm:space-y-3">
                     {session.notes && (
                       <div>
-                        <div className="text-gray-400 text-xs sm:text-sm mb-0.5 sm:mb-1">Anteckningar</div>
-                        <div className="text-gray-200 text-xs sm:text-sm">{session.notes}</div>
+                        <div className="text-gray-500 text-xs sm:text-sm mb-0.5 sm:mb-1">Anteckningar</div>
+                        <div className="text-gray-700 text-xs sm:text-sm">{session.notes}</div>
                       </div>
                     )}
                     {session.ratingComment && (
                       <div>
-                        <div className="text-gray-400 text-xs sm:text-sm mb-0.5 sm:mb-1 flex items-center gap-1">
-                          <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-[#FFD700] text-gold-light" />
+                        <div className="text-gray-500 text-xs sm:text-sm mb-0.5 sm:mb-1 flex items-center gap-1">
+                          <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-gold-primary text-gold-primary" />
                           Passkommentar
                         </div>
-                        <div className="text-gray-200 text-xs sm:text-sm italic">{session.ratingComment}</div>
+                        <div className="text-gray-700 text-xs sm:text-sm italic">{session.ratingComment}</div>
                       </div>
                     )}
                   </div>
                 )}
 
                 {/* Expansion Toggle */}
-                <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-[rgba(255,255,255,0.1)] flex items-center justify-between gap-2">
+                <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={(e) => toggleSessionExpansion(session.id, e)}
-                      className="flex items-center gap-1 sm:gap-2 text-gold-light hover:text-gold-primary transition-colors"
+                      className="flex items-center gap-1 sm:gap-2 text-gold-primary hover:text-gold-600 transition-colors"
                     >
                       {isExpanded ? (
                         <>
@@ -520,7 +520,7 @@ export default function WorkoutHistoryPage() {
                   </div>
                   <button
                     onClick={() => router.push(`/dashboard/workout/session/completed/${session.id}`)}
-                    className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-white/5 hover:bg-white/10 border border-gold-primary/30 hover:border-gold-primary/60 rounded-lg text-white text-xs sm:text-sm font-medium transition-all"
+                    className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-gray-50 hover:bg-gray-100 border border-gold-primary/30 hover:border-gold-primary rounded-lg text-gray-700 text-xs sm:text-sm font-medium transition-all"
                   >
                     <span className="sm:hidden">Sammanfattning</span>
                     <span className="hidden sm:inline">Se fullständig sammanfattning</span>
@@ -532,16 +532,16 @@ export default function WorkoutHistoryPage() {
                 {isExpanded && (
                   <div className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
                     {Object.entries(exercisesBySets).map(([exerciseName, sets]) => (
-                      <div key={exerciseName} className="bg-black/20 rounded-lg sm:rounded-xl p-3 sm:p-4">
-                        <h4 className="text-white font-semibold mb-2 sm:mb-3 text-sm sm:text-base">{exerciseName}</h4>
+                      <div key={exerciseName} className="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4">
+                        <h4 className="text-gray-900 font-semibold mb-2 sm:mb-3 text-sm sm:text-base">{exerciseName}</h4>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
                           {sets.map((set, idx) => (
                             <div
                               key={idx}
-                              className="bg-white/5 rounded-lg p-2 sm:p-3 border border-gold-primary/20"
+                              className="bg-white rounded-lg p-2 sm:p-3 border border-gray-200"
                             >
-                              <div className="text-[10px] sm:text-xs text-gray-400 mb-0.5 sm:mb-1">Set {set.setNumber}</div>
-                              <div className="text-white font-medium text-xs sm:text-sm">
+                              <div className="text-[10px] sm:text-xs text-gray-500 mb-0.5 sm:mb-1">Set {set.setNumber}</div>
+                              <div className="text-gray-900 font-medium text-xs sm:text-sm">
                                 {set.reps && set.weightKg && (
                                   <span>{set.reps}×{set.weightKg}kg</span>
                                 )}
@@ -549,7 +549,7 @@ export default function WorkoutHistoryPage() {
                                   <span>{set.timeSeconds}s</span>
                                 )}
                                 {!set.reps && !set.weightKg && !set.timeSeconds && (
-                                  <span className="text-gray-500">-</span>
+                                  <span className="text-gray-400">-</span>
                                 )}
                               </div>
                             </div>
