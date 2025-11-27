@@ -246,7 +246,7 @@ export function DualPanelWorkoutBuilder({
           <ExerciseLibraryPanel
             exercises={exercises}
             onSelectExercise={handleAddExercise}
-            className="w-[400px] flex-shrink-0"
+            className="w-[450px] flex-shrink-0"
           />
 
           {/* Workout Plan Panel - Right */}

@@ -10,7 +10,9 @@ import {
   Filter,
   ChevronDown,
   ChevronUp,
-  X
+  X,
+  Video,
+  Plus
 } from 'lucide-react'
 import { Exercise, ExerciseFilter } from './types'
 import { useDebounce } from './hooks/useDebounce'
@@ -33,41 +35,65 @@ function ExerciseItem({
   isRecent?: boolean
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <div
       className={`
-        w-full p-3 rounded-lg text-left transition-all
+        w-full p-4 rounded-xl text-left transition-all
         ${isRecent
-          ? 'bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.15)] hover:bg-[rgba(255,215,0,0.1)] hover:border-[rgba(255,215,0,0.3)]'
-          : 'bg-[rgba(255,255,255,0.02)] border border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.08)] hover:border-[rgba(255,215,0,0.25)]'
+          ? 'bg-[rgba(255,215,0,0.08)] border-2 border-[rgba(255,215,0,0.25)] hover:bg-[rgba(255,215,0,0.12)] hover:border-[rgba(255,215,0,0.4)]'
+          : 'bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.15)] hover:bg-[rgba(255,215,0,0.08)] hover:border-[rgba(255,215,0,0.3)]'
         }
-        cursor-pointer
       `}
     >
-      <h4 className="text-[rgba(255,255,255,0.9)] font-medium text-sm mb-1.5 truncate">
-        {exercise.name}
-      </h4>
-      <div className="flex flex-wrap gap-1">
-        {exercise.muscleGroups?.slice(0, 3).map(mg => (
-          <Badge
-            key={mg}
-            variant="outline"
-            className="text-xs bg-[rgba(255,215,0,0.1)] border-[rgba(255,215,0,0.2)] text-[#FFD700] py-0"
-          >
-            {mg}
-          </Badge>
-        ))}
-        {exercise.muscleGroups?.length > 3 && (
-          <Badge
-            variant="outline"
-            className="text-xs bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.5)] py-0"
-          >
-            +{exercise.muscleGroups.length - 3}
-          </Badge>
-        )}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <h4 className="text-white font-semibold text-base mb-2">
+            {exercise.name}
+          </h4>
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {exercise.muscleGroups?.slice(0, 3).map(mg => (
+              <Badge
+                key={mg}
+                variant="outline"
+                className="text-xs bg-[rgba(255,215,0,0.15)] border-[rgba(255,215,0,0.3)] text-[#FFD700] py-0.5 px-2"
+              >
+                {mg}
+              </Badge>
+            ))}
+            {exercise.muscleGroups?.length > 3 && (
+              <Badge
+                variant="outline"
+                className="text-xs bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.15)] text-[rgba(255,255,255,0.6)] py-0.5 px-2"
+              >
+                +{exercise.muscleGroups.length - 3}
+              </Badge>
+            )}
+          </div>
+
+          {/* Video link */}
+          {exercise.videoUrl && (
+            <a
+              href={exercise.videoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 transition-colors"
+            >
+              <Video className="w-3.5 h-3.5" />
+              <span className="truncate max-w-[200px]">Se video</span>
+            </a>
+          )}
+        </div>
+
+        {/* Add button */}
+        <button
+          type="button"
+          onClick={onClick}
+          className="flex-shrink-0 w-10 h-10 rounded-lg bg-[rgba(255,215,0,0.2)] border border-[rgba(255,215,0,0.3)] hover:bg-[rgba(255,215,0,0.3)] hover:border-[rgba(255,215,0,0.5)] transition-all flex items-center justify-center"
+        >
+          <Plus className="w-5 h-5 text-[#FFD700]" />
+        </button>
       </div>
-    </button>
+    </div>
   )
 }
 
@@ -249,7 +275,7 @@ export function ExerciseLibraryPanel({
                 : `Alla övningar (${exercises.length})`
               }
             </span>
-            <div className="space-y-1.5">
+            <div className="space-y-3">
               {filteredExercises.length > 0 ? (
                 filteredExercises.map(exercise => (
                   <ExerciseItem
