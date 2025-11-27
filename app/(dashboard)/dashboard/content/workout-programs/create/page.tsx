@@ -28,13 +28,11 @@ interface Exercise {
 interface ProgramExercise {
   exerciseId: string
   exercise?: Exercise
-  sets: number
-  repsMin: number | null
-  repsMax: number | null
-  restSeconds: number
+  sets: string
+  reps: string
+  restSeconds: string
   tempo: string
   notes: string
-  targetWeight: number | null
 }
 
 interface ProgramDay {
@@ -123,13 +121,11 @@ export default function CreateWorkoutProgramPage() {
   const addExerciseToDay = (dayIndex: number) => {
     const newExercise: ProgramExercise = {
       exerciseId: '',
-      sets: 3,
-      repsMin: 8,
-      repsMax: 12,
-      restSeconds: 60,
+      sets: '3',
+      reps: '8-12',
+      restSeconds: '60',
       tempo: '',
-      notes: '',
-      targetWeight: null
+      notes: ''
     }
     const updated = [...days]
     updated[dayIndex].exercises.push(newExercise)
@@ -200,13 +196,11 @@ export default function CreateWorkoutProgramPage() {
   const addExerciseToDayInWeek = (weekIndex: number, dayIndex: number) => {
     const newExercise: ProgramExercise = {
       exerciseId: '',
-      sets: 3,
-      repsMin: 8,
-      repsMax: 12,
-      restSeconds: 60,
+      sets: '3',
+      reps: '8-12',
+      restSeconds: '60',
       tempo: '',
-      notes: '',
-      targetWeight: null
+      notes: ''
     }
     const updated = [...weeks]
     updated[weekIndex].days[dayIndex].exercises.push(newExercise)
@@ -227,6 +221,28 @@ export default function CreateWorkoutProgramPage() {
     }
     setWeeks(updated)
   }
+
+  // Helper function to parse reps string to min/max
+  const parseReps = (reps: string): { repsMin: number | null, repsMax: number | null } => {
+    if (!reps) return { repsMin: null, repsMax: null }
+    if (reps.includes('-')) {
+      const [min, max] = reps.split('-').map(v => parseInt(v.trim()) || null)
+      return { repsMin: min, repsMax: max }
+    }
+    const val = parseInt(reps) || null
+    return { repsMin: val, repsMax: val }
+  }
+
+  // Helper function to format exercise for API
+  const formatExercise = (ex: ProgramExercise, exIndex: number) => ({
+    exerciseId: ex.exerciseId,
+    sets: parseInt(ex.sets) || 3,
+    ...parseReps(ex.reps),
+    restSeconds: parseInt(ex.restSeconds) || 60,
+    tempo: ex.tempo,
+    notes: ex.notes,
+    orderIndex: exIndex
+  })
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -252,19 +268,13 @@ export default function CreateWorkoutProgramPage() {
           days: week.days.map((day, dayIndex) => ({
             ...day,
             orderIndex: dayIndex,
-            exercises: day.exercises.map((ex, exIndex) => ({
-              ...ex,
-              orderIndex: exIndex
-            }))
+            exercises: day.exercises.map((ex, exIndex) => formatExercise(ex, exIndex))
           }))
         })) : undefined,
         days: !useMultiWeek ? days.map((day, index) => ({
           ...day,
           orderIndex: index,
-          exercises: day.exercises.map((ex, exIndex) => ({
-            ...ex,
-            orderIndex: exIndex
-          }))
+          exercises: day.exercises.map((ex, exIndex) => formatExercise(ex, exIndex))
         })) : undefined
       }
 
@@ -625,32 +635,18 @@ export default function CreateWorkoutProgramPage() {
                                       <div>
                                         <Label className="text-[10px] text-gray-500">Sets</Label>
                                         <Input
-                                          type="number"
-                                          min="1"
+                                          type="text"
                                           value={exercise.sets || ''}
-                                          onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'sets', parseInt(e.target.value) || 0)}
-                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                          onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'sets', e.target.value)}
+                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
                                         />
                                       </div>
                                       <div>
                                         <Label className="text-[10px] text-gray-500">Reps</Label>
                                         <Input
                                           type="text"
-                                          value={exercise.repsMin && exercise.repsMax && exercise.repsMin !== exercise.repsMax
-                                            ? `${exercise.repsMin}-${exercise.repsMax}`
-                                            : exercise.repsMin?.toString() || ''}
-                                          onChange={(e) => {
-                                            const value = e.target.value
-                                            if (value.includes('-')) {
-                                              const [min, max] = value.split('-').map(v => parseInt(v.trim()) || null)
-                                              updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMin', min)
-                                              updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMax', max)
-                                            } else {
-                                              const reps = value === '' ? null : (parseInt(value) || null)
-                                              updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMin', reps)
-                                              updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMax', reps)
-                                            }
-                                          }}
+                                          value={exercise.reps || ''}
+                                          onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'reps', e.target.value)}
                                           placeholder="8-12"
                                           className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
                                         />
@@ -658,11 +654,10 @@ export default function CreateWorkoutProgramPage() {
                                       <div>
                                         <Label className="text-[10px] text-gray-500">Vila (s)</Label>
                                         <Input
-                                          type="number"
-                                          min="0"
+                                          type="text"
                                           value={exercise.restSeconds || ''}
-                                          onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 0)}
-                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                          onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'restSeconds', e.target.value)}
+                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
                                         />
                                       </div>
                                       <div>
@@ -884,32 +879,18 @@ export default function CreateWorkoutProgramPage() {
                             <div>
                               <Label className="text-xs text-gray-400">Sets</Label>
                               <Input
-                                type="number"
-                                min="1"
+                                type="text"
                                 value={exercise.sets || ''}
-                                onChange={(e) => updateExercise(dayIndex, exIndex, 'sets', parseInt(e.target.value) || 0)}
-                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                onChange={(e) => updateExercise(dayIndex, exIndex, 'sets', e.target.value)}
+                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                               />
                             </div>
                             <div>
                               <Label className="text-xs text-gray-400">Reps</Label>
                               <Input
                                 type="text"
-                                value={exercise.repsMin && exercise.repsMax && exercise.repsMin !== exercise.repsMax
-                                  ? `${exercise.repsMin}-${exercise.repsMax}`
-                                  : exercise.repsMin?.toString() || ''}
-                                onChange={(e) => {
-                                  const value = e.target.value
-                                  if (value.includes('-')) {
-                                    const [min, max] = value.split('-').map(v => parseInt(v.trim()) || null)
-                                    updateExercise(dayIndex, exIndex, 'repsMin', min)
-                                    updateExercise(dayIndex, exIndex, 'repsMax', max)
-                                  } else {
-                                    const reps = value === '' ? null : (parseInt(value) || null)
-                                    updateExercise(dayIndex, exIndex, 'repsMin', reps)
-                                    updateExercise(dayIndex, exIndex, 'repsMax', reps)
-                                  }
-                                }}
+                                value={exercise.reps || ''}
+                                onChange={(e) => updateExercise(dayIndex, exIndex, 'reps', e.target.value)}
                                 placeholder="8-12"
                                 className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                               />
@@ -917,11 +898,10 @@ export default function CreateWorkoutProgramPage() {
                             <div>
                               <Label className="text-xs text-gray-400">Vila (s)</Label>
                               <Input
-                                type="number"
-                                min="0"
+                                type="text"
                                 value={exercise.restSeconds || ''}
-                                onChange={(e) => updateExercise(dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 0)}
-                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                onChange={(e) => updateExercise(dayIndex, exIndex, 'restSeconds', e.target.value)}
+                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                               />
                             </div>
                             <div>
