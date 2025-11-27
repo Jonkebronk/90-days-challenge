@@ -24,6 +24,13 @@ interface ExerciseLibraryPanelProps {
   className?: string
 }
 
+// Helper to get YouTube video ID from URL
+function getYouTubeVideoId(url: string): string | null {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
+  const match = url.match(regExp)
+  return match && match[2].length === 11 ? match[2] : null
+}
+
 // Exercise Item (click to add)
 function ExerciseItem({
   exercise,
@@ -34,6 +41,9 @@ function ExerciseItem({
   onClick: () => void
   isRecent?: boolean
 }) {
+  const [showVideo, setShowVideo] = useState(false)
+  const videoId = exercise.videoUrl ? getYouTubeVideoId(exercise.videoUrl) : null
+
   return (
     <div
       className={`
@@ -69,18 +79,16 @@ function ExerciseItem({
             )}
           </div>
 
-          {/* Video link */}
-          {exercise.videoUrl && (
-            <a
-              href={exercise.videoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
+          {/* Video preview toggle */}
+          {exercise.videoUrl && videoId && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setShowVideo(!showVideo) }}
               className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 transition-colors"
             >
               <Video className="w-3.5 h-3.5" />
-              <span className="truncate max-w-[200px]">Se video</span>
-            </a>
+              <span>{showVideo ? 'Dölj video' : 'Visa video'}</span>
+            </button>
           )}
         </div>
 
@@ -93,6 +101,19 @@ function ExerciseItem({
           <Plus className="w-5 h-5 text-[#FFD700]" />
         </button>
       </div>
+
+      {/* Embedded video preview */}
+      {showVideo && videoId && (
+        <div className="mt-3 rounded-lg overflow-hidden aspect-video">
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}`}
+            title={exercise.name}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+          />
+        </div>
+      )}
     </div>
   )
 }
