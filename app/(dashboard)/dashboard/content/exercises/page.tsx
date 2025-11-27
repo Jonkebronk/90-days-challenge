@@ -271,11 +271,16 @@ export default function ExercisesPage() {
   }
 
   const addInstruction = () => {
-    if (instructionInput.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        instructions: [...prev.instructions, instructionInput.trim()]
-      }))
+    const trimmed = instructionInput.trim()
+    if (trimmed) {
+      setFormData(prev => {
+        const newInstructions = [...prev.instructions, trimmed]
+        console.log('Adding instruction:', trimmed, 'Total:', newInstructions.length)
+        return {
+          ...prev,
+          instructions: newInstructions
+        }
+      })
       setInstructionInput('')
     }
   }
@@ -594,7 +599,12 @@ export default function ExercisesPage() {
                 <Input
                   value={instructionInput}
                   onChange={(e) => setInstructionInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addInstruction())}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      addInstruction()
+                    }
+                  }}
                   placeholder="Lägg till instruktion..."
                   className="bg-white/5 border-gold-primary/20 text-white placeholder:text-gray-500"
                 />
