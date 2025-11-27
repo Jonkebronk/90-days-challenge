@@ -127,6 +127,17 @@ export function ExerciseCard({
             />
           </div>
 
+          {/* Tempo */}
+          <div className="text-center">
+            <span className="text-[10px] text-[rgba(255,255,255,0.4)] block">Tempo</span>
+            <Input
+              value={exercise.tempo || ''}
+              onChange={(e) => onChange('tempo', e.target.value)}
+              placeholder="3-0-1-0"
+              className="w-20 h-8 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-white text-sm px-1"
+            />
+          </div>
+
           {/* Superset Toggle */}
           {onToggleSuperset && (
             <div className="flex items-center pl-2 border-l border-[rgba(255,255,255,0.1)]">

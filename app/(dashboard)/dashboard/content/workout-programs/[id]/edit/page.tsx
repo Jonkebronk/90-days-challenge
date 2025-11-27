@@ -74,6 +74,7 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
             repsMin: ex.repsMin,
             repsMax: ex.repsMax,
             restSeconds: ex.restSeconds,
+            tempo: ex.tempo || '',
             notes: ex.notes || '',
             coachNotes: ex.coachNotes || '',
             targetWeight: ex.targetWeight,
@@ -134,6 +135,7 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
       repsMin: 8,
       repsMax: 12,
       restSeconds: 60,
+      tempo: '',
       notes: '',
       coachNotes: '',
       targetWeight: null
@@ -188,6 +190,7 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
               repsMin: ex.repsMin,
               repsMax: ex.repsMax,
               restSeconds: ex.restSeconds,
+              tempo: ex.tempo,
               notes: ex.notes,
               coachNotes: ex.coachNotes,
               targetWeight: ex.targetWeight,

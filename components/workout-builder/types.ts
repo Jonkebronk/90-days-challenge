@@ -14,6 +14,7 @@ export interface ProgramExercise {
   repsMin: number | null
   repsMax: number | null
   restSeconds: number
+  tempo: string
   notes: string
   coachNotes: string
   targetWeight: number | null

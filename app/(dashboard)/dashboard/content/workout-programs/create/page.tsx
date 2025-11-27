@@ -32,6 +32,7 @@ interface ProgramExercise {
   repsMin: number | null
   repsMax: number | null
   restSeconds: number
+  tempo: string
   notes: string
   targetWeight: number | null
 }
@@ -126,6 +127,7 @@ export default function CreateWorkoutProgramPage() {
       repsMin: 8,
       repsMax: 12,
       restSeconds: 60,
+      tempo: '',
       notes: '',
       targetWeight: null
     }
@@ -202,6 +204,7 @@ export default function CreateWorkoutProgramPage() {
       repsMin: 8,
       repsMax: 12,
       restSeconds: 60,
+      tempo: '',
       notes: '',
       targetWeight: null
     }
@@ -648,7 +651,7 @@ export default function CreateWorkoutProgramPage() {
                                       </div>
                                     )}
 
-                                    <div className="grid grid-cols-4 gap-2">
+                                    <div className="grid grid-cols-5 gap-2">
                                       <div>
                                         <Label className="text-[10px] text-gray-500">Sets</Label>
                                         <Input
@@ -682,6 +685,15 @@ export default function CreateWorkoutProgramPage() {
                                           type="number"
                                           value={exercise.restSeconds}
                                           onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 60)}
+                                          className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label className="text-[10px] text-gray-500">Tempo</Label>
+                                        <Input
+                                          value={exercise.tempo}
+                                          onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'tempo', e.target.value)}
+                                          placeholder="3-0-1-0"
                                           className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
                                         />
                                       </div>
@@ -890,7 +902,7 @@ export default function CreateWorkoutProgramPage() {
                             </div>
                           )}
 
-                          <div className="grid grid-cols-4 gap-2">
+                          <div className="grid grid-cols-5 gap-2">
                             <div>
                               <Label className="text-xs text-gray-400">Sets</Label>
                               <Input
@@ -924,6 +936,15 @@ export default function CreateWorkoutProgramPage() {
                                 type="number"
                                 value={exercise.restSeconds}
                                 onChange={(e) => updateExercise(dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 60)}
+                                className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs text-gray-400">Tempo</Label>
+                              <Input
+                                value={exercise.tempo}
+                                onChange={(e) => updateExercise(dayIndex, exIndex, 'tempo', e.target.value)}
+                                placeholder="3-0-1-0"
                                 className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                               />
                             </div>
