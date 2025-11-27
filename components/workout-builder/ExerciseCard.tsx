@@ -40,14 +40,6 @@ export function ExerciseCard({
     !!(exercise.notes || exercise.coachNotes)
   )
 
-  // Get reps value - use reps string if available, otherwise format from min/max
-  const getRepsValue = () => {
-    if (exercise.reps) return exercise.reps
-    if (exercise.repsMin && exercise.repsMax && exercise.repsMin !== exercise.repsMax) {
-      return `${exercise.repsMin}-${exercise.repsMax}`
-    }
-    return exercise.repsMin?.toString() || ''
-  }
 
   return (
     <div
@@ -126,7 +118,7 @@ export function ExerciseCard({
             <span className="text-xs text-[rgba(255,255,255,0.6)] block mb-1">Reps</span>
             <Input
               type="text"
-              value={getRepsValue()}
+              value={exercise.reps || ''}
               onChange={(e) => onChange('reps', e.target.value)}
               placeholder="8-12"
               className="w-20 h-10 text-center text-base bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white font-medium"

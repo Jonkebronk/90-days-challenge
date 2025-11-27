@@ -81,15 +81,22 @@ export function DualPanelWorkoutBuilder({
 
   // Handle superset creation
   const handleCreateSuperset = (indices: number[]) => {
+    const supersetId = `superset-${Date.now()}`
     const nextColor = SUPERSET_COLORS[currentSupersets.length % SUPERSET_COLORS.length].value
     const nextLabel = String.fromCharCode(65 + currentSupersets.length)
 
     const newSuperset: SupersetGroup = {
-      id: `superset-${Date.now()}`,
+      id: supersetId,
       exerciseIndices: indices,
       color: nextColor,
       label: `Superset ${nextLabel}`
     }
+
+    // Update supersetGroupId on all exercises in the superset
+    indices.forEach(index => {
+      onUpdateExercise(selectedDayIndex, index, 'supersetGroupId', supersetId)
+      onUpdateExercise(selectedDayIndex, index, 'supersetColor', nextColor)
+    })
 
     setSupersetsMap(prev => ({
       ...prev,
@@ -99,6 +106,15 @@ export function DualPanelWorkoutBuilder({
 
   // Handle superset removal
   const handleRemoveSuperset = (supersetId: string) => {
+    // Find exercises in this superset and clear their supersetGroupId
+    const superset = currentSupersets.find(s => s.id === supersetId)
+    if (superset) {
+      superset.exerciseIndices.forEach(index => {
+        onUpdateExercise(selectedDayIndex, index, 'supersetGroupId', undefined)
+        onUpdateExercise(selectedDayIndex, index, 'supersetColor', undefined)
+      })
+    }
+
     setSupersetsMap(prev => ({
       ...prev,
       [selectedDayIndex]: (prev[selectedDayIndex] || []).filter(s => s.id !== supersetId)

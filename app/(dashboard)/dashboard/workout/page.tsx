@@ -56,8 +56,8 @@ interface WorkoutDay {
 interface WorkoutExercise {
   id: string
   sets: number
-  repsMin: number | null
-  repsMax: number | null
+  reps: string | null
+  supersetGroupId: string | null
   exercise: {
     id: string
     name: string
@@ -530,9 +530,16 @@ export default function WorkoutPage() {
                               {idx + 1}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-gray-900">{ex.exercise.name}</p>
+                              <div className="flex items-center gap-2">
+                                <p className="font-medium text-gray-900">{ex.exercise.name}</p>
+                                {ex.supersetGroupId && (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700">
+                                    Superset
+                                  </span>
+                                )}
+                              </div>
                               <p className="text-sm text-gray-600">
-                                {ex.sets} set × {ex.repsMin}{ex.repsMax && ex.repsMax !== ex.repsMin ? `-${ex.repsMax}` : ''} reps
+                                {ex.sets} set × {ex.reps || '-'} reps
                               </p>
                             </div>
                             {ex.exercise.videoUrl && (

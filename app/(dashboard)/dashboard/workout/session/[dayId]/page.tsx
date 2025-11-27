@@ -35,8 +35,6 @@ interface Exercise {
   exerciseId: string
   sets: number
   reps: string | null
-  repsMin: number | null
-  repsMax: number | null
   restSeconds: number
   tempo: string | null
   notes: string | null
@@ -703,9 +701,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         </p>
                         <p>
                           <span className="font-semibold text-gray-700">Repetitioner:</span>{' '}
-                          {exercise.reps || (exercise.repsMin && exercise.repsMax && exercise.repsMin !== exercise.repsMax
-                            ? `${exercise.repsMin}-${exercise.repsMax}`
-                            : exercise.repsMin || exercise.repsMax || '-')}
+                          {exercise.reps || '-'}
                         </p>
                         {exercise.restSeconds > 0 && (
                           <p>
@@ -961,7 +957,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             type="number"
                             value={currentReps}
                             onChange={(e) => setCurrentReps(e.target.value)}
-                            placeholder={`${exercise.repsMin}-${exercise.repsMax}`}
+                            placeholder={exercise.reps || '8-12'}
                             className="h-12 text-lg font-semibold bg-white border-2 border-gray-300 text-gray-900 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>

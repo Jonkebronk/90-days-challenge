@@ -19,8 +19,7 @@ interface WorkoutTemplate {
   exercises: Array<{
     id: string
     sets: number
-    repsMin: number | null
-    repsMax: number | null
+    reps: string | null
     exercise: {
       id: string
       name: string
@@ -220,7 +219,7 @@ export default function WorkoutTemplatesPage() {
                         key={idx}
                         className="text-xs text-gray-400 truncate"
                       >
-                        • {ex.exercise.name} - {ex.sets} x {ex.repsMin}{ex.repsMax && ex.repsMax !== ex.repsMin ? `-${ex.repsMax}` : ''}
+                        • {ex.exercise.name} - {ex.sets} x {ex.reps || '-'}
                       </div>
                     ))}
                     {template.exercises.length > 4 && (

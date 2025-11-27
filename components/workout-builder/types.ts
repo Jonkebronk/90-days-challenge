@@ -13,9 +13,7 @@ export interface ProgramExercise {
   exerciseId: string
   exercise?: Exercise
   sets: number | string
-  reps?: string
-  repsMin: number | null
-  repsMax: number | null
+  reps: string
   restSeconds: number | string
   tempo: string
   notes: string

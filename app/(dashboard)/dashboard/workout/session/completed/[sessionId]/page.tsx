@@ -29,8 +29,7 @@ interface WorkoutSet {
 interface WorkoutProgramExercise {
   id: string
   sets: number
-  repsMin: number | null
-  repsMax: number | null
+  reps: string | null
   restSeconds: number
   notes: string | null
   exercise: Exercise

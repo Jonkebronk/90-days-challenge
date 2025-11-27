@@ -29,8 +29,7 @@ interface TemplateExercise {
   exerciseId: string
   exercise?: Exercise
   sets: number
-  repsMin: number | null
-  repsMax: number | null
+  reps: string
   restSeconds: number
   notes: string
 }
@@ -69,8 +68,7 @@ export default function WorkoutBuilderPage() {
     const newExercise: TemplateExercise = {
       exerciseId: '',
       sets: 3,
-      repsMin: 8,
-      repsMax: 12,
+      reps: '8-12',
       restSeconds: 60,
       notes: ''
     }
@@ -397,20 +395,12 @@ export default function WorkoutBuilderPage() {
                       />
                     </div>
                     <div>
-                      <Label className="text-xs text-gray-400">Reps Min</Label>
+                      <Label className="text-xs text-gray-400">Reps</Label>
                       <Input
-                        type="number"
-                        value={exercise.repsMin || ''}
-                        onChange={(e) => updateExercise(index, 'repsMin', e.target.value ? parseInt(e.target.value) : null)}
-                        className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-gray-400">Reps Max</Label>
-                      <Input
-                        type="number"
-                        value={exercise.repsMax || ''}
-                        onChange={(e) => updateExercise(index, 'repsMax', e.target.value ? parseInt(e.target.value) : null)}
+                        type="text"
+                        value={exercise.reps || ''}
+                        onChange={(e) => updateExercise(index, 'reps', e.target.value)}
+                        placeholder="8-12"
                         className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                       />
                     </div>
