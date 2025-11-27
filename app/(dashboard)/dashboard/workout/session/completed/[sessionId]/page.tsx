@@ -207,6 +207,15 @@ export default function CompletedSessionPage({ params }: { params: Promise<{ ses
   return (
     <div className="min-h-screen bg-gray-900 p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
+        {/* Back Button */}
+        <button
+          onClick={() => router.push('/dashboard/workout/history')}
+          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4 sm:mb-6"
+        >
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="text-sm sm:text-base">Tillbaka</span>
+        </button>
+
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="text-center mb-6 sm:mb-8">
