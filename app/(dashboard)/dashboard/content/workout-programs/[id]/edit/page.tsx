@@ -202,16 +202,14 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
             orderIndex: index,
             exercises: day.exercises.map((ex, exIndex) => ({
               exerciseId: ex.exerciseId,
-              sets: ex.sets,
-              repsMin: ex.repsMin,
-              repsMax: ex.repsMax,
-              restSeconds: ex.restSeconds,
-              tempo: ex.tempo,
-              notes: ex.notes,
-              coachNotes: ex.coachNotes,
+              sets: typeof ex.sets === 'string' ? parseInt(ex.sets as string) || 3 : ex.sets,
+              reps: ex.reps || null,
+              restSeconds: typeof ex.restSeconds === 'string' ? parseInt(ex.restSeconds as string) || 60 : ex.restSeconds,
+              tempo: ex.tempo || null,
+              notes: ex.notes || null,
+              coachNotes: ex.coachNotes || null,
               targetWeight: ex.targetWeight,
-              supersetGroupId: ex.supersetGroupId,
-              supersetColor: ex.supersetColor,
+              supersetGroupId: ex.supersetGroupId || null,
               orderIndex: exIndex
             }))
           }))
@@ -219,7 +217,8 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
       })
 
       if (response.ok) {
-        router.push('/dashboard/content/workout-programs')
+        // Visa bekräftelse utan att navigera bort
+        alert('Programmet har sparats!')
       } else {
         alert('Kunde inte spara programmet')
       }

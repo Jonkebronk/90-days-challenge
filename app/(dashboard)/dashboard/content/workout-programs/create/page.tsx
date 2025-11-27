@@ -144,17 +144,14 @@ export default function CreateWorkoutProgramPage() {
             orderIndex: index,
             exercises: day.exercises.map((ex, exIndex) => ({
               exerciseId: ex.exerciseId,
-              sets: ex.sets,
-              reps: ex.repsMin && ex.repsMax && ex.repsMin !== ex.repsMax
-                ? `${ex.repsMin}-${ex.repsMax}`
-                : ex.repsMin?.toString() || '',
-              restSeconds: ex.restSeconds,
-              tempo: ex.tempo,
-              notes: ex.notes,
-              coachNotes: ex.coachNotes,
+              sets: typeof ex.sets === 'string' ? parseInt(ex.sets as string) || 3 : ex.sets,
+              reps: ex.reps || null,
+              restSeconds: typeof ex.restSeconds === 'string' ? parseInt(ex.restSeconds as string) || 60 : ex.restSeconds,
+              tempo: ex.tempo || null,
+              notes: ex.notes || null,
+              coachNotes: ex.coachNotes || null,
               targetWeight: ex.targetWeight,
-              supersetGroupId: ex.supersetGroupId,
-              supersetColor: ex.supersetColor,
+              supersetGroupId: ex.supersetGroupId || null,
               orderIndex: exIndex
             }))
           }))
