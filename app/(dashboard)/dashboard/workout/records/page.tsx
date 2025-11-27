@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Trophy, Dumbbell, Calendar, ArrowLeft } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Trophy, Dumbbell, Calendar } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
@@ -67,38 +67,30 @@ export default function PersonalRecordsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard/workout">
-            <Button variant="ghost" size="icon" className="text-gray-300">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-100 flex items-center gap-2">
-              <Trophy className="w-7 h-7 sm:w-8 sm:h-8 text-gold-light" />
-              Personbästa
-            </h1>
-            <p className="text-gray-400 mt-1 text-sm sm:text-base">
-              Dina högsta lyft för varje övning
-            </p>
-          </div>
-        </div>
+      <div className="text-center mb-6 sm:mb-8">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
+        <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3 sm:mb-4">
+          Personbästa
+        </h1>
+        <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
+          Dina högsta lyft för varje övning
+        </p>
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
 
       {/* Records Grid */}
       {records.length === 0 ? (
-        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
+        <Card className="bg-white border border-gray-200">
           <CardContent className="py-12 text-center">
-            <Trophy className="w-16 h-16 text-[rgba(255,215,0,0.3)] mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-100 mb-2">
+            <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
               Inga personbästa än
             </h3>
-            <p className="text-gray-400 mb-6">
+            <p className="text-gray-500 mb-6">
               Genomför ditt första träningspass för att börja spåra dina rekord!
             </p>
             <Link href="/dashboard/workout">
-              <Button className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90">
+              <Button className="bg-gradient-to-r from-gold-light to-orange-500 text-black hover:opacity-90">
                 Börja träna
               </Button>
             </Link>
@@ -109,15 +101,15 @@ export default function PersonalRecordsPage() {
           {records.map((record) => (
             <Card
               key={record.exercise.id}
-              className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] hover:border-[rgba(255,215,0,0.4)] transition-all"
+              className="bg-white border border-gray-200 hover:border-gold-primary hover:shadow-lg transition-all"
             >
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center flex-shrink-0">
-                    <Dumbbell className="w-5 h-5 sm:w-6 sm:h-6 text-[#0a0a0a]" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                    <Dumbbell className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-base sm:text-lg font-semibold text-white truncate">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
                       {record.exercise.name}
                     </h3>
                     <div className="flex flex-wrap gap-1 mt-1">
@@ -125,7 +117,7 @@ export default function PersonalRecordsPage() {
                         <Badge
                           key={idx}
                           variant="outline"
-                          className="text-[10px] sm:text-xs bg-[rgba(139,92,246,0.1)] border-[rgba(139,92,246,0.3)] text-[rgba(139,92,246,0.9)]"
+                          className="text-[10px] sm:text-xs bg-purple-50 border-purple-200 text-purple-600"
                         >
                           {mg}
                         </Badge>
@@ -135,19 +127,19 @@ export default function PersonalRecordsPage() {
                 </div>
 
                 {record.records.max_weight && (
-                  <div className="mt-4 p-3 bg-white/5 rounded-lg">
+                  <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-2xl sm:text-3xl font-bold text-white">
+                        <div className="text-2xl sm:text-3xl font-bold text-gray-900">
                           {Number(record.records.max_weight.weightKg).toFixed(1)} kg
                         </div>
-                        <div className="text-sm text-gray-400 mt-1">
+                        <div className="text-sm text-gray-500 mt-1">
                           {record.records.max_weight.reps} reps
                         </div>
                       </div>
-                      <Trophy className="w-8 h-8 text-gold-light" />
+                      <Trophy className="w-8 h-8 text-gold-primary" />
                     </div>
-                    <div className="text-xs text-gray-500 flex items-center gap-1 mt-2 pt-2 border-t border-white/10">
+                    <div className="text-xs text-gray-500 flex items-center gap-1 mt-2 pt-2 border-t border-gray-200">
                       <Calendar className="w-3 h-3" />
                       {formatDate(record.records.max_weight.achievedAt)}
                     </div>
