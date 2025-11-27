@@ -1,22 +1,10 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import {
-  DndContext,
-  DragOverlay,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragStartEvent,
-  DragEndEvent,
-} from '@dnd-kit/core'
-import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Library, Dumbbell, GripVertical } from 'lucide-react'
+import { ArrowLeft, Library, Dumbbell } from 'lucide-react'
 import {
   ProgramDay,
   Exercise,
@@ -60,8 +48,6 @@ export function DualPanelWorkoutBuilder({
 }: DualPanelWorkoutBuilderProps) {
   const [selectedDayIndex, setSelectedDayIndex] = useState(0)
   const [mobileTab, setMobileTab] = useState<'library' | 'workout'>('workout')
-  const [activeExercise, setActiveExercise] = useState<Exercise | null>(null)
-  const [isDraggingFromLibrary, setIsDraggingFromLibrary] = useState(false)
 
   // Superset and dropset state per day
   const [supersetsMap, setSupersetsMap] = useState<Record<number, SupersetGroup[]>>({})
@@ -70,17 +56,6 @@ export function DualPanelWorkoutBuilder({
   const currentDay = days[selectedDayIndex] || { dayNumber: 1, name: '', description: '', isRestDay: false, exercises: [] }
   const currentSupersets = supersetsMap[selectedDayIndex] || []
   const currentDropsets = dropsetsMap[selectedDayIndex] || []
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  )
 
   // Auto-save functionality
   const handleAutoSave = useCallback(async (data: ProgramDay[]) => {
@@ -95,74 +70,6 @@ export function DualPanelWorkoutBuilder({
     30000,
     !!onSave
   )
-
-  // Handle drag start
-  const handleDragStart = (event: DragStartEvent) => {
-    const { active } = event
-    const id = active.id as string
-
-    // Check if dragging from library (id starts with "library-")
-    if (id.startsWith('library-')) {
-      const actualId = id.replace('library-', '')
-      const exercise = exercises.find(e => e.id === actualId)
-      if (exercise) {
-        setActiveExercise(exercise)
-        setIsDraggingFromLibrary(true)
-      }
-    } else {
-      // Dragging from workout panel - find the exercise being dragged
-      const exercise = currentDay.exercises.find(ex => ex.id === id)
-      if (exercise) {
-        const exerciseData = exercises.find(e => e.id === exercise.exerciseId)
-        if (exerciseData) {
-          setActiveExercise(exerciseData)
-        }
-      }
-      setIsDraggingFromLibrary(false)
-    }
-  }
-
-  // Handle drag end
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
-
-    // Handle drag from library
-    if (isDraggingFromLibrary && activeExercise) {
-      // Add exercise when dropped - either on drop zone or if over is null (dropped outside)
-      // but not if dropped back on another library item
-      const droppedOnLibrary = over?.id?.toString().startsWith('library-')
-
-      if (!droppedOnLibrary) {
-        // Dropped on workout area (or anywhere that's not the library)
-        onAddExercise(selectedDayIndex, activeExercise)
-        if (window.innerWidth < 1024) {
-          setMobileTab('workout')
-        }
-      }
-    }
-    // Handle reordering within workout panel
-    else if (active && over && active.id !== over.id) {
-      const activeId = active.id as string
-      const overId = over.id as string
-
-      // Check if both are workout exercises (not library items)
-      const isActiveLibrary = activeId.startsWith('library-')
-      const isOverLibrary = overId.startsWith('library-')
-
-      if (!isActiveLibrary && !isOverLibrary) {
-        // Find indices in the exercises array using the unique id
-        const oldIndex = currentDay.exercises.findIndex(ex => ex.id === activeId)
-        const newIndex = currentDay.exercises.findIndex(ex => ex.id === overId)
-
-        if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
-          onReorderExercises(selectedDayIndex, oldIndex, newIndex)
-        }
-      }
-    }
-
-    setActiveExercise(null)
-    setIsDraggingFromLibrary(false)
-  }
 
   // Handle adding exercise (click)
   const handleAddExercise = (exercise: Exercise) => {
@@ -233,34 +140,28 @@ export function DualPanelWorkoutBuilder({
   }
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="flex flex-col h-full">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[rgba(255,215,0,0.1)]">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onPrevious}
-              className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
-                Bygg träningsdagar
-              </h1>
-              <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                Dra övningar från biblioteket till passet
-              </p>
-            </div>
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-[rgba(255,215,0,0.1)]">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onPrevious}
+            className="text-[rgba(255,255,255,0.7)] hover:text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)]"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-[rgba(255,255,255,0.9)]">
+              Bygg träningsdagar
+            </h1>
+            <p className="text-sm text-[rgba(255,255,255,0.6)]">
+              Klicka på övningar för att lägga till
+            </p>
           </div>
         </div>
+      </div>
 
         {/* Day Tabs */}
         <div className="p-4 border-b border-[rgba(255,215,0,0.1)]">
@@ -304,7 +205,6 @@ export function DualPanelWorkoutBuilder({
             hasUnsavedChanges={hasUnsavedChanges()}
             onManualSave={triggerSave}
             className="flex-1 border-l border-[rgba(255,215,0,0.1)]"
-            isDropTarget={isDraggingFromLibrary}
           />
         </div>
 
@@ -367,31 +267,10 @@ export function DualPanelWorkoutBuilder({
                 hasUnsavedChanges={hasUnsavedChanges()}
                 onManualSave={triggerSave}
                 className="h-full"
-                isDropTarget={false}
               />
             </TabsContent>
           </Tabs>
         </div>
       </div>
-
-      {/* Drag Overlay */}
-      <DragOverlay>
-        {activeExercise && (
-          <div className="bg-[rgba(255,215,0,0.15)] border-2 border-[#FFD700] rounded-lg p-3 shadow-xl backdrop-blur-sm">
-            <div className="flex items-center gap-2">
-              <GripVertical className="w-4 h-4 text-[#FFD700]" />
-              <span className="text-white font-medium">{activeExercise.name}</span>
-            </div>
-            <div className="flex gap-1 mt-1">
-              {activeExercise.muscleGroups.slice(0, 2).map(mg => (
-                <Badge key={mg} variant="outline" className="text-xs bg-[rgba(255,215,0,0.2)] border-[#FFD700] text-[#FFD700]">
-                  {mg}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
-      </DragOverlay>
-    </DndContext>
   )
 }

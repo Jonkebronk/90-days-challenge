@@ -1,16 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  useDroppable,
-  DragEndEvent,
-} from '@dnd-kit/core'
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -50,61 +40,6 @@ interface WorkoutPlanPanelProps {
   isDropTarget?: boolean
 }
 
-// Sortable Exercise Item
-function SortableExerciseItem({
-  exercise,
-  exerciseData,
-  onUpdate,
-  onRemove,
-  onToggleSuperset,
-  onToggleDropset,
-  isSelectedForSuperset,
-  isSelectedForDropset,
-  supersetColor,
-  dropsetColor
-}: {
-  exercise: ProgramExercise
-  exerciseData?: Exercise
-  onUpdate: (field: keyof ProgramExercise, value: any) => void
-  onRemove: () => void
-  onToggleSuperset?: (selected: boolean) => void
-  onToggleDropset?: (selected: boolean) => void
-  isSelectedForSuperset?: boolean
-  isSelectedForDropset?: boolean
-  supersetColor?: string
-  dropsetColor?: string
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({ id: exercise.id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  }
-
-  return (
-    <div ref={setNodeRef} style={style}>
-      <ExerciseCard
-        exercise={exercise}
-        exerciseData={exerciseData}
-        onChange={onUpdate}
-        onRemove={onRemove}
-        onToggleSuperset={onToggleSuperset}
-        isSelected={isSelectedForSuperset}
-        supersetColor={supersetColor || dropsetColor}
-        dragHandleProps={{ ...attributes, ...listeners }}
-        isDragging={isDragging}
-      />
-    </div>
-  )
-}
-
 export function WorkoutPlanPanel({
   day,
   exercises,
@@ -128,10 +63,18 @@ export function WorkoutPlanPanel({
   const [selectedForDropset, setSelectedForDropset] = useState<Set<number>>(new Set())
   const [groupingMode, setGroupingMode] = useState<'none' | 'superset' | 'dropset'>('none')
 
-  // Make the panel a drop target
-  const { setNodeRef, isOver } = useDroppable({
-    id: 'workout-drop-zone'
-  })
+  // Move exercise up/down handlers
+  const handleMoveUp = (index: number) => {
+    if (index > 0) {
+      onReorderExercises(index, index - 1)
+    }
+  }
+
+  const handleMoveDown = (index: number) => {
+    if (index < day.exercises.length - 1) {
+      onReorderExercises(index, index + 1)
+    }
+  }
 
   const handleToggleSuperset = (index: number, selected: boolean) => {
     if (groupingMode !== 'superset') {
@@ -244,7 +187,7 @@ export function WorkoutPlanPanel({
   return (
     <div
       className={`flex flex-col h-full ${className} ${
-        isDropTarget || isOver
+        isDropTarget
           ? 'ring-2 ring-[#FFD700] ring-inset bg-[rgba(255,215,0,0.05)]'
           : ''
       } transition-all`}
@@ -342,50 +285,45 @@ export function WorkoutPlanPanel({
 
       {/* Exercises */}
       <ScrollArea className="flex-1">
-        <div ref={setNodeRef} className="p-4 min-h-full">
+        <div className="p-4 min-h-full">
           {day.exercises.length > 0 ? (
-              <SortableContext
-                items={day.exercises.map(ex => ex.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="space-y-3">
-                  {day.exercises.map((exercise, index) => {
-                    const exerciseData = exercises.find(e => e.id === exercise.exerciseId)
-                    const superset = getExerciseSuperset(index)
-                    const dropset = getExerciseDropset(index)
-                    const isInSuperset = !!superset
-                    const isInDropset = !!dropset
+            <div className="space-y-3">
+              {day.exercises.map((exercise, index) => {
+                const exerciseData = exercises.find(e => e.id === exercise.exerciseId)
+                const superset = getExerciseSuperset(index)
+                const dropset = getExerciseDropset(index)
+                const isInDropset = !!dropset
 
-                    return (
-                      <SortableExerciseItem
-                        key={exercise.id}
-                        exercise={exercise}
-                        exerciseData={exerciseData}
-                        onUpdate={(field, value) => onUpdateExercise(index, field, value)}
-                        onRemove={() => onRemoveExercise(index)}
-                        onToggleSuperset={
-                          !isInDropset
-                            ? (selected) => handleToggleSuperset(index, selected)
-                            : undefined
-                        }
-                        isSelectedForSuperset={selectedForSuperset.has(index)}
-                        supersetColor={superset?.color}
-                        dropsetColor={dropset ? DROPSET_COLORS[0].value : undefined}
-                      />
-                    )
-                  })}
-                </div>
-              </SortableContext>
+                return (
+                  <ExerciseCard
+                    key={exercise.id}
+                    exercise={exercise}
+                    exerciseData={exerciseData}
+                    onChange={(field, value) => onUpdateExercise(index, field, value)}
+                    onRemove={() => onRemoveExercise(index)}
+                    onMoveUp={() => handleMoveUp(index)}
+                    onMoveDown={() => handleMoveDown(index)}
+                    canMoveUp={index > 0}
+                    canMoveDown={index < day.exercises.length - 1}
+                    onToggleSuperset={
+                      !isInDropset
+                        ? (selected) => handleToggleSuperset(index, selected)
+                        : undefined
+                    }
+                    isSelected={selectedForSuperset.has(index)}
+                    supersetColor={superset?.color || (dropset ? DROPSET_COLORS[0].value : undefined)}
+                  />
+                )
+              })}
+            </div>
           ) : (
-            <Card className={`bg-[rgba(255,255,255,0.03)] border-2 border-dashed transition-all ${
-              isOver ? 'border-[#FFD700] bg-[rgba(255,215,0,0.1)]' : 'border-[rgba(255,215,0,0.2)]'
-            }`}>
+            <Card className="bg-[rgba(255,255,255,0.03)] border-2 border-dashed border-[rgba(255,215,0,0.2)]">
               <CardContent className="py-12 text-center">
-                <p className={`mb-2 ${isOver ? 'text-[#FFD700]' : 'text-[rgba(255,255,255,0.5)]'}`}>
-                  {isOver ? 'Släpp för att lägga till' : 'Inga övningar än'}
+                <p className="mb-2 text-[rgba(255,255,255,0.5)]">
+                  Inga övningar än
                 </p>
                 <p className="text-sm text-[rgba(255,255,255,0.4)]">
-                  Dra övningar från biblioteket eller klicka för att lägga till
+                  Klicka på övningar i biblioteket för att lägga till
                 </p>
               </CardContent>
             </Card>

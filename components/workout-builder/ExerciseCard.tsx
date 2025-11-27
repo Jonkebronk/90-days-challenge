@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { GripVertical, Trash2, MoreHorizontal, ChevronDown, ChevronUp } from 'lucide-react'
+import { Trash2, ChevronDown, ChevronUp, ArrowUp, ArrowDown } from 'lucide-react'
 import { ProgramExercise, Exercise } from './types'
 import { cn } from '@/lib/utils'
 
@@ -14,11 +14,13 @@ interface ExerciseCardProps {
   exerciseData?: Exercise
   onChange: (field: keyof ProgramExercise, value: any) => void
   onRemove: () => void
+  onMoveUp?: () => void
+  onMoveDown?: () => void
+  canMoveUp?: boolean
+  canMoveDown?: boolean
   onToggleSuperset?: (selected: boolean) => void
   isSelected?: boolean
   supersetColor?: string
-  dragHandleProps?: any
-  isDragging?: boolean
 }
 
 export function ExerciseCard({
@@ -26,11 +28,13 @@ export function ExerciseCard({
   exerciseData,
   onChange,
   onRemove,
+  onMoveUp,
+  onMoveDown,
+  canMoveUp = true,
+  canMoveDown = true,
   onToggleSuperset,
   isSelected = false,
-  supersetColor,
-  dragHandleProps,
-  isDragging = false
+  supersetColor
 }: ExerciseCardProps) {
   const [showNotes, setShowNotes] = useState(
     !!(exercise.notes || exercise.coachNotes)
@@ -49,7 +53,6 @@ export function ExerciseCard({
     <div
       className={cn(
         "group bg-[rgba(255,255,255,0.02)] hover:bg-[rgba(255,255,255,0.04)] rounded-xl transition-all",
-        isDragging && "opacity-50 scale-[0.98]",
         supersetColor && "border-l-4",
         isSelected && "ring-2 ring-[rgba(255,215,0,0.4)]"
       )}
@@ -57,12 +60,36 @@ export function ExerciseCard({
     >
       {/* Main Row */}
       <div className="flex items-center gap-3 p-3">
-        {/* Drag Handle */}
-        <div
-          {...dragHandleProps}
-          className="cursor-grab active:cursor-grabbing touch-none opacity-30 group-hover:opacity-60 transition-opacity"
-        >
-          <GripVertical className="w-5 h-5 text-white" />
+        {/* Move Up/Down Buttons */}
+        <div className="flex flex-col gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onMoveUp}
+            disabled={!canMoveUp}
+            className={cn(
+              "w-8 h-8 rounded-md transition-all",
+              canMoveUp
+                ? "text-[#FFD700] hover:bg-[rgba(255,215,0,0.2)] hover:text-[#FFD700]"
+                : "text-[rgba(255,255,255,0.2)] cursor-not-allowed"
+            )}
+          >
+            <ArrowUp className="w-5 h-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onMoveDown}
+            disabled={!canMoveDown}
+            className={cn(
+              "w-8 h-8 rounded-md transition-all",
+              canMoveDown
+                ? "text-[#FFD700] hover:bg-[rgba(255,215,0,0.2)] hover:text-[#FFD700]"
+                : "text-[rgba(255,255,255,0.2)] cursor-not-allowed"
+            )}
+          >
+            <ArrowDown className="w-5 h-5" />
+          </Button>
         </div>
 
         {/* Exercise Name */}
