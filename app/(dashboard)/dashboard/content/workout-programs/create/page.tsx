@@ -627,8 +627,15 @@ export default function CreateWorkoutProgramPage() {
                                         <Input
                                           type="text"
                                           inputMode="numeric"
-                                          value={exercise.sets}
-                                          onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'sets', parseInt(e.target.value) || 0)}
+                                          value={exercise.sets?.toString() || ''}
+                                          onChange={(e) => {
+                                            const val = e.target.value
+                                            updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'sets', val === '' ? 0 : parseInt(val) || exercise.sets)
+                                          }}
+                                          onBlur={(e) => {
+                                            const val = parseInt(e.target.value)
+                                            if (!isNaN(val)) updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'sets', val)
+                                          }}
                                           className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
                                         />
                                       </div>
@@ -646,7 +653,7 @@ export default function CreateWorkoutProgramPage() {
                                               updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMin', min)
                                               updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMax', max)
                                             } else {
-                                              const reps = parseInt(value) || null
+                                              const reps = value === '' ? null : (parseInt(value) || null)
                                               updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMin', reps)
                                               updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'repsMax', reps)
                                             }
@@ -660,8 +667,15 @@ export default function CreateWorkoutProgramPage() {
                                         <Input
                                           type="text"
                                           inputMode="numeric"
-                                          value={exercise.restSeconds}
-                                          onChange={(e) => updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 60)}
+                                          value={exercise.restSeconds?.toString() || ''}
+                                          onChange={(e) => {
+                                            const val = e.target.value
+                                            updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'restSeconds', val === '' ? 60 : parseInt(val) || exercise.restSeconds)
+                                          }}
+                                          onBlur={(e) => {
+                                            const val = parseInt(e.target.value)
+                                            if (!isNaN(val)) updateExerciseInWeek(weekIndex, dayIndex, exIndex, 'restSeconds', val)
+                                          }}
                                           className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-xs h-7"
                                         />
                                       </div>
@@ -886,8 +900,15 @@ export default function CreateWorkoutProgramPage() {
                               <Input
                                 type="text"
                                 inputMode="numeric"
-                                value={exercise.sets}
-                                onChange={(e) => updateExercise(dayIndex, exIndex, 'sets', parseInt(e.target.value) || 0)}
+                                value={exercise.sets?.toString() || ''}
+                                onChange={(e) => {
+                                  const val = e.target.value
+                                  updateExercise(dayIndex, exIndex, 'sets', val === '' ? 0 : parseInt(val) || exercise.sets)
+                                }}
+                                onBlur={(e) => {
+                                  const val = parseInt(e.target.value)
+                                  if (!isNaN(val)) updateExercise(dayIndex, exIndex, 'sets', val)
+                                }}
                                 className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                               />
                             </div>
@@ -905,7 +926,7 @@ export default function CreateWorkoutProgramPage() {
                                     updateExercise(dayIndex, exIndex, 'repsMin', min)
                                     updateExercise(dayIndex, exIndex, 'repsMax', max)
                                   } else {
-                                    const reps = parseInt(value) || null
+                                    const reps = value === '' ? null : (parseInt(value) || null)
                                     updateExercise(dayIndex, exIndex, 'repsMin', reps)
                                     updateExercise(dayIndex, exIndex, 'repsMax', reps)
                                   }
@@ -919,8 +940,15 @@ export default function CreateWorkoutProgramPage() {
                               <Input
                                 type="text"
                                 inputMode="numeric"
-                                value={exercise.restSeconds}
-                                onChange={(e) => updateExercise(dayIndex, exIndex, 'restSeconds', parseInt(e.target.value) || 60)}
+                                value={exercise.restSeconds?.toString() || ''}
+                                onChange={(e) => {
+                                  const val = e.target.value
+                                  updateExercise(dayIndex, exIndex, 'restSeconds', val === '' ? 60 : parseInt(val) || exercise.restSeconds)
+                                }}
+                                onBlur={(e) => {
+                                  const val = parseInt(e.target.value)
+                                  if (!isNaN(val)) updateExercise(dayIndex, exIndex, 'restSeconds', val)
+                                }}
                                 className="bg-[rgba(255,255,255,0.05)] border-gold-primary/20 text-white text-sm"
                               />
                             </div>
