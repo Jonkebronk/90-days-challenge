@@ -562,8 +562,9 @@ model WorkoutProgramExercise {
 
   // Exercise configuration
   sets        Int // Number of sets
-  repsMin     Int? // Minimum reps (e.g., 8)
-  repsMax     Int? // Maximum reps (e.g., 12) - displays as "8-12 reps"
+  reps        String? // Reps as string (e.g., "8-12", "10", "AMRAP")
+  repsMin     Int? // @deprecated - use reps field instead
+  repsMax     Int? // @deprecated - use reps field instead
   restSeconds Int     @default(60) // Rest between sets
   tempo       String? // "3-0-1-0" tempo notation
   notes       String? // "Drop set", "Superset with X", etc.
@@ -1654,8 +1655,9 @@ model WorkoutTemplateExercise {
 
   // Exercise configuration
   sets        Int // Number of sets
-  repsMin     Int? // Minimum reps
-  repsMax     Int? // Maximum reps
+  reps        String? // Reps as string (e.g., "8-12", "10", "AMRAP")
+  repsMin     Int? // @deprecated - use reps field instead
+  repsMax     Int? // @deprecated - use reps field instead
   restSeconds Int     @default(60)
   notes       String? // Exercise-specific notes
 

@@ -168,8 +168,7 @@ export async function POST(request: Request) {
                 create: day.exercises.map((ex: any, exIndex: number) => ({
                   exerciseId: ex.exerciseId,
                   sets: ex.sets,
-                  repsMin: ex.repsMin,
-                  repsMax: ex.repsMax,
+                  reps: ex.reps,
                   restSeconds: ex.restSeconds || 60,
                   tempo: ex.tempo,
                   notes: ex.notes,
@@ -195,8 +194,7 @@ export async function POST(request: Request) {
             create: day.exercises.map((ex: any, exIndex: number) => ({
               exerciseId: ex.exerciseId,
               sets: ex.sets,
-              repsMin: ex.repsMin,
-              repsMax: ex.repsMax,
+              reps: ex.reps,
               restSeconds: ex.restSeconds || 60,
               tempo: ex.tempo,
               notes: ex.notes,

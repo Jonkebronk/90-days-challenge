@@ -222,22 +222,11 @@ export default function CreateWorkoutProgramPage() {
     setWeeks(updated)
   }
 
-  // Helper function to parse reps string to min/max
-  const parseReps = (reps: string): { repsMin: number | null, repsMax: number | null } => {
-    if (!reps) return { repsMin: null, repsMax: null }
-    if (reps.includes('-')) {
-      const [min, max] = reps.split('-').map(v => parseInt(v.trim()) || null)
-      return { repsMin: min, repsMax: max }
-    }
-    const val = parseInt(reps) || null
-    return { repsMin: val, repsMax: val }
-  }
-
   // Helper function to format exercise for API
   const formatExercise = (ex: ProgramExercise, exIndex: number) => ({
     exerciseId: ex.exerciseId,
     sets: parseInt(ex.sets) || 3,
-    ...parseReps(ex.reps),
+    reps: ex.reps,
     restSeconds: parseInt(ex.restSeconds) || 60,
     tempo: ex.tempo,
     notes: ex.notes,
