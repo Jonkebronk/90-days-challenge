@@ -4,16 +4,15 @@ import { useState, useCallback } from 'react'
 import {
   DndContext,
   DragOverlay,
-  pointerWithin,
+  closestCenter,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
   DragStartEvent,
   DragEndEvent,
-  closestCenter,
 } from '@dnd-kit/core'
-import { arrayMove } from '@dnd-kit/sortable'
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
@@ -75,10 +74,12 @@ export function DualPanelWorkoutBuilder({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 5,
       },
     }),
-    useSensor(KeyboardSensor)
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
   )
 
   // Auto-save functionality
@@ -98,16 +99,26 @@ export function DualPanelWorkoutBuilder({
   // Handle drag start
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
-    const exerciseId = active.id as string
+    const id = active.id as string
 
     // Check if dragging from library (id starts with "library-")
-    if (exerciseId.startsWith('library-')) {
-      const actualId = exerciseId.replace('library-', '')
+    if (id.startsWith('library-')) {
+      const actualId = id.replace('library-', '')
       const exercise = exercises.find(e => e.id === actualId)
       if (exercise) {
         setActiveExercise(exercise)
         setIsDraggingFromLibrary(true)
       }
+    } else {
+      // Dragging from workout panel - find the exercise being dragged
+      const exercise = currentDay.exercises.find(ex => ex.id === id)
+      if (exercise) {
+        const exerciseData = exercises.find(e => e.id === exercise.exerciseId)
+        if (exerciseData) {
+          setActiveExercise(exerciseData)
+        }
+      }
+      setIsDraggingFromLibrary(false)
     }
   }
 
@@ -224,7 +235,7 @@ export function DualPanelWorkoutBuilder({
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={pointerWithin}
+      collisionDetection={closestCenter}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
