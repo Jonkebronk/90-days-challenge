@@ -5,6 +5,7 @@ export interface Exercise {
   name: string
   muscleGroups: string[]
   equipmentNeeded: string[]
+  videoUrl?: string
 }
 
 export interface ProgramExercise {
