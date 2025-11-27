@@ -463,9 +463,6 @@ export default function WorkoutPage() {
                 {/* Day Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                      Dag {day.dayNumber}
-                    </span>
                     {day.isRestDay && (
                       <Badge variant="outline" className="bg-gray-100 border-gray-300 text-gray-500 text-xs">
                         <Coffee className="w-3 h-3 mr-1" />

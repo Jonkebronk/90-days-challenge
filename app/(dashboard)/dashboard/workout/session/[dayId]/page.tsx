@@ -633,9 +633,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
               </Button>
             </Link>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-gold-primary">DAG {workoutDay.dayNumber}</span>
-              </div>
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
                 {workoutDay.name}
               </h1>
