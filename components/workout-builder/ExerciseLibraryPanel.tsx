@@ -39,12 +39,30 @@ function DraggableExerciseItem({
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `library-${exercise.id}`,
-    disabled: !enableDrag
+    disabled: !enableDrag,
+    data: { exercise }
   })
 
   const style = transform ? {
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    zIndex: isDragging ? 1000 : undefined,
   } : undefined
+
+  // Don't render dragging item in place - DragOverlay handles it
+  if (isDragging) {
+    return (
+      <div
+        ref={setNodeRef}
+        className="w-full p-3 rounded-lg border border-dashed border-[rgba(255,215,0,0.3)] bg-[rgba(255,215,0,0.05)]"
+      >
+        <div className="opacity-30">
+          <h4 className="text-[rgba(255,255,255,0.9)] font-medium text-sm truncate">
+            {exercise.name}
+          </h4>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div
@@ -56,7 +74,6 @@ function DraggableExerciseItem({
           ? 'bg-[rgba(255,215,0,0.05)] border border-[rgba(255,215,0,0.15)] hover:bg-[rgba(255,215,0,0.1)] hover:border-[rgba(255,215,0,0.3)]'
           : 'bg-[rgba(255,255,255,0.02)] border border-[rgba(255,215,0,0.1)] hover:bg-[rgba(255,215,0,0.08)] hover:border-[rgba(255,215,0,0.25)]'
         }
-        ${isDragging ? 'opacity-50 scale-95' : ''}
         ${enableDrag ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'}
       `}
       onClick={!enableDrag ? onClick : undefined}
@@ -73,7 +90,7 @@ function DraggableExerciseItem({
           {exercise.name}
         </h4>
         <div className="flex flex-wrap gap-1">
-          {exercise.muscleGroups.slice(0, 3).map(mg => (
+          {exercise.muscleGroups?.slice(0, 3).map(mg => (
             <Badge
               key={mg}
               variant="outline"
@@ -82,7 +99,7 @@ function DraggableExerciseItem({
               {mg}
             </Badge>
           ))}
-          {exercise.muscleGroups.length > 3 && (
+          {exercise.muscleGroups?.length > 3 && (
             <Badge
               variant="outline"
               className="text-xs bg-[rgba(255,255,255,0.05)] border-[rgba(255,255,255,0.1)] text-[rgba(255,255,255,0.5)] py-0"
