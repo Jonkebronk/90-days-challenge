@@ -93,64 +93,64 @@ export function ExerciseCard({
         </div>
 
         {/* Compact Stats */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           {/* Sets */}
           <div className="text-center">
-            <span className="text-xs text-[rgba(255,255,255,0.5)] block mb-1">Sets</span>
+            <span className="text-sm text-[rgba(255,255,255,0.6)] block mb-1">Sets</span>
             <Input
               type="text"
               inputMode="numeric"
               value={exercise.sets || ''}
               onChange={(e) => onChange('sets', e.target.value === '' ? 0 : parseInt(e.target.value) || exercise.sets)}
-              className="w-16 h-10 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+              className="w-20 h-12 text-center text-lg bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white font-medium"
             />
           </div>
 
           {/* Reps */}
           <div className="text-center">
-            <span className="text-xs text-[rgba(255,255,255,0.5)] block mb-1">Reps</span>
+            <span className="text-sm text-[rgba(255,255,255,0.6)] block mb-1">Reps</span>
             <Input
               type="text"
               value={getRepsValue()}
               onChange={(e) => handleRepsChange(e.target.value)}
               placeholder="8-12"
-              className="w-20 h-10 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+              className="w-24 h-12 text-center text-lg bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white font-medium"
             />
           </div>
 
           {/* Rest */}
           <div className="text-center">
-            <span className="text-xs text-[rgba(255,255,255,0.5)] block mb-1">Vila</span>
+            <span className="text-sm text-[rgba(255,255,255,0.6)] block mb-1">Vila</span>
             <Input
               type="text"
               inputMode="numeric"
               value={exercise.restSeconds || ''}
               onChange={(e) => onChange('restSeconds', e.target.value === '' ? 60 : parseInt(e.target.value) || exercise.restSeconds)}
-              className="w-16 h-10 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+              className="w-20 h-12 text-center text-lg bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white font-medium"
             />
           </div>
 
           {/* Tempo */}
           <div className="text-center">
-            <span className="text-xs text-[rgba(255,255,255,0.5)] block mb-1">Tempo</span>
+            <span className="text-sm text-[rgba(255,255,255,0.6)] block mb-1">Tempo</span>
             <Input
               type="text"
               value={exercise.tempo || ''}
               onChange={(e) => onChange('tempo', e.target.value)}
               placeholder="3-0-1-0"
-              className="w-24 h-10 text-center bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white"
+              className="w-28 h-12 text-center text-lg bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.3)] text-white font-medium"
             />
           </div>
 
           {/* Superset Toggle */}
           {onToggleSuperset && (
-            <div className="flex items-center gap-2 pl-3 border-l border-[rgba(255,255,255,0.1)]">
+            <div className="flex items-center gap-2 pl-4 border-l border-[rgba(255,255,255,0.15)]">
               <Checkbox
                 checked={isSelected}
                 onCheckedChange={(checked) => onToggleSuperset(checked === true)}
-                className="w-5 h-5 border-[rgba(255,215,0,0.3)] data-[state=checked]:bg-[#FFD700] data-[state=checked]:border-[#FFD700]"
+                className="w-6 h-6 border-[rgba(255,215,0,0.4)] data-[state=checked]:bg-[#FFD700] data-[state=checked]:border-[#FFD700]"
               />
-              <span className="text-xs text-[rgba(255,255,255,0.5)]">Superset</span>
+              <span className="text-sm text-[rgba(255,255,255,0.6)]">Superset</span>
             </div>
           )}
 
