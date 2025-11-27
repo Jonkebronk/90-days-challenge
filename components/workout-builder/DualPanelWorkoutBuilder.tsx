@@ -66,7 +66,7 @@ export function DualPanelWorkoutBuilder({
   const [supersetsMap, setSupersetsMap] = useState<Record<number, SupersetGroup[]>>({})
   const [dropsetsMap, setDropsetsMap] = useState<Record<number, Dropset[]>>({})
 
-  const currentDay = days[selectedDayIndex]
+  const currentDay = days[selectedDayIndex] || { dayNumber: 1, name: '', description: '', isRestDay: false, exercises: [] }
   const currentSupersets = supersetsMap[selectedDayIndex] || []
   const currentDropsets = dropsetsMap[selectedDayIndex] || []
 
