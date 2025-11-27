@@ -99,7 +99,7 @@ export async function PUT(
       data: {
         name,
         description,
-        difficulty,
+        difficulty: difficulty || null,
         categoryId: categoryId || null,
         warmupRoutineId: warmupRoutineId || null,
         durationWeeks,
