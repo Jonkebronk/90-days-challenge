@@ -89,36 +89,20 @@ export function ProgramInfoStep({ data, onChange, onNext }: ProgramInfoStepProps
               value={data.description}
               onChange={(e) => onChange('description', e.target.value)}
               placeholder="Beskriv programmet och dess mål..."
-              rows={3}
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+              rows={10}
+              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1 min-h-[200px]"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Svårighetsgrad</Label>
-              <Select value={data.difficulty} onValueChange={(value) => onChange('difficulty', value)}>
-                <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
-                  <SelectValue placeholder="Välj nivå" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="beginner">Beginner</SelectItem>
-                  <SelectItem value="intermediate">Intermediate</SelectItem>
-                  <SelectItem value="advanced">Advanced</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label className="text-[rgba(255,255,255,0.7)]">Varaktighet (veckor)</Label>
-              <Input
-                type="number"
-                value={data.durationWeeks || ''}
-                onChange={(e) => onChange('durationWeeks', e.target.value ? parseInt(e.target.value) : null)}
-                placeholder="T.ex. 8"
-                className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
-              />
-            </div>
+          <div>
+            <Label className="text-[rgba(255,255,255,0.7)]">Varaktighet (veckor)</Label>
+            <Input
+              type="number"
+              value={data.durationWeeks || ''}
+              onChange={(e) => onChange('durationWeeks', e.target.value ? parseInt(e.target.value) : null)}
+              placeholder="T.ex. 8"
+              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1"
+            />
           </div>
 
           <div>
@@ -173,18 +157,6 @@ export function ProgramInfoStep({ data, onChange, onNext }: ProgramInfoStepProps
             )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="published"
-              checked={data.published}
-              onChange={(e) => onChange('published', e.target.checked)}
-              className="w-4 h-4 rounded border-[rgba(255,215,0,0.3)]"
-            />
-            <Label htmlFor="published" className="text-[rgba(255,255,255,0.7)] cursor-pointer">
-              Publicera direkt
-            </Label>
-          </div>
         </CardContent>
       </Card>
 
