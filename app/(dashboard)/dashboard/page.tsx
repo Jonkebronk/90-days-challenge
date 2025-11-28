@@ -501,50 +501,23 @@ export default function DashboardPage() {
           {/* Right: Day Counter */}
           {programInfo && (
             <div className="flex items-center gap-3">
-              {/* Circular Progress with integrated info */}
-              <div className="relative w-16 h-16 sm:w-20 sm:h-20">
-                {/* Background circle */}
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="15.5"
-                    fill="none"
-                    stroke="#f3f4f6"
-                    strokeWidth="3"
-                  />
-                  {/* Progress circle */}
-                  <circle
-                    cx="18"
-                    cy="18"
-                    r="15.5"
-                    fill="none"
-                    stroke={programInfo.phase === 1 ? '#22c55e' : programInfo.phase === 2 ? '#3b82f6' : '#f59e0b'}
-                    strokeWidth="3"
-                    strokeDasharray={`${(programInfo.programDay / 90) * 97.4} 97.4`}
-                    strokeLinecap="round"
-                    className="drop-shadow-sm"
-                  />
-                </svg>
-                {/* Center text */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-[8px] sm:text-[9px] font-medium text-gray-400 uppercase tracking-wider">Dag</span>
-                  <span className="text-xl sm:text-2xl font-bold text-gray-900 leading-none -mt-0.5">{programInfo.programDay}</span>
+              {/* Day counter text */}
+              <div className="text-right">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl sm:text-3xl font-bold text-gray-900">Dag {programInfo.programDay}</span>
+                  <span className="text-sm sm:text-base text-gray-400">av 90</span>
                 </div>
-              </div>
-
-              {/* Phase & Week info - vertical */}
-              <div className="hidden sm:flex flex-col gap-1">
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
-                  programInfo.phase === 1 ? 'bg-green-100 text-green-700' :
-                  programInfo.phase === 2 ? 'bg-blue-100 text-blue-700' :
-                  'bg-amber-100 text-amber-700'
-                }`}>
-                  Fas {programInfo.phase}
-                </span>
-                <span className="text-[10px] text-gray-500 text-center">
-                  Vecka {programInfo.week} av 13
-                </span>
+                <div className="flex items-center justify-end gap-2 mt-0.5">
+                  <span className={`text-xs font-medium ${
+                    programInfo.phase === 1 ? 'text-green-600' :
+                    programInfo.phase === 2 ? 'text-blue-600' :
+                    'text-amber-600'
+                  }`}>
+                    Fas {programInfo.phase}
+                  </span>
+                  <span className="text-xs text-gray-400">•</span>
+                  <span className="text-xs text-gray-500">Vecka {programInfo.week}</span>
+                </div>
               </div>
             </div>
           )}
