@@ -454,33 +454,44 @@ export default function ProfilePage() {
             ) : (
               <div className="space-y-4">
                 {/* Status */}
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="flex items-center gap-3">
-                    {hasSubscription ? (
-                      <CheckCircle2 className="w-6 h-6 text-green-500" />
-                    ) : (
-                      <XCircle className="w-6 h-6 text-gray-400" />
-                    )}
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {hasSubscription ? 'Notiser aktiverade' : 'Notiser ej aktiverade'}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {hasSubscription
-                          ? `${subscriptionCount} enhet${subscriptionCount !== 1 ? 'er' : ''} registrerad${subscriptionCount !== 1 ? 'e' : ''}`
-                          : 'Du får inga push-notiser just nu'
-                        }
-                      </p>
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {hasSubscription ? (
+                        <CheckCircle2 className="w-6 h-6 text-green-500" />
+                      ) : (
+                        <XCircle className="w-6 h-6 text-gray-400" />
+                      )}
+                      <div>
+                        <p className="font-medium text-gray-900">
+                          {hasSubscription ? 'Notiser aktiverade' : 'Notiser ej aktiverade'}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {hasSubscription
+                            ? `${subscriptionCount} enhet${subscriptionCount !== 1 ? 'er' : ''} registrerad${subscriptionCount !== 1 ? 'e' : ''}`
+                            : 'Du får inga push-notiser just nu'
+                          }
+                        </p>
+                      </div>
+                    </div>
+                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      pushPermission === 'granted'
+                        ? 'bg-green-100 text-green-700'
+                        : pushPermission === 'denied'
+                          ? 'bg-red-100 text-red-700'
+                          : 'bg-gray-100 text-gray-700'
+                    }`}>
+                      {pushPermission === 'granted' ? 'Tillåtet' : pushPermission === 'denied' ? 'Blockerat' : 'Ej frågat'}
                     </div>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    pushPermission === 'granted'
-                      ? 'bg-green-100 text-green-700'
-                      : pushPermission === 'denied'
-                        ? 'bg-red-100 text-red-700'
-                        : 'bg-gray-100 text-gray-700'
-                  }`}>
-                    {pushPermission === 'granted' ? 'Tillåtet' : pushPermission === 'denied' ? 'Blockerat' : 'Ej frågat'}
+                  {/* What notifications are for */}
+                  <div className="text-sm text-gray-600 pl-9">
+                    <p className="font-medium text-gray-700 mb-1">Du får notiser för:</p>
+                    <ul className="list-disc list-inside space-y-0.5 text-gray-500">
+                      <li>Nya meddelanden från din coach</li>
+                      <li>Påminnelse om vecko-check-in (söndagar)</li>
+                      <li>När du tilldelas nytt träningsprogram eller kostschema</li>
+                    </ul>
                   </div>
                 </div>
 
