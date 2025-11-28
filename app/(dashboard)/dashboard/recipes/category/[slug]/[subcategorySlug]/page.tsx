@@ -213,20 +213,6 @@ export default function RecipeSubcategoryPage({
                 <h3 className="text-xs sm:text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-gold-primary transition-colors">
                   {recipe.title}
                 </h3>
-                <div className="flex items-center gap-2 mt-1.5">
-                  {(recipe.prepTimeMinutes || recipe.cookTimeMinutes) && (
-                    <div className="flex items-center gap-0.5 text-gray-400">
-                      <Clock className="h-3 w-3" />
-                      <span className="text-[10px]">{(recipe.prepTimeMinutes || 0) + (recipe.cookTimeMinutes || 0)}m</span>
-                    </div>
-                  )}
-                  {recipe.caloriesPerServing && (
-                    <div className="flex items-center gap-0.5 text-gray-400">
-                      <Flame className="h-3 w-3" />
-                      <span className="text-[10px]">{Math.round(recipe.caloriesPerServing)}</span>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           ))}

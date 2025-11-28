@@ -25,7 +25,8 @@ import {
   Clock,
   Info,
   Apple,
-  Smartphone
+  Smartphone,
+  Bell
 } from 'lucide-react'
 
 export default function DashboardPage() {
@@ -306,7 +307,7 @@ export default function DashboardPage() {
         {isGettingStartedOpen && (
         <div className="p-6 pt-2 border-t border-gray-100">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            {/* 1. Installera som app */}
+            {/* 1. Installera som app och aktivera notiser */}
             <Dialog>
               <DialogTrigger asChild>
                 <button className="flex items-start gap-3 group cursor-pointer text-left">
@@ -314,16 +315,16 @@ export default function DashboardPage() {
                     <span className="text-white font-bold text-sm">1</span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-green-600 transition-colors">Installera som app</h4>
+                    <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-green-600 transition-colors">Installera app & notiser</h4>
                     <p className="text-gray-600 text-xs">Få app-upplevelsen</p>
                   </div>
                 </button>
               </DialogTrigger>
-              <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-lg">
+              <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-lg max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="text-gray-200 flex items-center gap-2">
                     <Smartphone className="w-6 h-6 text-green-400" />
-                    Installera som app
+                    Installera app & aktivera notiser
                   </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-6 text-gray-300">
@@ -372,6 +373,29 @@ export default function DashboardPage() {
                       <li className="flex gap-2">
                         <span className="text-green-400 font-bold">4.</span>
                         Tryck &quot;Lägg till&quot;
+                      </li>
+                    </ol>
+                  </div>
+                  <div className="border-t border-gray-700 pt-4">
+                    <h3 className="font-semibold text-white flex items-center gap-2 mb-3">
+                      <Bell className="w-5 h-5" />
+                      Aktivera push-notiser
+                    </h3>
+                    <p className="text-sm mb-3">
+                      För att få notiser när din coach skriver till dig:
+                    </p>
+                    <ol className="space-y-2 text-sm">
+                      <li className="flex gap-2">
+                        <span className="text-green-400 font-bold">1.</span>
+                        Gå till <span className="text-green-400">Profil</span> i menyn
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-green-400 font-bold">2.</span>
+                        Scrolla ner till &quot;Push-notiser&quot;
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-green-400 font-bold">3.</span>
+                        Tryck &quot;Aktivera notiser&quot;
                       </li>
                     </ol>
                   </div>

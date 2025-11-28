@@ -39,7 +39,11 @@
       "Bash(node scripts/check-guide-types.js:*)",
       "Bash(echo:*)",
       "Bash(npx prisma db execute:*)",
-      "Bash(dir /b \"C:\\Users\\johnn\\90-days-challenge\\*.md\")"
+      "Bash(dir /b \"C:\\Users\\johnn\\90-days-challenge\\*.md\")",
+      "Bash(dir /s /b C:Usersjohnn90-days-challenge*.md)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ],
     "deny": [],
     "ask": []

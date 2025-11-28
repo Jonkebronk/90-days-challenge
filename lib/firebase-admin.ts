@@ -43,8 +43,8 @@ export async function sendPushToDevice(
       },
       webpush: {
         notification: {
-          icon: '/icons/icon-192x192.png',
-          badge: '/icons/icon-72x72.png',
+          icon: '/images/icon-192.png',
+          badge: '/images/icon-192.png',
           tag: 'notification',
           requireInteraction: true,
         },
@@ -101,8 +101,8 @@ export async function sendPushToDevices(
       },
       webpush: {
         notification: {
-          icon: '/icons/icon-192x192.png',
-          badge: '/icons/icon-72x72.png',
+          icon: '/images/icon-192.png',
+          badge: '/images/icon-192.png',
           tag: 'notification',
           requireInteraction: true,
         },

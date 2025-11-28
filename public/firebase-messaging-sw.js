@@ -28,8 +28,8 @@ function initializeFirebase() {
       const notificationTitle = payload.notification?.title || 'Ny notifikation'
       const notificationOptions = {
         body: payload.notification?.body || '',
-        icon: '/icons/icon-192x192.png',
-        badge: '/icons/icon-72x72.png',
+        icon: '/images/icon-192.png',
+        badge: '/images/icon-192.png',
         tag: payload.data?.tag || 'notification',
         requireInteraction: true,
         data: {
