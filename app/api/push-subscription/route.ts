@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE - Remove a push subscription
+// DELETE - Remove push subscriptions (all or specific token)
 export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -55,19 +55,30 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { token } = await request.json()
-
-    if (!token) {
-      return NextResponse.json({ error: 'Token is required' }, { status: 400 })
+    let token: string | undefined
+    try {
+      const body = await request.json()
+      token = body.token
+    } catch {
+      // No body, remove all
     }
 
-    // Delete the subscription
-    await prisma.pushSubscription.deleteMany({
-      where: {
-        userId: session.user.id,
-        token,
-      },
-    })
+    if (token) {
+      // Delete specific subscription
+      await prisma.pushSubscription.deleteMany({
+        where: {
+          userId: session.user.id,
+          token,
+        },
+      })
+    } else {
+      // Delete ALL subscriptions for this user
+      await prisma.pushSubscription.deleteMany({
+        where: {
+          userId: session.user.id,
+        },
+      })
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {

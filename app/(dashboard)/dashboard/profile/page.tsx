@@ -4,10 +4,11 @@ import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Bell, BellOff, CheckCircle2, XCircle, RefreshCw } from 'lucide-react'
+import { requestNotificationPermission, isPushSupported, getNotificationPermission } from '@/lib/firebase'
 
 export default function ProfilePage() {
   const { data: session, update } = useSession()
@@ -27,6 +28,108 @@ export default function ProfilePage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
+
+  // Push notification state
+  const [pushSupported, setPushSupported] = useState(false)
+  const [pushPermission, setPushPermission] = useState<NotificationPermission | null>(null)
+  const [hasSubscription, setHasSubscription] = useState(false)
+  const [subscriptionCount, setSubscriptionCount] = useState(0)
+  const [isLoadingPush, setIsLoadingPush] = useState(true)
+  const [isEnablingPush, setIsEnablingPush] = useState(false)
+
+  // Check push notification status on mount
+  useEffect(() => {
+    async function checkPushStatus() {
+      setIsLoadingPush(true)
+      try {
+        const supported = await isPushSupported()
+        setPushSupported(supported)
+
+        if (supported) {
+          setPushPermission(getNotificationPermission())
+        }
+
+        // Check server subscription
+        const response = await fetch('/api/push-subscription')
+        if (response.ok) {
+          const data = await response.json()
+          setHasSubscription(data.hasSubscriptions)
+          setSubscriptionCount(data.count || 0)
+        }
+      } catch (error) {
+        console.error('Error checking push status:', error)
+      } finally {
+        setIsLoadingPush(false)
+      }
+    }
+
+    checkPushStatus()
+  }, [])
+
+  const handleEnablePush = async () => {
+    setIsEnablingPush(true)
+    try {
+      const token = await requestNotificationPermission()
+
+      if (token) {
+        // Save token to server
+        const response = await fetch('/api/push-subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token,
+            device: detectDevice(),
+          }),
+        })
+
+        if (response.ok) {
+          setPushPermission('granted')
+          setHasSubscription(true)
+          setSubscriptionCount(prev => prev + 1)
+          toast.success('Push-notiser aktiverade!')
+        } else {
+          const data = await response.json()
+          toast.error(data.error || 'Kunde inte spara prenumerationen')
+        }
+      } else {
+        setPushPermission(getNotificationPermission())
+        if (getNotificationPermission() === 'denied') {
+          toast.error('Du har blockerat notifikationer. Ändra i webbläsarens inställningar.')
+        }
+      }
+    } catch (error) {
+      console.error('Error enabling push:', error)
+      toast.error('Något gick fel')
+    } finally {
+      setIsEnablingPush(false)
+    }
+  }
+
+  const handleRemoveSubscriptions = async () => {
+    try {
+      const response = await fetch('/api/push-subscription', {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        setHasSubscription(false)
+        setSubscriptionCount(0)
+        toast.success('Alla prenumerationer borttagna')
+      } else {
+        toast.error('Kunde inte ta bort prenumerationer')
+      }
+    } catch (error) {
+      console.error('Error removing subscriptions:', error)
+      toast.error('Något gick fel')
+    }
+  }
+
+  function detectDevice(): string {
+    const userAgent = navigator.userAgent.toLowerCase()
+    if (/iphone|ipad|ipod/.test(userAgent)) return 'ios'
+    if (/android/.test(userAgent)) return 'android'
+    return 'web'
+  }
 
   const handleSave = async () => {
     try {
@@ -287,6 +390,117 @@ export default function ProfilePage() {
                 </div>
               </DialogContent>
             </Dialog>
+          </div>
+        </div>
+
+        {/* Push Notifications Card */}
+        <div className="bg-white border-2 border-gray-300 rounded-xl shadow-lg">
+          <div className="p-6 border-b-2 border-gray-200 bg-gray-50 rounded-t-xl">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <Bell className="w-5 h-5" />
+              Push-notiser
+            </h2>
+          </div>
+          <div className="p-6">
+            {isLoadingPush ? (
+              <div className="flex items-center gap-2 text-gray-500">
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                Laddar status...
+              </div>
+            ) : !pushSupported ? (
+              <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <BellOff className="w-5 h-5 text-amber-600" />
+                <div>
+                  <p className="font-medium text-amber-800">Push-notiser stöds inte</p>
+                  <p className="text-sm text-amber-600">Din webbläsare eller enhet stöder inte push-notiser.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Status */}
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="flex items-center gap-3">
+                    {hasSubscription ? (
+                      <CheckCircle2 className="w-6 h-6 text-green-500" />
+                    ) : (
+                      <XCircle className="w-6 h-6 text-gray-400" />
+                    )}
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {hasSubscription ? 'Notiser aktiverade' : 'Notiser ej aktiverade'}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {hasSubscription
+                          ? `${subscriptionCount} enhet${subscriptionCount !== 1 ? 'er' : ''} registrerad${subscriptionCount !== 1 ? 'e' : ''}`
+                          : 'Du får inga push-notiser just nu'
+                        }
+                      </p>
+                    </div>
+                  </div>
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    pushPermission === 'granted'
+                      ? 'bg-green-100 text-green-700'
+                      : pushPermission === 'denied'
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-gray-100 text-gray-700'
+                  }`}>
+                    {pushPermission === 'granted' ? 'Tillåtet' : pushPermission === 'denied' ? 'Blockerat' : 'Ej frågat'}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    onClick={handleEnablePush}
+                    disabled={isEnablingPush || pushPermission === 'denied'}
+                    className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
+                  >
+                    {isEnablingPush ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        Aktiverar...
+                      </>
+                    ) : hasSubscription ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Registrera denna enhet igen
+                      </>
+                    ) : (
+                      <>
+                        <Bell className="w-4 h-4 mr-2" />
+                        Aktivera notiser
+                      </>
+                    )}
+                  </Button>
+
+                  {hasSubscription && (
+                    <Button
+                      onClick={handleRemoveSubscriptions}
+                      variant="outline"
+                      className="border-2 border-red-300 text-red-600 hover:bg-red-50"
+                    >
+                      <BellOff className="w-4 h-4 mr-2" />
+                      Ta bort alla prenumerationer
+                    </Button>
+                  )}
+                </div>
+
+                {/* Info text */}
+                {pushPermission === 'denied' && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-700">
+                      Du har blockerat notifikationer. För att aktivera dem måste du ändra i webbläsarens inställningar.
+                    </p>
+                  </div>
+                )}
+
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-700">
+                    <strong>Tips:</strong> För att få notiser på mobilen, lägg till appen på hemskärmen och aktivera notiser där också.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
