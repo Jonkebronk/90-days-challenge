@@ -109,6 +109,53 @@ export async function notifyMealPlanAssigned(
   )
 }
 
+// Send weight reminder (for cron job)
+export async function sendWeightReminders(): Promise<{
+  total: number
+  sent: number
+  failed: number
+}> {
+  try {
+    // Find all users with weight reminders enabled who have push subscriptions
+    const usersWithReminders = await prisma.user.findMany({
+      where: {
+        weightReminderEnabled: true,
+        pushSubscriptions: {
+          some: {},
+        },
+      },
+      select: {
+        id: true,
+      },
+    })
+
+    let totalSent = 0
+    let totalFailed = 0
+
+    for (const user of usersWithReminders) {
+      const result = await sendPushNotification(
+        user.id,
+        'Morgonvägning 🌅',
+        'Dags att väga dig! Klicka här för att logga din vikt.',
+        '/dashboard',
+        { type: 'weight_reminder' }
+      )
+
+      totalSent += result.sent
+      totalFailed += result.failed
+    }
+
+    return {
+      total: usersWithReminders.length,
+      sent: totalSent,
+      failed: totalFailed,
+    }
+  } catch (error) {
+    console.error('Error sending weight reminders:', error)
+    return { total: 0, sent: 0, failed: 0 }
+  }
+}
+
 // Send check-in reminder (for cron job)
 export async function sendCheckInReminders(): Promise<{
   total: number
