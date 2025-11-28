@@ -43,6 +43,8 @@ export default function DashboardPage() {
   const [isGettingStartedOpen, setIsGettingStartedOpen] = useState(false)
   const [isWaterTipsOpen, setIsWaterTipsOpen] = useState(false)
   const [userWeight, setUserWeight] = useState<string>('')
+  const [weightInput, setWeightInput] = useState<string>('')
+  const [hasCalculated, setHasCalculated] = useState(false)
   const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
 
   // Load weight from localStorage on mount
@@ -50,17 +52,27 @@ export default function DashboardPage() {
     const savedWeight = localStorage.getItem('userWeight')
     if (savedWeight) {
       setUserWeight(savedWeight)
+      setHasCalculated(true)
     }
   }, [])
 
   // Calculate water intake
   const weightNum = parseFloat(userWeight)
-  const waterLiters = weightNum > 0 ? (weightNum / 23).toFixed(1) : null
+  const waterLiters = weightNum > 0 && hasCalculated ? (weightNum / 23).toFixed(1) : null
 
-  // Save weight to localStorage
-  const handleWeightChange = (value: string) => {
-    setUserWeight(value)
-    localStorage.setItem('userWeight', value)
+  // Save weight and calculate
+  const handleCalculate = () => {
+    if (weightInput && parseFloat(weightInput) > 0) {
+      setUserWeight(weightInput)
+      setHasCalculated(true)
+      localStorage.setItem('userWeight', weightInput)
+    }
+  }
+
+  // Reset to input mode
+  const handleResetWeight = () => {
+    setWeightInput(userWeight)
+    setHasCalculated(false)
   }
 
   // Debug logging
@@ -517,17 +529,24 @@ export default function DashboardPage() {
                   <input
                     type="number"
                     placeholder="Din vikt"
-                    value={userWeight}
-                    onChange={(e) => handleWeightChange(e.target.value)}
+                    value={weightInput}
+                    onChange={(e) => setWeightInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
                     className="w-20 sm:w-24 px-2 py-1 text-sm border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
                   />
                   <span className="text-gray-600 text-sm">kg</span>
+                  <button
+                    onClick={handleCalculate}
+                    className="px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                  >
+                    Beräkna
+                  </button>
                 </div>
               )}
             </div>
             {waterLiters && (
               <button
-                onClick={() => handleWeightChange('')}
+                onClick={handleResetWeight}
                 className="text-xs text-blue-500 hover:text-blue-700 underline"
               >
                 Ändra vikt
