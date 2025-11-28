@@ -235,6 +235,16 @@ export default function ArticleReaderPage() {
       {/* Article Content */}
       <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
         <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Button
+            onClick={() => router.push('/dashboard/articles')}
+            variant="ghost"
+            className="mb-4 text-gray-400 hover:text-white hover:bg-white/10 -ml-2"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Tillbaka till kunskapsbanken
+          </Button>
+
           {/* Cover Image */}
           {article.coverImage && (
             <div className="mb-4 sm:mb-8 rounded-lg overflow-hidden border border-gold-primary/20">
