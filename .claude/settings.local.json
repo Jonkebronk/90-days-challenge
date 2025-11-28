@@ -43,7 +43,8 @@
       "Bash(dir /s /b C:Usersjohnn90-days-challenge*.md)",
       "Bash(git pull:*)",
       "Bash(git stash:*)",
-      "WebFetch(domain:raw.githubusercontent.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(git fetch:*)"
     ],
     "deny": [],
     "ask": []

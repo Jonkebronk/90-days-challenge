@@ -539,7 +539,7 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Daily Goals Widget - Collapsible */}
+      {/* Daily Goals Widget - Collapsible Card */}
       <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto">
         <button
           onClick={() => setIsDailyGoalsOpen(!isDailyGoalsOpen)}
