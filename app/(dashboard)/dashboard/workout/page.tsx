@@ -529,31 +529,47 @@ export default function WorkoutPage() {
                         <div key={idx}>
                           {/* Superset banner - only show before first exercise */}
                           {isFirstInSuperset && (
-                            <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-3 rounded-lg mb-2 shadow">
-                              <p className="font-bold text-sm mb-1">SUPERSET</p>
-                              <div className="flex flex-wrap items-center gap-1 mb-1">
+                            <div className="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-3 rounded-t-lg mb-0 shadow border-2 border-purple-400 border-b-0">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-6 h-6 bg-white/20 rounded flex items-center justify-center">
+                                  <span className="text-xs font-bold">SS</span>
+                                </div>
+                                <p className="font-bold text-sm">SUPERSET</p>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-1 mb-2">
                                 {supersetExercises.map((ssEx, ssIdx) => (
                                   <span key={ssEx.id} className="flex items-center">
-                                    <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-medium">{ssEx.exercise.name}</span>
-                                    {ssIdx < supersetExercises.length - 1 && <span className="mx-1 text-amber-200">+</span>}
+                                    <span className="bg-white/30 px-2 py-0.5 rounded text-xs font-medium">{ssEx.exercise.name}</span>
+                                    {ssIdx < supersetExercises.length - 1 && <span className="mx-1 text-white font-bold">+</span>}
                                   </span>
                                 ))}
                               </div>
-                              <p className="text-xs text-amber-100">Kör direkt efter varandra utan vila.</p>
+                              <p className="text-xs text-purple-200">Kör direkt efter varandra utan vila.</p>
                             </div>
                           )}
 
                         <div
-                          className={`bg-gray-50 rounded-lg border overflow-hidden ${
-                            isSuperset ? 'border-l-4 border-l-amber-500 border-gray-200' : 'border-gray-200'
+                          className={`bg-gray-50 border overflow-hidden ${
+                            isSuperset
+                              ? `border-l-4 border-l-purple-500 border-purple-200 ${isFirstInSuperset ? 'rounded-t-none rounded-b-lg' : 'rounded-lg'}`
+                              : 'border-gray-200 rounded-lg'
                           }`}
                         >
                           <div className="flex items-center gap-3 p-3">
-                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white text-sm font-bold">
+                            <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${
+                              isSuperset ? 'bg-gradient-to-br from-purple-500 to-purple-600' : 'bg-gradient-to-br from-gold-primary to-gold-secondary'
+                            }`}>
                               {idx + 1}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-gray-900">{ex.exercise.name}</p>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <p className="font-medium text-gray-900">{ex.exercise.name}</p>
+                                {isSuperset && (
+                                  <span className="bg-purple-100 text-purple-700 border border-purple-300 text-[10px] px-1.5 py-0.5 rounded font-semibold">
+                                    SS {supersetExercises.findIndex(e => e.id === ex.id) + 1}/{supersetExercises.length}
+                                  </span>
+                                )}
+                              </div>
                               <p className="text-sm text-gray-600">
                                 {ex.sets} set × {ex.reps || '-'} reps
                               </p>

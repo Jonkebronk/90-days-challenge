@@ -671,29 +671,36 @@ export default function WorkoutSessionPage({ params }: PageProps) {
               <div key={exercise.id}>
                 {/* Superset banner - only show before first exercise in superset */}
                 {isFirstInSuperset && (
-                  <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-4 rounded-xl mb-3 shadow-lg">
-                    <p className="font-bold text-lg mb-2">SUPERSET</p>
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <div className="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-4 rounded-xl mb-0 shadow-lg border-2 border-purple-400">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                        <span className="text-lg font-bold">SS</span>
+                      </div>
+                      <p className="font-bold text-xl tracking-wide">SUPERSET</p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 mb-3">
                       {supersetExercises.map((ex, idx) => (
                         <span key={ex.id} className="flex items-center">
-                          <span className="bg-white/20 px-2 py-1 rounded text-sm font-medium">{ex.exercise.name}</span>
-                          {idx < supersetExercises.length - 1 && <span className="mx-1 text-amber-200">+</span>}
+                          <span className="bg-white/30 px-3 py-1.5 rounded-lg text-sm font-semibold shadow-sm">{ex.exercise.name}</span>
+                          {idx < supersetExercises.length - 1 && <span className="mx-2 text-white font-bold text-lg">+</span>}
                         </span>
                       ))}
                     </div>
-                    <p className="text-sm text-amber-100">Kör dessa övningar direkt efter varandra utan vila. Vila först när alla är klara.</p>
+                    <p className="text-sm text-purple-200 bg-purple-800/50 p-2 rounded-lg">Kör dessa övningar direkt efter varandra utan vila mellan. Vila först när alla övningar är klara.</p>
                   </div>
                 )}
 
                 <Card
-              className={`bg-white border-2 transition-all shadow-md rounded-lg ${
-                isSuperset ? 'border-l-4 border-l-amber-500' : ''
+              className={`bg-white border-2 transition-all shadow-md ${
+                isSuperset
+                  ? `border-l-4 border-l-purple-500 ${isFirstInSuperset ? 'rounded-t-none rounded-b-lg mt-0' : ''} ${!isFirstInSuperset && !isLastInSuperset ? 'rounded-none' : ''} ${isLastInSuperset && !isFirstInSuperset ? 'rounded-t-none rounded-b-lg' : ''}`
+                  : 'rounded-lg'
               } ${
                 isCurrent && sessionId
                   ? 'border-gold-primary'
                   : isExerciseComplete && !isExpanded
                     ? 'border-green-300'
-                    : 'border-gray-300'
+                    : isSuperset ? 'border-purple-200' : 'border-gray-300'
               } ${isExerciseComplete && !isExpanded ? 'opacity-60 scale-95' : ''}`}
             >
               <CardHeader className={isExerciseComplete && !isExpanded ? 'py-3' : ''}>
@@ -707,6 +714,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         <CardTitle className={`${isExerciseComplete && !isExpanded ? 'text-lg' : 'text-xl'} text-gray-900 transition-all font-bold`}>
                           {exercise.exercise.name}
                         </CardTitle>
+                        {isSuperset && (
+                          <Badge className="bg-purple-100 text-purple-700 border-purple-300 text-xs font-semibold">
+                            Superset {supersetExercises.findIndex(ex => ex.id === exercise.id) + 1}/{supersetExercises.length}
+                          </Badge>
+                        )}
                         {isExerciseComplete && !isExpanded && (
                           <Badge className="bg-green-100 text-green-600 border-green-300 text-xs">
                             Klar
