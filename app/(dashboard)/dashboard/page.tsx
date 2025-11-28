@@ -526,7 +526,7 @@ export default function DashboardPage() {
                 <div>
                   <p className="text-2xl sm:text-3xl font-bold text-blue-600">{waterLiters} liter</p>
                   <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                    Läs mer om <Link href="/dashboard/articles" className="text-blue-500 hover:text-blue-700 underline">vatten</Link> i kunskapsbanken
+                    Läs mer om <Link href="/dashboard/articles/cmhsa0czw000uqf0qke1b3quq" className="text-blue-500 hover:text-blue-700 underline">vatten</Link> i kunskapsbanken
                   </p>
                 </div>
               ) : (
