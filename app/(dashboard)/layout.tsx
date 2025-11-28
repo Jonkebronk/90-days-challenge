@@ -46,6 +46,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
+import { ForegroundNotification } from '@/components/ForegroundNotification'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -152,6 +153,9 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-gray-900 overflow-x-hidden">
+      {/* Foreground push notification listener */}
+      <ForegroundNotification />
+
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4 max-w-[100vw]">
