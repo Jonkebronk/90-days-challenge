@@ -29,7 +29,8 @@ import {
   Bell,
   Droplets,
   Footprints,
-  CheckCircle2
+  CheckCircle2,
+  X
 } from 'lucide-react'
 
 export default function DashboardPage() {
@@ -58,10 +59,13 @@ export default function DashboardPage() {
   const [workoutSessions, setWorkoutSessions] = useState<any[]>([])
   const [checkIns, setCheckIns] = useState<any[]>([])
 
+  // Get started section visibility
+  const [hideGetStarted, setHideGetStarted] = useState(false)
+
   const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
   const userId = (session?.user as any)?.id
 
-  // Load weight and step goal from localStorage on mount
+  // Load weight, step goal, and getStarted visibility from localStorage on mount
   useEffect(() => {
     const savedWeight = localStorage.getItem('userWeight')
     if (savedWeight) {
@@ -73,6 +77,8 @@ export default function DashboardPage() {
       setStepGoal(savedStepGoal)
       setHasStepGoal(true)
     }
+    const hiddenGetStarted = localStorage.getItem('hideGetStarted') === 'true'
+    setHideGetStarted(hiddenGetStarted)
   }, [])
 
   // Calculate water intake
@@ -108,6 +114,16 @@ export default function DashboardPage() {
     setStepInput(stepGoal)
     setHasStepGoal(false)
   }
+
+  // Hide "Get Started" section manually
+  const handleHideGetStarted = () => {
+    setHideGetStarted(true)
+    localStorage.setItem('hideGetStarted', 'true')
+  }
+
+  // Determine if "Get Started" section should be shown
+  const hasCompletedActivity = workoutSessions.some((s: any) => s.completed) || checkIns.length > 0
+  const showGetStarted = !hasCompletedActivity && !hideGetStarted
 
   // Calendar helper functions
   const WEEKDAY_NAMES = ['M', 'T', 'O', 'T', 'F', 'L', 'S']
@@ -475,28 +491,58 @@ export default function DashboardPage() {
 
       {/* Week Calendar Widget */}
       <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto p-4 sm:p-6">
-        {/* Phase and Day Info */}
-        {programInfo && (
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-            <div className="flex items-center gap-3">
-              <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+        {/* Header with Day Counter and Phase Info */}
+        <div className="flex items-center justify-between mb-4">
+          {/* Left: Current Date */}
+          <p className="text-gray-900 font-medium capitalize">
+            {formatDateSwedish(new Date())}
+          </p>
+
+          {/* Right: Day Counter Circle */}
+          {programInfo && (
+            <div className="flex items-center gap-4">
+              {/* Phase Badge */}
+              <span className={`px-3 py-1 rounded-full text-xs font-semibold hidden sm:inline-block ${
                 programInfo.phase === 1 ? 'bg-green-100 text-green-700' :
                 programInfo.phase === 2 ? 'bg-blue-100 text-blue-700' :
                 'bg-amber-100 text-amber-700'
               }`}>
-                Fas {programInfo.phase} - Vecka {programInfo.week}
+                Fas {programInfo.phase} · V{programInfo.week}
               </span>
-              <span className="text-gray-600 text-sm">
-                Dag {programInfo.programDay} av 90
-              </span>
-            </div>
-          </div>
-        )}
 
-        {/* Current Date */}
-        <p className="text-gray-900 font-medium mb-4 capitalize">
-          {formatDateSwedish(new Date())}
-        </p>
+              {/* Circular Progress */}
+              <div className="relative w-14 h-14 sm:w-16 sm:h-16">
+                {/* Background circle */}
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="16"
+                    fill="none"
+                    stroke="#e5e7eb"
+                    strokeWidth="2"
+                  />
+                  {/* Progress circle */}
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="16"
+                    fill="none"
+                    stroke={programInfo.phase === 1 ? '#22c55e' : programInfo.phase === 2 ? '#3b82f6' : '#f59e0b'}
+                    strokeWidth="2"
+                    strokeDasharray={`${(programInfo.programDay / 90) * 100.53} 100.53`}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                {/* Center text */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-lg sm:text-xl font-bold text-gray-900 leading-none">{programInfo.programDay}</span>
+                  <span className="text-[10px] text-gray-500 leading-none">/90</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Week Calendar Grid */}
         <div className="grid grid-cols-7 gap-2">
@@ -572,15 +618,25 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Quick Tips Section - Collapsible */}
+      {/* Quick Tips Section - Collapsible (hidden when user is active) */}
+      {showGetStarted && (
       <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto">
-        <button
-          onClick={() => setIsGettingStartedOpen(!isGettingStartedOpen)}
-          className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-xl"
-        >
-          <h2 className="text-base font-semibold text-gray-900">Kom igång</h2>
-          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${isGettingStartedOpen ? 'rotate-180' : ''}`} />
-        </button>
+        <div className="flex items-center">
+          <button
+            onClick={() => setIsGettingStartedOpen(!isGettingStartedOpen)}
+            className="flex-1 p-4 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-l-xl"
+          >
+            <h2 className="text-base font-semibold text-gray-900">Kom igång</h2>
+            <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${isGettingStartedOpen ? 'rotate-180' : ''}`} />
+          </button>
+          <button
+            onClick={handleHideGetStarted}
+            className="p-4 text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors rounded-r-xl"
+            title="Dölj permanent"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
         {isGettingStartedOpen && (
         <div className="p-6 pt-2 border-t border-gray-100">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -756,6 +812,7 @@ export default function DashboardPage() {
         </div>
         )}
       </div>
+      )}
 
       {/* Daily Goals Widget - Collapsible Card */}
       <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto">

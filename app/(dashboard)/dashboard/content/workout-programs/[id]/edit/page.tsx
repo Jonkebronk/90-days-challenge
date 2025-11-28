@@ -67,6 +67,7 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
           name: day.name,
           description: day.description || '',
           isRestDay: day.isRestDay,
+          weekday: day.weekday ?? null,
           exercises: day.exercises.map((ex: any, exIndex: number) => ({
             id: ex.id || `${ex.exerciseId}-${day.dayNumber}-${exIndex}-${Date.now()}`,
             exerciseId: ex.exerciseId,
@@ -197,6 +198,7 @@ export default function EditWorkoutProgramPage({ params }: { params: Promise<{ i
             ...day,
             dayNumber: index + 1,
             orderIndex: index,
+            weekday: day.weekday ?? null,
             exercises: day.exercises.map((ex, exIndex) => ({
               exerciseId: ex.exerciseId,
               sets: typeof ex.sets === 'string' ? parseInt(ex.sets as string) || 3 : ex.sets,
