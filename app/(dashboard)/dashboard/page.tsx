@@ -30,8 +30,10 @@ import {
   Droplets,
   Footprints,
   CheckCircle2,
-  X
+  X,
+  Scale
 } from 'lucide-react'
+import { Input } from '@/components/ui/input'
 
 export default function DashboardPage() {
   const { data: session, status } = useSession()
@@ -58,6 +60,13 @@ export default function DashboardPage() {
   const [workoutProgram, setWorkoutProgram] = useState<any>(null)
   const [workoutSessions, setWorkoutSessions] = useState<any[]>([])
   const [checkIns, setCheckIns] = useState<any[]>([])
+
+  // Daily weight modal state
+  const [weightModalOpen, setWeightModalOpen] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [dailyWeightInput, setDailyWeightInput] = useState('')
+  const [dailyWeights, setDailyWeights] = useState<Record<string, number>>({})
+  const [savingWeight, setSavingWeight] = useState(false)
 
   // Get started section visibility
   const [hideGetStarted, setHideGetStarted] = useState(false)
@@ -250,9 +259,71 @@ export default function DashboardPage() {
         const data = await checkInsRes.json()
         setCheckIns(data.checkIns || [])
       }
+
+      // Fetch daily weights for current week
+      const today = new Date()
+      const startOfWeek = new Date(today)
+      const dayOfWeek = today.getDay()
+      const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1
+      startOfWeek.setDate(today.getDate() - diff)
+      const endOfWeek = new Date(startOfWeek)
+      endOfWeek.setDate(startOfWeek.getDate() + 6)
+
+      const weightsRes = await fetch(
+        `/api/daily-weight?startDate=${startOfWeek.toISOString().split('T')[0]}&endDate=${endOfWeek.toISOString().split('T')[0]}`
+      )
+      if (weightsRes.ok) {
+        const data = await weightsRes.json()
+        const weightsMap: Record<string, number> = {}
+        data.weights?.forEach((w: any) => {
+          weightsMap[w.date] = w.weight
+        })
+        setDailyWeights(weightsMap)
+      }
     } catch (error) {
       console.error('Error fetching calendar data:', error)
     }
+  }
+
+  // Save daily weight
+  const handleSaveDailyWeight = async () => {
+    if (!selectedDate || !dailyWeightInput) return
+
+    setSavingWeight(true)
+    try {
+      const dateStr = selectedDate.toISOString().split('T')[0]
+      const response = await fetch('/api/daily-weight', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: dateStr,
+          weight: parseFloat(dailyWeightInput)
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setDailyWeights(prev => ({
+          ...prev,
+          [data.weight.date]: data.weight.weight
+        }))
+        setWeightModalOpen(false)
+        setDailyWeightInput('')
+        setSelectedDate(null)
+      }
+    } catch (error) {
+      console.error('Error saving daily weight:', error)
+    } finally {
+      setSavingWeight(false)
+    }
+  }
+
+  // Open weight modal for a specific date
+  const openWeightModal = (date: Date) => {
+    const dateStr = date.toISOString().split('T')[0]
+    setSelectedDate(date)
+    setDailyWeightInput(dailyWeights[dateStr]?.toString() || '')
+    setWeightModalOpen(true)
   }
 
   const fetchCoachStats = async () => {
@@ -532,24 +603,18 @@ export default function DashboardPage() {
             const isSunday = weekdayIndex === 6
             const completedWorkout = hasCompletedWorkout(date)
             const completedCheckIn = hasCheckIn(date)
+            const dateStr = date.toISOString().split('T')[0]
+            const hasWeight = dailyWeights[dateStr] !== undefined
 
             return (
               <button
                 key={index}
-                onClick={() => {
-                  if (isTrainingDay) {
-                    router.push('/dashboard/workout')
-                  } else if (isSunday) {
-                    router.push('/dashboard/check-in')
-                  }
-                }}
-                className={`flex flex-col items-center p-2 sm:p-3 rounded-xl transition-all ${
+                onClick={() => openWeightModal(date)}
+                className={`flex flex-col items-center p-2 sm:p-3 rounded-xl transition-all cursor-pointer ${
                   isToday
-                    ? 'bg-gray-900 text-white'
-                    : isTrainingDay || isSunday
-                    ? 'bg-gray-50 hover:bg-gray-100 cursor-pointer'
-                    : 'bg-gray-50'
-                } ${(isTrainingDay || isSunday) && !isToday ? 'hover:scale-105' : ''}`}
+                    ? 'bg-gray-900 text-white hover:bg-gray-800'
+                    : 'bg-gray-50 hover:bg-gray-100'
+                } hover:scale-105`}
               >
                 <span className={`text-xs font-medium mb-1 ${isToday ? 'text-gray-300' : 'text-gray-500'}`}>
                   {WEEKDAY_NAMES[index]}
@@ -560,6 +625,9 @@ export default function DashboardPage() {
 
                 {/* Indicators */}
                 <div className="flex gap-1 mt-1 h-4">
+                  {hasWeight && (
+                    <Scale className={`w-4 h-4 ${isToday ? 'text-purple-300' : 'text-purple-500'}`} />
+                  )}
                   {isTrainingDay && (
                     completedWorkout ? (
                       <CheckCircle2 className="w-4 h-4 text-green-500" />
@@ -583,19 +651,74 @@ export default function DashboardPage() {
         {/* Legend */}
         <div className="flex flex-wrap gap-4 mt-4 text-xs text-gray-500">
           <div className="flex items-center gap-1">
+            <Scale className="w-3 h-3 text-purple-500" />
+            <span>Vikt</span>
+          </div>
+          <div className="flex items-center gap-1">
             <Dumbbell className="w-3 h-3 text-amber-500" />
-            <span>Träningsdag</span>
+            <span>Träning</span>
           </div>
           <div className="flex items-center gap-1">
             <Calendar className="w-3 h-3 text-blue-500" />
-            <span>Check-in (söndag)</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3 text-green-500" />
-            <span>Genomfört</span>
+            <span>Check-in</span>
           </div>
         </div>
+
+        {/* Tip text */}
+        <p className="text-xs text-gray-400 mt-3 text-center">
+          Tryck på en dag för att registrera din vikt
+        </p>
       </div>
+
+      {/* Daily Weight Modal */}
+      <Dialog open={weightModalOpen} onOpenChange={setWeightModalOpen}>
+        <DialogContent className="sm:max-w-[340px] bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900 flex items-center gap-2">
+              <Scale className="w-5 h-5 text-purple-500" />
+              Registrera vikt
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <p className="text-sm text-gray-600">
+              {selectedDate && selectedDate.toLocaleDateString('sv-SE', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+              })}
+            </p>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Vikt (kg)
+              </label>
+              <Input
+                type="number"
+                step="0.1"
+                placeholder="75.5"
+                value={dailyWeightInput}
+                onChange={(e) => setDailyWeightInput(e.target.value)}
+                className="bg-gray-50 border-gray-200 text-gray-900"
+              />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setWeightModalOpen(false)}
+                className="flex-1 border-gray-200 text-gray-700"
+              >
+                Avbryt
+              </Button>
+              <Button
+                onClick={handleSaveDailyWeight}
+                disabled={!dailyWeightInput || savingWeight}
+                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+              >
+                {savingWeight ? 'Sparar...' : 'Spara'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Quick Tips Section - Collapsible (hidden when user is active) */}
       {showGetStarted && (

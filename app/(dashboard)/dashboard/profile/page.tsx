@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Eye, EyeOff, Bell, BellOff, CheckCircle2, XCircle, RefreshCw } from 'lucide-react'
+import { Eye, EyeOff, Bell, BellOff, CheckCircle2, XCircle, RefreshCw, Scale } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
 import { requestNotificationPermission, isPushSupported, getNotificationPermission } from '@/lib/firebase'
 
 export default function ProfilePage() {
@@ -37,6 +38,10 @@ export default function ProfilePage() {
   const [isLoadingPush, setIsLoadingPush] = useState(true)
   const [isEnablingPush, setIsEnablingPush] = useState(false)
 
+  // Weight reminder state
+  const [weightReminderEnabled, setWeightReminderEnabled] = useState(false)
+  const [isTogglingWeightReminder, setIsTogglingWeightReminder] = useState(false)
+
   // Check push notification status on mount
   useEffect(() => {
     async function checkPushStatus() {
@@ -56,6 +61,13 @@ export default function ProfilePage() {
           setHasSubscription(data.hasSubscriptions)
           setSubscriptionCount(data.count || 0)
         }
+
+        // Check weight reminder setting
+        const settingsRes = await fetch('/api/user/settings')
+        if (settingsRes.ok) {
+          const settingsData = await settingsRes.json()
+          setWeightReminderEnabled(settingsData.weightReminderEnabled || false)
+        }
       } catch (error) {
         console.error('Error checking push status:', error)
       } finally {
@@ -65,6 +77,30 @@ export default function ProfilePage() {
 
     checkPushStatus()
   }, [])
+
+  const handleToggleWeightReminder = async () => {
+    setIsTogglingWeightReminder(true)
+    try {
+      const newValue = !weightReminderEnabled
+      const response = await fetch('/api/user/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ weightReminderEnabled: newValue })
+      })
+
+      if (response.ok) {
+        setWeightReminderEnabled(newValue)
+        toast.success(newValue ? 'Viktpåminnelse aktiverad!' : 'Viktpåminnelse avaktiverad')
+      } else {
+        toast.error('Kunde inte uppdatera inställningen')
+      }
+    } catch (error) {
+      console.error('Error toggling weight reminder:', error)
+      toast.error('Ett fel uppstod')
+    } finally {
+      setIsTogglingWeightReminder(false)
+    }
+  }
 
   const handleEnablePush = async () => {
     setIsEnablingPush(true)
@@ -447,6 +483,24 @@ export default function ProfilePage() {
                     {pushPermission === 'granted' ? 'Tillåtet' : pushPermission === 'denied' ? 'Blockerat' : 'Ej frågat'}
                   </div>
                 </div>
+
+                {/* Weight Reminder Toggle */}
+                {hasSubscription && (
+                  <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg border border-purple-200">
+                    <div className="flex items-center gap-3">
+                      <Scale className="w-5 h-5 text-purple-600" />
+                      <div>
+                        <p className="font-medium text-gray-900">Daglig viktpåminnelse</p>
+                        <p className="text-sm text-gray-500">Få en påminnelse att väga dig varje morgon</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={weightReminderEnabled}
+                      onCheckedChange={handleToggleWeightReminder}
+                      disabled={isTogglingWeightReminder}
+                    />
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex flex-wrap gap-2">

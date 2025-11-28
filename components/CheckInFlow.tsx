@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -55,6 +55,52 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
   const updateFormData = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
+
+  // Fetch daily weights and pre-fill the form
+  useEffect(() => {
+    const fetchDailyWeights = async () => {
+      try {
+        // Get current week's date range (Monday to Sunday)
+        const today = new Date()
+        const dayOfWeek = today.getDay()
+        const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1
+        const startOfWeek = new Date(today)
+        startOfWeek.setDate(today.getDate() - diff)
+        const endOfWeek = new Date(startOfWeek)
+        endOfWeek.setDate(startOfWeek.getDate() + 6)
+
+        const response = await fetch(
+          `/api/daily-weight?startDate=${startOfWeek.toISOString().split('T')[0]}&endDate=${endOfWeek.toISOString().split('T')[0]}`
+        )
+
+        if (response.ok) {
+          const data = await response.json()
+          const weights = data.weights || []
+
+          // Map weights to form fields based on day of week
+          const weekdayFields = ['mondayWeight', 'tuesdayWeight', 'wednesdayWeight', 'thursdayWeight', 'fridayWeight', 'saturdayWeight', 'sundayWeight']
+
+          const updates: Record<string, string> = {}
+          weights.forEach((w: { date: string; weight: number }) => {
+            const date = new Date(w.date)
+            const dayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1
+            const fieldName = weekdayFields[dayIndex]
+            if (fieldName) {
+              updates[fieldName] = w.weight.toString()
+            }
+          })
+
+          if (Object.keys(updates).length > 0) {
+            setFormData(prev => ({ ...prev, ...updates }))
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching daily weights:', error)
+      }
+    }
+
+    fetchDailyWeights()
+  }, [])
 
   const handleFileChange = (type: 'front' | 'side' | 'back', file: File | null) => {
     setPhotoFiles(prev => ({ ...prev, [type]: file }))
