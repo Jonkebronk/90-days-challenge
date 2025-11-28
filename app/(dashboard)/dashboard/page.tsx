@@ -672,6 +672,11 @@ export default function DashboardPage() {
         <p className="text-xs text-gray-400 mt-3 text-center">
           Tryck på en dag för att registrera din vikt
         </p>
+
+        {/* Link to knowledge base */}
+        <p className="text-xs text-gray-500 mt-3 text-center">
+          Läs mer om <Link href="/dashboard/articles/category/mat-dina-resultat" className="text-purple-500 hover:text-purple-700 underline">hur vi mäter dina resultat</Link> i kunskapsbanken
+        </p>
       </div>
 
       {/* Daily Weight Modal */}
