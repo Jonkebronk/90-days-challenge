@@ -697,7 +697,7 @@ export default function DashboardPage() {
                 placeholder="75.5"
                 value={dailyWeightInput}
                 onChange={(e) => setDailyWeightInput(e.target.value)}
-                className="bg-gray-50 border-gray-200 text-gray-900"
+                className="bg-gray-50 border-gray-200 text-gray-900 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
             </div>
             <div className="flex gap-2 pt-2">
