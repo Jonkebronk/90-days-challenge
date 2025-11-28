@@ -672,12 +672,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                 {/* Superset banner - only show before first exercise in superset */}
                 {isFirstInSuperset && (
                   <div className="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-4 rounded-xl mb-0 shadow-lg border-2 border-purple-400">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                        <span className="text-lg font-bold">SS</span>
-                      </div>
-                      <p className="font-bold text-xl tracking-wide">SUPERSET</p>
-                    </div>
+                    <p className="font-bold text-xl tracking-wide mb-3">SUPERSET</p>
                     <div className="flex flex-wrap items-center gap-2 mb-3">
                       {supersetExercises.map((ex, idx) => (
                         <span key={ex.id} className="flex items-center">
