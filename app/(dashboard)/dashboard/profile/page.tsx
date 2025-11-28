@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Eye, EyeOff, Bell, BellOff, CheckCircle2, XCircle, RefreshCw, Send } from 'lucide-react'
+import { Eye, EyeOff, Bell, BellOff, CheckCircle2, XCircle, RefreshCw } from 'lucide-react'
 import { requestNotificationPermission, isPushSupported, getNotificationPermission } from '@/lib/firebase'
 
 export default function ProfilePage() {
@@ -36,8 +36,6 @@ export default function ProfilePage() {
   const [subscriptionCount, setSubscriptionCount] = useState(0)
   const [isLoadingPush, setIsLoadingPush] = useState(true)
   const [isEnablingPush, setIsEnablingPush] = useState(false)
-  const [isSendingTest, setIsSendingTest] = useState(false)
-  const [testResult, setTestResult] = useState<any>(null)
 
   // Check push notification status on mount
   useEffect(() => {
@@ -123,30 +121,6 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('Error removing subscriptions:', error)
       toast.error('Något gick fel')
-    }
-  }
-
-  const handleTestPush = async () => {
-    setIsSendingTest(true)
-    setTestResult(null)
-    try {
-      const response = await fetch('/api/test-push', {
-        method: 'POST',
-      })
-      const data = await response.json()
-      setTestResult(data)
-
-      if (data.success) {
-        toast.success(`Test-notis skickad! (${data.sent} skickade, ${data.failed} misslyckades)`)
-      } else {
-        toast.error(data.error || 'Kunde inte skicka test-notis')
-      }
-    } catch (error) {
-      console.error('Error sending test push:', error)
-      setTestResult({ error: String(error) })
-      toast.error('Något gick fel')
-    } finally {
-      setIsSendingTest(false)
     }
   }
 
@@ -500,59 +474,16 @@ export default function ProfilePage() {
                   </Button>
 
                   {hasSubscription && (
-                    <>
-                      <Button
-                        onClick={handleTestPush}
-                        disabled={isSendingTest}
-                        variant="outline"
-                        className="border-2 border-blue-300 text-blue-600 hover:bg-blue-50"
-                      >
-                        {isSendingTest ? (
-                          <>
-                            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                            Skickar...
-                          </>
-                        ) : (
-                          <>
-                            <Send className="w-4 h-4 mr-2" />
-                            Testa notis
-                          </>
-                        )}
-                      </Button>
-                      <Button
-                        onClick={handleRemoveSubscriptions}
-                        variant="outline"
-                        className="border-2 border-red-300 text-red-600 hover:bg-red-50"
-                      >
-                        <BellOff className="w-4 h-4 mr-2" />
-                        Ta bort alla prenumerationer
-                      </Button>
-                    </>
+                    <Button
+                      onClick={handleRemoveSubscriptions}
+                      variant="outline"
+                      className="border-2 border-red-300 text-red-600 hover:bg-red-50"
+                    >
+                      <BellOff className="w-4 h-4 mr-2" />
+                      Ta bort alla prenumerationer
+                    </Button>
                   )}
                 </div>
-
-                {/* Test Result */}
-                {testResult && (
-                  <div className={`p-4 rounded-lg border ${testResult.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                    <p className={`font-medium ${testResult.success ? 'text-green-800' : 'text-red-800'}`}>
-                      {testResult.success ? 'Test-notis skickad!' : 'Misslyckades'}
-                    </p>
-                    <div className="text-sm mt-2 space-y-1">
-                      {testResult.error && (
-                        <p className="text-red-600">Fel: {testResult.error}</p>
-                      )}
-                      {testResult.subscriptionCount !== undefined && (
-                        <p className="text-gray-600">Prenumerationer: {testResult.subscriptionCount}</p>
-                      )}
-                      {testResult.sent !== undefined && (
-                        <p className="text-gray-600">Skickade: {testResult.sent}, Misslyckades: {testResult.failed}</p>
-                      )}
-                      {testResult.details && (
-                        <p className="text-gray-500 text-xs break-all">Detaljer: {testResult.details}</p>
-                      )}
-                    </div>
-                  </div>
-                )}
 
                 {/* Info text */}
                 {pushPermission === 'denied' && (
