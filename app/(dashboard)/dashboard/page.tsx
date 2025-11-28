@@ -234,7 +234,7 @@ export default function DashboardPage() {
       const programRes = await fetch(`/api/clients/${userId}/workout`)
       if (programRes.ok) {
         const data = await programRes.json()
-        setWorkoutProgram(data)
+        setWorkoutProgram(data.assignment)
       }
 
       // Fetch workout sessions
