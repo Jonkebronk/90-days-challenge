@@ -27,7 +27,8 @@ import {
   Apple,
   Smartphone,
   Bell,
-  Droplets
+  Droplets,
+  Footprints
 } from 'lucide-react'
 
 export default function DashboardPage() {
@@ -42,17 +43,26 @@ export default function DashboardPage() {
   const [onboardingGuideContent, setOnboardingGuideContent] = useState<string>('')
   const [isGettingStartedOpen, setIsGettingStartedOpen] = useState(false)
   const [isWaterTipsOpen, setIsWaterTipsOpen] = useState(false)
+  const [isStepTipsOpen, setIsStepTipsOpen] = useState(false)
   const [userWeight, setUserWeight] = useState<string>('')
   const [weightInput, setWeightInput] = useState<string>('')
   const [hasCalculated, setHasCalculated] = useState(false)
+  const [stepGoal, setStepGoal] = useState<string>('')
+  const [stepInput, setStepInput] = useState<string>('')
+  const [hasStepGoal, setHasStepGoal] = useState(false)
   const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
 
-  // Load weight from localStorage on mount
+  // Load weight and step goal from localStorage on mount
   useEffect(() => {
     const savedWeight = localStorage.getItem('userWeight')
     if (savedWeight) {
       setUserWeight(savedWeight)
       setHasCalculated(true)
+    }
+    const savedStepGoal = localStorage.getItem('stepGoal')
+    if (savedStepGoal) {
+      setStepGoal(savedStepGoal)
+      setHasStepGoal(true)
     }
   }, [])
 
@@ -73,6 +83,21 @@ export default function DashboardPage() {
   const handleResetWeight = () => {
     setWeightInput(userWeight)
     setHasCalculated(false)
+  }
+
+  // Save step goal
+  const handleSaveStepGoal = () => {
+    if (stepInput && parseInt(stepInput) > 0) {
+      setStepGoal(stepInput)
+      setHasStepGoal(true)
+      localStorage.setItem('stepGoal', stepInput)
+    }
+  }
+
+  // Reset step goal to input mode
+  const handleResetStepGoal = () => {
+    setStepInput(stepGoal)
+    setHasStepGoal(false)
   }
 
   // Debug logging
@@ -513,88 +538,168 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Water Intake Widget */}
-      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl max-w-6xl mx-auto overflow-hidden">
+      {/* Daily Goals Widget */}
+      <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto overflow-hidden">
         <div className="p-4 sm:p-5">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md">
-              <Droplets className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-bold text-gray-900 text-sm sm:text-base">Ditt dagliga vattenmål</h3>
-              {waterLiters ? (
-                <div>
-                  <p className="text-2xl sm:text-3xl font-bold text-blue-600">{waterLiters} liter</p>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                    Läs mer om <Link href="/dashboard/articles/cmhsa0czw000uqf0qke1b3quq" className="text-blue-500 hover:text-blue-700 underline">vatten</Link> i kunskapsbanken
-                  </p>
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Dagliga mål</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Water Section */}
+            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <Droplets className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-              ) : (
-                <div className="flex items-center gap-2 mt-1">
-                  <input
-                    type="number"
-                    placeholder="Din vikt"
-                    value={weightInput}
-                    onChange={(e) => setWeightInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
-                    className="w-20 sm:w-24 px-2 py-1 text-sm border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
-                  />
-                  <span className="text-gray-600 text-sm">kg</span>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Vatten</h3>
+                  {waterLiters ? (
+                    <div className="flex items-center gap-2">
+                      <p className="text-xl sm:text-2xl font-bold text-blue-600">{waterLiters} liter</p>
+                      <button
+                        onClick={handleResetWeight}
+                        className="text-xs text-blue-500 hover:text-blue-700 underline"
+                      >
+                        Ändra
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 mt-1">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        placeholder="Vikt"
+                        value={weightInput}
+                        onChange={(e) => setWeightInput(e.target.value.replace(/[^0-9]/g, ''))}
+                        onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
+                        className="w-16 sm:w-20 px-2 py-1 text-sm border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+                      />
+                      <span className="text-gray-600 text-sm">kg</span>
+                      <button
+                        onClick={handleCalculate}
+                        className="px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                      >
+                        Beräkna
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-600 mb-2">
+                Läs mer om <Link href="/dashboard/articles/cmhsa0czw000uqf0qke1b3quq" className="text-blue-500 hover:text-blue-700 underline">vatten</Link> i kunskapsbanken
+              </p>
+
+              {waterLiters && (
+                <>
                   <button
-                    onClick={handleCalculate}
-                    className="px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                    onClick={() => setIsWaterTipsOpen(!isWaterTipsOpen)}
+                    className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 transition-colors"
                   >
-                    Beräkna
+                    <span className="font-medium">Tips för att nå ditt mål</span>
+                    <ChevronDown className={`w-3 h-3 transition-transform ${isWaterTipsOpen ? 'rotate-180' : ''}`} />
                   </button>
-                </div>
+
+                  {isWaterTipsOpen && (
+                    <div className="mt-3 p-3 bg-white/70 rounded-lg border border-blue-100">
+                      <p className="font-semibold text-gray-800 mb-2 text-sm">Ett smart knep - Drick på detta sätt så når du enkelt ditt mål:</p>
+
+                      <div className="space-y-2 text-xs text-gray-700">
+                        <div>
+                          <p className="font-medium text-blue-700">På morgonen:</p>
+                          <p className="ml-3">• Direkt när du vaknar: 1 stort glas vatten (2-3 dl)</p>
+                        </div>
+
+                        <div>
+                          <p className="font-medium text-blue-700">I samband med måltider:</p>
+                          <p className="ml-3">• Vid varje måltid (4-5 st/dag): 2-3 dl vatten</p>
+                        </div>
+
+                        <div className="pt-2 border-t border-blue-100">
+                          <p className="text-blue-800">
+                            <strong>Resultat:</strong> Du kommer upp i ca 1.5 liter bara genom detta!
+                            Lägg till vatten före/under/efter träning så är du i mål.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
-            {waterLiters && (
-              <button
-                onClick={handleResetWeight}
-                className="text-xs text-blue-500 hover:text-blue-700 underline"
-              >
-                Ändra vikt
-              </button>
-            )}
-          </div>
 
-          {waterLiters && (
-            <>
-              <button
-                onClick={() => setIsWaterTipsOpen(!isWaterTipsOpen)}
-                className="mt-4 flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors"
-              >
-                <span className="font-medium">Tips för att nå ditt mål</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${isWaterTipsOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {isWaterTipsOpen && (
-                <div className="mt-4 p-4 bg-white/70 rounded-lg border border-blue-100">
-                  <p className="font-semibold text-gray-800 mb-3">Ett smart knep - Drick på detta sätt så når du enkelt ditt mål:</p>
-
-                  <div className="space-y-3 text-sm text-gray-700">
-                    <div>
-                      <p className="font-medium text-blue-700">På morgonen:</p>
-                      <p className="ml-4">• Direkt när du vaknar: 1 stort glas vatten (2-3 dl)</p>
-                    </div>
-
-                    <div>
-                      <p className="font-medium text-blue-700">I samband med måltider:</p>
-                      <p className="ml-4">• Vid varje måltid (4-5 st/dag): 2-3 dl vatten</p>
-                    </div>
-
-                    <div className="pt-2 border-t border-blue-100">
-                      <p className="text-blue-800">
-                        <strong>Resultat:</strong> Du kommer upp i ca 1.5 liter bara genom detta!
-                        Lägg till vatten före/under/efter träning så är du i mål.
-                      </p>
-                    </div>
-                  </div>
+            {/* Steps Section */}
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <Footprints className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Steg</h3>
+                  {hasStepGoal ? (
+                    <div className="flex items-center gap-2">
+                      <p className="text-xl sm:text-2xl font-bold text-green-600">{parseInt(stepGoal).toLocaleString('sv-SE')} steg</p>
+                      <button
+                        onClick={handleResetStepGoal}
+                        className="text-xs text-green-500 hover:text-green-700 underline"
+                      >
+                        Ändra
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 mt-1">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        placeholder="Mål"
+                        value={stepInput}
+                        onChange={(e) => setStepInput(e.target.value.replace(/[^0-9]/g, ''))}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSaveStepGoal()}
+                        className="w-20 sm:w-24 px-2 py-1 text-sm border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"
+                      />
+                      <span className="text-gray-600 text-sm">steg</span>
+                      <button
+                        onClick={handleSaveStepGoal}
+                        className="px-3 py-1 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+                      >
+                        Spara
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-600 mb-2">
+                Läs mer om <Link href="/dashboard/articles/cmij19vz00001k30qmlodc7k0" className="text-green-500 hover:text-green-700 underline">daglig aktivitetsnivå (steg)</Link> i kunskapsbanken
+              </p>
+
+              {hasStepGoal && (
+                <>
+                  <button
+                    onClick={() => setIsStepTipsOpen(!isStepTipsOpen)}
+                    className="flex items-center gap-2 text-xs text-green-600 hover:text-green-800 transition-colors"
+                  >
+                    <span className="font-medium">Tips för att lyckas med ditt stegmål</span>
+                    <ChevronDown className={`w-3 h-3 transition-transform ${isStepTipsOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isStepTipsOpen && (
+                    <div className="mt-3 p-3 bg-white/70 rounded-lg border border-green-100">
+                      <p className="font-semibold text-gray-800 mb-2 text-sm">Tips för att lyckas med ditt stegmål:</p>
+
+                      <div className="space-y-2 text-xs text-gray-700">
+                        <p>• Spåra dina steg via Apple Watch, Fitbit eller liknande. Du kan använda telefonen, men den är ofta opålitlig och måste alltid vara på dig.</p>
+                        <p>• Välj en mer aktiv väg i vardagen – gå av bussen en hållplats tidigare eller ta trapporna istället för hissen.</p>
+                        <p>• Stå upp och rör dig lite mellan seten på gymmet. Det är ett underskattat sätt att samla extra steg.</p>
+                        <p>• Ta 10 minuters promenader efter måltider. Det hjälper dig samla steg, motverkar trötthet efter maten och underlättar matsmältningen.</p>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
-            </>
-          )}
+            </div>
+          </div>
         </div>
       </div>
 
