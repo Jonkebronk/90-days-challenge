@@ -564,7 +564,7 @@ export default function DashboardPage() {
                       <p className="text-xl sm:text-2xl font-bold text-blue-600">{waterLiters} liter</p>
                       <button
                         onClick={handleResetWeight}
-                        className="text-xs text-blue-500 hover:text-blue-700 underline"
+                        className="px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
                       >
                         Ändra
                       </button>
@@ -644,7 +644,7 @@ export default function DashboardPage() {
                       <p className="text-xl sm:text-2xl font-bold text-green-600">{parseInt(stepGoal).toLocaleString('sv-SE')} steg</p>
                       <button
                         onClick={handleResetStepGoal}
-                        className="text-xs text-green-500 hover:text-green-700 underline"
+                        className="px-3 py-1 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
                       >
                         Ändra
                       </button>
