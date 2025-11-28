@@ -13,8 +13,9 @@ export function ForegroundNotification() {
     const unsubscribe = onForegroundMessage((payload) => {
       console.log('Foreground notification received:', payload)
 
-      const title = payload.notification?.title || 'Ny notifikation'
-      const body = payload.notification?.body || ''
+      // Handle both notification payload and data-only payload
+      const title = payload.notification?.title || payload.data?.title || 'Ny notifikation'
+      const body = payload.notification?.body || payload.data?.body || ''
       const link = payload.data?.link || payload.fcmOptions?.link
 
       // Show toast notification

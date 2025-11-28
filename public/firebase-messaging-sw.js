@@ -18,11 +18,24 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig)
 const messaging = firebase.messaging()
 
-// Firebase SDK handles showing the notification automatically when it contains
-// a "notification" payload. We only use onBackgroundMessage for logging/custom handling.
+// Handle background messages (data-only messages)
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message:', payload)
-  // Don't show notification here - Firebase SDK already shows it automatically
+
+  // For data-only messages, we need to show the notification manually
+  const title = payload.data?.title || 'Ny notifikation'
+  const options = {
+    body: payload.data?.body || '',
+    icon: '/images/icon-192.png',
+    badge: '/images/icon-192.png',
+    tag: 'message-notification',
+    requireInteraction: true,
+    data: {
+      link: payload.data?.link || '/',
+    },
+  }
+
+  self.registration.showNotification(title, options)
 })
 
 // Handle notification click

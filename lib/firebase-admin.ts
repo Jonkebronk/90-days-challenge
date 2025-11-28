@@ -35,25 +35,13 @@ export async function sendPushToDevice(
   }
 
   try {
+    // Use data-only message to have full control over notification display
     const message: admin.messaging.Message = {
       token,
-      notification: {
-        title,
-        body,
-      },
-      webpush: {
-        notification: {
-          icon: '/images/icon-192.png',
-          badge: '/images/icon-192.png',
-          tag: 'notification',
-          requireInteraction: true,
-        },
-        fcmOptions: {
-          link: link || '/',
-        },
-      },
       data: {
         ...data,
+        title,
+        body,
         link: link || '/',
       },
     }
@@ -93,25 +81,13 @@ export async function sendPushToDevices(
   }
 
   try {
+    // Use data-only message to have full control over notification display
     const message: admin.messaging.MulticastMessage = {
       tokens,
-      notification: {
-        title,
-        body,
-      },
-      webpush: {
-        notification: {
-          icon: '/images/icon-192.png',
-          badge: '/images/icon-192.png',
-          tag: 'notification',
-          requireInteraction: true,
-        },
-        fcmOptions: {
-          link: link || '/',
-        },
-      },
       data: {
         ...data,
+        title,
+        body,
         link: link || '/',
       },
     }
