@@ -578,7 +578,7 @@ export default function DashboardPage() {
                   <span className="text-2xl sm:text-3xl font-bold text-gray-900">Dag {programInfo.programDay}</span>
                   <span className="text-sm sm:text-base text-gray-400">av 90</span>
                 </div>
-                <div className="flex items-center justify-end gap-2 mt-0.5">
+                <div className="flex items-center justify-end gap-1 mt-0.5">
                   <span className={`text-xs font-medium ${
                     programInfo.phase === 1 ? 'text-green-600' :
                     programInfo.phase === 2 ? 'text-blue-600' :
@@ -586,8 +586,13 @@ export default function DashboardPage() {
                   }`}>
                     Fas {programInfo.phase}
                   </span>
-                  <span className="text-xs text-gray-400">•</span>
-                  <span className="text-xs text-gray-500">Vecka {programInfo.week}</span>
+                  <span className={`text-xs ${
+                    programInfo.phase === 1 ? 'text-green-500' :
+                    programInfo.phase === 2 ? 'text-blue-500' :
+                    'text-amber-500'
+                  }`}>
+                    ({programInfo.phase === 1 ? 'dag 1-28' : programInfo.phase === 2 ? 'dag 29-56' : 'dag 57-90'})
+                  </span>
                 </div>
               </div>
             </div>
