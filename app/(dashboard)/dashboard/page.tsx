@@ -498,47 +498,53 @@ export default function DashboardPage() {
             {formatDateSwedish(new Date())}
           </p>
 
-          {/* Right: Day Counter Circle */}
+          {/* Right: Day Counter */}
           {programInfo && (
-            <div className="flex items-center gap-4">
-              {/* Phase Badge */}
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold hidden sm:inline-block ${
-                programInfo.phase === 1 ? 'bg-green-100 text-green-700' :
-                programInfo.phase === 2 ? 'bg-blue-100 text-blue-700' :
-                'bg-amber-100 text-amber-700'
-              }`}>
-                Fas {programInfo.phase} · V{programInfo.week}
-              </span>
-
-              {/* Circular Progress */}
-              <div className="relative w-14 h-14 sm:w-16 sm:h-16">
+            <div className="flex items-center gap-3">
+              {/* Circular Progress with integrated info */}
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20">
                 {/* Background circle */}
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
                   <circle
                     cx="18"
                     cy="18"
-                    r="16"
+                    r="15.5"
                     fill="none"
-                    stroke="#e5e7eb"
-                    strokeWidth="2"
+                    stroke="#f3f4f6"
+                    strokeWidth="3"
                   />
                   {/* Progress circle */}
                   <circle
                     cx="18"
                     cy="18"
-                    r="16"
+                    r="15.5"
                     fill="none"
                     stroke={programInfo.phase === 1 ? '#22c55e' : programInfo.phase === 2 ? '#3b82f6' : '#f59e0b'}
-                    strokeWidth="2"
-                    strokeDasharray={`${(programInfo.programDay / 90) * 100.53} 100.53`}
+                    strokeWidth="3"
+                    strokeDasharray={`${(programInfo.programDay / 90) * 97.4} 97.4`}
                     strokeLinecap="round"
+                    className="drop-shadow-sm"
                   />
                 </svg>
                 {/* Center text */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-lg sm:text-xl font-bold text-gray-900 leading-none">{programInfo.programDay}</span>
-                  <span className="text-[10px] text-gray-500 leading-none">/90</span>
+                  <span className="text-[8px] sm:text-[9px] font-medium text-gray-400 uppercase tracking-wider">Dag</span>
+                  <span className="text-xl sm:text-2xl font-bold text-gray-900 leading-none -mt-0.5">{programInfo.programDay}</span>
                 </div>
+              </div>
+
+              {/* Phase & Week info - vertical */}
+              <div className="hidden sm:flex flex-col gap-1">
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
+                  programInfo.phase === 1 ? 'bg-green-100 text-green-700' :
+                  programInfo.phase === 2 ? 'bg-blue-100 text-blue-700' :
+                  'bg-amber-100 text-amber-700'
+                }`}>
+                  Fas {programInfo.phase}
+                </span>
+                <span className="text-[10px] text-gray-500 text-center">
+                  Vecka {programInfo.week} av 13
+                </span>
               </div>
             </div>
           )}
