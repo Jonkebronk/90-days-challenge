@@ -75,9 +75,27 @@ export default function WorkoutProgramsPage() {
   const [clients, setClients] = useState<any[]>([])
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null)
   const [selectedClientId, setSelectedClientId] = useState<string>('')
+  const [programStartDate, setProgramStartDate] = useState<string>('')
   const [assignDialogOpen, setAssignDialogOpen] = useState(false)
   const [assigning, setAssigning] = useState(false)
   const [assignments, setAssignments] = useState<Assignment[]>([])
+
+  // Helper to get next Monday
+  const getNextMonday = () => {
+    const today = new Date()
+    const dayOfWeek = today.getDay()
+    const daysUntilMonday = dayOfWeek === 0 ? 1 : dayOfWeek === 1 ? 7 : 8 - dayOfWeek
+    const nextMonday = new Date(today)
+    nextMonday.setDate(today.getDate() + daysUntilMonday)
+    return nextMonday.toISOString().split('T')[0]
+  }
+
+  // Check if date is a Monday
+  const isMonday = (dateString: string) => {
+    if (!dateString) return false
+    const date = new Date(dateString)
+    return date.getDay() === 1
+  }
   const [loadingAssignments, setLoadingAssignments] = useState(false)
   const [unassigning, setUnassigning] = useState<string | null>(null)
   const [showCategoryView, setShowCategoryView] = useState(true)
@@ -166,18 +184,29 @@ export default function WorkoutProgramsPage() {
       return
     }
 
+    if (!programStartDate) {
+      toast.error('Välj ett startdatum')
+      return
+    }
+
+    if (!isMonday(programStartDate)) {
+      toast.error('Startdatum måste vara en måndag')
+      return
+    }
+
     setAssigning(true)
 
     try {
       const response = await fetch(`/api/workout-programs/${selectedProgramId}/assign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId: selectedClientId })
+        body: JSON.stringify({ clientId: selectedClientId, startDate: programStartDate })
       })
 
       if (response.ok) {
         toast.success('Träningsprogram tilldelat!')
         setSelectedClientId('')
+        setProgramStartDate('')
         await fetchPrograms()
         if (selectedProgramId) {
           await fetchAssignments(selectedProgramId)
@@ -541,6 +570,40 @@ export default function WorkoutProgramsPage() {
                               </SelectContent>
                             </Select>
                           </div>
+
+                          {/* Start Date Picker */}
+                          <div>
+                            <label className="text-sm font-medium text-gray-700 mb-2 block">
+                              Startdatum (90-dagars utmaning)
+                            </label>
+                            <div className="flex gap-2">
+                              <Input
+                                type="date"
+                                value={programStartDate}
+                                onChange={(e) => setProgramStartDate(e.target.value)}
+                                className="bg-white border-gray-300 text-gray-900 flex-1"
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setProgramStartDate(getNextMonday())}
+                                className="border-gray-300 text-gray-700 text-xs whitespace-nowrap"
+                              >
+                                Nästa måndag
+                              </Button>
+                            </div>
+                            {programStartDate && !isMonday(programStartDate) && (
+                              <p className="text-amber-600 text-xs mt-1">
+                                Valt datum är inte en måndag. Programmet bör starta på en måndag.
+                              </p>
+                            )}
+                            {programStartDate && isMonday(programStartDate) && (
+                              <p className="text-green-600 text-xs mt-1">
+                                Dag 1 av 90 startar {new Date(programStartDate).toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })}
+                              </p>
+                            )}
+                          </div>
+
                           <div className="flex gap-2 justify-end">
                             <Button
                               variant="outline"
@@ -548,6 +611,7 @@ export default function WorkoutProgramsPage() {
                                 setAssignDialogOpen(false)
                                 setSelectedProgramId(null)
                                 setSelectedClientId('')
+                                setProgramStartDate('')
                                 setAssignments([])
                               }}
                               className="border-gray-300 text-gray-700"
@@ -556,7 +620,7 @@ export default function WorkoutProgramsPage() {
                             </Button>
                             <Button
                               onClick={handleAssignProgram}
-                              disabled={!selectedClientId || assigning}
+                              disabled={!selectedClientId || !programStartDate || !isMonday(programStartDate) || assigning}
                               className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white"
                             >
                               {assigning ? 'Tilldelar...' : 'Tilldela'}
