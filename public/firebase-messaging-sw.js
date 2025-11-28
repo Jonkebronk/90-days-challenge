@@ -18,23 +18,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig)
 const messaging = firebase.messaging()
 
-// Handle background messages
+// Firebase SDK handles showing the notification automatically when it contains
+// a "notification" payload. We only use onBackgroundMessage for logging/custom handling.
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message:', payload)
-
-  const notificationTitle = payload.notification?.title || 'Ny notifikation'
-  const notificationOptions = {
-    body: payload.notification?.body || '',
-    icon: '/images/icon-192.png',
-    badge: '/images/icon-192.png',
-    tag: payload.data?.tag || 'notification',
-    requireInteraction: true,
-    data: {
-      link: payload.data?.link || payload.fcmOptions?.link || '/',
-    },
-  }
-
-  self.registration.showNotification(notificationTitle, notificationOptions)
+  // Don't show notification here - Firebase SDK already shows it automatically
 })
 
 // Handle notification click
@@ -75,37 +63,4 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   console.log('[firebase-messaging-sw.js] Service worker activated')
   event.waitUntil(clients.claim())
-})
-
-// Handle push events directly (fallback)
-self.addEventListener('push', (event) => {
-  console.log('[firebase-messaging-sw.js] Push event received:', event)
-
-  if (event.data) {
-    try {
-      const payload = event.data.json()
-      console.log('[firebase-messaging-sw.js] Push payload:', payload)
-
-      // If Firebase SDK didn't handle it, show notification manually
-      if (payload.notification) {
-        const notificationTitle = payload.notification.title || 'Ny notifikation'
-        const notificationOptions = {
-          body: payload.notification.body || '',
-          icon: '/images/icon-192.png',
-          badge: '/images/icon-192.png',
-          tag: 'notification',
-          requireInteraction: true,
-          data: {
-            link: payload.data?.link || payload.fcmOptions?.link || '/',
-          },
-        }
-
-        event.waitUntil(
-          self.registration.showNotification(notificationTitle, notificationOptions)
-        )
-      }
-    } catch (e) {
-      console.error('[firebase-messaging-sw.js] Error parsing push data:', e)
-    }
-  }
 })
