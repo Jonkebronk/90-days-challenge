@@ -26,7 +26,8 @@ import {
   Info,
   Apple,
   Smartphone,
-  Bell
+  Bell,
+  Droplets
 } from 'lucide-react'
 
 export default function DashboardPage() {
@@ -40,7 +41,27 @@ export default function DashboardPage() {
   })
   const [onboardingGuideContent, setOnboardingGuideContent] = useState<string>('')
   const [isGettingStartedOpen, setIsGettingStartedOpen] = useState(false)
+  const [isWaterTipsOpen, setIsWaterTipsOpen] = useState(false)
+  const [userWeight, setUserWeight] = useState<string>('')
   const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
+
+  // Load weight from localStorage on mount
+  useEffect(() => {
+    const savedWeight = localStorage.getItem('userWeight')
+    if (savedWeight) {
+      setUserWeight(savedWeight)
+    }
+  }, [])
+
+  // Calculate water intake
+  const weightNum = parseFloat(userWeight)
+  const waterLiters = weightNum > 0 ? (weightNum / 23).toFixed(1) : null
+
+  // Save weight to localStorage
+  const handleWeightChange = (value: string) => {
+    setUserWeight(value)
+    localStorage.setItem('userWeight', value)
+  }
 
   // Debug logging
   console.log('[DASHBOARD] Status:', status)
@@ -478,6 +499,79 @@ export default function DashboardPage() {
           </div>
         </div>
         )}
+      </div>
+
+      {/* Water Intake Widget */}
+      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl max-w-6xl mx-auto overflow-hidden">
+        <div className="p-4 sm:p-5">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md">
+              <Droplets className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-gray-900 text-sm sm:text-base">Ditt dagliga vattenmål</h3>
+              {waterLiters ? (
+                <p className="text-2xl sm:text-3xl font-bold text-blue-600">{waterLiters} liter</p>
+              ) : (
+                <div className="flex items-center gap-2 mt-1">
+                  <input
+                    type="number"
+                    placeholder="Din vikt"
+                    value={userWeight}
+                    onChange={(e) => handleWeightChange(e.target.value)}
+                    className="w-20 sm:w-24 px-2 py-1 text-sm border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+                  />
+                  <span className="text-gray-600 text-sm">kg</span>
+                </div>
+              )}
+            </div>
+            {waterLiters && (
+              <button
+                onClick={() => handleWeightChange('')}
+                className="text-xs text-blue-500 hover:text-blue-700 underline"
+              >
+                Ändra vikt
+              </button>
+            )}
+          </div>
+
+          {waterLiters && (
+            <>
+              <button
+                onClick={() => setIsWaterTipsOpen(!isWaterTipsOpen)}
+                className="mt-4 flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors"
+              >
+                <span className="font-medium">Tips för att nå ditt mål</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${isWaterTipsOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isWaterTipsOpen && (
+                <div className="mt-4 p-4 bg-white/70 rounded-lg border border-blue-100">
+                  <p className="font-semibold text-gray-800 mb-3">Ett smart knep - Drick på detta sätt så når du enkelt ditt mål:</p>
+
+                  <div className="space-y-3 text-sm text-gray-700">
+                    <div>
+                      <p className="font-medium text-blue-700">På morgonen:</p>
+                      <p className="ml-4">• Direkt när du vaknar: 1 stort glas vatten (2-3 dl)</p>
+                    </div>
+
+                    <div>
+                      <p className="font-medium text-blue-700">I samband med måltider:</p>
+                      <p className="ml-4">• Vid varje måltid (4-5 st/dag): 2-3 dl vatten</p>
+                    </div>
+
+                    <div className="pt-2 border-t border-blue-100">
+                      <p className="text-blue-800">
+                        <strong>Resultat:</strong> Du kommer upp i ca 1.5 liter bara genom detta!
+                        Lägg till vatten före/under/efter träning så är du i mål.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       {/* Main Action Cards Grid */}
