@@ -130,9 +130,8 @@ export default function DashboardPage() {
     localStorage.setItem('hideGetStarted', 'true')
   }
 
-  // Determine if "Get Started" section should be shown
-  const hasCompletedActivity = workoutSessions.some((s: any) => s.completed) || checkIns.length > 0
-  const showGetStarted = !hasCompletedActivity && !hideGetStarted
+  // Determine if "Get Started" section should be shown (only manual hide)
+  const showGetStarted = !hideGetStarted
 
   // Calendar helper functions
   const WEEKDAY_NAMES = ['M', 'T', 'O', 'T', 'F', 'L', 'S']

@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Eye, EyeOff, Bell, BellOff, CheckCircle2, XCircle, RefreshCw, Scale } from 'lucide-react'
+import { Eye, EyeOff, Bell, BellOff, CheckCircle2, XCircle, RefreshCw, Scale, Rocket } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { requestNotificationPermission, isPushSupported, getNotificationPermission } from '@/lib/firebase'
 
@@ -41,6 +41,22 @@ export default function ProfilePage() {
   // Weight reminder state
   const [weightReminderEnabled, setWeightReminderEnabled] = useState(false)
   const [isTogglingWeightReminder, setIsTogglingWeightReminder] = useState(false)
+
+  // Get Started section visibility state
+  const [hideGetStarted, setHideGetStarted] = useState(false)
+
+  // Load Get Started visibility from localStorage
+  useEffect(() => {
+    const hidden = localStorage.getItem('hideGetStarted') === 'true'
+    setHideGetStarted(hidden)
+  }, [])
+
+  const handleToggleGetStarted = () => {
+    const newValue = !hideGetStarted
+    setHideGetStarted(newValue)
+    localStorage.setItem('hideGetStarted', newValue.toString())
+    toast.success(newValue ? '"Kom igång" är nu dold' : '"Kom igång" visas nu på dashboard')
+  }
 
   // Check push notification status on mount
   useEffect(() => {
@@ -566,6 +582,31 @@ export default function ProfilePage() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Dashboard Settings Card */}
+        <div className="bg-white border-2 border-gray-300 rounded-xl shadow-lg">
+          <div className="p-6 border-b-2 border-gray-200 bg-gray-50 rounded-t-xl">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <Rocket className="w-5 h-5" />
+              Dashboard-inställningar
+            </h2>
+          </div>
+          <div className="p-6">
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="flex items-center gap-3">
+                <Rocket className="w-5 h-5 text-green-600" />
+                <div>
+                  <p className="font-medium text-gray-900">Visa &quot;Kom igång&quot;-sektionen</p>
+                  <p className="text-sm text-gray-500">Guiden för nya användare på dashboard</p>
+                </div>
+              </div>
+              <Switch
+                checked={!hideGetStarted}
+                onCheckedChange={handleToggleGetStarted}
+              />
+            </div>
           </div>
         </div>
       </div>
