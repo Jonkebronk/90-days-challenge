@@ -1,10 +1,6 @@
 // Service Worker for 90 Days Challenge PWA
-const CACHE_NAME = '90-days-v5'
+const CACHE_NAME = '90-days-v6'
 const urlsToCache = [
-  '/',
-  '/dashboard',
-  '/login',
-  '/apply',
   '/offline.html'
 ]
 
@@ -14,119 +10,73 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache')
-        // Add URLs one by one to prevent failure on missing resources
         return Promise.all(
           urlsToCache.map(url =>
             cache.add(url).catch(err => {
               console.log('Failed to cache:', url, err)
-              return Promise.resolve() // Don't fail the entire install
+              return Promise.resolve()
             })
           )
         )
       })
       .catch((err) => console.log('Cache install failed:', err))
   )
-  // Force the waiting service worker to become active
   self.skipWaiting()
 })
 
-// Fetch event - serve from cache when offline
+// Fetch event - network first, cache fallback for offline
 self.addEventListener('fetch', (event) => {
-  // Skip chrome extensions and non-http requests
+  // Skip non-http requests
   if (!event.request.url.startsWith('http')) {
     return
   }
 
-  // Skip service worker entirely for API routes (especially NextAuth)
+  // Skip service worker for API routes - let them pass through directly
   if (event.request.url.includes('/api/')) {
-    event.respondWith(
-      fetch(event.request, {
-        redirect: 'follow'
-      })
-    )
     return
   }
 
-  // Skip caching for non-GET requests (POST, PUT, DELETE, etc.)
+  // Skip caching for non-GET requests
   if (event.request.method !== 'GET') {
-    event.respondWith(
-      fetch(event.request, {
-        redirect: 'follow'
-      })
-    )
     return
   }
 
-  // Use network-first strategy for navigation (HTML) requests
-  // Use cache-first for static assets (images, CSS, JS)
-  const isNavigationRequest = event.request.mode === 'navigate' ||
-                               event.request.headers.get('accept')?.includes('text/html')
-
-  if (isNavigationRequest) {
-    // Network first for HTML pages - always get fresh content
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          // Clone and cache the fresh response
-          if (response && response.status === 200) {
-            const responseToCache = response.clone()
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache).catch(err => {
-                  console.log('Failed to cache:', event.request.url, err)
-                })
-              })
-          }
-          return response
-        })
-        .catch(() => {
-          // Fallback to cache if network fails
-          return caches.match(event.request)
-            .then((cachedResponse) => {
-              return cachedResponse || caches.match('/offline.html')
-            })
-        })
-    )
-  } else {
-    // Cache first for static assets (faster loading)
-    event.respondWith(
-      caches.match(event.request)
-        .then((response) => {
-          // Cache hit - return response
-          if (response) {
-            return response
-          }
-
-          return fetch(event.request).then(
-            (response) => {
-              // Check if valid response
-              if (!response || response.status !== 200 || response.type !== 'basic') {
-                return response
-              }
-
-              // Clone response for caching
-              const responseToCache = response.clone()
-
-              caches.open(CACHE_NAME)
-                .then((cache) => {
-                  cache.put(event.request, responseToCache).catch(err => {
-                    // Ignore cache put errors (e.g., for opaque responses)
-                    console.log('Failed to cache:', event.request.url, err)
-                  })
-                })
-                .catch(err => {
-                  console.log('Failed to open cache:', err)
-                })
-
-              return response
-            }
-          ).catch(() => {
-            // Return offline page if fetch fails
-            return caches.match('/offline.html')
-          })
-        })
-    )
+  // Skip caching for auth-related pages to avoid redirect issues
+  if (event.request.url.includes('/login') ||
+      event.request.url.includes('/auth') ||
+      event.request.url.includes('/callback')) {
+    return
   }
+
+  // Network first strategy - only cache successful non-redirect responses
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        // Only cache successful responses that are not redirects
+        if (response && response.status === 200 && response.type === 'basic' && !response.redirected) {
+          const responseToCache = response.clone()
+          caches.open(CACHE_NAME)
+            .then((cache) => {
+              cache.put(event.request, responseToCache).catch(() => {})
+            })
+        }
+        return response
+      })
+      .catch(() => {
+        // Network failed - try cache, then offline page
+        return caches.match(event.request)
+          .then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse
+            }
+            // For navigation requests, show offline page
+            if (event.request.mode === 'navigate') {
+              return caches.match('/offline.html')
+            }
+            return new Response('Offline', { status: 503 })
+          })
+      })
+  )
 })
 
 // Activate event - clean up old caches
@@ -144,7 +94,6 @@ self.addEventListener('activate', (event) => {
         })
       )
     }).then(() => {
-      // Take control of all clients immediately
       return self.clients.claim()
     })
   )
