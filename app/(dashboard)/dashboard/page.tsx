@@ -523,7 +523,12 @@ export default function DashboardPage() {
             <div className="flex-1">
               <h3 className="font-bold text-gray-900 text-sm sm:text-base">Ditt dagliga vattenmål</h3>
               {waterLiters ? (
-                <p className="text-2xl sm:text-3xl font-bold text-blue-600">{waterLiters} liter</p>
+                <div>
+                  <p className="text-2xl sm:text-3xl font-bold text-blue-600">{waterLiters} liter</p>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                    Läs mer om <Link href="/dashboard/articles" className="text-blue-500 hover:text-blue-700 underline">vatten</Link> i kunskapsbanken
+                  </p>
+                </div>
               ) : (
                 <div className="flex items-center gap-2 mt-1">
                   <input
