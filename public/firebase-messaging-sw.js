@@ -4,45 +4,38 @@
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js')
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js')
 
-// Firebase config will be sent via postMessage from the client
-let firebaseConfig = null
-
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'FIREBASE_CONFIG') {
-    firebaseConfig = event.data.config
-    initializeFirebase()
-  }
-})
-
-function initializeFirebase() {
-  if (!firebaseConfig) return
-
-  try {
-    firebase.initializeApp(firebaseConfig)
-    const messaging = firebase.messaging()
-
-    // Handle background messages
-    messaging.onBackgroundMessage((payload) => {
-      console.log('[firebase-messaging-sw.js] Received background message:', payload)
-
-      const notificationTitle = payload.notification?.title || 'Ny notifikation'
-      const notificationOptions = {
-        body: payload.notification?.body || '',
-        icon: '/images/icon-192.png',
-        badge: '/images/icon-192.png',
-        tag: payload.data?.tag || 'notification',
-        requireInteraction: true,
-        data: {
-          link: payload.data?.link || payload.fcmOptions?.link || '/',
-        },
-      }
-
-      self.registration.showNotification(notificationTitle, notificationOptions)
-    })
-  } catch (error) {
-    console.error('[firebase-messaging-sw.js] Error initializing Firebase:', error)
-  }
+// Firebase config - hardcoded for service worker reliability
+const firebaseConfig = {
+  apiKey: "AIzaSyBELlWYBtHlKp6WKRX_hU1O9DUEmZsFIsA",
+  authDomain: "friskvardskompassen-698e6.firebaseapp.com",
+  projectId: "friskvardskompassen-698e6",
+  storageBucket: "friskvardskompassen-698e6.firebasestorage.app",
+  messagingSenderId: "549903959470",
+  appId: "1:549903959470:web:de95aad84fc9673f49f43f"
 }
+
+// Initialize Firebase immediately
+firebase.initializeApp(firebaseConfig)
+const messaging = firebase.messaging()
+
+// Handle background messages
+messaging.onBackgroundMessage((payload) => {
+  console.log('[firebase-messaging-sw.js] Received background message:', payload)
+
+  const notificationTitle = payload.notification?.title || 'Ny notifikation'
+  const notificationOptions = {
+    body: payload.notification?.body || '',
+    icon: '/images/icon-192.png',
+    badge: '/images/icon-192.png',
+    tag: payload.data?.tag || 'notification',
+    requireInteraction: true,
+    data: {
+      link: payload.data?.link || payload.fcmOptions?.link || '/',
+    },
+  }
+
+  self.registration.showNotification(notificationTitle, notificationOptions)
+})
 
 // Handle notification click
 self.addEventListener('notificationclick', (event) => {
@@ -82,4 +75,37 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   console.log('[firebase-messaging-sw.js] Service worker activated')
   event.waitUntil(clients.claim())
+})
+
+// Handle push events directly (fallback)
+self.addEventListener('push', (event) => {
+  console.log('[firebase-messaging-sw.js] Push event received:', event)
+
+  if (event.data) {
+    try {
+      const payload = event.data.json()
+      console.log('[firebase-messaging-sw.js] Push payload:', payload)
+
+      // If Firebase SDK didn't handle it, show notification manually
+      if (payload.notification) {
+        const notificationTitle = payload.notification.title || 'Ny notifikation'
+        const notificationOptions = {
+          body: payload.notification.body || '',
+          icon: '/images/icon-192.png',
+          badge: '/images/icon-192.png',
+          tag: 'notification',
+          requireInteraction: true,
+          data: {
+            link: payload.data?.link || payload.fcmOptions?.link || '/',
+          },
+        }
+
+        event.waitUntil(
+          self.registration.showNotification(notificationTitle, notificationOptions)
+        )
+      }
+    } catch (e) {
+      console.error('[firebase-messaging-sw.js] Error parsing push data:', e)
+    }
+  }
 })
