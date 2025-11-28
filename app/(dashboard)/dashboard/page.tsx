@@ -672,7 +672,7 @@ export default function DashboardPage() {
 
       {/* Daily Weight Modal */}
       <Dialog open={weightModalOpen} onOpenChange={setWeightModalOpen}>
-        <DialogContent className="sm:max-w-[340px] bg-white">
+        <DialogContent className="sm:max-w-[340px] bg-white" onOpenAutoFocus={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle className="text-gray-900 flex items-center gap-2">
               <Scale className="w-5 h-5 text-purple-500" />
@@ -697,6 +697,7 @@ export default function DashboardPage() {
                 placeholder="75.5"
                 value={dailyWeightInput}
                 onChange={(e) => setDailyWeightInput(e.target.value)}
+                autoFocus={false}
                 className="bg-gray-50 border-gray-200 text-gray-900 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
             </div>
