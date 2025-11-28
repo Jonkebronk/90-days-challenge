@@ -163,6 +163,7 @@ export async function POST(request: Request) {
               name: day.name,
               description: day.description,
               isRestDay: day.isRestDay || false,
+              weekday: day.weekday ?? null,
               orderIndex: day.orderIndex || dayIndex,
               exercises: day.exercises ? {
                 create: day.exercises.map((ex: any, exIndex: number) => ({
@@ -193,6 +194,7 @@ export async function POST(request: Request) {
           name: day.name,
           description: day.description,
           isRestDay: day.isRestDay || false,
+          weekday: day.weekday ?? null,
           orderIndex: day.orderIndex || dayIndex,
           exercises: day.exercises ? {
             create: day.exercises.map((ex: any, exIndex: number) => ({

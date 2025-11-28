@@ -545,6 +545,7 @@ model WorkoutProgramDay {
   name             String // "Push Day", "Leg Day", "Upper Body", etc.
   description      String? // Day description/focus
   isRestDay        Boolean @default(false)
+  weekday          Int? // 0=Måndag, 1=Tisdag, 2=Onsdag, 3=Torsdag, 4=Fredag, 5=Lördag, 6=Söndag
 
   orderIndex Int      @default(0)
   createdAt  DateTime @default(now())

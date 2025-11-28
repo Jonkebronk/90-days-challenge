@@ -141,6 +141,7 @@ export default function CreateWorkoutProgramPage() {
             ...day,
             dayNumber: index + 1,
             orderIndex: index,
+            weekday: day.weekday ?? null,
             exercises: day.exercises.map((ex, exIndex) => ({
               exerciseId: ex.exerciseId,
               sets: typeof ex.sets === 'string' ? parseInt(ex.sets as string) || 3 : ex.sets,

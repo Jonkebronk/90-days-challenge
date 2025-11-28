@@ -28,7 +28,8 @@ import {
   Smartphone,
   Bell,
   Droplets,
-  Footprints
+  Footprints,
+  CheckCircle2
 } from 'lucide-react'
 
 export default function DashboardPage() {
@@ -51,7 +52,14 @@ export default function DashboardPage() {
   const [stepGoal, setStepGoal] = useState<string>('')
   const [stepInput, setStepInput] = useState<string>('')
   const [hasStepGoal, setHasStepGoal] = useState(false)
+
+  // Calendar state
+  const [workoutProgram, setWorkoutProgram] = useState<any>(null)
+  const [workoutSessions, setWorkoutSessions] = useState<any[]>([])
+  const [checkIns, setCheckIns] = useState<any[]>([])
+
   const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
+  const userId = (session?.user as any)?.id
 
   // Load weight and step goal from localStorage on mount
   useEffect(() => {
@@ -101,6 +109,87 @@ export default function DashboardPage() {
     setHasStepGoal(false)
   }
 
+  // Calendar helper functions
+  const WEEKDAY_NAMES = ['M', 'T', 'O', 'T', 'F', 'L', 'S']
+  const WEEKDAY_FULL = ['Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag', 'Söndag']
+  const MONTH_NAMES = ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december']
+
+  const getWeekDays = () => {
+    const today = new Date()
+    const dayOfWeek = today.getDay() // 0 = Sunday, 1 = Monday, etc.
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+    const monday = new Date(today)
+    monday.setDate(today.getDate() + mondayOffset)
+
+    const days = []
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(monday)
+      date.setDate(monday.getDate() + i)
+      days.push(date)
+    }
+    return days
+  }
+
+  const formatDateSwedish = (date: Date) => {
+    const weekday = WEEKDAY_FULL[date.getDay() === 0 ? 6 : date.getDay() - 1]
+    const day = date.getDate()
+    const month = MONTH_NAMES[date.getMonth()]
+    return `${weekday.toLowerCase()} ${day} ${month}`
+  }
+
+  const isSameDay = (date1: Date, date2: Date) => {
+    return date1.getFullYear() === date2.getFullYear() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getDate() === date2.getDate()
+  }
+
+  // Calculate program day, week, and phase from start date
+  const getProgramInfo = () => {
+    if (!workoutProgram?.startDate) return null
+
+    const startDate = new Date(workoutProgram.startDate)
+    const today = new Date()
+    const diffTime = today.getTime() - startDate.getTime()
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+    const programDay = diffDays + 1
+
+    if (programDay < 1 || programDay > 90) return null
+
+    const phase = programDay <= 28 ? 1 : programDay <= 56 ? 2 : 3
+    const week = Math.ceil(programDay / 7)
+
+    return { programDay, phase, week, startDate }
+  }
+
+  // Get training days for current week based on program
+  const getTrainingDaysForWeek = () => {
+    if (!workoutProgram?.workoutProgram?.days) return []
+    return workoutProgram.workoutProgram.days
+      .filter((day: any) => !day.isRestDay && day.weekday !== null)
+      .map((day: any) => day.weekday)
+  }
+
+  // Check if a day has a completed workout
+  const hasCompletedWorkout = (date: Date) => {
+    return workoutSessions.some((session: any) => {
+      if (!session.startedAt || !session.completed) return false
+      const sessionDate = new Date(session.startedAt)
+      return isSameDay(sessionDate, date)
+    })
+  }
+
+  // Check if a day has a check-in
+  const hasCheckIn = (date: Date) => {
+    return checkIns.some((checkIn: any) => {
+      const checkInDate = new Date(checkIn.createdAt)
+      return isSameDay(checkInDate, date)
+    })
+  }
+
+  const weekDays = getWeekDays()
+  const programInfo = getProgramInfo()
+  const trainingDays = getTrainingDaysForWeek()
+
   // Debug logging
   console.log('[DASHBOARD] Status:', status)
   console.log('[DASHBOARD] Session:', session)
@@ -116,9 +205,39 @@ export default function DashboardPage() {
   useEffect(() => {
     if (isCoach) {
       fetchCoachStats()
+    } else if (userId) {
+      fetchClientCalendarData()
     }
     fetchOnboardingGuide()
-  }, [isCoach])
+  }, [isCoach, userId])
+
+  // Fetch workout program and sessions for client calendar
+  const fetchClientCalendarData = async () => {
+    try {
+      // Fetch assigned workout program
+      const programRes = await fetch(`/api/clients/${userId}/workout`)
+      if (programRes.ok) {
+        const data = await programRes.json()
+        setWorkoutProgram(data)
+      }
+
+      // Fetch workout sessions
+      const sessionsRes = await fetch('/api/workout-sessions?limit=100')
+      if (sessionsRes.ok) {
+        const data = await sessionsRes.json()
+        setWorkoutSessions(data.sessions || [])
+      }
+
+      // Fetch check-ins
+      const checkInsRes = await fetch(`/api/check-in?userId=${userId}`)
+      if (checkInsRes.ok) {
+        const data = await checkInsRes.json()
+        setCheckIns(data.checkIns || [])
+      }
+    } catch (error) {
+      console.error('Error fetching calendar data:', error)
+    }
+  }
 
   const fetchCoachStats = async () => {
     try {
@@ -352,6 +471,105 @@ export default function DashboardPage() {
           Hej {session?.user?.name?.split(' ')[0] || 'Champion'}!
         </h1>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
+      </div>
+
+      {/* Week Calendar Widget */}
+      <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto p-4 sm:p-6">
+        {/* Phase and Day Info */}
+        {programInfo && (
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+            <div className="flex items-center gap-3">
+              <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                programInfo.phase === 1 ? 'bg-green-100 text-green-700' :
+                programInfo.phase === 2 ? 'bg-blue-100 text-blue-700' :
+                'bg-amber-100 text-amber-700'
+              }`}>
+                Fas {programInfo.phase} - Vecka {programInfo.week}
+              </span>
+              <span className="text-gray-600 text-sm">
+                Dag {programInfo.programDay} av 90
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Current Date */}
+        <p className="text-gray-900 font-medium mb-4 capitalize">
+          {formatDateSwedish(new Date())}
+        </p>
+
+        {/* Week Calendar Grid */}
+        <div className="grid grid-cols-7 gap-2">
+          {weekDays.map((date, index) => {
+            const isToday = isSameDay(date, new Date())
+            const weekdayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1 // Convert to 0=Mon
+            const isTrainingDay = trainingDays.includes(weekdayIndex)
+            const isSunday = weekdayIndex === 6
+            const completedWorkout = hasCompletedWorkout(date)
+            const completedCheckIn = hasCheckIn(date)
+
+            return (
+              <button
+                key={index}
+                onClick={() => {
+                  if (isTrainingDay) {
+                    router.push('/dashboard/workout')
+                  } else if (isSunday) {
+                    router.push('/dashboard/check-in')
+                  }
+                }}
+                className={`flex flex-col items-center p-2 sm:p-3 rounded-xl transition-all ${
+                  isToday
+                    ? 'bg-gray-900 text-white'
+                    : isTrainingDay || isSunday
+                    ? 'bg-gray-50 hover:bg-gray-100 cursor-pointer'
+                    : 'bg-gray-50'
+                } ${(isTrainingDay || isSunday) && !isToday ? 'hover:scale-105' : ''}`}
+              >
+                <span className={`text-xs font-medium mb-1 ${isToday ? 'text-gray-300' : 'text-gray-500'}`}>
+                  {WEEKDAY_NAMES[index]}
+                </span>
+                <span className={`text-lg sm:text-xl font-bold ${isToday ? 'text-white' : 'text-gray-900'}`}>
+                  {date.getDate()}
+                </span>
+
+                {/* Indicators */}
+                <div className="flex gap-1 mt-1 h-4">
+                  {isTrainingDay && (
+                    completedWorkout ? (
+                      <CheckCircle2 className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <Dumbbell className={`w-4 h-4 ${isToday ? 'text-amber-400' : 'text-amber-500'}`} />
+                    )
+                  )}
+                  {isSunday && (
+                    completedCheckIn ? (
+                      <CheckCircle2 className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <Calendar className={`w-4 h-4 ${isToday ? 'text-blue-300' : 'text-blue-500'}`} />
+                    )
+                  )}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Legend */}
+        <div className="flex flex-wrap gap-4 mt-4 text-xs text-gray-500">
+          <div className="flex items-center gap-1">
+            <Dumbbell className="w-3 h-3 text-amber-500" />
+            <span>Träningsdag</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Calendar className="w-3 h-3 text-blue-500" />
+            <span>Check-in (söndag)</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <CheckCircle2 className="w-3 h-3 text-green-500" />
+            <span>Genomfört</span>
+          </div>
+        </div>
       </div>
 
       {/* Quick Tips Section - Collapsible */}

@@ -221,7 +221,7 @@ export function WorkoutPlanPanel({
         </div>
 
         {/* Day Details */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           <div>
             <Label className="text-xs text-[rgba(255,255,255,0.6)]">Dagnamn</Label>
             <Input
@@ -230,6 +230,23 @@ export function WorkoutPlanPanel({
               placeholder="T.ex. Push Day"
               className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white text-sm mt-1"
             />
+          </div>
+          <div>
+            <Label className="text-xs text-[rgba(255,255,255,0.6)]">Veckodag</Label>
+            <select
+              value={day.weekday ?? ''}
+              onChange={(e) => onUpdateDay('weekday', e.target.value === '' ? null : parseInt(e.target.value))}
+              className="w-full h-9 px-3 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,215,0,0.2)] text-white text-sm mt-1 rounded-md focus:outline-none focus:ring-2 focus:ring-[rgba(255,215,0,0.5)]"
+            >
+              <option value="" className="bg-gray-900">Välj dag</option>
+              <option value="0" className="bg-gray-900">Måndag</option>
+              <option value="1" className="bg-gray-900">Tisdag</option>
+              <option value="2" className="bg-gray-900">Onsdag</option>
+              <option value="3" className="bg-gray-900">Torsdag</option>
+              <option value="4" className="bg-gray-900">Fredag</option>
+              <option value="5" className="bg-gray-900">Lördag</option>
+              <option value="6" className="bg-gray-900">Söndag</option>
+            </select>
           </div>
           <div>
             <Label className="text-xs text-[rgba(255,255,255,0.6)]">Beskrivning</Label>
