@@ -42,6 +42,7 @@ export default function DashboardPage() {
   })
   const [onboardingGuideContent, setOnboardingGuideContent] = useState<string>('')
   const [isGettingStartedOpen, setIsGettingStartedOpen] = useState(false)
+  const [isDailyGoalsOpen, setIsDailyGoalsOpen] = useState(false)
   const [isWaterTipsOpen, setIsWaterTipsOpen] = useState(false)
   const [isStepTipsOpen, setIsStepTipsOpen] = useState(false)
   const [userWeight, setUserWeight] = useState<string>('')
@@ -538,11 +539,17 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Daily Goals Widget */}
-      <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto overflow-hidden">
-        <div className="p-4 sm:p-5">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Dagliga mål</h2>
-
+      {/* Daily Goals Widget - Collapsible */}
+      <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto">
+        <button
+          onClick={() => setIsDailyGoalsOpen(!isDailyGoalsOpen)}
+          className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-xl"
+        >
+          <h2 className="text-base font-semibold text-gray-900">Dagliga mål</h2>
+          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${isDailyGoalsOpen ? 'rotate-180' : ''}`} />
+        </button>
+        {isDailyGoalsOpen && (
+        <div className="p-4 sm:p-5 pt-2 border-t border-gray-100">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Water Section */}
             <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
@@ -590,41 +597,37 @@ export default function DashboardPage() {
                 Läs mer om <Link href="/dashboard/articles/cmhsa0czw000uqf0qke1b3quq" className="text-blue-500 hover:text-blue-700 underline">vatten</Link> i kunskapsbanken
               </p>
 
-              {waterLiters && (
-                <>
-                  <button
-                    onClick={() => setIsWaterTipsOpen(!isWaterTipsOpen)}
-                    className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 transition-colors"
-                  >
-                    <span className="font-medium">Tips för att nå ditt mål</span>
-                    <ChevronDown className={`w-3 h-3 transition-transform ${isWaterTipsOpen ? 'rotate-180' : ''}`} />
-                  </button>
+              <button
+                onClick={() => setIsWaterTipsOpen(!isWaterTipsOpen)}
+                className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 transition-colors"
+              >
+                <span className="font-medium">Tips för att nå ditt mål</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${isWaterTipsOpen ? 'rotate-180' : ''}`} />
+              </button>
 
-                  {isWaterTipsOpen && (
-                    <div className="mt-3 p-3 bg-white/70 rounded-lg border border-blue-100">
-                      <p className="font-semibold text-gray-800 mb-2 text-sm">Ett smart knep - Drick på detta sätt så når du enkelt ditt mål:</p>
+              {isWaterTipsOpen && (
+                <div className="mt-3 p-3 bg-white/70 rounded-lg border border-blue-100">
+                  <p className="font-semibold text-gray-800 mb-2 text-sm">Ett smart knep - Drick på detta sätt så når du enkelt ditt mål:</p>
 
-                      <div className="space-y-2 text-xs text-gray-700">
-                        <div>
-                          <p className="font-medium text-blue-700">På morgonen:</p>
-                          <p className="ml-3">• Direkt när du vaknar: 1 stort glas vatten (2-3 dl)</p>
-                        </div>
-
-                        <div>
-                          <p className="font-medium text-blue-700">I samband med måltider:</p>
-                          <p className="ml-3">• Vid varje måltid (4-5 st/dag): 2-3 dl vatten</p>
-                        </div>
-
-                        <div className="pt-2 border-t border-blue-100">
-                          <p className="text-blue-800">
-                            <strong>Resultat:</strong> Du kommer upp i ca 1.5 liter bara genom detta!
-                            Lägg till vatten före/under/efter träning så är du i mål.
-                          </p>
-                        </div>
-                      </div>
+                  <div className="space-y-2 text-xs text-gray-700">
+                    <div>
+                      <p className="font-medium text-blue-700">På morgonen:</p>
+                      <p className="ml-3">• Direkt när du vaknar: 1 stort glas vatten (2-3 dl)</p>
                     </div>
-                  )}
-                </>
+
+                    <div>
+                      <p className="font-medium text-blue-700">I samband med måltider:</p>
+                      <p className="ml-3">• Vid varje måltid (4-5 st/dag): 2-3 dl vatten</p>
+                    </div>
+
+                    <div className="pt-2 border-t border-blue-100">
+                      <p className="text-blue-800">
+                        <strong>Resultat:</strong> Du kommer upp i ca 1.5 liter bara genom detta!
+                        Lägg till vatten före/under/efter träning så är du i mål.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
 
@@ -674,33 +677,30 @@ export default function DashboardPage() {
                 Läs mer om <Link href="/dashboard/articles/cmij19vz00001k30qmlodc7k0" className="text-green-500 hover:text-green-700 underline">daglig aktivitetsnivå (steg)</Link> i kunskapsbanken
               </p>
 
-              {hasStepGoal && (
-                <>
-                  <button
-                    onClick={() => setIsStepTipsOpen(!isStepTipsOpen)}
-                    className="flex items-center gap-2 text-xs text-green-600 hover:text-green-800 transition-colors"
-                  >
-                    <span className="font-medium">Tips för att lyckas med ditt stegmål</span>
-                    <ChevronDown className={`w-3 h-3 transition-transform ${isStepTipsOpen ? 'rotate-180' : ''}`} />
-                  </button>
+              <button
+                onClick={() => setIsStepTipsOpen(!isStepTipsOpen)}
+                className="flex items-center gap-2 text-xs text-green-600 hover:text-green-800 transition-colors"
+              >
+                <span className="font-medium">Tips för att lyckas med ditt stegmål</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${isStepTipsOpen ? 'rotate-180' : ''}`} />
+              </button>
 
-                  {isStepTipsOpen && (
-                    <div className="mt-3 p-3 bg-white/70 rounded-lg border border-green-100">
-                      <p className="font-semibold text-gray-800 mb-2 text-sm">Tips för att lyckas med ditt stegmål:</p>
+              {isStepTipsOpen && (
+                <div className="mt-3 p-3 bg-white/70 rounded-lg border border-green-100">
+                  <p className="font-semibold text-gray-800 mb-2 text-sm">Tips för att lyckas med ditt stegmål:</p>
 
-                      <div className="space-y-2 text-xs text-gray-700">
-                        <p>• Spåra dina steg via Apple Watch, Fitbit eller liknande. Du kan använda telefonen, men den är ofta opålitlig och måste alltid vara på dig.</p>
-                        <p>• Välj en mer aktiv väg i vardagen – gå av bussen en hållplats tidigare eller ta trapporna istället för hissen.</p>
-                        <p>• Stå upp och rör dig lite mellan seten på gymmet. Det är ett underskattat sätt att samla extra steg.</p>
-                        <p>• Ta 10 minuters promenader efter måltider. Det hjälper dig samla steg, motverkar trötthet efter maten och underlättar matsmältningen.</p>
-                      </div>
-                    </div>
-                  )}
-                </>
+                  <div className="space-y-2 text-xs text-gray-700">
+                    <p>• Spåra dina steg via Apple Watch, Fitbit eller liknande. Du kan använda telefonen, men den är ofta opålitlig och måste alltid vara på dig.</p>
+                    <p>• Välj en mer aktiv väg i vardagen – gå av bussen en hållplats tidigare eller ta trapporna istället för hissen.</p>
+                    <p>• Stå upp och rör dig lite mellan seten på gymmet. Det är ett underskattat sätt att samla extra steg.</p>
+                    <p>• Ta 10 minuters promenader efter måltider. Det hjälper dig samla steg, motverkar trötthet efter maten och underlättar matsmältningen.</p>
+                  </div>
+                </div>
               )}
             </div>
           </div>
         </div>
+        )}
       </div>
 
       {/* Main Action Cards Grid */}
