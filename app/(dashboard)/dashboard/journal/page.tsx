@@ -649,7 +649,7 @@ function ClientJournalContent() {
                       {startCheckIn && (
                         <div
                           key={startCheckIn.id}
-                          className="bg-white/5 border-2 border-[rgba(255,215,0,0.5)] rounded-xl backdrop-blur-[10px] overflow-hidden shadow-[0_0_20px_rgba(255,215,0,0.3)]"
+                          className="bg-white border-2 border-amber-300 rounded-xl overflow-hidden shadow-sm"
                         >
                           <div className="p-4 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <div className="flex items-center gap-2 sm:gap-3">
