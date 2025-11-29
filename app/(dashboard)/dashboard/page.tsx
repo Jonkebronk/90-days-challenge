@@ -566,45 +566,34 @@ export default function DashboardPage() {
       </div>
 
       {/* Week Calendar Widget */}
-      <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto p-4 sm:p-6">
-        {/* Header with Day Counter and Phase Info */}
-        <div className="flex items-center justify-between mb-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Header with Day Counter and Phase Info - Outside card */}
+        <div className="flex items-center justify-between mb-3 px-1">
           {/* Left: Current Date */}
-          <p className="text-gray-900 font-medium capitalize">
+          <p className="text-gray-400 font-medium capitalize text-sm">
             {formatDateSwedish(new Date())}
           </p>
 
           {/* Right: Day Counter */}
           {programInfo && (
-            <div className="flex items-center gap-3">
-              {/* Day counter text */}
-              <div className="text-right">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl sm:text-3xl font-bold text-gray-900">Dag {programInfo.programDay}</span>
-                  <span className="text-sm sm:text-base text-gray-400">av 90</span>
-                </div>
-                <div className="flex items-center justify-end gap-1 mt-0.5">
-                  <span className={`text-xs font-medium ${
-                    programInfo.phase === 1 ? 'text-green-600' :
-                    programInfo.phase === 2 ? 'text-blue-600' :
-                    'text-amber-600'
-                  }`}>
-                    Fas {programInfo.phase}
-                  </span>
-                  <span className={`text-xs ${
-                    programInfo.phase === 1 ? 'text-green-500' :
-                    programInfo.phase === 2 ? 'text-blue-500' :
-                    'text-amber-500'
-                  }`}>
-                    ({programInfo.phase === 1 ? 'dag 1-28' : programInfo.phase === 2 ? 'dag 29-56' : 'dag 57-90'})
-                  </span>
-                </div>
+            <div className="text-right">
+              <div className="flex items-baseline gap-1">
+                <span className="text-lg sm:text-xl font-bold text-gray-200">Dag {programInfo.programDay}</span>
+                <span className="text-xs sm:text-sm text-gray-500">av 90</span>
               </div>
+              <span className={`text-xs font-medium ${
+                programInfo.phase === 1 ? 'text-green-500' :
+                programInfo.phase === 2 ? 'text-blue-500' :
+                'text-amber-500'
+              }`}>
+                Fas {programInfo.phase} ({programInfo.phase === 1 ? 'dag 1-28' : programInfo.phase === 2 ? 'dag 29-56' : 'dag 57-90'})
+              </span>
             </div>
           )}
         </div>
 
-        {/* Week Calendar Grid */}
+        {/* Week Calendar Grid - Inside card */}
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4">
         <div className="grid grid-cols-7 gap-2">
           {weekDays.map((date, index) => {
             const isToday = isSameDay(date, new Date())
@@ -658,31 +647,32 @@ export default function DashboardPage() {
           })}
         </div>
 
-        {/* Legend */}
-        <div className="flex flex-wrap gap-4 mt-4 text-xs text-gray-500">
-          <div className="flex items-center gap-1">
-            <Scale className="w-3 h-3 text-purple-500" />
-            <span>Vikt</span>
+          {/* Legend */}
+          <div className="flex flex-wrap justify-center gap-4 mt-3 text-xs text-gray-500">
+            <div className="flex items-center gap-1">
+              <Scale className="w-3 h-3 text-purple-500" />
+              <span>Vikt</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Dumbbell className="w-3 h-3 text-amber-500" />
+              <span>Träning</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Calendar className="w-3 h-3 text-blue-500" />
+              <span>Check-in</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <Dumbbell className="w-3 h-3 text-amber-500" />
-            <span>Träning</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Calendar className="w-3 h-3 text-blue-500" />
-            <span>Check-in</span>
-          </div>
+
+          {/* Tip text */}
+          <p className="text-xs text-gray-400 mt-3 text-center">
+            Tryck på en dag för att registrera din vikt
+          </p>
+
+          {/* Link to knowledge base */}
+          <p className="text-xs text-gray-500 mt-2 text-center">
+            Läs mer om <Link href="/dashboard/articles/category/mat-dina-resultat" className="text-purple-500 hover:text-purple-700 underline">hur vi mäter dina resultat</Link> i kunskapsbanken
+          </p>
         </div>
-
-        {/* Tip text */}
-        <p className="text-xs text-gray-400 mt-3 text-center">
-          Tryck på en dag för att registrera din vikt
-        </p>
-
-        {/* Link to knowledge base */}
-        <p className="text-xs text-gray-500 mt-3 text-center">
-          Läs mer om <Link href="/dashboard/articles/category/mat-dina-resultat" className="text-purple-500 hover:text-purple-700 underline">hur vi mäter dina resultat</Link> i kunskapsbanken
-        </p>
       </div>
 
       {/* Daily Weight Modal */}
