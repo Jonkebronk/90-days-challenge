@@ -15,15 +15,24 @@ type ArticleCategory = {
   slug: string
   color?: string
   icon?: string
+  section?: string | null
+  orderIndex: number
   _count: {
     articles: number
   }
+}
+
+type ArticleSection = {
+  id: string
+  name: string
+  orderIndex: number
 }
 
 export default function CoachArticlesPage() {
   const { data: session } = useSession()
   const router = useRouter()
   const [categories, setCategories] = useState<ArticleCategory[]>([])
+  const [sections, setSections] = useState<ArticleSection[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   // Check if user is a coach
@@ -31,24 +40,33 @@ export default function CoachArticlesPage() {
 
   useEffect(() => {
     if (session?.user && isCoach) {
-      fetchCategories()
+      fetchData()
     } else if (session && !isCoach) {
       router.push('/dashboard')
     }
   }, [session, isCoach])
 
-  const fetchCategories = async () => {
+  const fetchData = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/article-categories?audience=coach')
-      if (response.ok) {
-        const data = await response.json()
+      const [categoriesRes, sectionsRes] = await Promise.all([
+        fetch('/api/article-categories?audience=coach'),
+        fetch('/api/article-sections?audience=coach')
+      ])
+
+      if (categoriesRes.ok) {
+        const data = await categoriesRes.json()
         setCategories(data.categories)
       } else {
         toast.error('Kunde inte hämta kategorier')
       }
+
+      if (sectionsRes.ok) {
+        const data = await sectionsRes.json()
+        setSections(data.sections)
+      }
     } catch (error) {
-      console.error('Error fetching categories:', error)
+      console.error('Error fetching data:', error)
       toast.error('Ett fel uppstod')
     } finally {
       setIsLoading(false)
@@ -67,10 +85,10 @@ export default function CoachArticlesPage() {
   if (!session?.user || !isCoach) {
     return (
       <div className="container mx-auto p-6">
-        <Card className="bg-white/5 border border-purple-500/20 backdrop-blur-[10px]">
+        <Card className="bg-white border border-gray-200">
           <CardContent className="p-6 text-center">
             <ShieldCheck className="h-12 w-12 mx-auto text-purple-400 mb-4" />
-            <p className="text-gray-400">Du har inte behörighet att se denna sida.</p>
+            <p className="text-gray-500">Du har inte behörighet att se denna sida.</p>
           </CardContent>
         </Card>
       </div>
@@ -97,66 +115,84 @@ export default function CoachArticlesPage() {
           <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto" />
         </div>
       ) : categories.length === 0 ? (
-        <Card className="bg-white/5 border-2 border-purple-500/20 backdrop-blur-[10px]">
+        <Card className="bg-white border border-gray-200">
           <CardContent className="text-center py-16">
-            <BookOpen className="h-16 w-16 mx-auto text-purple-400/50 mb-4" />
-            <p className="text-gray-400 text-lg mb-2">
+            <BookOpen className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+            <p className="text-gray-500 text-lg mb-2">
               Inga coach-kategorier ännu
             </p>
-            <p className="text-sm text-[rgba(255,255,255,0.4)]">
+            <p className="text-sm text-gray-400">
               Kategorier kommer att visas här när de skapas
             </p>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-          {categories.map((category) => {
-            const Icon = getIconComponent(category.icon, category.name)
-            const categoryColor = category.color || '#A855F7' // Purple default for coach
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* Group categories by section */}
+          {(() => {
+            // Get unique sections from categories
+            const sectionsMap = new Map<string, ArticleCategory[]>()
 
-            return (
-              <Card
-                key={category.id}
-                onClick={() => router.push(`/dashboard/coach-articles/category/${category.slug}`)}
-                className="group relative bg-white/5 border-2 border-purple-500/20 hover:border-purple-500/60 hover:bg-white/10 transition-all duration-300 cursor-pointer backdrop-blur-[10px] overflow-hidden"
-              >
-                {/* Gradient Overlay */}
-                <div
-                  className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity"
-                  style={{
-                    background: `linear-gradient(135deg, ${categoryColor}30 0%, transparent 100%)`
-                  }}
-                />
+            categories.forEach(cat => {
+              const sectionName = cat.section || 'Övrigt'
+              if (!sectionsMap.has(sectionName)) {
+                sectionsMap.set(sectionName, [])
+              }
+              sectionsMap.get(sectionName)!.push(cat)
+            })
 
-                <CardContent className="relative p-4 sm:p-8 flex flex-col items-center text-center">
-                  {/* Icon */}
-                  <div
-                    className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform shadow-lg"
-                    style={{ backgroundColor: `${categoryColor}20` }}
-                  >
-                    <Icon className="h-7 w-7 sm:h-10 sm:w-10" style={{ color: categoryColor }} />
-                  </div>
+            // Sort sections by their orderIndex from the sections table
+            // Fallback to alphabetical if section not found in table
+            const sortedSections = Array.from(sectionsMap.entries()).sort((a, b) => {
+              const aSection = sections.find(s => s.name === a[0])
+              const bSection = sections.find(s => s.name === b[0])
+              const aOrder = aSection?.orderIndex ?? 999
+              const bOrder = bSection?.orderIndex ?? 999
+              if (aOrder !== bOrder) return aOrder - bOrder
+              return a[0].localeCompare(b[0])
+            })
 
-                  {/* Category Name */}
-                  <h3 className="text-sm sm:text-xl font-bold text-purple-300 mb-1 sm:mb-2 tracking-[0.5px] sm:tracking-[1px]">
-                    {category.name}
-                  </h3>
+            return sortedSections.map(([sectionName, sectionCategories]) => (
+              <div key={sectionName}>
+                {/* Section Header */}
+                <div className="flex items-center gap-4 mb-4">
+                  <h2 className="text-sm font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent uppercase tracking-[2px]">
+                    {sectionName}
+                  </h2>
+                  <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-purple-500/30" />
+                </div>
 
-                  {/* Article Count */}
-                  <p className="text-gray-400 text-xs sm:text-sm">
-                    {category._count.articles} {category._count.articles === 1 ? 'artikel' : 'artiklar'}
-                  </p>
+                {/* Categories in this section */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                  {sectionCategories.map((category) => {
+                    const Icon = getIconComponent(category.icon, category.name)
+                    const categoryColor = category.color || '#A855F7' // Purple default for coach
 
-                  {/* Arrow indicator */}
-                  <div className="mt-2 sm:mt-4 text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </CardContent>
-              </Card>
-            )
-          })}
+                    return (
+                      <div
+                        key={category.id}
+                        onClick={() => router.push(`/dashboard/coach-articles/category/${category.slug}`)}
+                        className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-purple-500 hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center"
+                      >
+                        <div
+                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md"
+                          style={{ background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}dd)` }}
+                        >
+                          <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                        </div>
+                        <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">
+                          {category.name}
+                        </h3>
+                        <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5">
+                          {category._count.articles} {category._count.articles === 1 ? 'artikel' : 'artiklar'}
+                        </p>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ))
+          })()}
         </div>
       )}
     </div>
