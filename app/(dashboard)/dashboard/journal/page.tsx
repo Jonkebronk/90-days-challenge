@@ -18,14 +18,9 @@ import {
 } from '@/components/ui/select'
 import {
   FileText,
-  User,
   ClipboardCheck,
   TrendingUp,
   TrendingDown,
-  Calendar,
-  Weight,
-  Image as ImageIcon,
-  ChevronLeft,
   Scale,
   Ruler,
   Camera,
@@ -403,12 +398,9 @@ function ClientJournalContent() {
 
       {/* Journal Content */}
       {!isLoading && journalData && (
-        <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
+        <Tabs defaultValue="application" className="space-y-4 sm:space-y-6">
           <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
             <TabsList className="bg-black/30 border border-gold-primary/30 w-max sm:w-auto">
-              <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 sm:px-3 data-[state=active]:bg-[rgba(255,215,0,0.2)] data-[state=active]:text-gold-light">
-                Översikt
-              </TabsTrigger>
               <TabsTrigger value="application" className="text-xs sm:text-sm px-2 sm:px-3 data-[state=active]:bg-[rgba(255,215,0,0.2)] data-[state=active]:text-gold-light">
                 Ansökan
               </TabsTrigger>
@@ -420,102 +412,6 @@ function ClientJournalContent() {
               </TabsTrigger>
             </TabsList>
           </div>
-
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-4 sm:space-y-6">
-            {/* Client Info */}
-            <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden">
-              <div className="p-4 sm:p-6 border-b border-gold-primary/20">
-                <h2 className="text-lg sm:text-xl font-bold text-gold-light flex items-center gap-2">
-                  <User className="h-4 w-4 sm:h-5 sm:w-5" />
-                  Klientinformation
-                </h2>
-              </div>
-              <div className="p-4 sm:p-6 grid grid-cols-2 gap-4 sm:gap-6">
-                <div>
-                  <Label className="text-gray-400 text-xs sm:text-sm">Namn</Label>
-                  <p className="text-white font-medium text-sm sm:text-base">
-                    {journalData.client.firstName} {journalData.client.lastName}
-                  </p>
-                </div>
-                <div>
-                  <Label className="text-gray-400 text-xs sm:text-sm">Email</Label>
-                  <p className="text-white font-medium text-sm sm:text-base truncate">{journalData.client.email}</p>
-                </div>
-                <div>
-                  <Label className="text-gray-400 text-xs sm:text-sm">Telefon</Label>
-                  <p className="text-white font-medium text-sm sm:text-base">{journalData.client.phone || 'Ej angivet'}</p>
-                </div>
-                <div>
-                  <Label className="text-gray-400 text-xs sm:text-sm">Status</Label>
-                  <div className="mt-1">
-                    <Badge className="bg-[rgba(34,197,94,0.1)] text-green-400 border border-[rgba(34,197,94,0.3)] text-xs">
-                      {journalData.client.status}
-                    </Badge>
-                  </div>
-                </div>
-                {journalData.client.tags.length > 0 && (
-                  <div className="col-span-2">
-                    <Label className="text-gray-400 text-xs sm:text-sm">Taggar</Label>
-                    <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
-                      {journalData.client.tags.map((tag) => (
-                        <Badge
-                          key={tag}
-                          className="bg-[rgba(255,215,0,0.1)] text-gold-light border border-gold-primary/30 text-xs"
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <div>
-                  <Label className="text-gray-400 text-xs sm:text-sm">Check-in</Label>
-                  <p className="text-white font-medium text-sm sm:text-base">
-                    {journalData.client.checkInDay || 'Ej angivet'}
-                  </p>
-                </div>
-                <div>
-                  <Label className="text-gray-400 text-xs sm:text-sm">Medlem sedan</Label>
-                  <p className="text-white font-medium text-sm sm:text-base">
-                    {journalData.client.membershipStartDate
-                      ? format(new Date(journalData.client.membershipStartDate), 'PP', { locale: sv })
-                      : format(new Date(journalData.client.createdAt), 'PP', { locale: sv })}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-4">
-              <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-3 sm:p-6">
-                <div className="text-center">
-                  <p className="text-xl sm:text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
-                    {journalData.stats.checkIns.total}
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-400 mt-1">Check-ins</p>
-                </div>
-              </div>
-              <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-3 sm:p-6">
-                <div className="text-center">
-                  <p className="text-xl sm:text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
-                    {journalData.stats.currentWeight || 'N/A'}
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-400 mt-1">Vikt (kg)</p>
-                </div>
-              </div>
-              <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-3 sm:p-6">
-                <div className="text-center">
-                  <p className="text-xl sm:text-3xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
-                    {journalData.stats.startWeight && journalData.stats.currentWeight
-                      ? (Number(journalData.stats.startWeight) - Number(journalData.stats.currentWeight)).toFixed(1)
-                      : 'N/A'}
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-400 mt-1">Förändring</p>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
 
           {/* Application Tab */}
           <TabsContent value="application" className="space-y-4 sm:space-y-6">
