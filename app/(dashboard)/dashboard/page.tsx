@@ -32,7 +32,8 @@ import {
   CheckCircle2,
   X,
   Scale,
-  Moon
+  Moon,
+  Brain
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 
@@ -1138,6 +1139,23 @@ export default function DashboardPage() {
 
               <p className="text-xs text-gray-600">
                 Läs mer om <span className="text-indigo-500">sömn</span> i kunskapsbanken
+              </p>
+            </div>
+
+            {/* Stress Section */}
+            <div className="bg-gradient-to-br from-teal-50 to-cyan-50 border border-teal-200 rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <Brain className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Stress</h3>
+                  <p className="text-sm text-gray-700">Hitta sätt för ditt sinne och din kropp att hantera stress</p>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-600">
+                Läs mer om <span className="text-teal-500">stress</span> i kunskapsbanken
               </p>
             </div>
           </div>
