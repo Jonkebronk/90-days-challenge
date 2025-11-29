@@ -1216,7 +1216,8 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 text-sm sm:text-base">Meal Prep</h3>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-gray-600">Förbered mat för veckan</p>
+                  <p className="text-xs text-gray-600 mt-1">
                     Läs mer om <Link href="/dashboard/articles/cmhv5hzfo0002mj0qzja6ns04" className="text-amber-600 hover:text-amber-800 underline">meal prep</Link> i kunskapsbanken
                   </p>
                 </div>
