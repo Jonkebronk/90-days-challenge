@@ -192,24 +192,22 @@ export default function CreateWorkoutProgramPage() {
             {currentStep === 1 ? 'Steg 1: Programinformation' : 'Steg 2: Bygg träningsdagar'}
           </p>
         </div>
-        {currentStep === 2 && (
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() => router.back()}
-              className="bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-gray-100 hover:bg-gold-50 hover:border-[rgba(255,215,0,0.5)]"
-            >
-              Avbryt
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={saving}
-              className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
-            >
-              {saving ? 'Sparar...' : 'Spara program'}
-            </Button>
-          </div>
-        )}
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => router.back()}
+            className="bg-[rgba(255,255,255,0.05)] border-gold-primary/30 text-gray-100 hover:bg-gold-50 hover:border-[rgba(255,215,0,0.5)]"
+          >
+            Avbryt
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] hover:opacity-90"
+          >
+            {saving ? 'Sparar...' : 'Spara program'}
+          </Button>
+        </div>
       </div>
 
       {/* Step Content */}
