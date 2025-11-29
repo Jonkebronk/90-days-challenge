@@ -44,6 +44,66 @@ import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { sv } from 'date-fns/locale'
 
+// Swedish label translations for enum values
+const goalLabels: Record<string, string> = {
+  build_muscle: 'Bygga muskler',
+  lose_fat: 'Gå ner i vikt',
+  lose_weight: 'Gå ner i vikt',
+  gain_weight: 'Gå upp i vikt',
+  maintain: 'Bibehålla vikt',
+  recomp: 'Förbättra kroppssammansättning',
+  improve_health: 'Förbättra hälsa',
+  increase_energy: 'Öka energi',
+  get_stronger: 'Bli starkare',
+  improve_endurance: 'Förbättra uthållighet',
+  other: 'Annat',
+}
+
+const genderLabels: Record<string, string> = {
+  male: 'Man',
+  female: 'Kvinna',
+  other: 'Annat',
+}
+
+const activityLabels: Record<string, string> = {
+  sedentary: 'Stillasittande',
+  very_low: 'Mycket låg',
+  low: 'Låg',
+  light: 'Lätt',
+  moderate: 'Måttlig',
+  medium: 'Medel',
+  active: 'Aktiv',
+  high: 'Hög',
+  very_high: 'Mycket hög',
+  very_active: 'Mycket aktiv',
+  extremely_active: 'Extremt aktiv',
+}
+
+const experienceLabels: Record<string, string> = {
+  beginner: 'Nybörjare',
+  some_experience: 'Viss erfarenhet',
+  intermediate: 'Medel',
+  experienced: 'Erfaren',
+  advanced: 'Avancerad',
+  very_experienced: 'Mycket erfaren',
+  expert: 'Expert',
+}
+
+const dayLabels: Record<string, string> = {
+  monday: 'Måndag',
+  tuesday: 'Tisdag',
+  wednesday: 'Onsdag',
+  thursday: 'Torsdag',
+  friday: 'Fredag',
+  saturday: 'Lördag',
+  sunday: 'Söndag',
+}
+
+const formatLabel = (value: string | null | undefined, labels: Record<string, string>): string => {
+  if (!value) return 'Ej angivet'
+  return labels[value.toLowerCase()] || value
+}
+
 type Client = {
   id: string
   name: string | null
@@ -436,7 +496,7 @@ function ClientJournalContent() {
                     <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Mål</h3>
                     <div>
                       <Label className="text-gray-400 text-xs sm:text-sm">Primärt Mål</Label>
-                      <p className="text-white text-sm sm:text-base">{journalData.profile.primaryGoal || 'Ej angivet'}</p>
+                      <p className="text-white text-sm sm:text-base">{formatLabel(journalData.profile.primaryGoal, goalLabels)}</p>
                     </div>
                   </div>
 
@@ -456,7 +516,7 @@ function ClientJournalContent() {
                       </div>
                       <div>
                         <Label className="text-gray-400 text-xs sm:text-sm">Kön</Label>
-                        <p className="text-white text-sm sm:text-base">{journalData.profile.genderAtBirth || '-'}</p>
+                        <p className="text-white text-sm sm:text-base">{formatLabel(journalData.profile.genderAtBirth, genderLabels)}</p>
                       </div>
                     </div>
                   </div>
@@ -469,11 +529,11 @@ function ClientJournalContent() {
                     <div className="grid grid-cols-2 gap-2 sm:gap-4">
                       <div>
                         <Label className="text-gray-400 text-xs sm:text-sm">Fritid</Label>
-                        <p className="text-white text-sm sm:text-base">{journalData.profile.activityLevelFree || '-'}</p>
+                        <p className="text-white text-sm sm:text-base">{formatLabel(journalData.profile.activityLevelFree, activityLabels)}</p>
                       </div>
                       <div>
                         <Label className="text-gray-400 text-xs sm:text-sm">Arbete</Label>
-                        <p className="text-white text-sm sm:text-base">{journalData.profile.activityLevelWork || '-'}</p>
+                        <p className="text-white text-sm sm:text-base">{formatLabel(journalData.profile.activityLevelWork, activityLabels)}</p>
                       </div>
                     </div>
                   </div>
@@ -520,6 +580,11 @@ function ClientJournalContent() {
                           <p className="text-white mt-1 text-sm sm:text-base">{journalData.profile.nutritionNotes}</p>
                         </div>
                       )}
+                      {journalData.profile.allergies.length === 0 &&
+                       journalData.profile.dietaryPreferences.length === 0 &&
+                       !journalData.profile.nutritionNotes && (
+                        <p className="text-gray-400 text-sm">Ej angivet</p>
+                      )}
                     </div>
                   </div>
 
@@ -538,7 +603,7 @@ function ClientJournalContent() {
                                 key={day}
                                 className="bg-[rgba(100,100,255,0.1)] text-blue-300 border border-[rgba(100,100,255,0.3)] text-xs"
                               >
-                                {day}
+                                {formatLabel(day, dayLabels)}
                               </Badge>
                             ))}
                           </div>
@@ -546,7 +611,7 @@ function ClientJournalContent() {
                       )}
                       <div>
                         <Label className="text-gray-400 text-xs sm:text-sm">Träningserfarenhet</Label>
-                        <p className="text-white text-sm sm:text-base">{journalData.profile.trainingExperience || 'Ej angivet'}</p>
+                        <p className="text-white text-sm sm:text-base">{formatLabel(journalData.profile.trainingExperience, experienceLabels)}</p>
                       </div>
                       {journalData.profile.trainingDetails && (
                         <div>
