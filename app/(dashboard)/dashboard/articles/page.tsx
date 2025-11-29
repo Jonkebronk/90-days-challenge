@@ -15,6 +15,8 @@ type ArticleCategory = {
   slug: string
   color?: string
   icon?: string
+  section?: string | null
+  orderIndex: number
   _count: {
     articles: number
   }
@@ -95,32 +97,65 @@ export default function ArticlesPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
-          {categories.map((category) => {
-            const Icon = getIconComponent(category.icon, category.name)
-            const categoryColor = category.color || '#8b5cf6'
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* Group categories by section */}
+          {(() => {
+            // Get unique sections in order (based on first category's orderIndex in each section)
+            const sectionsMap = new Map<string, ArticleCategory[]>()
 
-            return (
-              <div
-                key={category.id}
-                onClick={() => router.push(`/dashboard/articles/category/${category.slug}`)}
-                className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center"
-              >
-                <div
-                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md"
-                  style={{ background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}dd)` }}
-                >
-                  <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+            categories.forEach(cat => {
+              const sectionName = cat.section || 'Övrigt'
+              if (!sectionsMap.has(sectionName)) {
+                sectionsMap.set(sectionName, [])
+              }
+              sectionsMap.get(sectionName)!.push(cat)
+            })
+
+            // Sort sections by the lowest orderIndex of their categories
+            const sortedSections = Array.from(sectionsMap.entries()).sort((a, b) => {
+              const aMinOrder = Math.min(...a[1].map(c => c.orderIndex))
+              const bMinOrder = Math.min(...b[1].map(c => c.orderIndex))
+              return aMinOrder - bMinOrder
+            })
+
+            return sortedSections.map(([sectionName, sectionCategories]) => (
+              <div key={sectionName}>
+                {/* Section Header */}
+                <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 px-1">
+                  {sectionName}
+                </h2>
+
+                {/* Categories in this section */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                  {sectionCategories.map((category) => {
+                    const Icon = getIconComponent(category.icon, category.name)
+                    const categoryColor = category.color || '#8b5cf6'
+
+                    return (
+                      <div
+                        key={category.id}
+                        onClick={() => router.push(`/dashboard/articles/category/${category.slug}`)}
+                        className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center"
+                      >
+                        <div
+                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md"
+                          style={{ background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}dd)` }}
+                        >
+                          <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                        </div>
+                        <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">
+                          {category.name}
+                        </h3>
+                        <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5">
+                          {category._count.articles} {category._count.articles === 1 ? 'artikel' : 'artiklar'}
+                        </p>
+                      </div>
+                    )
+                  })}
                 </div>
-                <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">
-                  {category.name}
-                </h3>
-                <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5">
-                  {category._count.articles} {category._count.articles === 1 ? 'artikel' : 'artiklar'}
-                </p>
               </div>
-            )
-          })}
+            ))
+          })()}
         </div>
       )}
     </div>
