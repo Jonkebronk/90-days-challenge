@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Lock, Menu, X, Key } from 'lucide-react'
+import { ArrowRight, Lock, Menu, X, Key, CheckCircle2, XCircle, Dumbbell, MessageSquare, UtensilsCrossed, LayoutDashboard, BookOpen, ChefHat, ShieldCheck, Sparkles, Target } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
@@ -242,6 +242,257 @@ export default function HomePage() {
           </div>
         </div>
       </main>
+
+      {/* Programs Section */}
+      <section className="relative z-10 py-16 md:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-center text-2xl md:text-4xl font-bold text-white mb-4">
+            Välj ditt program
+          </h2>
+          <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+            Två vägar till samma mål – välj den som passar dig bäst
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* Nybörjare */}
+            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-gray-700 rounded-2xl p-6 md:p-8 hover:border-gold-primary/50 transition-all duration-300">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-green-400" />
+                </div>
+                <h3 className="text-xl md:text-2xl font-bold text-white">90 dagars Nybörjare</h3>
+              </div>
+              <p className="text-gray-400 mb-6">
+                För dig som vill ha en strukturerad och systematisk approach. Perfekt om du har tränat förut men vill komma igång på rätt sätt med tydlig vägledning.
+              </p>
+              <ul className="space-y-2 text-gray-300">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  Strukturerat upplägg
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  Steg-för-steg vägledning
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  Bygg hållbara vanor
+                </li>
+              </ul>
+            </div>
+
+            {/* Utmaningen */}
+            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-gold-primary/30 rounded-2xl p-6 md:p-8 hover:border-gold-primary transition-all duration-300 relative overflow-hidden">
+              <div className="absolute top-4 right-4 bg-gold-primary text-black text-xs font-bold px-3 py-1 rounded-full">
+                POPULÄR
+              </div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-gold-primary/20 rounded-xl flex items-center justify-center">
+                  <Target className="w-6 h-6 text-gold-primary" />
+                </div>
+                <h3 className="text-xl md:text-2xl font-bold text-white">90 dagars Utmaningen</h3>
+              </div>
+              <p className="text-gray-400 mb-6">
+                För dig som vill utmana dig själv och nå nästa nivå. 4 träningspass i veckan för dig som är redo att satsa – funkar även för nybörjare.
+              </p>
+              <ul className="space-y-2 text-gray-300">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-gold-primary flex-shrink-0" />
+                  4 träningspass/vecka
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-gold-primary flex-shrink-0" />
+                  Intensivt upplägg
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-gold-primary flex-shrink-0" />
+                  Maximala resultat
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section - Vad du får */}
+      <section className="relative z-10 py-16 md:py-24 bg-gray-900/50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-center text-2xl md:text-4xl font-bold text-white mb-4">
+            Vad du får
+          </h2>
+          <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+            Allt du behöver för att lyckas – samlat på ett ställe
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {/* Feature 1 */}
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-6 hover:border-gold-primary/30 transition-all">
+              <div className="w-12 h-12 bg-gold-primary/10 rounded-xl flex items-center justify-center mb-4">
+                <MessageSquare className="w-6 h-6 text-gold-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Personlig coach</h3>
+              <p className="text-gray-400 text-sm">Direkt kontakt med din coach via meddelanden. Få svar på frågor och stöd när du behöver det.</p>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-6 hover:border-gold-primary/30 transition-all">
+              <div className="w-12 h-12 bg-gold-primary/10 rounded-xl flex items-center justify-center mb-4">
+                <Dumbbell className="w-6 h-6 text-gold-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Träningsprogram</h3>
+              <p className="text-gray-400 text-sm">Anpassat träningsprogram för gym. Tydliga övningar med sets, reps och vila.</p>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-6 hover:border-gold-primary/30 transition-all">
+              <div className="w-12 h-12 bg-gold-primary/10 rounded-xl flex items-center justify-center mb-4">
+                <UtensilsCrossed className="w-6 h-6 text-gold-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Kostschema</h3>
+              <p className="text-gray-400 text-sm">Personligt kostschema med makron. Anpassat efter dina mål och preferenser.</p>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-6 hover:border-gold-primary/30 transition-all">
+              <div className="w-12 h-12 bg-gold-primary/10 rounded-xl flex items-center justify-center mb-4">
+                <LayoutDashboard className="w-6 h-6 text-gold-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">App med spårning</h3>
+              <p className="text-gray-400 text-sm">Dashboard med check-ins, framstegsspårning och daglig uppföljning av dina resultat.</p>
+            </div>
+
+            {/* Feature 5 */}
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-6 hover:border-gold-primary/30 transition-all">
+              <div className="w-12 h-12 bg-gold-primary/10 rounded-xl flex items-center justify-center mb-4">
+                <BookOpen className="w-6 h-6 text-gold-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Kunskapsbank</h3>
+              <p className="text-gray-400 text-sm">Artiklar och guider om träning, kost och livsstil. Lär dig varför – inte bara vad.</p>
+            </div>
+
+            {/* Feature 6 */}
+            <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-6 hover:border-gold-primary/30 transition-all">
+              <div className="w-12 h-12 bg-gold-primary/10 rounded-xl flex items-center justify-center mb-4">
+                <ChefHat className="w-6 h-6 text-gold-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Receptbank</h3>
+              <p className="text-gray-400 text-sm">Hundratals recept med näringsberäkning. God mat som passar dina makron.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Expectations Section - För dig / Inte för dig */}
+      <section className="relative z-10 py-16 md:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-center text-2xl md:text-4xl font-bold text-white mb-12">
+            Är det här rätt för dig?
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* För dig */}
+            <div className="bg-green-500/5 border border-green-500/20 rounded-2xl p-6 md:p-8">
+              <h3 className="text-xl font-bold text-green-400 mb-6 flex items-center gap-2">
+                <CheckCircle2 className="w-6 h-6" />
+                Det här förväntar vi oss av dig
+              </h3>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3 text-gray-300">
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span>Du kan träna 4 gånger i veckan på gym</span>
+                </li>
+                <li className="flex items-start gap-3 text-gray-300">
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span>Du är redo att investera i din hälsa och ditt välmående</span>
+                </li>
+                <li className="flex items-start gap-3 text-gray-300">
+                  <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span>Du är över 30 och ärligt trött på att leva med ursäkter</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Inte för dig */}
+            <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-6 md:p-8">
+              <h3 className="text-xl font-bold text-red-400 mb-6 flex items-center gap-2">
+                <XCircle className="w-6 h-6" />
+                Det här coachar vi inte
+              </h3>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3 text-gray-300">
+                  <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <span>Hemmaträning</span>
+                </li>
+                <li className="flex items-start gap-3 text-gray-300">
+                  <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <span>Veganer</span>
+                </li>
+                <li className="flex items-start gap-3 text-gray-300">
+                  <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <span>De som &quot;vet bäst själv&quot;</span>
+                </li>
+                <li className="flex items-start gap-3 text-gray-300">
+                  <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <span>De som hoppar på trender som fasta, keto eller annat extremt</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <p className="text-center text-gray-400 mt-8 max-w-2xl mx-auto">
+            Hos oss handlar det om hälsa, hållbarhet och verkliga resultat.
+          </p>
+        </div>
+      </section>
+
+      {/* Guarantee Section */}
+      <section className="relative z-10 py-16 md:py-24 bg-gradient-to-br from-gold-primary/10 to-transparent">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="w-16 h-16 bg-gold-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShieldCheck className="w-8 h-8 text-gold-primary" />
+            </div>
+            <h2 className="text-2xl md:text-4xl font-bold text-white mb-6">
+              Resultatgaranti
+            </h2>
+            <p className="text-xl text-gray-300 mb-4">
+              Äter du protein, kolhydrater och fett enligt våra metoder – <span className="text-gold-primary font-bold">GARANTERAR</span> vi resultat.
+            </p>
+            <p className="text-lg text-gray-400 mb-8">
+              Och om du mot förmodan inte lyckas? <span className="text-white font-semibold">Då får du pengarna tillbaka.</span>
+            </p>
+            <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6 inline-block">
+              <p className="text-gray-300 italic">
+                &quot;Så det enda du riskerar är att förbättra ditt liv. Det vi riskerar är att behöva jobba gratis.&quot;
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="relative z-10 py-16 md:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
+              Redo att ta första steget?
+            </h2>
+            <p className="text-gray-400 mb-8">
+              Vill du se samma förändring – och göra slutet av 2025 till den tidpunkt då du äntligen tog kontroll?
+            </p>
+            <button
+              onClick={() => router.push('/apply')}
+              className="group relative px-8 md:px-12 py-4 md:py-6 text-base md:text-lg font-bold tracking-[2px] uppercase bg-gradient-to-br from-gold-primary to-gold-secondary text-black rounded-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-gold-primary/50 active:scale-95"
+            >
+              <span className="relative z-10 flex items-center gap-3">
+                Intresseanmälan
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500" />
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="relative z-10 py-8 border-t border-gray-800">
