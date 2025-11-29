@@ -89,8 +89,8 @@ export function ProgramInfoStep({ data, onChange, onNext }: ProgramInfoStepProps
               value={data.description}
               onChange={(e) => onChange('description', e.target.value)}
               placeholder="Beskriv programmet och dess mål..."
-              rows={10}
-              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1 min-h-[200px]"
+              rows={20}
+              className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white mt-1 min-h-[400px]"
             />
           </div>
 
