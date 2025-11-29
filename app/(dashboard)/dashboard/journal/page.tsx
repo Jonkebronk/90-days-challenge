@@ -951,9 +951,9 @@ function ClientJournalContent() {
                   <section>
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
-                        <Scale className="w-5 h-5 text-gray-900" />
+                        <Scale className="w-5 h-5 text-white" />
                       </div>
-                      <h2 className="text-xl font-bold text-gray-900">Viktförändring</h2>
+                      <h2 className="text-xl font-bold text-amber-500">Viktförändring</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -1014,9 +1014,9 @@ function ClientJournalContent() {
                   <section>
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
-                        <Ruler className="w-5 h-5 text-gray-900" />
+                        <Ruler className="w-5 h-5 text-white" />
                       </div>
-                      <h2 className="text-xl font-bold text-gray-900">Mätpunkter</h2>
+                      <h2 className="text-xl font-bold text-purple-400">Mätpunkter</h2>
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -1046,9 +1046,9 @@ function ClientJournalContent() {
                   <section>
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                        <Camera className="w-5 h-5 text-gray-900" />
+                        <Camera className="w-5 h-5 text-white" />
                       </div>
-                      <h2 className="text-xl font-bold text-gray-900">Formbilder</h2>
+                      <h2 className="text-xl font-bold text-blue-400">Formbilder</h2>
                     </div>
 
                     {!startPhotos && !latestPhotos ? (
