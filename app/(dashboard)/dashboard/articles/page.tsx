@@ -121,9 +121,13 @@ export default function ArticlesPage() {
             return sortedSections.map(([sectionName, sectionCategories]) => (
               <div key={sectionName}>
                 {/* Section Header */}
-                <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 px-1">
-                  {sectionName}
-                </h2>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#FFD700]/30 to-transparent" />
+                  <h2 className="text-sm font-bold bg-gradient-to-r from-[#FFD700] to-orange-400 bg-clip-text text-transparent uppercase tracking-[2px]">
+                    {sectionName}
+                  </h2>
+                  <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#FFD700]/30 to-transparent" />
+                </div>
 
                 {/* Categories in this section */}
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
