@@ -31,7 +31,8 @@ import {
   Footprints,
   CheckCircle2,
   X,
-  Scale
+  Scale,
+  Moon
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 
@@ -1120,6 +1121,23 @@ export default function DashboardPage() {
 
               <p className="text-xs text-gray-600">
                 Läs mer om <Link href="/dashboard/articles/cmhv5hzfo0002mj0qzja6ns04" className="text-amber-500 hover:text-amber-700 underline">meal prep</Link> i kunskapsbanken
+              </p>
+            </div>
+
+            {/* Sleep Section */}
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <Moon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Sömn</h3>
+                  <p className="text-sm text-gray-700">Skapa en kvällsrutin</p>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-600">
+                Läs mer om <span className="text-indigo-500">sömn</span> i kunskapsbanken
               </p>
             </div>
           </div>
