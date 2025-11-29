@@ -31,7 +31,8 @@ import {
   Footprints,
   CheckCircle2,
   X,
-  Scale
+  Scale,
+  Settings
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 
@@ -55,6 +56,13 @@ export default function DashboardPage() {
   const [stepGoal, setStepGoal] = useState<string>('')
   const [stepInput, setStepInput] = useState<string>('')
   const [hasStepGoal, setHasStepGoal] = useState(false)
+
+  // Habits state
+  const [isHabitsOpen, setIsHabitsOpen] = useState(false)
+  const [mealPrepHabit, setMealPrepHabit] = useState<any>(null)
+  const [mealPrepDays, setMealPrepDays] = useState<number[]>([])
+  const [showMealPrepSetup, setShowMealPrepSetup] = useState(false)
+  const [tempMealPrepDays, setTempMealPrepDays] = useState<number[]>([])
 
   // Calendar state
   const [workoutProgram, setWorkoutProgram] = useState<any>(null)
@@ -279,6 +287,17 @@ export default function DashboardPage() {
         })
         setDailyWeights(weightsMap)
       }
+
+      // Fetch habits
+      const habitsRes = await fetch('/api/habits')
+      if (habitsRes.ok) {
+        const data = await habitsRes.json()
+        const mealPrep = data.habits?.find((h: any) => h.habitType === 'meal_prep')
+        if (mealPrep) {
+          setMealPrepHabit(mealPrep)
+          setMealPrepDays(mealPrep.settings?.days || [])
+        }
+      }
     } catch (error) {
       console.error('Error fetching calendar data:', error)
     }
@@ -323,6 +342,93 @@ export default function DashboardPage() {
     setSelectedDate(date)
     setDailyWeightInput(dailyWeights[dateStr]?.toString() || '')
     setWeightModalOpen(true)
+  }
+
+  // Save meal prep days
+  const saveMealPrepDays = async (days: number[]) => {
+    try {
+      const response = await fetch('/api/habits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          habitType: 'meal_prep',
+          settings: { days }
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setMealPrepHabit(data.habit)
+        setMealPrepDays(days)
+        setShowMealPrepSetup(false)
+      }
+    } catch (error) {
+      console.error('Error saving meal prep days:', error)
+    }
+  }
+
+  // Toggle habit completion for a specific date
+  const toggleHabitCompletion = async (habitId: string, date: Date, isCompleted: boolean) => {
+    try {
+      const dateStr = date.toISOString().split('T')[0]
+
+      if (isCompleted) {
+        // Remove completion
+        await fetch('/api/habits/completions', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ habitId, date: dateStr })
+        })
+      } else {
+        // Add completion
+        await fetch('/api/habits/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ habitId, date: dateStr })
+        })
+      }
+
+      // Refresh habits data
+      const habitsRes = await fetch('/api/habits')
+      if (habitsRes.ok) {
+        const data = await habitsRes.json()
+        const mealPrep = data.habits?.find((h: any) => h.habitType === 'meal_prep')
+        if (mealPrep) {
+          setMealPrepHabit(mealPrep)
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling habit completion:', error)
+    }
+  }
+
+  // Get weekday names for habits
+  const HABIT_WEEKDAY_NAMES = ['Sön', 'Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör']
+
+  // Check if a habit is completed for a specific weekday this week
+  const isHabitCompletedForWeekday = (habit: any, weekdayIndex: number) => {
+    if (!habit?.completions) return false
+    const weekStart = getWeekDays()[0]
+    const targetDate = new Date(weekStart)
+    // Adjust to get the correct date for the weekday (0=Sun, 1=Mon, etc)
+    const mondayIndex = 0
+    const daysToAdd = weekdayIndex === 0 ? 6 : weekdayIndex - 1 // Convert Sun=0 to be 6 days from Monday
+    targetDate.setDate(weekStart.getDate() + daysToAdd)
+
+    const targetDateStr = targetDate.toISOString().split('T')[0]
+    return habit.completions.some((c: any) => {
+      const completionDate = new Date(c.date).toISOString().split('T')[0]
+      return completionDate === targetDateStr
+    })
+  }
+
+  // Get date for a weekday in current week
+  const getDateForWeekday = (weekdayIndex: number) => {
+    const weekStart = getWeekDays()[0] // Monday
+    const targetDate = new Date(weekStart)
+    const daysToAdd = weekdayIndex === 0 ? 6 : weekdayIndex - 1
+    targetDate.setDate(weekStart.getDate() + daysToAdd)
+    return targetDate
   }
 
   const fetchCoachStats = async () => {
@@ -1085,6 +1191,160 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+        )}
+      </div>
+
+      {/* Vanor Widget - Collapsible Card */}
+      <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto">
+        <button
+          onClick={() => setIsHabitsOpen(!isHabitsOpen)}
+          className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-xl"
+        >
+          <h2 className="text-base font-semibold text-gray-900">Vanor</h2>
+          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${isHabitsOpen ? 'rotate-180' : ''}`} />
+        </button>
+        {isHabitsOpen && (
+        <div className="p-4 sm:p-5 pt-2 border-t border-gray-100">
+          {/* Meal Prep Section */}
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Meal Prep</h3>
+                  <p className="text-xs text-gray-600">
+                    Förbered mat för veckan - <Link href="/dashboard/articles/cmhv5hzfo0002mj0qzja6ns04" className="text-amber-600 hover:text-amber-800 underline">läs mer</Link>
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setTempMealPrepDays(mealPrepDays)
+                  setShowMealPrepSetup(true)
+                }}
+                className="p-2 hover:bg-amber-100 rounded-lg transition-colors"
+                title="Ändra dagar"
+              >
+                <Settings className="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Setup or display mode */}
+            {mealPrepDays.length === 0 && !showMealPrepSetup ? (
+              // Initial setup prompt
+              <div className="text-center py-4">
+                <p className="text-sm text-gray-600 mb-3">
+                  Välj vilka dagar du meal preppar
+                </p>
+                <Button
+                  onClick={() => {
+                    setTempMealPrepDays([])
+                    setShowMealPrepSetup(true)
+                  }}
+                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                >
+                  Välj dagar
+                </Button>
+              </div>
+            ) : showMealPrepSetup ? (
+              // Setup mode - choose days
+              <div>
+                <p className="text-sm text-gray-600 mb-3">
+                  Välj 2 dagar för meal prep:
+                </p>
+                <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-4">
+                  {HABIT_WEEKDAY_NAMES.map((day, index) => {
+                    const isSelected = tempMealPrepDays.includes(index)
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          if (isSelected) {
+                            setTempMealPrepDays(tempMealPrepDays.filter(d => d !== index))
+                          } else if (tempMealPrepDays.length < 2) {
+                            setTempMealPrepDays([...tempMealPrepDays, index])
+                          }
+                        }}
+                        className={`p-2 sm:p-3 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                          isSelected
+                            ? 'bg-amber-500 text-white'
+                            : 'bg-white border border-amber-200 text-gray-700 hover:border-amber-400'
+                        }`}
+                      >
+                        {day}
+                      </button>
+                    )
+                  })}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowMealPrepSetup(false)}
+                    className="flex-1 border-amber-200 text-gray-700"
+                  >
+                    Avbryt
+                  </Button>
+                  <Button
+                    onClick={() => saveMealPrepDays(tempMealPrepDays)}
+                    disabled={tempMealPrepDays.length !== 2}
+                    className="flex-1 bg-amber-500 hover:bg-amber-600 text-white disabled:opacity-50"
+                  >
+                    Spara
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              // Display mode - show weekly checkboxes
+              <div>
+                <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-3">
+                  {HABIT_WEEKDAY_NAMES.map((day, index) => {
+                    const isSelectedDay = mealPrepDays.includes(index)
+                    const isCompleted = isHabitCompletedForWeekday(mealPrepHabit, index)
+
+                    return (
+                      <div
+                        key={index}
+                        className="flex flex-col items-center"
+                      >
+                        <span className="text-xs text-gray-500 mb-1">{day}</span>
+                        {isSelectedDay ? (
+                          <button
+                            onClick={() => toggleHabitCompletion(
+                              mealPrepHabit.id,
+                              getDateForWeekday(index),
+                              isCompleted
+                            )}
+                            className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all ${
+                              isCompleted
+                                ? 'bg-green-500 text-white'
+                                : 'bg-amber-100 border-2 border-amber-300 hover:border-amber-500'
+                            }`}
+                          >
+                            {isCompleted && <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />}
+                          </button>
+                        ) : (
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gray-100" />
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* Progress indicator */}
+                <div className="text-center">
+                  <p className="text-sm text-gray-600">
+                    {mealPrepHabit?.completions?.length || 0} av {mealPrepDays.length} denna vecka
+                    {(mealPrepHabit?.completions?.length || 0) >= mealPrepDays.length && (
+                      <span className="ml-1 text-green-600">✓</span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         )}

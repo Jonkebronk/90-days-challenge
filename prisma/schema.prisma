@@ -160,6 +160,9 @@ model User {
   // Daily weight tracking
   dailyWeights DailyWeight[]
 
+  // Habits tracking
+  habits UserHabit[]
+
   // Coach-Client relationship
   coach   User?  @relation("CoachClients", fields: [coachId], references: [id])
   clients User[] @relation("CoachClients")
@@ -1919,4 +1922,38 @@ model DailyWeight {
   @@unique([userId, date])
   @@index([userId])
   @@map("daily_weights")
+}
+
+// ========================================
+// HABITS TRACKING
+// ========================================
+
+model UserHabit {
+  id          String   @id @default(cuid())
+  userId      String
+  habitType   String   // "meal_prep", "morning_routine", etc.
+  settings    Json     // Flexible for different habits, e.g. {"days": [0, 3]} for sun+wed
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  completions HabitCompletion[]
+
+  @@unique([userId, habitType])
+  @@index([userId])
+  @@map("user_habits")
+}
+
+model HabitCompletion {
+  id        String   @id @default(cuid())
+  habitId   String
+  date      DateTime @db.Date
+  completed Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  habit     UserHabit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, date])
+  @@index([habitId])
+  @@map("habit_completions")
 }
