@@ -287,20 +287,17 @@ export default function ClientsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900">
-        <div className="container mx-auto p-6 space-y-8 max-w-7xl">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-[rgba(255,215,0,0.1)] rounded w-1/4"></div>
-            <div className="h-64 bg-[rgba(255,215,0,0.1)] rounded"></div>
-          </div>
+      <div className="container mx-auto p-6 space-y-8 max-w-7xl">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-64 bg-gray-100 rounded"></div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      <div className="container mx-auto p-6 space-y-8 max-w-7xl">
+    <div className="container mx-auto p-6 space-y-8 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
@@ -321,62 +318,62 @@ export default function ClientsPage() {
                 Lägg till klient
               </Button>
             </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gray-900/95 border-2 border-gold-primary/30">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white border border-gray-200">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-gold-light">Lägg till ny klient</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-gray-900">Lägg till ny klient</DialogTitle>
             </DialogHeader>
 
             <div className="space-y-6 py-4">
               {/* Klientinformation */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-gold-light">Klientinformation</h3>
+                <h3 className="font-semibold text-amber-600">Klientinformation</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName" className="text-gray-200">Förnamn <span className="text-red-400">*</span></Label>
+                    <Label htmlFor="firstName" className="text-gray-700">Förnamn <span className="text-red-400">*</span></Label>
                     <Input
                       id="firstName"
                       value={newClient.firstName}
                       onChange={(e) => setNewClient({ ...newClient, firstName: e.target.value })}
-                      className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white"
+                      className="bg-white border-gray-300 text-gray-900"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="lastName" className="text-gray-200">Efternamn <span className="text-red-400">*</span></Label>
+                    <Label htmlFor="lastName" className="text-gray-700">Efternamn <span className="text-red-400">*</span></Label>
                     <Input
                       id="lastName"
                       value={newClient.lastName}
                       onChange={(e) => setNewClient({ ...newClient, lastName: e.target.value })}
-                      className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white"
+                      className="bg-white border-gray-300 text-gray-900"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-200">E-post <span className="text-red-400">*</span></Label>
+                  <Label htmlFor="email" className="text-gray-700">E-post <span className="text-red-400">*</span></Label>
                   <Input
                     id="email"
                     type="email"
                     value={newClient.email}
                     onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-gray-200">Telefon</Label>
+                  <Label htmlFor="phone" className="text-gray-700">Telefon</Label>
                   <Input
                     id="phone"
                     value={newClient.phone}
                     onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
                     placeholder="070 123 45 67"
-                    className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-gray-200">Taggar</Label>
+                  <Label className="text-gray-700">Taggar</Label>
                   <Select>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white">
+                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                       <SelectValue placeholder="Välj taggar" />
                     </SelectTrigger>
                     <SelectContent>
@@ -399,7 +396,7 @@ export default function ClientsPage() {
                   {newClient.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
                       {newClient.tags.map(tag => (
-                        <Badge key={tag} className="bg-[rgba(255,215,0,0.1)] border border-gold-primary/30 text-[rgba(255,215,0,0.9)] gap-1">
+                        <Badge key={tag} className="bg-amber-50 border border-gray-300 text-[rgba(255,215,0,0.9)] gap-1">
                           {tag}
                           <X
                             className="w-3 h-3 cursor-pointer"
@@ -412,50 +409,50 @@ export default function ClientsPage() {
                 </div>
               </div>
 
-              <Separator className="bg-[rgba(255,215,0,0.2)]" />
+              <Separator className="bg-gray-200" />
 
               {/* Fysiskt tillstånd & Mål */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-gold-light">Fysiskt tillstånd & Demografia</h3>
+                <h3 className="font-semibold text-amber-600">Fysiskt tillstånd & Demografia</h3>
 
                 <div className="space-y-2">
-                  <Label htmlFor="birthDate" className="text-gray-200">Födelsedatum</Label>
+                  <Label htmlFor="birthDate" className="text-gray-700">Födelsedatum</Label>
                   <Input
                     id="birthDate"
                     type="date"
                     value={newClient.birthDate}
                     onChange={(e) => setNewClient({ ...newClient, birthDate: e.target.value })}
-                    className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="heightCm" className="text-gray-200">Längd (cm)</Label>
+                    <Label htmlFor="heightCm" className="text-gray-700">Längd (cm)</Label>
                     <Input
                       id="heightCm"
                       type="number"
                       value={newClient.heightCm}
                       onChange={(e) => setNewClient({ ...newClient, heightCm: e.target.value })}
                       placeholder="175"
-                      className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white"
+                      className="bg-white border-gray-300 text-gray-900"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="currentWeightKg" className="text-gray-200">Vikt (kg)</Label>
+                    <Label htmlFor="currentWeightKg" className="text-gray-700">Vikt (kg)</Label>
                     <Input
                       id="currentWeightKg"
                       type="number"
                       value={newClient.currentWeightKg}
                       onChange={(e) => setNewClient({ ...newClient, currentWeightKg: e.target.value })}
                       placeholder="75"
-                      className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white"
+                      className="bg-white border-gray-300 text-gray-900"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="genderAtBirth" className="text-gray-200">Kön</Label>
+                    <Label htmlFor="genderAtBirth" className="text-gray-700">Kön</Label>
                     <Select value={newClient.genderAtBirth} onValueChange={(value) => setNewClient({ ...newClient, genderAtBirth: value })}>
-                      <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white">
+                      <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                         <SelectValue placeholder="Välj" />
                       </SelectTrigger>
                       <SelectContent>
@@ -468,9 +465,9 @@ export default function ClientsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-gray-200">Primärt mål</Label>
+                  <Label className="text-gray-700">Primärt mål</Label>
                   <Select value={newClient.primaryGoal} onValueChange={(value) => setNewClient({ ...newClient, primaryGoal: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white">
+                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                       <SelectValue placeholder="Välj mål" />
                     </SelectTrigger>
                     <SelectContent>
@@ -482,16 +479,16 @@ export default function ClientsPage() {
                 </div>
               </div>
 
-              <Separator className="bg-[rgba(255,215,0,0.2)]" />
+              <Separator className="bg-gray-200" />
 
               {/* Aktivitet & Träning */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-gold-light">Aktivitet & Träning</h3>
+                <h3 className="font-semibold text-amber-600">Aktivitet & Träning</h3>
 
                 <div className="space-y-2">
-                  <Label className="text-gray-200">Aktivitetsnivå (Fritid)</Label>
+                  <Label className="text-gray-700">Aktivitetsnivå (Fritid)</Label>
                   <Select value={newClient.activityLevelFree} onValueChange={(value) => setNewClient({ ...newClient, activityLevelFree: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white">
+                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                       <SelectValue placeholder="Välj nivå" />
                     </SelectTrigger>
                     <SelectContent>
@@ -505,9 +502,9 @@ export default function ClientsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-gray-200">Aktivitetsnivå (Jobb)</Label>
+                  <Label className="text-gray-700">Aktivitetsnivå (Jobb)</Label>
                   <Select value={newClient.activityLevelWork} onValueChange={(value) => setNewClient({ ...newClient, activityLevelWork: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white">
+                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                       <SelectValue placeholder="Välj nivå" />
                     </SelectTrigger>
                     <SelectContent>
@@ -520,7 +517,7 @@ export default function ClientsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-gray-200">Träningsdagar</Label>
+                  <Label className="text-gray-700">Träningsdagar</Label>
                   <div className="flex flex-wrap gap-2">
                     {daysOfWeek.map(day => (
                       <button
@@ -530,7 +527,7 @@ export default function ClientsPage() {
                         className={`px-4 py-2 rounded-lg border font-semibold transition-all ${
                           newClient.trainingDays.includes(day)
                             ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
-                            : 'bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-gray-200 hover:border-gold-light'
+                            : 'bg-[rgba(0,0,0,0.5)] border-gray-300 text-gray-700 hover:border-gold-light'
                         }`}
                       >
                         {day}
@@ -540,9 +537,9 @@ export default function ClientsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-gray-200">Träningserfarenhet</Label>
+                  <Label className="text-gray-700">Träningserfarenhet</Label>
                   <Select value={newClient.trainingExperience} onValueChange={(value) => setNewClient({ ...newClient, trainingExperience: value })}>
-                    <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white">
+                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                       <SelectValue placeholder="Välj erfarenhet" />
                     </SelectTrigger>
                     <SelectContent>
@@ -554,38 +551,38 @@ export default function ClientsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="trainingDetails" className="text-gray-200">Träningsdetaljer</Label>
+                  <Label htmlFor="trainingDetails" className="text-gray-700">Träningsdetaljer</Label>
                   <Textarea
                     id="trainingDetails"
                     value={newClient.trainingDetails}
                     onChange={(e) => setNewClient({ ...newClient, trainingDetails: e.target.value })}
                     placeholder="Beskriv dina träningsvanor..."
                     rows={3}
-                    className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
               </div>
 
-              <Separator className="bg-[rgba(255,215,0,0.2)]" />
+              <Separator className="bg-gray-200" />
 
               {/* Näring */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-gold-light">Näring</h3>
+                <h3 className="font-semibold text-amber-600">Näring</h3>
 
                 <div className="space-y-2">
-                  <Label htmlFor="nutritionNotes" className="text-gray-200">Nutritionsanteckningar</Label>
+                  <Label htmlFor="nutritionNotes" className="text-gray-700">Nutritionsanteckningar</Label>
                   <Textarea
                     id="nutritionNotes"
                     value={newClient.nutritionNotes}
                     onChange={(e) => setNewClient({ ...newClient, nutritionNotes: e.target.value })}
                     placeholder="Matpreferenser, vanor, etc..."
                     rows={3}
-                    className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-gray-200">Allergier</Label>
+                  <Label className="text-gray-700">Allergier</Label>
                   <div className="flex flex-wrap gap-2">
                     {allergiesList.map(allergy => (
                       <button
@@ -595,7 +592,7 @@ export default function ClientsPage() {
                         className={`px-3 py-2 rounded-full border text-sm transition-all ${
                           newClient.allergies.includes(allergy)
                             ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
-                            : 'bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-gray-200 hover:border-gold-light'
+                            : 'bg-[rgba(0,0,0,0.5)] border-gray-300 text-gray-700 hover:border-gold-light'
                         }`}
                       >
                         {allergy}
@@ -605,7 +602,7 @@ export default function ClientsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-gray-200">Kostpreferenser</Label>
+                  <Label className="text-gray-700">Kostpreferenser</Label>
                   <div className="flex flex-wrap gap-2">
                     {dietPreferencesList.map(pref => (
                       <button
@@ -615,7 +612,7 @@ export default function ClientsPage() {
                         className={`px-3 py-2 rounded-full border text-sm transition-all ${
                           newClient.dietaryPreferences.includes(pref)
                             ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
-                            : 'bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-gray-200 hover:border-gold-light'
+                            : 'bg-[rgba(0,0,0,0.5)] border-gray-300 text-gray-700 hover:border-gold-light'
                         }`}
                       >
                         {pref}
@@ -625,59 +622,59 @@ export default function ClientsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="excludedIngredients" className="text-gray-200">Exkluderade ingredienser</Label>
+                  <Label htmlFor="excludedIngredients" className="text-gray-700">Exkluderade ingredienser</Label>
                   <Input
                     id="excludedIngredients"
                     value={newClient.excludedIngredients}
                     onChange={(e) => setNewClient({ ...newClient, excludedIngredients: e.target.value })}
                     placeholder="T.ex. broccoli, paprika..."
-                    className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="nutritionMissing" className="text-gray-200">Övrig nutritionsinformation</Label>
+                  <Label htmlFor="nutritionMissing" className="text-gray-700">Övrig nutritionsinformation</Label>
                   <Textarea
                     id="nutritionMissing"
                     value={newClient.nutritionMissing}
                     onChange={(e) => setNewClient({ ...newClient, nutritionMissing: e.target.value })}
                     placeholder="Något vi har missat?"
                     rows={2}
-                    className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
               </div>
 
-              <Separator className="bg-[rgba(255,215,0,0.2)]" />
+              <Separator className="bg-gray-200" />
 
               {/* Livsstil */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-gold-light">Livsstil</h3>
+                <h3 className="font-semibold text-amber-600">Livsstil</h3>
 
                 <div className="space-y-2">
-                  <Label htmlFor="lifestyleNotes" className="text-gray-200">Livsstilsanteckningar</Label>
+                  <Label htmlFor="lifestyleNotes" className="text-gray-700">Livsstilsanteckningar</Label>
                   <Textarea
                     id="lifestyleNotes"
                     value={newClient.lifestyleNotes}
                     onChange={(e) => setNewClient({ ...newClient, lifestyleNotes: e.target.value })}
                     placeholder="Vanor, utmaningar, mål..."
                     rows={3}
-                    className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
+                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                   />
                 </div>
               </div>
 
-              <Separator className="bg-[rgba(255,215,0,0.2)]" />
+              <Separator className="bg-gray-200" />
 
               {/* Check-in */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-gold-light">Check-in</h3>
+                <h3 className="font-semibold text-amber-600">Check-in</h3>
                 <p className="text-sm text-gray-400">Skicka påminnelse om check-in varje gång:</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-gray-200">Check-in-period</Label>
+                    <Label className="text-gray-700">Check-in-period</Label>
                     <Select value={newClient.checkInPeriod} onValueChange={(value) => setNewClient({ ...newClient, checkInPeriod: value })}>
-                      <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white">
+                      <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -688,9 +685,9 @@ export default function ClientsPage() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-gray-200">Dag</Label>
+                    <Label className="text-gray-700">Dag</Label>
                     <Select value={newClient.checkInDay} onValueChange={(value) => setNewClient({ ...newClient, checkInDay: value })}>
-                      <SelectTrigger className="bg-[rgba(0,0,0,0.5)] border-gold-primary/30 text-white">
+                      <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -709,7 +706,7 @@ export default function ClientsPage() {
             </div>
 
             <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="border-gold-primary/30 text-gray-100 hover:bg-gold-50">
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="border-gray-300 text-gray-900 hover:bg-gold-50">
                 Avbryt
               </Button>
               <Button
@@ -726,38 +723,38 @@ export default function ClientsPage() {
 
       {/* Success Dialog with GOLD Code */}
       <Dialog open={successDialogOpen} onOpenChange={setSuccessDialogOpen}>
-        <DialogContent className="max-w-md bg-gray-900/95 border-2 border-gold-primary/30">
+        <DialogContent className="max-w-md bg-white border border-gray-200">
           <DialogHeader>
             <div className="flex items-center justify-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
-                <CheckCircle2 className="w-8 h-8 text-[#0a0a0a]" />
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                <CheckCircle2 className="w-8 h-8 text-white" />
               </div>
             </div>
-            <DialogTitle className="text-2xl font-bold text-gold-light text-center">
+            <DialogTitle className="text-2xl font-bold text-gray-900 text-center">
               Klient skapad!
             </DialogTitle>
-            <DialogDescription className="text-gray-300 text-center">
+            <DialogDescription className="text-gray-500 text-center">
               {createdClientData?.name} har bjudits in till programmet
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             {/* GOLD Code Display */}
-            <div className="bg-[rgba(255,215,0,0.1)] border-2 border-gold-primary/30 rounded-lg p-4">
+            <div className="bg-amber-50 border-2 border-gray-300 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-3">
-                <Key className="w-5 h-5 text-gold-light" />
-                <h3 className="font-semibold text-gold-light">GOLD Inbjudningskod</h3>
+                <Key className="w-5 h-5 text-amber-600" />
+                <h3 className="font-semibold text-amber-600">GOLD Inbjudningskod</h3>
               </div>
 
-              <div className="flex items-center gap-2 bg-black/30 border border-gold-primary/30 rounded-lg p-3">
-                <code className="flex-1 text-xl font-mono font-bold text-white tracking-wider">
+              <div className="flex items-center gap-2 bg-gray-200 border border-amber-300 rounded-lg p-3">
+                <code className="flex-1 text-xl font-mono font-bold text-amber-800 tracking-wider">
                   {createdClientData?.inviteCode}
                 </code>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => copyInviteCode(createdClientData?.inviteCode || '')}
-                  className="text-gold-light hover:bg-[rgba(255,215,0,0.2)]"
+                  className="text-amber-600 hover:bg-gray-200"
                 >
                   {copiedCode ? (
                     <CheckCircle2 className="w-4 h-4" />
@@ -773,9 +770,9 @@ export default function ClientsPage() {
             </div>
 
             {/* Instructions */}
-            <div className="bg-white/5 border border-gold-primary/20 rounded-lg p-4">
-              <h4 className="font-semibold text-gray-100 mb-2">Instruktioner för klienten:</h4>
-              <ol className="text-sm text-gray-300 space-y-2 list-decimal list-inside">
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">Instruktioner för klienten:</h4>
+              <ol className="text-sm text-gray-600 space-y-2 list-decimal list-inside">
                 <li>Gå till inloggningssidan</li>
                 <li>Klicka på &quot;Har du en inbjudningskod?&quot;</li>
                 <li>Ange GOLD-koden ovan</li>
@@ -785,7 +782,7 @@ export default function ClientsPage() {
 
             {/* Email notification */}
             <div className="flex items-center gap-2 text-sm text-gray-400">
-              <Mail className="w-4 h-4 text-gold-light" />
+              <Mail className="w-4 h-4 text-amber-600" />
               <span>En inbjudan har också skickats till {createdClientData?.email}</span>
             </div>
           </div>
@@ -805,9 +802,9 @@ export default function ClientsPage() {
         </DialogContent>
       </Dialog>
 
-        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px]">
-          <div className="p-6 border-b border-gold-primary/10">
-            <h2 className="text-xl font-bold text-gray-100">
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
+          <div className="p-6 border-b border-gray-100">
+            <h2 className="text-xl font-bold text-gray-900">
               Alla klienter
             </h2>
             <p className="text-gray-400 text-sm mt-1">
@@ -818,7 +815,7 @@ export default function ClientsPage() {
             {clients.length === 0 ? (
               <div className="text-center py-12">
                 <User className="w-12 h-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-                <h3 className="text-lg font-semibold mb-2 text-gray-100">Inga klienter än</h3>
+                <h3 className="text-lg font-semibold mb-2 text-gray-900">Inga klienter än</h3>
                 <p className="text-gray-400 mb-4">
                   Börja med att bjuda in din första klient till programmet
                 </p>
@@ -832,7 +829,7 @@ export default function ClientsPage() {
                 {clients.map((client) => (
                   <div
                     key={client.id}
-                    className="border border-gold-primary/20 rounded-lg hover:bg-[rgba(255,215,0,0.05)] hover:border-[rgba(255,215,0,0.4)] transition-all"
+                    className="border border-gray-200 rounded-lg hover:bg-amber-50/50 hover:border-[rgba(255,215,0,0.4)] transition-all"
                   >
                     <div className="flex items-center justify-between p-4">
                       <Link href={`/dashboard/clients/${client.id}`} className="flex items-center gap-4 flex-1">
@@ -843,7 +840,7 @@ export default function ClientsPage() {
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold text-gray-100">{client.name || 'Inget namn'}</p>
+                            <p className="font-semibold text-gray-900">{client.name || 'Inget namn'}</p>
                             {client.status === 'pending' && (
                               <Badge className="bg-[rgba(255,165,0,0.2)] text-orange-500 border border-[rgba(255,165,0,0.3)] text-xs">
                                 Väntande
@@ -864,7 +861,7 @@ export default function ClientsPage() {
                             size="sm"
                             onClick={() => handleGenerateInviteCode(client.id)}
                             disabled={generatingCodeFor === client.id}
-                            className="text-gold-light hover:text-orange-500 hover:bg-gold-50 gap-2"
+                            className="text-amber-600 hover:text-orange-500 hover:bg-gold-50 gap-2"
                           >
                             <RefreshCw className={`w-4 h-4 ${generatingCodeFor === client.id ? 'animate-spin' : ''}`} />
                             <span className="hidden sm:inline">
@@ -887,13 +884,13 @@ export default function ClientsPage() {
                     {/* Show GOLD code for pending clients */}
                     {client.status === 'pending' && client.inviteCode && (
                       <div className="px-4 pb-4">
-                        <div className="bg-[rgba(255,215,0,0.1)] border border-gold-primary/30 rounded-lg p-3">
+                        <div className="bg-amber-50 border border-gray-300 rounded-lg p-3">
                           <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2 flex-1">
-                              <Key className="w-4 h-4 text-gold-light" />
+                              <Key className="w-4 h-4 text-amber-600" />
                               <div>
                                 <p className="text-xs text-gray-400 mb-1">GOLD-kod</p>
-                                <code className="text-sm font-mono font-bold text-gold-light tracking-wide">
+                                <code className="text-sm font-mono font-bold text-amber-600 tracking-wide">
                                   {client.inviteCode}
                                 </code>
                                 {client.inviteCodeExpiresAt && (
@@ -907,7 +904,7 @@ export default function ClientsPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => copyInviteCode(client.inviteCode || '')}
-                              className="text-gold-light hover:bg-[rgba(255,215,0,0.2)]"
+                              className="text-amber-600 hover:bg-gray-200"
                             >
                               <Copy className="w-4 h-4" />
                             </Button>
@@ -922,6 +919,5 @@ export default function ClientsPage() {
           </div>
         </div>
       </div>
-    </div>
   )
 }
