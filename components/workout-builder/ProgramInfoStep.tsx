@@ -127,26 +127,19 @@ export function ProgramInfoStep({ data, onChange, onNext }: ProgramInfoStepProps
               <Flame className="w-4 h-4 text-orange-500" />
               Uppvärmning
             </Label>
-            <div className="flex gap-2 mt-1">
-              <Select value={data.warmupRoutineId || 'none'} onValueChange={(value) => onChange('warmupRoutineId', value === 'none' ? undefined : value)}>
-                <SelectTrigger className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
-                  <SelectValue placeholder="Välj uppvärmning (valfritt)" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Ingen uppvärmning</SelectItem>
-                  {warmups.map((warmup) => (
-                    <SelectItem key={warmup.id} value={warmup.id}>
-                      {warmup.name} ({warmup.exercises.length} övningar)
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Link href="/dashboard/content/warmups">
-                <Button variant="outline" size="icon" className="bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-orange-400 hover:bg-orange-500/20">
-                  <Flame className="w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
+            <Select value={data.warmupRoutineId || 'none'} onValueChange={(value) => onChange('warmupRoutineId', value === 'none' ? undefined : value)}>
+              <SelectTrigger className="mt-1 bg-[rgba(255,255,255,0.05)] border-[rgba(255,215,0,0.2)] text-white">
+                <SelectValue placeholder="Välj uppvärmning (valfritt)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Ingen uppvärmning</SelectItem>
+                {warmups.map((warmup) => (
+                  <SelectItem key={warmup.id} value={warmup.id}>
+                    {warmup.name} ({warmup.exercises.length} övningar)
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {warmups.length === 0 && (
               <p className="text-xs text-gray-400 mt-1">
                 Inga uppvärmningar skapade ännu.{' '}
