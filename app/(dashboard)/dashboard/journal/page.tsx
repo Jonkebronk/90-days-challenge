@@ -346,7 +346,7 @@ function ClientJournalContent() {
         <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3 sm:mb-4">
           {isCoach ? 'Klientjournal' : 'Min Journal'}
         </h1>
-        <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
+        <p className="text-gray-500 text-xs sm:text-sm tracking-[1px]">
           {isCoach
             ? 'Komplett översikt över klientens resa och framsteg'
             : 'Din resa och framsteg i 90-Dagars Challenge'}
@@ -356,21 +356,21 @@ function ClientJournalContent() {
 
       {/* Client Selector - Only for coaches */}
       {isCoach && (
-        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-4 sm:p-6">
-          <Label className="text-gray-200 mb-2 block text-sm sm:text-base">
+        <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 shadow-sm">
+          <Label className="text-gray-700 mb-2 block text-sm sm:text-base font-medium">
             Välj klient
           </Label>
           <Select value={selectedClientId} onValueChange={handleClientChange}>
-            <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white text-sm sm:text-base">
+            <SelectTrigger className="bg-white border-gray-300 text-gray-900 text-sm sm:text-base">
               <SelectValue placeholder="Välj en klient..." />
             </SelectTrigger>
-            <SelectContent className="bg-gray-900/95 border-gold-primary/30">
+            <SelectContent className="bg-white border-gray-200">
               {isLoadingClients ? (
-                <SelectItem value="loading" disabled className="text-white">
+                <SelectItem value="loading" disabled className="text-gray-500">
                   Laddar...
                 </SelectItem>
               ) : clients.length === 0 ? (
-                <SelectItem value="none" disabled className="text-white">
+                <SelectItem value="none" disabled className="text-gray-500">
                   Inga klienter
                 </SelectItem>
               ) : (
@@ -378,7 +378,7 @@ function ClientJournalContent() {
                   <SelectItem
                     key={client.id}
                     value={client.id}
-                    className="text-white hover:bg-gold-50"
+                    className="text-gray-900 hover:bg-amber-50"
                   >
                     {client.name || client.email}
                   </SelectItem>
@@ -391,8 +391,9 @@ function ClientJournalContent() {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-12 text-center">
-          <p className="text-gray-400">Laddar klientjournal...</p>
+        <div className="bg-white border border-gray-200 rounded-xl p-12 text-center shadow-sm">
+          <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-500">Laddar klientjournal...</p>
         </div>
       )}
 
@@ -400,14 +401,14 @@ function ClientJournalContent() {
       {!isLoading && journalData && (
         <Tabs defaultValue="application" className="space-y-4 sm:space-y-6">
           <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-            <TabsList className="bg-black/30 border border-gold-primary/30 w-max sm:w-auto">
-              <TabsTrigger value="application" className="text-xs sm:text-sm px-2 sm:px-3 data-[state=active]:bg-[rgba(255,215,0,0.2)] data-[state=active]:text-gold-light">
+            <TabsList className="bg-gray-100 border border-gray-200 w-max sm:w-auto">
+              <TabsTrigger value="application" className="text-xs sm:text-sm px-2 sm:px-3 data-[state=active]:bg-white data-[state=active]:text-amber-600 data-[state=active]:shadow-sm">
                 Ansökan
               </TabsTrigger>
-              <TabsTrigger value="checkins" className="text-xs sm:text-sm px-2 sm:px-3 data-[state=active]:bg-[rgba(255,215,0,0.2)] data-[state=active]:text-gold-light">
+              <TabsTrigger value="checkins" className="text-xs sm:text-sm px-2 sm:px-3 data-[state=active]:bg-white data-[state=active]:text-amber-600 data-[state=active]:shadow-sm">
                 Check-ins
               </TabsTrigger>
-              <TabsTrigger value="progress" className="text-xs sm:text-sm px-2 sm:px-3 data-[state=active]:bg-[rgba(255,215,0,0.2)] data-[state=active]:text-gold-light">
+              <TabsTrigger value="progress" className="text-xs sm:text-sm px-2 sm:px-3 data-[state=active]:bg-white data-[state=active]:text-amber-600 data-[state=active]:shadow-sm">
                 Framsteg
               </TabsTrigger>
             </TabsList>
@@ -416,164 +417,164 @@ function ClientJournalContent() {
           {/* Application Tab */}
           <TabsContent value="application" className="space-y-4 sm:space-y-6">
             {journalData.lead ? (
-              <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden">
-                <div className="p-4 sm:p-6 border-b border-gold-primary/20">
-                  <h2 className="text-lg sm:text-xl font-bold text-gold-light">
+              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div className="p-4 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-orange-50">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                     Ursprunglig Intresseanmälan
                   </h2>
-                  <p className="text-gray-400 text-xs sm:text-sm mt-1">
+                  <p className="text-gray-500 text-xs sm:text-sm mt-1">
                     Inskickad {format(new Date(journalData.lead.createdAt), 'PP', { locale: sv })}
                   </p>
                 </div>
                 <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                   {/* Personal Info */}
                   <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Personuppgifter</h3>
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Personuppgifter</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
                       <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm">Namn</Label>
-                        <p className="text-white text-sm sm:text-base">{journalData.lead.fullName || '-'}</p>
+                        <Label className="text-gray-500 text-xs sm:text-sm">Namn</Label>
+                        <p className="text-gray-900 text-sm sm:text-base">{journalData.lead.fullName || '-'}</p>
                       </div>
                       <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm">Ålder</Label>
-                        <p className="text-white text-sm sm:text-base">{journalData.lead.age ? `${journalData.lead.age} år` : '-'}</p>
+                        <Label className="text-gray-500 text-xs sm:text-sm">Ålder</Label>
+                        <p className="text-gray-900 text-sm sm:text-base">{journalData.lead.age ? `${journalData.lead.age} år` : '-'}</p>
                       </div>
                       <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm">Kön</Label>
-                        <p className="text-white text-sm sm:text-base">{formatLabel(journalData.lead.gender, genderLabels)}</p>
+                        <Label className="text-gray-500 text-xs sm:text-sm">Kön</Label>
+                        <p className="text-gray-900 text-sm sm:text-base">{formatLabel(journalData.lead.gender, genderLabels)}</p>
                       </div>
                       <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm">Stad</Label>
-                        <p className="text-white text-sm sm:text-base">{journalData.lead.city || '-'}</p>
+                        <Label className="text-gray-500 text-xs sm:text-sm">Stad</Label>
+                        <p className="text-gray-900 text-sm sm:text-base">{journalData.lead.city || '-'}</p>
                       </div>
                       <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm">Land</Label>
-                        <p className="text-white text-sm sm:text-base">{journalData.lead.country || '-'}</p>
+                        <Label className="text-gray-500 text-xs sm:text-sm">Land</Label>
+                        <p className="text-gray-900 text-sm sm:text-base">{journalData.lead.country || '-'}</p>
                       </div>
                     </div>
                   </div>
 
-                  <Separator className="bg-[rgba(255,215,0,0.2)]" />
+                  <Separator className="bg-gray-200" />
 
                   {/* Physical Stats */}
                   <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Fysiska Mått</h3>
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Fysiska Mått</h3>
                     <div className="grid grid-cols-2 gap-3 sm:gap-4">
                       <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm">Längd</Label>
-                        <p className="text-white text-sm sm:text-base">{journalData.lead.height ? `${journalData.lead.height} cm` : '-'}</p>
+                        <Label className="text-gray-500 text-xs sm:text-sm">Längd</Label>
+                        <p className="text-gray-900 text-sm sm:text-base">{journalData.lead.height ? `${journalData.lead.height} cm` : '-'}</p>
                       </div>
                       <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm">Nuvarande vikt</Label>
-                        <p className="text-white text-sm sm:text-base">{journalData.lead.currentWeight ? `${journalData.lead.currentWeight} kg` : '-'}</p>
+                        <Label className="text-gray-500 text-xs sm:text-sm">Nuvarande vikt</Label>
+                        <p className="text-gray-900 text-sm sm:text-base">{journalData.lead.currentWeight ? `${journalData.lead.currentWeight} kg` : '-'}</p>
                       </div>
                     </div>
                   </div>
 
-                  <Separator className="bg-[rgba(255,215,0,0.2)]" />
+                  <Separator className="bg-gray-200" />
 
                   {/* Goals / Motivation */}
                   <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Målsättning</h3>
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Målsättning</h3>
                     <div className="space-y-3 sm:space-y-4">
                       {journalData.lead.whyJoin && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Klientens målsättningar</Label>
-                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.whyJoin}</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">Klientens målsättningar</Label>
+                          <p className="text-gray-900 mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.whyJoin}</p>
                         </div>
                       )}
                       {journalData.lead.biggestChallenges && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Största utmaningar</Label>
-                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.biggestChallenges}</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">Största utmaningar</Label>
+                          <p className="text-gray-900 mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.biggestChallenges}</p>
                         </div>
                       )}
                       {journalData.lead.previousCoaching && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Tidigare coaching eller PT</Label>
-                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.previousCoaching}</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">Tidigare coaching eller PT</Label>
+                          <p className="text-gray-900 mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.previousCoaching}</p>
                         </div>
                       )}
                       {!journalData.lead.whyJoin && !journalData.lead.biggestChallenges && !journalData.lead.previousCoaching && (
-                        <p className="text-gray-400 text-sm">Ej angivet</p>
+                        <p className="text-gray-500 text-sm">Ej angivet</p>
                       )}
                     </div>
                   </div>
 
-                  <Separator className="bg-[rgba(255,215,0,0.2)]" />
+                  <Separator className="bg-gray-200" />
 
                   {/* Training */}
                   <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Träningsbakgrund</h3>
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Träningsbakgrund</h3>
                     <div className="space-y-3 sm:space-y-4">
                       {journalData.lead.currentTraining && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Tränar du idag?</Label>
-                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.currentTraining}</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">Tränar du idag?</Label>
+                          <p className="text-gray-900 mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.currentTraining}</p>
                         </div>
                       )}
                       {journalData.lead.trainingExperience && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Träningserfarenhet historiskt</Label>
-                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.trainingExperience}</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">Träningserfarenhet historiskt</Label>
+                          <p className="text-gray-900 mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.trainingExperience}</p>
                         </div>
                       )}
                       {journalData.lead.injuries && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Skador/Begränsningar</Label>
-                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.injuries}</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">Skador/Begränsningar</Label>
+                          <p className="text-gray-900 mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.injuries}</p>
                         </div>
                       )}
                       {!journalData.lead.currentTraining && !journalData.lead.trainingExperience && !journalData.lead.injuries && (
-                        <p className="text-gray-400 text-sm">Ej angivet</p>
+                        <p className="text-gray-500 text-sm">Ej angivet</p>
                       )}
                     </div>
                   </div>
 
-                  <Separator className="bg-[rgba(255,215,0,0.2)]" />
+                  <Separator className="bg-gray-200" />
 
                   {/* Nutrition */}
                   <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Kostbakgrund</h3>
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Kostbakgrund</h3>
                     <div className="space-y-3 sm:space-y-4">
                       {journalData.lead.dietHistory && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Hur äter du idag?</Label>
-                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.dietHistory}</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">Hur äter du idag?</Label>
+                          <p className="text-gray-900 mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.dietHistory}</p>
                         </div>
                       )}
                       {journalData.lead.favoriteFood && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Matpreferenser</Label>
-                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.favoriteFood}</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">Matpreferenser</Label>
+                          <p className="text-gray-900 mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.favoriteFood}</p>
                         </div>
                       )}
                       {journalData.lead.allergies && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Allergier och intoleranser</Label>
-                          <p className="text-white mt-1 text-sm sm:text-base">{journalData.lead.allergies}</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">Allergier och intoleranser</Label>
+                          <p className="text-gray-900 mt-1 text-sm sm:text-base">{journalData.lead.allergies}</p>
                         </div>
                       )}
                       {!journalData.lead.dietHistory && !journalData.lead.favoriteFood && !journalData.lead.allergies && (
-                        <p className="text-gray-400 text-sm">Ej angivet</p>
+                        <p className="text-gray-500 text-sm">Ej angivet</p>
                       )}
                     </div>
                   </div>
 
-                  <Separator className="bg-[rgba(255,215,0,0.2)]" />
+                  <Separator className="bg-gray-200" />
 
                   {/* Lifestyle */}
                   <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Livsstil</h3>
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Livsstil</h3>
                     <div className="space-y-3 sm:space-y-4">
                       {journalData.lead.lifestyle && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">En vanlig dag</Label>
-                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.lifestyle}</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">En vanlig dag</Label>
+                          <p className="text-gray-900 mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.lifestyle}</p>
                         </div>
                       )}
                       {!journalData.lead.lifestyle && (
-                        <p className="text-gray-400 text-sm">Ej angivet</p>
+                        <p className="text-gray-500 text-sm">Ej angivet</p>
                       )}
                     </div>
                   </div>
@@ -581,18 +582,18 @@ function ClientJournalContent() {
                   {/* Application Photos */}
                   {(journalData.lead.frontPhoto || journalData.lead.sidePhoto || journalData.lead.backPhoto) && (
                     <>
-                      <Separator className="bg-[rgba(255,215,0,0.2)]" />
+                      <Separator className="bg-gray-200" />
                       <div>
-                        <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Bilder från ansökan</h3>
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">Bilder från ansökan</h3>
                         <div className="grid grid-cols-3 gap-2 sm:gap-4">
                           {journalData.lead.frontPhoto && (
                             <div>
                               <img
                                 src={journalData.lead.frontPhoto}
                                 alt="Fram"
-                                className="w-full h-auto rounded border-2 border-gold-primary/30"
+                                className="w-full h-auto rounded border-2 border-gray-200"
                               />
-                              <p className="text-center text-[10px] sm:text-xs text-gray-400 mt-1">Fram</p>
+                              <p className="text-center text-[10px] sm:text-xs text-gray-500 mt-1">Fram</p>
                             </div>
                           )}
                           {journalData.lead.sidePhoto && (
@@ -600,9 +601,9 @@ function ClientJournalContent() {
                               <img
                                 src={journalData.lead.sidePhoto}
                                 alt="Sida"
-                                className="w-full h-auto rounded border-2 border-gold-primary/30"
+                                className="w-full h-auto rounded border-2 border-gray-200"
                               />
-                              <p className="text-center text-[10px] sm:text-xs text-gray-400 mt-1">Sida</p>
+                              <p className="text-center text-[10px] sm:text-xs text-gray-500 mt-1">Sida</p>
                             </div>
                           )}
                           {journalData.lead.backPhoto && (
@@ -610,9 +611,9 @@ function ClientJournalContent() {
                               <img
                                 src={journalData.lead.backPhoto}
                                 alt="Bak"
-                                className="w-full h-auto rounded border-2 border-gold-primary/30"
+                                className="w-full h-auto rounded border-2 border-gray-200"
                               />
-                              <p className="text-center text-[10px] sm:text-xs text-gray-400 mt-1">Bak</p>
+                              <p className="text-center text-[10px] sm:text-xs text-gray-500 mt-1">Bak</p>
                             </div>
                           )}
                         </div>
@@ -622,8 +623,8 @@ function ClientJournalContent() {
                 </div>
               </div>
             ) : (
-              <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-8 sm:p-12 text-center">
-                <p className="text-gray-400 text-sm sm:text-base">Ingen intresseanmälan hittades för denna klient</p>
+              <div className="bg-white border border-gray-200 rounded-xl p-8 sm:p-12 text-center shadow-sm">
+                <p className="text-gray-500 text-sm sm:text-base">Ingen intresseanmälan hittades för denna klient</p>
                 <p className="text-gray-500 text-xs mt-2">Klienten kan ha blivit tillagd manuellt utan ansökan</p>
               </div>
             )}
@@ -632,9 +633,9 @@ function ClientJournalContent() {
           {/* Check-ins Tab */}
           <TabsContent value="checkins" className="space-y-3 sm:space-y-4">
             {journalData.checkIns.length === 0 ? (
-              <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-8 sm:p-12 text-center">
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8 sm:p-12 text-center">
                 <ClipboardCheck className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-3 sm:mb-4" />
-                <p className="text-gray-400 text-sm sm:text-base">Inga check-ins ännu</p>
+                <p className="text-gray-500 text-sm sm:text-base">Inga check-ins ännu</p>
               </div>
             ) : (
               <>
@@ -650,87 +651,87 @@ function ClientJournalContent() {
                           key={startCheckIn.id}
                           className="bg-white/5 border-2 border-[rgba(255,215,0,0.5)] rounded-xl backdrop-blur-[10px] overflow-hidden shadow-[0_0_20px_rgba(255,215,0,0.3)]"
                         >
-                          <div className="p-4 sm:p-6 border-b border-gold-primary/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                          <div className="p-4 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <div className="flex items-center gap-2 sm:gap-3">
                               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center text-lg sm:text-xl flex-shrink-0">
                                 🎯
                               </div>
                               <div>
                                 <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-1">
-                                  <h3 className="font-bold text-gold-light text-sm sm:text-lg">
+                                  <h3 className="font-bold text-amber-600 text-sm sm:text-lg">
                                     START CHECK-IN
                                   </h3>
                                   <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs font-bold bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a]">
                                     UTGÅNGSPUNKT
                                   </span>
                                 </div>
-                                <p className="text-xs sm:text-sm text-gray-400">
+                                <p className="text-xs sm:text-sm text-gray-500">
                                   {format(new Date(startCheckIn.createdAt), 'PP', { locale: sv })}
                                 </p>
                               </div>
                             </div>
                             {startCheckIn.mondayWeight && (
                               <div className="text-left sm:text-right ml-12 sm:ml-0">
-                                <p className="text-xl sm:text-2xl font-bold text-gold-light">
+                                <p className="text-xl sm:text-2xl font-bold text-amber-600">
                                   {startCheckIn.mondayWeight} kg
                                 </p>
-                                <p className="text-xs text-gray-400">Startvikt</p>
+                                <p className="text-xs text-gray-500">Startvikt</p>
                               </div>
                             )}
                           </div>
                           <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
                             {startCheckIn.statusUpdate && (
                               <div>
-                                <Label className="text-gray-400 text-xs sm:text-sm">Berättelse</Label>
-                                <p className="text-white mt-1 text-sm sm:text-base">{startCheckIn.statusUpdate}</p>
+                                <Label className="text-gray-500 text-xs sm:text-sm">Berättelse</Label>
+                                <p className="text-gray-900 mt-1 text-sm sm:text-base">{startCheckIn.statusUpdate}</p>
                               </div>
                             )}
 
                             {/* Body measurements for start check-in */}
                             {(startCheckIn.chest || startCheckIn.waist || startCheckIn.hips || startCheckIn.butt || startCheckIn.arms || startCheckIn.thighs || startCheckIn.calves) && (
                               <div>
-                                <Label className="text-gray-400 text-xs sm:text-sm mb-2 block">Startmått</Label>
+                                <Label className="text-gray-500 text-xs sm:text-sm mb-2 block">Startmått</Label>
                                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
                                   {startCheckIn.chest && (
                                     <div>
-                                      <p className="text-[10px] sm:text-xs text-gray-400">Bröst</p>
-                                      <p className="text-white font-medium text-sm sm:text-base">{startCheckIn.chest} cm</p>
+                                      <p className="text-[10px] sm:text-xs text-gray-500">Bröst</p>
+                                      <p className="text-gray-900 font-medium text-sm sm:text-base">{startCheckIn.chest} cm</p>
                                     </div>
                                   )}
                                   {startCheckIn.waist && (
                                     <div>
-                                      <p className="text-[10px] sm:text-xs text-gray-400">Midja</p>
-                                      <p className="text-white font-medium text-sm sm:text-base">{startCheckIn.waist} cm</p>
+                                      <p className="text-[10px] sm:text-xs text-gray-500">Midja</p>
+                                      <p className="text-gray-900 font-medium text-sm sm:text-base">{startCheckIn.waist} cm</p>
                                     </div>
                                   )}
                                   {startCheckIn.hips && (
                                     <div>
-                                      <p className="text-[10px] sm:text-xs text-gray-400">Höfter</p>
-                                      <p className="text-white font-medium text-sm sm:text-base">{startCheckIn.hips} cm</p>
+                                      <p className="text-[10px] sm:text-xs text-gray-500">Höfter</p>
+                                      <p className="text-gray-900 font-medium text-sm sm:text-base">{startCheckIn.hips} cm</p>
                                     </div>
                                   )}
                                   {startCheckIn.butt && (
                                     <div>
-                                      <p className="text-[10px] sm:text-xs text-gray-400">Rumpa</p>
-                                      <p className="text-white font-medium text-sm sm:text-base">{startCheckIn.butt} cm</p>
+                                      <p className="text-[10px] sm:text-xs text-gray-500">Rumpa</p>
+                                      <p className="text-gray-900 font-medium text-sm sm:text-base">{startCheckIn.butt} cm</p>
                                     </div>
                                   )}
                                   {startCheckIn.arms && (
                                     <div>
-                                      <p className="text-[10px] sm:text-xs text-gray-400">Armar</p>
-                                      <p className="text-white font-medium text-sm sm:text-base">{startCheckIn.arms} cm</p>
+                                      <p className="text-[10px] sm:text-xs text-gray-500">Armar</p>
+                                      <p className="text-gray-900 font-medium text-sm sm:text-base">{startCheckIn.arms} cm</p>
                                     </div>
                                   )}
                                   {startCheckIn.thighs && (
                                     <div>
-                                      <p className="text-[10px] sm:text-xs text-gray-400">Lår</p>
-                                      <p className="text-white font-medium text-sm sm:text-base">{startCheckIn.thighs} cm</p>
+                                      <p className="text-[10px] sm:text-xs text-gray-500">Lår</p>
+                                      <p className="text-gray-900 font-medium text-sm sm:text-base">{startCheckIn.thighs} cm</p>
                                     </div>
                                   )}
                                   {startCheckIn.calves && (
                                     <div>
-                                      <p className="text-[10px] sm:text-xs text-gray-400">Vader</p>
-                                      <p className="text-white font-medium text-sm sm:text-base">{startCheckIn.calves} cm</p>
+                                      <p className="text-[10px] sm:text-xs text-gray-500">Vader</p>
+                                      <p className="text-gray-900 font-medium text-sm sm:text-base">{startCheckIn.calves} cm</p>
                                     </div>
                                   )}
                                 </div>
@@ -740,16 +741,16 @@ function ClientJournalContent() {
                             {/* Photos */}
                             {(startCheckIn.photoFront || startCheckIn.photoSide || startCheckIn.photoBack) && (
                               <div>
-                                <Label className="text-gray-400 text-xs sm:text-sm mb-2 block">Startbilder</Label>
+                                <Label className="text-gray-500 text-xs sm:text-sm mb-2 block">Startbilder</Label>
                                 <div className="grid grid-cols-3 gap-2 sm:gap-4">
                                   {startCheckIn.photoFront && (
                                     <div>
                                       <img
                                         src={startCheckIn.photoFront}
                                         alt="Front"
-                                        className="w-full h-auto rounded border-2 border-gold-primary/30"
+                                        className="w-full h-auto rounded border-2 border-gray-200"
                                       />
-                                      <p className="text-center text-[10px] sm:text-xs text-gray-400 mt-1">Fram</p>
+                                      <p className="text-center text-[10px] sm:text-xs text-gray-500 mt-1">Fram</p>
                                     </div>
                                   )}
                                   {startCheckIn.photoSide && (
@@ -757,9 +758,9 @@ function ClientJournalContent() {
                                       <img
                                         src={startCheckIn.photoSide}
                                         alt="Side"
-                                        className="w-full h-auto rounded border-2 border-gold-primary/30"
+                                        className="w-full h-auto rounded border-2 border-gray-200"
                                       />
-                                      <p className="text-center text-[10px] sm:text-xs text-gray-400 mt-1">Sida</p>
+                                      <p className="text-center text-[10px] sm:text-xs text-gray-500 mt-1">Sida</p>
                                     </div>
                                   )}
                                   {startCheckIn.photoBack && (
@@ -767,9 +768,9 @@ function ClientJournalContent() {
                                       <img
                                         src={startCheckIn.photoBack}
                                         alt="Back"
-                                        className="w-full h-auto rounded border-2 border-gold-primary/30"
+                                        className="w-full h-auto rounded border-2 border-gray-200"
                                       />
-                                      <p className="text-center text-[10px] sm:text-xs text-gray-400 mt-1">Bak</p>
+                                      <p className="text-center text-[10px] sm:text-xs text-gray-500 mt-1">Bak</p>
                                     </div>
                                   )}
                                 </div>
@@ -783,34 +784,34 @@ function ClientJournalContent() {
                       {regularCheckIns.map((checkIn: any) => (
                 <div
                   key={checkIn.id}
-                  className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden"
+                  className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
                 >
-                  <div className="p-4 sm:p-6 border-b border-gold-primary/20 flex items-center justify-between">
+                  <div className="p-4 sm:p-6 border-b border-gray-200 flex items-center justify-between">
                     <div className="flex items-center gap-2 sm:gap-3">
-                      <ClipboardCheck className="h-4 w-4 sm:h-5 sm:w-5 text-gold-light flex-shrink-0" />
+                      <ClipboardCheck className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600 flex-shrink-0" />
                       <div>
-                        <h3 className="font-bold text-white text-sm sm:text-base">
+                        <h3 className="font-bold text-gray-900 text-sm sm:text-base">
                           Vecka {checkIn.weekNumber || 'N/A'}
                         </h3>
-                        <p className="text-xs sm:text-sm text-gray-400">
+                        <p className="text-xs sm:text-sm text-gray-500">
                           {format(new Date(checkIn.createdAt), 'PP', { locale: sv })}
                         </p>
                       </div>
                     </div>
                     {checkIn.weightKg && (
                       <div className="text-right">
-                        <p className="text-xl sm:text-2xl font-bold text-gold-light">
+                        <p className="text-xl sm:text-2xl font-bold text-amber-600">
                           {checkIn.weightKg} kg
                         </p>
-                        <p className="text-xs text-gray-400">Vikt</p>
+                        <p className="text-xs text-gray-500">Vikt</p>
                       </div>
                     )}
                   </div>
                   <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
                     {checkIn.statusUpdate && (
                       <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm">Statusuppdatering</Label>
-                        <p className="text-white mt-1 text-sm sm:text-base">{checkIn.statusUpdate}</p>
+                        <Label className="text-gray-500 text-xs sm:text-sm">Statusuppdatering</Label>
+                        <p className="text-gray-900 mt-1 text-sm sm:text-base">{checkIn.statusUpdate}</p>
                       </div>
                     )}
 
@@ -818,26 +819,26 @@ function ClientJournalContent() {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
                       {checkIn.energyLevel && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Energi</Label>
-                          <p className="text-white font-medium text-sm sm:text-base">{checkIn.energyLevel}/5</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">Energi</Label>
+                          <p className="text-gray-900 font-medium text-sm sm:text-base">{checkIn.energyLevel}/5</p>
                         </div>
                       )}
                       {checkIn.mood && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Humör</Label>
-                          <p className="text-white font-medium text-sm sm:text-base">{checkIn.mood}/5</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">Humör</Label>
+                          <p className="text-gray-900 font-medium text-sm sm:text-base">{checkIn.mood}/5</p>
                         </div>
                       )}
                       {checkIn.dietPlanAdherence && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Kost</Label>
-                          <p className="text-white font-medium text-sm sm:text-base">{checkIn.dietPlanAdherence}/5</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">Kost</Label>
+                          <p className="text-gray-900 font-medium text-sm sm:text-base">{checkIn.dietPlanAdherence}/5</p>
                         </div>
                       )}
                       {checkIn.workoutPlanAdherence && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Träning</Label>
-                          <p className="text-white font-medium text-sm sm:text-base">{checkIn.workoutPlanAdherence}/5</p>
+                          <Label className="text-gray-500 text-xs sm:text-sm">Träning</Label>
+                          <p className="text-gray-900 font-medium text-sm sm:text-base">{checkIn.workoutPlanAdherence}/5</p>
                         </div>
                       )}
                     </div>
@@ -847,14 +848,14 @@ function ClientJournalContent() {
                       <div className="grid grid-cols-2 gap-2 sm:gap-4">
                         {checkIn.sleepNotes && (
                           <div>
-                            <Label className="text-gray-400 text-xs sm:text-sm">Sömn</Label>
-                            <p className="text-white text-sm sm:text-base">{checkIn.sleepNotes}</p>
+                            <Label className="text-gray-500 text-xs sm:text-sm">Sömn</Label>
+                            <p className="text-gray-900 text-sm sm:text-base">{checkIn.sleepNotes}</p>
                           </div>
                         )}
                         {checkIn.dailySteps && (
                           <div>
-                            <Label className="text-gray-400 text-xs sm:text-sm">Steg/dag</Label>
-                            <p className="text-white text-sm sm:text-base">{checkIn.dailySteps}</p>
+                            <Label className="text-gray-500 text-xs sm:text-sm">Steg/dag</Label>
+                            <p className="text-gray-900 text-sm sm:text-base">{checkIn.dailySteps}</p>
                           </div>
                         )}
                       </div>
@@ -863,16 +864,16 @@ function ClientJournalContent() {
                     {/* Photos */}
                     {(checkIn.photoFront || checkIn.photoSide || checkIn.photoBack) && (
                       <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm mb-2 block">Bilder</Label>
+                        <Label className="text-gray-500 text-xs sm:text-sm mb-2 block">Bilder</Label>
                         <div className="grid grid-cols-3 gap-2 sm:gap-4">
                           {checkIn.photoFront && (
                             <div>
                               <img
                                 src={checkIn.photoFront}
                                 alt="Framsida"
-                                className="w-full h-32 sm:h-48 object-cover rounded-lg border-2 border-gold-primary/20"
+                                className="w-full h-32 sm:h-48 object-cover rounded-lg border-2 border-gray-200"
                               />
-                              <p className="text-[10px] sm:text-xs text-gray-400 mt-1 text-center">Fram</p>
+                              <p className="text-[10px] sm:text-xs text-gray-500 mt-1 text-center">Fram</p>
                             </div>
                           )}
                           {checkIn.photoSide && (
@@ -880,9 +881,9 @@ function ClientJournalContent() {
                               <img
                                 src={checkIn.photoSide}
                                 alt="Sida"
-                                className="w-full h-32 sm:h-48 object-cover rounded-lg border-2 border-gold-primary/20"
+                                className="w-full h-32 sm:h-48 object-cover rounded-lg border-2 border-gray-200"
                               />
-                              <p className="text-[10px] sm:text-xs text-gray-400 mt-1 text-center">Sida</p>
+                              <p className="text-[10px] sm:text-xs text-gray-500 mt-1 text-center">Sida</p>
                             </div>
                           )}
                           {checkIn.photoBack && (
@@ -890,9 +891,9 @@ function ClientJournalContent() {
                               <img
                                 src={checkIn.photoBack}
                                 alt="Baksida"
-                                className="w-full h-32 sm:h-48 object-cover rounded-lg border-2 border-gold-primary/20"
+                                className="w-full h-32 sm:h-48 object-cover rounded-lg border-2 border-gray-200"
                               />
-                              <p className="text-[10px] sm:text-xs text-gray-400 mt-1 text-center">Bak</p>
+                              <p className="text-[10px] sm:text-xs text-gray-500 mt-1 text-center">Bak</p>
                             </div>
                           )}
                         </div>
@@ -950,39 +951,39 @@ function ClientJournalContent() {
                   <section>
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
-                        <Scale className="w-5 h-5 text-white" />
+                        <Scale className="w-5 h-5 text-gray-900" />
                       </div>
-                      <h2 className="text-xl font-bold text-white">Viktförändring</h2>
+                      <h2 className="text-xl font-bold text-gray-900">Viktförändring</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-6">
-                        <p className="text-gray-400 text-sm mb-1">Startvikt</p>
-                        <p className="text-2xl font-bold text-white">
+                      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                        <p className="text-gray-500 text-sm mb-1">Startvikt</p>
+                        <p className="text-2xl font-bold text-gray-900">
                           {startWeight ? `${Number(startWeight).toFixed(1)} kg` : '-'}
                         </p>
                       </div>
-                      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-6">
-                        <p className="text-gray-400 text-sm mb-1">Nuvarande vikt</p>
-                        <p className="text-2xl font-bold text-white">
+                      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                        <p className="text-gray-500 text-sm mb-1">Nuvarande vikt</p>
+                        <p className="text-2xl font-bold text-gray-900">
                           {currentWeight ? `${Number(currentWeight).toFixed(1)} kg` : '-'}
                         </p>
                       </div>
-                      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-6">
-                        <p className="text-gray-400 text-sm mb-1">Förändring</p>
+                      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                        <p className="text-gray-500 text-sm mb-1">Förändring</p>
                         <div className="flex items-center gap-2">
-                          <p className={`text-2xl font-bold ${weightChange && weightChange < 0 ? 'text-green-400' : weightChange && weightChange > 0 ? 'text-red-400' : 'text-white'}`}>
+                          <p className={`text-2xl font-bold ${weightChange && weightChange < 0 ? 'text-green-400' : weightChange && weightChange > 0 ? 'text-red-400' : 'text-gray-900'}`}>
                             {weightChange !== null ? `${weightChange > 0 ? '+' : ''}${weightChange.toFixed(1)} kg` : '-'}
                           </p>
                           {weightChange !== null && weightChange < 0 && <TrendingDown className="w-5 h-5 text-green-400" />}
                           {weightChange !== null && weightChange > 0 && <TrendingUp className="w-5 h-5 text-red-400" />}
-                          {weightChange === 0 && <Minus className="w-5 h-5 text-gray-400" />}
+                          {weightChange === 0 && <Minus className="w-5 h-5 text-gray-500" />}
                         </div>
                       </div>
                     </div>
 
                     {weightChartData.length > 1 && (
-                      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-6">
+                      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
                         <ResponsiveContainer width="100%" height={250}>
                           <LineChart data={weightChartData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,215,0,0.1)" />
@@ -1013,9 +1014,9 @@ function ClientJournalContent() {
                   <section>
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
-                        <Ruler className="w-5 h-5 text-white" />
+                        <Ruler className="w-5 h-5 text-gray-900" />
                       </div>
-                      <h2 className="text-xl font-bold text-white">Mätpunkter</h2>
+                      <h2 className="text-xl font-bold text-gray-900">Mätpunkter</h2>
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -1025,9 +1026,9 @@ function ClientJournalContent() {
                         const change = startValue && currentValue ? Number(currentValue) - Number(startValue) : null
 
                         return (
-                          <div key={field} className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-4">
-                            <p className="text-gray-400 text-sm mb-1">{label}</p>
-                            <p className="text-xl font-bold text-white">
+                          <div key={field} className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+                            <p className="text-gray-500 text-sm mb-1">{label}</p>
+                            <p className="text-xl font-bold text-gray-900">
                               {currentValue !== null ? `${currentValue} cm` : '-'}
                             </p>
                             {change !== null && change !== 0 && (
@@ -1045,23 +1046,23 @@ function ClientJournalContent() {
                   <section>
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                        <Camera className="w-5 h-5 text-white" />
+                        <Camera className="w-5 h-5 text-gray-900" />
                       </div>
-                      <h2 className="text-xl font-bold text-white">Formbilder</h2>
+                      <h2 className="text-xl font-bold text-gray-900">Formbilder</h2>
                     </div>
 
                     {!startPhotos && !latestPhotos ? (
-                      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-8 text-center">
+                      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8 text-center">
                         <Camera className="w-12 h-12 text-gray-500 mx-auto mb-3" />
-                        <p className="text-gray-400">Inga formbilder uppladdade än</p>
+                        <p className="text-gray-500">Inga formbilder uppladdade än</p>
                         <p className="text-gray-500 text-sm mt-1">Ladda upp bilder i nästa check-in</p>
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Start Photos */}
                         {startPhotos && (startPhotos.photoFront || startPhotos.photoSide || startPhotos.photoBack) && (
-                          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-4">
-                            <h3 className="font-semibold text-white mb-3">Start</h3>
+                          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+                            <h3 className="font-semibold text-gray-900 mb-3">Start</h3>
                             <div className="grid grid-cols-3 gap-2">
                               {startPhotos.photoFront && (
                                 <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-800">
@@ -1070,7 +1071,7 @@ function ClientJournalContent() {
                                     alt="Start Fram"
                                     className="w-full h-full object-cover"
                                   />
-                                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                                  <span className="absolute bottom-1 left-1 bg-black/60 text-gray-900 text-xs px-2 py-0.5 rounded">
                                     Fram
                                   </span>
                                 </div>
@@ -1082,7 +1083,7 @@ function ClientJournalContent() {
                                     alt="Start Sida"
                                     className="w-full h-full object-cover"
                                   />
-                                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                                  <span className="absolute bottom-1 left-1 bg-black/60 text-gray-900 text-xs px-2 py-0.5 rounded">
                                     Sida
                                   </span>
                                 </div>
@@ -1094,7 +1095,7 @@ function ClientJournalContent() {
                                     alt="Start Bak"
                                     className="w-full h-full object-cover"
                                   />
-                                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                                  <span className="absolute bottom-1 left-1 bg-black/60 text-gray-900 text-xs px-2 py-0.5 rounded">
                                     Bak
                                   </span>
                                 </div>
@@ -1105,8 +1106,8 @@ function ClientJournalContent() {
 
                         {/* Latest Photos */}
                         {latestPhotos && (latestPhotos.photoFront || latestPhotos.photoSide || latestPhotos.photoBack) && (
-                          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-4">
-                            <h3 className="font-semibold text-white mb-3">
+                          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
+                            <h3 className="font-semibold text-gray-900 mb-3">
                               Vecka {latestPhotos.weekNumber || photos.length}
                             </h3>
                             <div className="grid grid-cols-3 gap-2">
@@ -1117,7 +1118,7 @@ function ClientJournalContent() {
                                     alt="Senaste Fram"
                                     className="w-full h-full object-cover"
                                   />
-                                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                                  <span className="absolute bottom-1 left-1 bg-black/60 text-gray-900 text-xs px-2 py-0.5 rounded">
                                     Fram
                                   </span>
                                 </div>
@@ -1129,7 +1130,7 @@ function ClientJournalContent() {
                                     alt="Senaste Sida"
                                     className="w-full h-full object-cover"
                                   />
-                                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                                  <span className="absolute bottom-1 left-1 bg-black/60 text-gray-900 text-xs px-2 py-0.5 rounded">
                                     Sida
                                   </span>
                                 </div>
@@ -1141,7 +1142,7 @@ function ClientJournalContent() {
                                     alt="Senaste Bak"
                                     className="w-full h-full object-cover"
                                   />
-                                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                                  <span className="absolute bottom-1 left-1 bg-black/60 text-gray-900 text-xs px-2 py-0.5 rounded">
                                     Bak
                                   </span>
                                 </div>
@@ -1154,9 +1155,9 @@ function ClientJournalContent() {
                   </section>
 
                   {weightData.length === 0 && measurements.length === 0 && photos.length === 0 && (
-                    <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-8 sm:p-12 text-center">
+                    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8 sm:p-12 text-center">
                       <TrendingUp className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-3 sm:mb-4" />
-                      <p className="text-gray-400 text-sm sm:text-base">Ingen framstegsinformation tillgänglig ännu</p>
+                      <p className="text-gray-500 text-sm sm:text-base">Ingen framstegsinformation tillgänglig ännu</p>
                     </div>
                   )}
                 </>
@@ -1168,9 +1169,9 @@ function ClientJournalContent() {
 
       {/* No Client Selected */}
       {!isLoading && !journalData && selectedClientId === '' && (
-        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-8 sm:p-12 text-center">
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8 sm:p-12 text-center">
           <FileText className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-3 sm:mb-4" />
-          <p className="text-gray-400 text-sm sm:text-base">Välj en klient för att visa journalen</p>
+          <p className="text-gray-500 text-sm sm:text-base">Välj en klient för att visa journalen</p>
         </div>
       )}
     </div>
@@ -1182,8 +1183,8 @@ export default function ClientJournalPage() {
     <Suspense
       fallback={
         <div className="container mx-auto p-4 sm:p-6">
-          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-8 sm:p-12 text-center">
-            <p className="text-gray-400 text-sm sm:text-base">Laddar journal...</p>
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8 sm:p-12 text-center">
+            <p className="text-gray-500 text-sm sm:text-base">Laddar journal...</p>
           </div>
         </div>
       }
