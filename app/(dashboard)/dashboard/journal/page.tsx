@@ -143,11 +143,47 @@ type UserProfile = {
 
 type Lead = {
   id: string
-  name: string
+  fullName: string | null
   email: string | null
   phone: string | null
+  city: string | null
+  country: string | null
+  age: number | null
+  gender: string | null
+  height: number | null
+  currentWeight: number | null
+  // Training
+  trainingGoal: string | null
+  currentTraining: string | null
+  trainingExperience: string | null
+  injuries: string | null
+  availableTime: string | null
+  preferredSchedule: string | null
+  // Nutrition
+  dietHistory: string | null
+  macroExperience: string | null
+  digestionIssues: string | null
+  allergies: string | null
+  favoriteFood: string | null
+  dislikedFood: string | null
+  supplements: string | null
+  previousCoaching: string | null
+  // Lifestyle
+  stressLevel: string | null
+  sleepHours: string | null
+  occupation: string | null
+  lifestyle: string | null
+  // Motivation
+  whyJoin: string | null
+  canFollowPlan: string | null
+  expectations: string | null
+  biggestChallenges: string | null
+  // Photos
+  frontPhoto: string | null
+  sidePhoto: string | null
+  backPhoto: string | null
+  // Meta
   status: string
-  notes: string | null
   tags: string[]
   createdAt: string
 }
@@ -483,20 +519,41 @@ function ClientJournalContent() {
 
           {/* Application Tab */}
           <TabsContent value="application" className="space-y-4 sm:space-y-6">
-            {journalData.profile && (
+            {journalData.lead ? (
               <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden">
                 <div className="p-4 sm:p-6 border-b border-gold-primary/20">
                   <h2 className="text-lg sm:text-xl font-bold text-gold-light">
                     Ursprunglig Intresseanmälan
                   </h2>
+                  <p className="text-gray-400 text-xs sm:text-sm mt-1">
+                    Inskickad {format(new Date(journalData.lead.createdAt), 'PP', { locale: sv })}
+                  </p>
                 </div>
                 <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-                  {/* Goals */}
+                  {/* Personal Info */}
                   <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Mål</h3>
-                    <div>
-                      <Label className="text-gray-400 text-xs sm:text-sm">Primärt Mål</Label>
-                      <p className="text-white text-sm sm:text-base">{formatLabel(journalData.profile.primaryGoal, goalLabels)}</p>
+                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Personuppgifter</h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                      <div>
+                        <Label className="text-gray-400 text-xs sm:text-sm">Namn</Label>
+                        <p className="text-white text-sm sm:text-base">{journalData.lead.fullName || '-'}</p>
+                      </div>
+                      <div>
+                        <Label className="text-gray-400 text-xs sm:text-sm">Ålder</Label>
+                        <p className="text-white text-sm sm:text-base">{journalData.lead.age ? `${journalData.lead.age} år` : '-'}</p>
+                      </div>
+                      <div>
+                        <Label className="text-gray-400 text-xs sm:text-sm">Kön</Label>
+                        <p className="text-white text-sm sm:text-base">{formatLabel(journalData.lead.gender, genderLabels)}</p>
+                      </div>
+                      <div>
+                        <Label className="text-gray-400 text-xs sm:text-sm">Stad</Label>
+                        <p className="text-white text-sm sm:text-base">{journalData.lead.city || '-'}</p>
+                      </div>
+                      <div>
+                        <Label className="text-gray-400 text-xs sm:text-sm">Land</Label>
+                        <p className="text-white text-sm sm:text-base">{journalData.lead.country || '-'}</p>
+                      </div>
                     </div>
                   </div>
 
@@ -505,84 +562,43 @@ function ClientJournalContent() {
                   {/* Physical Stats */}
                   <div>
                     <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Fysiska Mått</h3>
-                    <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
                       <div>
                         <Label className="text-gray-400 text-xs sm:text-sm">Längd</Label>
-                        <p className="text-white text-sm sm:text-base">{journalData.profile.heightCm ? `${journalData.profile.heightCm} cm` : '-'}</p>
+                        <p className="text-white text-sm sm:text-base">{journalData.lead.height ? `${journalData.lead.height} cm` : '-'}</p>
                       </div>
                       <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm">Startvikt</Label>
-                        <p className="text-white text-sm sm:text-base">{journalData.profile.currentWeightKg ? `${journalData.profile.currentWeightKg} kg` : '-'}</p>
-                      </div>
-                      <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm">Kön</Label>
-                        <p className="text-white text-sm sm:text-base">{formatLabel(journalData.profile.genderAtBirth, genderLabels)}</p>
+                        <Label className="text-gray-400 text-xs sm:text-sm">Nuvarande vikt</Label>
+                        <p className="text-white text-sm sm:text-base">{journalData.lead.currentWeight ? `${journalData.lead.currentWeight} kg` : '-'}</p>
                       </div>
                     </div>
                   </div>
 
                   <Separator className="bg-[rgba(255,215,0,0.2)]" />
 
-                  {/* Activity Level */}
+                  {/* Goals / Motivation */}
                   <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Aktivitetsnivå</h3>
-                    <div className="grid grid-cols-2 gap-2 sm:gap-4">
-                      <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm">Fritid</Label>
-                        <p className="text-white text-sm sm:text-base">{formatLabel(journalData.profile.activityLevelFree, activityLabels)}</p>
-                      </div>
-                      <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm">Arbete</Label>
-                        <p className="text-white text-sm sm:text-base">{formatLabel(journalData.profile.activityLevelWork, activityLabels)}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Separator className="bg-[rgba(255,215,0,0.2)]" />
-
-                  {/* Nutrition */}
-                  <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Kost</h3>
+                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Målsättning</h3>
                     <div className="space-y-3 sm:space-y-4">
-                      {journalData.profile.allergies.length > 0 && (
+                      {journalData.lead.whyJoin && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Allergier</Label>
-                          <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
-                            {journalData.profile.allergies.map((allergy) => (
-                              <Badge
-                                key={allergy}
-                                className="bg-[rgba(255,100,0,0.1)] text-orange-300 border border-[rgba(255,100,0,0.3)] text-xs"
-                              >
-                                {allergy}
-                              </Badge>
-                            ))}
-                          </div>
+                          <Label className="text-gray-400 text-xs sm:text-sm">Klientens målsättningar</Label>
+                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.whyJoin}</p>
                         </div>
                       )}
-                      {journalData.profile.dietaryPreferences.length > 0 && (
+                      {journalData.lead.biggestChallenges && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Kostpreferenser</Label>
-                          <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
-                            {journalData.profile.dietaryPreferences.map((pref) => (
-                              <Badge
-                                key={pref}
-                                className="bg-[rgba(34,197,94,0.1)] text-green-300 border border-[rgba(34,197,94,0.3)] text-xs"
-                              >
-                                {pref}
-                              </Badge>
-                            ))}
-                          </div>
+                          <Label className="text-gray-400 text-xs sm:text-sm">Största utmaningar</Label>
+                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.biggestChallenges}</p>
                         </div>
                       )}
-                      {journalData.profile.nutritionNotes && (
+                      {journalData.lead.previousCoaching && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Kostanteckningar</Label>
-                          <p className="text-white mt-1 text-sm sm:text-base">{journalData.profile.nutritionNotes}</p>
+                          <Label className="text-gray-400 text-xs sm:text-sm">Tidigare coaching eller PT</Label>
+                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.previousCoaching}</p>
                         </div>
                       )}
-                      {journalData.profile.allergies.length === 0 &&
-                       journalData.profile.dietaryPreferences.length === 0 &&
-                       !journalData.profile.nutritionNotes && (
+                      {!journalData.lead.whyJoin && !journalData.lead.biggestChallenges && !journalData.lead.previousCoaching && (
                         <p className="text-gray-400 text-sm">Ej angivet</p>
                       )}
                     </div>
@@ -592,52 +608,127 @@ function ClientJournalContent() {
 
                   {/* Training */}
                   <div>
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Träning</h3>
+                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Träningsbakgrund</h3>
                     <div className="space-y-3 sm:space-y-4">
-                      {journalData.profile.trainingDays.length > 0 && (
+                      {journalData.lead.currentTraining && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Träningsdagar</Label>
-                          <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
-                            {journalData.profile.trainingDays.map((day) => (
-                              <Badge
-                                key={day}
-                                className="bg-[rgba(100,100,255,0.1)] text-blue-300 border border-[rgba(100,100,255,0.3)] text-xs"
-                              >
-                                {formatLabel(day, dayLabels)}
-                              </Badge>
-                            ))}
-                          </div>
+                          <Label className="text-gray-400 text-xs sm:text-sm">Tränar du idag?</Label>
+                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.currentTraining}</p>
                         </div>
                       )}
-                      <div>
-                        <Label className="text-gray-400 text-xs sm:text-sm">Träningserfarenhet</Label>
-                        <p className="text-white text-sm sm:text-base">{formatLabel(journalData.profile.trainingExperience, experienceLabels)}</p>
-                      </div>
-                      {journalData.profile.trainingDetails && (
+                      {journalData.lead.trainingExperience && (
                         <div>
-                          <Label className="text-gray-400 text-xs sm:text-sm">Träningsdetaljer</Label>
-                          <p className="text-white mt-1 text-sm sm:text-base">{journalData.profile.trainingDetails}</p>
+                          <Label className="text-gray-400 text-xs sm:text-sm">Träningserfarenhet historiskt</Label>
+                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.trainingExperience}</p>
                         </div>
+                      )}
+                      {journalData.lead.injuries && (
+                        <div>
+                          <Label className="text-gray-400 text-xs sm:text-sm">Skador/Begränsningar</Label>
+                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.injuries}</p>
+                        </div>
+                      )}
+                      {!journalData.lead.currentTraining && !journalData.lead.trainingExperience && !journalData.lead.injuries && (
+                        <p className="text-gray-400 text-sm">Ej angivet</p>
                       )}
                     </div>
                   </div>
 
-                  {journalData.profile.lifestyleNotes && (
+                  <Separator className="bg-[rgba(255,215,0,0.2)]" />
+
+                  {/* Nutrition */}
+                  <div>
+                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Kostbakgrund</h3>
+                    <div className="space-y-3 sm:space-y-4">
+                      {journalData.lead.dietHistory && (
+                        <div>
+                          <Label className="text-gray-400 text-xs sm:text-sm">Hur äter du idag?</Label>
+                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.dietHistory}</p>
+                        </div>
+                      )}
+                      {journalData.lead.favoriteFood && (
+                        <div>
+                          <Label className="text-gray-400 text-xs sm:text-sm">Matpreferenser</Label>
+                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.favoriteFood}</p>
+                        </div>
+                      )}
+                      {journalData.lead.allergies && (
+                        <div>
+                          <Label className="text-gray-400 text-xs sm:text-sm">Allergier och intoleranser</Label>
+                          <p className="text-white mt-1 text-sm sm:text-base">{journalData.lead.allergies}</p>
+                        </div>
+                      )}
+                      {!journalData.lead.dietHistory && !journalData.lead.favoriteFood && !journalData.lead.allergies && (
+                        <p className="text-gray-400 text-sm">Ej angivet</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <Separator className="bg-[rgba(255,215,0,0.2)]" />
+
+                  {/* Lifestyle */}
+                  <div>
+                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Livsstil</h3>
+                    <div className="space-y-3 sm:space-y-4">
+                      {journalData.lead.lifestyle && (
+                        <div>
+                          <Label className="text-gray-400 text-xs sm:text-sm">En vanlig dag</Label>
+                          <p className="text-white mt-1 text-sm sm:text-base whitespace-pre-wrap">{journalData.lead.lifestyle}</p>
+                        </div>
+                      )}
+                      {!journalData.lead.lifestyle && (
+                        <p className="text-gray-400 text-sm">Ej angivet</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Application Photos */}
+                  {(journalData.lead.frontPhoto || journalData.lead.sidePhoto || journalData.lead.backPhoto) && (
                     <>
                       <Separator className="bg-[rgba(255,215,0,0.2)]" />
                       <div>
-                        <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Livsstil</h3>
-                        <p className="text-white text-sm sm:text-base">{journalData.profile.lifestyleNotes}</p>
+                        <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Bilder från ansökan</h3>
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                          {journalData.lead.frontPhoto && (
+                            <div>
+                              <img
+                                src={journalData.lead.frontPhoto}
+                                alt="Fram"
+                                className="w-full h-auto rounded border-2 border-gold-primary/30"
+                              />
+                              <p className="text-center text-[10px] sm:text-xs text-gray-400 mt-1">Fram</p>
+                            </div>
+                          )}
+                          {journalData.lead.sidePhoto && (
+                            <div>
+                              <img
+                                src={journalData.lead.sidePhoto}
+                                alt="Sida"
+                                className="w-full h-auto rounded border-2 border-gold-primary/30"
+                              />
+                              <p className="text-center text-[10px] sm:text-xs text-gray-400 mt-1">Sida</p>
+                            </div>
+                          )}
+                          {journalData.lead.backPhoto && (
+                            <div>
+                              <img
+                                src={journalData.lead.backPhoto}
+                                alt="Bak"
+                                className="w-full h-auto rounded border-2 border-gold-primary/30"
+                              />
+                              <p className="text-center text-[10px] sm:text-xs text-gray-400 mt-1">Bak</p>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </>
                   )}
                 </div>
               </div>
-            )}
-
-            {!journalData.profile && (
+            ) : (
               <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-8 sm:p-12 text-center">
-                <p className="text-gray-400 text-sm sm:text-base">Ingen ansökningsinformation tillgänglig</p>
+                <p className="text-gray-400 text-sm sm:text-base">Ingen intresseanmälan hittades för denna klient</p>
+                <p className="text-gray-500 text-xs mt-2">Klienten kan ha blivit tillagd manuellt utan ansökan</p>
               </div>
             )}
           </TabsContent>
