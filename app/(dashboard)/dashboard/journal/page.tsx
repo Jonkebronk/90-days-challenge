@@ -21,11 +21,25 @@ import {
   User,
   ClipboardCheck,
   TrendingUp,
+  TrendingDown,
   Calendar,
   Weight,
   Image as ImageIcon,
   ChevronLeft,
+  Scale,
+  Ruler,
+  Camera,
+  Minus,
 } from 'lucide-react'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { sv } from 'date-fns/locale'
@@ -844,190 +858,258 @@ function ClientJournalContent() {
           </TabsContent>
 
           {/* Progress Tab */}
-          <TabsContent value="progress" className="space-y-4 sm:space-y-6">
-            {/* Weight Progression */}
-            {journalData.progression.weight.length > 0 && (
-              <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden">
-                <div className="p-4 sm:p-6 border-b border-gold-primary/20">
-                  <h2 className="text-lg sm:text-xl font-bold text-gold-light flex items-center gap-2">
-                    <Weight className="h-4 w-4 sm:h-5 sm:w-5" />
-                    Viktutveckling
-                  </h2>
-                </div>
-                <div className="p-4 sm:p-6">
-                  <div className="space-y-2 sm:space-y-3">
-                    {journalData.progression.weight.map((entry, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-3 sm:p-4 bg-black/30 rounded-lg border border-gold-primary/20"
-                      >
-                        <div>
-                          <p className="text-white font-medium text-sm sm:text-base">
-                            Vecka {entry.weekNumber || 'N/A'}
-                          </p>
-                          <p className="text-xs sm:text-sm text-gray-400">
-                            {format(new Date(entry.date), 'PP', { locale: sv })}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xl sm:text-2xl font-bold text-gold-light">
-                            {entry.weight} kg
-                          </p>
-                          {index > 0 && (
-                            <p className="text-xs sm:text-sm text-gray-400">
-                              {Number(entry.weight) - Number(journalData.progression.weight[index - 1].weight) > 0 ? '+' : ''}
-                              {(Number(entry.weight) - Number(journalData.progression.weight[index - 1].weight)).toFixed(1)} kg
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+          <TabsContent value="progress" className="space-y-6 sm:space-y-8">
+            {(() => {
+              // Calculate weight data
+              const weightData = journalData.progression.weight
+              const startWeight = weightData.length > 0 ? weightData[0].weight : null
+              const currentWeight = weightData.length > 0 ? weightData[weightData.length - 1].weight : null
+              const weightChange = startWeight && currentWeight ? Number(currentWeight) - Number(startWeight) : null
 
-            {/* Measurements Progression */}
-            {journalData.progression.measurements && journalData.progression.measurements.length > 0 && (
-              <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden">
-                <div className="p-4 sm:p-6 border-b border-gold-primary/20">
-                  <h2 className="text-lg sm:text-xl font-bold text-gold-light flex items-center gap-2">
-                    📏
-                    Måttutveckling
-                  </h2>
-                </div>
-                <div className="p-4 sm:p-6">
-                  <div className="space-y-4 sm:space-y-6">
-                    {journalData.progression.measurements.map((entry, index) => (
-                      <div
-                        key={index}
-                        className="p-3 sm:p-4 bg-black/30 rounded-lg border border-gold-primary/20"
-                      >
-                        <div className="mb-2 sm:mb-3">
-                          <p className="text-white font-medium text-sm sm:text-base">
-                            Vecka {entry.weekNumber || 'N/A'}
-                          </p>
-                          <p className="text-xs sm:text-sm text-gray-400">
-                            {format(new Date(entry.date), 'PP', { locale: sv })}
-                          </p>
-                        </div>
-                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-4">
-                          {entry.chest && (
-                            <div>
-                              <Label className="text-gray-400 text-[10px] sm:text-xs">Bröst</Label>
-                              <p className="text-white font-semibold text-sm sm:text-base">{entry.chest} cm</p>
-                            </div>
-                          )}
-                          {entry.waist && (
-                            <div>
-                              <Label className="text-gray-400 text-[10px] sm:text-xs">Midja</Label>
-                              <p className="text-white font-semibold text-sm sm:text-base">{entry.waist} cm</p>
-                            </div>
-                          )}
-                          {entry.hips && (
-                            <div>
-                              <Label className="text-gray-400 text-[10px] sm:text-xs">Höfter</Label>
-                              <p className="text-white font-semibold text-sm sm:text-base">{entry.hips} cm</p>
-                            </div>
-                          )}
-                          {entry.butt && (
-                            <div>
-                              <Label className="text-gray-400 text-[10px] sm:text-xs">Rumpa</Label>
-                              <p className="text-white font-semibold text-sm sm:text-base">{entry.butt} cm</p>
-                            </div>
-                          )}
-                          {entry.arms && (
-                            <div>
-                              <Label className="text-gray-400 text-[10px] sm:text-xs">Armar</Label>
-                              <p className="text-white font-semibold text-sm sm:text-base">{entry.arms} cm</p>
-                            </div>
-                          )}
-                          {entry.thighs && (
-                            <div>
-                              <Label className="text-gray-400 text-[10px] sm:text-xs">Lår</Label>
-                              <p className="text-white font-semibold text-sm sm:text-base">{entry.thighs} cm</p>
-                            </div>
-                          )}
-                          {entry.calves && (
-                            <div>
-                              <Label className="text-gray-400 text-[10px] sm:text-xs">Vader</Label>
-                              <p className="text-white font-semibold text-sm sm:text-base">{entry.calves} cm</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+              // Chart data
+              const weightChartData = weightData.map((entry, idx) => ({
+                name: entry.weekNumber ? `V${entry.weekNumber}` : idx === 0 ? 'Start' : `V${idx}`,
+                weight: Number(entry.weight),
+              }))
 
-            {/* Photo Timeline */}
-            {journalData.progression.photos.length > 0 && (
-              <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] overflow-hidden">
-                <div className="p-4 sm:p-6 border-b border-gold-primary/20">
-                  <h2 className="text-lg sm:text-xl font-bold text-gold-light flex items-center gap-2">
-                    <ImageIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                    Bildtidslinje
-                  </h2>
-                </div>
-                <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-                  {journalData.progression.photos.map((entry, index) => (
-                    <div key={index}>
-                      <div className="mb-2 sm:mb-3">
-                        <h3 className="text-white font-semibold text-sm sm:text-base">
-                          Vecka {entry.weekNumber || 'N/A'}
-                        </h3>
-                        <p className="text-xs sm:text-sm text-gray-400">
-                          {format(new Date(entry.date), 'PP', { locale: sv })}
+              // Get start and latest measurements
+              const measurements = journalData.progression.measurements || []
+              const startMeasurements = measurements.length > 0 ? measurements[0] : null
+              const latestMeasurements = measurements.length > 1 ? measurements[measurements.length - 1] : null
+
+              // Get start and latest photos
+              const photos = journalData.progression.photos
+              const startPhotos = photos.length > 0 ? photos[0] : null
+              const latestPhotos = photos.length > 1 ? photos[photos.length - 1] : null
+
+              const measurementFields = [
+                { label: 'Bröst', field: 'chest' },
+                { label: 'Midja', field: 'waist' },
+                { label: 'Höfter', field: 'hips' },
+                { label: 'Rumpa', field: 'butt' },
+                { label: 'Armar', field: 'arms' },
+                { label: 'Lår', field: 'thighs' },
+                { label: 'Vader', field: 'calves' },
+              ]
+
+              return (
+                <>
+                  {/* Weight Section */}
+                  <section>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
+                        <Scale className="w-5 h-5 text-white" />
+                      </div>
+                      <h2 className="text-xl font-bold text-white">Viktförändring</h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-6">
+                        <p className="text-gray-400 text-sm mb-1">Startvikt</p>
+                        <p className="text-2xl font-bold text-white">
+                          {startWeight ? `${Number(startWeight).toFixed(1)} kg` : '-'}
                         </p>
                       </div>
-                      <div className="grid grid-cols-3 gap-2 sm:gap-4">
-                        {entry.photoFront && (
-                          <div>
-                            <img
-                              src={entry.photoFront}
-                              alt="Framsida"
-                              className="w-full h-32 sm:h-64 object-cover rounded-lg border-2 border-gold-primary/20"
+                      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-6">
+                        <p className="text-gray-400 text-sm mb-1">Nuvarande vikt</p>
+                        <p className="text-2xl font-bold text-white">
+                          {currentWeight ? `${Number(currentWeight).toFixed(1)} kg` : '-'}
+                        </p>
+                      </div>
+                      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-6">
+                        <p className="text-gray-400 text-sm mb-1">Förändring</p>
+                        <div className="flex items-center gap-2">
+                          <p className={`text-2xl font-bold ${weightChange && weightChange < 0 ? 'text-green-400' : weightChange && weightChange > 0 ? 'text-red-400' : 'text-white'}`}>
+                            {weightChange !== null ? `${weightChange > 0 ? '+' : ''}${weightChange.toFixed(1)} kg` : '-'}
+                          </p>
+                          {weightChange !== null && weightChange < 0 && <TrendingDown className="w-5 h-5 text-green-400" />}
+                          {weightChange !== null && weightChange > 0 && <TrendingUp className="w-5 h-5 text-red-400" />}
+                          {weightChange === 0 && <Minus className="w-5 h-5 text-gray-400" />}
+                        </div>
+                      </div>
+                    </div>
+
+                    {weightChartData.length > 1 && (
+                      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-6">
+                        <ResponsiveContainer width="100%" height={250}>
+                          <LineChart data={weightChartData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,215,0,0.1)" />
+                            <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
+                            <YAxis domain={['dataMin - 2', 'dataMax + 2']} stroke="#9ca3af" fontSize={12} />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                border: '1px solid rgba(255,215,0,0.3)',
+                                borderRadius: '8px'
+                              }}
                             />
-                            <p className="text-[10px] sm:text-xs text-gray-400 mt-1 text-center">Fram</p>
+                            <Line
+                              type="monotone"
+                              dataKey="weight"
+                              stroke="#f59e0b"
+                              strokeWidth={3}
+                              dot={{ fill: '#f59e0b', r: 5 }}
+                              name="Vikt (kg)"
+                            />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                    )}
+                  </section>
+
+                  {/* Measurements Section */}
+                  <section>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                        <Ruler className="w-5 h-5 text-white" />
+                      </div>
+                      <h2 className="text-xl font-bold text-white">Mätpunkter</h2>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {measurementFields.map(({ label, field }) => {
+                        const startValue = startMeasurements?.[field as keyof typeof startMeasurements] as number | null
+                        const currentValue = latestMeasurements?.[field as keyof typeof latestMeasurements] as number | null ?? startValue
+                        const change = startValue && currentValue ? Number(currentValue) - Number(startValue) : null
+
+                        return (
+                          <div key={field} className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-4">
+                            <p className="text-gray-400 text-sm mb-1">{label}</p>
+                            <p className="text-xl font-bold text-white">
+                              {currentValue !== null ? `${currentValue} cm` : '-'}
+                            </p>
+                            {change !== null && change !== 0 && (
+                              <p className={`text-sm ${change < 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                {change > 0 ? '+' : ''}{change.toFixed(1)} cm
+                              </p>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </section>
+
+                  {/* Photos Section */}
+                  <section>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                        <Camera className="w-5 h-5 text-white" />
+                      </div>
+                      <h2 className="text-xl font-bold text-white">Formbilder</h2>
+                    </div>
+
+                    {!startPhotos && !latestPhotos ? (
+                      <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-8 text-center">
+                        <Camera className="w-12 h-12 text-gray-500 mx-auto mb-3" />
+                        <p className="text-gray-400">Inga formbilder uppladdade än</p>
+                        <p className="text-gray-500 text-sm mt-1">Ladda upp bilder i nästa check-in</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Start Photos */}
+                        {startPhotos && (startPhotos.photoFront || startPhotos.photoSide || startPhotos.photoBack) && (
+                          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-4">
+                            <h3 className="font-semibold text-white mb-3">Start</h3>
+                            <div className="grid grid-cols-3 gap-2">
+                              {startPhotos.photoFront && (
+                                <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-800">
+                                  <img
+                                    src={startPhotos.photoFront}
+                                    alt="Start Fram"
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                                    Fram
+                                  </span>
+                                </div>
+                              )}
+                              {startPhotos.photoSide && (
+                                <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-800">
+                                  <img
+                                    src={startPhotos.photoSide}
+                                    alt="Start Sida"
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                                    Sida
+                                  </span>
+                                </div>
+                              )}
+                              {startPhotos.photoBack && (
+                                <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-800">
+                                  <img
+                                    src={startPhotos.photoBack}
+                                    alt="Start Bak"
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                                    Bak
+                                  </span>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         )}
-                        {entry.photoSide && (
-                          <div>
-                            <img
-                              src={entry.photoSide}
-                              alt="Sida"
-                              className="w-full h-32 sm:h-64 object-cover rounded-lg border-2 border-gold-primary/20"
-                            />
-                            <p className="text-[10px] sm:text-xs text-gray-400 mt-1 text-center">Sida</p>
-                          </div>
-                        )}
-                        {entry.photoBack && (
-                          <div>
-                            <img
-                              src={entry.photoBack}
-                              alt="Baksida"
-                              className="w-full h-32 sm:h-64 object-cover rounded-lg border-2 border-gold-primary/20"
-                            />
-                            <p className="text-[10px] sm:text-xs text-gray-400 mt-1 text-center">Bak</p>
+
+                        {/* Latest Photos */}
+                        {latestPhotos && (latestPhotos.photoFront || latestPhotos.photoSide || latestPhotos.photoBack) && (
+                          <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-4">
+                            <h3 className="font-semibold text-white mb-3">
+                              Vecka {latestPhotos.weekNumber || photos.length}
+                            </h3>
+                            <div className="grid grid-cols-3 gap-2">
+                              {latestPhotos.photoFront && (
+                                <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-800">
+                                  <img
+                                    src={latestPhotos.photoFront}
+                                    alt="Senaste Fram"
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                                    Fram
+                                  </span>
+                                </div>
+                              )}
+                              {latestPhotos.photoSide && (
+                                <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-800">
+                                  <img
+                                    src={latestPhotos.photoSide}
+                                    alt="Senaste Sida"
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                                    Sida
+                                  </span>
+                                </div>
+                              )}
+                              {latestPhotos.photoBack && (
+                                <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-800">
+                                  <img
+                                    src={latestPhotos.photoBack}
+                                    alt="Senaste Bak"
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                                    Bak
+                                  </span>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         )}
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                    )}
+                  </section>
 
-            {journalData.progression.weight.length === 0 &&
-             (!journalData.progression.measurements || journalData.progression.measurements.length === 0) &&
-             journalData.progression.photos.length === 0 && (
-              <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-8 sm:p-12 text-center">
-                <TrendingUp className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-3 sm:mb-4" />
-                <p className="text-gray-400 text-sm sm:text-base">Ingen framstegsinformation tillgänglig ännu</p>
-              </div>
-            )}
+                  {weightData.length === 0 && measurements.length === 0 && photos.length === 0 && (
+                    <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px] p-8 sm:p-12 text-center">
+                      <TrendingUp className="h-10 w-10 sm:h-12 sm:w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-3 sm:mb-4" />
+                      <p className="text-gray-400 text-sm sm:text-base">Ingen framstegsinformation tillgänglig ännu</p>
+                    </div>
+                  )}
+                </>
+              )
+            })()}
           </TabsContent>
         </Tabs>
       )}
