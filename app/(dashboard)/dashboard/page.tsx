@@ -579,7 +579,7 @@ export default function DashboardPage() {
             <div className="text-right">
               <div className="flex items-baseline gap-1">
                 <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-[#FFD700] to-orange-400 bg-clip-text text-transparent">Dag {programInfo.programDay}</span>
-                <span className="text-xs sm:text-sm text-gray-500">av 90</span>
+                <span className="text-xs sm:text-sm text-[#B8860B]">av 90</span>
               </div>
               <span className={`text-xs font-medium ${
                 programInfo.phase === 1 ? 'text-green-500' :
