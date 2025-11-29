@@ -122,11 +122,10 @@ export default function ArticlesPage() {
               <div key={sectionName}>
                 {/* Section Header */}
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#FFD700]/30 to-transparent" />
                   <h2 className="text-sm font-bold bg-gradient-to-r from-[#FFD700] to-orange-400 bg-clip-text text-transparent uppercase tracking-[2px]">
                     {sectionName}
                   </h2>
-                  <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#FFD700]/30 to-transparent" />
+                  <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#FFD700]/30" />
                 </div>
 
                 {/* Categories in this section */}
