@@ -922,17 +922,17 @@ export default function DashboardPage() {
       </div>
       )}
 
-      {/* Daily Goals Widget - Collapsible Card */}
-      <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto">
+      {/* Daily Goals Widget - Collapsible */}
+      <div className="max-w-6xl mx-auto">
         <button
           onClick={() => setIsDailyGoalsOpen(!isDailyGoalsOpen)}
-          className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-xl"
+          className="w-full flex items-center justify-between mb-3 px-1"
         >
-          <h2 className="text-base font-semibold text-gray-900">Dagliga mål</h2>
-          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${isDailyGoalsOpen ? 'rotate-180' : ''}`} />
+          <h2 className="text-sm font-medium bg-gradient-to-r from-[#FFD700] to-orange-400 bg-clip-text text-transparent">Dagliga mål</h2>
+          <ChevronDown className={`w-4 h-4 text-[#B8860B] transition-transform ${isDailyGoalsOpen ? 'rotate-180' : ''}`} />
         </button>
         {isDailyGoalsOpen && (
-        <div className="p-4 sm:p-5 pt-2 border-t border-gray-100">
+        <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Water Section */}
             <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
@@ -1086,18 +1086,18 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Vanor Widget - Collapsible Card */}
-      <div className="bg-white border border-gray-200 rounded-xl max-w-6xl mx-auto">
+      {/* Vanor Widget - Collapsible */}
+      <div className="max-w-6xl mx-auto">
         <button
           onClick={() => setIsHabitsOpen(!isHabitsOpen)}
-          className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors rounded-xl"
+          className="w-full flex items-center justify-between mb-3 px-1"
         >
-          <h2 className="text-base font-semibold text-gray-900">Vanor</h2>
-          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${isHabitsOpen ? 'rotate-180' : ''}`} />
+          <h2 className="text-sm font-medium bg-gradient-to-r from-[#FFD700] to-orange-400 bg-clip-text text-transparent">Vanor</h2>
+          <ChevronDown className={`w-4 h-4 text-[#B8860B] transition-transform ${isHabitsOpen ? 'rotate-180' : ''}`} />
         </button>
         {isHabitsOpen && (
-        <div className="p-4 sm:p-5 pt-2 border-t border-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Meal Prep Section */}
             <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4">
               <div className="flex items-center gap-3 mb-3">
