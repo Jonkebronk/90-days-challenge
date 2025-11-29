@@ -1105,19 +1105,22 @@ export default function DashboardPage() {
         </button>
         {isHabitsOpen && (
         <div className="p-4 sm:p-5 pt-2 border-t border-gray-100">
-          {/* Meal Prep Section */}
-          <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-md">
-                <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Meal Prep Section */}
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Meal Prep</h3>
+                  <p className="text-sm text-gray-700">Förbered mat för veckan</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-bold text-gray-900 text-sm sm:text-base">Meal Prep</h3>
-                <p className="text-xs text-gray-600">Förbered mat för veckan</p>
-                <p className="text-xs text-gray-600">
-                  Läs mer om <Link href="/dashboard/articles/cmhv5hzfo0002mj0qzja6ns04" className="text-amber-600 hover:text-amber-800 underline">meal prep</Link> i kunskapsbanken
-                </p>
-              </div>
+
+              <p className="text-xs text-gray-600">
+                Läs mer om <Link href="/dashboard/articles/cmhv5hzfo0002mj0qzja6ns04" className="text-amber-500 hover:text-amber-700 underline">meal prep</Link> i kunskapsbanken
+              </p>
             </div>
           </div>
         </div>
