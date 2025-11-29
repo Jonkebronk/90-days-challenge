@@ -22,30 +22,46 @@ type ArticleCategory = {
   }
 }
 
+type ArticleSection = {
+  id: string
+  name: string
+  orderIndex: number
+}
+
 export default function ArticlesPage() {
   const { data: session } = useSession()
   const router = useRouter()
   const [categories, setCategories] = useState<ArticleCategory[]>([])
+  const [sections, setSections] = useState<ArticleSection[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     if (session?.user) {
-      fetchCategories()
+      fetchData()
     }
   }, [session])
 
-  const fetchCategories = async () => {
+  const fetchData = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/article-categories?audience=client')
-      if (response.ok) {
-        const data = await response.json()
+      const [categoriesRes, sectionsRes] = await Promise.all([
+        fetch('/api/article-categories?audience=client'),
+        fetch('/api/article-sections?audience=client')
+      ])
+
+      if (categoriesRes.ok) {
+        const data = await categoriesRes.json()
         setCategories(data.categories)
       } else {
         toast.error('Kunde inte hämta kategorier')
       }
+
+      if (sectionsRes.ok) {
+        const data = await sectionsRes.json()
+        setSections(data.sections)
+      }
     } catch (error) {
-      console.error('Error fetching categories:', error)
+      console.error('Error fetching data:', error)
       toast.error('Ett fel uppstod')
     } finally {
       setIsLoading(false)
@@ -100,7 +116,7 @@ export default function ArticlesPage() {
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Group categories by section */}
           {(() => {
-            // Get unique sections in order (based on first category's orderIndex in each section)
+            // Get unique sections from categories
             const sectionsMap = new Map<string, ArticleCategory[]>()
 
             categories.forEach(cat => {
@@ -111,11 +127,15 @@ export default function ArticlesPage() {
               sectionsMap.get(sectionName)!.push(cat)
             })
 
-            // Sort sections by the lowest orderIndex of their categories
+            // Sort sections by their orderIndex from the sections table
+            // Fallback to alphabetical if section not found in table
             const sortedSections = Array.from(sectionsMap.entries()).sort((a, b) => {
-              const aMinOrder = Math.min(...a[1].map(c => c.orderIndex))
-              const bMinOrder = Math.min(...b[1].map(c => c.orderIndex))
-              return aMinOrder - bMinOrder
+              const aSection = sections.find(s => s.name === a[0])
+              const bSection = sections.find(s => s.name === b[0])
+              const aOrder = aSection?.orderIndex ?? 999
+              const bOrder = bSection?.orderIndex ?? 999
+              if (aOrder !== bOrder) return aOrder - bOrder
+              return a[0].localeCompare(b[0])
             })
 
             return sortedSections.map(([sectionName, sectionCategories]) => (

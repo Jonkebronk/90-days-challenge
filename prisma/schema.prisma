@@ -972,6 +972,19 @@ model CaloriePlan {
 }
 
 // Article Bank and 90-Day Roadmap Models
+model ArticleSection {
+  id         String @id @default(cuid())
+  name       String
+  orderIndex Int    @default(0)
+  audience   String @default("client") // "client" | "coach"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, audience])
+  @@map("article_sections")
+}
+
 model ArticleCategory {
   id          String  @id @default(cuid())
   name        String

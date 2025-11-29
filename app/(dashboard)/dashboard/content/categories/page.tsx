@@ -23,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Plus, Pencil, Trash2, FolderOpen, ArrowUp, ArrowDown, Check, ChevronsUpDown } from 'lucide-react'
+import { Plus, Pencil, Trash2, FolderOpen, ArrowUp, ArrowDown, Check, ChevronsUpDown, Layers, ChevronDown } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -65,9 +65,18 @@ type ArticleCategory = {
   }
 }
 
+type ArticleSection = {
+  id: string
+  name: string
+  orderIndex: number
+  audience: 'client' | 'coach'
+}
+
 export default function CategoriesPage() {
   const { data: session } = useSession()
   const [categories, setCategories] = useState<ArticleCategory[]>([])
+  const [sections, setSections] = useState<ArticleSection[]>([])
+  const [isSectionsOpen, setIsSectionsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -95,24 +104,119 @@ export default function CategoriesPage() {
   const fetchCategories = async () => {
     try {
       setIsLoading(true)
-      // Fetch both client and coach categories
-      const [clientRes, coachRes] = await Promise.all([
+      // Fetch both client and coach categories and sections
+      const [clientCatRes, coachCatRes, clientSecRes, coachSecRes] = await Promise.all([
         fetch('/api/article-categories?audience=client'),
-        fetch('/api/article-categories?audience=coach')
+        fetch('/api/article-categories?audience=coach'),
+        fetch('/api/article-sections?audience=client'),
+        fetch('/api/article-sections?audience=coach')
       ])
 
-      if (clientRes.ok && coachRes.ok) {
-        const clientData = await clientRes.json()
-        const coachData = await coachRes.json()
+      if (clientCatRes.ok && coachCatRes.ok) {
+        const clientData = await clientCatRes.json()
+        const coachData = await coachCatRes.json()
         setCategories([...clientData.categories, ...coachData.categories])
       } else {
         toast.error('Kunde inte hämta kategorier')
+      }
+
+      if (clientSecRes.ok && coachSecRes.ok) {
+        const clientSecData = await clientSecRes.json()
+        const coachSecData = await coachSecRes.json()
+        setSections([...clientSecData.sections, ...coachSecData.sections])
       }
     } catch (error) {
       console.error('Error fetching categories:', error)
       toast.error('Ett fel uppstod')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  // Sync sections from categories (auto-create missing sections)
+  const syncSections = async () => {
+    const uniqueSectionNames = new Set<string>()
+    categories.forEach(cat => {
+      if (cat.section) {
+        uniqueSectionNames.add(`${cat.section}|${cat.audience}`)
+      }
+    })
+
+    for (const sectionKey of uniqueSectionNames) {
+      const [name, audience] = sectionKey.split('|')
+      const existingSection = sections.find(s => s.name === name && s.audience === audience)
+      if (!existingSection) {
+        try {
+          await fetch('/api/article-sections', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, audience })
+          })
+        } catch (error) {
+          console.error('Error syncing section:', error)
+        }
+      }
+    }
+    // Refresh sections
+    const [clientSecRes, coachSecRes] = await Promise.all([
+      fetch('/api/article-sections?audience=client'),
+      fetch('/api/article-sections?audience=coach')
+    ])
+    if (clientSecRes.ok && coachSecRes.ok) {
+      const clientSecData = await clientSecRes.json()
+      const coachSecData = await coachSecRes.json()
+      setSections([...clientSecData.sections, ...coachSecData.sections])
+    }
+  }
+
+  // Call syncSections when categories change
+  useEffect(() => {
+    if (categories.length > 0) {
+      syncSections()
+    }
+  }, [categories.length])
+
+  const handleMoveSection = async (section: ArticleSection, direction: 'up' | 'down') => {
+    const sameCategoryToSections = sections.filter(s => s.audience === section.audience)
+    const currentIndex = sameCategoryToSections.findIndex(s => s.id === section.id)
+
+    if (
+      (direction === 'up' && currentIndex === 0) ||
+      (direction === 'down' && currentIndex === sameCategoryToSections.length - 1)
+    ) {
+      return
+    }
+
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    const otherSection = sameCategoryToSections[newIndex]
+
+    try {
+      // Swap orderIndex values
+      await fetch('/api/article-sections', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sections: [
+            { id: section.id, orderIndex: otherSection.orderIndex },
+            { id: otherSection.id, orderIndex: section.orderIndex }
+          ]
+        })
+      })
+
+      // Refresh sections
+      const [clientSecRes, coachSecRes] = await Promise.all([
+        fetch('/api/article-sections?audience=client'),
+        fetch('/api/article-sections?audience=coach')
+      ])
+      if (clientSecRes.ok && coachSecRes.ok) {
+        const clientSecData = await clientSecRes.json()
+        const coachSecData = await coachSecRes.json()
+        setSections([...clientSecData.sections, ...coachSecData.sections])
+      }
+      toast.success('Sektion flyttad')
+    } catch (error) {
+      console.error('Error moving section:', error)
+      toast.error('Ett fel uppstod')
     }
   }
 
@@ -324,6 +428,106 @@ export default function CategoriesPage() {
             <Plus className="h-4 w-4 mr-2" />
             Ny kategori
           </Button>
+        </div>
+
+        {/* Sections Management */}
+        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px]">
+          <button
+            onClick={() => setIsSectionsOpen(!isSectionsOpen)}
+            className="w-full p-4 flex items-center justify-between hover:bg-white/5 transition-colors rounded-xl"
+          >
+            <div className="flex items-center gap-3">
+              <Layers className="h-5 w-5 text-[rgba(255,215,0,0.8)]" />
+              <h2 className="text-lg font-bold text-gray-100">Sektioner</h2>
+              <span className="text-sm text-gray-400">({sections.length})</span>
+            </div>
+            <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform ${isSectionsOpen ? 'rotate-180' : ''}`} />
+          </button>
+          {isSectionsOpen && (
+            <div className="p-4 pt-0 border-t border-gold-primary/10">
+              <p className="text-sm text-gray-400 mb-4">
+                Ändra ordningen på sektionerna med pilarna. Ordningen visas i Kunskapsbanken.
+              </p>
+
+              {/* Client Sections */}
+              {sections.filter(s => s.audience === 'client').length > 0 && (
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold text-gold-light mb-2">Kunskapsbanken (Klient)</h3>
+                  <div className="space-y-1">
+                    {sections
+                      .filter(s => s.audience === 'client')
+                      .sort((a, b) => a.orderIndex - b.orderIndex)
+                      .map((section, index, arr) => (
+                        <div
+                          key={section.id}
+                          className="flex items-center justify-between py-2 px-3 bg-white/5 rounded-lg"
+                        >
+                          <span className="text-gray-200">{section.name}</span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => handleMoveSection(section, 'up')}
+                              disabled={index === 0}
+                              className="p-1.5 hover:bg-gold-50 rounded transition-colors text-[rgba(255,215,0,0.8)] hover:text-gold-light disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              <ArrowUp className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleMoveSection(section, 'down')}
+                              disabled={index === arr.length - 1}
+                              className="p-1.5 hover:bg-gold-50 rounded transition-colors text-[rgba(255,215,0,0.8)] hover:text-gold-light disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              <ArrowDown className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Coach Sections */}
+              {sections.filter(s => s.audience === 'coach').length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-purple-400 mb-2">Coach Kunskapsbanken</h3>
+                  <div className="space-y-1">
+                    {sections
+                      .filter(s => s.audience === 'coach')
+                      .sort((a, b) => a.orderIndex - b.orderIndex)
+                      .map((section, index, arr) => (
+                        <div
+                          key={section.id}
+                          className="flex items-center justify-between py-2 px-3 bg-white/5 rounded-lg"
+                        >
+                          <span className="text-gray-200">{section.name}</span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => handleMoveSection(section, 'up')}
+                              disabled={index === 0}
+                              className="p-1.5 hover:bg-purple-500/20 rounded transition-colors text-purple-400 hover:text-purple-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              <ArrowUp className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleMoveSection(section, 'down')}
+                              disabled={index === arr.length - 1}
+                              className="p-1.5 hover:bg-purple-500/20 rounded transition-colors text-purple-400 hover:text-purple-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              <ArrowDown className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {sections.length === 0 && (
+                <p className="text-gray-500 text-sm text-center py-4">
+                  Inga sektioner ännu. Sektioner skapas automatiskt när du lägger till en sektion på en kategori.
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl backdrop-blur-[10px]">
