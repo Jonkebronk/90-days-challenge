@@ -226,16 +226,18 @@ export default function CategoriesPage() {
   }
 
   const handleMoveCategory = async (category: ArticleCategory, direction: 'up' | 'down') => {
-    const currentIndex = categories.findIndex(c => c.id === category.id)
+    // Use filtered categories for correct ordering within the same audience
+    const sameAudienceCategories = categories.filter(c => c.audience === category.audience)
+    const currentIndex = sameAudienceCategories.findIndex(c => c.id === category.id)
     if (
       (direction === 'up' && currentIndex === 0) ||
-      (direction === 'down' && currentIndex === categories.length - 1)
+      (direction === 'down' && currentIndex === sameAudienceCategories.length - 1)
     ) {
       return
     }
 
     const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
-    const otherCategory = categories[newIndex]
+    const otherCategory = sameAudienceCategories[newIndex]
 
     try {
       // Swap orderIndex values
@@ -420,7 +422,7 @@ export default function CategoriesPage() {
                   <div className="col-span-2 flex items-center justify-end gap-2">
                     <button
                       onClick={() => handleMoveCategory(category, 'up')}
-                      disabled={index === 0}
+                      disabled={filteredCategories.filter(c => c.audience === category.audience).findIndex(c => c.id === category.id) === 0}
                       className="p-2 hover:bg-gold-50 rounded transition-colors text-[rgba(255,215,0,0.8)] hover:text-gold-light disabled:opacity-30 disabled:cursor-not-allowed"
                       title="Flytta upp"
                     >
@@ -428,7 +430,10 @@ export default function CategoriesPage() {
                     </button>
                     <button
                       onClick={() => handleMoveCategory(category, 'down')}
-                      disabled={index === categories.length - 1}
+                      disabled={(() => {
+                        const sameAudience = filteredCategories.filter(c => c.audience === category.audience)
+                        return sameAudience.findIndex(c => c.id === category.id) === sameAudience.length - 1
+                      })()}
                       className="p-2 hover:bg-gold-50 rounded transition-colors text-[rgba(255,215,0,0.8)] hover:text-gold-light disabled:opacity-30 disabled:cursor-not-allowed"
                       title="Flytta ner"
                     >
