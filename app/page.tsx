@@ -268,11 +268,11 @@ export default function HomePage() {
               <ul className="space-y-2 text-gray-300">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
-                  Strukturerat upplägg
+                  3 träningspass/vecka
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
-                  Steg-för-steg vägledning
+                  Strukturerat upplägg
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
