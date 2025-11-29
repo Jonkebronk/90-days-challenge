@@ -832,7 +832,7 @@ export default function ClientsPage() {
                     className="border border-gray-200 rounded-lg hover:bg-amber-50/50 hover:border-[rgba(255,215,0,0.4)] transition-all"
                   >
                     <div className="flex items-center justify-between p-4">
-                      <Link href={`/dashboard/clients/${client.id}`} className="flex items-center gap-4 flex-1">
+                      <Link href={`/dashboard/journal?client=${client.id}`} className="flex items-center gap-4 flex-1">
                         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
                           <span className="font-bold text-[#0a0a0a] text-lg">
                             {client.name?.[0]?.toUpperCase() || client.email[0].toUpperCase()}
