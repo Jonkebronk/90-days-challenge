@@ -329,12 +329,12 @@ export default function SkillTreePage() {
                 })}
               </div>
 
-              {/* Desktop: Branch 4 (Mätmetoder) - centered */}
+              {/* Desktop: Branch 4 (Mindset) - centered */}
               {branches.length > 3 && (
                 <>
                   {/* Connecting line down */}
                   <div className="hidden lg:flex flex-col items-center py-2">
-                    <div className="w-0.5 h-6 bg-gradient-to-b from-[#FFD700]/30 to-blue-500/50" />
+                    <div className="w-0.5 h-6 bg-gradient-to-b from-[#FFD700]/30 to-purple-500/50" />
                   </div>
 
                   {/* Branch 4 centered */}
@@ -404,20 +404,20 @@ export default function SkillTreePage() {
                 </>
               )}
 
-              {/* Desktop: Branches 5-7 (Fas 1, 2, 3) in a row */}
+              {/* Desktop: Branches 5-7 (Mätmetoder, Fas 1, Fas 2) in a row */}
               {branches.length > 4 && (
                 <>
                   {/* Branching lines */}
                   <div className="relative hidden lg:flex justify-center py-2">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-blue-500/50 to-[#FFD700]/30" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-purple-500/50 to-[#FFD700]/30" />
                     <div className="absolute top-4 left-[33%] right-[33%] h-0.5 bg-[#FFD700]/30" />
-                    <div className="absolute top-4 left-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
+                    <div className="absolute top-4 left-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-blue-500/50" />
                     <div className="absolute top-4 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
                     <div className="absolute top-4 right-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
                     <div className="h-8" />
                   </div>
 
-                  {/* Fas 1, 2, 3 in a row */}
+                  {/* Mätmetoder, Fas 1, Fas 2 in a row */}
                   <div className="hidden lg:grid lg:grid-cols-3 gap-4">
                     {branches.slice(4, 7).map((branch) => {
                       const Icon = getIconComponent(branch.icon)
@@ -481,12 +481,12 @@ export default function SkillTreePage() {
                 </>
               )}
 
-              {/* Desktop: Branch 8 (När du är i mål) - centered at bottom */}
+              {/* Desktop: Branch 8 (Fas 3) - centered */}
               {branches.length > 7 && (
                 <>
                   {/* Connecting line down */}
                   <div className="hidden lg:flex flex-col items-center py-2">
-                    <div className="w-0.5 h-6 bg-gradient-to-b from-green-500/50 to-[#FFD700]/50" />
+                    <div className="w-0.5 h-6 bg-gradient-to-b from-green-500/50 to-red-500/50" />
                   </div>
 
                   {/* Branch 8 centered */}
@@ -494,6 +494,81 @@ export default function SkillTreePage() {
                     <div className="max-w-[200px] w-full">
                       {(() => {
                         const branch = branches[7]
+                        const Icon = getIconComponent(branch.icon)
+                        const progress = getBranchProgress(branch)
+                        const articles = branch.articles || []
+                        const isExpanded = expandedBranches.includes(branch.id)
+
+                        return (
+                          <div className="space-y-3">
+                            <button
+                              onClick={() => toggleBranch(branch.id)}
+                              className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
+                            >
+                              <div className="flex flex-col items-center text-center">
+                                <div
+                                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+                                  style={{ backgroundColor: branch.color }}
+                                >
+                                  <Icon className="w-6 h-6 text-white" />
+                                </div>
+                                <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">
+                                  {branch.name}
+                                </h3>
+                                <p className="text-gray-400 text-xs">
+                                  {progress.total} artiklar
+                                </p>
+                              </div>
+                            </button>
+
+                            {isExpanded && articles.length > 0 && (
+                              <div className="space-y-2 pl-2">
+                                {articles.map((article) => (
+                                  <Link
+                                    key={article.id}
+                                    href={`/dashboard/articles/${article.id}`}
+                                    className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
+                                  >
+                                    {isArticleCompleted(article) ? (
+                                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                                    ) : (
+                                      <Circle className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                      <p className={`text-sm truncate ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
+                                        {article.title}
+                                      </p>
+                                      {article.estimatedReadingMinutes && (
+                                        <p className="text-xs text-gray-500">
+                                          {article.estimatedReadingMinutes} min läsning
+                                        </p>
+                                      )}
+                                    </div>
+                                  </Link>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })()}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Desktop: Branch 9 (När du är i mål) - centered at bottom */}
+              {branches.length > 8 && (
+                <>
+                  {/* Connecting line down */}
+                  <div className="hidden lg:flex flex-col items-center py-2">
+                    <div className="w-0.5 h-6 bg-gradient-to-b from-red-500/50 to-[#FFD700]/50" />
+                  </div>
+
+                  {/* Branch 9 centered */}
+                  <div className="hidden lg:flex justify-center">
+                    <div className="max-w-[200px] w-full">
+                      {(() => {
+                        const branch = branches[8]
                         const Icon = getIconComponent(branch.icon)
                         const progress = getBranchProgress(branch)
                         const articles = branch.articles || []
