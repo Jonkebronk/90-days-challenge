@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import {
   Heart,
   Leaf,
@@ -24,45 +23,6 @@ import {
 import Link from 'next/link'
 import { toast } from 'sonner'
 
-type Article = {
-  id: string
-  title: string
-  slug: string
-  categoryId: string
-  estimatedReadingMinutes?: number
-  progress?: {
-    completed: boolean
-  }
-}
-
-type ArticleCategory = {
-  id: string
-  name: string
-  slug: string
-  color?: string
-  section?: string | null
-  articles: Article[]
-}
-
-type ApiBranch = {
-  id: string
-  name: string
-  icon: string
-  color: string
-  categorySlugs: string[]
-  orderIndex: number
-}
-
-type BranchConfig = {
-  id: string
-  name: string
-  icon: LucideIcon
-  color: string
-  bgColor: string
-  borderColor: string
-  categories: string[]
-}
-
 // Map icon names to components
 const iconMap: Record<string, LucideIcon> = {
   Heart,
@@ -76,51 +36,25 @@ const iconMap: Record<string, LucideIcon> = {
   Star
 }
 
-// Default branches if API returns empty
-const defaultBranches: BranchConfig[] = [
-  {
-    id: 'livsstil',
-    name: 'Livsstil',
-    icon: Heart,
-    color: '#A855F7',
-    bgColor: 'bg-purple-500/20',
-    borderColor: 'border-purple-500/50',
-    categories: ['kropp-sinne', 'livsstil', 'framgangsrik-livsstilsforandring']
-  },
-  {
-    id: 'kost',
-    name: 'Kost',
-    icon: Leaf,
-    color: '#22C55E',
-    bgColor: 'bg-green-500/20',
-    borderColor: 'border-green-500/50',
-    categories: ['kost', 'din-guide-till-ratt-naring']
-  },
-  {
-    id: 'traning',
-    name: 'Träning',
-    icon: Dumbbell,
-    color: '#F97316',
-    bgColor: 'bg-orange-500/20',
-    borderColor: 'border-orange-500/50',
-    categories: ['traning', 'ovningar']
-  }
-]
-
-// Helper to convert hex color to Tailwind-like classes
-const getColorClasses = (hexColor: string): { bgColor: string; borderColor: string } => {
-  // Generate opacity-based classes from hex color
-  return {
-    bgColor: '', // We'll use inline styles instead
-    borderColor: ''
-  }
+type BranchWithArticles = {
+  id: string
+  name: string
+  icon: string
+  color: string
+  articles: {
+    id: string
+    title: string
+    slug: string
+    orderInBranch: number
+    estimatedReadingMinutes?: number
+    progress?: { completed: boolean }[]
+  }[]
 }
 
 export default function SkillTreePage() {
   const { data: session } = useSession()
   const router = useRouter()
-  const [categories, setCategories] = useState<ArticleCategory[]>([])
-  const [branches, setBranches] = useState<BranchConfig[]>(defaultBranches)
+  const [branches, setBranches] = useState<BranchWithArticles[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [expandedBranches, setExpandedBranches] = useState<string[]>([])
   const [rootExpanded, setRootExpanded] = useState(false)
@@ -135,57 +69,14 @@ export default function SkillTreePage() {
     try {
       setIsLoading(true)
 
-      // Fetch both articles and branches in parallel
-      const [articlesRes, branchesRes] = await Promise.all([
-        fetch('/api/articles?audience=client&includeProgress=true'),
-        fetch('/api/skill-tree-branches')
-      ])
+      // Fetch branches with articles and progress
+      const response = await fetch(`/api/skill-tree-branches?includeArticles=true&userId=${session?.user?.id}`)
 
-      if (articlesRes.ok) {
-        const data = await articlesRes.json()
-        // Group articles by category
-        const categoriesMap = new Map<string, ArticleCategory>()
-
-        data.articles.forEach((article: any) => {
-          if (article.category) {
-            const catId = article.category.id
-            if (!categoriesMap.has(catId)) {
-              categoriesMap.set(catId, {
-                ...article.category,
-                articles: []
-              })
-            }
-            categoriesMap.get(catId)!.articles.push({
-              id: article.id,
-              title: article.title,
-              slug: article.slug,
-              categoryId: article.categoryId,
-              estimatedReadingMinutes: article.estimatedReadingMinutes,
-              progress: article.progress
-            })
-          }
-        })
-
-        setCategories(Array.from(categoriesMap.values()))
+      if (response.ok) {
+        const data = await response.json()
+        setBranches(data.branches || [])
       } else {
-        toast.error('Kunde inte hämta artiklar')
-      }
-
-      // Process branches from API
-      if (branchesRes.ok) {
-        const branchData = await branchesRes.json()
-        if (branchData.branches && branchData.branches.length > 0) {
-          const apiBranches: BranchConfig[] = branchData.branches.map((b: ApiBranch) => ({
-            id: b.id,
-            name: b.name,
-            icon: iconMap[b.icon] || BookOpen,
-            color: b.color,
-            bgColor: '', // Using inline styles
-            borderColor: '',
-            categories: b.categorySlugs
-          }))
-          setBranches(apiBranches)
-        }
+        toast.error('Kunde inte hämta data')
       }
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -203,16 +94,9 @@ export default function SkillTreePage() {
     )
   }
 
-  const getBranchArticles = (branch: BranchConfig) => {
-    const branchCategories = categories.filter(cat =>
-      branch.categories.includes(cat.slug)
-    )
-    return branchCategories.flatMap(cat => cat.articles)
-  }
-
-  const getBranchProgress = (branch: BranchConfig) => {
-    const articles = getBranchArticles(branch)
-    const completed = articles.filter(a => a.progress?.completed).length
+  const getBranchProgress = (branch: BranchWithArticles) => {
+    const articles = branch.articles || []
+    const completed = articles.filter(a => a.progress && a.progress.length > 0 && a.progress[0].completed).length
     return { completed, total: articles.length }
   }
 
@@ -225,6 +109,14 @@ export default function SkillTreePage() {
       total += progress.total
     })
     return { completed, total }
+  }
+
+  const getIconComponent = (iconName: string) => {
+    return iconMap[iconName] || BookOpen
+  }
+
+  const isArticleCompleted = (article: BranchWithArticles['articles'][0]) => {
+    return article.progress && article.progress.length > 0 && article.progress[0].completed
   }
 
   if (!session?.user) {
@@ -310,9 +202,9 @@ export default function SkillTreePage() {
               {/* Desktop: Show branches in a row */}
               <div className="hidden lg:grid lg:grid-cols-3 gap-4">
                 {branches.map((branch) => {
-                  const Icon = branch.icon
+                  const Icon = getIconComponent(branch.icon)
                   const progress = getBranchProgress(branch)
-                  const articles = getBranchArticles(branch)
+                  const articles = branch.articles || []
                   const isExpanded = expandedBranches.includes(branch.id)
 
                   return (
@@ -364,19 +256,19 @@ export default function SkillTreePage() {
                       {/* Articles list */}
                       {isExpanded && articles.length > 0 && (
                         <div className="space-y-2 pl-2">
-                          {articles.map((article, idx) => (
+                          {articles.map((article) => (
                             <Link
                               key={article.id}
                               href={`/dashboard/articles/${article.id}`}
                               className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
                             >
-                              {article.progress?.completed ? (
+                              {isArticleCompleted(article) ? (
                                 <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                               ) : (
                                 <Circle className="w-5 h-5 text-gray-500 flex-shrink-0" />
                               )}
                               <div className="flex-1 min-w-0">
-                                <p className={`text-sm truncate ${article.progress?.completed ? 'text-gray-400' : 'text-white'}`}>
+                                <p className={`text-sm truncate ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
                                   {article.title}
                                 </p>
                                 {article.estimatedReadingMinutes && (
@@ -397,9 +289,9 @@ export default function SkillTreePage() {
               {/* Mobile/Tablet: Accordion style */}
               <div className="lg:hidden space-y-3">
                 {branches.map((branch) => {
-                  const Icon = branch.icon
+                  const Icon = getIconComponent(branch.icon)
                   const progress = getBranchProgress(branch)
-                  const articles = getBranchArticles(branch)
+                  const articles = branch.articles || []
                   const isExpanded = expandedBranches.includes(branch.id)
 
                   return (
@@ -465,13 +357,13 @@ export default function SkillTreePage() {
                               href={`/dashboard/articles/${article.id}`}
                               className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 active:bg-white/10 transition-all"
                             >
-                              {article.progress?.completed ? (
+                              {isArticleCompleted(article) ? (
                                 <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
                               ) : (
                                 <Circle className="w-6 h-6 text-gray-500 flex-shrink-0" />
                               )}
                               <div className="flex-1 min-w-0">
-                                <p className={`font-medium ${article.progress?.completed ? 'text-gray-400' : 'text-white'}`}>
+                                <p className={`font-medium ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
                                   {article.title}
                                 </p>
                                 {article.estimatedReadingMinutes && (
@@ -487,7 +379,7 @@ export default function SkillTreePage() {
 
                       {isExpanded && articles.length === 0 && (
                         <div className="ml-4 border-l-2 pl-4 py-4" style={{ borderColor: `${branch.color}40` }}>
-                          <p className="text-gray-500 text-sm">Inga artiklar i denna kategori ännu</p>
+                          <p className="text-gray-500 text-sm">Inga artiklar i denna gren ännu</p>
                         </div>
                       )}
                     </div>

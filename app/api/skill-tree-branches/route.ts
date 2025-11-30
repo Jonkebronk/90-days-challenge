@@ -3,11 +3,32 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-// GET - Fetch all branches
-export async function GET() {
+// GET - Fetch all branches with optional articles
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url)
+    const includeArticles = searchParams.get('includeArticles') === 'true'
+    const userId = searchParams.get('userId')
+
     const branches = await prisma.skillTreeBranch.findMany({
-      orderBy: { orderIndex: 'asc' }
+      orderBy: { orderIndex: 'asc' },
+      include: includeArticles ? {
+        articles: {
+          where: { published: true },
+          orderBy: { orderInBranch: 'asc' },
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            orderInBranch: true,
+            estimatedReadingMinutes: true,
+            progress: userId ? {
+              where: { userId },
+              select: { completed: true }
+            } : false
+          }
+        }
+      } : undefined
     })
 
     return NextResponse.json({ branches })

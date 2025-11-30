@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-// GET - Fetch single branch
+// GET - Fetch single branch with articles
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -12,7 +12,20 @@ export async function GET(
     const { id } = await params
 
     const branch = await prisma.skillTreeBranch.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        articles: {
+          orderBy: { orderInBranch: 'asc' },
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+            orderInBranch: true,
+            published: true,
+            estimatedReadingMinutes: true
+          }
+        }
+      }
     })
 
     if (!branch) {

@@ -977,11 +977,13 @@ model SkillTreeBranch {
   name           String   // e.g., "Livsstil", "Kost", "Träning"
   icon           String   @default("BookOpen") // Lucide icon name
   color          String   @default("#FFD700") // Hex color
-  categorySlugs  String[] // Array of category slugs that belong to this branch
+  categorySlugs  String[] // Array of category slugs that belong to this branch (legacy)
   orderIndex     Int      @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  articles  Article[] // Articles directly assigned to this branch
 
   @@map("skill_tree_branches")
 }
@@ -1035,6 +1037,10 @@ model Article {
   gallery                 String[] // Array of image URLs for gallery
   orderIndex              Int      @default(0) // For sorting articles within category
 
+  // Skill Tree Branch assignment
+  skillTreeBranchId       String? // Which branch this article belongs to
+  orderInBranch           Int      @default(0) // Order within the branch
+
   // Publishing
   published   Boolean   @default(false)
   publishedAt DateTime?
@@ -1047,11 +1053,13 @@ model Article {
   updatedAt DateTime @updatedAt
 
   category           ArticleCategory     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  skillTreeBranch    SkillTreeBranch?    @relation(fields: [skillTreeBranchId], references: [id], onDelete: SetNull)
   roadmapAssignments RoadmapAssignment[]
   progress           ArticleProgress[]
   feedback           ArticleFeedback[] // User feedback
   pathArticles       PathArticle[] // Learning path associations
 
+  @@index([skillTreeBranchId, orderInBranch])
   @@map("articles")
 }
 

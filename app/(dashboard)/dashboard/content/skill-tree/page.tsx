@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -38,9 +38,22 @@ import {
   Zap,
   Target,
   Flame,
-  Star
+  Star,
+  ChevronDown,
+  ChevronRight,
+  GripVertical,
+  FileText
 } from 'lucide-react'
 import { toast } from 'sonner'
+
+type BranchArticle = {
+  id: string
+  title: string
+  slug: string
+  orderInBranch: number
+  published: boolean
+  estimatedReadingMinutes?: number
+}
 
 type Branch = {
   id: string
@@ -49,13 +62,15 @@ type Branch = {
   color: string
   categorySlugs: string[]
   orderIndex: number
+  articles?: BranchArticle[]
 }
 
-type Category = {
+type Article = {
   id: string
-  name: string
+  title: string
   slug: string
-  color?: string
+  published: boolean
+  skillTreeBranchId?: string | null
 }
 
 const iconOptions = [
@@ -85,15 +100,17 @@ export default function SkillTreeAdminPage() {
   const { data: session } = useSession()
   const router = useRouter()
   const [branches, setBranches] = useState<Branch[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
+  const [allArticles, setAllArticles] = useState<Article[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [expandedBranch, setExpandedBranch] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [addArticleDialogOpen, setAddArticleDialogOpen] = useState(false)
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null)
+  const [selectedBranchForArticle, setSelectedBranchForArticle] = useState<Branch | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     icon: 'Heart',
-    color: '#A855F7',
-    categorySlugs: [] as string[]
+    color: '#A855F7'
   })
 
   const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
@@ -107,9 +124,9 @@ export default function SkillTreeAdminPage() {
   const fetchData = async () => {
     try {
       setIsLoading(true)
-      const [branchesRes, categoriesRes] = await Promise.all([
+      const [branchesRes, articlesRes] = await Promise.all([
         fetch('/api/skill-tree-branches'),
-        fetch('/api/article-categories?audience=client')
+        fetch('/api/articles?audience=client')
       ])
 
       if (branchesRes.ok) {
@@ -117,9 +134,15 @@ export default function SkillTreeAdminPage() {
         setBranches(data.branches)
       }
 
-      if (categoriesRes.ok) {
-        const data = await categoriesRes.json()
-        setCategories(data.categories)
+      if (articlesRes.ok) {
+        const data = await articlesRes.json()
+        setAllArticles(data.articles.map((a: any) => ({
+          id: a.id,
+          title: a.title,
+          slug: a.slug,
+          published: a.published,
+          skillTreeBranchId: a.skillTreeBranchId
+        })))
       }
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -129,24 +152,50 @@ export default function SkillTreeAdminPage() {
     }
   }
 
+  const fetchBranchArticles = async (branchId: string) => {
+    try {
+      const response = await fetch(`/api/skill-tree-branches/${branchId}`)
+      if (response.ok) {
+        const data = await response.json()
+        setBranches(prev => prev.map(b =>
+          b.id === branchId ? { ...b, articles: data.branch.articles } : b
+        ))
+      }
+    } catch (error) {
+      console.error('Error fetching branch articles:', error)
+    }
+  }
+
+  const toggleBranch = async (branchId: string) => {
+    if (expandedBranch === branchId) {
+      setExpandedBranch(null)
+    } else {
+      setExpandedBranch(branchId)
+      // Fetch articles for this branch if not already loaded
+      const branch = branches.find(b => b.id === branchId)
+      if (!branch?.articles) {
+        await fetchBranchArticles(branchId)
+      }
+    }
+  }
+
   const openCreateDialog = () => {
     setEditingBranch(null)
     setFormData({
       name: '',
       icon: 'Heart',
-      color: '#A855F7',
-      categorySlugs: []
+      color: '#A855F7'
     })
     setDialogOpen(true)
   }
 
-  const openEditDialog = (branch: Branch) => {
+  const openEditDialog = (branch: Branch, e: React.MouseEvent) => {
+    e.stopPropagation()
     setEditingBranch(branch)
     setFormData({
       name: branch.name,
       icon: branch.icon,
-      color: branch.color,
-      categorySlugs: branch.categorySlugs
+      color: branch.color
     })
     setDialogOpen(true)
   }
@@ -159,7 +208,6 @@ export default function SkillTreeAdminPage() {
 
     try {
       if (editingBranch) {
-        // Update
         const response = await fetch(`/api/skill-tree-branches/${editingBranch.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -173,7 +221,6 @@ export default function SkillTreeAdminPage() {
           toast.error('Kunde inte uppdatera gren')
         }
       } else {
-        // Create
         const response = await fetch('/api/skill-tree-branches', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -195,7 +242,8 @@ export default function SkillTreeAdminPage() {
     }
   }
 
-  const handleDelete = async (branch: Branch) => {
+  const handleDelete = async (branch: Branch, e: React.MouseEvent) => {
+    e.stopPropagation()
     if (!confirm(`Vill du verkligen ta bort "${branch.name}"?`)) {
       return
     }
@@ -217,7 +265,8 @@ export default function SkillTreeAdminPage() {
     }
   }
 
-  const handleReorder = async (index: number, direction: 'up' | 'down') => {
+  const handleBranchReorder = async (index: number, direction: 'up' | 'down', e: React.MouseEvent) => {
+    e.stopPropagation()
     const newIndex = direction === 'up' ? index - 1 : index + 1
     if (newIndex < 0 || newIndex >= branches.length) return
 
@@ -238,23 +287,99 @@ export default function SkillTreeAdminPage() {
       })
     } catch (error) {
       console.error('Error reordering:', error)
-      fetchData() // Revert on error
+      fetchData()
     }
   }
 
-  const toggleCategory = (slug: string) => {
-    setFormData(prev => ({
-      ...prev,
-      categorySlugs: prev.categorySlugs.includes(slug)
-        ? prev.categorySlugs.filter(s => s !== slug)
-        : [...prev.categorySlugs, slug]
-    }))
+  const openAddArticleDialog = (branch: Branch) => {
+    setSelectedBranchForArticle(branch)
+    setAddArticleDialogOpen(true)
+  }
+
+  const handleAddArticle = async (articleId: string) => {
+    if (!selectedBranchForArticle) return
+
+    try {
+      const response = await fetch(`/api/skill-tree-branches/${selectedBranchForArticle.id}/articles`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ articleId })
+      })
+
+      if (response.ok) {
+        toast.success('Artikel tillagd!')
+        await fetchBranchArticles(selectedBranchForArticle.id)
+        // Update allArticles to reflect the change
+        setAllArticles(prev => prev.map(a =>
+          a.id === articleId ? { ...a, skillTreeBranchId: selectedBranchForArticle.id } : a
+        ))
+      } else {
+        toast.error('Kunde inte lägga till artikel')
+      }
+    } catch (error) {
+      console.error('Error adding article:', error)
+      toast.error('Ett fel uppstod')
+    }
+  }
+
+  const handleRemoveArticle = async (branchId: string, articleId: string) => {
+    try {
+      const response = await fetch(`/api/skill-tree-branches/${branchId}/articles`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ articleId })
+      })
+
+      if (response.ok) {
+        toast.success('Artikel borttagen från gren')
+        await fetchBranchArticles(branchId)
+        setAllArticles(prev => prev.map(a =>
+          a.id === articleId ? { ...a, skillTreeBranchId: null } : a
+        ))
+      } else {
+        toast.error('Kunde inte ta bort artikel')
+      }
+    } catch (error) {
+      console.error('Error removing article:', error)
+      toast.error('Ett fel uppstod')
+    }
+  }
+
+  const handleArticleReorder = async (branchId: string, articles: BranchArticle[], index: number, direction: 'up' | 'down') => {
+    const newIndex = direction === 'up' ? index - 1 : index + 1
+    if (newIndex < 0 || newIndex >= articles.length) return
+
+    const newArticles = [...articles]
+    const temp = newArticles[index]
+    newArticles[index] = newArticles[newIndex]
+    newArticles[newIndex] = temp
+
+    // Update local state immediately
+    setBranches(prev => prev.map(b =>
+      b.id === branchId ? { ...b, articles: newArticles } : b
+    ))
+
+    try {
+      await fetch(`/api/skill-tree-branches/${branchId}/articles`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          articleIds: newArticles.map(a => a.id)
+        })
+      })
+    } catch (error) {
+      console.error('Error reordering articles:', error)
+      fetchBranchArticles(branchId)
+    }
   }
 
   const getIconComponent = (iconName: string) => {
     const option = iconOptions.find(o => o.name === iconName)
     return option?.icon || Heart
   }
+
+  // Get available articles (not assigned to any branch)
+  const availableArticles = allArticles.filter(a => !a.skillTreeBranchId)
 
   if (!session?.user || !isCoach) {
     return (
@@ -273,7 +398,7 @@ export default function SkillTreeAdminPage() {
           Kunskapskartan Admin
         </h1>
         <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
-          Hantera grenar och kategorikopplingar
+          Hantera grenar och artiklar
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
@@ -308,11 +433,27 @@ export default function SkillTreeAdminPage() {
         <div className="space-y-3">
           {branches.map((branch, index) => {
             const Icon = getIconComponent(branch.icon)
+            const isExpanded = expandedBranch === branch.id
+            const articles = branch.articles || []
+
             return (
-              <Card key={branch.id} className="bg-white/5 border-white/10 hover:border-white/20 transition-all">
-                <CardContent className="p-4">
+              <Card key={branch.id} className="bg-white/5 border-white/10 overflow-hidden">
+                {/* Branch Header */}
+                <div
+                  className="p-4 cursor-pointer hover:bg-white/5 transition-all"
+                  onClick={() => toggleBranch(branch.id)}
+                >
                   <div className="flex items-center gap-4">
-                    {/* Icon */}
+                    {/* Expand Icon */}
+                    <div className="text-gray-400">
+                      {isExpanded ? (
+                        <ChevronDown className="w-5 h-5" />
+                      ) : (
+                        <ChevronRight className="w-5 h-5" />
+                      )}
+                    </div>
+
+                    {/* Branch Icon */}
                     <div
                       className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: branch.color }}
@@ -323,24 +464,9 @@ export default function SkillTreeAdminPage() {
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-white">{branch.name}</h3>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {branch.categorySlugs.length > 0 ? (
-                          branch.categorySlugs.map(slug => {
-                            const cat = categories.find(c => c.slug === slug)
-                            return (
-                              <Badge
-                                key={slug}
-                                variant="outline"
-                                className="text-xs border-gray-600 text-gray-400"
-                              >
-                                {cat?.name || slug}
-                              </Badge>
-                            )
-                          })
-                        ) : (
-                          <span className="text-xs text-gray-500">Inga kategorier kopplade</span>
-                        )}
-                      </div>
+                      <p className="text-xs text-gray-500">
+                        {articles.length} artikel{articles.length !== 1 ? 'ar' : ''}
+                      </p>
                     </div>
 
                     {/* Actions */}
@@ -348,7 +474,7 @@ export default function SkillTreeAdminPage() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleReorder(index, 'up')}
+                        onClick={(e) => handleBranchReorder(index, 'up', e)}
                         disabled={index === 0}
                         className="text-gray-400 hover:text-white"
                       >
@@ -357,7 +483,7 @@ export default function SkillTreeAdminPage() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleReorder(index, 'down')}
+                        onClick={(e) => handleBranchReorder(index, 'down', e)}
                         disabled={index === branches.length - 1}
                         className="text-gray-400 hover:text-white"
                       >
@@ -366,7 +492,7 @@ export default function SkillTreeAdminPage() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => openEditDialog(branch)}
+                        onClick={(e) => openEditDialog(branch, e)}
                         className="text-gray-400 hover:text-gold-light"
                       >
                         <Pencil className="w-4 h-4" />
@@ -374,21 +500,95 @@ export default function SkillTreeAdminPage() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDelete(branch)}
+                        onClick={(e) => handleDelete(branch, e)}
                         className="text-gray-400 hover:text-red-500"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
-                </CardContent>
+                </div>
+
+                {/* Articles List (Expanded) */}
+                {isExpanded && (
+                  <div className="border-t border-white/10 bg-black/20 p-4">
+                    {/* Add Article Button */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openAddArticleDialog(branch)}
+                      className="mb-4 border-gold-primary/50 text-gold-light hover:bg-gold-primary/10"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Lägg till artikel
+                    </Button>
+
+                    {articles.length === 0 ? (
+                      <p className="text-gray-500 text-sm text-center py-4">
+                        Inga artiklar tillagda ännu
+                      </p>
+                    ) : (
+                      <div className="space-y-2">
+                        {articles.map((article, artIndex) => (
+                          <div
+                            key={article.id}
+                            className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10"
+                          >
+                            <FileText className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm text-white truncate">{article.title}</p>
+                              {article.estimatedReadingMinutes && (
+                                <p className="text-xs text-gray-500">
+                                  {article.estimatedReadingMinutes} min läsning
+                                </p>
+                              )}
+                            </div>
+                            {!article.published && (
+                              <Badge variant="outline" className="text-xs border-yellow-500/50 text-yellow-500">
+                                Utkast
+                              </Badge>
+                            )}
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleArticleReorder(branch.id, articles, artIndex, 'up')}
+                                disabled={artIndex === 0}
+                                className="h-8 w-8 text-gray-400 hover:text-white"
+                              >
+                                <ArrowUp className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleArticleReorder(branch.id, articles, artIndex, 'down')}
+                                disabled={artIndex === articles.length - 1}
+                                className="h-8 w-8 text-gray-400 hover:text-white"
+                              >
+                                <ArrowDown className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleRemoveArticle(branch.id, article.id)}
+                                className="h-8 w-8 text-gray-400 hover:text-red-500"
+                              >
+                                <X className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </Card>
             )
           })}
         </div>
       )}
 
-      {/* Create/Edit Dialog */}
+      {/* Create/Edit Branch Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="bg-gray-900 border-gold-primary/30 max-w-lg">
           <DialogHeader>
@@ -452,35 +652,6 @@ export default function SkillTreeAdminPage() {
                 ))}
               </div>
             </div>
-
-            {/* Categories */}
-            <div className="space-y-2">
-              <Label className="text-gray-200">Kategorier</Label>
-              <p className="text-xs text-gray-500 mb-2">
-                Välj vilka kategorier som ska visas under denna gren
-              </p>
-              <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto p-2 bg-black/20 rounded-lg">
-                {categories.map(cat => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => toggleCategory(cat.slug)}
-                    className={`px-3 py-1.5 rounded-full text-sm transition-all ${
-                      formData.categorySlugs.includes(cat.slug)
-                        ? 'bg-gold-primary text-black font-medium'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    {cat.name}
-                  </button>
-                ))}
-              </div>
-              {formData.categorySlugs.length > 0 && (
-                <p className="text-xs text-gray-400">
-                  {formData.categorySlugs.length} kategori(er) valda
-                </p>
-              )}
-            </div>
           </div>
 
           <DialogFooter>
@@ -496,6 +667,59 @@ export default function SkillTreeAdminPage() {
               className="bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] font-semibold"
             >
               {editingBranch ? 'Spara' : 'Skapa'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Article Dialog */}
+      <Dialog open={addArticleDialogOpen} onOpenChange={setAddArticleDialogOpen}>
+        <DialogContent className="bg-gray-900 border-gold-primary/30 max-w-lg max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="text-gold-light">
+              Lägg till artikel till {selectedBranchForArticle?.name}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="py-4">
+            {availableArticles.length === 0 ? (
+              <p className="text-gray-400 text-center py-8">
+                Alla artiklar är redan tilldelade till grenar
+              </p>
+            ) : (
+              <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+                {availableArticles.map(article => (
+                  <button
+                    key={article.id}
+                    onClick={() => {
+                      handleAddArticle(article.id)
+                      setAddArticleDialogOpen(false)
+                    }}
+                    className="w-full flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 hover:border-gold-primary/30 transition-all text-left"
+                  >
+                    <FileText className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-white truncate">{article.title}</p>
+                    </div>
+                    {!article.published && (
+                      <Badge variant="outline" className="text-xs border-yellow-500/50 text-yellow-500">
+                        Utkast
+                      </Badge>
+                    )}
+                    <Plus className="w-4 h-4 text-gold-light" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setAddArticleDialogOpen(false)}
+              className="border-gray-600 text-gray-300"
+            >
+              Stäng
             </Button>
           </DialogFooter>
         </DialogContent>
