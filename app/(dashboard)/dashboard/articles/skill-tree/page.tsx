@@ -243,9 +243,32 @@ export default function SkillTreePage() {
             </div>
           )}
 
+          {/* Branching Lines */}
+          {rootExpanded && (
+            <div className="relative hidden lg:flex justify-center py-4">
+              {/* Vertical line down */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/50 to-[#FFD700]/30" />
+              {/* Horizontal line */}
+              <div className="absolute top-8 left-1/4 right-1/4 h-0.5 bg-[#FFD700]/30" />
+              {/* Three vertical lines down to branches */}
+              <div className="absolute top-8 left-1/4 w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/30 to-purple-500/50" />
+              <div className="absolute top-8 left-1/2 -translate-x-1/2 w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
+              <div className="absolute top-8 right-1/4 w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/30 to-orange-500/50" />
+              {/* Spacer for the lines */}
+              <div className="h-16" />
+            </div>
+          )}
+
+          {/* Mobile: Simple line */}
+          {rootExpanded && (
+            <div className="lg:hidden flex justify-center py-2">
+              <div className="w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/50 to-transparent" />
+            </div>
+          )}
+
           {/* Branches */}
           {rootExpanded && (
-            <div className="space-y-3 pt-4 lg:pt-8">
+            <div className="space-y-3">
               {/* Desktop: Show branches in a row */}
               <div className="hidden lg:grid lg:grid-cols-3 gap-4">
                 {branches.map((branch) => {
