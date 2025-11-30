@@ -200,6 +200,49 @@ export default function SkillTreePage() {
             )}
           </div>
 
+          {/* Introduction Text */}
+          {rootExpanded && (
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4 text-gray-300 text-sm leading-relaxed">
+              <h3 className="text-gold-light font-semibold text-base">Varför träning ensamt inte räcker</h3>
+              <p>
+                Det räcker inte att bara hoppa på den senaste trenddieten eller träningsprogrammet. Vi vet alla hur viktigt det är att variera sin träning, men om du bara fokuserar på det kämpar du en förlorande kamp.
+              </p>
+              <p>
+                Om du söker långsiktig framgång är det avgörande att din approach inkluderar en förståelse för tre grundläggande principer:
+              </p>
+              <ul className="list-disc list-inside space-y-1 text-gold-light/90">
+                <li>Livsstilsfaktorer</li>
+                <li>Kostfaktorer</li>
+                <li>Träningsfaktorer</li>
+              </ul>
+              <p>
+                Tillsammans kommer dessa faktorer att hjälpa dig nå dina hälso- och träningsmål, men de klarar det inte ensamma.
+              </p>
+              <h4 className="text-white font-medium pt-2">Varför?</h4>
+              <p>
+                Har du någonsin hört uttrycket "du kan inte bygga ett hus utan att först röja träden"? Samma koncept gäller för din kropp.
+              </p>
+              <p>
+                Om vi inte tar hand om vår livsstil och kost kommer all den hårda träningen inte att hjälpa oss nå våra mål. Varför? Därför att om vår kost inte stödjer målet vi strävar efter att nå kommer vi inte att lyckas nå det.
+              </p>
+              <p>
+                Praktiskt innebär detta att om ditt mål är fettförlust och du tränar hårt på gymmet men inte äter i ett kaloriskt underskott (mer om detta kommer), kommer du inte att förlora fett.
+              </p>
+              <p>
+                På samma sätt, om ditt mål är att bygga muskler men du inte får i dig tillräckligt med protein eller kalorier, kommer du inte att bygga muskler.
+              </p>
+              <p>
+                Återigen, om du tränar hårt på gymmet men dina livsstilsfaktorer som stress och sömnhygien inte hanteras, kommer du att göra det svårare för dig själv i en fettförlustfas eller en muskelbyggnadsfas.
+              </p>
+              <p>
+                Våra undermåliga livsstilsval kan leda till ständiga bakslag och viktuppgång.
+              </p>
+              <p>
+                Det är ofta kopplat till en bristande förståelse för kost och höga stressnivåer från omvärlden. Det är därför detta program fokuserar starkt på de tre faktorerna: livsstil, kost och träning.
+              </p>
+            </div>
+          )}
+
           {/* Branches */}
           {rootExpanded && (
             <div className="space-y-3 pt-4 lg:pt-8">
