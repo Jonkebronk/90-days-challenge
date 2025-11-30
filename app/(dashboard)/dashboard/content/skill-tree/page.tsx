@@ -439,6 +439,7 @@ export default function SkillTreeAdminPage() {
             const Icon = getIconComponent(branch.icon)
             const isExpanded = expandedBranch === branch.id
             const articles = branch.articles || []
+            const articleCount = allArticles.filter(a => a.skillTreeBranchId === branch.id).length
 
             return (
               <Card key={branch.id} className="bg-white/5 border-white/10 overflow-hidden">
@@ -469,7 +470,7 @@ export default function SkillTreeAdminPage() {
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-white">{branch.name}</h3>
                       <p className="text-xs text-gray-500">
-                        {articles.length} artikel{articles.length !== 1 ? 'ar' : ''}
+                        {articleCount} artikel{articleCount !== 1 ? 'ar' : ''}
                       </p>
                     </div>
 
