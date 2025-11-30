@@ -19,7 +19,7 @@ export async function POST(
       where: { id: session.user.id }
     })
 
-    if (user?.role !== 'COACH') {
+    if (user?.role?.toUpperCase() !== 'COACH') {
       return NextResponse.json({ error: 'Only coaches can modify branches' }, { status: 403 })
     }
 
@@ -72,7 +72,7 @@ export async function DELETE(
       where: { id: session.user.id }
     })
 
-    if (user?.role !== 'COACH') {
+    if (user?.role?.toUpperCase() !== 'COACH') {
       return NextResponse.json({ error: 'Only coaches can modify branches' }, { status: 403 })
     }
 
@@ -118,7 +118,7 @@ export async function PATCH(
       where: { id: session.user.id }
     })
 
-    if (user?.role !== 'COACH') {
+    if (user?.role?.toUpperCase() !== 'COACH') {
       return NextResponse.json({ error: 'Only coaches can modify branches' }, { status: 403 })
     }
 

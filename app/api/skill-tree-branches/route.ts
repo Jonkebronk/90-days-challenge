@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       where: { id: session.user.id }
     })
 
-    if (user?.role !== 'COACH') {
+    if (user?.role?.toUpperCase() !== 'COACH') {
       return NextResponse.json({ error: 'Only coaches can create branches' }, { status: 403 })
     }
 
@@ -103,7 +103,7 @@ export async function PATCH(request: NextRequest) {
       where: { id: session.user.id }
     })
 
-    if (user?.role !== 'COACH') {
+    if (user?.role?.toUpperCase() !== 'COACH') {
       return NextResponse.json({ error: 'Only coaches can reorder branches' }, { status: 403 })
     }
 

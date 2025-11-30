@@ -58,7 +58,7 @@ export async function PATCH(
       where: { id: session.user.id }
     })
 
-    if (user?.role !== 'COACH') {
+    if (user?.role?.toUpperCase() !== 'COACH') {
       return NextResponse.json({ error: 'Only coaches can update branches' }, { status: 403 })
     }
 
@@ -102,7 +102,7 @@ export async function DELETE(
       where: { id: session.user.id }
     })
 
-    if (user?.role !== 'COACH') {
+    if (user?.role?.toUpperCase() !== 'COACH') {
       return NextResponse.json({ error: 'Only coaches can delete branches' }, { status: 403 })
     }
 
