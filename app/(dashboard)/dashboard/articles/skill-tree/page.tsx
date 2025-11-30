@@ -439,7 +439,7 @@ export default function SkillTreePage() {
           {/* Prompt to expand if not expanded */}
           {!rootExpanded && (
             <p className="text-center text-gray-500 text-sm animate-pulse">
-              Klicka ovan för att utforska de tre pelarna
+              Klicka ovan för att utforska de tre faktorerna
             </p>
           )}
         </div>
