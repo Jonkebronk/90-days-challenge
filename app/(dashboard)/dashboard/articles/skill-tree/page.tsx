@@ -12,7 +12,14 @@ import {
   CheckCircle2,
   Circle,
   Sparkles,
-  ArrowLeft
+  ArrowLeft,
+  BookOpen,
+  Brain,
+  Zap,
+  Target,
+  Flame,
+  Star,
+  LucideIcon
 } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
@@ -37,17 +44,40 @@ type ArticleCategory = {
   articles: Article[]
 }
 
+type ApiBranch = {
+  id: string
+  name: string
+  icon: string
+  color: string
+  categorySlugs: string[]
+  orderIndex: number
+}
+
 type BranchConfig = {
   id: string
   name: string
-  icon: React.ElementType
+  icon: LucideIcon
   color: string
   bgColor: string
   borderColor: string
-  categories: string[] // category slugs that belong to this branch
+  categories: string[]
 }
 
-const branches: BranchConfig[] = [
+// Map icon names to components
+const iconMap: Record<string, LucideIcon> = {
+  Heart,
+  Leaf,
+  Dumbbell,
+  BookOpen,
+  Brain,
+  Zap,
+  Target,
+  Flame,
+  Star
+}
+
+// Default branches if API returns empty
+const defaultBranches: BranchConfig[] = [
   {
     id: 'livsstil',
     name: 'Livsstil',
@@ -77,10 +107,20 @@ const branches: BranchConfig[] = [
   }
 ]
 
+// Helper to convert hex color to Tailwind-like classes
+const getColorClasses = (hexColor: string): { bgColor: string; borderColor: string } => {
+  // Generate opacity-based classes from hex color
+  return {
+    bgColor: '', // We'll use inline styles instead
+    borderColor: ''
+  }
+}
+
 export default function SkillTreePage() {
   const { data: session } = useSession()
   const router = useRouter()
   const [categories, setCategories] = useState<ArticleCategory[]>([])
+  const [branches, setBranches] = useState<BranchConfig[]>(defaultBranches)
   const [isLoading, setIsLoading] = useState(true)
   const [expandedBranches, setExpandedBranches] = useState<string[]>([])
   const [rootExpanded, setRootExpanded] = useState(false)
@@ -94,10 +134,15 @@ export default function SkillTreePage() {
   const fetchData = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/articles?audience=client&includeProgress=true')
 
-      if (response.ok) {
-        const data = await response.json()
+      // Fetch both articles and branches in parallel
+      const [articlesRes, branchesRes] = await Promise.all([
+        fetch('/api/articles?audience=client&includeProgress=true'),
+        fetch('/api/skill-tree-branches')
+      ])
+
+      if (articlesRes.ok) {
+        const data = await articlesRes.json()
         // Group articles by category
         const categoriesMap = new Map<string, ArticleCategory>()
 
@@ -124,6 +169,23 @@ export default function SkillTreePage() {
         setCategories(Array.from(categoriesMap.values()))
       } else {
         toast.error('Kunde inte hämta artiklar')
+      }
+
+      // Process branches from API
+      if (branchesRes.ok) {
+        const branchData = await branchesRes.json()
+        if (branchData.branches && branchData.branches.length > 0) {
+          const apiBranches: BranchConfig[] = branchData.branches.map((b: ApiBranch) => ({
+            id: b.id,
+            name: b.name,
+            icon: iconMap[b.icon] || BookOpen,
+            color: b.color,
+            bgColor: '', // Using inline styles
+            borderColor: '',
+            categories: b.categorySlugs
+          }))
+          setBranches(apiBranches)
+        }
       }
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -258,7 +320,11 @@ export default function SkillTreePage() {
                       {/* Branch node */}
                       <button
                         onClick={() => toggleBranch(branch.id)}
-                        className={`w-full ${branch.bgColor} border-2 ${branch.borderColor} rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group`}
+                        className="w-full border-2 rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group"
+                        style={{
+                          backgroundColor: `${branch.color}20`,
+                          borderColor: `${branch.color}50`
+                        }}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
@@ -341,7 +407,11 @@ export default function SkillTreePage() {
                       {/* Branch node */}
                       <button
                         onClick={() => toggleBranch(branch.id)}
-                        className={`w-full ${branch.bgColor} border-2 ${branch.borderColor} rounded-xl p-4 backdrop-blur-sm active:scale-[0.98] transition-all`}
+                        className="w-full border-2 rounded-xl p-4 backdrop-blur-sm active:scale-[0.98] transition-all"
+                        style={{
+                          backgroundColor: `${branch.color}20`,
+                          borderColor: `${branch.color}50`
+                        }}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">

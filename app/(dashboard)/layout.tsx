@@ -71,6 +71,7 @@ const navigation = [
       { name: 'Träningsprogram', href: '/dashboard/content/workout-programs', icon: Zap },
       { name: 'Uppvärmningar', href: '/dashboard/content/warmups', icon: Flame },
       { name: 'Träningskategorier', href: '/dashboard/content/workout-categories', icon: FolderOpen },
+      { name: 'Kunskapskartan', href: '/dashboard/content/skill-tree', icon: Map },
     ]
   },
   { name: 'Kunskapsbanken', href: '/dashboard/articles', icon: Library },

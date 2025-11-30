@@ -971,6 +971,21 @@ model CaloriePlan {
   @@map("calorie_plans")
 }
 
+// Skill Tree Configuration
+model SkillTreeBranch {
+  id             String   @id @default(cuid())
+  name           String   // e.g., "Livsstil", "Kost", "Träning"
+  icon           String   @default("BookOpen") // Lucide icon name
+  color          String   @default("#FFD700") // Hex color
+  categorySlugs  String[] // Array of category slugs that belong to this branch
+  orderIndex     Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("skill_tree_branches")
+}
+
 // Article Bank and 90-Day Roadmap Models
 model ArticleSection {
   id         String @id @default(cuid())
