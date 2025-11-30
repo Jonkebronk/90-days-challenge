@@ -195,12 +195,10 @@ export default function SkillTreePage() {
             </button>
 
             {/* Connection line */}
-            {rootExpanded && (
-              <div className="hidden lg:block absolute left-1/2 -translate-x-1/2 w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/50 to-transparent" />
-            )}
+            <div className="hidden lg:block absolute left-1/2 -translate-x-1/2 w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/50 to-transparent" />
           </div>
 
-          {/* Introduction Text */}
+          {/* Introduction Text - Collapsible */}
           {rootExpanded && (
             <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4 text-gray-300 text-sm leading-relaxed">
               <h3 className="text-gold-light font-semibold text-base">Varför träning ensamt inte räcker</h3>
@@ -244,31 +242,26 @@ export default function SkillTreePage() {
           )}
 
           {/* Branching Lines */}
-          {rootExpanded && (
-            <div className="relative hidden lg:flex justify-center">
-              {/* Vertical line down */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/50 to-[#FFD700]/30" />
-              {/* Horizontal line */}
-              <div className="absolute top-4 left-[33%] right-[33%] h-0.5 bg-[#FFD700]/30" />
-              {/* Three vertical lines down to branches */}
-              <div className="absolute top-4 left-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-purple-500/50" />
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
-              <div className="absolute top-4 right-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-orange-500/50" />
-              {/* Spacer for the lines */}
-              <div className="h-8" />
-            </div>
-          )}
+          <div className="relative hidden lg:flex justify-center">
+            {/* Vertical line down */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/50 to-[#FFD700]/30" />
+            {/* Horizontal line */}
+            <div className="absolute top-4 left-[33%] right-[33%] h-0.5 bg-[#FFD700]/30" />
+            {/* Three vertical lines down to branches */}
+            <div className="absolute top-4 left-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-purple-500/50" />
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
+            <div className="absolute top-4 right-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-orange-500/50" />
+            {/* Spacer for the lines */}
+            <div className="h-8" />
+          </div>
 
           {/* Mobile: Simple line */}
-          {rootExpanded && (
-            <div className="lg:hidden flex justify-center">
-              <div className="w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/50 to-transparent" />
-            </div>
-          )}
+          <div className="lg:hidden flex justify-center">
+            <div className="w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/50 to-transparent" />
+          </div>
 
-          {/* Branches */}
-          {rootExpanded && (
-            <div className="space-y-3 -mt-1">
+          {/* Branches - Always visible */}
+          <div className="space-y-3 -mt-1">
               {/* Desktop: Show first 3 branches in a row */}
               <div className="hidden lg:grid lg:grid-cols-3 gap-4">
                 {branches.slice(0, 3).map((branch) => {
@@ -551,15 +544,7 @@ export default function SkillTreePage() {
                   )
                 })}
               </div>
-            </div>
-          )}
-
-          {/* Prompt to expand if not expanded */}
-          {!rootExpanded && (
-            <p className="text-center text-gray-500 text-sm animate-pulse">
-              Klicka ovan för att utforska de tre faktorerna
-            </p>
-          )}
+          </div>
         </div>
       )}
     </div>
