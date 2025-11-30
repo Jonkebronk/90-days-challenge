@@ -20,6 +20,7 @@ import {
   Flame,
   Star,
   Trophy,
+  X,
   LucideIcon
 } from 'lucide-react'
 import Link from 'next/link'
@@ -274,47 +275,24 @@ export default function SkillTreePage() {
 
                   return (
                     <div key={branch.id} className="space-y-3">
-                      {/* Branch node */}
+                      {/* Branch node - Compact vertical card */}
                       <button
                         onClick={() => toggleBranch(branch.id)}
-                        className="w-full border-2 rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group"
-                        style={{
-                          backgroundColor: `${branch.color}20`,
-                          borderColor: `${branch.color}50`
-                        }}
+                        className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div
-                              className="w-10 h-10 rounded-lg flex items-center justify-center"
-                              style={{ backgroundColor: branch.color }}
-                            >
-                              <Icon className="w-5 h-5 text-white" />
-                            </div>
-                            <div className="text-left">
-                              <h3 className="font-bold text-white text-sm uppercase tracking-wide">
-                                {branch.name}
-                              </h3>
-                              <p className="text-gray-400 text-xs">
-                                {progress.completed} av {progress.total} lästa
-                              </p>
-                            </div>
-                          </div>
-                          {isExpanded ? (
-                            <ChevronDown className="w-5 h-5 text-gray-400" />
-                          ) : (
-                            <ChevronRight className="w-5 h-5 text-gray-400" />
-                          )}
-                        </div>
-                        {/* Progress bar */}
-                        <div className="mt-3 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                        <div className="flex flex-col items-center text-center">
                           <div
-                            className="h-full rounded-full transition-all duration-500"
-                            style={{
-                              width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`,
-                              backgroundColor: branch.color
-                            }}
-                          />
+                            className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+                            style={{ backgroundColor: branch.color }}
+                          >
+                            <Icon className="w-6 h-6 text-white" />
+                          </div>
+                          <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">
+                            {branch.name}
+                          </h3>
+                          <p className="text-gray-400 text-xs">
+                            {progress.total} artiklar
+                          </p>
                         </div>
                       </button>
 
@@ -361,7 +339,7 @@ export default function SkillTreePage() {
 
                   {/* Branch 4 centered */}
                   <div className="hidden lg:flex justify-center">
-                    <div className="max-w-md w-full">
+                    <div className="max-w-[200px] w-full">
                       {(() => {
                         const branch = branches[3]
                         const Icon = getIconComponent(branch.icon)
@@ -373,43 +351,21 @@ export default function SkillTreePage() {
                           <div className="space-y-3">
                             <button
                               onClick={() => toggleBranch(branch.id)}
-                              className="w-full border-2 rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group"
-                              style={{
-                                backgroundColor: `${branch.color}20`,
-                                borderColor: `${branch.color}50`
-                              }}
+                              className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
                             >
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <div
-                                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                                    style={{ backgroundColor: branch.color }}
-                                  >
-                                    <Icon className="w-5 h-5 text-white" />
-                                  </div>
-                                  <div className="text-left">
-                                    <h3 className="font-bold text-white text-sm uppercase tracking-wide">
-                                      {branch.name}
-                                    </h3>
-                                    <p className="text-gray-400 text-xs">
-                                      {progress.completed} av {progress.total} lästa
-                                    </p>
-                                  </div>
-                                </div>
-                                {isExpanded ? (
-                                  <ChevronDown className="w-5 h-5 text-gray-400" />
-                                ) : (
-                                  <ChevronRight className="w-5 h-5 text-gray-400" />
-                                )}
-                              </div>
-                              <div className="mt-3 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                              <div className="flex flex-col items-center text-center">
                                 <div
-                                  className="h-full rounded-full transition-all duration-500"
-                                  style={{
-                                    width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`,
-                                    backgroundColor: branch.color
-                                  }}
-                                />
+                                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+                                  style={{ backgroundColor: branch.color }}
+                                >
+                                  <Icon className="w-6 h-6 text-white" />
+                                </div>
+                                <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">
+                                  {branch.name}
+                                </h3>
+                                <p className="text-gray-400 text-xs">
+                                  {progress.total} artiklar
+                                </p>
                               </div>
                             </button>
 
@@ -473,43 +429,21 @@ export default function SkillTreePage() {
                         <div key={branch.id} className="space-y-3">
                           <button
                             onClick={() => toggleBranch(branch.id)}
-                            className="w-full border-2 rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group"
-                            style={{
-                              backgroundColor: `${branch.color}20`,
-                              borderColor: `${branch.color}50`
-                            }}
+                            className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
                           >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <div
-                                  className="w-10 h-10 rounded-lg flex items-center justify-center"
-                                  style={{ backgroundColor: branch.color }}
-                                >
-                                  <Icon className="w-5 h-5 text-white" />
-                                </div>
-                                <div className="text-left">
-                                  <h3 className="font-bold text-white text-sm uppercase tracking-wide">
-                                    {branch.name}
-                                  </h3>
-                                  <p className="text-gray-400 text-xs">
-                                    {progress.completed} av {progress.total} lästa
-                                  </p>
-                                </div>
-                              </div>
-                              {isExpanded ? (
-                                <ChevronDown className="w-5 h-5 text-gray-400" />
-                              ) : (
-                                <ChevronRight className="w-5 h-5 text-gray-400" />
-                              )}
-                            </div>
-                            <div className="mt-3 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                            <div className="flex flex-col items-center text-center">
                               <div
-                                className="h-full rounded-full transition-all duration-500"
-                                style={{
-                                  width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`,
-                                  backgroundColor: branch.color
-                                }}
-                              />
+                                className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+                                style={{ backgroundColor: branch.color }}
+                              >
+                                <Icon className="w-6 h-6 text-white" />
+                              </div>
+                              <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">
+                                {branch.name}
+                              </h3>
+                              <p className="text-gray-400 text-xs">
+                                {progress.total} artiklar
+                              </p>
                             </div>
                           </button>
 
@@ -557,7 +491,7 @@ export default function SkillTreePage() {
 
                   {/* Branch 8 centered */}
                   <div className="hidden lg:flex justify-center">
-                    <div className="max-w-md w-full">
+                    <div className="max-w-[200px] w-full">
                       {(() => {
                         const branch = branches[7]
                         const Icon = getIconComponent(branch.icon)
@@ -569,43 +503,21 @@ export default function SkillTreePage() {
                           <div className="space-y-3">
                             <button
                               onClick={() => toggleBranch(branch.id)}
-                              className="w-full border-2 rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group"
-                              style={{
-                                backgroundColor: `${branch.color}20`,
-                                borderColor: `${branch.color}50`
-                              }}
+                              className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
                             >
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <div
-                                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                                    style={{ backgroundColor: branch.color }}
-                                  >
-                                    <Icon className="w-5 h-5 text-white" />
-                                  </div>
-                                  <div className="text-left">
-                                    <h3 className="font-bold text-white text-sm uppercase tracking-wide">
-                                      {branch.name}
-                                    </h3>
-                                    <p className="text-gray-400 text-xs">
-                                      {progress.completed} av {progress.total} lästa
-                                    </p>
-                                  </div>
-                                </div>
-                                {isExpanded ? (
-                                  <ChevronDown className="w-5 h-5 text-gray-400" />
-                                ) : (
-                                  <ChevronRight className="w-5 h-5 text-gray-400" />
-                                )}
-                              </div>
-                              <div className="mt-3 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                              <div className="flex flex-col items-center text-center">
                                 <div
-                                  className="h-full rounded-full transition-all duration-500"
-                                  style={{
-                                    width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`,
-                                    backgroundColor: branch.color
-                                  }}
-                                />
+                                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+                                  style={{ backgroundColor: branch.color }}
+                                >
+                                  <Icon className="w-6 h-6 text-white" />
+                                </div>
+                                <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">
+                                  {branch.name}
+                                </h3>
+                                <p className="text-gray-400 text-xs">
+                                  {progress.total} artiklar
+                                </p>
                               </div>
                             </button>
 
@@ -644,88 +556,73 @@ export default function SkillTreePage() {
                 </>
               )}
 
-              {/* Mobile/Tablet: Accordion style */}
-              <div className="lg:hidden space-y-3">
+              {/* Mobile/Tablet: Grid style like Kunskapsbanken */}
+              <div className="lg:hidden grid grid-cols-2 gap-3">
                 {branches.map((branch) => {
                   const Icon = getIconComponent(branch.icon)
                   const progress = getBranchProgress(branch)
-                  const articles = branch.articles || []
-                  const isExpanded = expandedBranches.includes(branch.id)
 
                   return (
-                    <div key={branch.id} className="space-y-2">
-                      {/* Branch node */}
-                      <button
-                        onClick={() => toggleBranch(branch.id)}
-                        className="w-full border-2 rounded-xl p-4 backdrop-blur-sm active:scale-[0.98] transition-all"
-                        style={{
-                          backgroundColor: `${branch.color}20`,
-                          borderColor: `${branch.color}50`
-                        }}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div
-                              className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
-                              style={{ backgroundColor: branch.color }}
-                            >
-                              <Icon className="w-6 h-6 text-white" />
-                            </div>
-                            <div className="text-left">
-                              <h3 className="font-bold text-white uppercase tracking-wide">
-                                {branch.name}
-                              </h3>
-                              <p className="text-gray-400 text-sm">
-                                {progress.completed} av {progress.total} lästa
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span
-                              className="text-sm font-bold px-2 py-1 rounded"
-                              style={{ color: branch.color }}
-                            >
-                              {progress.total > 0 ? Math.round((progress.completed / progress.total) * 100) : 0}%
-                            </span>
-                            {isExpanded ? (
-                              <ChevronDown className="w-6 h-6 text-gray-400" />
-                            ) : (
-                              <ChevronRight className="w-6 h-6 text-gray-400" />
-                            )}
-                          </div>
+                    <button
+                      key={branch.id}
+                      onClick={() => toggleBranch(branch.id)}
+                      className="rounded-xl p-4 bg-[#1a1a2e] border border-white/10 active:scale-[0.98] transition-all"
+                    >
+                      <div className="flex flex-col items-center text-center">
+                        <div
+                          className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+                          style={{ backgroundColor: branch.color }}
+                        >
+                          <Icon className="w-6 h-6 text-white" />
                         </div>
-                        {/* Progress bar */}
-                        <div className="mt-3 h-2 bg-gray-700 rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all duration-500"
-                            style={{
-                              width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`,
-                              backgroundColor: branch.color
-                            }}
-                          />
-                        </div>
-                      </button>
+                        <h3 className="font-bold text-white text-xs uppercase tracking-wide mb-1">
+                          {branch.name}
+                        </h3>
+                        <p className="text-gray-400 text-xs">
+                          {progress.total} artiklar
+                        </p>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
 
-                      {/* Articles list - Mobile */}
-                      {isExpanded && articles.length > 0 && (
-                        <div className="space-y-2 ml-4 border-l-2 pl-4" style={{ borderColor: `${branch.color}40` }}>
+              {/* Mobile: Expanded articles modal/section */}
+              {expandedBranches.length > 0 && (
+                <div className="lg:hidden mt-4">
+                  {branches.filter(b => expandedBranches.includes(b.id)).map((branch) => {
+                    const articles = branch.articles || []
+                    if (articles.length === 0) return null
+
+                    return (
+                      <div key={branch.id} className="space-y-2 mb-4">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-sm font-bold text-white uppercase">{branch.name}</h4>
+                          <button
+                            onClick={() => toggleBranch(branch.id)}
+                            className="text-gray-400 p-1"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="space-y-2">
                           {articles.map((article) => (
                             <Link
                               key={article.id}
                               href={`/dashboard/articles/${article.id}`}
-                              className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 active:bg-white/10 transition-all"
+                              className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 active:bg-white/10 transition-all"
                             >
                               {isArticleCompleted(article) ? (
-                                <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
+                                <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                               ) : (
-                                <Circle className="w-6 h-6 text-gray-500 flex-shrink-0" />
+                                <Circle className="w-5 h-5 text-gray-500 flex-shrink-0" />
                               )}
                               <div className="flex-1 min-w-0">
-                                <p className={`font-medium ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
+                                <p className={`text-sm ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
                                   {article.title}
                                 </p>
                                 {article.estimatedReadingMinutes && (
-                                  <p className="text-sm text-gray-500 mt-0.5">
+                                  <p className="text-xs text-gray-500">
                                     {article.estimatedReadingMinutes} min läsning
                                   </p>
                                 )}
@@ -733,17 +630,11 @@ export default function SkillTreePage() {
                             </Link>
                           ))}
                         </div>
-                      )}
-
-                      {isExpanded && articles.length === 0 && (
-                        <div className="ml-4 border-l-2 pl-4 py-4" style={{ borderColor: `${branch.color}40` }}>
-                          <p className="text-gray-500 text-sm">Inga artiklar i denna gren ännu</p>
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
           </div>
         </div>
       )}
