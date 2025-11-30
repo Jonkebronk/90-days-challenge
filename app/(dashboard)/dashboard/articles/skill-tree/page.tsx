@@ -349,18 +349,119 @@ export default function SkillTreePage() {
                 })}
               </div>
 
-              {/* Desktop: Connecting line to additional branches */}
+              {/* Desktop: Branch 4 (Mätmetoder) - centered */}
               {branches.length > 3 && (
-                <div className="hidden lg:flex flex-col items-center py-2">
-                  <div className="w-0.5 h-6 bg-gradient-to-b from-[#FFD700]/30 to-blue-500/50" />
-                </div>
+                <>
+                  {/* Connecting line down */}
+                  <div className="hidden lg:flex flex-col items-center py-2">
+                    <div className="w-0.5 h-6 bg-gradient-to-b from-[#FFD700]/30 to-blue-500/50" />
+                  </div>
+
+                  {/* Branch 4 centered */}
+                  <div className="hidden lg:flex justify-center">
+                    <div className="max-w-md w-full">
+                      {(() => {
+                        const branch = branches[3]
+                        const Icon = getIconComponent(branch.icon)
+                        const progress = getBranchProgress(branch)
+                        const articles = branch.articles || []
+                        const isExpanded = expandedBranches.includes(branch.id)
+
+                        return (
+                          <div className="space-y-3">
+                            <button
+                              onClick={() => toggleBranch(branch.id)}
+                              className="w-full border-2 rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group"
+                              style={{
+                                backgroundColor: `${branch.color}20`,
+                                borderColor: `${branch.color}50`
+                              }}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div
+                                    className="w-10 h-10 rounded-lg flex items-center justify-center"
+                                    style={{ backgroundColor: branch.color }}
+                                  >
+                                    <Icon className="w-5 h-5 text-white" />
+                                  </div>
+                                  <div className="text-left">
+                                    <h3 className="font-bold text-white text-sm uppercase tracking-wide">
+                                      {branch.name}
+                                    </h3>
+                                    <p className="text-gray-400 text-xs">
+                                      {progress.completed} av {progress.total} lästa
+                                    </p>
+                                  </div>
+                                </div>
+                                {isExpanded ? (
+                                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                                ) : (
+                                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                                )}
+                              </div>
+                              <div className="mt-3 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full rounded-full transition-all duration-500"
+                                  style={{
+                                    width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`,
+                                    backgroundColor: branch.color
+                                  }}
+                                />
+                              </div>
+                            </button>
+
+                            {isExpanded && articles.length > 0 && (
+                              <div className="space-y-2 pl-2">
+                                {articles.map((article) => (
+                                  <Link
+                                    key={article.id}
+                                    href={`/dashboard/articles/${article.id}`}
+                                    className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
+                                  >
+                                    {isArticleCompleted(article) ? (
+                                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                                    ) : (
+                                      <Circle className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                      <p className={`text-sm truncate ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
+                                        {article.title}
+                                      </p>
+                                      {article.estimatedReadingMinutes && (
+                                        <p className="text-xs text-gray-500">
+                                          {article.estimatedReadingMinutes} min läsning
+                                        </p>
+                                      )}
+                                    </div>
+                                  </Link>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })()}
+                    </div>
+                  </div>
+                </>
               )}
 
-              {/* Desktop: Additional branches (centered) */}
-              {branches.length > 3 && (
-                <div className="hidden lg:flex justify-center">
-                  <div className="grid grid-cols-1 gap-4 max-w-md w-full">
-                    {branches.slice(3).map((branch) => {
+              {/* Desktop: Branches 5-7 (Fas 1, 2, 3) in a row */}
+              {branches.length > 4 && (
+                <>
+                  {/* Branching lines */}
+                  <div className="relative hidden lg:flex justify-center py-2">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-blue-500/50 to-[#FFD700]/30" />
+                    <div className="absolute top-4 left-[33%] right-[33%] h-0.5 bg-[#FFD700]/30" />
+                    <div className="absolute top-4 left-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
+                    <div className="absolute top-4 right-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
+                    <div className="h-8" />
+                  </div>
+
+                  {/* Fas 1, 2, 3 in a row */}
+                  <div className="hidden lg:grid lg:grid-cols-3 gap-4">
+                    {branches.slice(4, 7).map((branch) => {
                       const Icon = getIconComponent(branch.icon)
                       const progress = getBranchProgress(branch)
                       const articles = branch.articles || []
@@ -441,7 +542,7 @@ export default function SkillTreePage() {
                       )
                     })}
                   </div>
-                </div>
+                </>
               )}
 
               {/* Mobile/Tablet: Accordion style */}
