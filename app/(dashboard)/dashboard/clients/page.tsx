@@ -11,10 +11,9 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus, Mail, User, X, Trash2, Copy, CheckCircle2, Key, RefreshCw } from 'lucide-react'
+import { Plus, Mail, User, X, Trash2, Copy, CheckCircle2, Key, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import { Separator } from '@/components/ui/separator'
 
 interface Client {
   id: string
@@ -78,7 +77,7 @@ export default function ClientsPage() {
     phone: '',
     tags: [],
     checkInPeriod: 'Vecka',
-    checkInDay: 'Måndag',
+    checkInDay: 'Söndag',
     // Onboarding defaults
     primaryGoal: '',
     heightCm: '',
@@ -97,6 +96,18 @@ export default function ClientsPage() {
     trainingDetails: '',
     lifestyleNotes: '',
   })
+
+  const [expandedSections, setExpandedSections] = useState({
+    personal: true,
+    physical: false,
+    training: false,
+    nutrition: false,
+    lifestyle: false,
+  })
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
+  }
 
   const availableTags = ['Nutrition Only', 'VIP', 'Workout Only']
 
@@ -175,7 +186,7 @@ export default function ClientsPage() {
           phone: '',
           tags: [],
           checkInPeriod: 'Vecka',
-          checkInDay: 'Måndag',
+          checkInDay: 'Söndag',
           primaryGoal: '',
           heightCm: '',
           currentWeightKg: '',
@@ -192,6 +203,14 @@ export default function ClientsPage() {
           trainingExperience: '',
           trainingDetails: '',
           lifestyleNotes: '',
+        })
+        // Reset expanded sections
+        setExpandedSections({
+          personal: true,
+          physical: false,
+          training: false,
+          nutrition: false,
+          lifestyle: false,
         })
         fetchClients()
       } else {
@@ -318,395 +337,406 @@ export default function ClientsPage() {
                 Lägg till klient
               </Button>
             </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white border border-gray-200">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gray-900 border-2 border-gold-primary/30">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-gray-900">Lägg till ny klient</DialogTitle>
+              <DialogTitle className="font-['Orbitron',sans-serif] text-2xl font-black tracking-[2px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
+                Lägg till ny klient
+              </DialogTitle>
             </DialogHeader>
 
-            <div className="space-y-6 py-4">
-              {/* Klientinformation */}
+            <div className="space-y-4 py-4">
+              {/* Personuppgifter Section */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-amber-600">Klientinformation</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName" className="text-gray-700">Förnamn <span className="text-red-400">*</span></Label>
-                    <Input
-                      id="firstName"
-                      value={newClient.firstName}
-                      onChange={(e) => setNewClient({ ...newClient, firstName: e.target.value })}
-                      className="bg-white border-gray-300 text-gray-900"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName" className="text-gray-700">Efternamn <span className="text-red-400">*</span></Label>
-                    <Input
-                      id="lastName"
-                      value={newClient.lastName}
-                      onChange={(e) => setNewClient({ ...newClient, lastName: e.target.value })}
-                      className="bg-white border-gray-300 text-gray-900"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-700">E-post <span className="text-red-400">*</span></Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={newClient.email}
-                    onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
-                    className="bg-white border-gray-300 text-gray-900"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-gray-700">Telefon</Label>
-                  <Input
-                    id="phone"
-                    value={newClient.phone}
-                    onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
-                    placeholder="070 123 45 67"
-                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-gray-700">Taggar</Label>
-                  <Select>
-                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                      <SelectValue placeholder="Välj taggar" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableTags.map(tag => (
-                        <div
-                          key={tag}
-                          className="px-2 py-1.5 cursor-pointer hover:bg-gold-50 flex items-center gap-2"
-                          onClick={() => toggleArrayItem('tags', tag)}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={newClient.tags.includes(tag)}
-                            readOnly
-                          />
-                          {tag}
-                        </div>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {newClient.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {newClient.tags.map(tag => (
-                        <Badge key={tag} className="bg-amber-50 border border-gray-300 text-[rgba(255,215,0,0.9)] gap-1">
-                          {tag}
-                          <X
-                            className="w-3 h-3 cursor-pointer"
-                            onClick={() => toggleArrayItem('tags', tag)}
-                          />
-                        </Badge>
-                      ))}
-                    </div>
+                <button
+                  type="button"
+                  onClick={() => toggleSection('personal')}
+                  className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-gold-primary/30 rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
+                >
+                  <h2 className="text-xl font-bold text-gold-light tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                    Personuppgifter
+                  </h2>
+                  {expandedSections.personal ? (
+                    <ChevronUp className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
+                  ) : (
+                    <ChevronDown className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
                   )}
-                </div>
+                </button>
+
+                {expandedSections.personal && (
+                  <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-gray-200">Förnamn *</Label>
+                        <Input
+                          value={newClient.firstName}
+                          onChange={(e) => setNewClient({ ...newClient, firstName: e.target.value })}
+                          className="bg-black/30 border-gold-primary/30 text-white"
+                          placeholder="Förnamn"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-gray-200">Efternamn *</Label>
+                        <Input
+                          value={newClient.lastName}
+                          onChange={(e) => setNewClient({ ...newClient, lastName: e.target.value })}
+                          className="bg-black/30 border-gold-primary/30 text-white"
+                          placeholder="Efternamn"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-gray-200">E-post *</Label>
+                        <Input
+                          type="email"
+                          value={newClient.email}
+                          onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                          className="bg-black/30 border-gold-primary/30 text-white"
+                          placeholder="email@example.com"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-gray-200">Telefon</Label>
+                        <Input
+                          value={newClient.phone}
+                          onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                          className="bg-black/30 border-gold-primary/30 text-white"
+                          placeholder="070-123 45 67"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-gray-200">Taggar</Label>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {availableTags.map(tag => (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={() => toggleArrayItem('tags', tag)}
+                            className={`px-3 py-2 rounded-full border text-sm transition-all ${
+                              newClient.tags.includes(tag)
+                                ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
+                                : 'bg-black/30 border-gold-primary/30 text-gray-300 hover:border-[rgba(255,215,0,0.5)]'
+                            }`}
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <Separator className="bg-gray-200" />
-
-              {/* Fysiskt tillstånd & Mål */}
+              {/* Fysiskt tillstånd & Demografia Section */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-amber-600">Fysiskt tillstånd & Demografia</h3>
+                <button
+                  type="button"
+                  onClick={() => toggleSection('physical')}
+                  className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-gold-primary/30 rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
+                >
+                  <h2 className="text-xl font-bold text-gold-light tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                    Fysiskt tillstånd & Demografia
+                  </h2>
+                  {expandedSections.physical ? (
+                    <ChevronUp className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
+                  ) : (
+                    <ChevronDown className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
+                  )}
+                </button>
 
-                <div className="space-y-2">
-                  <Label htmlFor="birthDate" className="text-gray-700">Födelsedatum</Label>
-                  <Input
-                    id="birthDate"
-                    type="date"
-                    value={newClient.birthDate}
-                    onChange={(e) => setNewClient({ ...newClient, birthDate: e.target.value })}
-                    className="bg-white border-gray-300 text-gray-900"
-                  />
-                </div>
+                {expandedSections.physical && (
+                  <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
+                    <div>
+                      <Label className="text-gray-200">Födelsedatum</Label>
+                      <Input
+                        type="date"
+                        value={newClient.birthDate}
+                        onChange={(e) => setNewClient({ ...newClient, birthDate: e.target.value })}
+                        className="bg-black/30 border-gold-primary/30 text-white"
+                      />
+                    </div>
 
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="heightCm" className="text-gray-700">Längd (cm)</Label>
-                    <Input
-                      id="heightCm"
-                      type="number"
-                      value={newClient.heightCm}
-                      onChange={(e) => setNewClient({ ...newClient, heightCm: e.target.value })}
-                      placeholder="175"
-                      className="bg-white border-gray-300 text-gray-900"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="currentWeightKg" className="text-gray-700">Vikt (kg)</Label>
-                    <Input
-                      id="currentWeightKg"
-                      type="number"
-                      value={newClient.currentWeightKg}
-                      onChange={(e) => setNewClient({ ...newClient, currentWeightKg: e.target.value })}
-                      placeholder="75"
-                      className="bg-white border-gray-300 text-gray-900"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="genderAtBirth" className="text-gray-700">Kön</Label>
-                    <Select value={newClient.genderAtBirth} onValueChange={(value) => setNewClient({ ...newClient, genderAtBirth: value })}>
-                      <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                        <SelectValue placeholder="Välj" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="male">Man</SelectItem>
-                        <SelectItem value="female">Kvinna</SelectItem>
-                        <SelectItem value="other">Annat</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <Label className="text-gray-200">Längd (cm)</Label>
+                        <Input
+                          type="number"
+                          value={newClient.heightCm}
+                          onChange={(e) => setNewClient({ ...newClient, heightCm: e.target.value })}
+                          className="bg-black/30 border-gold-primary/30 text-white"
+                          placeholder="175"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-gray-200">Vikt (kg)</Label>
+                        <Input
+                          type="number"
+                          value={newClient.currentWeightKg}
+                          onChange={(e) => setNewClient({ ...newClient, currentWeightKg: e.target.value })}
+                          className="bg-black/30 border-gold-primary/30 text-white"
+                          placeholder="75"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-gray-200">Kön</Label>
+                        <Select value={newClient.genderAtBirth} onValueChange={(value) => setNewClient({ ...newClient, genderAtBirth: value })}>
+                          <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
+                            <SelectValue placeholder="Välj" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="male">Man</SelectItem>
+                            <SelectItem value="female">Kvinna</SelectItem>
+                            <SelectItem value="other">Annat</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
 
-                <div className="space-y-2">
-                  <Label className="text-gray-700">Primärt mål</Label>
-                  <Select value={newClient.primaryGoal} onValueChange={(value) => setNewClient({ ...newClient, primaryGoal: value })}>
-                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                      <SelectValue placeholder="Välj mål" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="build_muscle">Bygga muskler</SelectItem>
-                      <SelectItem value="get_fit">Komma i form</SelectItem>
-                      <SelectItem value="healthy_habits">Bygga hälsosamma vanor</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                    <div>
+                      <Label className="text-gray-200">Primärt mål</Label>
+                      <Select value={newClient.primaryGoal} onValueChange={(value) => setNewClient({ ...newClient, primaryGoal: value })}>
+                        <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
+                          <SelectValue placeholder="Välj mål" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="build_muscle">Bygga muskler</SelectItem>
+                          <SelectItem value="get_fit">Komma i form</SelectItem>
+                          <SelectItem value="healthy_habits">Bygga hälsosamma vanor</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <Separator className="bg-gray-200" />
-
-              {/* Aktivitet & Träning */}
+              {/* Aktivitet & Träning Section */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-amber-600">Aktivitet & Träning</h3>
+                <button
+                  type="button"
+                  onClick={() => toggleSection('training')}
+                  className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-gold-primary/30 rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
+                >
+                  <h2 className="text-xl font-bold text-gold-light tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                    Aktivitet & Träning
+                  </h2>
+                  {expandedSections.training ? (
+                    <ChevronUp className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
+                  ) : (
+                    <ChevronDown className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
+                  )}
+                </button>
 
-                <div className="space-y-2">
-                  <Label className="text-gray-700">Aktivitetsnivå (Fritid)</Label>
-                  <Select value={newClient.activityLevelFree} onValueChange={(value) => setNewClient({ ...newClient, activityLevelFree: value })}>
-                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                      <SelectValue placeholder="Välj nivå" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="very_low">Mycket låg</SelectItem>
-                      <SelectItem value="low">Låg</SelectItem>
-                      <SelectItem value="medium">Medel</SelectItem>
-                      <SelectItem value="active">Aktiv</SelectItem>
-                      <SelectItem value="very_active">Mycket aktiv</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                {expandedSections.training && (
+                  <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-gray-200">Aktivitetsnivå (Fritid)</Label>
+                        <Select value={newClient.activityLevelFree} onValueChange={(value) => setNewClient({ ...newClient, activityLevelFree: value })}>
+                          <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
+                            <SelectValue placeholder="Välj nivå" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="very_low">Mycket låg</SelectItem>
+                            <SelectItem value="low">Låg</SelectItem>
+                            <SelectItem value="medium">Medel</SelectItem>
+                            <SelectItem value="active">Aktiv</SelectItem>
+                            <SelectItem value="very_active">Mycket aktiv</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="text-gray-200">Aktivitetsnivå (Jobb)</Label>
+                        <Select value={newClient.activityLevelWork} onValueChange={(value) => setNewClient({ ...newClient, activityLevelWork: value })}>
+                          <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
+                            <SelectValue placeholder="Välj nivå" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="very_low">Mycket låg</SelectItem>
+                            <SelectItem value="low">Låg</SelectItem>
+                            <SelectItem value="medium">Medel</SelectItem>
+                            <SelectItem value="high">Hög</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
 
-                <div className="space-y-2">
-                  <Label className="text-gray-700">Aktivitetsnivå (Jobb)</Label>
-                  <Select value={newClient.activityLevelWork} onValueChange={(value) => setNewClient({ ...newClient, activityLevelWork: value })}>
-                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                      <SelectValue placeholder="Välj nivå" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="very_low">Mycket låg</SelectItem>
-                      <SelectItem value="low">Låg</SelectItem>
-                      <SelectItem value="medium">Medel</SelectItem>
-                      <SelectItem value="high">Hög</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                    <div>
+                      <Label className="text-gray-200">Träningsdagar</Label>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {daysOfWeek.map(day => (
+                          <button
+                            key={day}
+                            type="button"
+                            onClick={() => toggleArrayItem('trainingDays', day)}
+                            className={`px-4 py-2 rounded-lg border font-semibold transition-all ${
+                              newClient.trainingDays.includes(day)
+                                ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
+                                : 'bg-black/30 border-gold-primary/30 text-gray-300 hover:border-[rgba(255,215,0,0.5)]'
+                            }`}
+                          >
+                            {day}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
 
-                <div className="space-y-2">
-                  <Label className="text-gray-700">Träningsdagar</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {daysOfWeek.map(day => (
-                      <button
-                        key={day}
-                        type="button"
-                        onClick={() => toggleArrayItem('trainingDays', day)}
-                        className={`px-4 py-2 rounded-lg border font-semibold transition-all ${
-                          newClient.trainingDays.includes(day)
-                            ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
-                            : 'bg-[rgba(0,0,0,0.5)] border-gray-300 text-gray-700 hover:border-gold-light'
-                        }`}
-                      >
-                        {day}
-                      </button>
-                    ))}
+                    <div>
+                      <Label className="text-gray-200">Träningserfarenhet</Label>
+                      <Select value={newClient.trainingExperience} onValueChange={(value) => setNewClient({ ...newClient, trainingExperience: value })}>
+                        <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
+                          <SelectValue placeholder="Välj erfarenhet" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="beginner">Nybörjare</SelectItem>
+                          <SelectItem value="experienced">Erfaren</SelectItem>
+                          <SelectItem value="very_experienced">Mycket erfaren</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label className="text-gray-200">Träningsdetaljer</Label>
+                      <Textarea
+                        value={newClient.trainingDetails}
+                        onChange={(e) => setNewClient({ ...newClient, trainingDetails: e.target.value })}
+                        className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
+                        placeholder="Beskriv dina träningsvanor..."
+                      />
+                    </div>
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-gray-700">Träningserfarenhet</Label>
-                  <Select value={newClient.trainingExperience} onValueChange={(value) => setNewClient({ ...newClient, trainingExperience: value })}>
-                    <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                      <SelectValue placeholder="Välj erfarenhet" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="beginner">Nybörjare</SelectItem>
-                      <SelectItem value="experienced">Erfaren</SelectItem>
-                      <SelectItem value="very_experienced">Mycket erfaren</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="trainingDetails" className="text-gray-700">Träningsdetaljer</Label>
-                  <Textarea
-                    id="trainingDetails"
-                    value={newClient.trainingDetails}
-                    onChange={(e) => setNewClient({ ...newClient, trainingDetails: e.target.value })}
-                    placeholder="Beskriv dina träningsvanor..."
-                    rows={3}
-                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
-                  />
-                </div>
+                )}
               </div>
 
-              <Separator className="bg-gray-200" />
-
-              {/* Näring */}
+              {/* Näring Section */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-amber-600">Näring</h3>
+                <button
+                  type="button"
+                  onClick={() => toggleSection('nutrition')}
+                  className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-gold-primary/30 rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
+                >
+                  <h2 className="text-xl font-bold text-gold-light tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                    Näring
+                  </h2>
+                  {expandedSections.nutrition ? (
+                    <ChevronUp className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
+                  ) : (
+                    <ChevronDown className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
+                  )}
+                </button>
 
-                <div className="space-y-2">
-                  <Label htmlFor="nutritionNotes" className="text-gray-700">Nutritionsanteckningar</Label>
-                  <Textarea
-                    id="nutritionNotes"
-                    value={newClient.nutritionNotes}
-                    onChange={(e) => setNewClient({ ...newClient, nutritionNotes: e.target.value })}
-                    placeholder="Matpreferenser, vanor, etc..."
-                    rows={3}
-                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
-                  />
-                </div>
+                {expandedSections.nutrition && (
+                  <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
+                    <div>
+                      <Label className="text-gray-200">Nutritionsanteckningar</Label>
+                      <Textarea
+                        value={newClient.nutritionNotes}
+                        onChange={(e) => setNewClient({ ...newClient, nutritionNotes: e.target.value })}
+                        className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
+                        placeholder="Matpreferenser, vanor, etc..."
+                      />
+                    </div>
 
-                <div className="space-y-2">
-                  <Label className="text-gray-700">Allergier</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {allergiesList.map(allergy => (
-                      <button
-                        key={allergy}
-                        type="button"
-                        onClick={() => toggleArrayItem('allergies', allergy)}
-                        className={`px-3 py-2 rounded-full border text-sm transition-all ${
-                          newClient.allergies.includes(allergy)
-                            ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
-                            : 'bg-[rgba(0,0,0,0.5)] border-gray-300 text-gray-700 hover:border-gold-light'
-                        }`}
-                      >
-                        {allergy}
-                      </button>
-                    ))}
+                    <div>
+                      <Label className="text-gray-200">Allergier</Label>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {allergiesList.map(allergy => (
+                          <button
+                            key={allergy}
+                            type="button"
+                            onClick={() => toggleArrayItem('allergies', allergy)}
+                            className={`px-3 py-2 rounded-full border text-sm transition-all ${
+                              newClient.allergies.includes(allergy)
+                                ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
+                                : 'bg-black/30 border-gold-primary/30 text-gray-300 hover:border-[rgba(255,215,0,0.5)]'
+                            }`}
+                          >
+                            {allergy}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-gray-200">Kostpreferenser</Label>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {dietPreferencesList.map(pref => (
+                          <button
+                            key={pref}
+                            type="button"
+                            onClick={() => toggleArrayItem('dietaryPreferences', pref)}
+                            className={`px-3 py-2 rounded-full border text-sm transition-all ${
+                              newClient.dietaryPreferences.includes(pref)
+                                ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
+                                : 'bg-black/30 border-gold-primary/30 text-gray-300 hover:border-[rgba(255,215,0,0.5)]'
+                            }`}
+                          >
+                            {pref}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-gray-200">Exkluderade ingredienser</Label>
+                      <Input
+                        value={newClient.excludedIngredients}
+                        onChange={(e) => setNewClient({ ...newClient, excludedIngredients: e.target.value })}
+                        className="bg-black/30 border-gold-primary/30 text-white"
+                        placeholder="T.ex. broccoli, paprika..."
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="text-gray-200">Övrig nutritionsinformation</Label>
+                      <Textarea
+                        value={newClient.nutritionMissing}
+                        onChange={(e) => setNewClient({ ...newClient, nutritionMissing: e.target.value })}
+                        className="bg-black/30 border-gold-primary/30 text-white min-h-[80px]"
+                        placeholder="Något vi har missat?"
+                      />
+                    </div>
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-gray-700">Kostpreferenser</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {dietPreferencesList.map(pref => (
-                      <button
-                        key={pref}
-                        type="button"
-                        onClick={() => toggleArrayItem('dietaryPreferences', pref)}
-                        className={`px-3 py-2 rounded-full border text-sm transition-all ${
-                          newClient.dietaryPreferences.includes(pref)
-                            ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
-                            : 'bg-[rgba(0,0,0,0.5)] border-gray-300 text-gray-700 hover:border-gold-light'
-                        }`}
-                      >
-                        {pref}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="excludedIngredients" className="text-gray-700">Exkluderade ingredienser</Label>
-                  <Input
-                    id="excludedIngredients"
-                    value={newClient.excludedIngredients}
-                    onChange={(e) => setNewClient({ ...newClient, excludedIngredients: e.target.value })}
-                    placeholder="T.ex. broccoli, paprika..."
-                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="nutritionMissing" className="text-gray-700">Övrig nutritionsinformation</Label>
-                  <Textarea
-                    id="nutritionMissing"
-                    value={newClient.nutritionMissing}
-                    onChange={(e) => setNewClient({ ...newClient, nutritionMissing: e.target.value })}
-                    placeholder="Något vi har missat?"
-                    rows={2}
-                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
-                  />
-                </div>
+                )}
               </div>
 
-              <Separator className="bg-gray-200" />
-
-              {/* Livsstil */}
+              {/* Livsstil Section */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-amber-600">Livsstil</h3>
+                <button
+                  type="button"
+                  onClick={() => toggleSection('lifestyle')}
+                  className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-gold-primary/30 rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
+                >
+                  <h2 className="text-xl font-bold text-gold-light tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                    Livsstil
+                  </h2>
+                  {expandedSections.lifestyle ? (
+                    <ChevronUp className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
+                  ) : (
+                    <ChevronDown className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
+                  )}
+                </button>
 
-                <div className="space-y-2">
-                  <Label htmlFor="lifestyleNotes" className="text-gray-700">Livsstilsanteckningar</Label>
-                  <Textarea
-                    id="lifestyleNotes"
-                    value={newClient.lifestyleNotes}
-                    onChange={(e) => setNewClient({ ...newClient, lifestyleNotes: e.target.value })}
-                    placeholder="Vanor, utmaningar, mål..."
-                    rows={3}
-                    className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
-                  />
-                </div>
-              </div>
-
-              <Separator className="bg-gray-200" />
-
-              {/* Check-in */}
-              <div className="space-y-4">
-                <h3 className="font-semibold text-amber-600">Check-in</h3>
-                <p className="text-sm text-gray-400">Skicka påminnelse om check-in varje gång:</p>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-gray-700">Check-in-period</Label>
-                    <Select value={newClient.checkInPeriod} onValueChange={(value) => setNewClient({ ...newClient, checkInPeriod: value })}>
-                      <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Dag">Dag</SelectItem>
-                        <SelectItem value="Vecka">Vecka</SelectItem>
-                        <SelectItem value="Månad">Månad</SelectItem>
-                      </SelectContent>
-                    </Select>
+                {expandedSections.lifestyle && (
+                  <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
+                    <div>
+                      <Label className="text-gray-200">Livsstilsanteckningar</Label>
+                      <Textarea
+                        value={newClient.lifestyleNotes}
+                        onChange={(e) => setNewClient({ ...newClient, lifestyleNotes: e.target.value })}
+                        className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
+                        placeholder="Vanor, utmaningar, mål..."
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-gray-700">Dag</Label>
-                    <Select value={newClient.checkInDay} onValueChange={(value) => setNewClient({ ...newClient, checkInDay: value })}>
-                      <SelectTrigger className="bg-white border-gray-300 text-gray-900">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Måndag">Måndag</SelectItem>
-                        <SelectItem value="Tisdag">Tisdag</SelectItem>
-                        <SelectItem value="Onsdag">Onsdag</SelectItem>
-                        <SelectItem value="Torsdag">Torsdag</SelectItem>
-                        <SelectItem value="Fredag">Fredag</SelectItem>
-                        <SelectItem value="Lördag">Lördag</SelectItem>
-                        <SelectItem value="Söndag">Söndag</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
-            <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="border-gray-300 text-gray-900 hover:bg-gold-50">
+            <DialogFooter className="gap-2 pt-4 border-t border-gold-primary/20">
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="border-gold-primary/30 text-gray-300 hover:bg-gold-primary/10 hover:text-gold-light">
                 Avbryt
               </Button>
               <Button
