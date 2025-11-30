@@ -220,7 +220,7 @@ export default function SkillTreePage() {
               </p>
               <h4 className="text-white font-medium pt-2">Varför?</h4>
               <p>
-                Har du någonsin hört uttrycket &quot;du kan inte bygga ett hus utan att först röja träden&quot;? Samma koncept gäller för din kropp.
+                Har du någonsin hört uttrycket &quot;Du kan inte bygga ett hus utan att först lägga grunden&quot;? Samma koncept gäller för din kropp.
               </p>
               <p>
                 Om vi inte tar hand om vår livsstil och kost kommer all den hårda träningen inte att hjälpa oss nå våra mål. Varför? Därför att om vår kost inte stödjer målet vi strävar efter att nå kommer vi inte att lyckas nå det.
