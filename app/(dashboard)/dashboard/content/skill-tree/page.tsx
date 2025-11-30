@@ -217,8 +217,11 @@ export default function SkillTreeAdminPage() {
         if (response.ok) {
           toast.success('Gren uppdaterad!')
           fetchData()
+          setDialogOpen(false)
         } else {
-          toast.error('Kunde inte uppdatera gren')
+          const errorData = await response.json().catch(() => ({}))
+          console.error('Update error:', errorData)
+          toast.error(errorData.error || 'Kunde inte uppdatera gren')
         }
       } else {
         const response = await fetch('/api/skill-tree-branches', {
@@ -230,12 +233,13 @@ export default function SkillTreeAdminPage() {
         if (response.ok) {
           toast.success('Gren skapad!')
           fetchData()
+          setDialogOpen(false)
         } else {
-          toast.error('Kunde inte skapa gren')
+          const errorData = await response.json().catch(() => ({}))
+          console.error('Create error:', errorData)
+          toast.error(errorData.error || 'Kunde inte skapa gren')
         }
       }
-
-      setDialogOpen(false)
     } catch (error) {
       console.error('Error saving branch:', error)
       toast.error('Ett fel uppstod')
