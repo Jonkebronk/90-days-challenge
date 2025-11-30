@@ -556,56 +556,51 @@ export default function SkillTreePage() {
                 </>
               )}
 
-              {/* Mobile/Tablet: Grid style like Kunskapsbanken */}
-              <div className="lg:hidden grid grid-cols-2 gap-3">
-                {branches.map((branch) => {
+              {/* Mobile/Tablet: Vertical tree view with lines */}
+              <div className="lg:hidden flex flex-col items-center">
+                {branches.map((branch, index) => {
                   const Icon = getIconComponent(branch.icon)
                   const progress = getBranchProgress(branch)
+                  const articles = branch.articles || []
+                  const isExpanded = expandedBranches.includes(branch.id)
+                  const isLast = index === branches.length - 1
 
                   return (
-                    <button
-                      key={branch.id}
-                      onClick={() => toggleBranch(branch.id)}
-                      className="rounded-xl p-4 bg-[#1a1a2e] border border-white/10 active:scale-[0.98] transition-all"
-                    >
-                      <div className="flex flex-col items-center text-center">
+                    <div key={branch.id} className="flex flex-col items-center w-full max-w-[200px]">
+                      {/* Connecting line from previous */}
+                      {index > 0 && (
                         <div
-                          className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-                          style={{ backgroundColor: branch.color }}
-                        >
-                          <Icon className="w-6 h-6 text-white" />
-                        </div>
-                        <h3 className="font-bold text-white text-xs uppercase tracking-wide mb-1">
-                          {branch.name}
-                        </h3>
-                        <p className="text-gray-400 text-xs">
-                          {progress.total} artiklar
-                        </p>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
+                          className="w-0.5 h-4"
+                          style={{
+                            background: `linear-gradient(to bottom, ${branches[index-1].color}50, ${branch.color}50)`
+                          }}
+                        />
+                      )}
 
-              {/* Mobile: Expanded articles modal/section */}
-              {expandedBranches.length > 0 && (
-                <div className="lg:hidden mt-4">
-                  {branches.filter(b => expandedBranches.includes(b.id)).map((branch) => {
-                    const articles = branch.articles || []
-                    if (articles.length === 0) return null
-
-                    return (
-                      <div key={branch.id} className="space-y-2 mb-4">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-bold text-white uppercase">{branch.name}</h4>
-                          <button
-                            onClick={() => toggleBranch(branch.id)}
-                            className="text-gray-400 p-1"
+                      {/* Branch card */}
+                      <button
+                        onClick={() => toggleBranch(branch.id)}
+                        className="w-full rounded-xl p-4 bg-[#1a1a2e] border border-white/10 active:scale-[0.98] transition-all"
+                      >
+                        <div className="flex flex-col items-center text-center">
+                          <div
+                            className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+                            style={{ backgroundColor: branch.color }}
                           >
-                            <X className="w-4 h-4" />
-                          </button>
+                            <Icon className="w-6 h-6 text-white" />
+                          </div>
+                          <h3 className="font-bold text-white text-xs uppercase tracking-wide mb-1">
+                            {branch.name}
+                          </h3>
+                          <p className="text-gray-400 text-xs">
+                            {progress.total} artiklar
+                          </p>
                         </div>
-                        <div className="space-y-2">
+                      </button>
+
+                      {/* Expanded articles */}
+                      {isExpanded && articles.length > 0 && (
+                        <div className="w-full mt-2 space-y-2">
                           {articles.map((article) => (
                             <Link
                               key={article.id}
@@ -630,11 +625,19 @@ export default function SkillTreePage() {
                             </Link>
                           ))}
                         </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
+                      )}
+
+                      {/* Connecting line to next */}
+                      {!isLast && (
+                        <div
+                          className="w-0.5 h-4 mt-2"
+                          style={{ backgroundColor: `${branch.color}50` }}
+                        />
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
           </div>
         </div>
       )}
