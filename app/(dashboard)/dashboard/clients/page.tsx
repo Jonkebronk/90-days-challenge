@@ -27,30 +27,33 @@ interface Client {
 }
 
 interface NewClientForm {
+  // Personuppgifter
   firstName: string
   lastName: string
   email: string
   phone: string
-  tags: string[]
-  checkInPeriod: string
-  checkInDay: string
-  // Onboarding fields
-  primaryGoal: string
-  heightCm: string
-  currentWeightKg: string
-  genderAtBirth: string
-  birthDate: string
-  activityLevelFree: string
-  activityLevelWork: string
-  nutritionNotes: string
-  allergies: string[]
-  dietaryPreferences: string[]
-  excludedIngredients: string
-  nutritionMissing: string
-  trainingDays: string[]
+  city: string
+  country: string
+  age: string
+  gender: string
+  height: string
+  currentWeight: string
+  // Målsättning
+  goals: string
+  biggestChallenges: string
+  previousCoaching: string
+  // Träningsbakgrund
+  currentTraining: string
   trainingExperience: string
-  trainingDetails: string
-  lifestyleNotes: string
+  injuries: string
+  // Kostbakgrund
+  dietHistory: string
+  foodPreferences: string
+  allergies: string
+  // Livsstil
+  dailyRoutine: string
+  // Övrigt
+  other: string
 }
 
 export default function ClientsPage() {
@@ -71,63 +74,46 @@ export default function ClientsPage() {
   const [copiedCode, setCopiedCode] = useState(false)
   const [generatingCodeFor, setGeneratingCodeFor] = useState<string | null>(null)
   const [newClient, setNewClient] = useState<NewClientForm>({
+    // Personuppgifter
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
-    tags: [],
-    checkInPeriod: 'Vecka',
-    checkInDay: 'Söndag',
-    // Onboarding defaults
-    primaryGoal: '',
-    heightCm: '',
-    currentWeightKg: '',
-    genderAtBirth: '',
-    birthDate: '',
-    activityLevelFree: '',
-    activityLevelWork: '',
-    nutritionNotes: '',
-    allergies: [],
-    dietaryPreferences: [],
-    excludedIngredients: '',
-    nutritionMissing: '',
-    trainingDays: [],
+    city: '',
+    country: 'Sverige',
+    age: '',
+    gender: '',
+    height: '',
+    currentWeight: '',
+    // Målsättning
+    goals: '',
+    biggestChallenges: '',
+    previousCoaching: '',
+    // Träningsbakgrund
+    currentTraining: '',
     trainingExperience: '',
-    trainingDetails: '',
-    lifestyleNotes: '',
+    injuries: '',
+    // Kostbakgrund
+    dietHistory: '',
+    foodPreferences: '',
+    allergies: '',
+    // Livsstil
+    dailyRoutine: '',
+    // Övrigt
+    other: '',
   })
 
   const [expandedSections, setExpandedSections] = useState({
     personal: true,
-    physical: false,
+    goals: false,
     training: false,
     nutrition: false,
     lifestyle: false,
+    other: false,
   })
 
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
-  }
-
-  const availableTags = ['Nutrition Only', 'VIP', 'Workout Only']
-
-  const allergiesList = [
-    'Gluten', 'Laktos', 'Nötter', 'Skaldjur', 'Ägg', 'Soja'
-  ]
-
-  const dietPreferencesList = [
-    'pescetarian', 'vegan', 'vegetarian', 'halal', 'kosher', 'no_supplements'
-  ]
-
-  const daysOfWeek = ['MÅN', 'TIS', 'ONS', 'TORS', 'FRE', 'LÖR', 'SÖN']
-
-  const toggleArrayItem = (field: 'tags' | 'allergies' | 'dietaryPreferences' | 'trainingDays', value: string) => {
-    setNewClient(prev => ({
-      ...prev,
-      [field]: prev[field].includes(value)
-        ? prev[field].filter((item: string) => item !== value)
-        : [...prev[field], value]
-    }))
   }
 
   useEffect(() => {
@@ -184,33 +170,32 @@ export default function ClientsPage() {
           lastName: '',
           email: '',
           phone: '',
-          tags: [],
-          checkInPeriod: 'Vecka',
-          checkInDay: 'Söndag',
-          primaryGoal: '',
-          heightCm: '',
-          currentWeightKg: '',
-          genderAtBirth: '',
-          birthDate: '',
-          activityLevelFree: '',
-          activityLevelWork: '',
-          nutritionNotes: '',
-          allergies: [],
-          dietaryPreferences: [],
-          excludedIngredients: '',
-          nutritionMissing: '',
-          trainingDays: [],
+          city: '',
+          country: 'Sverige',
+          age: '',
+          gender: '',
+          height: '',
+          currentWeight: '',
+          goals: '',
+          biggestChallenges: '',
+          previousCoaching: '',
+          currentTraining: '',
           trainingExperience: '',
-          trainingDetails: '',
-          lifestyleNotes: '',
+          injuries: '',
+          dietHistory: '',
+          foodPreferences: '',
+          allergies: '',
+          dailyRoutine: '',
+          other: '',
         })
         // Reset expanded sections
         setExpandedSections({
           personal: true,
-          physical: false,
+          goals: false,
           training: false,
           nutrition: false,
           lifestyle: false,
+          other: false,
         })
         fetchClients()
       } else {
@@ -393,11 +378,11 @@ export default function ClientsPage() {
                           value={newClient.email}
                           onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
                           className="bg-black/30 border-gold-primary/30 text-white"
-                          placeholder="email@example.com"
+                          placeholder="din@email.se"
                         />
                       </div>
                       <div>
-                        <Label className="text-gray-200">Telefon</Label>
+                        <Label className="text-gray-200">Telefon *</Label>
                         <Input
                           value={newClient.phone}
                           onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
@@ -407,82 +392,41 @@ export default function ClientsPage() {
                       </div>
                     </div>
 
-                    <div>
-                      <Label className="text-gray-200">Taggar</Label>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {availableTags.map(tag => (
-                          <button
-                            key={tag}
-                            type="button"
-                            onClick={() => toggleArrayItem('tags', tag)}
-                            className={`px-3 py-2 rounded-full border text-sm transition-all ${
-                              newClient.tags.includes(tag)
-                                ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
-                                : 'bg-black/30 border-gold-primary/30 text-gray-300 hover:border-[rgba(255,215,0,0.5)]'
-                            }`}
-                          >
-                            {tag}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Fysiskt tillstånd & Demografia Section */}
-              <div className="space-y-4">
-                <button
-                  type="button"
-                  onClick={() => toggleSection('physical')}
-                  className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-gold-primary/30 rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
-                >
-                  <h2 className="text-xl font-bold text-gold-light tracking-[2px] uppercase font-['Orbitron',sans-serif]">
-                    Fysiskt tillstånd & Demografia
-                  </h2>
-                  {expandedSections.physical ? (
-                    <ChevronUp className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
-                  ) : (
-                    <ChevronDown className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
-                  )}
-                </button>
-
-                {expandedSections.physical && (
-                  <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
-                    <div>
-                      <Label className="text-gray-200">Födelsedatum</Label>
-                      <Input
-                        type="date"
-                        value={newClient.birthDate}
-                        onChange={(e) => setNewClient({ ...newClient, birthDate: e.target.value })}
-                        className="bg-black/30 border-gold-primary/30 text-white"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label className="text-gray-200">Längd (cm)</Label>
+                        <Label className="text-gray-200">Stad</Label>
                         <Input
-                          type="number"
-                          value={newClient.heightCm}
-                          onChange={(e) => setNewClient({ ...newClient, heightCm: e.target.value })}
+                          value={newClient.city}
+                          onChange={(e) => setNewClient({ ...newClient, city: e.target.value })}
                           className="bg-black/30 border-gold-primary/30 text-white"
-                          placeholder="175"
+                          placeholder="Stockholm"
                         />
                       </div>
                       <div>
-                        <Label className="text-gray-200">Vikt (kg)</Label>
+                        <Label className="text-gray-200">Land</Label>
+                        <Input
+                          value={newClient.country}
+                          onChange={(e) => setNewClient({ ...newClient, country: e.target.value })}
+                          className="bg-black/30 border-gold-primary/30 text-white"
+                          placeholder="Sverige"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-gray-200">Ålder</Label>
                         <Input
                           type="number"
-                          value={newClient.currentWeightKg}
-                          onChange={(e) => setNewClient({ ...newClient, currentWeightKg: e.target.value })}
+                          value={newClient.age}
+                          onChange={(e) => setNewClient({ ...newClient, age: e.target.value })}
                           className="bg-black/30 border-gold-primary/30 text-white"
-                          placeholder="75"
+                          placeholder="25"
                         />
                       </div>
                       <div>
                         <Label className="text-gray-200">Kön</Label>
-                        <Select value={newClient.genderAtBirth} onValueChange={(value) => setNewClient({ ...newClient, genderAtBirth: value })}>
+                        <Select value={newClient.gender} onValueChange={(value) => setNewClient({ ...newClient, gender: value })}>
                           <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
                             <SelectValue placeholder="Välj" />
                           </SelectTrigger>
@@ -495,24 +439,85 @@ export default function ClientsPage() {
                       </div>
                     </div>
 
-                    <div>
-                      <Label className="text-gray-200">Primärt mål</Label>
-                      <Select value={newClient.primaryGoal} onValueChange={(value) => setNewClient({ ...newClient, primaryGoal: value })}>
-                        <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                          <SelectValue placeholder="Välj mål" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="build_muscle">Bygga muskler</SelectItem>
-                          <SelectItem value="get_fit">Komma i form</SelectItem>
-                          <SelectItem value="healthy_habits">Bygga hälsosamma vanor</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-gray-200">Längd (cm)</Label>
+                        <Input
+                          type="number"
+                          value={newClient.height}
+                          onChange={(e) => setNewClient({ ...newClient, height: e.target.value })}
+                          className="bg-black/30 border-gold-primary/30 text-white"
+                          placeholder="175"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-gray-200">Nuvarande vikt (kg)</Label>
+                        <Input
+                          type="number"
+                          value={newClient.currentWeight}
+                          onChange={(e) => setNewClient({ ...newClient, currentWeight: e.target.value })}
+                          className="bg-black/30 border-gold-primary/30 text-white"
+                          placeholder="80"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Aktivitet & Träning Section */}
+              {/* Målsättning Section */}
+              <div className="space-y-4">
+                <button
+                  type="button"
+                  onClick={() => toggleSection('goals')}
+                  className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-gold-primary/30 rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
+                >
+                  <h2 className="text-xl font-bold text-gold-light tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                    Målsättning
+                  </h2>
+                  {expandedSections.goals ? (
+                    <ChevronUp className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
+                  ) : (
+                    <ChevronDown className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
+                  )}
+                </button>
+
+                {expandedSections.goals && (
+                  <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
+                    <div>
+                      <Label className="text-gray-200">Klientens målsättningar (Stora och små mål)</Label>
+                      <Textarea
+                        value={newClient.goals}
+                        onChange={(e) => setNewClient({ ...newClient, goals: e.target.value })}
+                        className="bg-black/30 border-gold-primary/30 text-white min-h-[120px]"
+                        placeholder="Beskriv dina stora mål och små delmål..."
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="text-gray-200">Största utmaningar</Label>
+                      <Textarea
+                        value={newClient.biggestChallenges}
+                        onChange={(e) => setNewClient({ ...newClient, biggestChallenges: e.target.value })}
+                        className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
+                        placeholder="Vad har hindrat dig från att nå dina mål tidigare?"
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="text-gray-200">Tidigare coaching eller PT</Label>
+                      <Textarea
+                        value={newClient.previousCoaching}
+                        onChange={(e) => setNewClient({ ...newClient, previousCoaching: e.target.value })}
+                        className="bg-black/30 border-gold-primary/30 text-white min-h-[80px]"
+                        placeholder="Har du haft personlig tränare eller coach tidigare? Vad funkade/funkade inte?"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Träningsbakgrund Section */}
               <div className="space-y-4">
                 <button
                   type="button"
@@ -520,7 +525,7 @@ export default function ClientsPage() {
                   className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-gold-primary/30 rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
                 >
                   <h2 className="text-xl font-bold text-gold-light tracking-[2px] uppercase font-['Orbitron',sans-serif]">
-                    Aktivitet & Träning
+                    Träningsbakgrund
                   </h2>
                   {expandedSections.training ? (
                     <ChevronUp className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
@@ -531,86 +536,40 @@ export default function ClientsPage() {
 
                 {expandedSections.training && (
                   <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-gray-200">Aktivitetsnivå (Fritid)</Label>
-                        <Select value={newClient.activityLevelFree} onValueChange={(value) => setNewClient({ ...newClient, activityLevelFree: value })}>
-                          <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                            <SelectValue placeholder="Välj nivå" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="very_low">Mycket låg</SelectItem>
-                            <SelectItem value="low">Låg</SelectItem>
-                            <SelectItem value="medium">Medel</SelectItem>
-                            <SelectItem value="active">Aktiv</SelectItem>
-                            <SelectItem value="very_active">Mycket aktiv</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label className="text-gray-200">Aktivitetsnivå (Jobb)</Label>
-                        <Select value={newClient.activityLevelWork} onValueChange={(value) => setNewClient({ ...newClient, activityLevelWork: value })}>
-                          <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                            <SelectValue placeholder="Välj nivå" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="very_low">Mycket låg</SelectItem>
-                            <SelectItem value="low">Låg</SelectItem>
-                            <SelectItem value="medium">Medel</SelectItem>
-                            <SelectItem value="high">Hög</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
                     <div>
-                      <Label className="text-gray-200">Träningsdagar</Label>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {daysOfWeek.map(day => (
-                          <button
-                            key={day}
-                            type="button"
-                            onClick={() => toggleArrayItem('trainingDays', day)}
-                            className={`px-4 py-2 rounded-lg border font-semibold transition-all ${
-                              newClient.trainingDays.includes(day)
-                                ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
-                                : 'bg-black/30 border-gold-primary/30 text-gray-300 hover:border-[rgba(255,215,0,0.5)]'
-                            }`}
-                          >
-                            {day}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label className="text-gray-200">Träningserfarenhet</Label>
-                      <Select value={newClient.trainingExperience} onValueChange={(value) => setNewClient({ ...newClient, trainingExperience: value })}>
-                        <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                          <SelectValue placeholder="Välj erfarenhet" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="beginner">Nybörjare</SelectItem>
-                          <SelectItem value="experienced">Erfaren</SelectItem>
-                          <SelectItem value="very_experienced">Mycket erfaren</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <Label className="text-gray-200">Träningsdetaljer</Label>
+                      <Label className="text-gray-200">Tränar du idag?</Label>
                       <Textarea
-                        value={newClient.trainingDetails}
-                        onChange={(e) => setNewClient({ ...newClient, trainingDetails: e.target.value })}
+                        value={newClient.currentTraining}
+                        onChange={(e) => setNewClient({ ...newClient, currentTraining: e.target.value })}
                         className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
-                        placeholder="Beskriv dina träningsvanor..."
+                        placeholder="Om du gör det, beskriv vad du gör, gärna så detaljerat som möjligt"
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="text-gray-200">Träningserfarenhet historiskt</Label>
+                      <Textarea
+                        value={newClient.trainingExperience}
+                        onChange={(e) => setNewClient({ ...newClient, trainingExperience: e.target.value })}
+                        className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
+                        placeholder="Vad har du för träningserfarenhet historiskt?"
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="text-gray-200">Skador/Begränsningar</Label>
+                      <Textarea
+                        value={newClient.injuries}
+                        onChange={(e) => setNewClient({ ...newClient, injuries: e.target.value })}
+                        className="bg-black/30 border-gold-primary/30 text-white min-h-[80px]"
+                        placeholder="Eventuella skador, smärtor eller andra begränsningar vi bör veta om"
                       />
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Näring Section */}
+              {/* Kostbakgrund Section */}
               <div className="space-y-4">
                 <button
                   type="button"
@@ -618,7 +577,7 @@ export default function ClientsPage() {
                   className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-gold-primary/30 rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
                 >
                   <h2 className="text-xl font-bold text-gold-light tracking-[2px] uppercase font-['Orbitron',sans-serif]">
-                    Näring
+                    Kostbakgrund
                   </h2>
                   {expandedSections.nutrition ? (
                     <ChevronUp className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
@@ -630,72 +589,32 @@ export default function ClientsPage() {
                 {expandedSections.nutrition && (
                   <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
                     <div>
-                      <Label className="text-gray-200">Nutritionsanteckningar</Label>
+                      <Label className="text-gray-200">Hur äter du idag?</Label>
                       <Textarea
-                        value={newClient.nutritionNotes}
-                        onChange={(e) => setNewClient({ ...newClient, nutritionNotes: e.target.value })}
+                        value={newClient.dietHistory}
+                        onChange={(e) => setNewClient({ ...newClient, dietHistory: e.target.value })}
+                        className="bg-black/30 border-gold-primary/30 text-white min-h-[120px]"
+                        placeholder="Beskriv en vanlig dag i ditt liv i matväg, gärna så detaljerat som möjligt"
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="text-gray-200">Matpreferenser</Label>
+                      <Textarea
+                        value={newClient.foodPreferences}
+                        onChange={(e) => setNewClient({ ...newClient, foodPreferences: e.target.value })}
                         className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
-                        placeholder="Matpreferenser, vanor, etc..."
+                        placeholder="Har du några särskilda matpreferenser? Till exempelvis mat som du gillar mer eller mindre?"
                       />
                     </div>
 
                     <div>
-                      <Label className="text-gray-200">Allergier</Label>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {allergiesList.map(allergy => (
-                          <button
-                            key={allergy}
-                            type="button"
-                            onClick={() => toggleArrayItem('allergies', allergy)}
-                            className={`px-3 py-2 rounded-full border text-sm transition-all ${
-                              newClient.allergies.includes(allergy)
-                                ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
-                                : 'bg-black/30 border-gold-primary/30 text-gray-300 hover:border-[rgba(255,215,0,0.5)]'
-                            }`}
-                          >
-                            {allergy}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label className="text-gray-200">Kostpreferenser</Label>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {dietPreferencesList.map(pref => (
-                          <button
-                            key={pref}
-                            type="button"
-                            onClick={() => toggleArrayItem('dietaryPreferences', pref)}
-                            className={`px-3 py-2 rounded-full border text-sm transition-all ${
-                              newClient.dietaryPreferences.includes(pref)
-                                ? 'bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] border-gold-light'
-                                : 'bg-black/30 border-gold-primary/30 text-gray-300 hover:border-[rgba(255,215,0,0.5)]'
-                            }`}
-                          >
-                            {pref}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label className="text-gray-200">Exkluderade ingredienser</Label>
+                      <Label className="text-gray-200">Allergier och intoleranser</Label>
                       <Input
-                        value={newClient.excludedIngredients}
-                        onChange={(e) => setNewClient({ ...newClient, excludedIngredients: e.target.value })}
+                        value={newClient.allergies}
+                        onChange={(e) => setNewClient({ ...newClient, allergies: e.target.value })}
                         className="bg-black/30 border-gold-primary/30 text-white"
-                        placeholder="T.ex. broccoli, paprika..."
-                      />
-                    </div>
-
-                    <div>
-                      <Label className="text-gray-200">Övrig nutritionsinformation</Label>
-                      <Textarea
-                        value={newClient.nutritionMissing}
-                        onChange={(e) => setNewClient({ ...newClient, nutritionMissing: e.target.value })}
-                        className="bg-black/30 border-gold-primary/30 text-white min-h-[80px]"
-                        placeholder="Något vi har missat?"
+                        placeholder="T.ex. gluten, laktos, nötter"
                       />
                     </div>
                   </div>
@@ -722,12 +641,44 @@ export default function ClientsPage() {
                 {expandedSections.lifestyle && (
                   <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
                     <div>
-                      <Label className="text-gray-200">Livsstilsanteckningar</Label>
+                      <Label className="text-gray-200">Ta mig igenom en dag, från när du vaknar till när du går och lägger dig. Hur ser den ut för dig?</Label>
                       <Textarea
-                        value={newClient.lifestyleNotes}
-                        onChange={(e) => setNewClient({ ...newClient, lifestyleNotes: e.target.value })}
+                        value={newClient.dailyRoutine}
+                        onChange={(e) => setNewClient({ ...newClient, dailyRoutine: e.target.value })}
                         className="bg-black/30 border-gold-primary/30 text-white min-h-[100px]"
-                        placeholder="Vanor, utmaningar, mål..."
+                        placeholder="Beskriv din dag..."
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Övrigt Section */}
+              <div className="space-y-4">
+                <button
+                  type="button"
+                  onClick={() => toggleSection('other')}
+                  className="w-full flex items-center justify-between p-4 bg-[rgba(255,215,0,0.1)] border-2 border-gold-primary/30 rounded-lg hover:border-[rgba(255,215,0,0.5)] transition-all group"
+                >
+                  <h2 className="text-xl font-bold text-gold-light tracking-[2px] uppercase font-['Orbitron',sans-serif]">
+                    Övrigt
+                  </h2>
+                  {expandedSections.other ? (
+                    <ChevronUp className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
+                  ) : (
+                    <ChevronDown className="w-6 h-6 text-gold-light group-hover:scale-110 transition-transform" />
+                  )}
+                </button>
+
+                {expandedSections.other && (
+                  <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
+                    <div>
+                      <Label className="text-gray-200">Något annat du vill att jag ska veta?</Label>
+                      <Textarea
+                        value={newClient.other}
+                        onChange={(e) => setNewClient({ ...newClient, other: e.target.value })}
+                        className="bg-black/30 border-gold-primary/30 text-white min-h-[120px]"
+                        placeholder="Skriv här om det är något ytterligare du vill dela med dig av..."
                       />
                     </div>
                   </div>
