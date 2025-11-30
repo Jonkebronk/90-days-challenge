@@ -19,6 +19,7 @@ import {
   Target,
   Flame,
   Star,
+  Trophy,
   LucideIcon
 } from 'lucide-react'
 import Link from 'next/link'
@@ -34,7 +35,8 @@ const iconMap: Record<string, LucideIcon> = {
   Zap,
   Target,
   Flame,
-  Star
+  Star,
+  Trophy
 }
 
 type BranchWithArticles = {

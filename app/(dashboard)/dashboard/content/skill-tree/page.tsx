@@ -39,6 +39,7 @@ import {
   Target,
   Flame,
   Star,
+  Trophy,
   ChevronDown,
   ChevronRight,
   GripVertical,
@@ -82,7 +83,8 @@ const iconOptions = [
   { name: 'Zap', icon: Zap },
   { name: 'Target', icon: Target },
   { name: 'Flame', icon: Flame },
-  { name: 'Star', icon: Star }
+  { name: 'Star', icon: Star },
+  { name: 'Trophy', icon: Trophy }
 ]
 
 const colorOptions = [
