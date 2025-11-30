@@ -170,7 +170,10 @@ export default function SkillTreePage() {
                     <h2 className="font-['Orbitron',sans-serif] text-lg sm:text-xl font-bold text-gold-light tracking-wide uppercase">
                       Framgångsrik Livsstilsförändring
                     </h2>
-                    <p className="text-gray-400 text-sm mt-1">
+                    <p className="text-gray-500 text-xs sm:text-sm mt-1">
+                      Livsstil, Kost & Träning – de tre pelarna för din framgång
+                    </p>
+                    <p className="text-gray-400 text-xs mt-1">
                       {totalProgress.completed} av {totalProgress.total} artiklar lästa
                     </p>
                   </div>
