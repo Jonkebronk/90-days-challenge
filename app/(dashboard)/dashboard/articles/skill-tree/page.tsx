@@ -249,11 +249,11 @@ export default function SkillTreePage() {
               {/* Vertical line down */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/50 to-[#FFD700]/30" />
               {/* Horizontal line */}
-              <div className="absolute top-8 left-1/4 right-1/4 h-0.5 bg-[#FFD700]/30" />
+              <div className="absolute top-8 left-[33%] right-[33%] h-0.5 bg-[#FFD700]/30" />
               {/* Three vertical lines down to branches */}
-              <div className="absolute top-8 left-1/4 w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/30 to-purple-500/50" />
+              <div className="absolute top-8 left-[33%] w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/30 to-purple-500/50" />
               <div className="absolute top-8 left-1/2 -translate-x-1/2 w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
-              <div className="absolute top-8 right-1/4 w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/30 to-orange-500/50" />
+              <div className="absolute top-8 right-[33%] w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/30 to-orange-500/50" />
               {/* Spacer for the lines */}
               <div className="h-16" />
             </div>
