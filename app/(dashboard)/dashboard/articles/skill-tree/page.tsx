@@ -171,7 +171,7 @@ export default function SkillTreePage() {
                       Framgångsrik Livsstilsförändring
                     </h2>
                     <p className="text-gray-500 text-xs sm:text-sm mt-1">
-                      Livsstil, Kost & Träning – de tre pelarna för din framgång
+                      Livsstil, Kost & Träning – de tre faktorerna för din framgång
                     </p>
                     <p className="text-gray-400 text-xs mt-1">
                       {totalProgress.completed} av {totalProgress.total} artiklar lästa
