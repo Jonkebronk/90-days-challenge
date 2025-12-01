@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ArrowLeft, Save, Eye, EyeOff, Plus, X, Upload, FileText } from 'lucide-react'
+import { ArrowLeft, Save, Eye, EyeOff, Plus, X, Upload, FileText, ImagePlus } from 'lucide-react'
 import { toast } from 'sonner'
 import { MDXPreview } from '@/components/mdx-preview'
 
@@ -68,6 +68,72 @@ export default function ArticleEditorPage() {
 
   const [newTag, setNewTag] = useState('')
   const [isImporting, setIsImporting] = useState(false)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const contentTextareaRef = useRef<HTMLTextAreaElement>(null)
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+    if (!validTypes.includes(file.type)) {
+      toast.error('Ogiltig filtyp. Använd JPEG, PNG, GIF eller WebP.')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024
+    if (file.size > maxSize) {
+      toast.error('Filen är för stor. Max 5MB.')
+      return
+    }
+
+    setIsUploadingImage(true)
+    const uploadFormData = new FormData()
+    uploadFormData.append('file', file)
+
+    try {
+      const response = await fetch('/api/upload/article-image', {
+        method: 'POST',
+        body: uploadFormData
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        // Insert markdown image at cursor position or at end
+        const imageMarkdown = `\n![${file.name}](${data.url})\n`
+
+        if (contentTextareaRef.current) {
+          const textarea = contentTextareaRef.current
+          const start = textarea.selectionStart
+          const end = textarea.selectionEnd
+          const newContent = formData.content.substring(0, start) + imageMarkdown + formData.content.substring(end)
+          setFormData(prev => ({ ...prev, content: newContent }))
+
+          // Set cursor after inserted image
+          setTimeout(() => {
+            textarea.selectionStart = textarea.selectionEnd = start + imageMarkdown.length
+            textarea.focus()
+          }, 0)
+        } else {
+          setFormData(prev => ({ ...prev, content: prev.content + imageMarkdown }))
+        }
+
+        toast.success('Bild uppladdad!')
+      } else {
+        const error = await response.json()
+        toast.error(error.error || 'Kunde inte ladda upp bild')
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      toast.error('Ett fel uppstod vid uppladdning')
+    } finally {
+      setIsUploadingImage(false)
+      // Reset file input
+      event.target.value = ''
+    }
+  }
 
   const handleFileImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -579,7 +645,36 @@ export default function ArticleEditorPage() {
                 </div>
               </div>
 
+              {/* Image upload button */}
+              <div className="flex items-center gap-2 mb-2">
+                <label className="cursor-pointer">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="border-gold-primary/50 text-gold-light hover:bg-gold-primary/20"
+                    disabled={isUploadingImage}
+                    asChild
+                  >
+                    <span>
+                      <ImagePlus className="h-4 w-4 mr-2" />
+                      {isUploadingImage ? 'Laddar upp...' : 'Lägg till bild'}
+                    </span>
+                  </Button>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                </label>
+                <span className="text-xs text-gray-500">
+                  Max 5MB (JPEG, PNG, GIF, WebP)
+                </span>
+              </div>
+
               <Textarea
+                ref={contentTextareaRef}
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 placeholder="Skriv artikelinnehåll här med MDX-formatering... eller importera från fil ovan"
@@ -593,6 +688,7 @@ export default function ArticleEditorPage() {
                   <li>**text** för fet text</li>
                   <li>*text* för kursiv text</li>
                   <li>[länktext](url) för länkar</li>
+                  <li>![alt text](bildurl) för bilder</li>
                   <li>- för punktlistor</li>
                 </ul>
               </div>
