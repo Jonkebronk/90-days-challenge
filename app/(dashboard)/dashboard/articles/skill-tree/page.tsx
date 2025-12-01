@@ -41,19 +41,30 @@ const iconMap: Record<string, LucideIcon> = {
   Trophy
 }
 
+type ArticleWithProgress = {
+  id: string
+  title: string
+  slug: string
+  orderInBranch: number
+  estimatedReadingMinutes?: number
+  skillTreeSubcategoryId?: string | null
+  progress?: { completed: boolean }[]
+}
+
+type Subcategory = {
+  id: string
+  name: string
+  orderIndex: number
+  articles: ArticleWithProgress[]
+}
+
 type BranchWithArticles = {
   id: string
   name: string
   icon: string
   color: string
-  articles: {
-    id: string
-    title: string
-    slug: string
-    orderInBranch: number
-    estimatedReadingMinutes?: number
-    progress?: { completed: boolean }[]
-  }[]
+  articles: ArticleWithProgress[]
+  subcategories?: Subcategory[]
 }
 
 export default function SkillTreePage() {
@@ -167,9 +178,13 @@ export default function SkillTreePage() {
   }
 
   const getBranchProgress = (branch: BranchWithArticles) => {
-    const articles = branch.articles || []
-    const completed = articles.filter(a => a.progress && a.progress.length > 0 && a.progress[0].completed).length
-    return { completed, total: articles.length }
+    // Count loose articles
+    const looseArticles = branch.articles || []
+    // Count articles in subcategories
+    const subcategoryArticles = (branch.subcategories || []).flatMap(s => s.articles || [])
+    const allArticles = [...looseArticles, ...subcategoryArticles]
+    const completed = allArticles.filter(a => a.progress && a.progress.length > 0 && a.progress[0].completed).length
+    return { completed, total: allArticles.length }
   }
 
   const getTotalProgress = () => {
@@ -187,12 +202,81 @@ export default function SkillTreePage() {
     return iconMap[iconName] || BookOpen
   }
 
-  const isArticleCompleted = (article: BranchWithArticles['articles'][0]) => {
+  const isArticleCompleted = (article: ArticleWithProgress) => {
     return article.progress && article.progress.length > 0 && article.progress[0].completed
   }
 
+  // Render subcategory with its articles
+  const renderSubcategory = (subcategory: Subcategory, branchId: string, branchColor: string) => {
+    const completedCount = subcategory.articles.filter(a => isArticleCompleted(a)).length
+    const totalCount = subcategory.articles.length
+
+    return (
+      <div key={subcategory.id} className="space-y-2">
+        <div className="flex items-center gap-2 py-2">
+          <div
+            className="w-1 h-4 rounded-full"
+            style={{ backgroundColor: branchColor }}
+          />
+          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            {subcategory.name}
+          </span>
+          <span className="text-xs text-gray-500">
+            ({completedCount}/{totalCount})
+          </span>
+        </div>
+        <div className="space-y-2 pl-3">
+          {subcategory.articles.map((article, index) =>
+            renderArticleItem(article, branchId, index, subcategory.articles.length)
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Render all branch content (subcategories + loose articles)
+  const renderBranchContent = (branch: BranchWithArticles) => {
+    const subcategories = branch.subcategories || []
+    const looseArticles = branch.articles || []
+
+    if (subcategories.length === 0 && looseArticles.length === 0) {
+      return <p className="text-gray-500 text-sm text-center py-2">Inga artiklar ännu</p>
+    }
+
+    return (
+      <div className="space-y-4">
+        {/* Subcategories with their articles */}
+        {subcategories.map(subcategory =>
+          renderSubcategory(subcategory, branch.id, branch.color)
+        )}
+
+        {/* Loose articles (not in a subcategory) */}
+        {looseArticles.length > 0 && (
+          <div className="space-y-2">
+            {subcategories.length > 0 && (
+              <div className="flex items-center gap-2 py-2">
+                <div
+                  className="w-1 h-4 rounded-full"
+                  style={{ backgroundColor: branch.color }}
+                />
+                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  Övrigt
+                </span>
+              </div>
+            )}
+            <div className={subcategories.length > 0 ? "pl-3 space-y-2" : "space-y-2"}>
+              {looseArticles.map((article, index) =>
+                renderArticleItem(article, branch.id, index, looseArticles.length)
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
   // Render article item with optional reorder buttons
-  const renderArticleItem = (article: BranchWithArticles['articles'][0], branchId: string, index: number, totalArticles: number) => (
+  const renderArticleItem = (article: ArticleWithProgress, branchId: string, index: number, totalArticles: number) => (
     <div
       key={article.id}
       className="flex items-center gap-2 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
@@ -379,9 +463,9 @@ export default function SkillTreePage() {
                       </button>
 
                       {/* Articles list */}
-                      {isExpanded && articles.length > 0 && (
+                      {isExpanded && (
                         <div className="space-y-2 pl-2">
-                          {articles.map((article, index) => renderArticleItem(article, branch.id, index, articles.length))}
+                          {renderBranchContent(branch)}
                         </div>
                       )}
                     </div>
@@ -429,9 +513,9 @@ export default function SkillTreePage() {
                               </div>
                             </button>
 
-                            {isExpanded && articles.length > 0 && (
+                            {isExpanded && (
                               <div className="space-y-2 pl-2">
-                                {articles.map((article, index) => renderArticleItem(article, branch.id, index, articles.length))}
+                                {renderBranchContent(branch)}
                               </div>
                             )}
                           </div>
@@ -482,9 +566,9 @@ export default function SkillTreePage() {
                               </div>
                             </button>
 
-                            {isExpanded && articles.length > 0 && (
+                            {isExpanded && (
                               <div className="space-y-2 pl-2">
-                                {articles.map((article, index) => renderArticleItem(article, branch.id, index, articles.length))}
+                                {renderBranchContent(branch)}
                               </div>
                             )}
                           </div>
@@ -538,9 +622,9 @@ export default function SkillTreePage() {
                             </div>
                           </button>
 
-                          {isExpanded && articles.length > 0 && (
+                          {isExpanded && (
                             <div className="space-y-2 pl-2">
-                              {articles.map((article, index) => renderArticleItem(article, branch.id, index, articles.length))}
+                              {renderBranchContent(branch)}
                             </div>
                           )}
                         </div>
@@ -590,9 +674,9 @@ export default function SkillTreePage() {
                               </div>
                             </button>
 
-                            {isExpanded && articles.length > 0 && (
+                            {isExpanded && (
                               <div className="space-y-2 pl-2">
-                                {articles.map((article, index) => renderArticleItem(article, branch.id, index, articles.length))}
+                                {renderBranchContent(branch)}
                               </div>
                             )}
                           </div>
@@ -646,9 +730,9 @@ export default function SkillTreePage() {
                       </button>
 
                       {/* Expanded articles */}
-                      {isExpanded && articles.length > 0 && (
+                      {isExpanded && (
                         <div className="w-full mt-2 space-y-2">
-                          {articles.map((article, articleIndex) => renderArticleItem(article, branch.id, articleIndex, articles.length))}
+                          {renderBranchContent(branch)}
                         </div>
                       )}
 

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       orderBy: { orderIndex: 'asc' },
       include: includeArticles ? {
         articles: {
-          where: { published: true },
+          where: { published: true, skillTreeSubcategoryId: null }, // Only loose articles
           orderBy: { orderInBranch: 'asc' },
           select: {
             id: true,
@@ -22,10 +22,32 @@ export async function GET(request: NextRequest) {
             slug: true,
             orderInBranch: true,
             estimatedReadingMinutes: true,
+            skillTreeSubcategoryId: true,
             progress: userId ? {
               where: { userId },
               select: { completed: true }
             } : false
+          }
+        },
+        subcategories: {
+          orderBy: { orderIndex: 'asc' },
+          include: {
+            articles: {
+              where: { published: true },
+              orderBy: { orderInBranch: 'asc' },
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                orderInBranch: true,
+                estimatedReadingMinutes: true,
+                skillTreeSubcategoryId: true,
+                progress: userId ? {
+                  where: { userId },
+                  select: { completed: true }
+                } : false
+              }
+            }
           }
         }
       } : undefined
