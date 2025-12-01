@@ -13,7 +13,6 @@ import {
   CheckCircle2,
   Circle,
   Sparkles,
-  ArrowLeft,
   BookOpen,
   Brain,
   Zap,
@@ -234,15 +233,6 @@ export default function SkillTreePage() {
 
   return (
     <div className="container mx-auto p-4 sm:p-6 space-y-6 max-w-4xl">
-      {/* Back button */}
-      <Link
-        href="/dashboard/articles"
-        className="inline-flex items-center gap-2 text-gray-400 hover:text-gold-light transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span className="text-sm">Tillbaka till Kunskapsbanken</span>
-      </Link>
-
       {/* Header */}
       <div className="text-center mb-6 sm:mb-8">
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
