@@ -1026,7 +1026,7 @@ model Article {
   title                   String
   content                 String // Rich text/MDX content
   slug                    String   @unique
-  categoryId              String
+  categoryId              String? // Optional for skill tree articles
   tags                    String[] // Additional tags for filtering
   difficulty              String? // "beginner", "intermediate", "advanced"
   phase                   Int? // 1 (days 1-30), 2 (days 31-60), 3 (days 61-90)
@@ -1052,7 +1052,7 @@ model Article {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  category           ArticleCategory     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category           ArticleCategory?    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   skillTreeBranch    SkillTreeBranch?    @relation(fields: [skillTreeBranchId], references: [id], onDelete: SetNull)
   roadmapAssignments RoadmapAssignment[]
   progress           ArticleProgress[]
