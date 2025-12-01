@@ -6,7 +6,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, ArrowRight, Clock, CheckCircle, Circle, Pencil } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Clock, CheckCircle, Circle, Pencil, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { MDXPreview } from '@/components/mdx-preview'
 import { Progress } from '@/components/ui/progress'
@@ -63,6 +63,7 @@ export default function ArticleReaderPage() {
   const [branchArticles, setBranchArticles] = useState<Article[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isMarkingComplete, setIsMarkingComplete] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [relatedArticles, setRelatedArticles] = useState<any[]>([])
   const [nextArticle, setNextArticle] = useState<any | null>(null)
 
@@ -157,6 +158,33 @@ export default function ArticleReaderPage() {
       toast.error('Ett fel uppstod')
     } finally {
       setIsMarkingComplete(false)
+    }
+  }
+
+  const handleDeleteArticle = async () => {
+    if (!article) return
+
+    const confirmed = window.confirm(`Är du säker på att du vill ta bort "${article.title}"? Detta går inte att ångra.`)
+    if (!confirmed) return
+
+    try {
+      setIsDeleting(true)
+      const response = await fetch(`/api/articles/${articleId}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        toast.success('Artikel borttagen')
+        router.push('/dashboard/articles/skill-tree')
+      } else {
+        const error = await response.json()
+        toast.error(error.error || 'Kunde inte ta bort artikel')
+      }
+    } catch (error) {
+      console.error('Error deleting article:', error)
+      toast.error('Ett fel uppstod')
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -293,15 +321,27 @@ export default function ArticleReaderPage() {
             <div className="flex items-start justify-between gap-4 mb-3 sm:mb-4">
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">{article.title}</h1>
               {isCoach && (
-                <Button
-                  onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
-                  variant="ghost"
-                  size="icon"
-                  className="text-gray-400 hover:text-white hover:bg-white/10 flex-shrink-0"
-                  title="Redigera artikel"
-                >
-                  <Pencil className="h-5 w-5" />
-                </Button>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <Button
+                    onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
+                    variant="ghost"
+                    size="icon"
+                    className="text-gray-400 hover:text-white hover:bg-white/10"
+                    title="Redigera artikel"
+                  >
+                    <Pencil className="h-5 w-5" />
+                  </Button>
+                  <Button
+                    onClick={handleDeleteArticle}
+                    variant="ghost"
+                    size="icon"
+                    className="text-gray-400 hover:text-red-500 hover:bg-red-500/10"
+                    title="Ta bort artikel"
+                    disabled={isDeleting}
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </Button>
+                </div>
               )}
             </div>
 
