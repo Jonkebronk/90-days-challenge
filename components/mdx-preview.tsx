@@ -57,6 +57,34 @@ export function MDXPreview({ content, theme = 'light' }: MDXPreviewProps) {
           a: ({ ...props }) => (
             <a className={`${isDark ? 'text-amber-500' : 'text-blue-600'} hover:underline`} {...props} />
           ),
+          table: ({ ...props }) => (
+            <div className="overflow-x-auto mb-4">
+              <table className={`min-w-full border-collapse ${isDark ? 'border-gray-600' : 'border-gray-300'}`} {...props} />
+            </div>
+          ),
+          thead: ({ ...props }) => (
+            <thead className={`${isDark ? 'bg-gray-800' : 'bg-gray-100'}`} {...props} />
+          ),
+          tbody: ({ ...props }) => (
+            <tbody className={`${isDark ? 'divide-y divide-gray-600' : 'divide-y divide-gray-200'}`} {...props} />
+          ),
+          tr: ({ ...props }) => (
+            <tr className={`${isDark ? 'border-gray-600' : 'border-gray-200'}`} {...props} />
+          ),
+          th: ({ ...props }) => (
+            <th className={`px-4 py-3 text-left text-sm font-bold ${isDark ? 'text-amber-500 border border-gray-600' : 'text-gray-900 border border-gray-300'}`} {...props} />
+          ),
+          td: ({ ...props }) => (
+            <td className={`px-4 py-3 text-sm ${isDark ? 'text-gray-200 border border-gray-600' : 'text-gray-700 border border-gray-300'}`} {...props} />
+          ),
+          img: ({ src, alt, ...props }) => (
+            <img
+              src={src}
+              alt={alt || ''}
+              className="max-w-full h-auto rounded-lg my-4 mx-auto shadow-md"
+              {...props}
+            />
+          ),
         }}
       >
         {content}
