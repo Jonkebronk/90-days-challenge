@@ -211,6 +211,34 @@ Här hittar du viktiga tips och råd för att lyckas med ditt kostschema.
 - Kaffe och te räknas
 - Begränsa sötade drycker`
 
+const DEFAULT_SKILL_TREE_CONTENT = `## Varför träning ensamt inte räcker
+
+Det räcker inte att bara hoppa på den senaste trenddieten eller träningsprogrammet. Vi vet alla hur viktigt det är att variera sin träning, men om du bara fokuserar på det kämpar du en förlorande kamp.
+
+Om du söker långsiktig framgång är det avgörande att din approach inkluderar en förståelse för tre grundläggande principer:
+
+- **Livsstilsfaktorer**
+- **Kostfaktorer**
+- **Träningsfaktorer**
+
+Tillsammans kommer dessa faktorer att hjälpa dig nå dina hälso- och träningsmål, men de klarar det inte ensamma.
+
+### Varför?
+
+Har du någonsin hört uttrycket "Du kan inte bygga ett hus utan att först lägga grunden"? Samma koncept gäller för din kropp.
+
+Om vi inte tar hand om vår livsstil och kost kommer all den hårda träningen inte att hjälpa oss nå våra mål. Varför? Därför att om vår kost inte stödjer målet vi strävar efter att nå kommer vi inte att lyckas nå det.
+
+Praktiskt innebär detta att om ditt mål är fettförlust och du tränar hårt på gymmet men inte äter i ett kaloriskt underskott (mer om detta kommer), kommer du inte att förlora fett.
+
+På samma sätt, om ditt mål är att bygga muskler men du inte får i dig tillräckligt med protein eller kalorier, kommer du inte att bygga muskler.
+
+Återigen, om du tränar hårt på gymmet men dina livsstilsfaktorer som stress och sömnhygien inte hanteras, kommer du att göra det svårare för dig själv i en fettförlustfas eller en muskelbyggnadsfas.
+
+Våra undermåliga livsstilsval kan leda till ständiga bakslag och viktuppgång.
+
+Det är ofta kopplat till en bristande förståelse för kost och höga stressnivåer från omvärlden. Det är därför detta program fokuserar starkt på de tre faktorerna: livsstil, kost och träning.`
+
 const DEFAULT_ONBOARDING_CONTENT = `# Välkommen till 90-Dagars Challenge!
 
 Grattis till att du har tagit steget mot en hälsosammare livsstil! Detta är början på din transformation.
@@ -344,6 +372,8 @@ export async function GET(request: Request) {
           ? DEFAULT_FOOD_GUIDE_CONTENT
           : type === 'nutrition_tips'
           ? DEFAULT_NUTRITION_TIPS_CONTENT
+          : type === 'skill_tree'
+          ? DEFAULT_SKILL_TREE_CONTENT
           : DEFAULT_ONBOARDING_CONTENT
         const defaultTitle = type === 'meal_plan'
           ? 'Kostschema Guide'
@@ -353,6 +383,8 @@ export async function GET(request: Request) {
           ? 'Livsmedelsguide'
           : type === 'nutrition_tips'
           ? 'Generella råd för kosten'
+          : type === 'skill_tree'
+          ? 'Kunskapskartan Intro'
           : 'Kom Igång Guide'
 
         guide = await prisma.guideContent.create({
@@ -400,6 +432,11 @@ export async function GET(request: Request) {
             type: 'nutrition_tips',
             title: 'Generella råd för kosten',
             content: DEFAULT_NUTRITION_TIPS_CONTENT
+          },
+          {
+            type: 'skill_tree',
+            title: 'Kunskapskartan Intro',
+            content: DEFAULT_SKILL_TREE_CONTENT
           }
         ]
       })
@@ -442,7 +479,7 @@ export async function PATCH(request: Request) {
       },
       create: {
         type,
-        title: title || (type === 'meal_plan' ? 'Kostschema Guide' : type === 'workout' ? 'Träningsprogram Guide' : type === 'food_guide' ? 'Livsmedelsguide' : type === 'nutrition_tips' ? 'Generella råd för kosten' : 'Kom Igång Guide'),
+        title: title || (type === 'meal_plan' ? 'Kostschema Guide' : type === 'workout' ? 'Träningsprogram Guide' : type === 'food_guide' ? 'Livsmedelsguide' : type === 'nutrition_tips' ? 'Generella råd för kosten' : type === 'skill_tree' ? 'Kunskapskartan Intro' : 'Kom Igång Guide'),
         content: content || ''
       }
     })
