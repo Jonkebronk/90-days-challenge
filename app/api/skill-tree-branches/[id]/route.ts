@@ -9,6 +9,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getServerSession(authOptions)
     const { id } = await params
 
     const branch = await prisma.skillTreeBranch.findUnique({
@@ -22,7 +23,10 @@ export async function GET(
             slug: true,
             orderInBranch: true,
             published: true,
-            estimatedReadingMinutes: true
+            estimatedReadingMinutes: true,
+            progress: session?.user?.id ? {
+              where: { userId: session.user.id as string }
+            } : false
           }
         }
       }
@@ -32,7 +36,7 @@ export async function GET(
       return NextResponse.json({ error: 'Branch not found' }, { status: 404 })
     }
 
-    return NextResponse.json({ branch })
+    return NextResponse.json(branch)
   } catch (error) {
     console.error('Error fetching branch:', error)
     return NextResponse.json(

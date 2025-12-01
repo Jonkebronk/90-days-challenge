@@ -23,6 +23,11 @@ type ArticleProgress = {
   lastReadAt?: Date | null
 }
 
+type SkillTreeBranch = {
+  id: string
+  name: string
+}
+
 type Article = {
   id: string
   title: string
@@ -38,6 +43,9 @@ type Article = {
   lastReviewed?: string | null
   version?: number | null
   category: ArticleCategory
+  skillTreeBranchId?: string | null
+  orderInBranch?: number
+  skillTreeBranch?: SkillTreeBranch | null
   progress?: ArticleProgress[]
   feedback?: Array<{
     isHelpful: boolean
@@ -52,7 +60,7 @@ export default function ArticleReaderPage() {
   const articleId = params.id as string
 
   const [article, setArticle] = useState<Article | null>(null)
-  const [categoryArticles, setCategoryArticles] = useState<Article[]>([])
+  const [branchArticles, setBranchArticles] = useState<Article[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isMarkingComplete, setIsMarkingComplete] = useState(false)
   const [relatedArticles, setRelatedArticles] = useState<any[]>([])
@@ -73,8 +81,10 @@ export default function ArticleReaderPage() {
         const data = await response.json()
         setArticle(data.article)
 
-        // Fetch all articles in the same category
-        await fetchCategoryArticles(data.article.categoryId)
+        // Fetch all articles in the same skill tree branch
+        if (data.article.skillTreeBranchId) {
+          await fetchBranchArticles(data.article.skillTreeBranchId)
+        }
 
         // Track that user viewed this article (only update lastReadAt, don't change completed status)
         await fetch(`/api/articles/${articleId}/progress`, {
@@ -94,18 +104,18 @@ export default function ArticleReaderPage() {
     }
   }
 
-  const fetchCategoryArticles = async (categoryId: string) => {
+  const fetchBranchArticles = async (branchId: string) => {
     try {
-      const response = await fetch('/api/articles')
+      const response = await fetch(`/api/skill-tree-branches/${branchId}`)
       if (response.ok) {
         const data = await response.json()
-        const articlesInCategory = data.articles
-          .filter((a: Article) => a.categoryId === categoryId && a.published)
-          .sort((a: Article, b: Article) => a.orderIndex - b.orderIndex)
-        setCategoryArticles(articlesInCategory)
+        const articlesInBranch = (data.articles || [])
+          .filter((a: Article) => a.published)
+          .sort((a: Article, b: Article) => (a.orderInBranch || 0) - (b.orderInBranch || 0))
+        setBranchArticles(articlesInBranch)
       }
     } catch (error) {
-      console.error('Error fetching category articles:', error)
+      console.error('Error fetching branch articles:', error)
     }
   }
 
@@ -160,22 +170,22 @@ export default function ArticleReaderPage() {
     return labels[difficulty] || difficulty
   }
 
-  // Calculate category progress
-  const categoryProgress = categoryArticles.length > 0
+  // Calculate branch progress
+  const branchProgress = branchArticles.length > 0
     ? {
-        completed: categoryArticles.filter(a => a.progress?.[0]?.completed).length,
-        total: categoryArticles.length,
-        percentage: Math.round((categoryArticles.filter(a => a.progress?.[0]?.completed).length / categoryArticles.length) * 100)
+        completed: branchArticles.filter(a => a.progress?.[0]?.completed).length,
+        total: branchArticles.length,
+        percentage: Math.round((branchArticles.filter(a => a.progress?.[0]?.completed).length / branchArticles.length) * 100)
       }
     : null
 
-  // Find next and previous articles
-  const currentIndex = categoryArticles.findIndex(a => a.id === articleId)
-  const nextCategoryArticle = currentIndex >= 0 && currentIndex < categoryArticles.length - 1
-    ? categoryArticles[currentIndex + 1]
+  // Find next and previous articles in branch
+  const currentIndex = branchArticles.findIndex(a => a.id === articleId)
+  const nextBranchArticle = currentIndex >= 0 && currentIndex < branchArticles.length - 1
+    ? branchArticles[currentIndex + 1]
     : null
-  const previousCategoryArticle = currentIndex > 0
-    ? categoryArticles[currentIndex - 1]
+  const previousBranchArticle = currentIndex > 0
+    ? branchArticles[currentIndex - 1]
     : null
 
   if (!session?.user) {
@@ -218,16 +228,16 @@ export default function ArticleReaderPage() {
       {/* Header */}
       <div className="bg-black/30 backdrop-blur-sm border-b border-gold-primary/20 sticky top-0 z-10">
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
-          {/* Category Progress Bar */}
-          {categoryProgress && (
+          {/* Branch Progress Bar */}
+          {branchProgress && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs sm:text-sm">
-                <span className="text-gray-400">{article.category.name}</span>
+                <span className="text-gray-400">{article.skillTreeBranch?.name || article.category.name}</span>
                 <span className="font-medium text-gold-light">
-                  {categoryProgress.completed} av {categoryProgress.total} artiklar lästa
+                  {branchProgress.completed} av {branchProgress.total} artiklar lästa
                 </span>
               </div>
-              <Progress value={categoryProgress.percentage} className="h-2 bg-[rgba(255,215,0,0.2)]" />
+              <Progress value={branchProgress.percentage} className="h-2 bg-[rgba(255,215,0,0.2)]" />
             </div>
           )}
         </div>
@@ -343,9 +353,9 @@ export default function ArticleReaderPage() {
 
             {/* Navigation */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 sm:pt-6 border-t border-gold-primary/20">
-              {previousCategoryArticle ? (
+              {previousBranchArticle ? (
                 <Button
-                  onClick={() => router.push(`/dashboard/articles/${previousCategoryArticle.id}`)}
+                  onClick={() => router.push(`/dashboard/articles/${previousBranchArticle.id}`)}
                   className="bg-[#FFD700] text-black hover:bg-[#FFA500] text-sm sm:text-base order-2 sm:order-1"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
@@ -353,18 +363,18 @@ export default function ArticleReaderPage() {
                 </Button>
               ) : (
                 <Button
-                  onClick={() => router.push('/dashboard/articles')}
+                  onClick={() => router.push('/dashboard/articles/skill-tree')}
                   className="bg-[#FFD700] text-black hover:bg-[#FFA500] text-sm sm:text-base order-2 sm:order-1"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Tillbaka till artiklar</span>
+                  <span className="hidden sm:inline">Tillbaka till Kunskapskartan</span>
                   <span className="sm:hidden">Tillbaka</span>
                 </Button>
               )}
 
-              {nextCategoryArticle ? (
+              {nextBranchArticle ? (
                 <Button
-                  onClick={() => router.push(`/dashboard/articles/${nextCategoryArticle.id}`)}
+                  onClick={() => router.push(`/dashboard/articles/${nextBranchArticle.id}`)}
                   className="bg-[#FFD700] text-black hover:bg-[#FFA500] text-sm sm:text-base order-1 sm:order-2"
                 >
                   Nästa artikel
@@ -372,11 +382,11 @@ export default function ArticleReaderPage() {
                 </Button>
               ) : (
                 <Button
-                  onClick={() => router.push('/dashboard/articles')}
+                  onClick={() => router.push('/dashboard/articles/skill-tree')}
                   className="bg-[#FFD700] text-black hover:bg-[#FFA500] text-sm sm:text-base order-1 sm:order-2"
                 >
-                  <span className="hidden sm:inline">Tillbaka till artiklar</span>
-                  <span className="sm:hidden">Alla artiklar</span>
+                  <span className="hidden sm:inline">Tillbaka till Kunskapskartan</span>
+                  <span className="sm:hidden">Kunskapskartan</span>
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               )}

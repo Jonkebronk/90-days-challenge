@@ -21,6 +21,7 @@ export async function GET(
       where: { id },
       include: {
         category: true,
+        skillTreeBranch: true,
         roadmapAssignments: {
           orderBy: { dayNumber: 'asc' }
         },
