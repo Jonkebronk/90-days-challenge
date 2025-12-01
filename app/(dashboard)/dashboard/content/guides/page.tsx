@@ -24,7 +24,7 @@ export default function GuidesManagementPage() {
   const [guides, setGuides] = useState<GuideContent[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState<string | null>(null)
-  const [activePreview, setActivePreview] = useState<'meal_plan' | 'workout' | 'onboarding' | 'food_guide' | 'nutrition_tips' | null>(null)
+  const [activePreview, setActivePreview] = useState<'meal_plan' | 'workout' | 'onboarding' | 'food_guide' | 'nutrition_tips' | 'skill_tree' | null>(null)
 
   const [mealPlanData, setMealPlanData] = useState({
     title: '',
@@ -47,6 +47,11 @@ export default function GuidesManagementPage() {
   })
 
   const [nutritionTipsData, setNutritionTipsData] = useState({
+    title: '',
+    content: ''
+  })
+
+  const [skillTreeData, setSkillTreeData] = useState({
     title: '',
     content: ''
   })
@@ -105,6 +110,14 @@ export default function GuidesManagementPage() {
             content: nutritionTips.content
           })
         }
+
+        const skillTree = data.guides.find((g: GuideContent) => g.type === 'skill_tree')
+        if (skillTree) {
+          setSkillTreeData({
+            title: skillTree.title,
+            content: skillTree.content
+          })
+        }
       }
     } catch (error) {
       console.error('Error fetching guides:', error)
@@ -114,10 +127,10 @@ export default function GuidesManagementPage() {
     }
   }
 
-  const handleSave = async (type: 'meal_plan' | 'workout' | 'onboarding' | 'food_guide' | 'nutrition_tips') => {
+  const handleSave = async (type: 'meal_plan' | 'workout' | 'onboarding' | 'food_guide' | 'nutrition_tips' | 'skill_tree') => {
     try {
       setSaving(type)
-      const data = type === 'meal_plan' ? mealPlanData : type === 'workout' ? workoutData : type === 'food_guide' ? foodGuideData : type === 'nutrition_tips' ? nutritionTipsData : onboardingData
+      const data = type === 'meal_plan' ? mealPlanData : type === 'workout' ? workoutData : type === 'food_guide' ? foodGuideData : type === 'nutrition_tips' ? nutritionTipsData : type === 'skill_tree' ? skillTreeData : onboardingData
 
       const response = await fetch('/api/guide-content', {
         method: 'PATCH',
@@ -181,12 +194,18 @@ export default function GuidesManagementPage() {
 
       {/* Tabs for different guides */}
       <Tabs defaultValue="onboarding" className="w-full">
-        <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-2 md:grid-cols-5 bg-[rgba(255,255,255,0.05)] border border-gold-primary/30">
+        <TabsList className="grid w-full max-w-6xl mx-auto grid-cols-2 md:grid-cols-6 bg-[rgba(255,255,255,0.05)] border border-gold-primary/30">
           <TabsTrigger
             value="onboarding"
             className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a]"
           >
             Kom Igång
+          </TabsTrigger>
+          <TabsTrigger
+            value="skill_tree"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#ec4899] data-[state=active]:to-[#db2777] data-[state=active]:text-white"
+          >
+            Kunskapskartan
           </TabsTrigger>
           <TabsTrigger
             value="meal_plan"
@@ -290,6 +309,95 @@ export default function GuidesManagementPage() {
 
               <div className="mt-4 p-4 bg-[rgba(59,130,246,0.1)] border border-[rgba(59,130,246,0.3)] rounded-lg">
                 <p className="text-sm font-medium text-[#3b82f6] mb-2">MDX Formatering:</p>
+                <ul className="text-sm text-gray-300 space-y-1 list-disc list-inside">
+                  <li># för huvudrubrik (H1)</li>
+                  <li>## för underrubrik (H2)</li>
+                  <li>**text** för fet text</li>
+                  <li>*text* för kursiv text</li>
+                  <li>[länktext](url) för länkar</li>
+                  <li>- för punktlistor</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Skill Tree / Kunskapskartan Intro */}
+        <TabsContent value="skill_tree">
+          <Card className="bg-[rgba(10,10,10,0.6)] border-2 border-[rgba(236,72,153,0.3)] backdrop-blur-[10px]">
+            <CardHeader>
+              <CardTitle className="text-gray-100">Kunskapskartan Intro</CardTitle>
+              <p className="text-sm text-gray-400">
+                Denna text visas som introduktion på kunskapskartan (/dashboard/articles/skill-tree)
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="skill-tree-title" className="text-gray-200">
+                  Titel
+                </Label>
+                <Input
+                  id="skill-tree-title"
+                  value={skillTreeData.title}
+                  onChange={(e) => setSkillTreeData({ ...skillTreeData, title: e.target.value })}
+                  className="bg-[rgba(255,255,255,0.05)] border-[rgba(236,72,153,0.3)] text-white"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label htmlFor="skill-tree-content" className="text-gray-200">
+                    Innehåll (MDX)
+                  </Label>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setActivePreview(activePreview === 'skill_tree' ? null : 'skill_tree')}
+                    className="bg-transparent border-[rgba(236,72,153,0.3)] text-gray-200"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    {activePreview === 'skill_tree' ? 'Dölj' : 'Visa'} Förhandsvisning
+                  </Button>
+                </div>
+                <Textarea
+                  id="skill-tree-content"
+                  value={skillTreeData.content}
+                  onChange={(e) => setSkillTreeData({ ...skillTreeData, content: e.target.value })}
+                  className="min-h-[400px] font-mono bg-[rgba(255,255,255,0.05)] border-[rgba(236,72,153,0.3)] text-white"
+                  placeholder="# Varför träning ensamt inte räcker&#10;&#10;Din text här..."
+                />
+              </div>
+
+              {activePreview === 'skill_tree' && (
+                <div className="border-2 border-[rgba(236,72,153,0.3)] rounded-lg p-6 bg-black/30">
+                  <h3 className="text-lg font-bold text-[#ec4899] mb-4">Förhandsvisning:</h3>
+                  <div className="prose prose-invert prose-lg max-w-none prose-headings:text-[#ec4899] prose-headings:font-bold prose-p:text-gray-200 prose-strong:text-[#ec4899] prose-li:text-gray-200">
+                    <MDXPreview content={skillTreeData.content} />
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => handleSave('skill_tree')}
+                  disabled={saving === 'skill_tree'}
+                  className="bg-gradient-to-r from-[#ec4899] to-[#db2777] text-white font-bold hover:shadow-[0_0_20px_rgba(236,72,153,0.5)]"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {saving === 'skill_tree' ? 'Sparar...' : 'Spara Ändringar'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => window.open('/dashboard/articles/skill-tree', '_blank')}
+                  className="bg-transparent border-[rgba(236,72,153,0.3)] text-gray-200"
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  Öppna Live-sida
+                </Button>
+              </div>
+
+              <div className="mt-4 p-4 bg-[rgba(236,72,153,0.1)] border border-[rgba(236,72,153,0.3)] rounded-lg">
+                <p className="text-sm font-medium text-[#ec4899] mb-2">MDX Formatering:</p>
                 <ul className="text-sm text-gray-300 space-y-1 list-disc list-inside">
                   <li># för huvudrubrik (H1)</li>
                   <li>## för underrubrik (H2)</li>
