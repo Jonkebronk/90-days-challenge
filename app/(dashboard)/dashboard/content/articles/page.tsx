@@ -41,110 +41,112 @@ import {
   Filter,
   ArrowUp,
   ArrowDown,
+  Heart,
+  Leaf,
+  Dumbbell,
+  BookOpen,
+  Brain,
+  Zap,
+  Target,
+  Flame,
+  Star,
+  Trophy,
+  LucideIcon,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
-type ArticleCategory = {
-  id: string
-  name: string
-  slug: string
-  color?: string
-  orderIndex: number
-  audience: string
-}
-
-type Article = {
+type BranchArticle = {
   id: string
   title: string
   slug: string
-  categoryId: string
+  orderInBranch: number
+  published: boolean
   difficulty?: string | null
   phase?: number | null
   estimatedReadingMinutes?: number | null
+}
+
+type Branch = {
+  id: string
+  name: string
+  icon: string
+  color: string
   orderIndex: number
-  published: boolean
-  publishedAt?: Date | null
-  createdAt: Date
-  category: ArticleCategory
-  _count: {
-    roadmapAssignments: number
-    progress: number
-  }
+  articles: BranchArticle[]
+}
+
+const iconMap: Record<string, LucideIcon> = {
+  Heart,
+  Leaf,
+  Dumbbell,
+  BookOpen,
+  Brain,
+  Zap,
+  Target,
+  Flame,
+  Star,
+  Trophy,
 }
 
 export default function ArticlesPage() {
   const { data: session } = useSession()
   const router = useRouter()
-  const [articles, setArticles] = useState<Article[]>([])
-  const [categories, setCategories] = useState<ArticleCategory[]>([])
+  const [branches, setBranches] = useState<Branch[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [isCreateCategoryDialogOpen, setIsCreateCategoryDialogOpen] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
   // Filters
-  const [filterAudience, setFilterAudience] = useState<string>('client')
-  const [filterCategory, setFilterCategory] = useState<string>('all')
+  const [filterBranch, setFilterBranch] = useState<string>('all')
   const [filterPhase, setFilterPhase] = useState<string>('all')
   const [filterPublished, setFilterPublished] = useState<string>('all')
 
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
-    categoryId: ''
+    branchId: ''
   })
 
-  const [categoryFormData, setCategoryFormData] = useState({
-    name: '',
-    slug: '',
-    color: '#FFD700'
-  })
+  const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
 
   useEffect(() => {
-    if (session?.user) {
-      fetchArticles()
-      fetchCategories()
+    if (session?.user && isCoach) {
+      fetchBranches()
     }
-  }, [session, filterAudience])
+  }, [session, isCoach])
 
-  const fetchArticles = async () => {
+  const fetchBranches = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch(`/api/articles?audience=${filterAudience}`, {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      })
+      const response = await fetch('/api/skill-tree-branches')
       if (response.ok) {
         const data = await response.json()
-        setArticles(data.articles)
+        // Fetch articles for each branch
+        const branchesWithArticles = await Promise.all(
+          data.branches.map(async (branch: Branch) => {
+            const articlesRes = await fetch(`/api/skill-tree-branches/${branch.id}`)
+            if (articlesRes.ok) {
+              const articlesData = await articlesRes.json()
+              return { ...branch, articles: articlesData.articles || [] }
+            }
+            return { ...branch, articles: [] }
+          })
+        )
+        setBranches(branchesWithArticles)
       } else {
-        toast.error('Kunde inte hämta artiklar')
+        toast.error('Kunde inte hämta grenar')
       }
     } catch (error) {
-      console.error('Error fetching articles:', error)
+      console.error('Error fetching branches:', error)
       toast.error('Ett fel uppstod')
     } finally {
       setIsLoading(false)
     }
   }
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch(`/api/article-categories?audience=${filterAudience}`)
-      if (response.ok) {
-        const data = await response.json()
-        setCategories(data.categories)
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-    }
-  }
-
   const handleCreateArticle = async () => {
-    if (!formData.title || !formData.slug || !formData.categoryId) {
-      toast.error('Alla fält krävs')
+    if (!formData.title || !formData.slug) {
+      toast.error('Titel och slug krävs')
       return
     }
 
@@ -153,14 +155,19 @@ export default function ArticlesPage() {
       const response = await fetch('/api/articles', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, published: false })
+        body: JSON.stringify({
+          title: formData.title,
+          slug: formData.slug,
+          published: false,
+          skillTreeBranchId: formData.branchId || null
+        })
       })
 
       if (response.ok) {
         const data = await response.json()
         toast.success('Artikel skapad')
         setIsCreateDialogOpen(false)
-        setFormData({ title: '', slug: '', categoryId: '' })
+        setFormData({ title: '', slug: '', branchId: '' })
         router.push(`/dashboard/content/articles/${data.article.id}`)
       } else {
         const data = await response.json()
@@ -174,7 +181,7 @@ export default function ArticlesPage() {
     }
   }
 
-  const handleDeleteArticle = async (article: Article) => {
+  const handleDeleteArticle = async (article: BranchArticle) => {
     if (!confirm(`Är du säker på att du vill radera "${article.title}"?`)) {
       return
     }
@@ -186,7 +193,7 @@ export default function ArticlesPage() {
 
       if (response.ok) {
         toast.success('Artikel raderad')
-        fetchArticles()
+        fetchBranches()
       } else {
         const data = await response.json()
         toast.error(data.error || 'Kunde inte radera artikel')
@@ -197,7 +204,7 @@ export default function ArticlesPage() {
     }
   }
 
-  const handleTogglePublished = async (article: Article) => {
+  const handleTogglePublished = async (article: BranchArticle) => {
     try {
       const response = await fetch(`/api/articles/${article.id}`, {
         method: 'PATCH',
@@ -206,15 +213,14 @@ export default function ArticlesPage() {
       })
 
       if (response.ok) {
-        const data = await response.json()
         toast.success(article.published ? 'Artikel avpublicerad' : 'Artikel publicerad')
-
-        // Update only the specific article in state to preserve scroll position
-        setArticles(prevArticles =>
-          prevArticles.map(a =>
-            a.id === article.id ? { ...a, published: data.article.published } : a
+        // Update locally
+        setBranches(prev => prev.map(branch => ({
+          ...branch,
+          articles: branch.articles.map(a =>
+            a.id === article.id ? { ...a, published: !article.published } : a
           )
-        )
+        })))
       } else {
         toast.error('Kunde inte uppdatera artikel')
       }
@@ -238,164 +244,62 @@ export default function ArticlesPage() {
     setFormData({ ...formData, title, slug: generateSlug(title) })
   }
 
-  const handleCategoryNameChange = (name: string) => {
-    setCategoryFormData({ ...categoryFormData, name, slug: generateSlug(name) })
-  }
+  const handleMoveArticle = async (branchId: string, article: BranchArticle, direction: 'up' | 'down') => {
+    const branch = branches.find(b => b.id === branchId)
+    if (!branch) return
 
-  const handleCreateCategory = async () => {
-    if (!categoryFormData.name || !categoryFormData.slug) {
-      toast.error('Namn och slug krävs')
+    const articles = [...branch.articles].sort((a, b) => a.orderInBranch - b.orderInBranch)
+    const currentIndex = articles.findIndex(a => a.id === article.id)
+
+    if (
+      (direction === 'up' && currentIndex === 0) ||
+      (direction === 'down' && currentIndex === articles.length - 1)
+    ) {
       return
     }
 
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    const [movedArticle] = articles.splice(currentIndex, 1)
+    articles.splice(newIndex, 0, movedArticle)
+
+    // Optimistic update
+    setBranches(prev => prev.map(b => {
+      if (b.id !== branchId) return b
+      return { ...b, articles: articles.map((a, i) => ({ ...a, orderInBranch: i })) }
+    }))
+
     try {
-      setIsSaving(true)
-      const response = await fetch('/api/article-categories', {
-        method: 'POST',
+      await fetch(`/api/skill-tree-branches/${branchId}/articles`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...categoryFormData,
-          audience: filterAudience
-        })
+        body: JSON.stringify({ articleIds: articles.map(a => a.id) })
       })
-
-      if (response.ok) {
-        toast.success('Kategori skapad')
-        setIsCreateCategoryDialogOpen(false)
-        setCategoryFormData({ name: '', slug: '', color: '#FFD700' })
-        fetchCategories()
-      } else {
-        const data = await response.json()
-        toast.error(data.error || 'Kunde inte skapa kategori')
-      }
     } catch (error) {
-      console.error('Error creating category:', error)
-      toast.error('Ett fel uppstod')
-    } finally {
-      setIsSaving(false)
+      console.error('Error reordering:', error)
+      fetchBranches()
     }
   }
 
-  const handleMoveArticle = async (article: Article, direction: 'up' | 'down') => {
-    // Get ALL articles in the same category (not just filtered ones)
-    const categoryArticles = articles
-      .filter(a => a.categoryId === article.categoryId)
-      .sort((a, b) => a.orderIndex - b.orderIndex)
-
-    console.log('Moving article:', article.title, 'Direction:', direction)
-    console.log('Category articles:', categoryArticles.map(a => ({ title: a.title, order: a.orderIndex })))
-
-    const currentIndex = categoryArticles.findIndex(a => a.id === article.id)
-    console.log('Current index:', currentIndex)
-
-    if (
-      (direction === 'up' && currentIndex === 0) ||
-      (direction === 'down' && currentIndex === categoryArticles.length - 1)
-    ) {
-      console.log('Cannot move - at boundary')
-      return
-    }
-
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
-    const otherArticle = categoryArticles[newIndex]
-
-    console.log('Swapping with:', otherArticle.title, 'orderIndex:', otherArticle.orderIndex)
-
-    try {
-      toast.loading('Flyttar artikel...')
-
-      // Swap orderIndex values
-      const results = await Promise.all([
-        fetch(`/api/articles/${article.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderIndex: otherArticle.orderIndex })
-        }),
-        fetch(`/api/articles/${otherArticle.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderIndex: article.orderIndex })
+  // Filter branches and articles
+  const filteredBranches = branches
+    .filter(branch => filterBranch === 'all' || branch.id === filterBranch)
+    .map(branch => ({
+      ...branch,
+      articles: branch.articles
+        .filter(article => {
+          if (filterPhase !== 'all' && article.phase?.toString() !== filterPhase) return false
+          if (filterPublished !== 'all' && article.published.toString() !== filterPublished) return false
+          return true
         })
-      ])
+        .sort((a, b) => a.orderInBranch - b.orderInBranch)
+    }))
+    .filter(branch => branch.articles.length > 0 || filterBranch === branch.id)
 
-      console.log('API responses:', results.map(r => r.status))
-
-      await fetchArticles()
-      toast.dismiss()
-      toast.success('Artikel flyttad')
-    } catch (error) {
-      console.error('Error moving article:', error)
-      toast.dismiss()
-      toast.error('Ett fel uppstod vid flytt av artikel')
-    }
+  const getIconComponent = (iconName: string) => {
+    return iconMap[iconName] || Heart
   }
 
-  const handleMoveCategory = async (category: ArticleCategory, direction: 'up' | 'down') => {
-    const currentIndex = categories.findIndex(c => c.id === category.id)
-    if (
-      (direction === 'up' && currentIndex === 0) ||
-      (direction === 'down' && currentIndex === categories.length - 1)
-    ) {
-      return
-    }
-
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
-    const otherCategory = categories[newIndex]
-
-    try {
-      // Swap orderIndex values
-      await Promise.all([
-        fetch(`/api/article-categories/${category.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderIndex: otherCategory.orderIndex })
-        }),
-        fetch(`/api/article-categories/${otherCategory.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderIndex: category.orderIndex })
-        })
-      ])
-
-      fetchCategories()
-      fetchArticles()
-    } catch (error) {
-      console.error('Error moving category:', error)
-      toast.error('Ett fel uppstod')
-    }
-  }
-
-  const filteredArticles = articles.filter(article => {
-    if (filterCategory !== 'all' && article.categoryId !== filterCategory) return false
-    if (filterPhase !== 'all' && article.phase?.toString() !== filterPhase) return false
-    if (filterPublished !== 'all' && article.published.toString() !== filterPublished) return false
-    return true
-  })
-
-  // Group articles by category
-  const articlesByCategory = filteredArticles.reduce((acc, article) => {
-    const categoryId = article.categoryId
-    if (!acc[categoryId]) {
-      acc[categoryId] = {
-        category: article.category,
-        articles: []
-      }
-    }
-    acc[categoryId].articles.push(article)
-    return acc
-  }, {} as Record<string, { category: ArticleCategory; articles: Article[] }>)
-
-  // Sort articles within each category by orderIndex
-  Object.values(articlesByCategory).forEach(group => {
-    group.articles.sort((a, b) => a.orderIndex - b.orderIndex)
-  })
-
-  // Sort category groups by category orderIndex
-  const categoryGroups = Object.values(articlesByCategory).sort((a, b) =>
-    a.category.orderIndex - b.category.orderIndex
-  )
-
-  if (!session?.user || (session.user as any).role !== 'coach') {
+  if (!session?.user || !isCoach) {
     return (
       <div className="container mx-auto p-6">
         <Card className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]">
@@ -413,7 +317,7 @@ export default function ArticlesPage() {
         <div>
           <h1 className="text-3xl font-bold text-gray-200">Skapa Artiklar</h1>
           <p className="text-gray-400 mt-1">
-            Skapa och hantera artiklar för Kunskapsbanken
+            Skapa och hantera artiklar för Kunskapskartan
           </p>
         </div>
         <Button
@@ -425,46 +329,6 @@ export default function ArticlesPage() {
         </Button>
       </div>
 
-      {/* Audience Tabs */}
-      <div className="flex gap-2 flex-wrap items-center justify-between">
-        <div className="flex gap-2">
-          <Button
-            variant={filterAudience === 'client' ? 'default' : 'outline'}
-            onClick={() => {
-              setFilterAudience('client')
-              setFilterCategory('all')
-            }}
-            className={filterAudience === 'client'
-              ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-black font-semibold'
-              : 'border-gold-primary/30 text-gray-300 hover:bg-white/10'
-            }
-          >
-            Klient Kunskapsbank
-          </Button>
-          <Button
-            variant={filterAudience === 'coach' ? 'default' : 'outline'}
-            onClick={() => {
-              setFilterAudience('coach')
-              setFilterCategory('all')
-            }}
-            className={filterAudience === 'coach'
-              ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold'
-              : 'border-purple-500/30 text-gray-300 hover:bg-purple-500/10'
-            }
-          >
-            Coach Kunskapsbank
-          </Button>
-        </div>
-        <Button
-          variant="outline"
-          onClick={() => setIsCreateCategoryDialogOpen(true)}
-          className="border-gold-primary/30 text-gray-300 hover:bg-white/10"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Ny kategori
-        </Button>
-      </div>
-
       {/* Filters */}
       <Card className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]">
         <CardContent className="pt-6">
@@ -472,16 +336,16 @@ export default function ArticlesPage() {
             <Filter className="h-5 w-5 text-gold-primary" />
             <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label className="text-xs text-gray-400 mb-1 block">Kategori</Label>
-                <Select value={filterCategory} onValueChange={setFilterCategory}>
+                <Label className="text-xs text-gray-400 mb-1 block">Gren</Label>
+                <Select value={filterBranch} onValueChange={setFilterBranch}>
                   <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                    <SelectValue placeholder="Välj kategori" />
+                    <SelectValue placeholder="Välj gren" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Alla kategorier</SelectItem>
-                    {categories.map(cat => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name}
+                    <SelectItem value="all">Alla grenar</SelectItem>
+                    {branches.map(branch => (
+                      <SelectItem key={branch.id} value={branch.id}>
+                        {branch.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -528,7 +392,7 @@ export default function ArticlesPage() {
               </div>
             </CardContent>
           </Card>
-        ) : filteredArticles.length === 0 ? (
+        ) : filteredBranches.length === 0 ? (
           <Card className="bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]">
             <CardContent className="py-8">
               <div className="text-center">
@@ -541,161 +405,133 @@ export default function ArticlesPage() {
             </CardContent>
           </Card>
         ) : (
-          categoryGroups.map((group) => {
-            const categoryIndex = categories.findIndex(c => c.id === group.category.id)
+          filteredBranches.map((branch) => {
+            const Icon = getIconComponent(branch.icon)
             return (
-            <Card
-              key={group.category.id}
-              className="overflow-hidden bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]"
-            >
-              <CardHeader
-                className="border-b border-gold-primary/20"
-                style={{
-                  background: `linear-gradient(to right, ${group.category.color}15, transparent)`
-                }}
+              <Card
+                key={branch.id}
+                className="overflow-hidden bg-white/5 border border-gold-primary/20 backdrop-blur-[10px]"
               >
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-1 h-8 rounded-full"
-                      style={{
-                        backgroundColor: group.category.color || '#D4AF37'
-                      }}
-                    />
-                    <span className="text-gray-200 uppercase tracking-[1px] font-semibold">
-                      {group.category.name}
-                    </span>
-                    <Badge className="bg-gold-primary/10 text-gold-primary border border-gold-primary/30">
-                      {group.articles.length}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleMoveCategory(group.category, 'up')}
-                      disabled={categoryIndex === 0}
-                      className="hover:bg-white/10"
-                    >
-                      <ArrowUp className="h-4 w-4 text-gray-400" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleMoveCategory(group.category, 'down')}
-                      disabled={categoryIndex === categories.length - 1}
-                      className="hover:bg-white/10"
-                    >
-                      <ArrowDown className="h-4 w-4 text-gray-400" />
-                    </Button>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-b border-gold-primary/20 hover:bg-transparent">
-                      <TableHead className="text-gray-400 font-semibold">Titel</TableHead>
-                      <TableHead className="text-gray-400 font-semibold">Fas</TableHead>
-                      <TableHead className="text-gray-400 font-semibold">Svårighetsgrad</TableHead>
-                      <TableHead className="text-gray-400 font-semibold">Tid</TableHead>
-                      <TableHead className="text-gray-400 font-semibold">Status</TableHead>
-                      <TableHead className="text-right text-gray-400 font-semibold">Åtgärder</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {group.articles.map((article, index) => (
-                      <TableRow key={article.id} className="border-b border-white/10 hover:bg-white/5">
-                        <TableCell className="font-medium text-gray-200">{article.title}</TableCell>
-                        <TableCell className="text-gray-300">
-                          {article.phase ? `Fas ${article.phase}` : '-'}
-                        </TableCell>
-                        <TableCell className="text-gray-300">
-                          {article.difficulty ? (
-                            <Badge variant="secondary" className="bg-white/10 text-gray-300">{article.difficulty}</Badge>
-                          ) : '-'}
-                        </TableCell>
-                        <TableCell className="text-gray-300">
-                          {article.estimatedReadingMinutes ? `${article.estimatedReadingMinutes} min` : '-'}
-                        </TableCell>
-                        <TableCell className="text-gray-300">
-                          {article.published ? (
-                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Publicerad</Badge>
-                          ) : (
-                            <Badge variant="secondary" className="bg-white/10 text-gray-400">Utkast</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            {(() => {
-                              // Get position in ALL category articles (not just filtered)
-                              const allCategoryArticles = articles
-                                .filter(a => a.categoryId === article.categoryId)
-                                .sort((a, b) => a.orderIndex - b.orderIndex)
-                              const positionInCategory = allCategoryArticles.findIndex(a => a.id === article.id)
-                              const isFirst = positionInCategory === 0
-                              const isLast = positionInCategory === allCategoryArticles.length - 1
-
-                              return (
-                                <>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleMoveArticle(article, 'up')}
-                                    disabled={isFirst}
-                                    className="hover:bg-white/10"
-                                  >
-                                    <ArrowUp className="h-4 w-4 text-gray-400" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleMoveArticle(article, 'down')}
-                                    disabled={isLast}
-                                    className="hover:bg-white/10"
-                                  >
-                                    <ArrowDown className="h-4 w-4 text-gray-400" />
-                                  </Button>
-                                </>
-                              )
-                            })()}
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleTogglePublished(article)}
-                              title={article.published ? 'Avpublicera' : 'Publicera'}
-                              className="hover:bg-white/10"
-                            >
+                <CardHeader
+                  className="border-b border-gold-primary/20"
+                  style={{
+                    background: `linear-gradient(to right, ${branch.color}15, transparent)`
+                  }}
+                >
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: branch.color }}
+                      >
+                        <Icon className="w-5 h-5 text-white" />
+                      </div>
+                      <span className="text-gray-200 uppercase tracking-[1px] font-semibold">
+                        {branch.name}
+                      </span>
+                      <Badge className="bg-gold-primary/10 text-gold-primary border border-gold-primary/30">
+                        {branch.articles.length}
+                      </Badge>
+                    </div>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {branch.articles.length === 0 ? (
+                    <div className="p-6 text-center text-gray-500">
+                      Inga artiklar i denna gren
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="border-b border-gold-primary/20 hover:bg-transparent">
+                          <TableHead className="text-gray-400 font-semibold">Titel</TableHead>
+                          <TableHead className="text-gray-400 font-semibold">Fas</TableHead>
+                          <TableHead className="text-gray-400 font-semibold">Svårighetsgrad</TableHead>
+                          <TableHead className="text-gray-400 font-semibold">Tid</TableHead>
+                          <TableHead className="text-gray-400 font-semibold">Status</TableHead>
+                          <TableHead className="text-right text-gray-400 font-semibold">Åtgärder</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {branch.articles.map((article, index) => (
+                          <TableRow key={article.id} className="border-b border-white/10 hover:bg-white/5">
+                            <TableCell className="font-medium text-gray-200">{article.title}</TableCell>
+                            <TableCell className="text-gray-300">
+                              {article.phase ? `Fas ${article.phase}` : '-'}
+                            </TableCell>
+                            <TableCell className="text-gray-300">
+                              {article.difficulty ? (
+                                <Badge variant="secondary" className="bg-white/10 text-gray-300">{article.difficulty}</Badge>
+                              ) : '-'}
+                            </TableCell>
+                            <TableCell className="text-gray-300">
+                              {article.estimatedReadingMinutes ? `${article.estimatedReadingMinutes} min` : '-'}
+                            </TableCell>
+                            <TableCell className="text-gray-300">
                               {article.published ? (
-                                <EyeOff className="h-4 w-4 text-gray-400" />
+                                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Publicerad</Badge>
                               ) : (
-                                <Eye className="h-4 w-4 text-gray-400" />
+                                <Badge variant="secondary" className="bg-white/10 text-gray-400">Utkast</Badge>
                               )}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
-                              className="hover:bg-white/10"
-                            >
-                              <Pencil className="h-4 w-4 text-gold-primary" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteArticle(article)}
-                              className="hover:bg-red-500/10"
-                            >
-                              <Trash2 className="h-4 w-4 text-red-400" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleMoveArticle(branch.id, article, 'up')}
+                                  disabled={index === 0}
+                                  className="hover:bg-white/10"
+                                >
+                                  <ArrowUp className="h-4 w-4 text-gray-400" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleMoveArticle(branch.id, article, 'down')}
+                                  disabled={index === branch.articles.length - 1}
+                                  className="hover:bg-white/10"
+                                >
+                                  <ArrowDown className="h-4 w-4 text-gray-400" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleTogglePublished(article)}
+                                  title={article.published ? 'Avpublicera' : 'Publicera'}
+                                  className="hover:bg-white/10"
+                                >
+                                  {article.published ? (
+                                    <EyeOff className="h-4 w-4 text-gray-400" />
+                                  ) : (
+                                    <Eye className="h-4 w-4 text-gray-400" />
+                                  )}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
+                                  className="hover:bg-white/10"
+                                >
+                                  <Pencil className="h-4 w-4 text-gold-primary" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleDeleteArticle(article)}
+                                  className="hover:bg-red-500/10"
+                                >
+                                  <Trash2 className="h-4 w-4 text-red-400" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
             )
           })
         )}
@@ -707,7 +543,7 @@ export default function ArticlesPage() {
           <DialogHeader>
             <DialogTitle className="text-gray-200">Skapa ny artikel</DialogTitle>
             <DialogDescription className="text-gray-400">
-              Lägg till en ny artikel till artikel banken.
+              Lägg till en ny artikel till Kunskapskartan.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -732,22 +568,26 @@ export default function ArticlesPage() {
               />
             </div>
             <div>
-              <Label htmlFor="category" className="text-gray-200">Kategori *</Label>
+              <Label htmlFor="branch" className="text-gray-200">Gren (valfritt)</Label>
               <Select
-                value={formData.categoryId}
-                onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
+                value={formData.branchId}
+                onValueChange={(value) => setFormData({ ...formData, branchId: value })}
               >
                 <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                  <SelectValue placeholder="Välj kategori" />
+                  <SelectValue placeholder="Välj gren" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map(cat => (
-                    <SelectItem key={cat.id} value={cat.id}>
-                      {cat.name}
+                  <SelectItem value="">Ingen gren</SelectItem>
+                  {branches.map(branch => (
+                    <SelectItem key={branch.id} value={branch.id}>
+                      {branch.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <p className="text-xs text-gray-500 mt-1">
+                Du kan tilldela artikel till en gren senare via Kunskapskartan Admin
+              </p>
             </div>
           </div>
           <DialogFooter>
@@ -764,81 +604,6 @@ export default function ArticlesPage() {
               className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-black font-semibold"
             >
               {isSaving ? 'Skapar...' : 'Skapa artikel'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Create Category Dialog */}
-      <Dialog open={isCreateCategoryDialogOpen} onOpenChange={setIsCreateCategoryDialogOpen}>
-        <DialogContent className="bg-gray-900 border border-gold-primary/30">
-          <DialogHeader>
-            <DialogTitle className="text-gray-200">Skapa ny kategori</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Skapa en ny kategori för {filterAudience === 'coach' ? 'Coach' : 'Klient'} Kunskapsbanken.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="categoryName" className="text-gray-200">Namn *</Label>
-              <Input
-                id="categoryName"
-                value={categoryFormData.name}
-                onChange={(e) => handleCategoryNameChange(e.target.value)}
-                placeholder="t.ex. Träning"
-                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-gray-500"
-              />
-            </div>
-            <div>
-              <Label htmlFor="categorySlug" className="text-gray-200">Slug *</Label>
-              <Input
-                id="categorySlug"
-                value={categoryFormData.slug}
-                onChange={(e) => setCategoryFormData({ ...categoryFormData, slug: e.target.value })}
-                placeholder="t.ex. traning"
-                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-gray-500"
-              />
-            </div>
-            <div>
-              <Label htmlFor="categoryColor" className="text-gray-200">Färg</Label>
-              <div className="flex gap-2 items-center">
-                <Input
-                  id="categoryColor"
-                  type="color"
-                  value={categoryFormData.color}
-                  onChange={(e) => setCategoryFormData({ ...categoryFormData, color: e.target.value })}
-                  className="w-16 h-10 p-1 bg-black/30 border-gold-primary/30"
-                />
-                <Input
-                  value={categoryFormData.color}
-                  onChange={(e) => setCategoryFormData({ ...categoryFormData, color: e.target.value })}
-                  placeholder="#FFD700"
-                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-gray-500"
-                />
-              </div>
-            </div>
-            <div className="p-3 bg-black/20 rounded-lg border border-gold-primary/20">
-              <p className="text-sm text-gray-400">
-                Kategorin skapas i: <span className={filterAudience === 'coach' ? 'text-purple-400 font-semibold' : 'text-gold-primary font-semibold'}>
-                  {filterAudience === 'coach' ? 'Coach Kunskapsbank' : 'Klient Kunskapsbank'}
-                </span>
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsCreateCategoryDialogOpen(false)}
-              className="border-gold-primary/30 text-gray-300 hover:bg-white/10"
-            >
-              Avbryt
-            </Button>
-            <Button
-              onClick={handleCreateCategory}
-              disabled={isSaving}
-              className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-black font-semibold"
-            >
-              {isSaving ? 'Skapar...' : 'Skapa kategori'}
             </Button>
           </DialogFooter>
         </DialogContent>
