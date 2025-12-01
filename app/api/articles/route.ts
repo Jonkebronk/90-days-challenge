@@ -141,6 +141,7 @@ export async function POST(request: Request) {
       content,
       slug,
       categoryId,
+      skillTreeBranchId,
       tags,
       difficulty,
       phase,
@@ -149,30 +150,41 @@ export async function POST(request: Request) {
       published
     } = body
 
-    if (!title || !slug || !categoryId) {
+    if (!title || !slug) {
       return NextResponse.json(
-        { error: 'Title, slug, and category are required' },
+        { error: 'Title and slug are required' },
         { status: 400 }
       )
     }
 
-    // Get all articles in category to calculate next orderIndex
-    const existingArticles = await prisma.article.findMany({
-      where: { categoryId },
-      select: { orderIndex: true }
-    })
-
-    // Find the highest orderIndex, defaulting to -1 so first article gets 0
-    const maxOrderIndex = existingArticles.length > 0
-      ? Math.max(...existingArticles.map(a => a.orderIndex))
-      : -1
+    // Calculate orderIndex based on category or branch
+    let maxOrderIndex = -1
+    if (categoryId) {
+      const existingArticles = await prisma.article.findMany({
+        where: { categoryId },
+        select: { orderIndex: true }
+      })
+      if (existingArticles.length > 0) {
+        maxOrderIndex = Math.max(...existingArticles.map(a => a.orderIndex))
+      }
+    } else if (skillTreeBranchId) {
+      const existingArticles = await prisma.article.findMany({
+        where: { skillTreeBranchId },
+        select: { orderInBranch: true }
+      })
+      if (existingArticles.length > 0) {
+        maxOrderIndex = Math.max(...existingArticles.map(a => a.orderInBranch ?? -1))
+      }
+    }
 
     const article = await prisma.article.create({
       data: {
         title,
         content: content || '',
         slug,
-        categoryId,
+        categoryId: categoryId || null,
+        skillTreeBranchId: skillTreeBranchId || null,
+        orderInBranch: skillTreeBranchId ? maxOrderIndex + 1 : null,
         tags: tags || [],
         difficulty: difficulty && difficulty !== '' ? difficulty : null,
         phase: phase && phase !== '' ? parseInt(phase) : null,
@@ -180,10 +192,11 @@ export async function POST(request: Request) {
         coverImage: coverImage || null,
         published: published || false,
         publishedAt: published ? new Date() : null,
-        orderIndex: maxOrderIndex + 1
+        orderIndex: categoryId ? maxOrderIndex + 1 : 0
       },
       include: {
-        category: true
+        category: true,
+        skillTreeBranch: true
       }
     })
 
