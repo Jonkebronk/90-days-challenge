@@ -466,7 +466,7 @@ export default function DashboardPage() {
             </div>
           </Link>
 
-          <Link href="/dashboard/articles">
+          <Link href="/dashboard/articles/skill-tree">
             <div className="bg-white border border-gray-200 rounded-xl p-6 hover:border-gold-primary hover:shadow-lg hover:scale-105 transition-all cursor-pointer group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -474,8 +474,8 @@ export default function DashboardPage() {
                     <BookOpen className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Kunskapsbanken</h3>
-                    <p className="text-sm text-gray-600">Läs artiklar</p>
+                    <h3 className="text-lg font-semibold text-gray-900">Kunskapskartan</h3>
+                    <p className="text-sm text-gray-600">Utforska din resa</p>
                   </div>
                 </div>
                 <ChevronRight className="w-5 h-5 text-gold-primary group-hover:translate-x-1 transition-transform" />
@@ -1117,14 +1117,14 @@ export default function DashboardPage() {
               </div>
             </Link>
 
-            {/* 4. Kunskapsbanken */}
-            <Link href="/dashboard/articles" className="flex items-start gap-3 group">
+            {/* 4. Kunskapskartan */}
+            <Link href="/dashboard/articles/skill-tree" className="flex items-start gap-3 group">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                 <span className="text-white font-bold text-sm">4</span>
               </div>
               <div>
-                <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-purple-600 transition-colors">Utforska kunskapsbanken</h4>
-                <p className="text-gray-600 text-xs">Lär dig grunderna för framgång</p>
+                <h4 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-purple-600 transition-colors">Utforska kunskapskartan</h4>
+                <p className="text-gray-600 text-xs">Din resa till framgångsrik förändring</p>
               </div>
             </Link>
 
@@ -1200,14 +1200,14 @@ export default function DashboardPage() {
           </div>
         </Link>
 
-        {/* Kunskapsbanken Card */}
-        <Link href="/dashboard/articles">
+        {/* Kunskapskartan Card */}
+        <Link href="/dashboard/articles/skill-tree">
           <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
               <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
             </div>
             <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Kunskap</h3>
-            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Artiklar & guider</p>
+            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Kunskapskartan</p>
           </div>
         </Link>
 

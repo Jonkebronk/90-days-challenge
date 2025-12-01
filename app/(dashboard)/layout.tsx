@@ -74,7 +74,6 @@ const navigation = [
       { name: 'Kunskapskartan', href: '/dashboard/content/skill-tree', icon: Map },
     ]
   },
-  { name: 'Kunskapsbanken', href: '/dashboard/articles', icon: Library },
   { name: 'Kunskapskartan', href: '/dashboard/articles/skill-tree', icon: Map },
   { name: 'Coach Kunskapsbank', href: '/dashboard/coach-articles', icon: GraduationCap, coachOnly: true },
   { name: 'Recept', href: '/dashboard/recipes', icon: ChefHat },

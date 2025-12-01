@@ -238,12 +238,12 @@ export default function ArticleReaderPage() {
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
           <Button
-            onClick={() => router.push('/dashboard/articles')}
+            onClick={() => router.push('/dashboard/articles/skill-tree')}
             variant="ghost"
             className="mb-4 text-gray-400 hover:text-white hover:bg-white/10 -ml-2"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Tillbaka till kunskapsbanken
+            Tillbaka till Kunskapskartan
           </Button>
 
           {/* Cover Image */}
