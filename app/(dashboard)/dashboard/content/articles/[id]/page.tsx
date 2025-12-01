@@ -349,7 +349,7 @@ export default function ArticleEditorPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => router.push('/dashboard/content/articles')}
+            onClick={() => router.back()}
             className="text-gray-300 hover:text-gold-primary hover:bg-white/10"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
