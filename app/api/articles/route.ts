@@ -184,7 +184,7 @@ export async function POST(request: Request) {
         slug,
         categoryId: categoryId || null,
         skillTreeBranchId: skillTreeBranchId || null,
-        orderInBranch: skillTreeBranchId ? maxOrderIndex + 1 : null,
+        orderInBranch: skillTreeBranchId ? maxOrderIndex + 1 : undefined,
         tags: tags || [],
         difficulty: difficulty && difficulty !== '' ? difficulty : null,
         phase: phase && phase !== '' ? parseInt(phase) : null,
