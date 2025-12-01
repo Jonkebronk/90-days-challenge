@@ -18,10 +18,15 @@ export async function GET(request: Request) {
     const published = searchParams.get('published')
     const phase = searchParams.get('phase')
     const audience = searchParams.get('audience')
+    const unassigned = searchParams.get('unassigned')
 
     const where: any = {}
 
-    if (categoryId) {
+    // Filter for unassigned articles (no category and no branch)
+    if (unassigned === 'true') {
+      where.categoryId = null
+      where.skillTreeBranchId = null
+    } else if (categoryId) {
       where.categoryId = categoryId
     }
 

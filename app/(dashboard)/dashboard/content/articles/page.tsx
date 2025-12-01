@@ -92,6 +92,7 @@ export default function ArticlesPage() {
   const { data: session } = useSession()
   const router = useRouter()
   const [branches, setBranches] = useState<Branch[]>([])
+  const [unassignedArticles, setUnassignedArticles] = useState<BranchArticle[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -132,6 +133,13 @@ export default function ArticlesPage() {
           })
         )
         setBranches(branchesWithArticles)
+
+        // Fetch unassigned articles
+        const unassignedRes = await fetch('/api/articles?unassigned=true')
+        if (unassignedRes.ok) {
+          const unassignedData = await unassignedRes.json()
+          setUnassignedArticles(unassignedData.articles || [])
+        }
       } else {
         toast.error('Kunde inte hämta grenar')
       }
@@ -213,13 +221,17 @@ export default function ArticlesPage() {
 
       if (response.ok) {
         toast.success(article.published ? 'Artikel avpublicerad' : 'Artikel publicerad')
-        // Update locally
+        // Update locally in branches
         setBranches(prev => prev.map(branch => ({
           ...branch,
           articles: branch.articles.map(a =>
             a.id === article.id ? { ...a, published: !article.published } : a
           )
         })))
+        // Update locally in unassigned
+        setUnassignedArticles(prev => prev.map(a =>
+          a.id === article.id ? { ...a, published: !article.published } : a
+        ))
       } else {
         toast.error('Kunde inte uppdatera artikel')
       }
@@ -341,6 +353,7 @@ export default function ArticlesPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Alla grenar</SelectItem>
+                    <SelectItem value="unassigned">Otilldelade</SelectItem>
                     {branches.map(branch => (
                       <SelectItem key={branch.id} value={branch.id}>
                         {branch.name}
@@ -508,6 +521,98 @@ export default function ArticlesPage() {
               </Card>
             )
           })
+        )}
+
+        {/* Unassigned Articles Section */}
+        {(filterBranch === 'all' || filterBranch === 'unassigned') && unassignedArticles.length > 0 && (
+          <Card className="overflow-hidden bg-white/5 border border-orange-500/30 backdrop-blur-[10px]">
+            <CardHeader
+              className="border-b border-orange-500/20"
+              style={{
+                background: 'linear-gradient(to right, rgba(249, 115, 22, 0.1), transparent)'
+              }}
+            >
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-orange-500">
+                    <FileText className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-gray-200 uppercase tracking-[1px] font-semibold">
+                    Otilldelade artiklar
+                  </span>
+                  <Badge className="bg-orange-500/10 text-orange-400 border border-orange-500/30">
+                    {unassignedArticles.filter(a =>
+                      filterPublished === 'all' || a.published.toString() === filterPublished
+                    ).length}
+                  </Badge>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-b border-orange-500/20 hover:bg-transparent">
+                    <TableHead className="text-gray-400 font-semibold">Titel</TableHead>
+                    <TableHead className="text-gray-400 font-semibold">Tid</TableHead>
+                    <TableHead className="text-gray-400 font-semibold">Status</TableHead>
+                    <TableHead className="text-right text-gray-400 font-semibold">Åtgärder</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {unassignedArticles
+                    .filter(a => filterPublished === 'all' || a.published.toString() === filterPublished)
+                    .map((article) => (
+                    <TableRow key={article.id} className="border-b border-white/10 hover:bg-white/5">
+                      <TableCell className="font-medium text-gray-200">{article.title}</TableCell>
+                      <TableCell className="text-gray-300">
+                        {article.estimatedReadingMinutes ? `${article.estimatedReadingMinutes} min` : '-'}
+                      </TableCell>
+                      <TableCell className="text-gray-300">
+                        {article.published ? (
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Publicerad</Badge>
+                        ) : (
+                          <Badge variant="secondary" className="bg-white/10 text-gray-400">Utkast</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleTogglePublished(article)}
+                            title={article.published ? 'Avpublicera' : 'Publicera'}
+                            className="hover:bg-white/10"
+                          >
+                            {article.published ? (
+                              <EyeOff className="h-4 w-4 text-gray-400" />
+                            ) : (
+                              <Eye className="h-4 w-4 text-gray-400" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
+                            className="hover:bg-white/10"
+                          >
+                            <Pencil className="h-4 w-4 text-gold-primary" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteArticle(article)}
+                            className="hover:bg-red-500/10"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-400" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         )}
       </div>
 
