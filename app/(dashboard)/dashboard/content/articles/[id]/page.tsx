@@ -21,24 +21,17 @@ import { ArrowLeft, Save, Eye, EyeOff, Plus, X, Upload, FileText, ImagePlus } fr
 import { toast } from 'sonner'
 import { MDXPreview } from '@/components/mdx-preview'
 
-type ArticleCategory = {
-  id: string
-  name: string
-}
-
 type Article = {
   id: string
   title: string
   content: string
   slug: string
-  categoryId: string
   tags: string[]
   difficulty?: string | null
   phase?: number | null
   estimatedReadingMinutes?: number | null
   coverImage?: string | null
   published: boolean
-  category: ArticleCategory
 }
 
 export default function ArticleEditorPage() {
@@ -48,7 +41,6 @@ export default function ArticleEditorPage() {
   const articleId = params.id as string
 
   const [article, setArticle] = useState<Article | null>(null)
-  const [categories, setCategories] = useState<ArticleCategory[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit')
@@ -57,7 +49,6 @@ export default function ArticleEditorPage() {
     title: '',
     content: '',
     slug: '',
-    categoryId: '',
     tags: [] as string[],
     difficulty: '',
     phase: '',
@@ -129,7 +120,6 @@ export default function ArticleEditorPage() {
   useEffect(() => {
     if (session?.user) {
       fetchArticle()
-      fetchCategories()
     }
   }, [session, articleId])
 
@@ -158,7 +148,6 @@ export default function ArticleEditorPage() {
               title: data.article.title,
               content: data.article.content,
               slug: data.article.slug,
-              categoryId: data.article.categoryId,
               tags: data.article.tags || [],
               difficulty: data.article.difficulty || '',
               phase: data.article.phase?.toString() || '',
@@ -172,7 +161,6 @@ export default function ArticleEditorPage() {
             title: data.article.title,
             content: data.article.content,
             slug: data.article.slug,
-            categoryId: data.article.categoryId,
             tags: data.article.tags || [],
             difficulty: data.article.difficulty || '',
             phase: data.article.phase?.toString() || '',
@@ -190,18 +178,6 @@ export default function ArticleEditorPage() {
       toast.error('Ett fel uppstod')
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/article-categories')
-      if (response.ok) {
-        const data = await response.json()
-        setCategories(data.categories)
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error)
     }
   }
 
@@ -241,7 +217,6 @@ export default function ArticleEditorPage() {
           title: data.article.title,
           content: data.article.content,
           slug: data.article.slug,
-          categoryId: data.article.categoryId,
           tags: data.article.tags,
           difficulty: data.article.difficulty || '',
           phase: data.article.phase ? String(data.article.phase) : '',
@@ -415,25 +390,7 @@ export default function ArticleEditorPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="category" className="text-gray-200">Kategori</Label>
-              <Select
-                value={formData.categoryId}
-                onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
-              >
-                <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map(cat => (
-                    <SelectItem key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="phase" className="text-gray-200">Fas</Label>
               <Select

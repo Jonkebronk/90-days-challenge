@@ -58,7 +58,6 @@ const navigation = [
     icon: BookOpen,
     coachOnly: true,
     dropdown: [
-      { name: 'Skapa Kategorier', href: '/dashboard/content/categories', icon: FolderOpen },
       { name: 'Skapa Artiklar', href: '/dashboard/content/articles', icon: Library },
       { name: 'Skapa Recept Kategorier', href: '/dashboard/content/recipe-categories', icon: FolderOpen },
       { name: 'Skapa Recept', href: '/dashboard/content/recipes', icon: ChefHat },
