@@ -4,7 +4,7 @@ export interface RelatedArticle {
   id: string
   title: string
   description: string | null
-  categoryName: string
+  categoryName: string | null
   phase: number | null
   estimatedReadingMinutes: number | null
   coverImage: string | null
@@ -97,7 +97,7 @@ export async function getRelatedArticles(
       id: candidate.id,
       title: candidate.title,
       description: candidate.content.substring(0, 150) || null, // Use content preview as description
-      categoryName: candidate.category.name,
+      categoryName: candidate.category?.name ?? null,
       phase: candidate.phase,
       estimatedReadingMinutes: candidate.estimatedReadingMinutes,
       coverImage: candidate.coverImage,
@@ -150,7 +150,7 @@ export async function getNextInSeries(
     id: next.id,
     title: next.title,
     description: next.content.substring(0, 150) || null,
-    categoryName: next.category.name,
+    categoryName: next.category?.name ?? null,
     phase: next.phase,
     estimatedReadingMinutes: next.estimatedReadingMinutes,
     coverImage: next.coverImage,
@@ -195,7 +195,7 @@ export async function getNextPhaseArticles(
     id: article.id,
     title: article.title,
     description: article.content.substring(0, 150) || null,
-    categoryName: article.category.name,
+    categoryName: article.category?.name ?? null,
     phase: article.phase,
     estimatedReadingMinutes: article.estimatedReadingMinutes,
     coverImage: article.coverImage,

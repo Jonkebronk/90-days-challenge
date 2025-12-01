@@ -121,7 +121,7 @@ export async function GET(req: Request) {
       score += matchingTags * 7
 
       // Category name match: +5 points
-      if (article.category.name.toLowerCase().includes(lowerQuery)) {
+      if (article.category?.name.toLowerCase().includes(lowerQuery)) {
         score += 5
       }
 
@@ -133,9 +133,9 @@ export async function GET(req: Request) {
         title: article.title,
         slug: article.slug,
         categoryId: article.categoryId,
-        categoryName: article.category.name,
-        categoryColor: article.category.color,
-        categoryIcon: article.category.icon,
+        categoryName: article.category?.name ?? null,
+        categoryColor: article.category?.color ?? null,
+        categoryIcon: article.category?.icon ?? null,
         phase: article.phase,
         difficulty: article.difficulty,
         estimatedReadingMinutes: article.estimatedReadingMinutes,

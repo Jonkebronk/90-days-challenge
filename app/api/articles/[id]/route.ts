@@ -46,14 +46,16 @@ export async function GET(
     }
 
     // Check if this is a coach-only article (category audience = 'coach')
-    const categoryWithAudience = await prisma.articleCategory.findUnique({
-      where: { id: article.categoryId },
-      select: { audience: true }
-    })
+    if (article.categoryId) {
+      const categoryWithAudience = await prisma.articleCategory.findUnique({
+        where: { id: article.categoryId },
+        select: { audience: true }
+      })
 
-    // Non-coaches cannot view coach articles
-    if (!isCoach && categoryWithAudience?.audience === 'coach') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      // Non-coaches cannot view coach articles
+      if (!isCoach && categoryWithAudience?.audience === 'coach') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
     }
 
     return NextResponse.json({ article })

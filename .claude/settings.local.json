@@ -46,7 +46,8 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(git fetch:*)",
       "Bash(git checkout:*)",
-      "Bash(railway link:*)"
+      "Bash(railway link:*)",
+      "WebFetch(domain:frontend-production-edec.up.railway.app)"
     ],
     "deny": [],
     "ask": []

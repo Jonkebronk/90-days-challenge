@@ -82,9 +82,9 @@ export async function GET(req: Request) {
 
     // Reading by category
     const categoryStats = allProgress
-      .filter(p => p.completed)
+      .filter(p => p.completed && p.article.category)
       .reduce((acc: any[], p) => {
-        const categoryName = p.article.category.name
+        const categoryName = p.article.category!.name
         const existing = acc.find(c => c.name === categoryName)
         if (existing) {
           existing.count++
@@ -92,7 +92,7 @@ export async function GET(req: Request) {
           acc.push({
             name: categoryName,
             count: 1,
-            color: p.article.category.color
+            color: p.article.category!.color
           })
         }
         return acc
