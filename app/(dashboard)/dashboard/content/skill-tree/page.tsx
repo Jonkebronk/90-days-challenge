@@ -160,7 +160,7 @@ export default function SkillTreeAdminPage() {
       if (response.ok) {
         const data = await response.json()
         setBranches(prev => prev.map(b =>
-          b.id === branchId ? { ...b, articles: data.branch.articles } : b
+          b.id === branchId ? { ...b, articles: data.articles || [] } : b
         ))
       }
     } catch (error) {
