@@ -646,7 +646,7 @@ export default function ArticleEditorPage() {
               </div>
 
               {/* Image upload button */}
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <label className="cursor-pointer">
                   <Button
                     type="button"
@@ -658,7 +658,7 @@ export default function ArticleEditorPage() {
                   >
                     <span>
                       <ImagePlus className="h-4 w-4 mr-2" />
-                      {isUploadingImage ? 'Laddar upp...' : 'Lägg till bild'}
+                      {isUploadingImage ? 'Laddar upp...' : 'Ladda upp bild'}
                     </span>
                   </Button>
                   <input
@@ -668,8 +668,38 @@ export default function ArticleEditorPage() {
                     className="hidden"
                   />
                 </label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="border-gold-primary/50 text-gold-light hover:bg-gold-primary/20"
+                  onClick={() => {
+                    const imageUrl = prompt('Klistra in bild-URL:')
+                    if (imageUrl && imageUrl.trim()) {
+                      const altText = prompt('Beskrivning av bilden (valfritt):') || 'bild'
+                      const imageMarkdown = `\n![${altText}](${imageUrl.trim()})\n`
+                      if (contentTextareaRef.current) {
+                        const textarea = contentTextareaRef.current
+                        const start = textarea.selectionStart
+                        const end = textarea.selectionEnd
+                        const newContent = formData.content.substring(0, start) + imageMarkdown + formData.content.substring(end)
+                        setFormData(prev => ({ ...prev, content: newContent }))
+                        setTimeout(() => {
+                          textarea.selectionStart = textarea.selectionEnd = start + imageMarkdown.length
+                          textarea.focus()
+                        }, 0)
+                      } else {
+                        setFormData(prev => ({ ...prev, content: prev.content + imageMarkdown }))
+                      }
+                      toast.success('Bild tillagd!')
+                    }
+                  }}
+                >
+                  <ImagePlus className="h-4 w-4 mr-2" />
+                  Lägg till från URL
+                </Button>
                 <span className="text-xs text-gray-500">
-                  Max 5MB (JPEG, PNG, GIF, WebP)
+                  Uppladdning: Max 5MB (JPEG, PNG, GIF, WebP)
                 </span>
               </div>
 
