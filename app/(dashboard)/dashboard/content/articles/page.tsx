@@ -98,7 +98,6 @@ export default function ArticlesPage() {
 
   // Filters
   const [filterBranch, setFilterBranch] = useState<string>('all')
-  const [filterPhase, setFilterPhase] = useState<string>('all')
   const [filterPublished, setFilterPublished] = useState<string>('all')
 
   const [formData, setFormData] = useState({
@@ -287,7 +286,6 @@ export default function ArticlesPage() {
       ...branch,
       articles: branch.articles
         .filter(article => {
-          if (filterPhase !== 'all' && article.phase?.toString() !== filterPhase) return false
           if (filterPublished !== 'all' && article.published.toString() !== filterPublished) return false
           return true
         })
@@ -334,7 +332,7 @@ export default function ArticlesPage() {
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
             <Filter className="h-5 w-5 text-gold-primary" />
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label className="text-xs text-gray-400 mb-1 block">Gren</Label>
                 <Select value={filterBranch} onValueChange={setFilterBranch}>
@@ -348,20 +346,6 @@ export default function ArticlesPage() {
                         {branch.name}
                       </SelectItem>
                     ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-xs text-gray-400 mb-1 block">Fas</Label>
-                <Select value={filterPhase} onValueChange={setFilterPhase}>
-                  <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                    <SelectValue placeholder="Välj fas" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Alla faser</SelectItem>
-                    <SelectItem value="1">Fas 1 (1-30 dagar)</SelectItem>
-                    <SelectItem value="2">Fas 2 (31-60 dagar)</SelectItem>
-                    <SelectItem value="3">Fas 3 (61-90 dagar)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -445,8 +429,6 @@ export default function ArticlesPage() {
                       <TableHeader>
                         <TableRow className="border-b border-gold-primary/20 hover:bg-transparent">
                           <TableHead className="text-gray-400 font-semibold">Titel</TableHead>
-                          <TableHead className="text-gray-400 font-semibold">Fas</TableHead>
-                          <TableHead className="text-gray-400 font-semibold">Svårighetsgrad</TableHead>
                           <TableHead className="text-gray-400 font-semibold">Tid</TableHead>
                           <TableHead className="text-gray-400 font-semibold">Status</TableHead>
                           <TableHead className="text-right text-gray-400 font-semibold">Åtgärder</TableHead>
@@ -456,14 +438,6 @@ export default function ArticlesPage() {
                         {branch.articles.map((article, index) => (
                           <TableRow key={article.id} className="border-b border-white/10 hover:bg-white/5">
                             <TableCell className="font-medium text-gray-200">{article.title}</TableCell>
-                            <TableCell className="text-gray-300">
-                              {article.phase ? `Fas ${article.phase}` : '-'}
-                            </TableCell>
-                            <TableCell className="text-gray-300">
-                              {article.difficulty ? (
-                                <Badge variant="secondary" className="bg-white/10 text-gray-300">{article.difficulty}</Badge>
-                              ) : '-'}
-                            </TableCell>
                             <TableCell className="text-gray-300">
                               {article.estimatedReadingMinutes ? `${article.estimatedReadingMinutes} min` : '-'}
                             </TableCell>
