@@ -158,7 +158,7 @@ export default function ArticlesPage() {
           title: formData.title,
           slug: formData.slug,
           published: false,
-          skillTreeBranchId: formData.branchId || null
+          skillTreeBranchId: formData.branchId && formData.branchId !== 'none' ? formData.branchId : null
         })
       })
 
@@ -551,7 +551,7 @@ export default function ArticlesPage() {
                   <SelectValue placeholder="Välj gren" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Ingen gren</SelectItem>
+                  <SelectItem value="none">Ingen gren</SelectItem>
                   {branches.map(branch => (
                     <SelectItem key={branch.id} value={branch.id}>
                       {branch.name}
