@@ -9,6 +9,7 @@ import {
   Dumbbell,
   ChevronDown,
   ChevronRight,
+  ChevronUp,
   CheckCircle2,
   Circle,
   Sparkles,
@@ -98,6 +99,51 @@ export default function SkillTreePage() {
     )
   }
 
+  const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
+
+  const moveArticle = async (branchId: string, articleId: string, direction: 'up' | 'down') => {
+    const branch = branches.find(b => b.id === branchId)
+    if (!branch) return
+
+    const articles = [...branch.articles].sort((a, b) => a.orderInBranch - b.orderInBranch)
+    const currentIndex = articles.findIndex(a => a.id === articleId)
+
+    if (direction === 'up' && currentIndex <= 0) return
+    if (direction === 'down' && currentIndex >= articles.length - 1) return
+
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    const [movedArticle] = articles.splice(currentIndex, 1)
+    articles.splice(newIndex, 0, movedArticle)
+
+    const articleIds = articles.map(a => a.id)
+
+    // Optimistic update
+    setBranches(prev => prev.map(b => {
+      if (b.id !== branchId) return b
+      return {
+        ...b,
+        articles: articles.map((a, i) => ({ ...a, orderInBranch: i }))
+      }
+    }))
+
+    try {
+      const response = await fetch(`/api/skill-tree-branches/${branchId}/articles`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ articleIds })
+      })
+
+      if (!response.ok) {
+        toast.error('Kunde inte ändra ordning')
+        fetchData() // Revert on error
+      }
+    } catch (error) {
+      console.error('Error reordering articles:', error)
+      toast.error('Ett fel uppstod')
+      fetchData() // Revert on error
+    }
+  }
+
   const getBranchProgress = (branch: BranchWithArticles) => {
     const articles = branch.articles || []
     const completed = articles.filter(a => a.progress && a.progress.length > 0 && a.progress[0].completed).length
@@ -122,6 +168,63 @@ export default function SkillTreePage() {
   const isArticleCompleted = (article: BranchWithArticles['articles'][0]) => {
     return article.progress && article.progress.length > 0 && article.progress[0].completed
   }
+
+  // Render article item with optional reorder buttons
+  const renderArticleItem = (article: BranchWithArticles['articles'][0], branchId: string, index: number, totalArticles: number) => (
+    <div
+      key={article.id}
+      className="flex items-center gap-2 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
+    >
+      {/* Reorder buttons for coaches */}
+      {isCoach && (
+        <div className="flex flex-col gap-0.5">
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              moveArticle(branchId, article.id, 'up')
+            }}
+            disabled={index === 0}
+            className={`p-0.5 rounded ${index === 0 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+          >
+            <ChevronUp className="w-4 h-4" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              moveArticle(branchId, article.id, 'down')
+            }}
+            disabled={index === totalArticles - 1}
+            className={`p-0.5 rounded ${index === totalArticles - 1 ? 'text-gray-600 cursor-not-allowed' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+          >
+            <ChevronDown className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      <Link
+        href={`/dashboard/articles/${article.id}`}
+        className="flex items-center gap-3 flex-1 min-w-0"
+      >
+        {isArticleCompleted(article) ? (
+          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+        ) : (
+          <Circle className="w-5 h-5 text-gray-500 flex-shrink-0" />
+        )}
+        <div className="flex-1 min-w-0">
+          <p className={`text-sm truncate ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
+            {article.title}
+          </p>
+          {article.estimatedReadingMinutes && (
+            <p className="text-xs text-gray-500">
+              {article.estimatedReadingMinutes} min läsning
+            </p>
+          )}
+        </div>
+      </Link>
+    </div>
+  )
 
   if (!session?.user) {
     return null
@@ -299,29 +402,7 @@ export default function SkillTreePage() {
                       {/* Articles list */}
                       {isExpanded && articles.length > 0 && (
                         <div className="space-y-2 pl-2">
-                          {articles.map((article) => (
-                            <Link
-                              key={article.id}
-                              href={`/dashboard/articles/${article.id}`}
-                              className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
-                            >
-                              {isArticleCompleted(article) ? (
-                                <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                              ) : (
-                                <Circle className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                              )}
-                              <div className="flex-1 min-w-0">
-                                <p className={`text-sm truncate ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
-                                  {article.title}
-                                </p>
-                                {article.estimatedReadingMinutes && (
-                                  <p className="text-xs text-gray-500">
-                                    {article.estimatedReadingMinutes} min läsning
-                                  </p>
-                                )}
-                              </div>
-                            </Link>
-                          ))}
+                          {articles.map((article, index) => renderArticleItem(article, branch.id, index, articles.length))}
                         </div>
                       )}
                     </div>
@@ -371,29 +452,7 @@ export default function SkillTreePage() {
 
                             {isExpanded && articles.length > 0 && (
                               <div className="space-y-2 pl-2">
-                                {articles.map((article) => (
-                                  <Link
-                                    key={article.id}
-                                    href={`/dashboard/articles/${article.id}`}
-                                    className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
-                                  >
-                                    {isArticleCompleted(article) ? (
-                                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                                    ) : (
-                                      <Circle className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                                    )}
-                                    <div className="flex-1 min-w-0">
-                                      <p className={`text-sm truncate ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
-                                        {article.title}
-                                      </p>
-                                      {article.estimatedReadingMinutes && (
-                                        <p className="text-xs text-gray-500">
-                                          {article.estimatedReadingMinutes} min läsning
-                                        </p>
-                                      )}
-                                    </div>
-                                  </Link>
-                                ))}
+                                {articles.map((article, index) => renderArticleItem(article, branch.id, index, articles.length))}
                               </div>
                             )}
                           </div>
@@ -446,29 +505,7 @@ export default function SkillTreePage() {
 
                             {isExpanded && articles.length > 0 && (
                               <div className="space-y-2 pl-2">
-                                {articles.map((article) => (
-                                  <Link
-                                    key={article.id}
-                                    href={`/dashboard/articles/${article.id}`}
-                                    className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
-                                  >
-                                    {isArticleCompleted(article) ? (
-                                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                                    ) : (
-                                      <Circle className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                                    )}
-                                    <div className="flex-1 min-w-0">
-                                      <p className={`text-sm truncate ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
-                                        {article.title}
-                                      </p>
-                                      {article.estimatedReadingMinutes && (
-                                        <p className="text-xs text-gray-500">
-                                          {article.estimatedReadingMinutes} min läsning
-                                        </p>
-                                      )}
-                                    </div>
-                                  </Link>
-                                ))}
+                                {articles.map((article, index) => renderArticleItem(article, branch.id, index, articles.length))}
                               </div>
                             )}
                           </div>
@@ -524,29 +561,7 @@ export default function SkillTreePage() {
 
                           {isExpanded && articles.length > 0 && (
                             <div className="space-y-2 pl-2">
-                              {articles.map((article) => (
-                                <Link
-                                  key={article.id}
-                                  href={`/dashboard/articles/${article.id}`}
-                                  className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
-                                >
-                                  {isArticleCompleted(article) ? (
-                                    <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                                  ) : (
-                                    <Circle className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                                  )}
-                                  <div className="flex-1 min-w-0">
-                                    <p className={`text-sm truncate ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
-                                      {article.title}
-                                    </p>
-                                    {article.estimatedReadingMinutes && (
-                                      <p className="text-xs text-gray-500">
-                                        {article.estimatedReadingMinutes} min läsning
-                                      </p>
-                                    )}
-                                  </div>
-                                </Link>
-                              ))}
+                              {articles.map((article, index) => renderArticleItem(article, branch.id, index, articles.length))}
                             </div>
                           )}
                         </div>
@@ -598,29 +613,7 @@ export default function SkillTreePage() {
 
                             {isExpanded && articles.length > 0 && (
                               <div className="space-y-2 pl-2">
-                                {articles.map((article) => (
-                                  <Link
-                                    key={article.id}
-                                    href={`/dashboard/articles/${article.id}`}
-                                    className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
-                                  >
-                                    {isArticleCompleted(article) ? (
-                                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                                    ) : (
-                                      <Circle className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                                    )}
-                                    <div className="flex-1 min-w-0">
-                                      <p className={`text-sm truncate ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
-                                        {article.title}
-                                      </p>
-                                      {article.estimatedReadingMinutes && (
-                                        <p className="text-xs text-gray-500">
-                                          {article.estimatedReadingMinutes} min läsning
-                                        </p>
-                                      )}
-                                    </div>
-                                  </Link>
-                                ))}
+                                {articles.map((article, index) => renderArticleItem(article, branch.id, index, articles.length))}
                               </div>
                             )}
                           </div>
@@ -676,29 +669,7 @@ export default function SkillTreePage() {
                       {/* Expanded articles */}
                       {isExpanded && articles.length > 0 && (
                         <div className="w-full mt-2 space-y-2">
-                          {articles.map((article) => (
-                            <Link
-                              key={article.id}
-                              href={`/dashboard/articles/${article.id}`}
-                              className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10 active:bg-white/10 transition-all"
-                            >
-                              {isArticleCompleted(article) ? (
-                                <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                              ) : (
-                                <Circle className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                              )}
-                              <div className="flex-1 min-w-0">
-                                <p className={`text-sm ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
-                                  {article.title}
-                                </p>
-                                {article.estimatedReadingMinutes && (
-                                  <p className="text-xs text-gray-500">
-                                    {article.estimatedReadingMinutes} min läsning
-                                  </p>
-                                )}
-                              </div>
-                            </Link>
-                          ))}
+                          {articles.map((article, articleIndex) => renderArticleItem(article, branch.id, articleIndex, articles.length))}
                         </div>
                       )}
 
