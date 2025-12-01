@@ -6,7 +6,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, ArrowRight, Clock, CheckCircle, Circle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Clock, CheckCircle, Circle, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { MDXPreview } from '@/components/mdx-preview'
 import { Progress } from '@/components/ui/progress'
@@ -211,6 +211,7 @@ export default function ArticleReaderPage() {
   }
 
   const isCompleted = article.progress && article.progress.length > 0 && article.progress[0].completed
+  const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -279,7 +280,20 @@ export default function ArticleReaderPage() {
                 </Badge>
               )}
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-white">{article.title}</h1>
+            <div className="flex items-start justify-between gap-4 mb-3 sm:mb-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">{article.title}</h1>
+              {isCoach && (
+                <Button
+                  onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-400 hover:text-white hover:bg-white/10 flex-shrink-0"
+                  title="Redigera artikel"
+                >
+                  <Pencil className="h-5 w-5" />
+                </Button>
+              )}
+            </div>
 
             {/* Article Metadata */}
             <ArticleMetadata
