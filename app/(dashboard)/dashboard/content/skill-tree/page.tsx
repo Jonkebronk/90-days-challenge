@@ -539,11 +539,12 @@ export default function SkillTreeAdminPage() {
                         {articles.map((article, artIndex) => (
                           <div
                             key={article.id}
-                            className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10"
+                            className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors cursor-pointer"
+                            onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
                           >
                             <FileText className="w-4 h-4 text-gray-500 flex-shrink-0" />
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm text-white truncate">{article.title}</p>
+                              <p className="text-sm text-white truncate hover:text-gold-light">{article.title}</p>
                               {article.estimatedReadingMinutes && (
                                 <p className="text-xs text-gray-500">
                                   {article.estimatedReadingMinutes} min läsning
@@ -555,7 +556,7 @@ export default function SkillTreeAdminPage() {
                                 Utkast
                               </Badge>
                             )}
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -573,6 +574,15 @@ export default function SkillTreeAdminPage() {
                                 className="h-8 w-8 text-gray-400 hover:text-white"
                               >
                                 <ArrowDown className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
+                                className="h-8 w-8 text-gray-400 hover:text-gold-light"
+                                title="Redigera artikel"
+                              >
+                                <Pencil className="w-3 h-3" />
                               </Button>
                               <Button
                                 variant="ghost"
