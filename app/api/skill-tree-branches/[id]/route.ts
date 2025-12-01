@@ -16,6 +16,7 @@ export async function GET(
       where: { id },
       include: {
         articles: {
+          where: { skillTreeSubcategoryId: null }, // Only articles NOT in a subcategory
           orderBy: { orderInBranch: 'asc' },
           select: {
             id: true,
@@ -24,9 +25,30 @@ export async function GET(
             orderInBranch: true,
             published: true,
             estimatedReadingMinutes: true,
+            skillTreeSubcategoryId: true,
             progress: session?.user?.id ? {
               where: { userId: session.user.id as string }
             } : false
+          }
+        },
+        subcategories: {
+          orderBy: { orderIndex: 'asc' },
+          include: {
+            articles: {
+              orderBy: { orderInBranch: 'asc' },
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                orderInBranch: true,
+                published: true,
+                estimatedReadingMinutes: true,
+                skillTreeSubcategoryId: true,
+                progress: session?.user?.id ? {
+                  where: { userId: session.user.id as string }
+                } : false
+              }
+            }
           }
         }
       }

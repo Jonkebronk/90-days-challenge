@@ -983,9 +983,26 @@ model SkillTreeBranch {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  articles  Article[] // Articles directly assigned to this branch
+  articles      Article[] // Articles directly assigned to this branch
+  subcategories SkillTreeSubcategory[] // Subcategories within this branch
 
   @@map("skill_tree_branches")
+}
+
+model SkillTreeSubcategory {
+  id          String   @id @default(cuid())
+  name        String   // e.g., "GRUNDEN", "MAKRONÄRINGSÄMNEN"
+  orderIndex  Int      @default(0)
+
+  branchId    String
+  branch      SkillTreeBranch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articles  Article[]
+
+  @@map("skill_tree_subcategories")
 }
 
 // Article Bank and 90-Day Roadmap Models
@@ -1039,7 +1056,8 @@ model Article {
 
   // Skill Tree Branch assignment
   skillTreeBranchId       String? // Which branch this article belongs to
-  orderInBranch           Int      @default(0) // Order within the branch
+  skillTreeSubcategoryId  String? // Which subcategory within the branch
+  orderInBranch           Int      @default(0) // Order within the branch/subcategory
 
   // Publishing
   published   Boolean   @default(false)
@@ -1052,14 +1070,16 @@ model Article {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  category           ArticleCategory?    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  skillTreeBranch    SkillTreeBranch?    @relation(fields: [skillTreeBranchId], references: [id], onDelete: SetNull)
-  roadmapAssignments RoadmapAssignment[]
+  category              ArticleCategory?       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  skillTreeBranch       SkillTreeBranch?       @relation(fields: [skillTreeBranchId], references: [id], onDelete: SetNull)
+  skillTreeSubcategory  SkillTreeSubcategory?  @relation(fields: [skillTreeSubcategoryId], references: [id], onDelete: SetNull)
+  roadmapAssignments    RoadmapAssignment[]
   progress           ArticleProgress[]
   feedback           ArticleFeedback[] // User feedback
   pathArticles       PathArticle[] // Learning path associations
 
   @@index([skillTreeBranchId, orderInBranch])
+  @@index([skillTreeSubcategoryId, orderInBranch])
   @@map("articles")
 }
 

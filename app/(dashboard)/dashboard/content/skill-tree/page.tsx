@@ -54,6 +54,14 @@ type BranchArticle = {
   orderInBranch: number
   published: boolean
   estimatedReadingMinutes?: number
+  skillTreeSubcategoryId?: string | null
+}
+
+type Subcategory = {
+  id: string
+  name: string
+  orderIndex: number
+  articles: BranchArticle[]
 }
 
 type Branch = {
@@ -64,6 +72,7 @@ type Branch = {
   categorySlugs: string[]
   orderIndex: number
   articles?: BranchArticle[]
+  subcategories?: Subcategory[]
 }
 
 type Article = {
@@ -72,6 +81,7 @@ type Article = {
   slug: string
   published: boolean
   skillTreeBranchId?: string | null
+  skillTreeSubcategoryId?: string | null
 }
 
 const iconOptions = [
@@ -107,13 +117,18 @@ export default function SkillTreeAdminPage() {
   const [expandedBranch, setExpandedBranch] = useState<string | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [addArticleDialogOpen, setAddArticleDialogOpen] = useState(false)
+  const [subcategoryDialogOpen, setSubcategoryDialogOpen] = useState(false)
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null)
   const [selectedBranchForArticle, setSelectedBranchForArticle] = useState<Branch | null>(null)
+  const [selectedSubcategoryForArticle, setSelectedSubcategoryForArticle] = useState<Subcategory | null>(null)
+  const [selectedBranchForSubcategory, setSelectedBranchForSubcategory] = useState<Branch | null>(null)
+  const [editingSubcategory, setEditingSubcategory] = useState<Subcategory | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     icon: 'Heart',
     color: '#A855F7'
   })
+  const [subcategoryFormData, setSubcategoryFormData] = useState({ name: '' })
 
   const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
 
@@ -160,7 +175,11 @@ export default function SkillTreeAdminPage() {
       if (response.ok) {
         const data = await response.json()
         setBranches(prev => prev.map(b =>
-          b.id === branchId ? { ...b, articles: data.articles || [] } : b
+          b.id === branchId ? {
+            ...b,
+            articles: data.articles || [],
+            subcategories: data.subcategories || []
+          } : b
         ))
       }
     } catch (error) {
@@ -384,6 +403,105 @@ export default function SkillTreeAdminPage() {
     return option?.icon || Heart
   }
 
+  // Subcategory functions
+  const openSubcategoryDialog = (branch: Branch, subcategory?: Subcategory) => {
+    setSelectedBranchForSubcategory(branch)
+    setEditingSubcategory(subcategory || null)
+    setSubcategoryFormData({ name: subcategory?.name || '' })
+    setSubcategoryDialogOpen(true)
+  }
+
+  const handleSaveSubcategory = async () => {
+    if (!subcategoryFormData.name || !selectedBranchForSubcategory) {
+      toast.error('Namn krävs')
+      return
+    }
+
+    try {
+      if (editingSubcategory) {
+        await fetch(`/api/skill-tree-branches/${selectedBranchForSubcategory.id}/subcategories/${editingSubcategory.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: subcategoryFormData.name })
+        })
+        toast.success('Subkategori uppdaterad!')
+      } else {
+        await fetch(`/api/skill-tree-branches/${selectedBranchForSubcategory.id}/subcategories`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: subcategoryFormData.name })
+        })
+        toast.success('Subkategori skapad!')
+      }
+      setSubcategoryDialogOpen(false)
+      fetchBranchArticles(selectedBranchForSubcategory.id)
+    } catch (error) {
+      console.error('Error saving subcategory:', error)
+      toast.error('Ett fel uppstod')
+    }
+  }
+
+  const handleDeleteSubcategory = async (branchId: string, subcategoryId: string) => {
+    if (!confirm('Vill du verkligen ta bort denna subkategori? Artiklarna kommer behållas i grenen.')) return
+
+    try {
+      await fetch(`/api/skill-tree-branches/${branchId}/subcategories/${subcategoryId}`, {
+        method: 'DELETE'
+      })
+      toast.success('Subkategori borttagen!')
+      fetchBranchArticles(branchId)
+    } catch (error) {
+      console.error('Error deleting subcategory:', error)
+      toast.error('Ett fel uppstod')
+    }
+  }
+
+  const handleAddArticleToSubcategory = async (articleId: string) => {
+    if (!selectedBranchForArticle || !selectedSubcategoryForArticle) return
+
+    try {
+      const response = await fetch(`/api/skill-tree-branches/${selectedBranchForArticle.id}/subcategories/${selectedSubcategoryForArticle.id}/articles`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ articleId })
+      })
+
+      if (response.ok) {
+        toast.success('Artikel tillagd!')
+        await fetchBranchArticles(selectedBranchForArticle.id)
+        setAllArticles(prev => prev.map(a =>
+          a.id === articleId ? { ...a, skillTreeBranchId: selectedBranchForArticle.id, skillTreeSubcategoryId: selectedSubcategoryForArticle.id } : a
+        ))
+      } else {
+        toast.error('Kunde inte lägga till artikel')
+      }
+    } catch (error) {
+      console.error('Error adding article:', error)
+      toast.error('Ett fel uppstod')
+    }
+  }
+
+  const handleRemoveArticleFromSubcategory = async (branchId: string, subcategoryId: string, articleId: string) => {
+    try {
+      await fetch(`/api/skill-tree-branches/${branchId}/subcategories/${subcategoryId}/articles`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ articleId })
+      })
+      toast.success('Artikel borttagen från subkategori')
+      fetchBranchArticles(branchId)
+    } catch (error) {
+      console.error('Error removing article:', error)
+      toast.error('Ett fel uppstod')
+    }
+  }
+
+  const openAddArticleToSubcategoryDialog = (branch: Branch, subcategory: Subcategory) => {
+    setSelectedBranchForArticle(branch)
+    setSelectedSubcategoryForArticle(subcategory)
+    setAddArticleDialogOpen(true)
+  }
+
   // Get available articles (not assigned to any branch)
   const availableArticles = allArticles.filter(a => !a.skillTreeBranchId)
 
@@ -518,24 +636,103 @@ export default function SkillTreeAdminPage() {
 
                 {/* Articles List (Expanded) */}
                 {isExpanded && (
-                  <div className="border-t border-white/10 bg-black/20 p-4">
-                    {/* Add Article Button */}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => openAddArticleDialog(branch)}
-                      className="mb-4 border-gold-primary/50 text-gold-light hover:bg-gold-primary/10"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Lägg till artikel
-                    </Button>
+                  <div className="border-t border-white/10 bg-black/20 p-4 space-y-4">
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 flex-wrap">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openSubcategoryDialog(branch)}
+                        className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Ny subkategori
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openAddArticleDialog(branch)}
+                        className="border-gold-primary/50 text-gold-light hover:bg-gold-primary/10"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Lägg till artikel
+                      </Button>
+                    </div>
 
-                    {articles.length === 0 ? (
-                      <p className="text-gray-500 text-sm text-center py-4">
-                        Inga artiklar tillagda ännu
-                      </p>
-                    ) : (
+                    {/* Subcategories */}
+                    {(branch.subcategories || []).map((subcategory) => (
+                      <div key={subcategory.id} className="bg-white/5 rounded-lg border border-cyan-500/30 overflow-hidden">
+                        <div className="flex items-center justify-between p-3 bg-cyan-500/10">
+                          <span className="font-semibold text-cyan-400 text-sm uppercase tracking-wider">
+                            {subcategory.name}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openAddArticleToSubcategoryDialog(branch, subcategory)}
+                              className="h-7 w-7 text-cyan-400 hover:text-cyan-300"
+                              title="Lägg till artikel"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openSubcategoryDialog(branch, subcategory)}
+                              className="h-7 w-7 text-gray-400 hover:text-white"
+                              title="Redigera"
+                            >
+                              <Pencil className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleDeleteSubcategory(branch.id, subcategory.id)}
+                              className="h-7 w-7 text-gray-400 hover:text-red-500"
+                              title="Ta bort"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                        {subcategory.articles.length === 0 ? (
+                          <p className="text-gray-500 text-xs text-center py-3">Inga artiklar</p>
+                        ) : (
+                          <div className="p-2 space-y-1">
+                            {subcategory.articles.map((article) => (
+                              <div
+                                key={article.id}
+                                className="flex items-center gap-2 p-2 bg-black/20 rounded hover:bg-black/40 cursor-pointer"
+                                onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
+                              >
+                                <FileText className="w-3 h-3 text-gray-500" />
+                                <span className="flex-1 text-xs text-gray-300 truncate">{article.title}</span>
+                                {!article.published && (
+                                  <Badge variant="outline" className="text-[10px] px-1 py-0 border-yellow-500/50 text-yellow-500">Utkast</Badge>
+                                )}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleRemoveArticleFromSubcategory(branch.id, subcategory.id, article.id)
+                                  }}
+                                  className="h-6 w-6 text-gray-500 hover:text-red-400"
+                                >
+                                  <X className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* Loose Articles (not in subcategory) */}
+                    {articles.length > 0 && (
                       <div className="space-y-2">
+                        <p className="text-xs text-gray-500 uppercase tracking-wider">Artiklar utan subkategori</p>
                         {articles.map((article, artIndex) => (
                           <div
                             key={article.id}
@@ -545,16 +742,9 @@ export default function SkillTreeAdminPage() {
                             <FileText className="w-4 h-4 text-gray-500 flex-shrink-0" />
                             <div className="flex-1 min-w-0">
                               <p className="text-sm text-white truncate hover:text-gold-light">{article.title}</p>
-                              {article.estimatedReadingMinutes && (
-                                <p className="text-xs text-gray-500">
-                                  {article.estimatedReadingMinutes} min läsning
-                                </p>
-                              )}
                             </div>
                             {!article.published && (
-                              <Badge variant="outline" className="text-xs border-yellow-500/50 text-yellow-500">
-                                Utkast
-                              </Badge>
+                              <Badge variant="outline" className="text-xs border-yellow-500/50 text-yellow-500">Utkast</Badge>
                             )}
                             <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                               <Button
@@ -578,15 +768,6 @@ export default function SkillTreeAdminPage() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => router.push(`/dashboard/content/articles/${article.id}`)}
-                                className="h-8 w-8 text-gray-400 hover:text-gold-light"
-                                title="Redigera artikel"
-                              >
-                                <Pencil className="w-3 h-3" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
                                 onClick={() => handleRemoveArticle(branch.id, article.id)}
                                 className="h-8 w-8 text-gray-400 hover:text-red-500"
                               >
@@ -596,6 +777,13 @@ export default function SkillTreeAdminPage() {
                           </div>
                         ))}
                       </div>
+                    )}
+
+                    {/* Empty state */}
+                    {articles.length === 0 && (branch.subcategories || []).length === 0 && (
+                      <p className="text-gray-500 text-sm text-center py-4">
+                        Inga artiklar eller subkategorier ännu
+                      </p>
                     )}
                   </div>
                 )}
@@ -690,11 +878,14 @@ export default function SkillTreeAdminPage() {
       </Dialog>
 
       {/* Add Article Dialog */}
-      <Dialog open={addArticleDialogOpen} onOpenChange={setAddArticleDialogOpen}>
+      <Dialog open={addArticleDialogOpen} onOpenChange={(open) => {
+        setAddArticleDialogOpen(open)
+        if (!open) setSelectedSubcategoryForArticle(null)
+      }}>
         <DialogContent className="bg-gray-900 border-gold-primary/30 max-w-lg max-h-[80vh]">
           <DialogHeader>
             <DialogTitle className="text-gold-light">
-              Lägg till artikel till {selectedBranchForArticle?.name}
+              Lägg till artikel till {selectedSubcategoryForArticle ? selectedSubcategoryForArticle.name : selectedBranchForArticle?.name}
             </DialogTitle>
           </DialogHeader>
 
@@ -709,7 +900,11 @@ export default function SkillTreeAdminPage() {
                   <button
                     key={article.id}
                     onClick={() => {
-                      handleAddArticle(article.id)
+                      if (selectedSubcategoryForArticle) {
+                        handleAddArticleToSubcategory(article.id)
+                      } else {
+                        handleAddArticle(article.id)
+                      }
                       setAddArticleDialogOpen(false)
                     }}
                     className="w-full flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 hover:border-gold-primary/30 transition-all text-left"
@@ -737,6 +932,45 @@ export default function SkillTreeAdminPage() {
               className="border-gray-600 text-gray-300"
             >
               Stäng
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Subcategory Dialog */}
+      <Dialog open={subcategoryDialogOpen} onOpenChange={setSubcategoryDialogOpen}>
+        <DialogContent className="bg-gray-900 border-cyan-500/30 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-cyan-400">
+              {editingSubcategory ? 'Redigera subkategori' : 'Ny subkategori'}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="py-4">
+            <div className="space-y-2">
+              <Label className="text-gray-200">Namn</Label>
+              <Input
+                value={subcategoryFormData.name}
+                onChange={(e) => setSubcategoryFormData({ name: e.target.value })}
+                placeholder="T.ex. GRUNDEN"
+                className="bg-black/30 border-cyan-500/30 text-white uppercase"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setSubcategoryDialogOpen(false)}
+              className="border-gray-600 text-gray-300"
+            >
+              Avbryt
+            </Button>
+            <Button
+              onClick={handleSaveSubcategory}
+              className="bg-cyan-500 hover:bg-cyan-600 text-white"
+            >
+              {editingSubcategory ? 'Spara' : 'Skapa'}
             </Button>
           </DialogFooter>
         </DialogContent>
