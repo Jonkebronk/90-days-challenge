@@ -557,7 +557,7 @@ export default function SkillTreePage() {
                             {branch.name}
                           </h3>
                           <p className="text-gray-400 text-xs">
-                            {progress.completed}/{progress.completed}/{progress.total} artiklar
+                            {progress.completed}/{progress.total} artiklar
                           </p>
                           {/* Mini progress bar */}
                           <div className="w-16 h-1.5 bg-zinc-700 rounded-full mt-2">
@@ -618,7 +618,7 @@ export default function SkillTreePage() {
                                   {branch.name}
                                 </h3>
                                 <p className="text-gray-400 text-xs">
-                                  {progress.completed}/{progress.completed}/{progress.total} artiklar
+                                  {progress.completed}/{progress.total} artiklar
                                 </p>
                                 {/* Mini progress bar */}
                                 <div className="w-16 h-1.5 bg-zinc-700 rounded-full mt-2">
@@ -681,7 +681,7 @@ export default function SkillTreePage() {
                                   {branch.name}
                                 </h3>
                                 <p className="text-gray-400 text-xs">
-                                  {progress.completed}/{progress.completed}/{progress.total} artiklar
+                                  {progress.completed}/{progress.total} artiklar
                                 </p>
                                 <div className="w-16 h-1.5 bg-zinc-700 rounded-full mt-2">
                                   <div className="h-1.5 rounded-full transition-all" style={{ width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`, backgroundColor: branch.color }} />
