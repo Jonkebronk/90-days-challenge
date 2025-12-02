@@ -778,6 +778,14 @@ model CheckIn {
   thighs Decimal? @db.Decimal(5, 2)
   calves Decimal? @db.Decimal(5, 2)
 
+  // Biofeedback (1-10 scale)
+  energyLevel   Int? // Energinivå
+  sleepQuality  Int? // Sömnkvalitet
+  stressLevel   Int? // Stressnivå
+  hungerLevel   Int? // Hungernivå
+  recoveryLevel Int? // Återhämtning
+  moodLevel     Int? // Humör/motivation
+
   // Training and diet adherence
   trainedAllSessions Boolean? // "Tränat alla pass?"
   trainingComments   String?  @db.Text // "Hur gick träning denna vecka?"

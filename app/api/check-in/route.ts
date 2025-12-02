@@ -22,6 +22,14 @@ export async function POST(request: NextRequest) {
       arms,
       thighs,
       calves,
+      // Biofeedback
+      energyLevel,
+      sleepQuality,
+      stressLevel,
+      hungerLevel,
+      recoveryLevel,
+      moodLevel,
+      // Training and diet
       trainedAllSessions,
       trainingComments,
       hadDietDeviations,
@@ -64,6 +72,13 @@ export async function POST(request: NextRequest) {
         arms: arms ? parseFloat(arms) : null,
         thighs: thighs ? parseFloat(thighs) : null,
         calves: calves ? parseFloat(calves) : null,
+        // Biofeedback
+        energyLevel: energyLevel || null,
+        sleepQuality: sleepQuality || null,
+        stressLevel: stressLevel || null,
+        hungerLevel: hungerLevel || null,
+        recoveryLevel: recoveryLevel || null,
+        moodLevel: moodLevel || null,
         // Training and diet adherence
         trainedAllSessions,
         trainingComments,
@@ -139,6 +154,18 @@ export async function POST(request: NextRequest) {
       if (measurements.length > 0) {
         summaryLines.push(`📏 Kroppsmått:`)
         measurements.forEach(m => summaryLines.push(m))
+        summaryLines.push('')
+      }
+
+      // Biofeedback summary (only show for weekly check-ins, not start check-in)
+      if (!isStartCheckIn && (energyLevel || sleepQuality || stressLevel || hungerLevel || recoveryLevel || moodLevel)) {
+        summaryLines.push(`🧠 Biofeedback:`)
+        if (energyLevel) summaryLines.push(`Energi: ${energyLevel}/10`)
+        if (sleepQuality) summaryLines.push(`Sömn: ${sleepQuality}/10`)
+        if (stressLevel) summaryLines.push(`Stress: ${stressLevel}/10`)
+        if (hungerLevel) summaryLines.push(`Hunger: ${hungerLevel}/10`)
+        if (recoveryLevel) summaryLines.push(`Återhämtning: ${recoveryLevel}/10`)
+        if (moodLevel) summaryLines.push(`Humör: ${moodLevel}/10`)
         summaryLines.push('')
       }
 

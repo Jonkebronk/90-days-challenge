@@ -44,6 +44,13 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     arms: '',
     thighs: '',
     calves: '',
+    // Biofeedback (1-10)
+    energyLevel: 5,
+    sleepQuality: 5,
+    stressLevel: 5,
+    hungerLevel: 5,
+    recoveryLevel: 5,
+    moodLevel: 5,
     // Träning och kost
     trainedAllSessions: null as boolean | null,
     trainingComments: '',
@@ -144,7 +151,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
       })
 
       if (response.ok) {
-        setStep(11) // Go to success screen
+        setStep(12) // Go to success screen
         router.refresh()
       } else {
         toast.error('Något gick fel')
@@ -209,7 +216,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               <h1 className="text-2xl font-bold bg-gradient-to-r from-gold-primary to-gold-secondary bg-clip-text text-transparent">Check-in</h1>
             </div>
 
-            <ProgressBar current={1} total={10} />
+            <ProgressBar current={1} total={11} />
 
             <div className="flex items-start gap-4 mb-8">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-semibold">
@@ -242,7 +249,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
         <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(1)} />
-            <ProgressBar current={2} total={10} />
+            <ProgressBar current={2} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-semibold">
@@ -297,7 +304,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
         <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(2)} />
-            <ProgressBar current={3} total={10} />
+            <ProgressBar current={3} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-semibold">
@@ -383,7 +390,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
         <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(3)} />
-            <ProgressBar current={4} total={10} />
+            <ProgressBar current={4} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-semibold">
@@ -448,7 +455,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
         <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(4)} />
-            <ProgressBar current={5} total={10} />
+            <ProgressBar current={5} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-semibold">
@@ -668,14 +675,109 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 6: Training Adherence
+  // Step 6: Biofeedback
   if (step === 6) {
+    const biofeedbackFields = [
+      {
+        field: 'energyLevel',
+        label: 'Energinivå',
+        descriptions: ['1-3: Helt slut, orkar ingenting', '4-6: Normal, varken pigg eller trött', '7-10: Massor av energi']
+      },
+      {
+        field: 'sleepQuality',
+        label: 'Sömnkvalitet',
+        descriptions: ['1-3: Dålig sömn, vaknade ofta', '4-6: Okej, varit bättre', '7-10: Djup sömn, vaknade utvilad']
+      },
+      {
+        field: 'stressLevel',
+        label: 'Stressnivå',
+        descriptions: ['1-3: Extremt stressad', '4-6: Normal vardagsstress', '7-10: Avslappnad, lugn']
+      },
+      {
+        field: 'hungerLevel',
+        label: 'Hungernivå',
+        descriptions: ['1-3: Konstant hungrig', '4-6: Normal hunger', '7-10: Lätt att följa planen']
+      },
+      {
+        field: 'recoveryLevel',
+        label: 'Återhämtning',
+        descriptions: ['1-3: Sliten, kroppen känns trött', '4-6: Lite stel ibland', '7-10: Fullt återhämtad']
+      },
+      {
+        field: 'moodLevel',
+        label: 'Humör/motivation',
+        descriptions: ['1-3: Låg motivation, nere', '4-6: Neutral', '7-10: Motiverad, positiv']
+      }
+    ]
+
     return (
       <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(5)} />
-            <ProgressBar current={6} total={10} />
+            <ProgressBar current={6} total={11} />
+
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-semibold">
+                {userName.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h2 className="text-xl font-bold mb-2 text-gray-900">Biofeedback</h2>
+                <p className="text-sm text-gray-600">
+                  Gradera hur du känt dig denna vecka (1-10)
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-5 max-h-[400px] overflow-y-auto pr-2">
+              {biofeedbackFields.map((item) => (
+                <div key={item.field} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-900 font-semibold">{item.label}</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        min={1}
+                        max={10}
+                        value={formData[item.field as keyof typeof formData] as number}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value) || 5
+                          updateFormData(item.field, Math.min(10, Math.max(1, val)))
+                        }}
+                        className="w-16 text-center bg-white border-2 border-gray-300 text-gray-900 focus:border-gold-primary"
+                      />
+                      <span className="text-gray-500 text-sm">/10</span>
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-500 space-y-0.5 pl-1">
+                    {item.descriptions.map((desc, i) => (
+                      <p key={i}>{desc}</p>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Button
+              onClick={() => setStep(7)}
+              className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold h-12 mt-6"
+            >
+              Fortsätt
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // Step 7: Training Adherence
+  if (step === 7) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
+          <CardContent className="pt-6">
+            <Header onBack={() => setStep(6)} />
+            <ProgressBar current={7} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-semibold">
@@ -710,51 +812,6 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
             </div>
 
             <Button
-              onClick={() => setStep(7)}
-              className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold h-12 mt-6"
-            >
-              Fortsätt
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  // Step 7: Training Comments
-  if (step === 7) {
-    return (
-      <div className="flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
-          <CardContent className="pt-6">
-            <Header onBack={() => setStep(6)} />
-            <ProgressBar current={7} total={10} />
-
-            <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-semibold">
-                {userName.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <h2 className="text-xl font-bold mb-2 text-gray-900">Träning</h2>
-                <p className="text-sm text-gray-600">
-                  Hur gick träning denna vecka?
-                </p>
-              </div>
-            </div>
-
-            <Textarea
-              value={formData.trainingComments}
-              onChange={(e) => updateFormData('trainingComments', e.target.value)}
-              placeholder="Lägg till ditt svar"
-              rows={6}
-              maxLength={500}
-              className="bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-gold-primary"
-            />
-            <div className="text-right text-sm text-gray-500 mt-1">
-              {formData.trainingComments.length} / 500
-            </div>
-
-            <Button
               onClick={() => setStep(8)}
               className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold h-12 mt-6"
             >
@@ -766,14 +823,59 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 8: Diet Adherence
+  // Step 8: Training Comments
   if (step === 8) {
     return (
       <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(7)} />
-            <ProgressBar current={8} total={10} />
+            <ProgressBar current={8} total={11} />
+
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-semibold">
+                {userName.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h2 className="text-xl font-bold mb-2 text-gray-900">Träning</h2>
+                <p className="text-sm text-gray-600">
+                  Hur gick träningen? Berätta om hur passen kändes.
+                </p>
+              </div>
+            </div>
+
+            <Textarea
+              value={formData.trainingComments}
+              onChange={(e) => updateFormData('trainingComments', e.target.value)}
+              placeholder="Gick vikterna upp? Var något extra tungt eller lätt? Några övningar som kändes fel?"
+              rows={6}
+              maxLength={500}
+              className="bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-gold-primary"
+            />
+            <div className="text-right text-sm text-gray-500 mt-1">
+              {formData.trainingComments.length} / 500
+            </div>
+
+            <Button
+              onClick={() => setStep(9)}
+              className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold h-12 mt-6"
+            >
+              Fortsätt
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // Step 9: Diet Adherence
+  if (step === 9) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
+          <CardContent className="pt-6">
+            <Header onBack={() => setStep(8)} />
+            <ProgressBar current={9} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-semibold">
@@ -808,51 +910,6 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
             </div>
 
             <Button
-              onClick={() => setStep(9)}
-              className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold h-12 mt-6"
-            >
-              Fortsätt
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  // Step 9: Diet Comments
-  if (step === 9) {
-    return (
-      <div className="flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
-          <CardContent className="pt-6">
-            <Header onBack={() => setStep(8)} />
-            <ProgressBar current={9} total={10} />
-
-            <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-semibold">
-                {userName.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <h2 className="text-xl font-bold mb-2 text-gray-900">Kost</h2>
-                <p className="text-sm text-gray-600">
-                  Hur gick kosten denna vecka?
-                </p>
-              </div>
-            </div>
-
-            <Textarea
-              value={formData.dietComments}
-              onChange={(e) => updateFormData('dietComments', e.target.value)}
-              placeholder="Lägg till ditt svar"
-              rows={6}
-              maxLength={500}
-              className="bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-gold-primary"
-            />
-            <div className="text-right text-sm text-gray-500 mt-1">
-              {formData.dietComments.length} / 500
-            </div>
-
-            <Button
               onClick={() => setStep(10)}
               className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold h-12 mt-6"
             >
@@ -864,14 +921,59 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 10: Other Comments & Submit
+  // Step 10: Diet Comments
   if (step === 10) {
     return (
       <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(9)} />
-            <ProgressBar current={10} total={10} />
+            <ProgressBar current={10} total={11} />
+
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-semibold">
+                {userName.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h2 className="text-xl font-bold mb-2 text-gray-900">Kost</h2>
+                <p className="text-sm text-gray-600">
+                  Hur gick kosten? Berätta om eventuella utmaningar eller framgångar.
+                </p>
+              </div>
+            </div>
+
+            <Textarea
+              value={formData.dietComments}
+              onChange={(e) => updateFormData('dietComments', e.target.value)}
+              placeholder="Var det lätt att följa planen? Några situationer som var svåra?"
+              rows={6}
+              maxLength={500}
+              className="bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-gold-primary"
+            />
+            <div className="text-right text-sm text-gray-500 mt-1">
+              {formData.dietComments.length} / 500
+            </div>
+
+            <Button
+              onClick={() => setStep(11)}
+              className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold h-12 mt-6"
+            >
+              Fortsätt
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  // Step 11: Other Comments & Submit
+  if (step === 11) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
+          <CardContent className="pt-6">
+            <Header onBack={() => setStep(10)} />
+            <ProgressBar current={11} total={11} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center text-white font-semibold">
@@ -880,7 +982,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               <div>
                 <h2 className="text-xl font-bold mb-2 text-gray-900">Övrigt</h2>
                 <p className="text-sm text-gray-600">
-                  Har du någon övrig kommentar?
+                  Något annat du vill berätta?
                 </p>
               </div>
             </div>
@@ -888,7 +990,7 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
             <Textarea
               value={formData.otherComments}
               onChange={(e) => updateFormData('otherComments', e.target.value)}
-              placeholder="Lägg till ditt svar"
+              placeholder="Speciella händelser, resor, sjukdom, stress på jobbet – allt som kan ha påverkat din vecka och dina resultat."
               rows={6}
               maxLength={500}
               className="bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-gold-primary"
@@ -910,8 +1012,8 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
     )
   }
 
-  // Step 11: Success Screen
-  if (step === 11) {
+  // Step 12: Success Screen
+  if (step === 12) {
     return (
       <div className="flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-white border-2 border-gray-300 shadow-lg">
