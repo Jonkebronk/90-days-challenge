@@ -56,13 +56,13 @@ function drawPage1(doc: jsPDF) {
   doc.setTextColor(...WHITE)
   doc.setFontSize(22)
   doc.setFont('helvetica', 'bold')
-  doc.text('MITT MAL OCH MINA DRIVKRAFTER', PAGE_WIDTH / 2, 22, { align: 'center' })
+  doc.text('MITT M\xc5L OCH MINA DRIVKRAFTER', PAGE_WIDTH / 2, 22, { align: 'center' })
 
   y = 45
 
   // Sektion 1: MITT MÅL
-  y = drawSectionHeader(doc, y, 'MITT MAL')
-  y = drawInputLines(doc, y, 'Vad ar ditt specifika, matbara mal?', 2)
+  y = drawSectionHeader(doc, y, 'MITT M\xc5L')
+  y = drawInputLines(doc, y, 'Vad \xe4r ditt specifika, m\xe4tbara m\xe5l?', 2)
 
   // Deadline
   doc.setTextColor(...DARK_GRAY)
@@ -75,24 +75,24 @@ function drawPage1(doc: jsPDF) {
   y += 10
 
   // Sektion 2: VARFÖR ÄR DETTA VIKTIGT FÖR MIG?
-  y = drawSectionHeader(doc, y, 'VARFOR AR DETTA VIKTIGT FOR MIG?')
-  y = drawInputLines(doc, y, 'Grav djupt. Vad driver dig egentligen? Vilka varderingar kopplar detta till?', 3)
+  y = drawSectionHeader(doc, y, 'VARF\xd6R \xc4R DETTA VIKTIGT F\xd6R MIG?')
+  y = drawInputLines(doc, y, 'Gr\xe4v djupt. Vad driver dig egentligen? Vilka v\xe4rderingar kopplar detta till?', 3)
 
   // Sektion 3: HUR SER MITT LIV UT NÄR JAG NÅTT MÅLET?
-  y = drawSectionHeader(doc, y, 'HUR SER MITT LIV UT NAR JAG NATT MALET?')
-  y = drawInputLines(doc, y, 'Beskriv din vardag. Hur kanns det? Vad gor du annorlunda? Hur ser du ut?', 3)
+  y = drawSectionHeader(doc, y, 'HUR SER MITT LIV UT N\xc4R JAG N\xc5TT M\xc5LET?')
+  y = drawInputLines(doc, y, 'Beskriv din vardag. Hur k\xe4nns det? Vad g\xf6r du annorlunda? Hur ser du ut?', 3)
 
   // Sektion 4: VAD HÄNDER OM JAG INTE GÖR FÖRÄNDRINGEN?
-  y = drawSectionHeader(doc, y, 'VAD HANDER OM JAG INTE GOR FORANDRINGEN?')
-  y = drawInputLines(doc, y, 'Hur ser livet ut om 1 ar, 5 ar om du INTE forandrar nagot?', 2)
+  y = drawSectionHeader(doc, y, 'VAD H\xc4NDER OM JAG INTE G\xd6R F\xd6R\xc4NDRINGEN?')
+  y = drawInputLines(doc, y, 'Hur ser livet ut om 1 \xe5r, 5 \xe5r om du INTE f\xf6r\xe4ndrar n\xe5got?', 2)
 
   // Sektion 5: NÄR DET BLIR TUFFT PÅMINNER JAG MIG OM
-  y = drawSectionHeader(doc, y, 'NAR DET BLIR TUFFT PAMINNER JAG MIG OM:')
-  y = drawInputLines(doc, y, 'Vad ska du saga till dig sjalv nar motivationen sviker?', 2)
+  y = drawSectionHeader(doc, y, 'N\xc4R DET BLIR TUFFT P\xc5MINNER JAG MIG OM:')
+  y = drawInputLines(doc, y, 'Vad ska du s\xe4ga till dig sj\xe4lv n\xe4r motivationen sviker?', 2)
 
   // Sektion 6: MITT LÖFTE TILL MIG SJÄLV
-  y = drawSectionHeader(doc, y, 'MITT LOFTE TILL MIG SJALV')
-  y = drawInputLines(doc, y, 'Skriv ett personligt atagande. Vad lovar du dig sjalv?', 2)
+  y = drawSectionHeader(doc, y, 'MITT L\xd6FTE TILL MIG SJ\xc4LV')
+  y = drawInputLines(doc, y, 'Skriv ett personligt \xe5tagande. Vad lovar du dig sj\xe4lv?', 2)
 
   // Datum och Signatur
   y += 3
@@ -115,7 +115,7 @@ function drawPage1(doc: jsPDF) {
   doc.setTextColor(...PRIMARY_COLOR)
   doc.setFontSize(9)
   doc.setFont('helvetica', 'italic')
-  const quote = '"Det finns inga lata manniskor, det finns bara manniskor med kraftlosa malsattningar som inte inspirerar dem."'
+  const quote = '"Det finns inga lata m\xe4nniskor, det finns bara m\xe4nniskor med kraftl\xf6sa m\xe5ls\xe4ttningar som inte inspirerar dem."'
   doc.text(quote, PAGE_WIDTH / 2, y + 7, { align: 'center', maxWidth: PAGE_WIDTH - 2 * MARGIN - 10 })
 
   doc.setFont('helvetica', 'normal')
@@ -134,40 +134,40 @@ function drawPage2(doc: jsPDF) {
   doc.setTextColor(...WHITE)
   doc.setFontSize(18)
   doc.setFont('helvetica', 'bold')
-  doc.text('FORDJUPADE DRIVKRAFTSFRAGOR', PAGE_WIDTH / 2, 16, { align: 'center' })
+  doc.text('F\xd6RDJUPADE DRIVKRAFTSFR\xc5GOR', PAGE_WIDTH / 2, 16, { align: 'center' })
 
   y = 35
 
   // Sektion 1: UTFORSKA NYTTAN
   y = drawSectionHeader(doc, y, 'UTFORSKA NYTTAN')
-  y = drawInputLines(doc, y, 'Vilka nyttor far jag om jag nar malet? (Lista allt du kommer pa)', 4)
+  y = drawInputLines(doc, y, 'Vilka nyttor f\xe5r jag om jag n\xe5r m\xe5let? (Lista allt du kommer p\xe5)', 4)
 
   // Sektion 2: UTFORSKA FÖRÄNDRINGEN
-  y = drawSectionHeader(doc, y, 'UTFORSKA FORANDRINGEN')
-  y = drawInputLines(doc, y, 'Vad kommer att vara annorlunda? (Energi, sjalvfortroende, klader, relationer, aktiviteter)', 3)
+  y = drawSectionHeader(doc, y, 'UTFORSKA F\xd6R\xc4NDRINGEN')
+  y = drawInputLines(doc, y, 'Vad kommer att vara annorlunda? (Energi, sj\xe4lvf\xf6rtroende, kl\xe4der, relationer, aktiviteter)', 3)
 
   // Sektion 3: UTFORSKA HINDREN
   y = drawSectionHeader(doc, y, 'UTFORSKA HINDREN')
-  y = drawInputLines(doc, y, 'Vad kommer att vara latt? Vad kommer att vara svart/ovant?', 3)
+  y = drawInputLines(doc, y, 'Vad kommer att vara l\xe4tt? Vad kommer att vara sv\xe5rt/ovant?', 3)
 
   // Sektion 4: TIDIGARE ERFARENHETER
   y = drawSectionHeader(doc, y, 'TIDIGARE ERFARENHETER')
-  y = drawInputLines(doc, y, 'Vad har du lyckats med tidigare? Vad fungerade da?', 2)
+  y = drawInputLines(doc, y, 'Vad har du lyckats med tidigare? Vad fungerade d\xe5?', 2)
 
   // Sektion 5: BIBEHÅLLA RESULTATEN
-  y = drawSectionHeader(doc, y, 'BIBEHALLA RESULTATEN')
-  y = drawInputLines(doc, y, 'Hur ska du halla kvar det goda efter att du natt malet?', 2)
+  y = drawSectionHeader(doc, y, 'BIBEH\xc5LLA RESULTATEN')
+  y = drawInputLines(doc, y, 'Hur ska du h\xe5lla kvar det goda efter att du n\xe5tt m\xe5let?', 2)
 
   // Sektion 6: MINA STYRKOR ATT ANVÄNDA
-  y = drawSectionHeader(doc, y, 'MINA STYRKOR ATT ANVANDA')
+  y = drawSectionHeader(doc, y, 'MINA STYRKOR ATT ANV\xc4NDA')
 
   const styrkor = [
-    'Jag ar disciplinerad nar jag bestamt mig',
-    'Jag ar bra pa att planera',
-    'Jag har stod fran familj/vanner',
+    'Jag \xe4r disciplinerad n\xe4r jag best\xe4mt mig',
+    'Jag \xe4r bra p\xe5 att planera',
+    'Jag har st\xf6d fr\xe5n familj/v\xe4nner',
     'Jag har lyckats med utmaningar tidigare',
-    'Jag ar envis och ger inte upp latt',
-    'Jag kan anpassa mig nar planer andras'
+    'Jag \xe4r envis och ger inte upp l\xe4tt',
+    'Jag kan anpassa mig n\xe4r planer \xe4ndras'
   ]
 
   const col1X = MARGIN + 2
@@ -210,16 +210,16 @@ function drawPage2(doc: jsPDF) {
   doc.setTextColor(...PRIMARY_COLOR)
   doc.setFontSize(10)
   doc.setFont('helvetica', 'bold')
-  doc.text('Tips for att anvanda detta ark:', MARGIN + 5, y + 6)
+  doc.text('Tips f\xf6r att anv\xe4nda detta ark:', MARGIN + 5, y + 6)
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)
   doc.setTextColor(...DARK_GRAY)
 
   const tips = [
-    '• Satt upp arket dar du ser det dagligen (kylskapet, badrumsspegeln, vid datorn)',
-    '• Las igenom dina drivkrafter varje morgon eller nar motivationen sviker',
-    '• Uppdatera arket om dina mal eller drivkrafter forandras under resans gang'
+    '\u2022 S\xe4tt upp arket d\xe4r du ser det dagligen (kylsk\xe5pet, badrumsspegeln, vid datorn)',
+    '\u2022 L\xe4s igenom dina drivkrafter varje morgon eller n\xe4r motivationen sviker',
+    '\u2022 Uppdatera arket om dina m\xe5l eller drivkrafter f\xf6r\xe4ndras under resans g\xe5ng'
   ]
 
   tips.forEach((tip, i) => {
