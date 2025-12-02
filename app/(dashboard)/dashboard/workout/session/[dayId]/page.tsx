@@ -471,9 +471,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const deleteSet = async () => {
     if (!sessionId || !deletingSet?.id) return
 
+    const setToDelete = deletingSet
     setIsUpdatingSet(true)
     try {
-      const response = await fetch(`/api/workout-sessions/${sessionId}/sets/${deletingSet.id}`, {
+      const response = await fetch(`/api/workout-sessions/${sessionId}/sets/${setToDelete.id}`, {
         method: 'DELETE'
       })
 
@@ -481,18 +482,18 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         // Update local state - remove the set
         setSetLogs(prev => {
           const updated = { ...prev }
-          const exerciseSets = updated[deletingSet.exerciseId]
+          const exerciseSets = updated[setToDelete.exerciseId]
           if (exerciseSets) {
-            updated[deletingSet.exerciseId] = exerciseSets.filter(s => s.id !== deletingSet.id)
+            updated[setToDelete.exerciseId] = exerciseSets.filter(s => s.id !== setToDelete.id)
           }
           return updated
         })
-        setDeletingSet(null)
       }
     } catch (error) {
       console.error('Error deleting set:', error)
     } finally {
       setIsUpdatingSet(false)
+      setDeletingSet(null) // Always close modal
     }
   }
 
@@ -507,13 +508,13 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       })
 
       if (response.ok) {
-        setShowCancelModal(false)
         router.push('/dashboard/workout')
       }
     } catch (error) {
       console.error('Error cancelling session:', error)
     } finally {
       setIsCancelling(false)
+      setShowCancelModal(false) // Always close modal
     }
   }
 
