@@ -36,7 +36,7 @@ interface WorkoutSession {
   notes: string | null
   rating: number | null
   ratingComment: string | null
-  workoutProgramDay: WorkoutProgramDay
+  workoutProgramDay: WorkoutProgramDay | null
   sets: WorkoutSet[]
 }
 
@@ -93,7 +93,7 @@ export default function WorkoutHistoryPage() {
     // Apply search filter
     if (searchQuery.trim()) {
       filtered = filtered.filter(session =>
-        session.workoutProgramDay.name.toLowerCase().includes(searchQuery.toLowerCase())
+        session.workoutProgramDay?.name?.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
 
@@ -395,7 +395,7 @@ export default function WorkoutHistoryPage() {
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                   <div className="min-w-0 flex-1">
                     <h3 className="text-base sm:text-xl font-semibold text-gray-900 mb-1 truncate">
-                      {session.workoutProgramDay.name}
+                      {session.workoutProgramDay?.name || 'Träningspass'}
                     </h3>
                     <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
                       <div className="flex items-center gap-1">
@@ -591,7 +591,7 @@ export default function WorkoutHistoryPage() {
                 Är du säker på att du vill ta bort detta pass? Detta kan inte ångras.
               </p>
               <div className="p-3 bg-white/5 rounded-lg mb-6">
-                <p className="text-white font-medium text-sm sm:text-base">{deletingSession.workoutProgramDay.name}</p>
+                <p className="text-white font-medium text-sm sm:text-base">{deletingSession.workoutProgramDay?.name || 'Träningspass'}</p>
                 <p className="text-gray-400 text-xs sm:text-sm">{formatDate(deletingSession.startedAt)}</p>
               </div>
 
