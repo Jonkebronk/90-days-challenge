@@ -33,7 +33,8 @@ import {
   X,
   Scale,
   Moon,
-  Brain
+  Brain,
+  User
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 
@@ -1241,6 +1242,28 @@ export default function DashboardPage() {
             </div>
             <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Meddelanden</h3>
             <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Kontakta coach</p>
+          </div>
+        </Link>
+
+        {/* Vanliga frågor Card */}
+        <Link href="/dashboard/faqs">
+          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
+              <HelpCircle className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+            </div>
+            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">FAQ</h3>
+            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Vanliga frågor</p>
+          </div>
+        </Link>
+
+        {/* Profil Card */}
+        <Link href="/dashboard/profile">
+          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
+              <User className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+            </div>
+            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Profil</h3>
+            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Dina inställningar</p>
           </div>
         </Link>
       </div>

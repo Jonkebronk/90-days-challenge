@@ -82,6 +82,7 @@ const navigation = [
   { name: 'Check-in', href: '/dashboard/check-in', icon: Calendar, clientOnly: true },
   { name: 'Framsteg', href: '/dashboard/progress', icon: TrendingUp, clientOnly: true },
   { name: 'Meddelanden', href: '/dashboard/messages', icon: MessageSquare },
+  { name: 'Vanliga frågor', href: '/dashboard/faqs', icon: HelpCircle },
   { name: 'Profil', href: '/dashboard/profile', icon: User },
 ]
 
