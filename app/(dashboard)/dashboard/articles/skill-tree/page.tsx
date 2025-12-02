@@ -212,6 +212,7 @@ export default function SkillTreePage() {
   const renderSubcategory = (subcategory: Subcategory, branchId: string, branchColor: string) => {
     const completedCount = subcategory.articles.filter(a => isArticleCompleted(a)).length
     const totalCount = subcategory.articles.length
+    const isMalOchDrivkrafter = subcategory.name.toLowerCase().includes('mål och drivkrafter')
 
     return (
       <div key={subcategory.id} className="space-y-2">
@@ -230,6 +231,27 @@ export default function SkillTreePage() {
         <div className="space-y-2 pl-3">
           {subcategory.articles.map((article, index) =>
             renderArticleItem(article, branchId, index, subcategory.articles.length)
+          )}
+
+          {/* Kylskåpsark download button - only in Mål och Drivkrafter */}
+          {isMalOchDrivkrafter && (
+            <button
+              onClick={handleDownloadKylskapsark}
+              className="w-full flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 hover:border-purple-500/50 hover:from-purple-500/30 hover:to-pink-500/30 transition-all group mt-2"
+            >
+              <div className="w-8 h-8 rounded-lg bg-purple-500/30 flex items-center justify-center">
+                <FileText className="w-4 h-4 text-purple-300" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-medium text-white group-hover:text-purple-200 transition-colors">
+                  Ladda ner ditt Kylskåpsark
+                </p>
+                <p className="text-xs text-gray-400">
+                  Skriv ut och sätt upp på kylskåpet
+                </p>
+              </div>
+              <Download className="w-4 h-4 text-purple-400 group-hover:text-purple-300 transition-colors" />
+            </button>
           )}
         </div>
       </div>
@@ -264,9 +286,8 @@ export default function SkillTreePage() {
   const renderBranchContent = (branch: BranchWithArticles) => {
     const subcategories = branch.subcategories || []
     const looseArticles = branch.articles || []
-    const isMindsetBranch = branch.name.toLowerCase().includes('mindset')
 
-    if (subcategories.length === 0 && looseArticles.length === 0 && !isMindsetBranch) {
+    if (subcategories.length === 0 && looseArticles.length === 0) {
       return <p className="text-gray-500 text-sm text-center py-2">Inga artiklar ännu</p>
     }
 
@@ -299,39 +320,6 @@ export default function SkillTreePage() {
           </div>
         )}
 
-        {/* Kylskåpsark download card - only in Mindset branch */}
-        {isMindsetBranch && (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 py-2">
-              <div
-                className="w-1 h-4 rounded-full"
-                style={{ backgroundColor: branch.color }}
-              />
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                Verktyg
-              </span>
-            </div>
-            <div className="pl-3">
-              <button
-                onClick={handleDownloadKylskapsark}
-                className="w-full flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 hover:border-purple-500/50 hover:from-purple-500/30 hover:to-pink-500/30 transition-all group"
-              >
-                <div className="w-10 h-10 rounded-lg bg-purple-500/30 flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-purple-300" />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-medium text-white group-hover:text-purple-200 transition-colors">
-                    Ladda ner ditt Kylskåpsark
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    Skriv ut och sätt upp på kylskåpet
-                  </p>
-                </div>
-                <Download className="w-5 h-5 text-purple-400 group-hover:text-purple-300 transition-colors" />
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     )
   }
