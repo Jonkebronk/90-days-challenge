@@ -21,6 +21,8 @@ import {
   Star,
   Trophy,
   X,
+  Download,
+  FileText,
   LucideIcon
 } from 'lucide-react'
 import Link from 'next/link'
@@ -234,12 +236,37 @@ export default function SkillTreePage() {
     )
   }
 
+  // Download handler for Kylskåpsark
+  const handleDownloadKylskapsark = async () => {
+    try {
+      const response = await fetch('/api/kylskapsark')
+      if (response.ok) {
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'kylskapsark_mal_och_drivkrafter.pdf'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+        toast.success('PDF nedladdad!')
+      } else {
+        toast.error('Kunde inte ladda ner PDF')
+      }
+    } catch (error) {
+      console.error('Download error:', error)
+      toast.error('Ett fel uppstod vid nedladdning')
+    }
+  }
+
   // Render all branch content (subcategories + loose articles)
   const renderBranchContent = (branch: BranchWithArticles) => {
     const subcategories = branch.subcategories || []
     const looseArticles = branch.articles || []
+    const isMindsetBranch = branch.name.toLowerCase().includes('mindset')
 
-    if (subcategories.length === 0 && looseArticles.length === 0) {
+    if (subcategories.length === 0 && looseArticles.length === 0 && !isMindsetBranch) {
       return <p className="text-gray-500 text-sm text-center py-2">Inga artiklar ännu</p>
     }
 
@@ -268,6 +295,40 @@ export default function SkillTreePage() {
               {looseArticles.map((article, index) =>
                 renderArticleItem(article, branch.id, index, looseArticles.length)
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Kylskåpsark download card - only in Mindset branch */}
+        {isMindsetBranch && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 py-2">
+              <div
+                className="w-1 h-4 rounded-full"
+                style={{ backgroundColor: branch.color }}
+              />
+              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                Verktyg
+              </span>
+            </div>
+            <div className="pl-3">
+              <button
+                onClick={handleDownloadKylskapsark}
+                className="w-full flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 hover:border-purple-500/50 hover:from-purple-500/30 hover:to-pink-500/30 transition-all group"
+              >
+                <div className="w-10 h-10 rounded-lg bg-purple-500/30 flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-purple-300" />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-medium text-white group-hover:text-purple-200 transition-colors">
+                    Ladda ner ditt Kylskåpsark
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Skriv ut och sätt upp på kylskåpet
+                  </p>
+                </div>
+                <Download className="w-5 h-5 text-purple-400 group-hover:text-purple-300 transition-colors" />
+              </button>
             </div>
           </div>
         )}

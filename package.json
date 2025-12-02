@@ -48,6 +48,7 @@
     "firebase": "^12.6.0",
     "firebase-admin": "^13.6.0",
     "framer-motion": "^12.23.24",
+    "jspdf": "^3.0.4",
     "lodash": "^4.17.21",
     "lucide-react": "^0.552.0",
     "mammoth": "^1.11.0",
