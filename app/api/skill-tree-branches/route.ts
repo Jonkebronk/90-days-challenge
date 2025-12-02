@@ -8,13 +8,20 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const includeArticles = searchParams.get('includeArticles') === 'true'
+    const includeAll = searchParams.get('includeAll') === 'true' // Include drafts for admin
     const userId = searchParams.get('userId')
+
+    const articleWhere = includeAll
+      ? { skillTreeSubcategoryId: null } // Only filter by no subcategory
+      : { published: true, skillTreeSubcategoryId: null } // Filter by published too
+
+    const subcategoryArticleWhere = includeAll ? {} : { published: true }
 
     const branches = await prisma.skillTreeBranch.findMany({
       orderBy: { orderIndex: 'asc' },
       include: includeArticles ? {
         articles: {
-          where: { published: true, skillTreeSubcategoryId: null }, // Only loose articles
+          where: articleWhere,
           orderBy: { orderInBranch: 'asc' },
           select: {
             id: true,
@@ -23,6 +30,7 @@ export async function GET(request: NextRequest) {
             orderInBranch: true,
             estimatedReadingMinutes: true,
             skillTreeSubcategoryId: true,
+            published: true,
             progress: userId ? {
               where: { userId },
               select: { completed: true }
@@ -33,7 +41,7 @@ export async function GET(request: NextRequest) {
           orderBy: { orderIndex: 'asc' },
           include: {
             articles: {
-              where: { published: true },
+              where: subcategoryArticleWhere,
               orderBy: { orderInBranch: 'asc' },
               select: {
                 id: true,
@@ -42,6 +50,7 @@ export async function GET(request: NextRequest) {
                 orderInBranch: true,
                 estimatedReadingMinutes: true,
                 skillTreeSubcategoryId: true,
+                published: true,
                 progress: userId ? {
                   where: { userId },
                   select: { completed: true }

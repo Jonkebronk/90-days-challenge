@@ -142,7 +142,7 @@ export default function SkillTreeAdminPage() {
     try {
       setIsLoading(true)
       const [branchesRes, articlesRes] = await Promise.all([
-        fetch('/api/skill-tree-branches'),
+        fetch('/api/skill-tree-branches?includeArticles=true&includeAll=true'),
         fetch('/api/articles?audience=client')
       ])
 
@@ -559,7 +559,10 @@ export default function SkillTreeAdminPage() {
             const Icon = getIconComponent(branch.icon)
             const isExpanded = expandedBranch === branch.id
             const articles = branch.articles || []
-            const articleCount = allArticles.filter(a => a.skillTreeBranchId === branch.id).length
+            // Count both loose articles and articles in subcategories
+            const looseArticleCount = articles.length
+            const subcategoryArticleCount = (branch.subcategories || []).reduce((sum, sub) => sum + (sub.articles?.length || 0), 0)
+            const articleCount = looseArticleCount + subcategoryArticleCount
 
             return (
               <Card key={branch.id} className="bg-white/5 border-white/10 overflow-hidden">
