@@ -127,7 +127,11 @@ export default function ArticlesPage() {
             const articlesRes = await fetch(`/api/skill-tree-branches/${branch.id}`)
             if (articlesRes.ok) {
               const articlesData = await articlesRes.json()
-              return { ...branch, articles: articlesData.articles || [] }
+              // Combine loose articles with articles from subcategories
+              const looseArticles = articlesData.articles || []
+              const subcategoryArticles = (articlesData.subcategories || []).flatMap((sub: any) => sub.articles || [])
+              const allArticles = [...looseArticles, ...subcategoryArticles]
+              return { ...branch, articles: allArticles }
             }
             return { ...branch, articles: [] }
           })
