@@ -108,12 +108,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
   const [isCompleting, setIsCompleting] = useState(false)
 
-  // Edit/Delete set state
+  // Edit set state
   const [editingSet, setEditingSet] = useState<SetLog | null>(null)
   const [editReps, setEditReps] = useState<string>('')
   const [editWeight, setEditWeight] = useState<string>('')
   const [editNotes, setEditNotes] = useState<string>('')
-  const [deletingSet, setDeletingSet] = useState<SetLog | null>(null)
   const [isUpdatingSet, setIsUpdatingSet] = useState(false)
 
   // Cancel/abandon session state
@@ -467,12 +466,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     }
   }
 
-  // Delete a set
-  const deleteSet = async () => {
-    if (!sessionId || !deletingSet?.id) return
+  // Delete a set directly (no confirmation)
+  const deleteSetDirectly = async (setToDelete: SetLog) => {
+    if (!sessionId || !setToDelete?.id) return
 
-    const setToDelete = deletingSet
-    setIsUpdatingSet(true)
     try {
       const response = await fetch(`/api/workout-sessions/${sessionId}/sets/${setToDelete.id}`, {
         method: 'DELETE'
@@ -491,9 +488,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       }
     } catch (error) {
       console.error('Error deleting set:', error)
-    } finally {
-      setIsUpdatingSet(false)
-      setDeletingSet(null) // Always close modal
     }
   }
 
@@ -965,7 +959,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                       <Pencil className="w-4 h-4 text-gray-400 hover:text-white" />
                                     </button>
                                     <button
-                                      onClick={() => setDeletingSet(set)}
+                                      onClick={() => deleteSetDirectly(set)}
                                       className="p-2 rounded-lg hover:bg-red-500/20 transition-colors"
                                       title="Ta bort set"
                                     >
@@ -1102,58 +1096,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             </Button>
           </CardContent>
         </Card>
-      )}
-
-      {/* Delete Set Confirmation Modal */}
-      {deletingSet && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="bg-[#1a1a2e] border border-red-500/30 shadow-xl w-full max-w-md">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Trash2 className="w-5 h-5 text-red-400" />
-                  Ta bort Set {deletingSet.setNumber}?
-                </CardTitle>
-                <button
-                  onClick={() => setDeletingSet(null)}
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-gray-300">
-                Är du säker på att du vill ta bort detta set? Detta kan inte ångras.
-              </p>
-              <div className="p-3 bg-zinc-800/50 border border-zinc-700 rounded-lg">
-                <span className="text-sm text-gray-400">Set {deletingSet.setNumber}: </span>
-                <span className="text-white font-semibold">
-                  {deletingSet.reps} reps
-                  {deletingSet.weightKg && ` × ${deletingSet.weightKg} kg`}
-                </span>
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <Button
-                  onClick={() => setDeletingSet(null)}
-                  variant="outline"
-                  className="flex-1 bg-zinc-800 border-zinc-600 text-gray-300 hover:bg-zinc-700 hover:text-white"
-                  disabled={isUpdatingSet}
-                >
-                  Avbryt
-                </Button>
-                <Button
-                  onClick={deleteSet}
-                  className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white hover:opacity-90"
-                  disabled={isUpdatingSet}
-                >
-                  {isUpdatingSet ? 'Tar bort...' : 'Ta bort'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       )}
 
       {/* Cancel Session Confirmation Modal */}
