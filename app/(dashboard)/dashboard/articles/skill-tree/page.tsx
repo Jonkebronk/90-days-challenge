@@ -213,6 +213,7 @@ export default function SkillTreePage() {
     const completedCount = subcategory.articles.filter(a => isArticleCompleted(a)).length
     const totalCount = subcategory.articles.length
     const isMalOchDrivkrafter = subcategory.name.toLowerCase().includes('mål och drivkrafter')
+    const firstUnreadIndex = subcategory.articles.findIndex(a => !isArticleCompleted(a))
 
     return (
       <div key={subcategory.id} className="space-y-2">
@@ -230,7 +231,7 @@ export default function SkillTreePage() {
         </div>
         <div className="space-y-2 pl-3">
           {subcategory.articles.map((article, index) =>
-            renderArticleItem(article, branchId, index, subcategory.articles.length)
+            renderArticleItem(article, branchId, index, subcategory.articles.length, index === firstUnreadIndex)
           )}
 
           {/* Kylskåpsark download button - only in Mål och Drivkrafter */}
@@ -287,6 +288,7 @@ export default function SkillTreePage() {
     const subcategories = branch.subcategories || []
     const looseArticles = branch.articles || []
     const isMalOchDrivkrafterBranch = branch.name.toLowerCase().includes('drivkrafter')
+    const firstUnreadLooseIndex = looseArticles.findIndex(a => !isArticleCompleted(a))
 
     if (subcategories.length === 0 && looseArticles.length === 0) {
       return <p className="text-gray-500 text-sm text-center py-2">Inga artiklar ännu</p>
@@ -315,7 +317,7 @@ export default function SkillTreePage() {
             )}
             <div className={subcategories.length > 0 ? "pl-3 space-y-2" : "space-y-2"}>
               {looseArticles.map((article, index) =>
-                renderArticleItem(article, branch.id, index, looseArticles.length)
+                renderArticleItem(article, branch.id, index, looseArticles.length, index === firstUnreadLooseIndex)
               )}
 
               {/* Kylskåpsark download button - in Mål och Drivkrafter branch */}
@@ -347,11 +349,19 @@ export default function SkillTreePage() {
   }
 
   // Render article item with optional reorder buttons
-  const renderArticleItem = (article: ArticleWithProgress, branchId: string, index: number, totalArticles: number) => (
+  const renderArticleItem = (article: ArticleWithProgress, branchId: string, index: number, totalArticles: number, isNextStep: boolean = false) => (
     <div
       key={article.id}
-      className="flex items-center gap-2 p-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
+      className={`flex items-center gap-2 p-3 rounded-lg transition-all group relative ${
+        isNextStep
+          ? 'bg-gold-primary/10 border border-gold-primary/40 hover:border-gold-primary/60'
+          : 'bg-white/5 border border-white/10 hover:bg-white/10 hover:border-gold-primary/30'
+      }`}
     >
+      {/* Next step indicator */}
+      {isNextStep && (
+        <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-6 bg-gold-primary rounded-full animate-pulse" />
+      )}
       {/* Reorder buttons for coaches */}
       {isCoach && (
         <div className="flex flex-col gap-0.5">
@@ -384,13 +394,23 @@ export default function SkillTreePage() {
         href={`/dashboard/articles/${article.id}`}
         className="flex items-center gap-3 flex-1 min-w-0"
       >
-        {isArticleCompleted(article) ? (
-          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-        ) : (
-          <Circle className="w-5 h-5 text-gray-500 flex-shrink-0" />
-        )}
+        <div className={`
+          w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0
+          transition-all duration-200
+          ${isArticleCompleted(article)
+            ? 'bg-green-500 border-green-500'
+            : 'border-zinc-500 group-hover:border-gold-primary group-hover:bg-gold-primary/10'
+          }
+        `}>
+          {isArticleCompleted(article) && (
+            <CheckCircle2 className="w-4 h-4 text-white" />
+          )}
+        </div>
         <div className="flex-1 min-w-0">
-          <p className={`text-sm truncate ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}>
+          <p
+            className={`text-sm truncate ${isArticleCompleted(article) ? 'text-gray-400' : 'text-white'}`}
+            title={article.title}
+          >
             {article.title}
           </p>
           {article.estimatedReadingMinutes && (
@@ -466,10 +486,19 @@ export default function SkillTreePage() {
                   )}
                 </div>
               </div>
+              {/* Progress bar under header */}
+              <div className="mt-4 w-full">
+                <div className="w-full bg-zinc-800 rounded-full h-2.5">
+                  <div
+                    className="bg-gradient-to-r from-gold-primary to-gold-secondary h-2.5 rounded-full transition-all duration-500"
+                    style={{ width: `${totalProgress.total > 0 ? Math.round((totalProgress.completed / totalProgress.total) * 100) : 0}%` }}
+                  />
+                </div>
+              </div>
             </button>
 
             {/* Connection line */}
-            <div className="hidden lg:block absolute left-1/2 -translate-x-1/2 w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/50 to-transparent" />
+            <div className="hidden lg:block absolute left-1/2 -translate-x-1/2 w-1 h-8 bg-gradient-to-b from-[#FFD700]/60 to-transparent" />
           </div>
 
           {/* Introduction Text - Collapsible */}
@@ -484,13 +513,13 @@ export default function SkillTreePage() {
           {/* Branching Lines */}
           <div className="relative hidden lg:flex justify-center">
             {/* Vertical line down */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/50 to-[#FFD700]/30" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-4 bg-gradient-to-b from-[#FFD700]/60 to-[#FFD700]/40" />
             {/* Horizontal line */}
-            <div className="absolute top-4 left-[33%] right-[33%] h-0.5 bg-[#FFD700]/30" />
+            <div className="absolute top-4 left-[33%] right-[33%] h-1 bg-[#FFD700]/40" />
             {/* Three vertical lines down to branches */}
-            <div className="absolute top-4 left-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-purple-500/50" />
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
-            <div className="absolute top-4 right-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-orange-500/50" />
+            <div className="absolute top-4 left-[33%] w-1 h-4 bg-gradient-to-b from-[#FFD700]/40 to-purple-500/60" />
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-1 h-4 bg-gradient-to-b from-[#FFD700]/40 to-green-500/60" />
+            <div className="absolute top-4 right-[33%] w-1 h-4 bg-gradient-to-b from-[#FFD700]/40 to-orange-500/60" />
             {/* Spacer for the lines */}
             <div className="h-8" />
           </div>
@@ -528,8 +557,18 @@ export default function SkillTreePage() {
                             {branch.name}
                           </h3>
                           <p className="text-gray-400 text-xs">
-                            {progress.total} artiklar
+                            {progress.completed}/{progress.completed}/{progress.total} artiklar
                           </p>
+                          {/* Mini progress bar */}
+                          <div className="w-16 h-1.5 bg-zinc-700 rounded-full mt-2">
+                            <div
+                              className="h-1.5 rounded-full transition-all"
+                              style={{
+                                width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`,
+                                backgroundColor: branch.color
+                              }}
+                            />
+                          </div>
                         </div>
                       </button>
 
@@ -579,8 +618,18 @@ export default function SkillTreePage() {
                                   {branch.name}
                                 </h3>
                                 <p className="text-gray-400 text-xs">
-                                  {progress.total} artiklar
+                                  {progress.completed}/{progress.completed}/{progress.total} artiklar
                                 </p>
+                                {/* Mini progress bar */}
+                                <div className="w-16 h-1.5 bg-zinc-700 rounded-full mt-2">
+                                  <div
+                                    className="h-1.5 rounded-full transition-all"
+                                    style={{
+                                      width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`,
+                                      backgroundColor: branch.color
+                                    }}
+                                  />
+                                </div>
                               </div>
                             </button>
 
@@ -632,8 +681,11 @@ export default function SkillTreePage() {
                                   {branch.name}
                                 </h3>
                                 <p className="text-gray-400 text-xs">
-                                  {progress.total} artiklar
+                                  {progress.completed}/{progress.completed}/{progress.total} artiklar
                                 </p>
+                                <div className="w-16 h-1.5 bg-zinc-700 rounded-full mt-2">
+                                  <div className="h-1.5 rounded-full transition-all" style={{ width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`, backgroundColor: branch.color }} />
+                                </div>
                               </div>
                             </button>
 
@@ -684,7 +736,7 @@ export default function SkillTreePage() {
                                   {branch.name}
                                 </h3>
                                 <p className="text-gray-400 text-xs">
-                                  {progress.total} artiklar
+                                  {progress.completed}/{progress.total} artiklar
                                 </p>
                               </div>
                             </button>
@@ -740,7 +792,7 @@ export default function SkillTreePage() {
                                 {branch.name}
                               </h3>
                               <p className="text-gray-400 text-xs">
-                                {progress.total} artiklar
+                                {progress.completed}/{progress.total} artiklar
                               </p>
                             </div>
                           </button>
@@ -792,7 +844,7 @@ export default function SkillTreePage() {
                                   {branch.name}
                                 </h3>
                                 <p className="text-gray-400 text-xs">
-                                  {progress.total} artiklar
+                                  {progress.completed}/{progress.total} artiklar
                                 </p>
                               </div>
                             </button>
@@ -847,7 +899,7 @@ export default function SkillTreePage() {
                             {branch.name}
                           </h3>
                           <p className="text-gray-400 text-xs">
-                            {progress.total} artiklar
+                            {progress.completed}/{progress.total} artiklar
                           </p>
                         </div>
                       </button>
