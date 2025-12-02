@@ -32,6 +32,12 @@ type Article = {
   estimatedReadingMinutes?: number | null
   coverImage?: string | null
   published: boolean
+  skillTreeBranchId?: string | null
+}
+
+type Branch = {
+  id: string
+  name: string
 }
 
 export default function ArticleEditorPage() {
@@ -41,6 +47,7 @@ export default function ArticleEditorPage() {
   const articleId = params.id as string
 
   const [article, setArticle] = useState<Article | null>(null)
+  const [branches, setBranches] = useState<Branch[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit')
@@ -54,7 +61,8 @@ export default function ArticleEditorPage() {
     phase: '',
     estimatedReadingMinutes: '',
     coverImage: '',
-    published: false
+    published: false,
+    skillTreeBranchId: ''
   })
 
   const [newTag, setNewTag] = useState('')
@@ -120,8 +128,21 @@ export default function ArticleEditorPage() {
   useEffect(() => {
     if (session?.user) {
       fetchArticle()
+      fetchBranches()
     }
   }, [session, articleId])
+
+  const fetchBranches = async () => {
+    try {
+      const response = await fetch('/api/skill-tree-branches')
+      if (response.ok) {
+        const data = await response.json()
+        setBranches(data.branches || [])
+      }
+    } catch (error) {
+      console.error('Error fetching branches:', error)
+    }
+  }
 
   const fetchArticle = async () => {
     try {
@@ -153,7 +174,8 @@ export default function ArticleEditorPage() {
               phase: data.article.phase?.toString() || '',
               estimatedReadingMinutes: data.article.estimatedReadingMinutes?.toString() || '',
               coverImage: data.article.coverImage || '',
-              published: data.article.published
+              published: data.article.published,
+              skillTreeBranchId: data.article.skillTreeBranchId || ''
             })
           }
         } else {
@@ -166,7 +188,8 @@ export default function ArticleEditorPage() {
             phase: data.article.phase?.toString() || '',
             estimatedReadingMinutes: data.article.estimatedReadingMinutes?.toString() || '',
             coverImage: data.article.coverImage || '',
-            published: data.article.published
+            published: data.article.published,
+            skillTreeBranchId: data.article.skillTreeBranchId || ''
           })
         }
       } else {
@@ -190,7 +213,8 @@ export default function ArticleEditorPage() {
         phase: formData.phase ? parseInt(formData.phase) : null,
         estimatedReadingMinutes: formData.estimatedReadingMinutes
           ? parseInt(formData.estimatedReadingMinutes)
-          : null
+          : null,
+        skillTreeBranchId: formData.skillTreeBranchId || null
       }
 
       console.log('Saving article with payload:', payload)
@@ -224,7 +248,8 @@ export default function ArticleEditorPage() {
             ? String(data.article.estimatedReadingMinutes)
             : '',
           coverImage: data.article.coverImage || '',
-          published: data.article.published
+          published: data.article.published,
+          skillTreeBranchId: data.article.skillTreeBranchId || ''
         })
 
         // Refresh router cache to update article list when navigating back
@@ -256,6 +281,7 @@ export default function ArticleEditorPage() {
           estimatedReadingMinutes: formData.estimatedReadingMinutes
             ? parseInt(formData.estimatedReadingMinutes)
             : null,
+          skillTreeBranchId: formData.skillTreeBranchId || null,
           published: newPublished
         })
       })
@@ -389,6 +415,25 @@ export default function ArticleEditorPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
+              <Label htmlFor="branch" className="text-gray-200">Gren (Kunskapskartan)</Label>
+              <Select
+                value={formData.skillTreeBranchId || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, skillTreeBranchId: value === 'none' ? '' : value })}
+              >
+                <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
+                  <SelectValue placeholder="Välj gren" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Ingen gren</SelectItem>
+                  {branches.map((branch) => (
+                    <SelectItem key={branch.id} value={branch.id}>
+                      {branch.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
               <Label htmlFor="phase" className="text-gray-200">Fas</Label>
               <Select
                 value={formData.phase || 'none'}
@@ -405,6 +450,9 @@ export default function ArticleEditorPage() {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="difficulty" className="text-gray-200">Svårighetsgrad</Label>
               <Select

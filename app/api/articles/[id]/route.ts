@@ -99,7 +99,8 @@ export async function PATCH(
       estimatedReadingMinutes,
       coverImage,
       published,
-      orderIndex
+      orderIndex,
+      skillTreeBranchId
     } = body
 
     const updateData: any = {}
@@ -113,6 +114,7 @@ export async function PATCH(
     if (estimatedReadingMinutes !== undefined) updateData.estimatedReadingMinutes = estimatedReadingMinutes
     if (coverImage !== undefined) updateData.coverImage = coverImage || null
     if (orderIndex !== undefined) updateData.orderIndex = orderIndex
+    if (skillTreeBranchId !== undefined) updateData.skillTreeBranchId = skillTreeBranchId || null
 
     console.log('PATCH /api/articles/[id] - Update data:', {
       updateDataKeys: Object.keys(updateData),
