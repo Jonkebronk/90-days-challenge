@@ -510,23 +510,14 @@ export default function SkillTreePage() {
             </div>
           )}
 
-          {/* Branching Lines */}
-          <div className="relative hidden lg:flex justify-center">
-            {/* Vertical line down */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-4 bg-gradient-to-b from-[#FFD700]/60 to-[#FFD700]/40" />
-            {/* Horizontal line */}
-            <div className="absolute top-4 left-[33%] right-[33%] h-1 bg-[#FFD700]/40" />
-            {/* Three vertical lines down to branches */}
-            <div className="absolute top-4 left-[33%] w-1 h-4 bg-gradient-to-b from-[#FFD700]/40 to-purple-500/60" />
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-1 h-4 bg-gradient-to-b from-[#FFD700]/40 to-green-500/60" />
-            <div className="absolute top-4 right-[33%] w-1 h-4 bg-gradient-to-b from-[#FFD700]/40 to-orange-500/60" />
-            {/* Spacer for the lines */}
-            <div className="h-8" />
+          {/* Simple connecting line down to first branch */}
+          <div className="hidden lg:flex justify-center py-2">
+            <div className="w-1 h-6 bg-gradient-to-b from-[#FFD700]/50 to-[#FFD700]/30" />
           </div>
 
           {/* Mobile: Simple line */}
           <div className="lg:hidden flex justify-center">
-            <div className="w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/50 to-transparent" />
+            <div className="w-1 h-4 bg-gradient-to-b from-[#FFD700]/50 to-transparent" />
           </div>
 
           {/* Branches - Always visible */}
