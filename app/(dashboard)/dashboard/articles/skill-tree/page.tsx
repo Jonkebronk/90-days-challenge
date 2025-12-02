@@ -286,6 +286,7 @@ export default function SkillTreePage() {
   const renderBranchContent = (branch: BranchWithArticles) => {
     const subcategories = branch.subcategories || []
     const looseArticles = branch.articles || []
+    const isMalOchDrivkrafterBranch = branch.name.toLowerCase().includes('drivkrafter')
 
     if (subcategories.length === 0 && looseArticles.length === 0) {
       return <p className="text-gray-500 text-sm text-center py-2">Inga artiklar ännu</p>
@@ -315,6 +316,27 @@ export default function SkillTreePage() {
             <div className={subcategories.length > 0 ? "pl-3 space-y-2" : "space-y-2"}>
               {looseArticles.map((article, index) =>
                 renderArticleItem(article, branch.id, index, looseArticles.length)
+              )}
+
+              {/* Kylskåpsark download button - in Mål och Drivkrafter branch */}
+              {isMalOchDrivkrafterBranch && (
+                <button
+                  onClick={handleDownloadKylskapsark}
+                  className="w-full flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 hover:border-purple-500/50 hover:from-purple-500/30 hover:to-pink-500/30 transition-all group mt-2"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-purple-500/30 flex items-center justify-center">
+                    <FileText className="w-4 h-4 text-purple-300" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="text-sm font-medium text-white group-hover:text-purple-200 transition-colors">
+                      Ladda ner ditt Kylskåpsark
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Skriv ut och sätt upp på kylskåpet
+                    </p>
+                  </div>
+                  <Download className="w-4 h-4 text-purple-400 group-hover:text-purple-300 transition-colors" />
+                </button>
               )}
             </div>
           </div>
