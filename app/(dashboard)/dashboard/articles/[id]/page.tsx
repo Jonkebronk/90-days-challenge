@@ -110,10 +110,21 @@ export default function ArticleReaderPage() {
       const response = await fetch(`/api/skill-tree-branches/${branchId}`)
       if (response.ok) {
         const data = await response.json()
-        const articlesInBranch = (data.articles || [])
+        // Combine loose articles with articles from subcategories
+        const looseArticles = data.articles || []
+        const subcategoryArticles = (data.subcategories || []).flatMap((sub: any) =>
+          (sub.articles || []).map((a: any) => ({ ...a, subcategoryOrder: sub.orderIndex }))
+        )
+        // Sort: first by subcategory order (loose articles = -1), then by orderInBranch
+        const allArticles = [...looseArticles.map((a: any) => ({ ...a, subcategoryOrder: -1 })), ...subcategoryArticles]
           .filter((a: Article) => a.published)
-          .sort((a: Article, b: Article) => (a.orderInBranch || 0) - (b.orderInBranch || 0))
-        setBranchArticles(articlesInBranch)
+          .sort((a: any, b: any) => {
+            if (a.subcategoryOrder !== b.subcategoryOrder) {
+              return a.subcategoryOrder - b.subcategoryOrder
+            }
+            return (a.orderInBranch || 0) - (b.orderInBranch || 0)
+          })
+        setBranchArticles(allArticles)
       }
     } catch (error) {
       console.error('Error fetching branch articles:', error)
