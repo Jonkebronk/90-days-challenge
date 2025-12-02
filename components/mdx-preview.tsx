@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 type MDXPreviewProps = {
   content: string
@@ -24,6 +25,7 @@ export function MDXPreview({ content, theme = 'light' }: MDXPreviewProps) {
   return (
     <div className={`${isDark ? 'bg-transparent text-gray-200' : 'bg-white text-black'} p-6 rounded-lg prose prose-sm max-w-none`}>
       <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
         components={{
           h1: ({ ...props }) => (
             <h1 className={`text-3xl font-bold mb-4 ${isDark ? 'text-amber-500' : 'text-black'}`} {...props} />
