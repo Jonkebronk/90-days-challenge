@@ -42,7 +42,7 @@ type Article = {
   updatedAt: string
   lastReviewed?: string | null
   version?: number | null
-  category: ArticleCategory
+  category?: ArticleCategory | null
   skillTreeBranchId?: string | null
   orderInBranch?: number
   skillTreeBranch?: SkillTreeBranch | null
@@ -260,7 +260,7 @@ export default function ArticleReaderPage() {
           {branchProgress && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs sm:text-sm">
-                <span className="text-gray-400">{article.skillTreeBranch?.name || article.category.name}</span>
+                <span className="text-gray-400">{article.skillTreeBranch?.name || article.category?.name || 'Artikel'}</span>
                 <span className="font-medium text-gold-light">
                   {branchProgress.completed} av {branchProgress.total} artiklar lästa
                 </span>
@@ -298,7 +298,9 @@ export default function ArticleReaderPage() {
           {/* Article Header */}
           <div className="mb-4 sm:mb-8">
             <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
-              <Badge className="bg-[rgba(255,215,0,0.2)] text-gold-light border-gold-primary/30 text-xs">{article.category.name}</Badge>
+              {article.category?.name && (
+                <Badge className="bg-[rgba(255,215,0,0.2)] text-gold-light border-gold-primary/30 text-xs">{article.category.name}</Badge>
+              )}
               {article.phase && (
                 <Badge className="bg-[rgba(255,255,255,0.05)] text-gray-300 border-[rgba(255,255,255,0.2)] text-xs">Fas {article.phase}</Badge>
               )}

@@ -213,7 +213,7 @@ export default function CoachArticleReaderPage() {
           {categoryProgress && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-400">{article.category.name}</span>
+                <span className="text-gray-400">{article.category?.name || 'Coachartiklar'}</span>
                 <span className="font-medium text-purple-300">
                   {categoryProgress.completed} av {categoryProgress.total} artiklar lästa
                 </span>
@@ -241,7 +241,9 @@ export default function CoachArticleReaderPage() {
           {/* Article Header */}
           <div className="mb-8">
             <div className="flex flex-wrap gap-2 mb-4">
-              <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30">{article.category.name}</Badge>
+              {article.category?.name && (
+                <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30">{article.category.name}</Badge>
+              )}
               {article.phase && (
                 <Badge className="bg-[rgba(255,255,255,0.05)] text-gray-300 border-[rgba(255,255,255,0.2)]">Fas {article.phase}</Badge>
               )}

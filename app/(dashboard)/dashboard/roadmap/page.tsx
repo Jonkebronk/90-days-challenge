@@ -23,9 +23,12 @@ type Article = {
   title: string
   difficulty?: string | null
   estimatedReadingMinutes?: number | null
-  category: {
+  category?: {
     name: string
-  }
+  } | null
+  skillTreeBranch?: {
+    name: string
+  } | null
 }
 
 type ArticleProgress = {
@@ -236,7 +239,7 @@ export default function ClientRoadmapPage() {
                               {assignment.article.title}
                             </h4>
                             <p className="text-sm text-muted-foreground">
-                              {assignment.article.category.name}
+                              {assignment.article.category?.name || assignment.article.skillTreeBranch?.name || 'Artikel'}
                             </p>
                           </div>
                         </div>

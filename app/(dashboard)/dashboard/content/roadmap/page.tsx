@@ -29,9 +29,12 @@ import { toast } from 'sonner'
 type Article = {
   id: string
   title: string
-  category: {
+  category?: {
     name: string
-  }
+  } | null
+  skillTreeBranch?: {
+    name: string
+  } | null
 }
 
 type RoadmapAssignment = {
@@ -212,7 +215,7 @@ export default function RoadmapPage() {
                     <div>
                       <p className="font-medium">{assignment.article.title}</p>
                       <p className="text-sm text-muted-foreground">
-                        {assignment.article.category.name}
+                        {assignment.article.category?.name || assignment.article.skillTreeBranch?.name || 'Artikel'}
                       </p>
                     </div>
                   </div>
@@ -354,7 +357,7 @@ export default function RoadmapPage() {
                 <SelectContent>
                   {articles.map(article => (
                     <SelectItem key={article.id} value={article.id}>
-                      {article.title} ({article.category.name})
+                      {article.title} ({article.category?.name || article.skillTreeBranch?.name || 'Ingen kategori'})
                     </SelectItem>
                   ))}
                 </SelectContent>
