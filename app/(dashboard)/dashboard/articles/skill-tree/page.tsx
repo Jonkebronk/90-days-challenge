@@ -531,336 +531,126 @@ export default function SkillTreePage() {
 
           {/* Branches - Always visible */}
           <div className="space-y-3 -mt-1">
-              {/* Desktop: Show first 3 branches in a row */}
-              <div className="hidden lg:grid lg:grid-cols-3 gap-4">
-                {branches.slice(0, 3).map((branch) => {
+              {/* Helper function to render a single centered branch */}
+              {(() => {
+                const renderCenteredBranch = (branch: BranchWithArticles) => {
                   const Icon = getIconComponent(branch.icon)
                   const progress = getBranchProgress(branch)
-                  const articles = branch.articles || []
                   const isExpanded = expandedBranches.includes(branch.id)
 
                   return (
-                    <div key={branch.id} className="space-y-3">
-                      {/* Branch node - Compact vertical card */}
-                      <button
-                        onClick={() => toggleBranch(branch.id)}
-                        className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
-                      >
-                        <div className="flex flex-col items-center text-center">
-                          <div
-                            className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-                            style={{ backgroundColor: branch.color }}
-                          >
-                            <Icon className="w-6 h-6 text-white" />
+                    <div className="hidden lg:flex justify-center">
+                      <div className="max-w-[200px] w-full space-y-3">
+                        <button
+                          onClick={() => toggleBranch(branch.id)}
+                          className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
+                        >
+                          <div className="flex flex-col items-center text-center">
+                            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: branch.color }}>
+                              <Icon className="w-6 h-6 text-white" />
+                            </div>
+                            <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">{branch.name}</h3>
+                            <p className="text-gray-400 text-xs">{progress.completed}/{progress.total} artiklar</p>
+                            <div className="w-16 h-1.5 bg-zinc-700 rounded-full mt-2">
+                              <div className="h-1.5 rounded-full transition-all" style={{ width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`, backgroundColor: branch.color }} />
+                            </div>
                           </div>
-                          <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">
-                            {branch.name}
-                          </h3>
-                          <p className="text-gray-400 text-xs">
-                            {progress.completed}/{progress.total} artiklar
-                          </p>
-                          {/* Mini progress bar */}
-                          <div className="w-16 h-1.5 bg-zinc-700 rounded-full mt-2">
-                            <div
-                              className="h-1.5 rounded-full transition-all"
-                              style={{
-                                width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`,
-                                backgroundColor: branch.color
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </button>
-
-                      {/* Articles list */}
-                      {isExpanded && (
-                        <div className="space-y-2 pl-2">
-                          {renderBranchContent(branch)}
-                        </div>
-                      )}
+                        </button>
+                        {isExpanded && <div className="space-y-2 pl-2">{renderBranchContent(branch)}</div>}
+                      </div>
                     </div>
                   )
-                })}
-              </div>
+                }
 
-              {/* Desktop: Branch 4 (Mindset) - centered */}
-              {branches.length > 3 && (
-                <>
-                  {/* Connecting line down */}
-                  <div className="hidden lg:flex flex-col items-center py-2">
-                    <div className="w-0.5 h-6 bg-gradient-to-b from-[#FFD700]/30 to-purple-500/50" />
-                  </div>
-
-                  {/* Branch 4 centered */}
-                  <div className="hidden lg:flex justify-center">
-                    <div className="max-w-[200px] w-full">
-                      {(() => {
-                        const branch = branches[3]
-                        const Icon = getIconComponent(branch.icon)
-                        const progress = getBranchProgress(branch)
-                        const articles = branch.articles || []
-                        const isExpanded = expandedBranches.includes(branch.id)
-
-                        return (
-                          <div className="space-y-3">
-                            <button
-                              onClick={() => toggleBranch(branch.id)}
-                              className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
-                            >
-                              <div className="flex flex-col items-center text-center">
-                                <div
-                                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-                                  style={{ backgroundColor: branch.color }}
-                                >
-                                  <Icon className="w-6 h-6 text-white" />
-                                </div>
-                                <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">
-                                  {branch.name}
-                                </h3>
-                                <p className="text-gray-400 text-xs">
-                                  {progress.completed}/{progress.total} artiklar
-                                </p>
-                                {/* Mini progress bar */}
-                                <div className="w-16 h-1.5 bg-zinc-700 rounded-full mt-2">
-                                  <div
-                                    className="h-1.5 rounded-full transition-all"
-                                    style={{
-                                      width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`,
-                                      backgroundColor: branch.color
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </button>
-
-                            {isExpanded && (
-                              <div className="space-y-2 pl-2">
-                                {renderBranchContent(branch)}
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })()}
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* Desktop: Branch 5 (Mätmetoder) - centered */}
-              {branches.length > 4 && (
-                <>
-                  {/* Connecting line down */}
-                  <div className="hidden lg:flex flex-col items-center py-2">
-                    <div className="w-0.5 h-6 bg-gradient-to-b from-purple-500/50 to-blue-500/50" />
-                  </div>
-
-                  {/* Branch 5 centered */}
-                  <div className="hidden lg:flex justify-center">
-                    <div className="max-w-[200px] w-full">
-                      {(() => {
-                        const branch = branches[4]
-                        const Icon = getIconComponent(branch.icon)
-                        const progress = getBranchProgress(branch)
-                        const articles = branch.articles || []
-                        const isExpanded = expandedBranches.includes(branch.id)
-
-                        return (
-                          <div className="space-y-3">
-                            <button
-                              onClick={() => toggleBranch(branch.id)}
-                              className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
-                            >
-                              <div className="flex flex-col items-center text-center">
-                                <div
-                                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-                                  style={{ backgroundColor: branch.color }}
-                                >
-                                  <Icon className="w-6 h-6 text-white" />
-                                </div>
-                                <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">
-                                  {branch.name}
-                                </h3>
-                                <p className="text-gray-400 text-xs">
-                                  {progress.completed}/{progress.total} artiklar
-                                </p>
-                                <div className="w-16 h-1.5 bg-zinc-700 rounded-full mt-2">
-                                  <div className="h-1.5 rounded-full transition-all" style={{ width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`, backgroundColor: branch.color }} />
-                                </div>
-                              </div>
-                            </button>
-
-                            {isExpanded && (
-                              <div className="space-y-2 pl-2">
-                                {renderBranchContent(branch)}
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })()}
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* Desktop: Branch 6 (Programintroduktion) - centered */}
-              {branches.length > 5 && (
-                <>
-                  {/* Connecting line down */}
-                  <div className="hidden lg:flex flex-col items-center py-2">
-                    <div className="w-0.5 h-6 bg-gradient-to-b from-blue-500/50 to-cyan-500/50" />
-                  </div>
-
-                  {/* Branch 6 centered */}
-                  <div className="hidden lg:flex justify-center">
-                    <div className="max-w-[200px] w-full">
-                      {(() => {
-                        const branch = branches[5]
-                        const Icon = getIconComponent(branch.icon)
-                        const progress = getBranchProgress(branch)
-                        const isExpanded = expandedBranches.includes(branch.id)
-
-                        return (
-                          <div className="space-y-3">
-                            <button
-                              onClick={() => toggleBranch(branch.id)}
-                              className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
-                            >
-                              <div className="flex flex-col items-center text-center">
-                                <div
-                                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-                                  style={{ backgroundColor: branch.color }}
-                                >
-                                  <Icon className="w-6 h-6 text-white" />
-                                </div>
-                                <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">
-                                  {branch.name}
-                                </h3>
-                                <p className="text-gray-400 text-xs">
-                                  {progress.completed}/{progress.total} artiklar
-                                </p>
-                              </div>
-                            </button>
-
-                            {isExpanded && (
-                              <div className="space-y-2 pl-2">
-                                {renderBranchContent(branch)}
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })()}
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* Desktop: Branches 7-9 (Fas 1, Fas 2, Fas 3) in a row */}
-              {branches.length > 6 && (
-                <>
-                  {/* Branching lines */}
-                  <div className="relative hidden lg:flex justify-center py-2">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-cyan-500/50 to-[#FFD700]/30" />
-                    <div className="absolute top-4 left-[33%] right-[33%] h-0.5 bg-[#FFD700]/30" />
-                    <div className="absolute top-4 left-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
-                    <div className="absolute top-4 right-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-red-500/50" />
-                    <div className="h-8" />
-                  </div>
-
-                  {/* Fas 1, Fas 2, Fas 3 in a row */}
+                const renderRowOfBranches = (branchList: BranchWithArticles[]) => (
                   <div className="hidden lg:grid lg:grid-cols-3 gap-4">
-                    {branches.slice(6, 9).map((branch) => {
+                    {branchList.map((branch) => {
                       const Icon = getIconComponent(branch.icon)
                       const progress = getBranchProgress(branch)
-                      const articles = branch.articles || []
                       const isExpanded = expandedBranches.includes(branch.id)
 
                       return (
                         <div key={branch.id} className="space-y-3">
-                          <button
-                            onClick={() => toggleBranch(branch.id)}
-                            className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
-                          >
+                          <button onClick={() => toggleBranch(branch.id)} className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20">
                             <div className="flex flex-col items-center text-center">
-                              <div
-                                className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-                                style={{ backgroundColor: branch.color }}
-                              >
+                              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: branch.color }}>
                                 <Icon className="w-6 h-6 text-white" />
                               </div>
-                              <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">
-                                {branch.name}
-                              </h3>
-                              <p className="text-gray-400 text-xs">
-                                {progress.completed}/{progress.total} artiklar
-                              </p>
+                              <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">{branch.name}</h3>
+                              <p className="text-gray-400 text-xs">{progress.completed}/{progress.total} artiklar</p>
+                              <div className="w-16 h-1.5 bg-zinc-700 rounded-full mt-2">
+                                <div className="h-1.5 rounded-full transition-all" style={{ width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`, backgroundColor: branch.color }} />
+                              </div>
                             </div>
                           </button>
-
-                          {isExpanded && (
-                            <div className="space-y-2 pl-2">
-                              {renderBranchContent(branch)}
-                            </div>
-                          )}
+                          {isExpanded && <div className="space-y-2 pl-2">{renderBranchContent(branch)}</div>}
                         </div>
                       )
                     })}
                   </div>
-                </>
-              )}
+                )
 
-              {/* Desktop: Branch 10 (När du är i mål) - centered at bottom */}
-              {branches.length > 9 && (
-                <>
-                  {/* Connecting line down */}
+                const renderConnectingLine = () => (
                   <div className="hidden lg:flex flex-col items-center py-2">
-                    <div className="w-0.5 h-6 bg-gradient-to-b from-red-500/50 to-[#FFD700]/50" />
+                    <div className="w-1 h-6 bg-gradient-to-b from-[#FFD700]/40 to-[#FFD700]/20" />
                   </div>
+                )
 
-                  {/* Branch 10 centered */}
-                  <div className="hidden lg:flex justify-center">
-                    <div className="max-w-[200px] w-full">
-                      {(() => {
-                        const branch = branches[9]
-                        const Icon = getIconComponent(branch.icon)
-                        const progress = getBranchProgress(branch)
-                        const articles = branch.articles || []
-                        const isExpanded = expandedBranches.includes(branch.id)
+                return (
+                  <>
+                    {/* 1. Programintroduktion (index 0) - centered */}
+                    {branches[0] && renderCenteredBranch(branches[0])}
 
-                        return (
-                          <div className="space-y-3">
-                            <button
-                              onClick={() => toggleBranch(branch.id)}
-                              className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
-                            >
-                              <div className="flex flex-col items-center text-center">
-                                <div
-                                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-                                  style={{ backgroundColor: branch.color }}
-                                >
-                                  <Icon className="w-6 h-6 text-white" />
-                                </div>
-                                <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">
-                                  {branch.name}
-                                </h3>
-                                <p className="text-gray-400 text-xs">
-                                  {progress.completed}/{progress.total} artiklar
-                                </p>
-                              </div>
-                            </button>
+                    {/* Connecting line */}
+                    {branches[1] && renderConnectingLine()}
 
-                            {isExpanded && (
-                              <div className="space-y-2 pl-2">
-                                {renderBranchContent(branch)}
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })()}
-                    </div>
-                  </div>
-                </>
-              )}
+                    {/* 2. Mål och drivkrafter (index 1) - centered */}
+                    {branches[1] && renderCenteredBranch(branches[1])}
+
+                    {/* Branching lines to 3 branches */}
+                    {branches.length > 4 && (
+                      <div className="relative hidden lg:flex justify-center py-2">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-4 bg-gradient-to-b from-[#FFD700]/40 to-[#FFD700]/30" />
+                        <div className="absolute top-4 left-[25%] right-[25%] h-1 bg-[#FFD700]/30" />
+                        <div className="absolute top-4 left-[25%] w-1 h-4 bg-gradient-to-b from-[#FFD700]/30 to-purple-500/50" />
+                        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-1 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
+                        <div className="absolute top-4 right-[25%] w-1 h-4 bg-gradient-to-b from-[#FFD700]/30 to-orange-500/50" />
+                        <div className="h-8" />
+                      </div>
+                    )}
+
+                    {/* 3. Livsstil, Kost, Träning (indices 2-4) - row */}
+                    {branches.length > 4 && renderRowOfBranches(branches.slice(2, 5))}
+
+                    {/* Connecting line */}
+                    {branches[5] && renderConnectingLine()}
+
+                    {/* 4. Mätmetoder (index 5) - centered */}
+                    {branches[5] && renderCenteredBranch(branches[5])}
+
+                    {/* Branching lines to Fas 1, 2, 3 */}
+                    {branches.length > 8 && (
+                      <div className="relative hidden lg:flex justify-center py-2">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-4 bg-gradient-to-b from-[#FFD700]/40 to-[#FFD700]/30" />
+                        <div className="absolute top-4 left-[25%] right-[25%] h-1 bg-[#FFD700]/30" />
+                        <div className="absolute top-4 left-[25%] w-1 h-4 bg-gradient-to-b from-[#FFD700]/30 to-blue-500/50" />
+                        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-1 h-4 bg-gradient-to-b from-[#FFD700]/30 to-purple-500/50" />
+                        <div className="absolute top-4 right-[25%] w-1 h-4 bg-gradient-to-b from-[#FFD700]/30 to-red-500/50" />
+                        <div className="h-8" />
+                      </div>
+                    )}
+
+                    {/* 5. Fas 1, 2, 3 (indices 6-8) - row */}
+                    {branches.length > 8 && renderRowOfBranches(branches.slice(6, 9))}
+
+                    {/* Connecting line */}
+                    {branches[9] && renderConnectingLine()}
+
+                    {/* 6. När du är i mål (index 9) - centered at bottom */}
+                    {branches[9] && renderCenteredBranch(branches[9])}
+                  </>
+                )
+              })()}
 
               {/* Mobile/Tablet: Vertical tree view with lines */}
               <div className="lg:hidden flex flex-col items-center">
