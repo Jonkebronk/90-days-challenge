@@ -582,37 +582,19 @@ export default function SkillTreePage() {
                 )
 
                 const renderConnectingLine = () => (
-                  <div className="hidden lg:flex flex-col items-center py-3">
-                    <div className="w-0.5 h-8 bg-gradient-to-b from-[#FFD700]/50 via-[#FFD700]/30 to-[#FFD700]/50 shadow-[0_0_8px_rgba(255,215,0,0.3)]" />
+                  <div className="hidden lg:flex flex-col items-center py-2">
+                    <div className="w-0.5 h-6 bg-gradient-to-b from-[#FFD700]/50 to-[#FFD700]/30 rounded-full" />
                   </div>
                 )
 
-                const renderBranchingLines = (colors: string[], id: string) => (
-                  <div className="hidden lg:flex justify-center py-3">
-                    <svg width="400" height="40" viewBox="0 0 400 40" className="overflow-visible">
-                      {/* Gradient definitions */}
-                      <defs>
-                        <linearGradient id={`goldGrad-${id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" stopColor="#FFD700" stopOpacity="0.5" />
-                          <stop offset="100%" stopColor="#FFD700" stopOpacity="0.3" />
-                        </linearGradient>
-                        <linearGradient id={`goldGradH-${id}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" stopColor={colors[0]} stopOpacity="0.5" />
-                          <stop offset="50%" stopColor="#FFD700" stopOpacity="0.6" />
-                          <stop offset="100%" stopColor={colors[2]} stopOpacity="0.5" />
-                        </linearGradient>
-                      </defs>
-                      {/* Vertical line from top */}
-                      <line x1="200" y1="0" x2="200" y2="15" stroke={`url(#goldGrad-${id})`} strokeWidth="2" />
-                      {/* Horizontal line with rounded ends */}
-                      <line x1="100" y1="15" x2="300" y2="15" stroke={`url(#goldGradH-${id})`} strokeWidth="2" strokeLinecap="round" />
-                      {/* Left vertical drop */}
-                      <line x1="100" y1="15" x2="100" y2="40" stroke={colors[0]} strokeWidth="2" opacity="0.7" strokeLinecap="round" />
-                      {/* Center vertical drop */}
-                      <line x1="200" y1="15" x2="200" y2="40" stroke={colors[1]} strokeWidth="2" opacity="0.7" strokeLinecap="round" />
-                      {/* Right vertical drop */}
-                      <line x1="300" y1="15" x2="300" y2="40" stroke={colors[2]} strokeWidth="2" opacity="0.7" strokeLinecap="round" />
-                    </svg>
+                const renderBranchingLines = () => (
+                  <div className="relative hidden lg:flex justify-center py-2">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-3 bg-gradient-to-b from-[#FFD700]/50 to-[#FFD700]/40 rounded-full" />
+                    <div className="absolute top-3 left-[16.67%] right-[16.67%] h-0.5 bg-[#FFD700]/40 rounded-full" />
+                    <div className="absolute top-3 left-[16.67%] w-0.5 h-3 bg-gradient-to-b from-[#FFD700]/40 to-[#FFD700]/30 rounded-full" />
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-0.5 h-3 bg-gradient-to-b from-[#FFD700]/40 to-[#FFD700]/30 rounded-full" />
+                    <div className="absolute top-3 right-[16.67%] w-0.5 h-3 bg-gradient-to-b from-[#FFD700]/40 to-[#FFD700]/30 rounded-full" />
+                    <div className="h-6" />
                   </div>
                 )
 
@@ -628,7 +610,7 @@ export default function SkillTreePage() {
                     {branches[1] && renderCenteredBranch(branches[1])}
 
                     {/* Branching lines to Livsstil, Kost, Träning */}
-                    {branches.length > 4 && renderBranchingLines(['#a855f7', '#22c55e', '#f97316'], 'row1')}
+                    {branches.length > 4 && renderBranchingLines()}
 
                     {/* 3. Livsstil, Kost, Träning (indices 2-4) - row */}
                     {branches.length > 4 && renderRowOfBranches(branches.slice(2, 5))}
@@ -640,7 +622,7 @@ export default function SkillTreePage() {
                     {branches[5] && renderCenteredBranch(branches[5])}
 
                     {/* Branching lines to Fas 1, 2, 3 */}
-                    {branches.length > 8 && renderBranchingLines(['#22c55e', '#f97316', '#ef4444'], 'row2')}
+                    {branches.length > 8 && renderBranchingLines()}
 
                     {/* 5. Fas 1, 2, 3 (indices 6-8) - row */}
                     {branches.length > 8 && renderRowOfBranches(branches.slice(6, 9))}
