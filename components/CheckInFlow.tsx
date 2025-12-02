@@ -729,30 +729,34 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               </div>
             </div>
 
-            <div className="space-y-5 max-h-[400px] overflow-y-auto pr-2">
+            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
               {biofeedbackFields.map((item) => (
-                <div key={item.field} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-gray-900 font-semibold">{item.label}</Label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="number"
-                        min={1}
-                        max={10}
+                <div key={item.field} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-gray-900 font-semibold">{item.label}</span>
+                    <div className="flex items-center">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         value={formData[item.field as keyof typeof formData] as number}
                         onChange={(e) => {
+                          const val = parseInt(e.target.value) || 0
+                          if (val >= 0 && val <= 10) {
+                            updateFormData(item.field, val || '')
+                          }
+                        }}
+                        onBlur={(e) => {
                           const val = parseInt(e.target.value) || 5
                           updateFormData(item.field, Math.min(10, Math.max(1, val)))
                         }}
-                        className="w-16 text-center bg-white border-2 border-gray-300 text-gray-900 focus:border-gold-primary"
+                        className="w-12 h-9 text-center text-lg font-semibold bg-white border-2 border-gray-300 rounded-md text-gray-900 focus:border-gold-primary focus:outline-none"
                       />
-                      <span className="text-gray-500 text-sm">/10</span>
+                      <span className="text-gray-400 text-sm ml-1">/10</span>
                     </div>
                   </div>
-                  <div className="text-xs text-gray-500 space-y-0.5 pl-1">
-                    {item.descriptions.map((desc, i) => (
-                      <p key={i}>{desc}</p>
-                    ))}
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    {item.descriptions.join(' · ')}
                   </div>
                 </div>
               ))}
