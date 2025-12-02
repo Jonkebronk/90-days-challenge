@@ -579,12 +579,64 @@ export default function SkillTreePage() {
                 </>
               )}
 
-              {/* Desktop: Branches 6-8 (Fas 1, Fas 2, Fas 3) in a row */}
+              {/* Desktop: Branch 6 (Programintroduktion) - centered */}
               {branches.length > 5 && (
+                <>
+                  {/* Connecting line down */}
+                  <div className="hidden lg:flex flex-col items-center py-2">
+                    <div className="w-0.5 h-6 bg-gradient-to-b from-blue-500/50 to-cyan-500/50" />
+                  </div>
+
+                  {/* Branch 6 centered */}
+                  <div className="hidden lg:flex justify-center">
+                    <div className="max-w-[200px] w-full">
+                      {(() => {
+                        const branch = branches[5]
+                        const Icon = getIconComponent(branch.icon)
+                        const progress = getBranchProgress(branch)
+                        const isExpanded = expandedBranches.includes(branch.id)
+
+                        return (
+                          <div className="space-y-3">
+                            <button
+                              onClick={() => toggleBranch(branch.id)}
+                              className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
+                            >
+                              <div className="flex flex-col items-center text-center">
+                                <div
+                                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+                                  style={{ backgroundColor: branch.color }}
+                                >
+                                  <Icon className="w-6 h-6 text-white" />
+                                </div>
+                                <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">
+                                  {branch.name}
+                                </h3>
+                                <p className="text-gray-400 text-xs">
+                                  {progress.total} artiklar
+                                </p>
+                              </div>
+                            </button>
+
+                            {isExpanded && (
+                              <div className="space-y-2 pl-2">
+                                {renderBranchContent(branch)}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })()}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Desktop: Branches 7-9 (Fas 1, Fas 2, Fas 3) in a row */}
+              {branches.length > 6 && (
                 <>
                   {/* Branching lines */}
                   <div className="relative hidden lg:flex justify-center py-2">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-blue-500/50 to-[#FFD700]/30" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-cyan-500/50 to-[#FFD700]/30" />
                     <div className="absolute top-4 left-[33%] right-[33%] h-0.5 bg-[#FFD700]/30" />
                     <div className="absolute top-4 left-[33%] w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
                     <div className="absolute top-4 left-1/2 -translate-x-1/2 w-0.5 h-4 bg-gradient-to-b from-[#FFD700]/30 to-green-500/50" />
@@ -594,7 +646,7 @@ export default function SkillTreePage() {
 
                   {/* Fas 1, Fas 2, Fas 3 in a row */}
                   <div className="hidden lg:grid lg:grid-cols-3 gap-4">
-                    {branches.slice(5, 8).map((branch) => {
+                    {branches.slice(6, 9).map((branch) => {
                       const Icon = getIconComponent(branch.icon)
                       const progress = getBranchProgress(branch)
                       const articles = branch.articles || []
@@ -634,19 +686,19 @@ export default function SkillTreePage() {
                 </>
               )}
 
-              {/* Desktop: Branch 9 (När du är i mål) - centered at bottom */}
-              {branches.length > 8 && (
+              {/* Desktop: Branch 10 (När du är i mål) - centered at bottom */}
+              {branches.length > 9 && (
                 <>
                   {/* Connecting line down */}
                   <div className="hidden lg:flex flex-col items-center py-2">
                     <div className="w-0.5 h-6 bg-gradient-to-b from-red-500/50 to-[#FFD700]/50" />
                   </div>
 
-                  {/* Branch 9 centered */}
+                  {/* Branch 10 centered */}
                   <div className="hidden lg:flex justify-center">
                     <div className="max-w-[200px] w-full">
                       {(() => {
-                        const branch = branches[8]
+                        const branch = branches[9]
                         const Icon = getIconComponent(branch.icon)
                         const progress = getBranchProgress(branch)
                         const articles = branch.articles || []
