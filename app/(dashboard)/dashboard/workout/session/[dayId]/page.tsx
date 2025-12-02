@@ -741,7 +741,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       </div>
 
                       {/* Video button + Previous session inline */}
-                      <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-white/10">
+                      <div className="flex flex-wrap items-center gap-3 mt-3">
                         {exercise.exercise.videoUrl && (
                           <button
                             onClick={(e) => {
@@ -750,8 +750,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             }}
                             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                               activeVideoIndex === index
-                                ? 'bg-red-600 border border-red-700 text-white'
-                                : 'bg-red-600 border border-red-700 text-white hover:bg-red-700'
+                                ? 'bg-zinc-700 border border-zinc-600 text-white'
+                                : 'bg-zinc-800 border border-zinc-600 text-gray-300 hover:bg-zinc-700 hover:text-white'
                             }`}
                           >
                             {activeVideoIndex === index ? (
@@ -761,7 +761,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                               </>
                             ) : (
                               <>
-                                <Play className="w-3 h-3 fill-white text-white" />
+                                <Play className="w-3 h-3 fill-current" />
                                 VIDEO
                               </>
                             )}
@@ -792,7 +792,20 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
+                    {/* Progress indicator */}
+                    <div className="flex items-center gap-1.5">
+                      {Array.from({ length: exercise.sets }).map((_, idx) => (
+                        <div
+                          key={idx}
+                          className={`w-2.5 h-2.5 rounded-full transition-colors ${
+                            idx < exerciseSets.length
+                              ? 'bg-green-500'
+                              : 'bg-zinc-600'
+                          }`}
+                        />
+                      ))}
+                    </div>
                     <span className="text-sm text-gray-400 font-medium">
                       {exerciseSets.length}/{exercise.sets}
                     </span>
@@ -969,8 +982,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Log Next Set */}
                   {sessionId && !isExerciseComplete && (
-                    <div className="space-y-4 p-3 sm:p-4 bg-gold-primary/10 border border-gold-primary/30 rounded-lg">
-                      <Label className="text-base font-bold text-gold-primary">
+                    <div className="space-y-4 p-3 sm:p-4 bg-amber-900/20 border border-amber-500/40 rounded-lg">
+                      <Label className="text-base font-bold text-amber-400">
                         Set {exerciseSets.length + 1} av {exercise.sets}
                       </Label>
 
@@ -984,7 +997,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             value={currentReps}
                             onChange={(e) => setCurrentReps(e.target.value)}
                             placeholder={exercise.reps || '8-12'}
-                            className="h-12 sm:h-14 text-lg sm:text-xl font-semibold bg-zinc-800 border-zinc-600 text-white placeholder:text-gray-500 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="h-12 sm:h-14 text-lg sm:text-xl font-semibold bg-zinc-900 border-zinc-500 text-white placeholder:text-gray-500 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 shadow-inner [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>
                         <div className="flex-1 space-y-1.5">
@@ -995,7 +1008,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             value={currentWeight}
                             onChange={(e) => setCurrentWeight(e.target.value)}
                             placeholder={exerciseSets.length > 0 ? exerciseSets[exerciseSets.length - 1].weightKg?.toString() : "0"}
-                            className="h-12 sm:h-14 text-lg sm:text-xl font-semibold bg-zinc-800 border-zinc-600 text-white placeholder:text-gray-500 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20"
+                            className="h-12 sm:h-14 text-lg sm:text-xl font-semibold bg-zinc-900 border-zinc-500 text-white placeholder:text-gray-500 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 shadow-inner"
                           />
                         </div>
                       </div>
