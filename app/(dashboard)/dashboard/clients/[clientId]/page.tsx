@@ -2,61 +2,20 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, Save, Calculator, Dumbbell, Calendar, ChevronRight, Heart, Zap, Clock, Flame, Trash2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import {
+  ArrowLeft, Dumbbell, Calendar, ChevronRight, Heart, Zap, Clock, Flame, Trash2,
+  User, Mail, Phone, MapPin, Ruler, Scale, Target, Brain, Utensils, Moon,
+  Activity, Sparkles, ChevronDown, ChevronUp, Image
+} from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
-
-interface CaloriePlan {
-  weight: number | null
-  activityLevel: string | null
-  deficit: number | null
-  dailySteps: number | null
-  proteinPerKg: number | null
-  numMeals: number | null
-  customDistribution: boolean
-  mealCalories: number[]
-}
-
-const clientProfileSchema = z.object({
-  // Step 1: Profile
-  birthdate: z.string().optional(),
-  gender: z.enum(['male', 'female', 'other']).optional(),
-  heightCm: z.coerce.number().min(120).max(250).optional(),
-  currentWeightKg: z.coerce.number().min(30).max(300).optional(),
-
-  // Step 2: Goals
-  primaryGoal: z.enum(['build_muscle', 'get_fit', 'healthy_habits']).optional(),
-
-  // Step 3: Activity
-  activityLevelFree: z.enum(['very_low', 'low', 'medium', 'active', 'very_active']).optional(),
-  activityLevelWork: z.enum(['very_low', 'low', 'medium', 'high']).optional(),
-  trainingExperience: z.enum(['beginner', 'experienced', 'very_experienced']).optional(),
-  trainingDetails: z.string().optional(),
-  trainingDays: z.array(z.string()).default([]),
-
-  // Step 4: Nutrition
-  nutritionNotes: z.string().optional(),
-  allergies: z.array(z.string()).default([]),
-  dietaryPreferences: z.array(z.string()).default([]),
-  excludedIngredients: z.array(z.string()).default([]),
-  nutritionMissing: z.string().optional(),
-
-  // Step 5: Lifestyle
-  lifestyleNotes: z.string().optional(),
-})
-
-type ClientProfileForm = z.infer<typeof clientProfileSchema>
 
 interface Client {
   id: string
@@ -65,6 +24,45 @@ interface Client {
   firstName: string | null
   lastName: string | null
   status: string
+  phone: string | null
+  city: string | null
+  country: string | null
+  age: number | null
+  gender: string | null
+  height: number | null
+  currentWeight: number | null
+  // Training
+  currentTraining: string | null
+  trainingExperience: string | null
+  trainingGoal: string | null
+  injuries: string | null
+  availableTime: string | null
+  preferredSchedule: string | null
+  // Nutrition
+  dietHistory: string | null
+  macroExperience: string | null
+  digestionIssues: string | null
+  allergies: string | null
+  favoriteFood: string | null
+  dislikedFood: string | null
+  supplements: string | null
+  previousCoaching: string | null
+  // Lifestyle
+  stressLevel: string | null
+  sleepHours: string | null
+  occupation: string | null
+  lifestyle: string | null
+  // Motivation
+  whyJoin: string | null
+  canFollowPlan: string | null
+  expectations: string | null
+  biggestChallenges: string | null
+  // Photos
+  frontPhoto: string | null
+  sidePhoto: string | null
+  backPhoto: string | null
+  // Meta
+  createdAt: string
 }
 
 interface AssignedWorkout {
@@ -111,13 +109,69 @@ interface PageProps {
   params: Promise<{ clientId: string }>
 }
 
+// Collapsible section component
+function CollapsibleSection({
+  title,
+  icon: Icon,
+  children,
+  defaultOpen = false,
+  color = 'gold'
+}: {
+  title: string
+  icon: any
+  children: React.ReactNode
+  defaultOpen?: boolean
+  color?: 'gold' | 'blue' | 'green' | 'purple' | 'red' | 'orange'
+}) {
+  const [isOpen, setIsOpen] = useState(defaultOpen)
+
+  const colorClasses = {
+    gold: 'border-gold-primary/30 text-gold-light',
+    blue: 'border-blue-500/30 text-blue-400',
+    green: 'border-green-500/30 text-green-400',
+    purple: 'border-purple-500/30 text-purple-400',
+    red: 'border-red-500/30 text-red-400',
+    orange: 'border-orange-500/30 text-orange-400',
+  }
+
+  return (
+    <div className="border-2 rounded-xl overflow-hidden bg-white/5 backdrop-blur-[10px]" style={{ borderColor: `var(--${color}-border, rgba(255,215,0,0.3))` }}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-full flex items-center justify-between p-4 hover:bg-white/5 transition-all ${colorClasses[color]}`}
+      >
+        <div className="flex items-center gap-3">
+          <Icon className="w-5 h-5" />
+          <h3 className="text-lg font-semibold">{title}</h3>
+        </div>
+        {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+      </button>
+      {isOpen && (
+        <div className="p-4 pt-0 border-t border-white/10">
+          {children}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Info field component
+function InfoField({ label, value }: { label: string; value: string | number | null | undefined }) {
+  if (!value) return null
+  return (
+    <div className="space-y-1">
+      <p className="text-xs text-gray-500 uppercase tracking-wide">{label}</p>
+      <p className="text-gray-200 whitespace-pre-line">{value}</p>
+    </div>
+  )
+}
+
 export default function ClientDetailPage({ params }: PageProps) {
   const router = useRouter()
   const [client, setClient] = useState<Client | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
   const [clientId, setClientId] = useState<string>('')
-  const [caloriePlan, setCaloriePlan] = useState<CaloriePlan | null>(null)
   const [assignedWorkout, setAssignedWorkout] = useState<AssignedWorkout | null>(null)
   const [availablePrograms, setAvailablePrograms] = useState<WorkoutProgram[]>([])
   const [showWorkoutAssign, setShowWorkoutAssign] = useState(false)
@@ -158,22 +212,11 @@ export default function ClientDetailPage({ params }: PageProps) {
     return date.getDay() === 1
   }
 
-  const { register, handleSubmit, control, formState: { errors }, setValue } = useForm<ClientProfileForm>({
-    mode: 'onChange',
-    defaultValues: {
-      trainingDays: [],
-      allergies: [],
-      dietaryPreferences: [],
-      excludedIngredients: [],
-    },
-  })
-
   useEffect(() => {
     const loadClient = async () => {
       const { clientId } = await params
       setClientId(clientId)
       fetchClientData(clientId)
-      fetchCaloriePlan(clientId)
       fetchAssignedWorkout(clientId)
       fetchAvailablePrograms()
       fetchCardioProgram(clientId)
@@ -188,39 +231,16 @@ export default function ClientDetailPage({ params }: PageProps) {
       if (response.ok) {
         const data = await response.json()
         setClient(data.client)
-
-        // Load existing profile data if available
-        if (data.profile) {
-          Object.keys(data.profile).forEach((key) => {
-            if (data.profile[key] !== null) {
-              setValue(key as keyof ClientProfileForm, data.profile[key])
-            }
-          })
-        }
       } else {
-        toast.error('Failed to load client data')
+        toast.error('Kunde inte ladda klientdata')
         router.push('/dashboard/clients')
       }
     } catch (error) {
       console.error('Failed to fetch client:', error)
-      toast.error('Failed to load client data')
+      toast.error('Kunde inte ladda klientdata')
       router.push('/dashboard/clients')
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const fetchCaloriePlan = async (id: string) => {
-    try {
-      const response = await fetch(`/api/calorie-plan?clientId=${id}`)
-      if (response.ok) {
-        const data = await response.json()
-        if (data.caloriePlan) {
-          setCaloriePlan(data.caloriePlan)
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch calorie plan:', error)
     }
   }
 
@@ -405,35 +425,12 @@ export default function ClientDetailPage({ params }: PageProps) {
     }
   }
 
-  const onSubmit = handleSubmit(async (data) => {
-    setIsSaving(true)
-    try {
-      const response = await fetch(`/api/clients/${clientId}/profile`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-
-      if (response.ok) {
-        toast.success('Client profile saved successfully')
-      } else {
-        const errorData = await response.json()
-        toast.error(errorData.error || 'Failed to save profile')
-      }
-    } catch (error) {
-      console.error('Failed to save profile:', error)
-      toast.error('Failed to save profile')
-    } finally {
-      setIsSaving(false)
-    }
-  })
-
   if (isLoading) {
     return (
       <div className="p-8">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-1/4"></div>
-          <div className="h-64 bg-muted rounded"></div>
+          <div className="h-8 bg-gray-700 rounded w-1/4"></div>
+          <div className="h-64 bg-gray-800 rounded"></div>
         </div>
       </div>
     )
@@ -443,213 +440,120 @@ export default function ClientDetailPage({ params }: PageProps) {
     return null
   }
 
-  const weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
-  const commonAllergies = ['Gluten', 'Laktos', 'Nötter', 'Skaldjur', 'Ägg', 'Soja']
-  const dietaryOptions = ['pescetarian', 'vegan', 'vegetarian', 'halal', 'kosher', 'no_supplements']
+  const genderLabel = client.gender === 'male' ? 'Man' : client.gender === 'female' ? 'Kvinna' : client.gender
 
   return (
-    <div className="p-8 space-y-6 max-w-5xl">
+    <div className="p-4 md:p-8 space-y-6 max-w-5xl mx-auto">
+      {/* Header */}
       <div className="flex items-center gap-4">
         <Link href="/dashboard/clients">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="w-4 h-4" />
+          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+            <ArrowLeft className="w-5 h-5" />
           </Button>
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold">{client.name || 'Client Profile'}</h1>
-          <p className="text-muted-foreground">{client.email}</p>
+        <div className="flex-1">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl md:text-3xl font-bold text-white">{client.name || 'Klient'}</h1>
+            {client.status === 'pending' && (
+              <Badge className="bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                Väntande
+              </Badge>
+            )}
+            {client.status === 'active' && (
+              <Badge className="bg-green-500/20 text-green-400 border border-green-500/30">
+                Aktiv
+              </Badge>
+            )}
+          </div>
+          <p className="text-gray-400 flex items-center gap-2 mt-1">
+            <Mail className="w-4 h-4" />
+            {client.email}
+          </p>
         </div>
       </div>
 
-      {/* Calorie Plan Summary */}
-      {caloriePlan && (
+      {/* Quick Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {client.age && (
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 text-center">
+            <p className="text-xs text-gray-400 uppercase">Ålder</p>
+            <p className="text-xl font-bold text-blue-400">{client.age} år</p>
+          </div>
+        )}
+        {client.height && (
+          <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 text-center">
+            <p className="text-xs text-gray-400 uppercase">Längd</p>
+            <p className="text-xl font-bold text-green-400">{client.height} cm</p>
+          </div>
+        )}
+        {client.currentWeight && (
+          <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 text-center">
+            <p className="text-xs text-gray-400 uppercase">Vikt</p>
+            <p className="text-xl font-bold text-purple-400">{client.currentWeight} kg</p>
+          </div>
+        )}
+        {genderLabel && (
+          <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-3 text-center">
+            <p className="text-xs text-gray-400 uppercase">Kön</p>
+            <p className="text-xl font-bold text-orange-400">{genderLabel}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Program Assignment Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Workout Program Card */}
         <Card className="bg-white/5 border-2 border-gold-primary/20">
-          <CardHeader>
+          <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Calculator className="text-gold-light" size={24} />
-                <CardTitle className="text-gold-light">Kaloriplan</CardTitle>
+                <Dumbbell className="text-gold-light" size={20} />
+                <CardTitle className="text-gold-light text-lg">Träningsprogram</CardTitle>
               </div>
-              <Link href="/dashboard/tools">
-                <Button variant="outline" size="sm" className="border-gold-light text-gold-light hover:bg-gold-50">
-                  Redigera i verktyg
-                </Button>
-              </Link>
             </div>
-            <CardDescription className="text-gray-400">
-              Sparad kaloriinformation för klienten
-            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {caloriePlan.weight && (
-                <div className="bg-[rgba(59,130,246,0.1)] p-4 rounded-lg border border-[rgba(59,130,246,0.3)]">
-                  <p className="text-sm text-gray-400">Vikt</p>
-                  <p className="text-2xl font-bold text-blue-400">{caloriePlan.weight} kg</p>
-                </div>
-              )}
-              {caloriePlan.activityLevel && (
-                <div className="bg-[rgba(34,197,94,0.1)] p-4 rounded-lg border border-[rgba(34,197,94,0.3)]">
-                  <p className="text-sm text-gray-400">Aktivitetsnivå</p>
-                  <p className="text-2xl font-bold text-green-400">x{caloriePlan.activityLevel}</p>
-                </div>
-              )}
-              {caloriePlan.deficit !== null && (
-                <div className="bg-[rgba(249,115,22,0.1)] p-4 rounded-lg border border-[rgba(249,115,22,0.3)]">
-                  <p className="text-sm text-gray-400">Underskott</p>
-                  <p className="text-2xl font-bold text-orange-400">{caloriePlan.deficit} kcal</p>
-                </div>
-              )}
-              {caloriePlan.dailySteps && (
-                <div className="bg-[rgba(168,85,247,0.1)] p-4 rounded-lg border border-[rgba(168,85,247,0.3)]">
-                  <p className="text-sm text-gray-400">Steg/dag</p>
-                  <p className="text-2xl font-bold text-purple-400">{caloriePlan.dailySteps.toLocaleString()}</p>
-                </div>
-              )}
-              {caloriePlan.proteinPerKg && (
-                <div className="bg-[rgba(239,68,68,0.1)] p-4 rounded-lg border border-[rgba(239,68,68,0.3)]">
-                  <p className="text-sm text-gray-400">Protein</p>
-                  <p className="text-2xl font-bold text-red-400">{caloriePlan.proteinPerKg} g/kg</p>
-                </div>
-              )}
-              {caloriePlan.numMeals && (
-                <div className="bg-[rgba(34,197,94,0.1)] p-4 rounded-lg border border-[rgba(34,197,94,0.3)]">
-                  <p className="text-sm text-gray-400">Antal måltider</p>
-                  <p className="text-2xl font-bold text-green-400">{caloriePlan.numMeals}</p>
-                </div>
-              )}
-              {caloriePlan.weight && caloriePlan.activityLevel && (
-                <div className="bg-[rgba(255,215,0,0.1)] p-4 rounded-lg border border-gold-primary/30">
-                  <p className="text-sm text-gray-400">BMR</p>
-                  <p className="text-2xl font-bold text-gold-light">
-                    {Math.round(caloriePlan.weight * parseFloat(caloriePlan.activityLevel))} kcal
+            {assignedWorkout ? (
+              <div className="space-y-3">
+                <div className="bg-gold-primary/5 p-3 rounded-lg border border-gold-primary/30">
+                  <h4 className="font-semibold text-gray-100">{assignedWorkout.workoutProgram.name}</h4>
+                  <p className="text-sm text-gray-400 mt-1">
+                    {assignedWorkout.workoutProgram.days.filter(d => !d.isRestDay).length} träningsdagar
                   </p>
                 </div>
-              )}
-              {caloriePlan.weight && caloriePlan.activityLevel && caloriePlan.deficit !== null && (
-                <div className="bg-[rgba(255,215,0,0.1)] p-4 rounded-lg border border-gold-primary/30">
-                  <p className="text-sm text-gray-400">Målintag</p>
-                  <p className="text-2xl font-bold text-gold-light">
-                    {Math.round(caloriePlan.weight * parseFloat(caloriePlan.activityLevel) - caloriePlan.deficit)} kcal
-                  </p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Workout Assignment Section */}
-      <Card className="bg-white/5 border-2 border-gold-primary/20">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Dumbbell className="text-gold-light" size={24} />
-              <CardTitle className="text-gold-light">Träningsprogram</CardTitle>
-            </div>
-            {!assignedWorkout && !showWorkoutAssign && (
-              <Button
-                onClick={() => setShowWorkoutAssign(true)}
-                variant="outline"
-                size="sm"
-                className="border-gold-light text-gold-light hover:bg-gold-50"
-              >
-                Tilldela program
-              </Button>
-            )}
-          </div>
-          <CardDescription className="text-gray-400">
-            Tilldelade träningsprogram för klienten
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {assignedWorkout ? (
-            <div className="space-y-4">
-              <div className="bg-[rgba(255,215,0,0.05)] p-4 rounded-lg border border-gold-primary/30">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-100">
-                      {assignedWorkout.workoutProgram.name}
-                    </h3>
-                    {assignedWorkout.workoutProgram.description && (
-                      <p className="text-sm text-gray-400 mt-1">
-                        {assignedWorkout.workoutProgram.description}
-                      </p>
-                    )}
-                  </div>
-                  {assignedWorkout.workoutProgram.difficulty && (
-                    <span className={`text-xs px-2 py-1 rounded ${
-                      assignedWorkout.workoutProgram.difficulty === 'beginner'
-                        ? 'bg-[rgba(40,167,69,0.2)] text-[#28a745]'
-                        : assignedWorkout.workoutProgram.difficulty === 'intermediate'
-                        ? 'bg-[rgba(255,193,7,0.2)] text-[#ffc107]'
-                        : 'bg-[rgba(220,53,69,0.2)] text-[#dc3545]'
-                    }`}>
-                      {assignedWorkout.workoutProgram.difficulty}
-                    </span>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  <div className="flex items-center gap-2 text-sm text-gray-300">
-                    <Calendar className="w-4 h-4 text-gold-light" />
-                    <span>{assignedWorkout.workoutProgram.days.length} dagar</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-300">
-                    <Dumbbell className="w-4 h-4 text-gold-light" />
-                    <span>
-                      {assignedWorkout.workoutProgram.days.filter(d => !d.isRestDay).length} träningsdagar
-                    </span>
-                  </div>
-                  <div className="text-sm text-gray-300">
-                    Startdatum: {new Date(assignedWorkout.startDate).toLocaleDateString('sv-SE')}
-                  </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 border-gold-primary/30 text-gold-light hover:bg-gold-50"
+                    onClick={() => setShowWorkoutAssign(true)}
+                  >
+                    Ändra
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                    onClick={handleUnassignWorkout}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
-
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className="flex-1 border-gold-primary/30 text-[rgba(255,215,0,0.9)] hover:bg-gold-50"
-                  onClick={() => setShowWorkoutAssign(true)}
-                >
-                  Ändra program
-                  <ChevronRight className="w-4 h-4 ml-2" />
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1 border-[rgba(255,100,100,0.3)] text-[rgba(255,100,100,0.9)] hover:bg-[rgba(255,100,100,0.1)]"
-                  onClick={handleUnassignWorkout}
-                >
-                  Ta bort program
-                </Button>
-              </div>
-            </div>
-          ) : showWorkoutAssign ? (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-gray-200">Välj träningsprogram</Label>
+            ) : showWorkoutAssign ? (
+              <div className="space-y-3">
                 <Select value={selectedProgramId} onValueChange={setSelectedProgramId}>
                   <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                    <SelectValue placeholder="Välj ett program" />
+                    <SelectValue placeholder="Välj program" />
                   </SelectTrigger>
                   <SelectContent>
                     {availablePrograms.map(program => (
                       <SelectItem key={program.id} value={program.id}>
-                        <div className="flex items-center gap-2">
-                          <span>{program.name}</span>
-                          <span className="text-xs text-muted-foreground">
-                            ({program.days.length} dagar)
-                          </span>
-                        </div>
+                        {program.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-gray-200">Startdatum (90-dagars utmaning)</Label>
                 <div className="flex gap-2">
                   <Input
                     type="date"
@@ -660,667 +564,268 @@ export default function ClientDetailPage({ params }: PageProps) {
                   <Button
                     type="button"
                     variant="outline"
+                    size="sm"
                     onClick={() => setProgramStartDate(getNextMonday())}
-                    className="border-gold-primary/30 text-gray-200 hover:bg-gold-50 text-xs"
+                    className="border-gold-primary/30 text-gray-200 text-xs whitespace-nowrap"
                   >
-                    Nästa måndag
+                    Nästa mån
                   </Button>
                 </div>
-                {programStartDate && !isMonday(programStartDate) && (
-                  <p className="text-amber-400 text-xs">
-                    Valt datum är inte en måndag. Programmet bör starta på en måndag.
-                  </p>
-                )}
-                {programStartDate && isMonday(programStartDate) && (
-                  <p className="text-green-400 text-xs">
-                    Dag 1 av 90 startar {new Date(programStartDate).toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })}
-                  </p>
-                )}
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleAssignWorkout}
+                    disabled={isAssigning}
+                    size="sm"
+                    className="flex-1 bg-gradient-to-br from-gold-light to-orange-500 text-black font-bold"
+                  >
+                    {isAssigning ? 'Tilldelar...' : 'Tilldela'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowWorkoutAssign(false)}
+                    className="border-gold-primary/30"
+                  >
+                    Avbryt
+                  </Button>
+                </div>
               </div>
-
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleAssignWorkout}
-                  disabled={isAssigning || !selectedProgramId || !programStartDate || !isMonday(programStartDate)}
-                  className="flex-1 bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
-                >
-                  {isAssigning ? 'Tilldelar...' : 'Tilldela program'}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowWorkoutAssign(false)
-                    setSelectedProgramId('')
-                    setProgramStartDate('')
-                  }}
-                  className="border-gold-primary/30 text-gray-200 hover:bg-gold-50"
-                >
-                  Avbryt
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <Dumbbell className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>Inget träningsprogram tilldelat ännu</p>
+            ) : (
               <Button
                 onClick={() => setShowWorkoutAssign(true)}
                 variant="outline"
-                className="mt-4 border-gold-light text-gold-light hover:bg-gold-50"
+                className="w-full border-gold-light text-gold-light hover:bg-gold-50"
               >
                 Tilldela program
               </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Cardio Program Section */}
-      <Card className="bg-white/5 border-2 border-red-500/20">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Heart className="text-red-400" size={24} />
-              <CardTitle className="text-red-400">Cardioprogram</CardTitle>
-            </div>
-            {!cardioProgram && !showCardioForm && (
-              <Button
-                onClick={() => setShowCardioForm(true)}
-                variant="outline"
-                size="sm"
-                className="border-red-400 text-red-400 hover:bg-red-500/10"
-              >
-                Lägg till cardio
-              </Button>
             )}
-          </div>
-          <CardDescription className="text-gray-400">
-            Cardio-instruktioner för klienten
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {cardioProgram ? (
-            <div className="space-y-4">
-              <div className="bg-red-500/5 p-4 rounded-lg border border-red-500/30">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-100">
-                      {cardioProgram.title}
-                    </h3>
-                    {cardioProgram.description && (
-                      <p className="text-sm text-gray-400 mt-1">
-                        {cardioProgram.description}
-                      </p>
-                    )}
-                  </div>
-                </div>
+          </CardContent>
+        </Card>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-                  {cardioProgram.cardioType && (
-                    <div className="flex items-center gap-2 text-sm text-gray-300">
-                      <Zap className="w-4 h-4 text-red-400" />
-                      <span>{cardioProgram.cardioType}</span>
-                    </div>
-                  )}
-                  {cardioProgram.frequency && (
-                    <div className="flex items-center gap-2 text-sm text-gray-300">
-                      <Calendar className="w-4 h-4 text-red-400" />
-                      <span>{cardioProgram.frequency}x/vecka</span>
-                    </div>
-                  )}
-                  {cardioProgram.durationMinutes && (
-                    <div className="flex items-center gap-2 text-sm text-gray-300">
-                      <Clock className="w-4 h-4 text-red-400" />
-                      <span>{cardioProgram.durationMinutes} min</span>
-                    </div>
-                  )}
-                  {cardioProgram.intensity && (
-                    <div className="flex items-center gap-2 text-sm text-gray-300">
-                      <Flame className="w-4 h-4 text-red-400" />
-                      <span>{cardioProgram.intensity}</span>
-                    </div>
-                  )}
-                </div>
-
-                {(cardioProgram.preferredDays || cardioProgram.timing) && (
-                  <div className="text-sm text-gray-400 mb-3">
-                    {cardioProgram.preferredDays && <p>Dagar: {cardioProgram.preferredDays}</p>}
-                    {cardioProgram.timing && <p>Tidpunkt: {cardioProgram.timing}</p>}
-                  </div>
-                )}
-
-                {cardioProgram.notes && (
-                  <div className="bg-black/20 rounded p-3 text-sm text-gray-300 whitespace-pre-line">
-                    {cardioProgram.notes}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className="flex-1 border-red-500/30 text-red-400 hover:bg-red-500/10"
-                  onClick={() => {
-                    setCardioForm({
-                      title: cardioProgram.title,
-                      description: cardioProgram.description || '',
-                      cardioType: cardioProgram.cardioType || '',
-                      frequency: cardioProgram.frequency?.toString() || '',
-                      durationMinutes: cardioProgram.durationMinutes?.toString() || '',
-                      intensity: cardioProgram.intensity || '',
-                      preferredDays: cardioProgram.preferredDays || '',
-                      timing: cardioProgram.timing || '',
-                      notes: cardioProgram.notes || '',
-                    })
-                    setShowCardioForm(true)
-                  }}
-                >
-                  Ändra cardio
-                  <ChevronRight className="w-4 h-4 ml-2" />
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-red-500/30 text-red-400 hover:bg-red-500/10"
-                  onClick={handleDeleteCardio}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+        {/* Cardio Program Card */}
+        <Card className="bg-white/5 border-2 border-red-500/20">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Heart className="text-red-400" size={20} />
+                <CardTitle className="text-red-400 text-lg">Cardioprogram</CardTitle>
               </div>
             </div>
-          ) : showCardioForm ? (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-gray-200">Titel *</Label>
-                  <Input
-                    value={cardioForm.title}
-                    onChange={(e) => setCardioForm({ ...cardioForm, title: e.target.value })}
-                    placeholder="t.ex. Promenader & LISS"
-                    className="bg-black/30 border-red-500/30 text-white"
-                  />
+          </CardHeader>
+          <CardContent>
+            {cardioProgram ? (
+              <div className="space-y-3">
+                <div className="bg-red-500/5 p-3 rounded-lg border border-red-500/30">
+                  <h4 className="font-semibold text-gray-100">{cardioProgram.title}</h4>
+                  <div className="flex flex-wrap gap-2 mt-2 text-xs text-gray-400">
+                    {cardioProgram.cardioType && <span>{cardioProgram.cardioType}</span>}
+                    {cardioProgram.frequency && <span>• {cardioProgram.frequency}x/vecka</span>}
+                    {cardioProgram.durationMinutes && <span>• {cardioProgram.durationMinutes} min</span>}
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-gray-200">Typ</Label>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 border-red-500/30 text-red-400 hover:bg-red-500/10"
+                    onClick={() => {
+                      setCardioForm({
+                        title: cardioProgram.title,
+                        description: cardioProgram.description || '',
+                        cardioType: cardioProgram.cardioType || '',
+                        frequency: cardioProgram.frequency?.toString() || '',
+                        durationMinutes: cardioProgram.durationMinutes?.toString() || '',
+                        intensity: cardioProgram.intensity || '',
+                        preferredDays: cardioProgram.preferredDays || '',
+                        timing: cardioProgram.timing || '',
+                        notes: cardioProgram.notes || '',
+                      })
+                      setShowCardioForm(true)
+                    }}
+                  >
+                    Ändra
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                    onClick={handleDeleteCardio}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            ) : showCardioForm ? (
+              <div className="space-y-3">
+                <Input
+                  value={cardioForm.title}
+                  onChange={(e) => setCardioForm({ ...cardioForm, title: e.target.value })}
+                  placeholder="Titel (t.ex. LISS Cardio)"
+                  className="bg-black/30 border-red-500/30 text-white"
+                />
+                <div className="grid grid-cols-2 gap-2">
                   <Select
                     value={cardioForm.cardioType}
                     onValueChange={(value) => setCardioForm({ ...cardioForm, cardioType: value })}
                   >
                     <SelectTrigger className="bg-black/30 border-red-500/30 text-white">
-                      <SelectValue placeholder="Välj typ" />
+                      <SelectValue placeholder="Typ" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="LISS">LISS (Low Intensity)</SelectItem>
-                      <SelectItem value="MISS">MISS (Medium Intensity)</SelectItem>
-                      <SelectItem value="HIIT">HIIT (High Intensity)</SelectItem>
+                      <SelectItem value="LISS">LISS</SelectItem>
+                      <SelectItem value="MISS">MISS</SelectItem>
+                      <SelectItem value="HIIT">HIIT</SelectItem>
                       <SelectItem value="Walking">Promenader</SelectItem>
-                      <SelectItem value="Mixed">Blandat</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-gray-200">Frekvens (ggr/vecka)</Label>
                   <Input
                     type="number"
-                    min="1"
-                    max="7"
                     value={cardioForm.frequency}
                     onChange={(e) => setCardioForm({ ...cardioForm, frequency: e.target.value })}
-                    placeholder="3"
+                    placeholder="ggr/vecka"
                     className="bg-black/30 border-red-500/30 text-white"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-gray-200">Duration (minuter)</Label>
-                  <Input
-                    type="number"
-                    min="5"
-                    value={cardioForm.durationMinutes}
-                    onChange={(e) => setCardioForm({ ...cardioForm, durationMinutes: e.target.value })}
-                    placeholder="30"
-                    className="bg-black/30 border-red-500/30 text-white"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-gray-200">Intensitet</Label>
-                  <Select
-                    value={cardioForm.intensity}
-                    onValueChange={(value) => setCardioForm({ ...cardioForm, intensity: value })}
-                  >
-                    <SelectTrigger className="bg-black/30 border-red-500/30 text-white">
-                      <SelectValue placeholder="Välj intensitet" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Låg">Låg (puls 100-120)</SelectItem>
-                      <SelectItem value="Medel">Medel (puls 120-140)</SelectItem>
-                      <SelectItem value="Hög">Hög (puls 140-160)</SelectItem>
-                      <SelectItem value="Maximal">Maximal (puls 160+)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-gray-200">Rekommenderade dagar</Label>
-                  <Input
-                    value={cardioForm.preferredDays}
-                    onChange={(e) => setCardioForm({ ...cardioForm, preferredDays: e.target.value })}
-                    placeholder="t.ex. Mån, Ons, Fre"
-                    className="bg-black/30 border-red-500/30 text-white"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-gray-200">Tidpunkt</Label>
-                  <Input
-                    value={cardioForm.timing}
-                    onChange={(e) => setCardioForm({ ...cardioForm, timing: e.target.value })}
-                    placeholder="t.ex. Morgon, efter träning"
-                    className="bg-black/30 border-red-500/30 text-white"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-gray-200">Beskrivning</Label>
-                <Textarea
-                  value={cardioForm.description}
-                  onChange={(e) => setCardioForm({ ...cardioForm, description: e.target.value })}
-                  placeholder="Kort beskrivning av programmet..."
-                  rows={2}
-                  className="bg-black/30 border-red-500/30 text-white"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-gray-200">Instruktioner till klienten</Label>
                 <Textarea
                   value={cardioForm.notes}
                   onChange={(e) => setCardioForm({ ...cardioForm, notes: e.target.value })}
-                  placeholder="Detaljerade instruktioner, tips, etc..."
-                  rows={4}
+                  placeholder="Instruktioner..."
+                  rows={2}
                   className="bg-black/30 border-red-500/30 text-white"
                 />
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleSaveCardio}
+                    disabled={isSavingCardio}
+                    size="sm"
+                    className="flex-1 bg-gradient-to-br from-red-500 to-red-600 text-white font-bold"
+                  >
+                    {isSavingCardio ? 'Sparar...' : 'Spara'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowCardioForm(false)}
+                    className="border-red-500/30"
+                  >
+                    Avbryt
+                  </Button>
+                </div>
               </div>
-
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleSaveCardio}
-                  disabled={isSavingCardio}
-                  className="flex-1 bg-gradient-to-br from-red-500 to-red-600 text-white font-bold hover:scale-105 transition-transform"
-                >
-                  {isSavingCardio ? 'Sparar...' : 'Spara cardioprogram'}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowCardioForm(false)
-                    setCardioForm({
-                      title: '',
-                      description: '',
-                      cardioType: '',
-                      frequency: '',
-                      durationMinutes: '',
-                      intensity: '',
-                      preferredDays: '',
-                      timing: '',
-                      notes: '',
-                    })
-                  }}
-                  className="border-red-500/30 text-gray-200 hover:bg-red-500/10"
-                >
-                  Avbryt
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p>Inget cardioprogram tilldelat ännu</p>
+            ) : (
               <Button
                 onClick={() => setShowCardioForm(true)}
                 variant="outline"
-                className="mt-4 border-red-400 text-red-400 hover:bg-red-500/10"
+                className="w-full border-red-400 text-red-400 hover:bg-red-500/10"
               >
                 Lägg till cardio
               </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <form onSubmit={onSubmit} className="space-y-6">
-        {/* Profile Information */}
-        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-          <CardHeader>
-            <CardTitle className="text-gold-light">Basic Information</CardTitle>
-            <CardDescription className="text-gray-400">Physical measurements and demographics</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="birthdate" className="text-gray-200">Födelsedatum</Label>
-                <Input
-                  id="birthdate"
-                  type="date"
-                  {...register('birthdate')}
-                  className="bg-black/30 border-gold-primary/30 text-white"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-gray-200">Kön</Label>
-                <Controller
-                  name="gender"
-                  control={control}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                        <SelectValue placeholder="Välj kön" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-900/95 border-gold-primary/30">
-                        <SelectItem value="male" className="text-white hover:bg-gold-50">Man</SelectItem>
-                        <SelectItem value="female" className="text-white hover:bg-gold-50">Kvinna</SelectItem>
-                        <SelectItem value="other" className="text-white hover:bg-gold-50">Annat</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="heightCm" className="text-gray-200">Längd (cm)</Label>
-                <Input
-                  id="heightCm"
-                  type="number"
-                  placeholder="175"
-                  {...register('heightCm')}
-                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="currentWeightKg" className="text-gray-200">Vikt (kg)</Label>
-                <Input
-                  id="currentWeightKg"
-                  type="number"
-                  placeholder="75"
-                  {...register('currentWeightKg')}
-                  className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
-                />
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
+      </div>
 
-        {/* Goals */}
-        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-          <CardHeader>
-            <CardTitle className="text-gold-light">Mål</CardTitle>
-            <CardDescription className="text-gray-400">Vad vill klienten uppnå?</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <Label className="text-gray-200">Primärt Mål</Label>
-              <Controller
-                name="primaryGoal"
-                control={control}
-                render={({ field }) => (
-                  <RadioGroup onValueChange={field.onChange} value={field.value}>
-                    <div className="flex items-center space-x-2 p-3 border-2 border-gold-primary/20 rounded-lg bg-[rgba(0,0,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors">
-                      <RadioGroupItem value="build_muscle" id="build_muscle" />
-                      <Label htmlFor="build_muscle" className="cursor-pointer flex-1 text-white">
-                        Bygga muskler
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2 p-3 border-2 border-gold-primary/20 rounded-lg bg-[rgba(0,0,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors">
-                      <RadioGroupItem value="get_fit" id="get_fit" />
-                      <Label htmlFor="get_fit" className="cursor-pointer flex-1 text-white">
-                        Bli mer fit
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2 p-3 border-2 border-gold-primary/20 rounded-lg bg-[rgba(0,0,0,0.2)] hover:border-[rgba(255,215,0,0.4)] transition-colors">
-                      <RadioGroupItem value="healthy_habits" id="healthy_habits" />
-                      <Label htmlFor="healthy_habits" className="cursor-pointer flex-1 text-white">
-                        Utveckla hälsosamma vanor
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                )}
-              />
+      {/* Application Information */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold text-gold-light flex items-center gap-2">
+          <Sparkles className="w-5 h-5" />
+          Ansökningsinformation
+        </h2>
+
+        {/* Contact Info */}
+        <CollapsibleSection title="Kontaktuppgifter" icon={User} defaultOpen={true} color="blue">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+            <InfoField label="Telefon" value={client.phone} />
+            <InfoField label="Stad" value={client.city} />
+            <InfoField label="Land" value={client.country} />
+            <InfoField label="Yrke" value={client.occupation} />
+          </div>
+        </CollapsibleSection>
+
+        {/* Motivation */}
+        {(client.whyJoin || client.expectations || client.biggestChallenges || client.canFollowPlan) && (
+          <CollapsibleSection title="Motivation & Mål" icon={Target} defaultOpen={true} color="gold">
+            <div className="space-y-4 pt-4">
+              <InfoField label="Varför vill du gå med?" value={client.whyJoin} />
+              <InfoField label="Förväntningar" value={client.expectations} />
+              <InfoField label="Största utmaningar" value={client.biggestChallenges} />
+              <InfoField label="Kan följa en plan?" value={client.canFollowPlan} />
             </div>
-          </CardContent>
-        </Card>
+          </CollapsibleSection>
+        )}
 
-        {/* Activity & Training */}
-        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-          <CardHeader>
-            <CardTitle className="text-gold-light">Aktivitet & Träning</CardTitle>
-            <CardDescription className="text-gray-400">Daglig aktivitet och träningserfarenhet</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-gray-200">Aktivitetsnivå (Fritid)</Label>
-                <Controller
-                  name="activityLevelFree"
-                  control={control}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                        <SelectValue placeholder="Välj nivå" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-900/95 border-gold-primary/30">
-                        <SelectItem value="very_low" className="text-white hover:bg-gold-50">Mycket låg</SelectItem>
-                        <SelectItem value="low" className="text-white hover:bg-gold-50">Låg</SelectItem>
-                        <SelectItem value="medium" className="text-white hover:bg-gold-50">Medium</SelectItem>
-                        <SelectItem value="active" className="text-white hover:bg-gold-50">Aktiv</SelectItem>
-                        <SelectItem value="very_active" className="text-white hover:bg-gold-50">Mycket aktiv</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-gray-200">Aktivitetsnivå (Jobb)</Label>
-                <Controller
-                  name="activityLevelWork"
-                  control={control}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                        <SelectValue placeholder="Välj nivå" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-900/95 border-gold-primary/30">
-                        <SelectItem value="very_low" className="text-white hover:bg-gold-50">Sittande</SelectItem>
-                        <SelectItem value="low" className="text-white hover:bg-gold-50">Lätt aktivitet</SelectItem>
-                        <SelectItem value="medium" className="text-white hover:bg-gold-50">Måttlig aktivitet</SelectItem>
-                        <SelectItem value="high" className="text-white hover:bg-gold-50">Hög aktivitet</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-gray-200">Träningserfarenhet</Label>
-                <Controller
-                  name="trainingExperience"
-                  control={control}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
-                        <SelectValue placeholder="Välj erfarenhet" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-900/95 border-gold-primary/30">
-                        <SelectItem value="beginner" className="text-white hover:bg-gold-50">Nybörjare</SelectItem>
-                        <SelectItem value="experienced" className="text-white hover:bg-gold-50">Erfaren</SelectItem>
-                        <SelectItem value="very_experienced" className="text-white hover:bg-gold-50">Mycket erfaren</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
+        {/* Training */}
+        {(client.currentTraining || client.trainingExperience || client.trainingGoal || client.injuries || client.availableTime || client.preferredSchedule) && (
+          <CollapsibleSection title="Träning" icon={Activity} color="green">
+            <div className="space-y-4 pt-4">
+              <InfoField label="Nuvarande träning" value={client.currentTraining} />
+              <InfoField label="Träningserfarenhet" value={client.trainingExperience} />
+              <InfoField label="Träningsmål" value={client.trainingGoal} />
+              <InfoField label="Skador/Begränsningar" value={client.injuries} />
+              <InfoField label="Tillgänglig tid" value={client.availableTime} />
+              <InfoField label="Föredraget schema" value={client.preferredSchedule} />
             </div>
-
-            <div className="space-y-2">
-              <Label className="text-gray-200">Träningsdagar</Label>
-              <div className="flex flex-wrap gap-2">
-                {weekDays.map(day => (
-                  <Button
-                    key={day}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const currentDays = control._formValues.trainingDays || []
-                      if (currentDays.includes(day)) {
-                        setValue('trainingDays', currentDays.filter((d: string) => d !== day))
-                      } else {
-                        setValue('trainingDays', [...currentDays, day])
-                      }
-                    }}
-                    className={control._formValues.trainingDays?.includes(day) ? 'bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold border-0' : 'bg-black/30 border-gold-primary/30 text-white hover:border-[rgba(255,215,0,0.5)]'}
-                  >
-                    {day}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="trainingDetails" className="text-gray-200">Träningsdetaljer</Label>
-              <Textarea
-                id="trainingDetails"
-                placeholder="Beskriv klientens träningserfarenhet..."
-                {...register('trainingDetails')}
-                rows={3}
-                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
-              />
-            </div>
-          </CardContent>
-        </Card>
+          </CollapsibleSection>
+        )}
 
         {/* Nutrition */}
-        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-          <CardHeader>
-            <CardTitle className="text-gold-light">Näring</CardTitle>
-            <CardDescription className="text-gray-400">Kostpreferenser och allergier</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-gray-200">Allergier</Label>
-              <div className="flex flex-wrap gap-2">
-                {commonAllergies.map(allergy => (
-                  <Button
-                    key={allergy}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const currentAllergies = control._formValues.allergies || []
-                      if (currentAllergies.includes(allergy)) {
-                        setValue('allergies', currentAllergies.filter((a: string) => a !== allergy))
-                      } else {
-                        setValue('allergies', [...currentAllergies, allergy])
-                      }
-                    }}
-                    className={control._formValues.allergies?.includes(allergy) ? 'bg-[rgba(239,68,68,0.2)] border-red-400 text-red-300 font-medium' : 'bg-black/30 border-gold-primary/30 text-white hover:border-[rgba(255,215,0,0.5)]'}
-                  >
-                    {allergy}
-                  </Button>
-                ))}
-              </div>
+        {(client.dietHistory || client.macroExperience || client.favoriteFood || client.dislikedFood || client.allergies || client.supplements || client.digestionIssues) && (
+          <CollapsibleSection title="Kost & Näring" icon={Utensils} color="orange">
+            <div className="space-y-4 pt-4">
+              <InfoField label="Kosthistorik" value={client.dietHistory} />
+              <InfoField label="Makroerfarenhet" value={client.macroExperience} />
+              <InfoField label="Favoritmat" value={client.favoriteFood} />
+              <InfoField label="Ogillar" value={client.dislikedFood} />
+              <InfoField label="Allergier" value={client.allergies} />
+              <InfoField label="Kosttillskott" value={client.supplements} />
+              <InfoField label="Matsmältningsproblem" value={client.digestionIssues} />
             </div>
-
-            <div className="space-y-2">
-              <Label className="text-gray-200">Kostpreferenser</Label>
-              <div className="flex flex-wrap gap-2">
-                {dietaryOptions.map(option => (
-                  <Button
-                    key={option}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const currentPrefs = control._formValues.dietaryPreferences || []
-                      if (currentPrefs.includes(option)) {
-                        setValue('dietaryPreferences', currentPrefs.filter((p: string) => p !== option))
-                      } else {
-                        setValue('dietaryPreferences', [...currentPrefs, option])
-                      }
-                    }}
-                    className={control._formValues.dietaryPreferences?.includes(option) ? 'bg-[rgba(34,197,94,0.2)] border-green-400 text-green-300 font-medium' : 'bg-black/30 border-gold-primary/30 text-white hover:border-[rgba(255,215,0,0.5)]'}
-                  >
-                    {option}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="nutritionNotes" className="text-gray-200">Kostanteckningar</Label>
-              <Textarea
-                id="nutritionNotes"
-                placeholder="Matpreferenser, matvanor, etc..."
-                {...register('nutritionNotes')}
-                rows={3}
-                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="nutritionMissing" className="text-gray-200">Övrig information</Label>
-              <Textarea
-                id="nutritionMissing"
-                placeholder="Annan viktig näringsinformation..."
-                {...register('nutritionMissing')}
-                rows={2}
-                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
-              />
-            </div>
-          </CardContent>
-        </Card>
+          </CollapsibleSection>
+        )}
 
         {/* Lifestyle */}
-        <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-          <CardHeader>
-            <CardTitle className="text-gold-light">Livsstil</CardTitle>
-            <CardDescription className="text-gray-400">Övriga kommentarer och anteckningar</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="lifestyleNotes" className="text-gray-200">Livsstilsanteckningar</Label>
-              <Textarea
-                id="lifestyleNotes"
-                placeholder="Sömn, stress, arbetsschema, etc..."
-                {...register('lifestyleNotes')}
-                rows={4}
-                className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
-              />
+        {(client.lifestyle || client.stressLevel || client.sleepHours || client.previousCoaching) && (
+          <CollapsibleSection title="Livsstil" icon={Moon} color="purple">
+            <div className="space-y-4 pt-4">
+              <InfoField label="Livsstil" value={client.lifestyle} />
+              <InfoField label="Stressnivå" value={client.stressLevel} />
+              <InfoField label="Sömn" value={client.sleepHours} />
+              <InfoField label="Tidigare coaching" value={client.previousCoaching} />
             </div>
-          </CardContent>
-        </Card>
+          </CollapsibleSection>
+        )}
 
-        <div className="flex gap-4">
-          <Button
-            type="submit"
-            disabled={isSaving}
-            className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            {isSaving ? 'Sparar...' : 'Spara Profil'}
-          </Button>
-          <Link href="/dashboard/clients">
-            <Button type="button" variant="outline" className="border-gold-primary/30 text-gray-200 hover:bg-gold-50">
-              Avbryt
-            </Button>
-          </Link>
-        </div>
-      </form>
+        {/* Photos */}
+        {(client.frontPhoto || client.sidePhoto || client.backPhoto) && (
+          <CollapsibleSection title="Bilder" icon={Image} color="blue">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+              {client.frontPhoto && (
+                <div>
+                  <p className="text-xs text-gray-500 uppercase mb-2">Framifrån</p>
+                  <img src={client.frontPhoto} alt="Front" className="rounded-lg w-full object-cover" />
+                </div>
+              )}
+              {client.sidePhoto && (
+                <div>
+                  <p className="text-xs text-gray-500 uppercase mb-2">Sidan</p>
+                  <img src={client.sidePhoto} alt="Side" className="rounded-lg w-full object-cover" />
+                </div>
+              )}
+              {client.backPhoto && (
+                <div>
+                  <p className="text-xs text-gray-500 uppercase mb-2">Bakifrån</p>
+                  <img src={client.backPhoto} alt="Back" className="rounded-lg w-full object-cover" />
+                </div>
+              )}
+            </div>
+          </CollapsibleSection>
+        )}
+      </div>
+
+      {/* Meta info */}
+      <div className="text-center text-xs text-gray-500 pt-4 border-t border-gray-800">
+        Klient sedan {new Date(client.createdAt).toLocaleDateString('sv-SE')}
+      </div>
     </div>
   )
 }
