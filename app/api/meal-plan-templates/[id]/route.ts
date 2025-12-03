@@ -55,6 +55,9 @@ export async function GET(
             },
           },
         },
+        dailyTargets: {
+          orderBy: { dayOfWeek: 'asc' },
+        },
       },
     })
 

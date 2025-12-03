@@ -1554,13 +1554,34 @@ model MealPlanTemplate {
   tags          String[] // ["viktnedgång", "vegan", "högprotein"]
   generalAdvice String?  @db.Text // General advice shown to clients
 
+  // Daily targets mode
+  useDifferentDailyTargets Boolean @default(false) // If true, use dailyTargets instead of global targets
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  meals       TemplateMeal[]
-  assignments MealPlanTemplateAssignment[]
+  meals        TemplateMeal[]
+  assignments  MealPlanTemplateAssignment[]
+  dailyTargets TemplateDailyTarget[]
 
   @@map("meal_plan_templates")
+}
+
+// Daily macro targets for templates (per day of week)
+model TemplateDailyTarget {
+  id         String  @id @default(cuid())
+  templateId String
+  dayOfWeek  Int     // 0=Måndag, 1=Tisdag, ... 6=Söndag
+  dayName    String? // Optional custom name like "Träningsdag", "Vilodag"
+  calories   Decimal @db.Decimal(7, 2)
+  protein    Decimal @db.Decimal(6, 2)
+  fat        Decimal @db.Decimal(6, 2)
+  carbs      Decimal @db.Decimal(6, 2)
+
+  template MealPlanTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, dayOfWeek])
+  @@map("template_daily_targets")
 }
 
 // Assignment - Which clients have which meal plan templates

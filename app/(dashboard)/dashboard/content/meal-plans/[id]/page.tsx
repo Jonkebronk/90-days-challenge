@@ -107,6 +107,16 @@ type Assignment = {
   }
 }
 
+type TemplateDailyTarget = {
+  id: string
+  dayOfWeek: number
+  dayName: string | null
+  calories: number
+  protein: number
+  fat: number
+  carbs: number
+}
+
 type MealPlanTemplate = {
   id: string
   name: string
@@ -116,10 +126,12 @@ type MealPlanTemplate = {
   targetFat: number | null
   targetCarbs: number | null
   targetCalories: number | null
+  useDifferentDailyTargets: boolean
   published: boolean
   tags: string[]
   meals: TemplateMeal[]
   assignments?: Assignment[]
+  dailyTargets?: TemplateDailyTarget[]
 }
 
 export default function MealPlanTemplatePage() {
@@ -169,6 +181,25 @@ export default function MealPlanTemplatePage() {
     calories: '',
   })
 
+  // Daily targets state
+  const [useDifferentDailyTargets, setUseDifferentDailyTargets] = useState(false)
+  const [dailyTargets, setDailyTargets] = useState<Array<{
+    dayOfWeek: number
+    dayName: string
+    calories: string
+    protein: string
+    fat: string
+    carbs: string
+  }>>([
+    { dayOfWeek: 0, dayName: 'Måndag', calories: '', protein: '', fat: '', carbs: '' },
+    { dayOfWeek: 1, dayName: 'Tisdag', calories: '', protein: '', fat: '', carbs: '' },
+    { dayOfWeek: 2, dayName: 'Onsdag', calories: '', protein: '', fat: '', carbs: '' },
+    { dayOfWeek: 3, dayName: 'Torsdag', calories: '', protein: '', fat: '', carbs: '' },
+    { dayOfWeek: 4, dayName: 'Fredag', calories: '', protein: '', fat: '', carbs: '' },
+    { dayOfWeek: 5, dayName: 'Lördag', calories: '', protein: '', fat: '', carbs: '' },
+    { dayOfWeek: 6, dayName: 'Söndag', calories: '', protein: '', fat: '', carbs: '' },
+  ])
+
   useEffect(() => {
     if (session?.user && templateId) {
       fetchTemplate()
@@ -186,6 +217,22 @@ export default function MealPlanTemplatePage() {
         targetCarbs: template.targetCarbs?.toString() || '',
         targetCalories: template.targetCalories?.toString() || '',
       })
+      // Sync daily targets
+      setUseDifferentDailyTargets(template.useDifferentDailyTargets || false)
+      if (template.dailyTargets && template.dailyTargets.length > 0) {
+        const defaultDays = ['Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag', 'Söndag']
+        setDailyTargets(defaultDays.map((dayName, index) => {
+          const existing = template.dailyTargets?.find(t => t.dayOfWeek === index)
+          return {
+            dayOfWeek: index,
+            dayName: existing?.dayName || dayName,
+            calories: existing?.calories?.toString() || template.targetCalories?.toString() || '',
+            protein: existing?.protein?.toString() || template.targetProtein?.toString() || '',
+            fat: existing?.fat?.toString() || template.targetFat?.toString() || '',
+            carbs: existing?.carbs?.toString() || template.targetCarbs?.toString() || '',
+          }
+        }))
+      }
     }
   }, [template])
 
@@ -256,6 +303,8 @@ export default function MealPlanTemplatePage() {
 
     try {
       setIsSaving(true)
+
+      // Save template basics
       const response = await fetch(`/api/meal-plan-templates/${templateId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -272,7 +321,24 @@ export default function MealPlanTemplatePage() {
         }),
       })
 
-      if (response.ok) {
+      // Save daily targets
+      const dailyTargetsResponse = await fetch(`/api/meal-plan-templates/${templateId}/daily-targets`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          useDifferentDailyTargets,
+          targets: dailyTargets.map(day => ({
+            dayOfWeek: day.dayOfWeek,
+            dayName: day.dayName,
+            calories: day.calories ? parseFloat(day.calories) : 0,
+            protein: day.protein ? parseFloat(day.protein) : 0,
+            fat: day.fat ? parseFloat(day.fat) : 0,
+            carbs: day.carbs ? parseFloat(day.carbs) : 0,
+          }))
+        }),
+      })
+
+      if (response.ok && dailyTargetsResponse.ok) {
         toast.success('Måltidsplan uppdaterad')
         fetchTemplate()
       } else {
@@ -692,49 +758,174 @@ export default function MealPlanTemplatePage() {
               className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.4)]"
             />
           </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="targetProtein" className="text-gray-200">
-                Mål protein (g)
-              </Label>
-              <Input
-                id="targetProtein"
-                type="number"
-                step="0.1"
-                value={formData.targetProtein}
-                onChange={(e) =>
-                  setFormData({ ...formData, targetProtein: e.target.value })
-                }
-                className="bg-black/30 border-gold-primary/30 text-white"
-              />
+          {/* Daily Targets Toggle */}
+          <div className="flex items-center gap-4 p-4 bg-black/20 rounded-lg border border-gold-primary/20">
+            <div className="flex-1">
+              <Label className="text-gray-200 font-semibold">Dagliga makromål</Label>
+              <p className="text-sm text-gray-400 mt-1">
+                Välj om samma mål ska gälla varje dag eller om du vill ha olika mål per veckodag
+              </p>
             </div>
-            <div>
-              <Label htmlFor="targetFat" className="text-gray-200">
-                Mål fett (g)
-              </Label>
-              <Input
-                id="targetFat"
-                type="number"
-                step="0.1"
-                value={formData.targetFat}
-                onChange={(e) => setFormData({ ...formData, targetFat: e.target.value })}
-                className="bg-black/30 border-gold-primary/30 text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="targetCarbs" className="text-gray-200">
-                Mål kolhydrater (g)
-              </Label>
-              <Input
-                id="targetCarbs"
-                type="number"
-                step="0.1"
-                value={formData.targetCarbs}
-                onChange={(e) => setFormData({ ...formData, targetCarbs: e.target.value })}
-                className="bg-black/30 border-gold-primary/30 text-white"
-              />
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                onClick={() => setUseDifferentDailyTargets(false)}
+                className={`${
+                  !useDifferentDailyTargets
+                    ? 'bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a]'
+                    : 'bg-transparent border border-gold-primary/30 text-gray-200'
+                }`}
+              >
+                Samma varje dag
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setUseDifferentDailyTargets(true)}
+                className={`${
+                  useDifferentDailyTargets
+                    ? 'bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a]'
+                    : 'bg-transparent border border-gold-primary/30 text-gray-200'
+                }`}
+              >
+                Olika per dag
+              </Button>
             </div>
           </div>
+
+          {/* Global Targets (same every day) */}
+          {!useDifferentDailyTargets && (
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="targetProtein" className="text-gray-200">
+                  Mål protein (g)
+                </Label>
+                <Input
+                  id="targetProtein"
+                  type="number"
+                  step="0.1"
+                  value={formData.targetProtein}
+                  onChange={(e) =>
+                    setFormData({ ...formData, targetProtein: e.target.value })
+                  }
+                  className="bg-black/30 border-gold-primary/30 text-white"
+                />
+              </div>
+              <div>
+                <Label htmlFor="targetFat" className="text-gray-200">
+                  Mål fett (g)
+                </Label>
+                <Input
+                  id="targetFat"
+                  type="number"
+                  step="0.1"
+                  value={formData.targetFat}
+                  onChange={(e) => setFormData({ ...formData, targetFat: e.target.value })}
+                  className="bg-black/30 border-gold-primary/30 text-white"
+                />
+              </div>
+              <div>
+                <Label htmlFor="targetCarbs" className="text-gray-200">
+                  Mål kolhydrater (g)
+                </Label>
+                <Input
+                  id="targetCarbs"
+                  type="number"
+                  step="0.1"
+                  value={formData.targetCarbs}
+                  onChange={(e) => setFormData({ ...formData, targetCarbs: e.target.value })}
+                  className="bg-black/30 border-gold-primary/30 text-white"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Per-Day Targets */}
+          {useDifferentDailyTargets && (
+            <div className="space-y-3">
+              {dailyTargets.map((day, index) => (
+                <div key={day.dayOfWeek} className="p-4 bg-black/20 rounded-lg border border-gold-primary/10">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-semibold text-white">{day.dayName}</h4>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-gray-400 hover:text-gold-light"
+                      onClick={() => {
+                        // Copy this day's values to all days
+                        setDailyTargets(prev => prev.map(d => ({
+                          ...d,
+                          calories: day.calories,
+                          protein: day.protein,
+                          fat: day.fat,
+                          carbs: day.carbs
+                        })))
+                      }}
+                    >
+                      Kopiera till alla dagar
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-4 gap-3">
+                    <div>
+                      <Label className="text-xs text-gray-400">Kcal</Label>
+                      <Input
+                        type="number"
+                        value={day.calories}
+                        onChange={(e) => {
+                          const newTargets = [...dailyTargets]
+                          newTargets[index].calories = e.target.value
+                          setDailyTargets(newTargets)
+                        }}
+                        className="bg-black/30 border-gold-primary/30 text-white h-9"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-400">Protein (g)</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={day.protein}
+                        onChange={(e) => {
+                          const newTargets = [...dailyTargets]
+                          newTargets[index].protein = e.target.value
+                          setDailyTargets(newTargets)
+                        }}
+                        className="bg-black/30 border-gold-primary/30 text-white h-9"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-400">Fett (g)</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={day.fat}
+                        onChange={(e) => {
+                          const newTargets = [...dailyTargets]
+                          newTargets[index].fat = e.target.value
+                          setDailyTargets(newTargets)
+                        }}
+                        className="bg-black/30 border-gold-primary/30 text-white h-9"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-400">Kolhydrater (g)</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={day.carbs}
+                        onChange={(e) => {
+                          const newTargets = [...dailyTargets]
+                          newTargets[index].carbs = e.target.value
+                          setDailyTargets(newTargets)
+                        }}
+                        className="bg-black/30 border-gold-primary/30 text-white h-9"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
