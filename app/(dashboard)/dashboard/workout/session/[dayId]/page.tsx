@@ -26,8 +26,10 @@ import {
   RotateCcw,
   UserCircle,
   Pencil,
-  Trash2
+  Trash2,
+  Timer
 } from 'lucide-react'
+import { RestTimerDialog } from '@/components/workout/rest-timer-dialog'
 import Link from 'next/link'
 
 interface Exercise {
@@ -89,6 +91,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [restTimerSeconds, setRestTimerSeconds] = useState(0)
   const [isResting, setIsResting] = useState(false)
   const [originalRestTime, setOriginalRestTime] = useState(0)
+  const [showRestDialog, setShowRestDialog] = useState(false)
 
   // Exercise tracking
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0)
@@ -195,6 +198,27 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
     oscillator.start(audioContext.currentTime)
     oscillator.stop(audioContext.currentTime + 0.5)
+  }
+
+  // Start rest timer with dialog
+  const startRestTimer = (seconds: number) => {
+    setRestTimerSeconds(seconds)
+    setOriginalRestTime(seconds)
+    setIsResting(true)
+    setShowRestDialog(true)
+  }
+
+  // Stop rest timer and close dialog
+  const stopRestTimer = () => {
+    setIsResting(false)
+    setRestTimerSeconds(0)
+    setShowRestDialog(false)
+  }
+
+  // Add time to rest timer
+  const addRestTime = (seconds: number) => {
+    setRestTimerSeconds(prev => prev + seconds)
+    setOriginalRestTime(prev => prev + seconds)
   }
 
   const fetchWorkoutDay = async (id: string) => {
@@ -396,13 +420,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
               setExpandedExercises(new Set([nextIncompleteIndex]))
             }, 500)
           }
-        } else {
-          // Start rest timer
-          if (exercise && exercise.restSeconds > 0) {
-            setRestTimerSeconds(exercise.restSeconds)
-            setOriginalRestTime(exercise.restSeconds)
-            setIsResting(true)
-          }
         }
       }
     } catch (error) {
@@ -563,27 +580,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     setIsRunning(!isRunning)
   }
 
-  const skipRest = () => {
-    setRestTimerSeconds(0)
-    setIsResting(false)
-  }
-
-  const addRestTime = (seconds: number) => {
-    setRestTimerSeconds(prev => prev + seconds)
-  }
-
-  const resetRestTimer = () => {
-    setRestTimerSeconds(originalRestTime)
-  }
-
-  const getRestTimerColor = () => {
-    if (!originalRestTime) return 'text-[#fb923c]'
-    const percentage = (restTimerSeconds / originalRestTime) * 100
-    if (percentage > 50) return 'text-green-500'
-    if (percentage > 25) return 'text-[#fbbf24]'
-    return 'text-red-500'
-  }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -735,7 +731,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         )}
                       </div>
 
-                      {/* Video button + Previous session inline */}
+                      {/* Video button + Rest timer button + Previous session inline */}
                       <div className="flex flex-wrap items-center gap-3 mt-3">
                         {exercise.exercise.videoUrl && (
                           <button
@@ -760,6 +756,19 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                 VIDEO
                               </>
                             )}
+                          </button>
+                        )}
+                        {/* Rest timer button */}
+                        {exercise.restSeconds > 0 && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              startRestTimer(exercise.restSeconds)
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors bg-amber-600/20 border border-amber-500/30 text-amber-300 hover:bg-amber-600/30 hover:text-amber-200"
+                          >
+                            <Timer className="w-3 h-3" />
+                            VILA {exercise.restSeconds}s
                           </button>
                         )}
                         {/* Previous session data for this exercise */}
@@ -1149,6 +1158,15 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           </Card>
         </div>
       )}
+
+      {/* Rest Timer Dialog */}
+      <RestTimerDialog
+        isOpen={showRestDialog}
+        totalSeconds={originalRestTime}
+        remainingSeconds={restTimerSeconds}
+        onStop={stopRestTimer}
+        onAddTime={addRestTime}
+      />
     </div>
   )
 }
