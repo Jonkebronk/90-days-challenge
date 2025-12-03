@@ -15,6 +15,7 @@ import {
 interface DayColumnsLayoutProps {
   days: DayFormData[]
   exercises: Exercise[]
+  viewMode: 'scroll' | 'week'
   onAddDay: () => void
   onUpdateDay: (dayIndex: number, updates: Partial<DayFormData>) => void
   onRemoveDay: (dayIndex: number) => void
@@ -46,6 +47,7 @@ interface DayColumnsLayoutProps {
 export function DayColumnsLayout({
   days,
   exercises,
+  viewMode,
   onAddDay,
   onUpdateDay,
   onRemoveDay,
@@ -68,6 +70,61 @@ export function DayColumnsLayout({
     }
   }
 
+  // Week view: Show all 7 days Mon-Sun
+  if (viewMode === 'week') {
+    return (
+      <div className="h-full overflow-auto">
+        <div className="grid grid-cols-7 gap-2 min-w-[1200px]">
+          {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(
+            (weekday, weekdayIndex) => {
+              // Find day that matches this weekday
+              const dayIndex = days.findIndex((d) => d.weekday === weekdayIndex)
+              const day = dayIndex >= 0 ? days[dayIndex] : null
+
+              return (
+                <div key={weekday} className="flex flex-col">
+                  {/* Weekday Header */}
+                  <div className="text-center text-xs font-medium text-zinc-400 mb-2 py-1 bg-zinc-800/50 rounded-t-lg">
+                    {weekday.slice(0, 3)}
+                  </div>
+
+                  {day ? (
+                    <DayColumn
+                      day={day}
+                      dayIndex={dayIndex}
+                      exercises={exercises}
+                      onUpdateDay={onUpdateDay}
+                      onRemoveDay={onRemoveDay}
+                      onAddMuscleSlot={onAddMuscleSlot}
+                      onUpdateMuscleSlot={onUpdateMuscleSlot}
+                      onRemoveMuscleSlot={onRemoveMuscleSlot}
+                      onAddExercise={onAddExercise}
+                      onUpdateExercise={onUpdateExercise}
+                      onRemoveExercise={onRemoveExercise}
+                      compact
+                    />
+                  ) : (
+                    <button
+                      onClick={() => {
+                        onAddDay()
+                        // Note: The new day will be created, user can then assign weekday
+                      }}
+                      className="flex-1 min-h-[150px] rounded-lg border-2 border-dashed border-zinc-800 bg-zinc-900/20 text-zinc-600 hover:text-amber-400 hover:border-amber-500/30 hover:bg-zinc-800/30 flex flex-col items-center justify-center gap-2 transition-all"
+                    >
+                      <Plus className="h-5 w-5" />
+                      <span className="text-xs">Rest day</span>
+                    </button>
+                  )}
+                </div>
+              )
+            }
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Scroll view (default)
   return (
     <div className="relative">
       {/* Scroll Buttons */}

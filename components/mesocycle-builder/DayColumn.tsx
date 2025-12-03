@@ -24,6 +24,7 @@ interface DayColumnProps {
   day: DayFormData
   dayIndex: number
   exercises: Exercise[]
+  compact?: boolean
   onUpdateDay: (dayIndex: number, updates: Partial<DayFormData>) => void
   onRemoveDay: (dayIndex: number) => void
   onAddMuscleSlot: (dayIndex: number, slot: MuscleSlotFormData) => void
@@ -55,6 +56,7 @@ export function DayColumn({
   day,
   dayIndex,
   exercises,
+  compact = false,
   onUpdateDay,
   onRemoveDay,
   onAddMuscleSlot,
@@ -67,41 +69,43 @@ export function DayColumn({
   const [isAddSlotOpen, setIsAddSlotOpen] = useState(false)
 
   return (
-    <div className="flex-shrink-0 w-[280px] md:w-[320px] flex flex-col bg-zinc-900/50 rounded-lg border border-zinc-800">
-      {/* Day Header */}
-      <div className="p-3 border-b border-zinc-800 flex items-center justify-between">
-        <div className="flex items-center gap-2 flex-1">
-          <GripVertical className="h-4 w-4 text-zinc-600 cursor-grab" />
-          <Select
-            value={day.weekday?.toString() ?? ''}
-            onValueChange={(value) =>
-              onUpdateDay(dayIndex, {
-                weekday: value ? parseInt(value) : null,
-                dayName: value ? WEEKDAYS[parseInt(value)] : day.dayName,
-              })
-            }
+    <div className={`flex flex-col bg-zinc-900/50 rounded-lg border border-zinc-800 ${compact ? 'flex-1' : 'flex-shrink-0 w-[280px] md:w-[320px]'}`}>
+      {/* Day Header - hidden in compact mode since we show weekday header above */}
+      {!compact && (
+        <div className="p-3 border-b border-zinc-800 flex items-center justify-between">
+          <div className="flex items-center gap-2 flex-1">
+            <GripVertical className="h-4 w-4 text-zinc-600 cursor-grab" />
+            <Select
+              value={day.weekday?.toString() ?? ''}
+              onValueChange={(value) =>
+                onUpdateDay(dayIndex, {
+                  weekday: value ? parseInt(value) : null,
+                  dayName: value ? WEEKDAYS[parseInt(value)] : day.dayName,
+                })
+              }
+            >
+              <SelectTrigger className="flex-1 h-8 bg-zinc-800 border-zinc-700 text-sm">
+                <SelectValue placeholder={day.dayName || 'Select day'} />
+              </SelectTrigger>
+              <SelectContent>
+                {WEEKDAYS.map((weekday, index) => (
+                  <SelectItem key={weekday} value={index.toString()}>
+                    {weekday}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-zinc-500 hover:text-red-400 hover:bg-red-500/10"
+            onClick={() => onRemoveDay(dayIndex)}
           >
-            <SelectTrigger className="flex-1 h-8 bg-zinc-800 border-zinc-700 text-sm">
-              <SelectValue placeholder={day.dayName || 'Select day'} />
-            </SelectTrigger>
-            <SelectContent>
-              {WEEKDAYS.map((weekday, index) => (
-                <SelectItem key={weekday} value={index.toString()}>
-                  {weekday}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-zinc-500 hover:text-red-400 hover:bg-red-500/10"
-          onClick={() => onRemoveDay(dayIndex)}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
+      )}
 
       {/* Muscle Slots */}
       <div className="flex-1 p-2 space-y-2 overflow-y-auto max-h-[calc(100vh-300px)]">

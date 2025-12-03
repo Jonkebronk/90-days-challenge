@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ArrowLeft, Save, Loader2 } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, LayoutGrid, Columns } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { DayColumnsLayout } from './DayColumnsLayout'
 import {
@@ -42,6 +42,7 @@ export function MesocycleBuilder({
   const router = useRouter()
   const [isSaving, setIsSaving] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
+  const [viewMode, setViewMode] = useState<'scroll' | 'week'>('scroll')
 
   // Mesocycle metadata
   const [mesocycle, setMesocycle] = useState<MesocycleFormData>(() => ({
@@ -311,9 +312,10 @@ export function MesocycleBuilder({
       </div>
 
       {/* Settings Bar */}
-      <div className="flex flex-wrap items-center gap-3 p-4 border-b border-zinc-800 bg-zinc-900/30">
-        <div className="flex items-center gap-2 bg-zinc-800/50 rounded-lg px-3 py-1.5">
-          <label className="text-xs text-zinc-400 font-medium">Goal</label>
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-zinc-800 bg-zinc-900/30">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 bg-zinc-800/50 rounded-lg px-3 py-1.5">
+            <label className="text-xs text-zinc-400 font-medium">Goal</label>
           <Select
             value={mesocycle.goal}
             onValueChange={(value) => updateMesocycle({ goal: value })}
@@ -380,6 +382,33 @@ export function MesocycleBuilder({
             />
           </div>
         </div>
+        </div>
+
+        {/* View Toggle */}
+        <div className="flex items-center gap-1 bg-zinc-800/50 rounded-lg p-1">
+          <button
+            onClick={() => setViewMode('scroll')}
+            className={`p-1.5 rounded-md transition-colors ${
+              viewMode === 'scroll'
+                ? 'bg-amber-500 text-black'
+                : 'text-zinc-400 hover:text-white'
+            }`}
+            title="Scroll view"
+          >
+            <Columns className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setViewMode('week')}
+            className={`p-1.5 rounded-md transition-colors ${
+              viewMode === 'week'
+                ? 'bg-amber-500 text-black'
+                : 'text-zinc-400 hover:text-white'
+            }`}
+            title="Week overview (Mon-Sun)"
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       {/* Day Columns */}
@@ -387,6 +416,7 @@ export function MesocycleBuilder({
         <DayColumnsLayout
           days={days}
           exercises={exercises}
+          viewMode={viewMode}
           onAddDay={addDay}
           onUpdateDay={updateDay}
           onRemoveDay={removeDay}
