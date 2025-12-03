@@ -21,6 +21,29 @@ export function RestTimerDialog({
 }: RestTimerDialogProps) {
   const audioContextRef = useRef<AudioContext | null>(null)
 
+  // Lås scroll när dialogen är öppen
+  useEffect(() => {
+    if (isOpen) {
+      // Spara nuvarande scroll position och lås body
+      const scrollY = window.scrollY
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${scrollY}px`
+      document.body.style.left = '0'
+      document.body.style.right = '0'
+      document.body.style.overflow = 'hidden'
+
+      return () => {
+        // Återställ scroll position när dialogen stängs
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.left = ''
+        document.body.style.right = ''
+        document.body.style.overflow = ''
+        window.scrollTo(0, scrollY)
+      }
+    }
+  }, [isOpen])
+
   // Spela ljud när tiden är slut
   useEffect(() => {
     if (isOpen && remainingSeconds <= 0) {
@@ -83,11 +106,14 @@ export function RestTimerDialog({
   const strokeDashoffset = circumference * (1 - progress)
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4">
+    <div
+      className="fixed top-0 left-0 right-0 bottom-0 bg-black/95 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center p-4 min-h-screen"
+      style={{ minHeight: '100dvh' }}
+    >
       {/* Stäng-knapp */}
       <button
         onClick={onStop}
-        className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors"
+        className="fixed top-6 right-6 text-gray-400 hover:text-white transition-colors z-[10000]"
       >
         <X className="h-8 w-8" />
       </button>
