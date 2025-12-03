@@ -286,10 +286,9 @@ export function MesocycleBuilder({
             <Input
               value={mesocycle.name}
               onChange={(e) => updateMesocycle({ name: e.target.value })}
-              className="text-xl font-bold bg-zinc-800/50 border border-zinc-700 hover:border-zinc-600 focus:border-amber-500/50 focus-visible:ring-0 focus-visible:ring-offset-0 px-3 py-1.5 h-auto text-white placeholder:text-zinc-500 rounded-lg"
+              className="text-xl font-bold bg-zinc-800 border-2 border-amber-500/30 hover:border-amber-500/50 focus:border-amber-500 focus-visible:ring-0 focus-visible:ring-offset-0 px-3 py-1.5 h-auto text-amber-400 placeholder:text-zinc-500 rounded-lg w-80"
               placeholder="Enter mesocycle name..."
             />
-            <span className="text-xs text-zinc-500 mt-1">Click to edit name</span>
           </div>
         </div>
         <Button
@@ -344,7 +343,7 @@ export function MesocycleBuilder({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((weeks) => (
+              {[4, 5, 6, 7, 8, 9, 10, 11, 12].map((weeks) => (
                 <SelectItem key={weeks} value={weeks.toString()}>
                   {weeks} weeks
                 </SelectItem>
@@ -364,10 +363,8 @@ export function MesocycleBuilder({
                   startingRIR: e.target.value ? parseInt(e.target.value) : null,
                 })
               }
-              className="w-12 h-7 text-xs text-center bg-zinc-900 border-zinc-700 rounded-md"
+              className="w-12 h-7 text-xs text-center bg-zinc-900 border-zinc-700 rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               placeholder="3"
-              min={0}
-              max={5}
             />
             <span className="text-zinc-500 text-xs">→</span>
             <Input
@@ -378,10 +375,8 @@ export function MesocycleBuilder({
                   endingRIR: e.target.value ? parseInt(e.target.value) : null,
                 })
               }
-              className="w-12 h-7 text-xs text-center bg-zinc-900 border-zinc-700 rounded-md"
+              className="w-12 h-7 text-xs text-center bg-zinc-900 border-zinc-700 rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               placeholder="0"
-              min={0}
-              max={5}
             />
           </div>
         </div>
