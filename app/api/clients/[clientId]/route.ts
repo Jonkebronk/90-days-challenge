@@ -104,6 +104,95 @@ export async function GET(
   }
 }
 
+// PATCH /api/clients/[clientId] - Update client data
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ clientId: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const coach = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    })
+
+    if (!coach) {
+      return NextResponse.json({ error: 'Coach not found' }, { status: 404 })
+    }
+
+    const { clientId } = await params
+
+    const client = await prisma.user.findUnique({
+      where: { id: clientId },
+    })
+
+    if (!client) {
+      return NextResponse.json({ error: 'Client not found' }, { status: 404 })
+    }
+
+    if (client.coachId !== coach.id) {
+      return NextResponse.json(
+        { error: 'You can only update your own clients' },
+        { status: 403 }
+      )
+    }
+
+    const body = await request.json()
+
+    // Update client with provided fields
+    const updatedClient = await prisma.user.update({
+      where: { id: clientId },
+      data: {
+        phone: body.phone !== undefined ? body.phone : undefined,
+        city: body.city !== undefined ? body.city : undefined,
+        country: body.country !== undefined ? body.country : undefined,
+        age: body.age !== undefined ? (body.age ? parseInt(body.age) : null) : undefined,
+        gender: body.gender !== undefined ? body.gender : undefined,
+        height: body.height !== undefined ? (body.height ? parseInt(body.height) : null) : undefined,
+        currentWeight: body.currentWeight !== undefined ? (body.currentWeight ? parseFloat(body.currentWeight) : null) : undefined,
+        occupation: body.occupation !== undefined ? body.occupation : undefined,
+        // Training
+        currentTraining: body.currentTraining !== undefined ? body.currentTraining : undefined,
+        trainingExperience: body.trainingExperience !== undefined ? body.trainingExperience : undefined,
+        trainingGoal: body.trainingGoal !== undefined ? body.trainingGoal : undefined,
+        injuries: body.injuries !== undefined ? body.injuries : undefined,
+        availableTime: body.availableTime !== undefined ? body.availableTime : undefined,
+        preferredSchedule: body.preferredSchedule !== undefined ? body.preferredSchedule : undefined,
+        // Nutrition
+        dietHistory: body.dietHistory !== undefined ? body.dietHistory : undefined,
+        macroExperience: body.macroExperience !== undefined ? body.macroExperience : undefined,
+        digestionIssues: body.digestionIssues !== undefined ? body.digestionIssues : undefined,
+        allergies: body.allergies !== undefined ? body.allergies : undefined,
+        favoriteFood: body.favoriteFood !== undefined ? body.favoriteFood : undefined,
+        dislikedFood: body.dislikedFood !== undefined ? body.dislikedFood : undefined,
+        supplements: body.supplements !== undefined ? body.supplements : undefined,
+        previousCoaching: body.previousCoaching !== undefined ? body.previousCoaching : undefined,
+        // Lifestyle
+        stressLevel: body.stressLevel !== undefined ? body.stressLevel : undefined,
+        sleepHours: body.sleepHours !== undefined ? body.sleepHours : undefined,
+        lifestyle: body.lifestyle !== undefined ? body.lifestyle : undefined,
+        // Motivation
+        whyJoin: body.whyJoin !== undefined ? body.whyJoin : undefined,
+        canFollowPlan: body.canFollowPlan !== undefined ? body.canFollowPlan : undefined,
+        expectations: body.expectations !== undefined ? body.expectations : undefined,
+        biggestChallenges: body.biggestChallenges !== undefined ? body.biggestChallenges : undefined,
+      },
+    })
+
+    return NextResponse.json({ success: true, client: updatedClient })
+  } catch (error) {
+    console.error('Failed to update client:', error)
+    return NextResponse.json(
+      { error: 'Failed to update client' },
+      { status: 500 }
+    )
+  }
+}
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ clientId: string }> }
