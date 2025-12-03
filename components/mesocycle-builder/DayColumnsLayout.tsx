@@ -119,17 +119,18 @@ export function DayColumnsLayout({
 
         {/* Add Day Column */}
         <div
-          className="flex-shrink-0 w-[280px] md:w-[320px] flex items-center justify-center"
+          className="flex-shrink-0 w-[280px] md:w-[320px]"
           style={{ scrollSnapAlign: 'start' }}
         >
-          <Button
-            variant="outline"
-            className="h-full min-h-[200px] w-full border-dashed border-2 border-zinc-700 text-zinc-400 hover:text-amber-400 hover:border-amber-500/50 hover:bg-amber-500/5 flex flex-col gap-2"
+          <button
             onClick={onAddDay}
+            className="h-full min-h-[200px] w-full rounded-lg border-2 border-dashed border-zinc-700 bg-zinc-900/30 text-zinc-500 hover:text-amber-400 hover:border-amber-500/50 hover:bg-zinc-800/50 flex flex-col items-center justify-center gap-3 transition-all"
           >
-            <Plus className="h-8 w-8" />
+            <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center">
+              <Plus className="h-6 w-6" />
+            </div>
             <span className="text-sm font-medium">ADD A DAY</span>
-          </Button>
+          </button>
         </div>
       </div>
 

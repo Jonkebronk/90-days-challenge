@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Trash2, Plus, GripVertical } from 'lucide-react'
+import { Trash2, Plus, GripVertical, Dumbbell } from 'lucide-react'
 import { MuscleSlotCard } from './MuscleSlotCard'
 import { AddMuscleSlotDialog } from './AddMuscleSlotDialog'
 import {
@@ -129,22 +129,25 @@ export function DayColumn({
         ))}
 
         {day.muscleSlots.length === 0 && (
-          <div className="text-center py-8 text-zinc-500 text-sm">
-            No muscle groups added yet
+          <div className="flex flex-col items-center justify-center py-8 text-zinc-600">
+            <div className="w-10 h-10 rounded-full bg-zinc-800/50 flex items-center justify-center mb-2">
+              <Dumbbell className="h-5 w-5" />
+            </div>
+            <p className="text-sm">No muscle groups added yet</p>
+            <p className="text-xs mt-1 text-zinc-700">Click below to add one</p>
           </div>
         )}
       </div>
 
       {/* Add Muscle Group Button */}
       <div className="p-2 border-t border-zinc-800">
-        <Button
-          variant="outline"
-          className="w-full h-9 border-dashed border-zinc-700 text-zinc-400 hover:text-amber-400 hover:border-amber-500/50 hover:bg-amber-500/5"
+        <button
           onClick={() => setIsAddSlotOpen(true)}
+          className="w-full h-9 rounded-md border border-dashed border-amber-500/40 bg-amber-500/5 text-amber-400 hover:bg-amber-500/10 hover:border-amber-500/60 flex items-center justify-center gap-2 text-sm font-medium transition-colors"
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="h-4 w-4" />
           ADD A MUSCLE GROUP
-        </Button>
+        </button>
       </div>
 
       {/* Add Muscle Slot Dialog */}

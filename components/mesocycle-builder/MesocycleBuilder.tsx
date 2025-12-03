@@ -278,20 +278,24 @@ export function MesocycleBuilder({
             variant="ghost"
             size="icon"
             onClick={() => router.back()}
+            className="text-zinc-400 hover:text-white"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <Input
-            value={mesocycle.name}
-            onChange={(e) => updateMesocycle({ name: e.target.value })}
-            className="text-lg font-semibold bg-transparent border-none focus-visible:ring-0 w-64"
-            placeholder="Mesocycle name"
-          />
+          <div className="flex flex-col">
+            <Input
+              value={mesocycle.name}
+              onChange={(e) => updateMesocycle({ name: e.target.value })}
+              className="text-xl font-bold bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto text-white placeholder:text-zinc-600"
+              placeholder="Enter mesocycle name..."
+            />
+            <span className="text-xs text-zinc-600 mt-0.5">Click to edit name</span>
+          </div>
         </div>
         <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="bg-amber-500 hover:bg-amber-600 text-black"
+          className="bg-amber-500 hover:bg-amber-600 text-black font-semibold"
         >
           {isSaving ? (
             <>
@@ -308,14 +312,14 @@ export function MesocycleBuilder({
       </div>
 
       {/* Settings Bar */}
-      <div className="flex flex-wrap items-center gap-4 p-4 border-b border-zinc-800 bg-zinc-900/30">
-        <div className="flex items-center gap-2">
-          <label className="text-xs text-zinc-500">Goal:</label>
+      <div className="flex flex-wrap items-center gap-3 p-4 border-b border-zinc-800 bg-zinc-900/30">
+        <div className="flex items-center gap-2 bg-zinc-800/50 rounded-lg px-3 py-1.5">
+          <label className="text-xs text-zinc-400 font-medium">Goal</label>
           <Select
             value={mesocycle.goal}
             onValueChange={(value) => updateMesocycle({ goal: value })}
           >
-            <SelectTrigger className="w-32 h-8 text-xs bg-zinc-800 border-zinc-700">
+            <SelectTrigger className="w-28 h-7 text-xs bg-zinc-900 border-zinc-700 rounded-md">
               <SelectValue placeholder="Select goal" />
             </SelectTrigger>
             <SelectContent>
@@ -328,15 +332,15 @@ export function MesocycleBuilder({
           </Select>
         </div>
 
-        <div className="flex items-center gap-2">
-          <label className="text-xs text-zinc-500">Duration:</label>
+        <div className="flex items-center gap-2 bg-zinc-800/50 rounded-lg px-3 py-1.5">
+          <label className="text-xs text-zinc-400 font-medium">Duration</label>
           <Select
             value={mesocycle.durationWeeks.toString()}
             onValueChange={(value) =>
               updateMesocycle({ durationWeeks: parseInt(value) })
             }
           >
-            <SelectTrigger className="w-24 h-8 text-xs bg-zinc-800 border-zinc-700">
+            <SelectTrigger className="w-24 h-7 text-xs bg-zinc-900 border-zinc-700 rounded-md">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -349,35 +353,37 @@ export function MesocycleBuilder({
           </Select>
         </div>
 
-        <div className="flex items-center gap-2">
-          <label className="text-xs text-zinc-500">RIR:</label>
-          <Input
-            type="number"
-            value={mesocycle.startingRIR ?? ''}
-            onChange={(e) =>
-              updateMesocycle({
-                startingRIR: e.target.value ? parseInt(e.target.value) : null,
-              })
-            }
-            className="w-14 h-8 text-xs bg-zinc-800 border-zinc-700"
-            placeholder="Start"
-            min={0}
-            max={5}
-          />
-          <span className="text-xs text-zinc-500">→</span>
-          <Input
-            type="number"
-            value={mesocycle.endingRIR ?? ''}
-            onChange={(e) =>
-              updateMesocycle({
-                endingRIR: e.target.value ? parseInt(e.target.value) : null,
-              })
-            }
-            className="w-14 h-8 text-xs bg-zinc-800 border-zinc-700"
-            placeholder="End"
-            min={0}
-            max={5}
-          />
+        <div className="flex items-center gap-2 bg-zinc-800/50 rounded-lg px-3 py-1.5">
+          <label className="text-xs text-zinc-400 font-medium">RIR</label>
+          <div className="flex items-center gap-1.5">
+            <Input
+              type="number"
+              value={mesocycle.startingRIR ?? ''}
+              onChange={(e) =>
+                updateMesocycle({
+                  startingRIR: e.target.value ? parseInt(e.target.value) : null,
+                })
+              }
+              className="w-12 h-7 text-xs text-center bg-zinc-900 border-zinc-700 rounded-md"
+              placeholder="3"
+              min={0}
+              max={5}
+            />
+            <span className="text-zinc-500 text-xs">→</span>
+            <Input
+              type="number"
+              value={mesocycle.endingRIR ?? ''}
+              onChange={(e) =>
+                updateMesocycle({
+                  endingRIR: e.target.value ? parseInt(e.target.value) : null,
+                })
+              }
+              className="w-12 h-7 text-xs text-center bg-zinc-900 border-zinc-700 rounded-md"
+              placeholder="0"
+              min={0}
+              max={5}
+            />
+          </div>
         </div>
       </div>
 
