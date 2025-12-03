@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X, Plus } from 'lucide-react'
 
@@ -20,6 +20,20 @@ export function RestTimerDialog({
   onAddTime
 }: RestTimerDialogProps) {
   const audioContextRef = useRef<AudioContext | null>(null)
+  const [hideInfo, setHideInfo] = useState(false)
+
+  // Ladda "visa inte igen" från localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('restTimerHideInfo')
+    if (stored === 'true') {
+      setHideInfo(true)
+    }
+  }, [])
+
+  const handleHideInfoChange = (checked: boolean) => {
+    setHideInfo(checked)
+    localStorage.setItem('restTimerHideInfo', checked ? 'true' : 'false')
+  }
 
   // Spela ljud när tiden är slut
   useEffect(() => {
@@ -183,10 +197,59 @@ export function RestTimerDialog({
         </button>
       </div>
 
-      {/* Info */}
-      <p style={{ color: '#888', marginTop: '2.5rem', fontSize: '0.875rem' }}>
-        Vila: {totalSeconds}s
-      </p>
+      {/* Vila info */}
+      {!hideInfo && (
+        <div
+          style={{
+            marginTop: '2rem',
+            padding: '1rem',
+            backgroundColor: 'rgba(255,255,255,0.05)',
+            borderRadius: '0.5rem',
+            maxWidth: '320px',
+            textAlign: 'left',
+          }}
+        >
+          <h3 style={{ fontSize: '0.875rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>
+            Hur du vilar mellan set
+          </h3>
+          <p style={{ fontSize: '0.75rem', color: '#aaa', marginBottom: '0.5rem' }}>
+            Efter varje set, vila tills du:
+          </p>
+          <ol style={{ fontSize: '0.75rem', color: '#888', paddingLeft: '1.25rem', margin: 0, lineHeight: 1.5 }}>
+            <li style={{ marginBottom: '0.25rem' }}>Inte längre andas tungt</li>
+            <li style={{ marginBottom: '0.25rem' }}>Känner dig mentalt redo för nästa set</li>
+            <li>Inte har kramp i stödmuskulaturen (t.ex. trött i ländryggen innan nästa knäböj)</li>
+          </ol>
+          <p style={{ fontSize: '0.75rem', color: '#22c55e', marginTop: '0.75rem', fontStyle: 'italic' }}>
+            Det är helt OK att lägga till 30 sekunder om du behöver mer vila!
+          </p>
+        </div>
+      )}
+
+      {/* Visa inte igen checkbox */}
+      <label
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          marginTop: '1.5rem',
+          fontSize: '0.75rem',
+          color: '#666',
+          cursor: 'pointer',
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={hideInfo}
+          onChange={(e) => handleHideInfoChange(e.target.checked)}
+          style={{
+            width: '1rem',
+            height: '1rem',
+            cursor: 'pointer',
+          }}
+        />
+        Visa inte tips igen
+      </label>
     </div>
   )
 
