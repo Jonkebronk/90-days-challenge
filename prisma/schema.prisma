@@ -167,6 +167,10 @@ model User {
   coach   User?  @relation("CoachClients", fields: [coachId], references: [id])
   clients User[] @relation("CoachClients")
 
+  // Mesocycle/Macrocycle assignments
+  assignedMacrocycles AssignedMacrocycle[]
+  assignedMesocycles  AssignedMesocycle[]
+
   @@map("users")
 }
 
@@ -368,6 +372,7 @@ model Exercise {
   workoutProgramExercises  WorkoutProgramExercise[]
   workoutSetLogs           WorkoutSetLog[]           @relation("SetLogs")
   workoutTemplateExercises WorkoutTemplateExercise[]
+  mesocycleSlotExercises   MesocycleSlotExercise[]
 
   @@map("exercises")
 }
@@ -2057,4 +2062,149 @@ model HabitCompletion {
   @@unique([habitId, date])
   @@index([habitId])
   @@map("habit_completions")
+}
+
+// ========================================
+// MESOCYCLE / MACROCYCLE PERIODIZATION SYSTEM
+// ========================================
+
+// Macrocycle - Long-term training plan (3-12 months)
+model Macrocycle {
+  id          String   @id @default(cuid())
+  coachId     String
+  name        String
+  description String?  @db.Text
+  goal        String?  // "hypertrophy", "strength", "cutting", "maintenance"
+  published   Boolean  @default(false)
+  isTemplate  Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  mesocycles  Mesocycle[]
+  assignments AssignedMacrocycle[]
+
+  @@map("macrocycles")
+}
+
+// Mesocycle - Training block (4-6 weeks)
+model Mesocycle {
+  id            String   @id @default(cuid())
+  coachId       String
+  macrocycleId  String?
+  name          String
+  description   String?  @db.Text
+  goal          String?  // "hypertrophy", "strength", "deload"
+  durationWeeks Int      @default(4)
+  orderIndex    Int      @default(0)
+  startingRIR   Int?     // Reps in Reserve start (e.g., 3)
+  endingRIR     Int?     // Reps in Reserve end (e.g., 0)
+  published     Boolean  @default(false)
+  isTemplate    Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  macrocycle  Macrocycle?         @relation(fields: [macrocycleId], references: [id], onDelete: SetNull)
+  days        MesocycleDay[]
+  assignments AssignedMesocycle[]
+
+  @@map("mesocycles")
+}
+
+// MesocycleDay - A training day template within mesocycle
+model MesocycleDay {
+  id          String   @id @default(cuid())
+  mesocycleId String
+  dayNumber   Int
+  dayName     String?
+  weekday     Int?     // 0=Monday, 1=Tuesday, etc.
+  isRestDay   Boolean  @default(false)
+  orderIndex  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  mesocycle   Mesocycle           @relation(fields: [mesocycleId], references: [id], onDelete: Cascade)
+  muscleSlots MesocleMuscleSlot[]
+
+  @@unique([mesocycleId, dayNumber])
+  @@map("mesocycle_days")
+}
+
+// MesocleMuscleSlot - A muscle group slot within a day
+model MesocleMuscleSlot {
+  id           String   @id @default(cuid())
+  mesocleDayId String
+  muscleGroup  String   // "chest", "back", "shoulders", etc.
+  priority     String   @default("primary") // "primary" or "secondary"
+  setsMin      Int?
+  setsMax      Int?
+  orderIndex   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  mesocycleDay MesocycleDay            @relation(fields: [mesocleDayId], references: [id], onDelete: Cascade)
+  exercises    MesocycleSlotExercise[]
+
+  @@map("mesocycle_muscle_slots")
+}
+
+// MesocycleSlotExercise - Exercise selection within a muscle slot
+model MesocycleSlotExercise {
+  id           String   @id @default(cuid())
+  muscleSlotId String
+  exerciseId   String
+  sets         Int      @default(3)
+  reps         String?
+  restSeconds  Int      @default(90)
+  tempo        String?
+  targetRPE    Int?
+  targetRIR    Int?
+  notes        String?  @db.Text
+  coachNotes   String?  @db.Text
+  orderIndex   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  muscleSlot MesocleMuscleSlot @relation(fields: [muscleSlotId], references: [id], onDelete: Cascade)
+  exercise   Exercise          @relation(fields: [exerciseId], references: [id])
+
+  @@map("mesocycle_slot_exercises")
+}
+
+// Assignment - Macrocycle assigned to client
+model AssignedMacrocycle {
+  id                    String    @id @default(cuid())
+  userId                String
+  macrocycleId          String
+  coachId               String
+  startDate             DateTime  @default(now())
+  endDate               DateTime?
+  active                Boolean   @default(true)
+  currentMesocycleIndex Int       @default(0)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  macrocycle Macrocycle @relation(fields: [macrocycleId], references: [id], onDelete: Cascade)
+
+  @@map("assigned_macrocycles")
+}
+
+// Assignment - Mesocycle assigned to client
+model AssignedMesocycle {
+  id          String    @id @default(cuid())
+  userId      String
+  mesocycleId String
+  coachId     String
+  startDate   DateTime  @default(now())
+  endDate     DateTime?
+  active      Boolean   @default(true)
+  currentWeek Int       @default(1)
+  currentDay  Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mesocycle Mesocycle @relation(fields: [mesocycleId], references: [id], onDelete: Cascade)
+
+  @@map("assigned_mesocycles")
 }
