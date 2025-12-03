@@ -1,12 +1,6 @@
 'use client'
 
 interface MacroSummaryProps {
-  current: {
-    calories: number
-    protein: number
-    fat: number
-    carbs: number
-  }
   target: {
     calories: number
     protein: number
@@ -15,7 +9,7 @@ interface MacroSummaryProps {
   }
 }
 
-export function MacroSummary({ current, target }: MacroSummaryProps) {
+export function MacroSummary({ target }: MacroSummaryProps) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-4">
       <div className="flex items-center justify-between flex-wrap gap-4">
@@ -25,7 +19,7 @@ export function MacroSummary({ current, target }: MacroSummaryProps) {
             <span className="text-white text-xs font-bold">K</span>
           </div>
           <span className="text-gray-900 font-semibold">
-            {Math.round(current.calories)}/{Math.round(target.calories)}
+            {Math.round(target.calories)}
           </span>
         </div>
 
@@ -35,7 +29,7 @@ export function MacroSummary({ current, target }: MacroSummaryProps) {
             <span className="text-white text-xs font-bold">P</span>
           </div>
           <span className="text-gray-900 font-semibold">
-            {Math.round(current.protein)}/{Math.round(target.protein)}
+            {Math.round(target.protein)}
           </span>
         </div>
 
@@ -45,7 +39,7 @@ export function MacroSummary({ current, target }: MacroSummaryProps) {
             <span className="text-white text-xs font-bold">F</span>
           </div>
           <span className="text-gray-900 font-semibold">
-            {Math.round(current.fat)}/{Math.round(target.fat)}
+            {Math.round(target.fat)}
           </span>
         </div>
 
@@ -55,7 +49,7 @@ export function MacroSummary({ current, target }: MacroSummaryProps) {
             <span className="text-white text-xs font-bold">C</span>
           </div>
           <span className="text-gray-900 font-semibold">
-            {Math.round(current.carbs)}/{Math.round(target.carbs)}
+            {Math.round(target.carbs)}
           </span>
         </div>
       </div>

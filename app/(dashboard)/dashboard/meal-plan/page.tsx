@@ -315,10 +315,7 @@ export default function MealPlanPage() {
       />
 
       {/* Macro Summary */}
-      <MacroSummary
-        current={currentIntake}
-        target={currentTarget}
-      />
+      <MacroSummary target={currentTarget} />
 
       {/* Main Content */}
       <div>
