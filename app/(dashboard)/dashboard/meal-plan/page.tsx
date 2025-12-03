@@ -12,6 +12,7 @@ import { Utensils, Dumbbell, Sparkles, Lightbulb, Info, ChevronDown, ChevronUp }
 import { MDXPreview } from '@/components/mdx-preview'
 import { WeekCalendar } from '@/components/meal-plan/week-calendar'
 import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
+import { DailyTargetsEditor } from '@/components/meal-plan/daily-targets-editor'
 
 interface MealPlanItem {
   id: string
@@ -102,6 +103,7 @@ export default function MealPlanPage() {
   const [mealPlanDescriptionContent, setMealPlanDescriptionContent] = useState<string>('')
   const [expandedMeals, setExpandedMeals] = useState<Set<number>>(new Set())
   const [dailyTargets, setDailyTargets] = useState<DailyTarget[]>([])
+  const [mealPlanIdForTargets, setMealPlanIdForTargets] = useState<string>('')
   const [selectedDay, setSelectedDay] = useState<number>(() => {
     // Default to current day of week (0 = Monday)
     const jsDay = new Date().getDay()
@@ -133,6 +135,9 @@ export default function MealPlanPage() {
       if (response.ok) {
         const data = await response.json()
         setDailyTargets(data.dailyTargets || [])
+        if (data.mealPlanId) {
+          setMealPlanIdForTargets(data.mealPlanId)
+        }
       }
     } catch (error) {
       console.error('Error fetching daily targets:', error)
@@ -144,6 +149,10 @@ export default function MealPlanPage() {
       const response = await fetch('/api/meal-plan')
       const data = await response.json()
       setMealPlan(data.mealPlan)
+      // Set mealPlanId if not already set from daily targets
+      if (data.mealPlan?.id && !mealPlanIdForTargets) {
+        setMealPlanIdForTargets(data.mealPlan.id)
+      }
     } catch (error) {
       console.error('Error fetching meal plan:', error)
     } finally {
@@ -306,13 +315,30 @@ export default function MealPlanPage() {
         </div>
       </div>
 
-      {/* Week Calendar */}
-      <WeekCalendar
-        dailyTargets={dailyTargets}
-        selectedDay={selectedDay}
-        onDaySelect={setSelectedDay}
-        defaultCalories={totalDailyCalories}
-      />
+      {/* Week Calendar with Editor */}
+      <div className="relative">
+        <WeekCalendar
+          dailyTargets={dailyTargets}
+          selectedDay={selectedDay}
+          onDaySelect={setSelectedDay}
+          defaultCalories={totalDailyCalories}
+        />
+        {(mealPlan?.id || mealPlanIdForTargets) && (
+          <div className="absolute top-3 right-3">
+            <DailyTargetsEditor
+              mealPlanId={mealPlan?.id || mealPlanIdForTargets}
+              dailyTargets={dailyTargets}
+              defaultValues={{
+                calories: totalDailyCalories,
+                protein: totalDailyProtein,
+                fat: totalDailyFat,
+                carbs: totalDailyCarbs
+              }}
+              onSave={fetchDailyTargets}
+            />
+          </div>
+        )}
+      </div>
 
       {/* Macro Summary */}
       <MacroSummary
