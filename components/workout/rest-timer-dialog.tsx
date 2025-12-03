@@ -215,11 +215,20 @@ export function RestTimerDialog({
           <p style={{ fontSize: '0.75rem', color: '#aaa', marginBottom: '0.5rem' }}>
             Efter varje set, vila tills du:
           </p>
-          <ol style={{ fontSize: '0.75rem', color: '#888', paddingLeft: '1.25rem', margin: 0, lineHeight: 1.5 }}>
-            <li style={{ marginBottom: '0.25rem' }}>Inte längre andas tungt</li>
-            <li style={{ marginBottom: '0.25rem' }}>Känner dig mentalt redo för nästa set</li>
-            <li>Inte har kramp i stödmuskulaturen (t.ex. trött i ländryggen innan nästa knäböj)</li>
-          </ol>
+          <ul style={{ fontSize: '0.75rem', color: '#888', paddingLeft: '0', margin: 0, lineHeight: 1.6, listStyle: 'none' }}>
+            <li style={{ marginBottom: '0.35rem', paddingLeft: '1rem', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: 0 }}>•</span>
+              Inte längre andas tungt
+            </li>
+            <li style={{ marginBottom: '0.35rem', paddingLeft: '1rem', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: 0 }}>•</span>
+              Känner dig mentalt redo för nästa set
+            </li>
+            <li style={{ paddingLeft: '1rem', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: 0 }}>•</span>
+              Inte har kramp i stödmuskulaturen (t.ex. trött i ländryggen innan nästa knäböj)
+            </li>
+          </ul>
           <p style={{ fontSize: '0.75rem', color: '#22c55e', marginTop: '0.75rem', fontStyle: 'italic' }}>
             Det är helt OK att lägga till 30 sekunder om du behöver mer vila!
           </p>
