@@ -261,6 +261,9 @@ export default function ArticleReaderPage() {
 
   const isCompleted = article.progress && article.progress.length > 0 && article.progress[0].completed
   const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
+  const isCoachArticle = article.category?.name === 'Coach Kunskapsbanken'
+  const backUrl = isCoachArticle ? '/dashboard/coach-articles' : '/dashboard/articles/skill-tree'
+  const backLabel = isCoachArticle ? 'Coach Kunskapsbank' : 'Kunskapskartan'
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -287,12 +290,12 @@ export default function ArticleReaderPage() {
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
           <Button
-            onClick={() => router.push('/dashboard/articles/skill-tree')}
+            onClick={() => router.push(backUrl)}
             variant="ghost"
             className="mb-4 text-gray-400 hover:text-white hover:bg-white/10 -ml-2"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Tillbaka till Kunskapskartan
+            Tillbaka till {backLabel}
           </Button>
 
           {/* Cover Image */}
@@ -416,11 +419,11 @@ export default function ArticleReaderPage() {
                 </Button>
               ) : (
                 <Button
-                  onClick={() => router.push('/dashboard/articles/skill-tree')}
+                  onClick={() => router.push(backUrl)}
                   className="bg-[#FFD700] text-black hover:bg-[#FFA500] text-sm sm:text-base order-2 sm:order-1"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Tillbaka till Kunskapskartan</span>
+                  <span className="hidden sm:inline">Tillbaka till {backLabel}</span>
                   <span className="sm:hidden">Tillbaka</span>
                 </Button>
               )}
@@ -435,11 +438,11 @@ export default function ArticleReaderPage() {
                 </Button>
               ) : (
                 <Button
-                  onClick={() => router.push('/dashboard/articles/skill-tree')}
+                  onClick={() => router.push(backUrl)}
                   className="bg-[#FFD700] text-black hover:bg-[#FFA500] text-sm sm:text-base order-1 sm:order-2"
                 >
-                  <span className="hidden sm:inline">Tillbaka till Kunskapskartan</span>
-                  <span className="sm:hidden">Kunskapskartan</span>
+                  <span className="hidden sm:inline">Tillbaka till {backLabel}</span>
+                  <span className="sm:hidden">{backLabel}</span>
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               )}
