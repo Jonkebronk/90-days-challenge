@@ -13,7 +13,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, Save, Calculator, Dumbbell, Calendar, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Save, Calculator, Dumbbell, Calendar, ChevronRight, Heart, Zap, Clock, Flame, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
 
@@ -93,6 +93,20 @@ interface WorkoutProgram {
   days: any[]
 }
 
+interface CardioProgram {
+  id: string
+  title: string
+  description: string | null
+  cardioType: string | null
+  frequency: number | null
+  durationMinutes: number | null
+  intensity: string | null
+  preferredDays: string | null
+  timing: string | null
+  notes: string | null
+  active: boolean
+}
+
 interface PageProps {
   params: Promise<{ clientId: string }>
 }
@@ -110,6 +124,22 @@ export default function ClientDetailPage({ params }: PageProps) {
   const [selectedProgramId, setSelectedProgramId] = useState('')
   const [programStartDate, setProgramStartDate] = useState('')
   const [isAssigning, setIsAssigning] = useState(false)
+
+  // Cardio states
+  const [cardioProgram, setCardioProgram] = useState<CardioProgram | null>(null)
+  const [showCardioForm, setShowCardioForm] = useState(false)
+  const [cardioForm, setCardioForm] = useState({
+    title: '',
+    description: '',
+    cardioType: '',
+    frequency: '',
+    durationMinutes: '',
+    intensity: '',
+    preferredDays: '',
+    timing: '',
+    notes: '',
+  })
+  const [isSavingCardio, setIsSavingCardio] = useState(false)
 
   // Helper to get next Monday
   const getNextMonday = () => {
@@ -146,6 +176,7 @@ export default function ClientDetailPage({ params }: PageProps) {
       fetchCaloriePlan(clientId)
       fetchAssignedWorkout(clientId)
       fetchAvailablePrograms()
+      fetchCardioProgram(clientId)
     }
     loadClient()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -216,6 +247,95 @@ export default function ClientDetailPage({ params }: PageProps) {
       }
     } catch (error) {
       console.error('Failed to fetch programs:', error)
+    }
+  }
+
+  const fetchCardioProgram = async (id: string) => {
+    try {
+      const response = await fetch(`/api/clients/${id}/cardio`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.cardioProgram) {
+          setCardioProgram(data.cardioProgram)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch cardio program:', error)
+    }
+  }
+
+  const handleSaveCardio = async () => {
+    if (!cardioForm.title.trim()) {
+      toast.error('Titel krävs')
+      return
+    }
+
+    setIsSavingCardio(true)
+    try {
+      const payload = {
+        userId: clientId,
+        title: cardioForm.title,
+        description: cardioForm.description || null,
+        cardioType: cardioForm.cardioType || null,
+        frequency: cardioForm.frequency ? parseInt(cardioForm.frequency) : null,
+        durationMinutes: cardioForm.durationMinutes ? parseInt(cardioForm.durationMinutes) : null,
+        intensity: cardioForm.intensity || null,
+        preferredDays: cardioForm.preferredDays || null,
+        timing: cardioForm.timing || null,
+        notes: cardioForm.notes || null,
+      }
+
+      const response = await fetch('/api/cardio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+
+      if (response.ok) {
+        toast.success('Cardioprogram sparat!')
+        setShowCardioForm(false)
+        setCardioForm({
+          title: '',
+          description: '',
+          cardioType: '',
+          frequency: '',
+          durationMinutes: '',
+          intensity: '',
+          preferredDays: '',
+          timing: '',
+          notes: '',
+        })
+        fetchCardioProgram(clientId)
+      } else {
+        const errorData = await response.json()
+        toast.error(errorData.error || 'Kunde inte spara cardioprogram')
+      }
+    } catch (error) {
+      console.error('Failed to save cardio:', error)
+      toast.error('Kunde inte spara cardioprogram')
+    } finally {
+      setIsSavingCardio(false)
+    }
+  }
+
+  const handleDeleteCardio = async () => {
+    if (!cardioProgram) return
+    if (!confirm('Är du säker på att du vill ta bort cardioprogrammet?')) return
+
+    try {
+      const response = await fetch(`/api/cardio/${cardioProgram.id}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        toast.success('Cardioprogram borttaget')
+        setCardioProgram(null)
+      } else {
+        toast.error('Kunde inte ta bort cardioprogram')
+      }
+    } catch (error) {
+      console.error('Failed to delete cardio:', error)
+      toast.error('Kunde inte ta bort cardioprogram')
     }
   }
 
@@ -589,6 +709,282 @@ export default function ClientDetailPage({ params }: PageProps) {
                 className="mt-4 border-gold-light text-gold-light hover:bg-gold-50"
               >
                 Tilldela program
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Cardio Program Section */}
+      <Card className="bg-white/5 border-2 border-red-500/20">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Heart className="text-red-400" size={24} />
+              <CardTitle className="text-red-400">Cardioprogram</CardTitle>
+            </div>
+            {!cardioProgram && !showCardioForm && (
+              <Button
+                onClick={() => setShowCardioForm(true)}
+                variant="outline"
+                size="sm"
+                className="border-red-400 text-red-400 hover:bg-red-500/10"
+              >
+                Lägg till cardio
+              </Button>
+            )}
+          </div>
+          <CardDescription className="text-gray-400">
+            Cardio-instruktioner för klienten
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {cardioProgram ? (
+            <div className="space-y-4">
+              <div className="bg-red-500/5 p-4 rounded-lg border border-red-500/30">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-100">
+                      {cardioProgram.title}
+                    </h3>
+                    {cardioProgram.description && (
+                      <p className="text-sm text-gray-400 mt-1">
+                        {cardioProgram.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                  {cardioProgram.cardioType && (
+                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                      <Zap className="w-4 h-4 text-red-400" />
+                      <span>{cardioProgram.cardioType}</span>
+                    </div>
+                  )}
+                  {cardioProgram.frequency && (
+                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                      <Calendar className="w-4 h-4 text-red-400" />
+                      <span>{cardioProgram.frequency}x/vecka</span>
+                    </div>
+                  )}
+                  {cardioProgram.durationMinutes && (
+                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                      <Clock className="w-4 h-4 text-red-400" />
+                      <span>{cardioProgram.durationMinutes} min</span>
+                    </div>
+                  )}
+                  {cardioProgram.intensity && (
+                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                      <Flame className="w-4 h-4 text-red-400" />
+                      <span>{cardioProgram.intensity}</span>
+                    </div>
+                  )}
+                </div>
+
+                {(cardioProgram.preferredDays || cardioProgram.timing) && (
+                  <div className="text-sm text-gray-400 mb-3">
+                    {cardioProgram.preferredDays && <p>Dagar: {cardioProgram.preferredDays}</p>}
+                    {cardioProgram.timing && <p>Tidpunkt: {cardioProgram.timing}</p>}
+                  </div>
+                )}
+
+                {cardioProgram.notes && (
+                  <div className="bg-black/20 rounded p-3 text-sm text-gray-300 whitespace-pre-line">
+                    {cardioProgram.notes}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="flex-1 border-red-500/30 text-red-400 hover:bg-red-500/10"
+                  onClick={() => {
+                    setCardioForm({
+                      title: cardioProgram.title,
+                      description: cardioProgram.description || '',
+                      cardioType: cardioProgram.cardioType || '',
+                      frequency: cardioProgram.frequency?.toString() || '',
+                      durationMinutes: cardioProgram.durationMinutes?.toString() || '',
+                      intensity: cardioProgram.intensity || '',
+                      preferredDays: cardioProgram.preferredDays || '',
+                      timing: cardioProgram.timing || '',
+                      notes: cardioProgram.notes || '',
+                    })
+                    setShowCardioForm(true)
+                  }}
+                >
+                  Ändra cardio
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                  onClick={handleDeleteCardio}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          ) : showCardioForm ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-200">Titel *</Label>
+                  <Input
+                    value={cardioForm.title}
+                    onChange={(e) => setCardioForm({ ...cardioForm, title: e.target.value })}
+                    placeholder="t.ex. Promenader & LISS"
+                    className="bg-black/30 border-red-500/30 text-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-200">Typ</Label>
+                  <Select
+                    value={cardioForm.cardioType}
+                    onValueChange={(value) => setCardioForm({ ...cardioForm, cardioType: value })}
+                  >
+                    <SelectTrigger className="bg-black/30 border-red-500/30 text-white">
+                      <SelectValue placeholder="Välj typ" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="LISS">LISS (Low Intensity)</SelectItem>
+                      <SelectItem value="MISS">MISS (Medium Intensity)</SelectItem>
+                      <SelectItem value="HIIT">HIIT (High Intensity)</SelectItem>
+                      <SelectItem value="Walking">Promenader</SelectItem>
+                      <SelectItem value="Mixed">Blandat</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-200">Frekvens (ggr/vecka)</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="7"
+                    value={cardioForm.frequency}
+                    onChange={(e) => setCardioForm({ ...cardioForm, frequency: e.target.value })}
+                    placeholder="3"
+                    className="bg-black/30 border-red-500/30 text-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-200">Duration (minuter)</Label>
+                  <Input
+                    type="number"
+                    min="5"
+                    value={cardioForm.durationMinutes}
+                    onChange={(e) => setCardioForm({ ...cardioForm, durationMinutes: e.target.value })}
+                    placeholder="30"
+                    className="bg-black/30 border-red-500/30 text-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-200">Intensitet</Label>
+                  <Select
+                    value={cardioForm.intensity}
+                    onValueChange={(value) => setCardioForm({ ...cardioForm, intensity: value })}
+                  >
+                    <SelectTrigger className="bg-black/30 border-red-500/30 text-white">
+                      <SelectValue placeholder="Välj intensitet" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Låg">Låg (puls 100-120)</SelectItem>
+                      <SelectItem value="Medel">Medel (puls 120-140)</SelectItem>
+                      <SelectItem value="Hög">Hög (puls 140-160)</SelectItem>
+                      <SelectItem value="Maximal">Maximal (puls 160+)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-gray-200">Rekommenderade dagar</Label>
+                  <Input
+                    value={cardioForm.preferredDays}
+                    onChange={(e) => setCardioForm({ ...cardioForm, preferredDays: e.target.value })}
+                    placeholder="t.ex. Mån, Ons, Fre"
+                    className="bg-black/30 border-red-500/30 text-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-200">Tidpunkt</Label>
+                  <Input
+                    value={cardioForm.timing}
+                    onChange={(e) => setCardioForm({ ...cardioForm, timing: e.target.value })}
+                    placeholder="t.ex. Morgon, efter träning"
+                    className="bg-black/30 border-red-500/30 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-200">Beskrivning</Label>
+                <Textarea
+                  value={cardioForm.description}
+                  onChange={(e) => setCardioForm({ ...cardioForm, description: e.target.value })}
+                  placeholder="Kort beskrivning av programmet..."
+                  rows={2}
+                  className="bg-black/30 border-red-500/30 text-white"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-gray-200">Instruktioner till klienten</Label>
+                <Textarea
+                  value={cardioForm.notes}
+                  onChange={(e) => setCardioForm({ ...cardioForm, notes: e.target.value })}
+                  placeholder="Detaljerade instruktioner, tips, etc..."
+                  rows={4}
+                  className="bg-black/30 border-red-500/30 text-white"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSaveCardio}
+                  disabled={isSavingCardio}
+                  className="flex-1 bg-gradient-to-br from-red-500 to-red-600 text-white font-bold hover:scale-105 transition-transform"
+                >
+                  {isSavingCardio ? 'Sparar...' : 'Spara cardioprogram'}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowCardioForm(false)
+                    setCardioForm({
+                      title: '',
+                      description: '',
+                      cardioType: '',
+                      frequency: '',
+                      durationMinutes: '',
+                      intensity: '',
+                      preferredDays: '',
+                      timing: '',
+                      notes: '',
+                    })
+                  }}
+                  className="border-red-500/30 text-gray-200 hover:bg-red-500/10"
+                >
+                  Avbryt
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <Heart className="w-12 h-12 mx-auto mb-3 opacity-30" />
+              <p>Inget cardioprogram tilldelat ännu</p>
+              <Button
+                onClick={() => setShowCardioForm(true)}
+                variant="outline"
+                className="mt-4 border-red-400 text-red-400 hover:bg-red-500/10"
+              >
+                Lägg till cardio
               </Button>
             </div>
           )}

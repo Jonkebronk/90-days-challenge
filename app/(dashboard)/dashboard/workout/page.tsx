@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, Plus, Info, ChevronUp, ChevronDown, RotateCcw, Flame, X } from 'lucide-react'
+import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, Plus, Info, ChevronUp, ChevronDown, RotateCcw, Flame, X, Heart, Clock, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { MDXPreview } from '@/components/mdx-preview'
 import { VideoPlayer } from '@/components/ui/video-player'
@@ -107,6 +107,19 @@ interface AssignedWorkout {
   }
 }
 
+interface CardioProgram {
+  id: string
+  title: string
+  description: string | null
+  cardioType: string | null
+  frequency: number | null
+  durationMinutes: number | null
+  intensity: string | null
+  preferredDays: string | null
+  timing: string | null
+  notes: string | null
+}
+
 export default function WorkoutPage() {
   const router = useRouter()
   const { data: session } = useSession()
@@ -118,6 +131,8 @@ export default function WorkoutPage() {
   const [activeExerciseVideo, setActiveExerciseVideo] = useState<string | null>(null) // Track which exercise video is playing
   const [workoutGuideContent, setWorkoutGuideContent] = useState<string>('')
   const [incompleteSessions, setIncompleteSessions] = useState<Record<string, boolean>>({}) // dayId -> has incomplete session
+  const [activeTab, setActiveTab] = useState<'strength' | 'cardio'>('strength')
+  const [cardioProgram, setCardioProgram] = useState<CardioProgram | null>(null)
 
   const toggleDay = (dayId: string) => {
     setExpandedDays(prev => {
@@ -136,6 +151,7 @@ export default function WorkoutPage() {
       fetchAssignment()
       fetchWorkoutGuide()
       fetchIncompleteSessions()
+      fetchCardio()
     } else if (session === null) {
       // Session loaded but no user, stop loading
       setLoading(false)
@@ -189,6 +205,21 @@ export default function WorkoutPage() {
       }
     } catch (error) {
       console.error('Error fetching incomplete sessions:', error)
+    }
+  }
+
+  const fetchCardio = async () => {
+    try {
+      const userId = (session?.user as any)?.id
+      if (!userId) return
+
+      const response = await fetch(`/api/clients/${userId}/cardio`)
+      if (response.ok) {
+        const data = await response.json()
+        setCardioProgram(data.cardioProgram)
+      }
+    } catch (error) {
+      console.error('Error fetching cardio:', error)
     }
   }
 
@@ -316,7 +347,34 @@ export default function WorkoutPage() {
         </Link>
       </div>
 
-      {/* Days List */}
+      {/* Tab Switcher */}
+      <div className="flex rounded-full bg-gray-100 p-1 max-w-md mx-auto">
+        <button
+          onClick={() => setActiveTab('strength')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-full text-sm font-semibold transition-all ${
+            activeTab === 'strength'
+              ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white shadow-md'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          <Dumbbell className="w-4 h-4" />
+          Styrketräning
+        </button>
+        <button
+          onClick={() => setActiveTab('cardio')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-full text-sm font-semibold transition-all ${
+            activeTab === 'cardio'
+              ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white shadow-md'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          <Heart className="w-4 h-4" />
+          Cardio
+        </button>
+      </div>
+
+      {/* Strength Training Tab Content */}
+      {activeTab === 'strength' && (
       <div className="space-y-3">
         <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
           <Calendar className="w-6 h-6 text-gold-primary" />
@@ -617,7 +675,6 @@ export default function WorkoutPage() {
           </Card>
           )
         })}
-      </div>
 
       {daysToShow.length === 0 && (
         <Card className="bg-white border border-gray-200">
@@ -629,6 +686,110 @@ export default function WorkoutPage() {
             </p>
           </CardContent>
         </Card>
+      )}
+      </div>
+      )}
+
+      {/* Cardio Tab Content */}
+      {activeTab === 'cardio' && (
+        <div className="space-y-4">
+          {cardioProgram ? (
+            <Card className="bg-white border-2 border-red-200 shadow-sm">
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <Heart className="w-5 h-5 text-red-500" />
+                  <span className="text-xs font-semibold text-red-500 uppercase tracking-wide">
+                    CARDIOPROGRAM
+                  </span>
+                </div>
+                <CardTitle className="text-2xl font-bold text-gray-900">
+                  {cardioProgram.title}
+                </CardTitle>
+                {cardioProgram.description && (
+                  <p className="text-gray-600 mt-1">{cardioProgram.description}</p>
+                )}
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Cardio Details Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {cardioProgram.cardioType && (
+                    <div className="bg-gray-50 rounded-lg p-3 text-center">
+                      <Zap className="w-5 h-5 text-red-500 mx-auto mb-1" />
+                      <p className="text-xs text-gray-500 uppercase">Typ</p>
+                      <p className="font-semibold text-gray-900">{cardioProgram.cardioType}</p>
+                    </div>
+                  )}
+                  {cardioProgram.frequency && (
+                    <div className="bg-gray-50 rounded-lg p-3 text-center">
+                      <Calendar className="w-5 h-5 text-red-500 mx-auto mb-1" />
+                      <p className="text-xs text-gray-500 uppercase">Frekvens</p>
+                      <p className="font-semibold text-gray-900">{cardioProgram.frequency}x/vecka</p>
+                    </div>
+                  )}
+                  {cardioProgram.durationMinutes && (
+                    <div className="bg-gray-50 rounded-lg p-3 text-center">
+                      <Clock className="w-5 h-5 text-red-500 mx-auto mb-1" />
+                      <p className="text-xs text-gray-500 uppercase">Tid</p>
+                      <p className="font-semibold text-gray-900">{cardioProgram.durationMinutes} min</p>
+                    </div>
+                  )}
+                  {cardioProgram.intensity && (
+                    <div className="bg-gray-50 rounded-lg p-3 text-center">
+                      <Flame className="w-5 h-5 text-red-500 mx-auto mb-1" />
+                      <p className="text-xs text-gray-500 uppercase">Intensitet</p>
+                      <p className="font-semibold text-gray-900">{cardioProgram.intensity}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Additional Info */}
+                {(cardioProgram.preferredDays || cardioProgram.timing) && (
+                  <div className="bg-red-50 rounded-lg p-4 space-y-2">
+                    {cardioProgram.preferredDays && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="w-4 h-4 text-red-500" />
+                        <span className="text-gray-600">Rekommenderade dagar:</span>
+                        <span className="font-medium text-gray-900">{cardioProgram.preferredDays}</span>
+                      </div>
+                    )}
+                    {cardioProgram.timing && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Clock className="w-4 h-4 text-red-500" />
+                        <span className="text-gray-600">Tidpunkt:</span>
+                        <span className="font-medium text-gray-900">{cardioProgram.timing}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Coach Notes */}
+                {cardioProgram.notes && (
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                      <Info className="w-4 h-4 text-gold-primary" />
+                      Instruktioner från din coach
+                    </h4>
+                    <div className="text-gray-700 whitespace-pre-line text-sm leading-relaxed">
+                      {cardioProgram.notes}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="bg-white border border-gray-200">
+              <CardContent className="py-12 text-center">
+                <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Inget cardioprogram tilldelat
+                </h3>
+                <p className="text-gray-600 max-w-md mx-auto">
+                  Din coach kan lägga till cardio-instruktioner om det behövs
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       )}
     </div>
   )

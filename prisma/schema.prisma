@@ -171,6 +171,9 @@ model User {
   assignedMacrocycles AssignedMacrocycle[]
   assignedMesocycles  AssignedMesocycle[]
 
+  // Cardio programs
+  cardioPrograms CardioProgram[] @relation("CardioPrograms")
+
   @@map("users")
 }
 
@@ -624,6 +627,40 @@ model AssignedWorkoutProgram {
   workoutProgram WorkoutProgram @relation(fields: [workoutProgramId], references: [id], onDelete: Cascade)
 
   @@map("assigned_workout_programs")
+}
+
+// Cardio prescription for clients
+model CardioProgram {
+  id      String @id @default(cuid())
+  userId  String // Client this cardio is assigned to
+  coachId String // Coach who prescribed it
+
+  title       String  // "LISS Cardio", "HIIT Program", etc.
+  description String? @db.Text // Detailed instructions
+
+  // Cardio details
+  cardioType     String? // "LISS", "HIIT", "MISS", "Steady State", etc.
+  frequency      Int?    // Times per week
+  durationMinutes Int?   // Duration per session
+  intensity      String? // "Low", "Moderate", "High" or custom
+
+  // Scheduling
+  preferredDays  String? // "Mon, Wed, Fri" or similar
+  timing         String? // "Morning", "Post-workout", etc.
+
+  // Coach notes with markdown support
+  notes String? @db.Text
+
+  active    Boolean   @default(true)
+  startDate DateTime  @default(now())
+  endDate   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation("CardioPrograms", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("cardio_programs")
 }
 
 model WorkoutSessionLog {
