@@ -10,14 +10,14 @@ export default function AuthLayout({
     <div className="min-h-screen bg-gray-900">
       {/* Header */}
       <header className="border-b border-gray-800">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-6">
           <Link href="/" className="flex items-center justify-center group">
             <Image
               src="/images/logo-white.svg"
-              alt="90-Dagars Utmaningen"
-              width={240}
-              height={50}
-              className="h-10 w-auto object-contain transition-all group-hover:opacity-80"
+              alt="Friskvårdskompassen"
+              width={320}
+              height={80}
+              className="h-16 md:h-20 w-auto object-contain transition-all group-hover:opacity-80"
               priority
             />
           </Link>

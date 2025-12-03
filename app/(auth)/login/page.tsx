@@ -15,8 +15,8 @@ import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.string().email('Ogiltig e-postadress'),
+  password: z.string().min(6, 'Lösenordet måste vara minst 6 tecken'),
 })
 
 type LoginForm = z.infer<typeof loginSchema>
@@ -49,8 +49,8 @@ export default function LoginPage() {
       if (result?.error) {
         console.log('Login error:', result.error)
         toast({
-          title: 'Login failed',
-          description: 'Invalid email or password',
+          title: 'Inloggning misslyckades',
+          description: 'Felaktig e-post eller lösenord',
           variant: 'destructive',
         })
         setIsLoading(false)
@@ -58,8 +58,8 @@ export default function LoginPage() {
     } catch (error) {
       console.error('Login exception:', error)
       toast({
-        title: 'An error occurred',
-        description: 'Please try again later.',
+        title: 'Ett fel uppstod',
+        description: 'Försök igen senare.',
         variant: 'destructive',
       })
       setIsLoading(false)
@@ -77,21 +77,21 @@ export default function LoginPage() {
       </Link>
       <Card className="bg-white border border-gray-200 shadow-lg">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gold-primary to-gold-secondary bg-clip-text text-transparent">
-          Sign In
+        <CardTitle className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+          Logga in
         </CardTitle>
         <CardDescription className="text-gray-600">
-          Enter your email and password to sign in
+          Ange din e-post och lösenord för att logga in
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-gray-700">Email</Label>
+            <Label htmlFor="email" className="text-gray-700">E-post</Label>
             <Input
               id="email"
               type="email"
-              placeholder="your@email.com"
+              placeholder="din@epost.se"
               {...register('email')}
               disabled={isLoading}
             />
@@ -100,7 +100,7 @@ export default function LoginPage() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-gray-700">Password</Label>
+            <Label htmlFor="password" className="text-gray-700">Lösenord</Label>
             <Input
               id="password"
               type="password"
@@ -119,7 +119,7 @@ export default function LoginPage() {
             className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
             disabled={isLoading}
           >
-            {isLoading ? 'Signing in...' : 'Sign In'}
+            {isLoading ? 'Loggar in...' : 'Logga in'}
           </Button>
         </CardFooter>
       </form>

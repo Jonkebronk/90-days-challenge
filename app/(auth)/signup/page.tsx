@@ -15,12 +15,12 @@ import { useToast } from '@/hooks/use-toast'
 import { ArrowLeft } from 'lucide-react'
 
 const signupSchema = z.object({
-  fullName: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  fullName: z.string().min(2, 'Namnet måste vara minst 2 tecken'),
+  email: z.string().email('Ogiltig e-postadress'),
+  password: z.string().min(6, 'Lösenordet måste vara minst 6 tecken'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
+  message: 'Lösenorden matchar inte',
   path: ['confirmPassword'],
 })
 
@@ -54,8 +54,8 @@ export default function SignupPage() {
 
       if (!response.ok) {
         toast({
-          title: 'Registration failed',
-          description: result.error || result.details || 'Something went wrong',
+          title: 'Registreringen misslyckades',
+          description: result.error || result.details || 'Något gick fel',
           variant: 'destructive',
         })
         return
@@ -70,22 +70,22 @@ export default function SignupPage() {
 
       if (signInResult?.error) {
         toast({
-          title: 'Account created!',
-          description: 'Please sign in',
+          title: 'Konto skapat!',
+          description: 'Vänligen logga in',
         })
         router.push('/login')
       } else {
         toast({
-          title: 'Welcome!',
-          description: 'Your account has been created.',
+          title: 'Välkommen!',
+          description: 'Ditt konto har skapats.',
         })
         router.push('/onboarding/step-1')
         router.refresh()
       }
     } catch (error) {
       toast({
-        title: 'An error occurred',
-        description: 'Please try again later.',
+        title: 'Ett fel uppstod',
+        description: 'Försök igen senare.',
         variant: 'destructive',
       })
     } finally {
@@ -104,19 +104,19 @@ export default function SignupPage() {
       </Link>
       <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-gold-light to-orange-500 bg-clip-text text-transparent">Create Account</CardTitle>
+        <CardTitle className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gold-light to-orange-500 bg-clip-text text-transparent">Skapa konto</CardTitle>
         <CardDescription className="text-gray-400">
-          Fill in the details below to start your 90-day journey
+          Fyll i dina uppgifter för att börja din resa
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="fullName" className="text-[rgba(255,215,0,0.8)]">Full Name</Label>
+            <Label htmlFor="fullName" className="text-[rgba(255,215,0,0.8)]">Fullständigt namn</Label>
             <Input
               id="fullName"
               type="text"
-              placeholder="Your name"
+              placeholder="Ditt namn"
               {...register('fullName')}
               disabled={isLoading}
               className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-gold-light"
@@ -126,11 +126,11 @@ export default function SignupPage() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-[rgba(255,215,0,0.8)]">Email</Label>
+            <Label htmlFor="email" className="text-[rgba(255,215,0,0.8)]">E-post</Label>
             <Input
               id="email"
               type="email"
-              placeholder="your@email.com"
+              placeholder="din@epost.se"
               {...register('email')}
               disabled={isLoading}
               className="bg-black/30 border-gold-primary/30 text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-gold-light"
@@ -140,7 +140,7 @@ export default function SignupPage() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-[rgba(255,215,0,0.8)]">Password</Label>
+            <Label htmlFor="password" className="text-[rgba(255,215,0,0.8)]">Lösenord</Label>
             <Input
               id="password"
               type="password"
@@ -154,7 +154,7 @@ export default function SignupPage() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-[rgba(255,215,0,0.8)]">Confirm Password</Label>
+            <Label htmlFor="confirmPassword" className="text-[rgba(255,215,0,0.8)]">Bekräfta lösenord</Label>
             <Input
               id="confirmPassword"
               type="password"
@@ -170,12 +170,12 @@ export default function SignupPage() {
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <Button type="submit" className="w-full bg-gradient-to-r from-gold-light to-orange-500 hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold" disabled={isLoading}>
-            {isLoading ? 'Creating account...' : 'Create Account'}
+            {isLoading ? 'Skapar konto...' : 'Skapa konto'}
           </Button>
           <p className="text-sm text-gray-400 text-center">
-            Already have an account?{' '}
+            Har du redan ett konto?{' '}
             <Link href="/login" className="text-gold-light hover:text-orange-500 hover:underline">
-              Sign in
+              Logga in
             </Link>
           </p>
         </CardFooter>
