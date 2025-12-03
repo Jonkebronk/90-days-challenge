@@ -286,10 +286,10 @@ export function MesocycleBuilder({
             <Input
               value={mesocycle.name}
               onChange={(e) => updateMesocycle({ name: e.target.value })}
-              className="text-xl font-bold bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto text-white placeholder:text-zinc-600"
+              className="text-xl font-bold bg-zinc-800/50 border border-zinc-700 hover:border-zinc-600 focus:border-amber-500/50 focus-visible:ring-0 focus-visible:ring-offset-0 px-3 py-1.5 h-auto text-white placeholder:text-zinc-500 rounded-lg"
               placeholder="Enter mesocycle name..."
             />
-            <span className="text-xs text-zinc-600 mt-0.5">Click to edit name</span>
+            <span className="text-xs text-zinc-500 mt-1">Click to edit name</span>
           </div>
         </div>
         <Button
@@ -344,7 +344,7 @@ export function MesocycleBuilder({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {[3, 4, 5, 6, 8].map((weeks) => (
+              {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((weeks) => (
                 <SelectItem key={weeks} value={weeks.toString()}>
                   {weeks} weeks
                 </SelectItem>
