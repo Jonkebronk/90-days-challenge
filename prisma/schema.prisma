@@ -1437,8 +1437,24 @@ model MealPlan {
   user            User                     @relation("AssignedMealPlan", fields: [userId], references: [id], onDelete: Cascade)
   meals           MealPlanMeal[]
   supplementItems MealPlanSupplementItem[]
+  dailyTargets    DailyMacroTarget[]
 
   @@map("meal_plans")
+}
+
+model DailyMacroTarget {
+  id         String  @id @default(cuid())
+  mealPlanId String
+  dayOfWeek  Int     // 0=Måndag, 1=Tisdag, ... 6=Söndag
+  calories   Decimal @db.Decimal(7, 2)
+  protein    Decimal @db.Decimal(6, 2)
+  fat        Decimal @db.Decimal(6, 2)
+  carbs      Decimal @db.Decimal(6, 2)
+
+  mealPlan MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+
+  @@unique([mealPlanId, dayOfWeek])
+  @@map("daily_macro_targets")
 }
 
 model MealPlanMeal {

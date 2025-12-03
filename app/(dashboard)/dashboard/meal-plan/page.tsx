@@ -10,6 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Utensils, Dumbbell, Sparkles, Lightbulb, Info, ChevronDown, ChevronUp } from 'lucide-react'
 import { MDXPreview } from '@/components/mdx-preview'
+import { WeekCalendar } from '@/components/meal-plan/week-calendar'
+import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
 
 interface MealPlanItem {
   id: string
@@ -83,6 +85,15 @@ interface MealPlan {
   supplementItems: SupplementItem[]
 }
 
+interface DailyTarget {
+  id: string
+  dayOfWeek: number
+  calories: number
+  protein: number
+  fat: number
+  carbs: number
+}
+
 export default function MealPlanPage() {
   const router = useRouter()
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null)
@@ -90,6 +101,12 @@ export default function MealPlanPage() {
   const [nutritionTipsContent, setNutritionTipsContent] = useState<string>('')
   const [mealPlanDescriptionContent, setMealPlanDescriptionContent] = useState<string>('')
   const [expandedMeals, setExpandedMeals] = useState<Set<number>>(new Set())
+  const [dailyTargets, setDailyTargets] = useState<DailyTarget[]>([])
+  const [selectedDay, setSelectedDay] = useState<number>(() => {
+    // Default to current day of week (0 = Monday)
+    const jsDay = new Date().getDay()
+    return jsDay === 0 ? 6 : jsDay - 1
+  })
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
@@ -107,7 +124,20 @@ export default function MealPlanPage() {
     fetchMealPlan()
     fetchNutritionTips()
     fetchMealPlanDescription()
+    fetchDailyTargets()
   }, [])
+
+  const fetchDailyTargets = async () => {
+    try {
+      const response = await fetch('/api/meal-plan/daily-targets')
+      if (response.ok) {
+        const data = await response.json()
+        setDailyTargets(data.dailyTargets || [])
+      }
+    } catch (error) {
+      console.error('Error fetching daily targets:', error)
+    }
+  }
 
   const fetchMealPlan = async () => {
     try {
@@ -204,6 +234,23 @@ export default function MealPlanPage() {
   const totalDailyCarbs = Number(mealPlan.totalCarbs || 0) + Number(mealPlan.preWorkoutCarbs || 0) + Number(mealPlan.postWorkoutCarbs || 0)
   const totalDailyCalories = Number(mealPlan.totalCalories || 0) + Number(mealPlan.preWorkoutCalories || 0) + Number(mealPlan.postWorkoutCalories || 0)
 
+  // Get target for selected day (fallback to plan totals if no specific target)
+  const selectedDayTarget = dailyTargets.find(t => t.dayOfWeek === selectedDay)
+  const currentTarget = {
+    calories: selectedDayTarget ? Number(selectedDayTarget.calories) : totalDailyCalories,
+    protein: selectedDayTarget ? Number(selectedDayTarget.protein) : totalDailyProtein,
+    fat: selectedDayTarget ? Number(selectedDayTarget.fat) : totalDailyFat,
+    carbs: selectedDayTarget ? Number(selectedDayTarget.carbs) : totalDailyCarbs
+  }
+
+  // Current intake from meal plan (what's planned)
+  const currentIntake = {
+    calories: totalDailyCalories,
+    protein: totalDailyProtein,
+    fat: totalDailyFat,
+    carbs: totalDailyCarbs
+  }
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -259,6 +306,20 @@ export default function MealPlanPage() {
         </div>
       </div>
 
+      {/* Week Calendar */}
+      <WeekCalendar
+        dailyTargets={dailyTargets}
+        selectedDay={selectedDay}
+        onDaySelect={setSelectedDay}
+        defaultCalories={totalDailyCalories}
+      />
+
+      {/* Macro Summary */}
+      <MacroSummary
+        current={currentIntake}
+        target={currentTarget}
+      />
+
       {/* Main Content */}
       <div>
           <Tabs defaultValue="meals" className="w-full">
@@ -291,23 +352,32 @@ export default function MealPlanPage() {
                     className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                     onClick={() => toggleMeal(meal.mealNumber)}
                   >
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                          <Utensils className="w-5 h-5 text-gold-primary" />
-                          {meal.name || `Måltid ${meal.mealNumber}`}
-                        </h3>
-                        {recipeCount > 0 && (
-                          <span className="text-sm text-gray-500">({recipeCount} recept)</span>
-                        )}
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                            <Utensils className="w-5 h-5 text-gold-primary" />
+                            {meal.name || `Måltid ${meal.mealNumber}`}
+                          </h3>
+                          {recipeCount > 0 && (
+                            <span className="text-sm text-gray-500">({recipeCount} recept)</span>
+                          )}
+                        </div>
+                        <div className="flex items-center">
+                          {isExpanded ? (
+                            <ChevronUp className="w-5 h-5 text-gold-primary" />
+                          ) : (
+                            <ChevronDown className="w-5 h-5 text-gold-primary" />
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center">
-                        {isExpanded ? (
-                          <ChevronUp className="w-5 h-5 text-gold-primary" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 text-gold-primary" />
-                        )}
-                      </div>
+                      {/* Meal Macros */}
+                      <MealMacros
+                        calories={Number(meal.totalCalories || 0)}
+                        protein={Number(meal.totalProtein || 0)}
+                        fat={Number(meal.totalFat || 0)}
+                        carbs={Number(meal.totalCarbs || 0)}
+                      />
                     </div>
                   </div>
 
