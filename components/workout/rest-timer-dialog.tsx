@@ -107,31 +107,35 @@ export function RestTimerDialog({
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 bottom-0 bg-black/95 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center p-4 min-h-screen"
-      style={{ minHeight: '100dvh' }}
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center p-4"
+      style={{
+        backgroundColor: 'rgba(0, 0, 0, 0.97)',
+        minHeight: '100vh',
+      }}
     >
       {/* Stäng-knapp */}
       <button
         onClick={onStop}
-        className="fixed top-6 right-6 text-gray-400 hover:text-white transition-colors z-[10000]"
+        className="absolute top-6 right-6 text-white hover:text-gray-300 transition-colors z-[10000]"
+        style={{ position: 'absolute' }}
       >
-        <X className="h-8 w-8" />
+        <X className="h-10 w-10" />
       </button>
 
       {/* Titel */}
-      <h2 className="text-xl text-gray-400 mb-8 font-medium">Vila</h2>
+      <h2 className="text-2xl text-white mb-8 font-medium">Vila</h2>
 
       {/* Cirkulär timer */}
-      <div className="relative mb-8">
+      <div className="relative mb-8" style={{ width: size, height: size }}>
         {/* SVG Progress Circle */}
-        <svg width={size} height={size} className="transform -rotate-90">
+        <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
           {/* Bakgrundscirkel */}
           <circle
             cx={size / 2}
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="rgba(255,255,255,0.1)"
+            stroke="rgba(255,255,255,0.2)"
             strokeWidth={strokeWidth}
           />
           {/* Progress cirkel */}
@@ -145,17 +149,19 @@ export function RestTimerDialog({
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
-            className="transition-all duration-1000 ease-linear"
+            style={{ transition: 'stroke-dashoffset 1s linear' }}
           />
         </svg>
 
         {/* Timer text i mitten */}
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        >
           <span
-            className="font-mono font-light tracking-tight"
+            className="font-mono font-light tracking-tight text-white"
             style={{
-              fontSize: minutes > 0 ? '5rem' : '7rem',
-              color: 'white'
+              fontSize: minutes > 0 ? '4.5rem' : '6rem',
             }}
           >
             {timeDisplay}
@@ -164,33 +170,27 @@ export function RestTimerDialog({
       </div>
 
       {/* Knappar */}
-      <div className="flex gap-4">
+      <div className="flex gap-6">
         {/* +30s knapp */}
-        <Button
-          variant="outline"
-          size="lg"
+        <button
           onClick={() => onAddTime(30)}
-          className="rounded-full w-20 h-20 border-2 border-gray-600 bg-transparent text-white hover:bg-gray-800 hover:text-white"
+          className="rounded-full w-20 h-20 border-2 border-gray-500 bg-gray-800 text-white hover:bg-gray-700 flex flex-col items-center justify-center"
         >
-          <div className="flex flex-col items-center">
-            <Plus className="h-5 w-5" />
-            <span className="text-xs mt-1">30s</span>
-          </div>
-        </Button>
+          <Plus className="h-6 w-6" />
+          <span className="text-xs mt-1">+30s</span>
+        </button>
 
         {/* Stoppa knapp */}
-        <Button
-          variant="destructive"
-          size="lg"
+        <button
           onClick={onStop}
-          className="rounded-full w-20 h-20 bg-red-600/80 hover:bg-red-600 text-white font-medium"
+          className="rounded-full w-20 h-20 bg-red-600 hover:bg-red-500 text-white font-semibold"
         >
           Stoppa
-        </Button>
+        </button>
       </div>
 
       {/* Visar total vilatid */}
-      <p className="text-gray-500 mt-8 text-sm">
+      <p className="text-gray-400 mt-10 text-base">
         Föreskriven vila: {totalSeconds}s
       </p>
     </div>
