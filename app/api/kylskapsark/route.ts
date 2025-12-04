@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server'
 import { jsPDF } from 'jspdf'
 
-// Färger (hex utan #)
-const PRIMARY_COLOR: [number, number, number] = [44, 62, 80]    // #2C3E50 - mörkblå
-const ACCENT_COLOR: [number, number, number] = [52, 152, 219]   // #3498DB - ljusblå
-const LIGHT_GRAY: [number, number, number] = [236, 240, 241]    // #ECF0F1
-const DARK_GRAY: [number, number, number] = [127, 140, 141]     // #7F8C8D
-const LINE_COLOR: [number, number, number] = [189, 195, 199]    // #BDC3C7
+// Färger som matchar plattformens tema (hex utan #)
+const DARK_BG: [number, number, number] = [15, 15, 25]           // #0F0F19 - mörk bakgrund
+const GOLD: [number, number, number] = [255, 215, 0]              // #FFD700 - guld
+const GOLD_DARK: [number, number, number] = [184, 134, 11]        // #B8860B - mörk guld
+const ORANGE: [number, number, number] = [249, 115, 22]           // #F97316 - orange accent
 const WHITE: [number, number, number] = [255, 255, 255]
+const LIGHT_GRAY: [number, number, number] = [156, 163, 175]      // #9CA3AF
+const DARK_GRAY: [number, number, number] = [75, 85, 99]          // #4B5563
+const CARD_BG: [number, number, number] = [26, 26, 46]            // #1A1A2E - kort bakgrund
 
 // A4 dimensioner i mm
 const PAGE_WIDTH = 210
@@ -48,28 +50,43 @@ export async function GET() {
 function drawPage1(doc: jsPDF) {
   let y = 0
 
-  // Header bakgrund
-  doc.setFillColor(...PRIMARY_COLOR)
-  doc.rect(0, 0, PAGE_WIDTH, 35, 'F')
+  // Hela sidan har mörk bakgrund
+  doc.setFillColor(...DARK_BG)
+  doc.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, 'F')
+
+  // Header bakgrund med gradient-effekt
+  doc.setFillColor(...CARD_BG)
+  doc.rect(0, 0, PAGE_WIDTH, 40, 'F')
+
+  // Guld-linje under header
+  doc.setDrawColor(...GOLD)
+  doc.setLineWidth(1)
+  doc.line(MARGIN, 40, PAGE_WIDTH - MARGIN, 40)
 
   // Header text
-  doc.setTextColor(...WHITE)
-  doc.setFontSize(22)
+  doc.setTextColor(...GOLD)
+  doc.setFontSize(24)
   doc.setFont('helvetica', 'bold')
-  doc.text('MITT M\xc5L OCH MINA DRIVKRAFTER', PAGE_WIDTH / 2, 22, { align: 'center' })
+  doc.text('MITT M\xc5L OCH MINA DRIVKRAFTER', PAGE_WIDTH / 2, 25, { align: 'center' })
 
-  y = 45
+  // Subheader
+  doc.setTextColor(...LIGHT_GRAY)
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  doc.text('90-Dagars Utmaningen', PAGE_WIDTH / 2, 33, { align: 'center' })
+
+  y = 50
 
   // Sektion 1: MITT MÅL
   y = drawSectionHeader(doc, y, 'MITT M\xc5L')
   y = drawInputLines(doc, y, 'Vad \xe4r ditt specifika, m\xe4tbara m\xe5l?', 2)
 
   // Deadline
-  doc.setTextColor(...DARK_GRAY)
+  doc.setTextColor(...LIGHT_GRAY)
   doc.setFontSize(10)
   doc.setFont('helvetica', 'normal')
   doc.text('Deadline:', MARGIN, y)
-  doc.setDrawColor(...LINE_COLOR)
+  doc.setDrawColor(...DARK_GRAY)
   doc.setLineWidth(0.3)
   doc.line(MARGIN + 20, y, 90, y)
   y += 10
@@ -96,11 +113,11 @@ function drawPage1(doc: jsPDF) {
 
   // Datum och Signatur
   y += 3
-  doc.setTextColor(...DARK_GRAY)
+  doc.setTextColor(...LIGHT_GRAY)
   doc.setFontSize(10)
   doc.setFont('helvetica', 'normal')
   doc.text('Datum:', MARGIN, y)
-  doc.setDrawColor(...LINE_COLOR)
+  doc.setDrawColor(...DARK_GRAY)
   doc.line(MARGIN + 15, y, 60, y)
 
   doc.text('Signatur:', 80, y)
@@ -108,35 +125,50 @@ function drawPage1(doc: jsPDF) {
 
   // Citat-ruta
   y += 12
-  const quoteBoxHeight = 18
-  doc.setFillColor(...LIGHT_GRAY)
-  doc.roundedRect(MARGIN, y, PAGE_WIDTH - 2 * MARGIN, quoteBoxHeight, 2, 2, 'F')
+  const quoteBoxHeight = 20
+  doc.setFillColor(...CARD_BG)
+  doc.roundedRect(MARGIN, y, PAGE_WIDTH - 2 * MARGIN, quoteBoxHeight, 3, 3, 'F')
 
-  doc.setTextColor(...PRIMARY_COLOR)
+  // Guld border på citat-rutan
+  doc.setDrawColor(...GOLD)
+  doc.setLineWidth(0.5)
+  doc.roundedRect(MARGIN, y, PAGE_WIDTH - 2 * MARGIN, quoteBoxHeight, 3, 3, 'S')
+
+  doc.setTextColor(...GOLD)
   doc.setFontSize(9)
   doc.setFont('helvetica', 'italic')
   const quote = '"Det finns inga lata m\xe4nniskor, det finns bara m\xe4nniskor med kraftl\xf6sa m\xe5ls\xe4ttningar som inte inspirerar dem."'
-  doc.text(quote, PAGE_WIDTH / 2, y + 7, { align: 'center', maxWidth: PAGE_WIDTH - 2 * MARGIN - 10 })
+  doc.text(quote, PAGE_WIDTH / 2, y + 8, { align: 'center', maxWidth: PAGE_WIDTH - 2 * MARGIN - 10 })
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)
-  doc.text('- Anthony Robbins', PAGE_WIDTH / 2, y + 13, { align: 'center' })
+  doc.setTextColor(...LIGHT_GRAY)
+  doc.text('- Anthony Robbins', PAGE_WIDTH / 2, y + 15, { align: 'center' })
 }
 
 function drawPage2(doc: jsPDF) {
   let y = 0
 
+  // Hela sidan har mörk bakgrund
+  doc.setFillColor(...DARK_BG)
+  doc.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, 'F')
+
   // Header bakgrund
-  doc.setFillColor(...PRIMARY_COLOR)
-  doc.rect(0, 0, PAGE_WIDTH, 25, 'F')
+  doc.setFillColor(...CARD_BG)
+  doc.rect(0, 0, PAGE_WIDTH, 30, 'F')
+
+  // Guld-linje under header
+  doc.setDrawColor(...GOLD)
+  doc.setLineWidth(1)
+  doc.line(MARGIN, 30, PAGE_WIDTH - MARGIN, 30)
 
   // Header text
-  doc.setTextColor(...WHITE)
-  doc.setFontSize(18)
+  doc.setTextColor(...GOLD)
+  doc.setFontSize(20)
   doc.setFont('helvetica', 'bold')
-  doc.text('F\xd6RDJUPADE DRIVKRAFTSFR\xc5GOR', PAGE_WIDTH / 2, 16, { align: 'center' })
+  doc.text('F\xd6RDJUPADE DRIVKRAFTSFR\xc5GOR', PAGE_WIDTH / 2, 19, { align: 'center' })
 
-  y = 35
+  y = 40
 
   // Sektion 1: UTFORSKA NYTTAN
   y = drawSectionHeader(doc, y, 'UTFORSKA NYTTAN')
@@ -179,13 +211,13 @@ function drawPage2(doc: jsPDF) {
     const row = i < 3 ? i : i - 3
     const itemY = y + row * 6
 
-    // Checkbox
-    doc.setDrawColor(...LINE_COLOR)
+    // Checkbox med guld border
+    doc.setDrawColor(...GOLD)
     doc.setLineWidth(0.5)
     doc.rect(x, itemY - 2.5, checkboxSize, checkboxSize)
 
     // Text
-    doc.setTextColor(...DARK_GRAY)
+    doc.setTextColor(...LIGHT_GRAY)
     doc.setFontSize(9)
     doc.setFont('helvetica', 'normal')
     doc.text(styrkor[i], x + checkboxSize + 2, itemY)
@@ -194,27 +226,32 @@ function drawPage2(doc: jsPDF) {
   y += 22
 
   // Annan styrka
-  doc.setTextColor(...DARK_GRAY)
+  doc.setTextColor(...LIGHT_GRAY)
   doc.setFontSize(9)
   doc.text('Annan styrka:', MARGIN + 2, y)
-  doc.setDrawColor(...LINE_COLOR)
+  doc.setDrawColor(...DARK_GRAY)
   doc.line(MARGIN + 28, y, PAGE_WIDTH - MARGIN, y)
 
   y += 12
 
   // Tips-ruta
-  const tipsBoxHeight = 28
-  doc.setFillColor(...LIGHT_GRAY)
-  doc.roundedRect(MARGIN, y, PAGE_WIDTH - 2 * MARGIN, tipsBoxHeight, 2, 2, 'F')
+  const tipsBoxHeight = 30
+  doc.setFillColor(...CARD_BG)
+  doc.roundedRect(MARGIN, y, PAGE_WIDTH - 2 * MARGIN, tipsBoxHeight, 3, 3, 'F')
 
-  doc.setTextColor(...PRIMARY_COLOR)
+  // Guld border
+  doc.setDrawColor(...GOLD)
+  doc.setLineWidth(0.5)
+  doc.roundedRect(MARGIN, y, PAGE_WIDTH - 2 * MARGIN, tipsBoxHeight, 3, 3, 'S')
+
+  doc.setTextColor(...GOLD)
   doc.setFontSize(10)
   doc.setFont('helvetica', 'bold')
-  doc.text('Tips f\xf6r att anv\xe4nda detta ark:', MARGIN + 5, y + 6)
+  doc.text('Tips f\xf6r att anv\xe4nda detta ark:', MARGIN + 5, y + 7)
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)
-  doc.setTextColor(...DARK_GRAY)
+  doc.setTextColor(...LIGHT_GRAY)
 
   const tips = [
     '\u2022 S\xe4tt upp arket d\xe4r du ser det dagligen (kylsk\xe5pet, badrumsspegeln, vid datorn)',
@@ -223,33 +260,33 @@ function drawPage2(doc: jsPDF) {
   ]
 
   tips.forEach((tip, i) => {
-    doc.text(tip, MARGIN + 5, y + 12 + i * 5)
+    doc.text(tip, MARGIN + 5, y + 14 + i * 5)
   })
 }
 
 function drawSectionHeader(doc: jsPDF, y: number, title: string): number {
-  doc.setTextColor(...ACCENT_COLOR)
+  doc.setTextColor(...GOLD)
   doc.setFontSize(11)
   doc.setFont('helvetica', 'bold')
   doc.text(title, MARGIN, y)
 
-  // Linje under rubriken
-  doc.setDrawColor(...ACCENT_COLOR)
-  doc.setLineWidth(0.5)
+  // Gradient-liknande linje under rubriken (guld till orange)
+  doc.setDrawColor(...GOLD)
+  doc.setLineWidth(0.8)
   doc.line(MARGIN, y + 2, PAGE_WIDTH - MARGIN, y + 2)
 
   return y + 8
 }
 
 function drawInputLines(doc: jsPDF, y: number, label: string, numLines: number): number {
-  doc.setTextColor(...DARK_GRAY)
+  doc.setTextColor(...LIGHT_GRAY)
   doc.setFontSize(9)
   doc.setFont('helvetica', 'normal')
   doc.text(label, MARGIN, y)
 
   y += 4
 
-  doc.setDrawColor(...LINE_COLOR)
+  doc.setDrawColor(...DARK_GRAY)
   doc.setLineWidth(0.3)
 
   for (let i = 0; i < numLines; i++) {
