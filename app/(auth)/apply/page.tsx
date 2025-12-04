@@ -70,6 +70,7 @@ export default function ApplyPage() {
     sleepHours: '',
     occupation: '',
     lifestyle: '',
+    activityLevel: '',
 
     // Motivation
     whyJoin: '',
@@ -129,6 +130,7 @@ Kosttillskott: ${formData.supplements || 'Ej angivet'}
 Tidigare coaching: ${formData.previousCoaching || 'Ej angivet'}
 
 === LIVSSTIL ===
+Aktivitetsnivå: ${formData.activityLevel || 'Ej angivet'}
 Stressnivå: ${formData.stressLevel || 'Ej angivet'}
 Sömntimmar: ${formData.sleepHours || 'Ej angivet'}
 Yrke: ${formData.occupation || 'Ej angivet'}
@@ -181,6 +183,7 @@ ${formData.other || 'Ej angivet'}
           previousCoaching: formData.previousCoaching,
 
           // Lifestyle
+          activityLevel: formData.activityLevel,
           stressLevel: formData.stressLevel,
           sleepHours: formData.sleepHours,
           occupation: formData.occupation,
@@ -546,6 +549,20 @@ ${formData.other || 'Ej angivet'}
 
             {expandedSections.lifestyle && (
               <div className="bg-white/5 border-2 border-gold-primary/20 rounded-xl p-6 backdrop-blur-[10px] space-y-4">
+                <div>
+                  <Label className="text-gray-200">Aktivitetsnivå</Label>
+                  <Select value={formData.activityLevel} onValueChange={(value) => setFormData({ ...formData, activityLevel: value })}>
+                    <SelectTrigger className="bg-black/30 border-gold-primary/30 text-white">
+                      <SelectValue placeholder="Välj din aktivitetsnivå" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sedentary">Stillasittande</SelectItem>
+                      <SelectItem value="moderate">Måttligt aktiv (träning 2-4 ggr/vecka)</SelectItem>
+                      <SelectItem value="active">Mycket aktiv (tung träning 4+ ggr/vecka)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div>
                   <Label className="text-gray-200">Ta mig igenom en dag, från när du vaknar till när du går och lägger dig. Hur ser den ut för dig?</Label>
                   <Textarea

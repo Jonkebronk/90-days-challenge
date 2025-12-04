@@ -882,10 +882,11 @@ model Lead {
   previousCoaching String? @db.Text
 
   // Lifestyle
-  stressLevel String? @db.Text
-  sleepHours  String? @db.Text
-  occupation  String? @db.Text
-  lifestyle   String? @db.Text
+  activityLevel String? // sedentary, moderate, active
+  stressLevel   String? @db.Text
+  sleepHours    String? @db.Text
+  occupation    String? @db.Text
+  lifestyle     String? @db.Text
 
   // Medical
   medicalConditions String? @db.Text

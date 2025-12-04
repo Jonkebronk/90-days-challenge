@@ -68,6 +68,7 @@ export async function POST(request: NextRequest) {
         previousCoaching: body.previousCoaching,
 
         // Lifestyle
+        activityLevel: body.activityLevel,
         stressLevel: body.stressLevel,
         sleepHours: body.sleepHours,
         occupation: body.occupation,
