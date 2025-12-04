@@ -81,14 +81,16 @@ function drawPage1(doc: jsPDF) {
   y = drawSectionHeader(doc, y, 'MITT M\xc5L')
   y = drawInputLines(doc, y, 'Vad \xe4r ditt specifika, m\xe4tbara m\xe5l?', 2)
 
-  // Deadline
+  // Deadline with white background
   doc.setTextColor(...LIGHT_GRAY)
   doc.setFontSize(10)
   doc.setFont('helvetica', 'normal')
   doc.text('Deadline:', MARGIN, y)
-  doc.setDrawColor(...DARK_GRAY)
-  doc.setLineWidth(0.3)
-  doc.line(MARGIN + 20, y, 90, y)
+
+  // White box for deadline
+  doc.setFillColor(...WHITE)
+  doc.roundedRect(MARGIN + 22, y - 5, 50, 8, 1, 1, 'F')
+
   y += 10
 
   // Sektion 2: VARFÖR ÄR DETTA VIKTIGT FÖR MIG?
@@ -111,17 +113,22 @@ function drawPage1(doc: jsPDF) {
   y = drawSectionHeader(doc, y, 'MITT L\xd6FTE TILL MIG SJ\xc4LV')
   y = drawInputLines(doc, y, 'Skriv ett personligt \xe5tagande. Vad lovar du dig sj\xe4lv?', 2)
 
-  // Datum och Signatur
+  // Datum och Signatur with white backgrounds
   y += 3
   doc.setTextColor(...LIGHT_GRAY)
   doc.setFontSize(10)
   doc.setFont('helvetica', 'normal')
   doc.text('Datum:', MARGIN, y)
-  doc.setDrawColor(...DARK_GRAY)
-  doc.line(MARGIN + 15, y, 60, y)
+
+  // White box for datum
+  doc.setFillColor(...WHITE)
+  doc.roundedRect(MARGIN + 17, y - 5, 40, 8, 1, 1, 'F')
 
   doc.text('Signatur:', 80, y)
-  doc.line(100, y, PAGE_WIDTH - MARGIN, y)
+
+  // White box for signatur
+  doc.setFillColor(...WHITE)
+  doc.roundedRect(102, y - 5, PAGE_WIDTH - MARGIN - 102, 8, 1, 1, 'F')
 
   // Citat-ruta
   y += 12
@@ -225,12 +232,14 @@ function drawPage2(doc: jsPDF) {
 
   y += 22
 
-  // Annan styrka
+  // Annan styrka with white background
   doc.setTextColor(...LIGHT_GRAY)
   doc.setFontSize(9)
   doc.text('Annan styrka:', MARGIN + 2, y)
-  doc.setDrawColor(...DARK_GRAY)
-  doc.line(MARGIN + 28, y, PAGE_WIDTH - MARGIN, y)
+
+  // White box for input
+  doc.setFillColor(...WHITE)
+  doc.roundedRect(MARGIN + 30, y - 5, PAGE_WIDTH - MARGIN - MARGIN - 30, 8, 1, 1, 'F')
 
   y += 12
 
@@ -286,13 +295,21 @@ function drawInputLines(doc: jsPDF, y: number, label: string, numLines: number):
 
   y += 4
 
-  doc.setDrawColor(...DARK_GRAY)
-  doc.setLineWidth(0.3)
+  // Draw white background boxes for writing
+  const lineHeight = 8
+  const boxHeight = numLines * lineHeight + 4
+
+  doc.setFillColor(...WHITE)
+  doc.roundedRect(MARGIN, y - 2, PAGE_WIDTH - 2 * MARGIN, boxHeight, 2, 2, 'F')
+
+  // Draw lines inside the white box
+  doc.setDrawColor(...LIGHT_GRAY)
+  doc.setLineWidth(0.2)
 
   for (let i = 0; i < numLines; i++) {
-    const lineY = y + i * 7
-    doc.line(MARGIN, lineY, PAGE_WIDTH - MARGIN, lineY)
+    const lineY = y + 4 + i * lineHeight
+    doc.line(MARGIN + 3, lineY, PAGE_WIDTH - MARGIN - 3, lineY)
   }
 
-  return y + numLines * 7 + 4
+  return y + boxHeight + 4
 }
