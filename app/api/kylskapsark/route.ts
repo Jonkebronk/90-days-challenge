@@ -92,7 +92,7 @@ function drawPage1(doc: jsPDF) {
   y = drawInputLines(doc, y, 'Skriv ett personligt \xe5tagande. Vad lovar du dig sj\xe4lv?', 2)
 
   // Citat (utan box)
-  y += 10
+  y += 3
 
   doc.setTextColor(...GOLD)
   doc.setFontSize(9)
@@ -103,7 +103,7 @@ function drawPage1(doc: jsPDF) {
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)
   doc.setTextColor(...LIGHT_GRAY)
-  doc.text('- Anthony Robbins', PAGE_WIDTH / 2, y + 10, { align: 'center' })
+  doc.text('- Anthony Robbins', PAGE_WIDTH / 2, y + 6, { align: 'center' })
 }
 
 function drawPage2(doc: jsPDF) {
@@ -190,7 +190,7 @@ function drawPage2(doc: jsPDF) {
   doc.setFillColor(...WHITE)
   doc.roundedRect(MARGIN + 30, y - 5, PAGE_WIDTH - MARGIN - MARGIN - 30, 8, 1, 1, 'F')
 
-  y += 12
+  y += 5
 
   // Tips-ruta
   const tipsBoxHeight = 30
