@@ -11,7 +11,7 @@ interface CoverPageProps {
 
 export function CoverPage({
   title = 'KUNSKAPSKARTAN',
-  subtitle = '90-Dagars Utmaningen',
+  subtitle,
   date,
   logoUrl,
 }: CoverPageProps) {
@@ -29,9 +29,9 @@ export function CoverPage({
           <Image
             src={logoUrl}
             style={{
-              width: 120,
-              height: 120,
-              marginBottom: 30,
+              width: 180,
+              height: 180,
+              marginBottom: 40,
             }}
           />
         )}
@@ -42,8 +42,8 @@ export function CoverPage({
         {/* Main title */}
         <Text style={styles.coverTitle}>{title}</Text>
 
-        {/* Subtitle */}
-        <Text style={styles.coverSubtitle}>{subtitle}</Text>
+        {/* Subtitle - only show if provided */}
+        {subtitle && <Text style={styles.coverSubtitle}>{subtitle}</Text>}
 
         {/* Bottom decoration */}
         <View style={styles.coverLine} />

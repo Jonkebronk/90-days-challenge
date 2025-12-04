@@ -132,7 +132,6 @@ export function KnowledgeBasePDF({
       {/* Cover Page */}
       <CoverPage
         title="KUNSKAPSKARTAN"
-        subtitle={audience === 'coach' ? 'Coach Kunskapsbank' : '90-Dagars Utmaningen'}
         logoUrl={logoUrl}
       />
 
