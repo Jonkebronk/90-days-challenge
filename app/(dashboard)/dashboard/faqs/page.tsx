@@ -119,17 +119,21 @@ export default function ClientFaqsPage() {
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-8">
         {/* FAQ Categories */}
         {categories
           .sort((a, b) => a.orderIndex - b.orderIndex)
-          .map((category) => (
+          .map((category, index) => (
             <div key={category.id} className="space-y-4">
+              {/* Separator line between categories */}
+              {index > 0 && (
+                <div className="h-[1px] bg-gradient-to-r from-transparent via-gold-primary/30 to-transparent mb-6" />
+              )}
               {/* Category Header */}
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">{category.name}</h2>
+              <div className="mb-2">
+                <h2 className="text-xl font-bold text-gold-light uppercase tracking-wide">{category.name}</h2>
                 {category.description && (
-                  <p className="text-gray-600 mt-1">{category.description}</p>
+                  <p className="text-gray-400 mt-1 text-sm">{category.description}</p>
                 )}
               </div>
 
