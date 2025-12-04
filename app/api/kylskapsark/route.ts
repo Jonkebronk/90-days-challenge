@@ -69,7 +69,7 @@ function drawPage1(doc: jsPDF) {
 
   // Sektion 1: MITT MÅL
   y = drawSectionHeader(doc, y, 'MITT M\xc5L')
-  y = drawInputLines(doc, y, 'Vad \xe4r ditt specifika, m\xe4tbara m\xe5l?', 3)
+  y = drawInputLines(doc, y, 'Vad \xe4r ditt specifika, m\xe4tbara m\xe5l?', 2)
 
   // Sektion 2: VARFÖR ÄR DETTA VIKTIGT FÖR MIG?
   y = drawSectionHeader(doc, y, 'VARF\xd6R \xc4R DETTA VIKTIGT F\xd6R MIG?')
@@ -81,15 +81,15 @@ function drawPage1(doc: jsPDF) {
 
   // Sektion 4: VAD HÄNDER OM JAG INTE GÖR FÖRÄNDRINGEN?
   y = drawSectionHeader(doc, y, 'VAD H\xc4NDER OM JAG INTE G\xd6R F\xd6R\xc4NDRINGEN?')
-  y = drawInputLines(doc, y, 'Hur ser livet ut om 1 \xe5r, 5 \xe5r om du INTE f\xf6r\xe4ndrar n\xe5got?', 3)
+  y = drawInputLines(doc, y, 'Hur ser livet ut om 1 \xe5r, 5 \xe5r om du INTE f\xf6r\xe4ndrar n\xe5got?', 2)
 
   // Sektion 5: NÄR DET BLIR TUFFT PÅMINNER JAG MIG OM
   y = drawSectionHeader(doc, y, 'N\xc4R DET BLIR TUFFT P\xc5MINNER JAG MIG OM:')
-  y = drawInputLines(doc, y, 'Vad ska du s\xe4ga till dig sj\xe4lv n\xe4r motivationen sviker?', 3)
+  y = drawInputLines(doc, y, 'Vad ska du s\xe4ga till dig sj\xe4lv n\xe4r motivationen sviker?', 2)
 
   // Sektion 6: MITT LÖFTE TILL MIG SJÄLV
   y = drawSectionHeader(doc, y, 'MITT L\xd6FTE TILL MIG SJ\xc4LV')
-  y = drawInputLines(doc, y, 'Skriv ett personligt \xe5tagande. Vad lovar du dig sj\xe4lv?', 3)
+  y = drawInputLines(doc, y, 'Skriv ett personligt \xe5tagande. Vad lovar du dig sj\xe4lv?', 2)
 
   // Citat-ruta
   y += 5
@@ -264,5 +264,5 @@ function drawInputLines(doc: jsPDF, y: number, label: string, numLines: number):
     doc.line(MARGIN + 3, lineY, PAGE_WIDTH - MARGIN - 3, lineY)
   }
 
-  return y + boxHeight + 3
+  return y + boxHeight + 6
 }
