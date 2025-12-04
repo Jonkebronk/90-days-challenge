@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import {
   ArrowLeft, Dumbbell, Heart, Trash2,
   User, Mail, Target, Utensils, Moon,
-  Activity, ChevronDown, ChevronUp, Image, Pencil, X, Save
+  Activity, ChevronDown, ChevronUp, Image, Pencil, X, Save, KeyRound
 } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -168,6 +168,7 @@ export default function ClientDetailPage({ params }: PageProps) {
   // Edit mode state
   const [isEditing, setIsEditing] = useState(false)
   const [isSavingClient, setIsSavingClient] = useState(false)
+  const [isResettingPassword, setIsResettingPassword] = useState(false)
   const [editForm, setEditForm] = useState({
     phone: '', city: '', country: '', age: '', gender: '', height: '', currentWeight: '', occupation: '',
     currentTraining: '', trainingExperience: '', trainingGoal: '', injuries: '',
@@ -340,6 +341,37 @@ export default function ClientDetailPage({ params }: PageProps) {
     }
   }
 
+  const handleResetPassword = async () => {
+    if (!confirm('Är du säker på att du vill återställa lösenordet för denna klient? Ett nytt lösenord kommer att skickas till deras e-post.')) return
+
+    setIsResettingPassword(true)
+    try {
+      const response = await fetch(`/api/clients/${clientId}/reset-password`, {
+        method: 'POST',
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        if (data.warning) {
+          toast.warning(data.warning)
+          // Show temporary password if email failed
+          if (data.tempPassword) {
+            toast.info(`Temporärt lösenord: ${data.tempPassword}`, { duration: 30000 })
+          }
+        } else {
+          toast.success(data.message || 'Lösenordet har återställts och skickats till klienten')
+        }
+      } else {
+        toast.error(data.error || 'Kunde inte återställa lösenord')
+      }
+    } catch (error) {
+      toast.error('Ett fel uppstod vid återställning av lösenord')
+    } finally {
+      setIsResettingPassword(false)
+    }
+  }
+
   const handleAssignWorkout = async () => {
     if (!selectedProgramId) { toast.error('Välj ett program'); return }
     if (!programStartDate) { toast.error('Välj ett startdatum'); return }
@@ -438,10 +470,22 @@ export default function ClientDetailPage({ params }: PageProps) {
               </Button>
             </div>
           ) : (
-            <Button onClick={startEditing} variant="outline" size="sm" className="border-amber-300 text-amber-700 hover:bg-amber-50">
-              <Pencil className="w-4 h-4 mr-1" />
-              Redigera
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={startEditing} variant="outline" size="sm" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+                <Pencil className="w-4 h-4 mr-1" />
+                Redigera
+              </Button>
+              <Button
+                onClick={handleResetPassword}
+                disabled={isResettingPassword}
+                variant="outline"
+                size="sm"
+                className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                <KeyRound className="w-4 h-4 mr-1" />
+                {isResettingPassword ? 'Återställer...' : 'Återställ lösenord'}
+              </Button>
+            </div>
           )}
         </div>
 

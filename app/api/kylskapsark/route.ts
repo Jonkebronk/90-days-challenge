@@ -93,7 +93,7 @@ function drawPage1(doc: jsPDF) {
 
   // Citat-ruta
   y += 5
-  const quoteBoxHeight = 20
+  const quoteBoxHeight = 25
 
   // Guld border på citat-rutan (ingen separat bakgrund)
   doc.setDrawColor(...GOLD)
@@ -104,12 +104,12 @@ function drawPage1(doc: jsPDF) {
   doc.setFontSize(9)
   doc.setFont('helvetica', 'italic')
   const quote = '"Det finns inga lata m\xe4nniskor, det finns bara m\xe4nniskor med kraftl\xf6sa m\xe5ls\xe4ttningar som inte inspirerar dem."'
-  doc.text(quote, PAGE_WIDTH / 2, y + 8, { align: 'center', maxWidth: PAGE_WIDTH - 2 * MARGIN - 10 })
+  doc.text(quote, PAGE_WIDTH / 2, y + 10, { align: 'center', maxWidth: PAGE_WIDTH - 2 * MARGIN - 15 })
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)
   doc.setTextColor(...LIGHT_GRAY)
-  doc.text('- Anthony Robbins', PAGE_WIDTH / 2, y + 15, { align: 'center' })
+  doc.text('- Anthony Robbins', PAGE_WIDTH / 2, y + 20, { align: 'center' })
 }
 
 function drawPage2(doc: jsPDF) {

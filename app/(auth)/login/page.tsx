@@ -100,7 +100,15 @@ export default function LoginPage() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-gray-700">Lösenord</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password" className="text-gray-700">Lösenord</Label>
+              <Link
+                href="/forgot-password"
+                className="text-sm text-gold-primary hover:text-gold-secondary transition-colors"
+              >
+                Glömt lösenord?
+              </Link>
+            </div>
             <Input
               id="password"
               type="password"
