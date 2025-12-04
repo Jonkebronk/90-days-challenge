@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image } from '@react-pdf/renderer'
+import { View, Text } from '@react-pdf/renderer'
 import { styles, colors } from './styles'
 
 interface ArticlePageProps {
@@ -11,14 +11,76 @@ interface ArticlePageProps {
   articleNumber?: string
 }
 
-// Parse MDX/Markdown content to PDF elements
+// Clean and convert MDX/Markdown content to plain text with proper formatting
+function cleanContent(content: string): string {
+  let cleaned = content
+
+  // Remove MDX imports and exports
+  cleaned = cleaned.replace(/^import\s+.*$/gm, '')
+  cleaned = cleaned.replace(/^export\s+.*$/gm, '')
+
+  // Remove JSX/MDX components (anything like <Component ... /> or <Component>...</Component>)
+  cleaned = cleaned.replace(/<[A-Z][a-zA-Z]*[^>]*\/>/g, '')
+  cleaned = cleaned.replace(/<[A-Z][a-zA-Z]*[^>]*>[\s\S]*?<\/[A-Z][a-zA-Z]*>/g, '')
+  cleaned = cleaned.replace(/<[A-Z][a-zA-Z]*[^>]*>/g, '')
+  cleaned = cleaned.replace(/<\/[A-Z][a-zA-Z]*>/g, '')
+
+  // Remove HTML comments
+  cleaned = cleaned.replace(/<!--[\s\S]*?-->/g, '')
+
+  // Remove code blocks (``` ... ```)
+  cleaned = cleaned.replace(/```[\s\S]*?```/g, '[Kodblock - se webversion]')
+
+  // Remove inline code backticks but keep content
+  cleaned = cleaned.replace(/`([^`]+)`/g, '$1')
+
+  // Convert bold **text** to just text (uppercase for emphasis)
+  cleaned = cleaned.replace(/\*\*([^*]+)\*\*/g, '$1')
+
+  // Convert italic *text* or _text_ to just text
+  cleaned = cleaned.replace(/\*([^*]+)\*/g, '$1')
+  cleaned = cleaned.replace(/_([^_]+)_/g, '$1')
+
+  // Convert links [text](url) to just text
+  cleaned = cleaned.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+
+  // Convert images ![alt](url) to [Bild: alt]
+  cleaned = cleaned.replace(/!\[([^\]]*)\]\([^)]+\)/g, (_, alt) => alt ? `[Bild: ${alt}]` : '')
+
+  // Remove any remaining HTML tags
+  cleaned = cleaned.replace(/<[^>]+>/g, '')
+
+  // Clean up extra whitespace and newlines
+  cleaned = cleaned.replace(/\n{3,}/g, '\n\n')
+  cleaned = cleaned.trim()
+
+  return cleaned
+}
+
+// Parse cleaned content into structured elements
 function parseContent(content: string): React.ReactNode[] {
+  const cleaned = cleanContent(content)
   const elements: React.ReactNode[] = []
-  const lines = content.split('\n')
+  const lines = cleaned.split('\n')
+
+  let currentParagraph: string[] = []
   let listItems: string[] = []
   let numberedListItems: string[] = []
-  let inBlockquote = false
   let blockquoteLines: string[] = []
+
+  const flushParagraph = () => {
+    if (currentParagraph.length > 0) {
+      const text = currentParagraph.join(' ').trim()
+      if (text) {
+        elements.push(
+          <Text key={`p-${elements.length}`} style={styles.paragraph}>
+            {text}
+          </Text>
+        )
+      }
+      currentParagraph = []
+    }
+  }
 
   const flushList = () => {
     if (listItems.length > 0) {
@@ -27,7 +89,7 @@ function parseContent(content: string): React.ReactNode[] {
           {listItems.map((item, i) => (
             <View key={i} style={styles.listItem}>
               <Text style={styles.listBullet}>•</Text>
-              <Text style={styles.listContent}>{item}</Text>
+              <Text style={styles.listContent}>{item.trim()}</Text>
             </View>
           ))}
         </View>
@@ -43,7 +105,7 @@ function parseContent(content: string): React.ReactNode[] {
           {numberedListItems.map((item, i) => (
             <View key={i} style={styles.numberedListItem}>
               <Text style={styles.numberedListNumber}>{i + 1}.</Text>
-              <Text style={styles.listContent}>{item}</Text>
+              <Text style={styles.listContent}>{item.trim()}</Text>
             </View>
           ))}
         </View>
@@ -56,149 +118,114 @@ function parseContent(content: string): React.ReactNode[] {
     if (blockquoteLines.length > 0) {
       elements.push(
         <View key={`quote-${elements.length}`} style={styles.blockquote}>
-          <Text style={styles.blockquoteText}>{blockquoteLines.join(' ')}</Text>
+          <Text style={styles.blockquoteText}>{blockquoteLines.join(' ').trim()}</Text>
         </View>
       )
       blockquoteLines = []
-      inBlockquote = false
     }
   }
 
+  const flushAll = () => {
+    flushParagraph()
+    flushList()
+    flushNumberedList()
+    flushBlockquote()
+  }
+
   for (let i = 0; i < lines.length; i++) {
-    let line = lines[i]
+    const line = lines[i]
+    const trimmedLine = line.trim()
 
-    // Skip empty lines
-    if (!line.trim()) {
-      flushList()
-      flushNumberedList()
-      flushBlockquote()
+    // Empty line - flush current paragraph
+    if (!trimmedLine) {
+      flushAll()
       continue
     }
 
-    // Skip MDX imports and components
-    if (line.startsWith('import ') || line.startsWith('export ') || line.match(/^<[A-Z]/)) {
-      continue
-    }
+    // Headers (# ## ###)
+    const h1Match = trimmedLine.match(/^#\s+(.+)$/)
+    const h2Match = trimmedLine.match(/^##\s+(.+)$/)
+    const h3Match = trimmedLine.match(/^###\s+(.+)$/)
+    const h4Match = trimmedLine.match(/^####\s+(.+)$/)
 
-    // Headers
-    if (line.startsWith('### ')) {
-      flushList()
-      flushNumberedList()
-      flushBlockquote()
+    if (h4Match || h3Match) {
+      flushAll()
       elements.push(
         <Text key={`h3-${i}`} style={styles.h3}>
-          {line.replace('### ', '')}
+          {(h4Match || h3Match)![1]}
         </Text>
       )
       continue
     }
-    if (line.startsWith('## ')) {
-      flushList()
-      flushNumberedList()
-      flushBlockquote()
+
+    if (h2Match) {
+      flushAll()
       elements.push(
         <Text key={`h2-${i}`} style={styles.h2}>
-          {line.replace('## ', '')}
+          {h2Match[1]}
         </Text>
       )
       continue
     }
-    if (line.startsWith('# ')) {
-      flushList()
-      flushNumberedList()
-      flushBlockquote()
+
+    if (h1Match) {
+      flushAll()
       elements.push(
         <Text key={`h1-${i}`} style={styles.h1}>
-          {line.replace('# ', '')}
+          {h1Match[1]}
         </Text>
       )
       continue
     }
 
     // Blockquote
-    if (line.startsWith('> ')) {
+    if (trimmedLine.startsWith('> ')) {
+      flushParagraph()
       flushList()
       flushNumberedList()
-      inBlockquote = true
-      blockquoteLines.push(line.replace('> ', ''))
+      blockquoteLines.push(trimmedLine.substring(2))
       continue
+    } else if (blockquoteLines.length > 0) {
+      flushBlockquote()
     }
 
-    // Unordered list
-    if (line.match(/^[-*] /)) {
+    // Unordered list (- or *)
+    const ulMatch = trimmedLine.match(/^[-*]\s+(.+)$/)
+    if (ulMatch) {
+      flushParagraph()
       flushNumberedList()
       flushBlockquote()
-      listItems.push(line.replace(/^[-*] /, ''))
+      listItems.push(ulMatch[1])
       continue
+    } else if (listItems.length > 0 && !trimmedLine.match(/^[-*]\s/)) {
+      flushList()
     }
 
     // Numbered list
-    if (line.match(/^\d+\. /)) {
+    const olMatch = trimmedLine.match(/^\d+[.)]\s+(.+)$/)
+    if (olMatch) {
+      flushParagraph()
       flushList()
       flushBlockquote()
-      numberedListItems.push(line.replace(/^\d+\. /, ''))
+      numberedListItems.push(olMatch[1])
       continue
-    }
-
-    // Image (just note it, can't always load external images)
-    if (line.match(/!\[.*\]\(.*\)/)) {
-      flushList()
+    } else if (numberedListItems.length > 0 && !trimmedLine.match(/^\d+[.)]\s/)) {
       flushNumberedList()
-      flushBlockquote()
-      const match = line.match(/!\[(.*)\]\((.*)\)/)
-      if (match) {
-        const [, alt, src] = match
-        // Try to render image if it's a valid URL
-        if (src.startsWith('http')) {
-          elements.push(
-            <View key={`img-${i}`} style={{ marginVertical: 10 }}>
-              <Image src={src} style={styles.image} />
-              {alt && <Text style={styles.imageCaption}>{alt}</Text>}
-            </View>
-          )
-        } else {
-          elements.push(
-            <Text key={`img-note-${i}`} style={{ ...styles.paragraph, fontStyle: 'italic', color: colors.gray }}>
-              [Bild: {alt || 'Se webversion'}]
-            </Text>
-          )
-        }
-      }
-      continue
     }
 
     // Horizontal rule
-    if (line.match(/^[-*_]{3,}$/)) {
-      flushList()
-      flushNumberedList()
-      flushBlockquote()
+    if (trimmedLine.match(/^[-*_]{3,}$/)) {
+      flushAll()
       elements.push(<View key={`hr-${i}`} style={styles.separator} />)
       continue
     }
 
-    // Regular paragraph
-    flushList()
-    flushNumberedList()
-    flushBlockquote()
-
-    // Process inline formatting
-    let processedText = line
-      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold markers (can't nest styles easily)
-      .replace(/\*(.*?)\*/g, '$1')     // Remove italic markers
-      .replace(/`(.*?)`/g, '$1')       // Remove code markers
-      .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Convert links to just text
-
-    elements.push(
-      <Text key={`p-${i}`} style={styles.paragraph}>
-        {processedText}
-      </Text>
-    )
+    // Regular text - add to current paragraph
+    currentParagraph.push(trimmedLine)
   }
 
-  // Flush any remaining lists
-  flushList()
-  flushNumberedList()
-  flushBlockquote()
+  // Flush any remaining content
+  flushAll()
 
   return elements
 }
