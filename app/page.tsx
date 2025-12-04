@@ -3,26 +3,15 @@
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Lock, Menu, X, Key, CheckCircle2, XCircle, Dumbbell, MessageSquare, UtensilsCrossed, LayoutDashboard, BookOpen, ChefHat, ShieldCheck, Sparkles, Target } from 'lucide-react'
+import { ArrowRight, Lock, Menu, X, CheckCircle2, XCircle, Dumbbell, MessageSquare, UtensilsCrossed, LayoutDashboard, BookOpen, ChefHat, ShieldCheck, Sparkles, Target } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
 
 export default function HomePage() {
   const router = useRouter()
   const { data: session, status } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [inviteDialogOpen, setInviteDialogOpen] = useState(false)
-  const [inviteCode, setInviteCode] = useState('')
-  const [isVerifying, setIsVerifying] = useState(false)
 
   // Redirect logged-in users to dashboard (for PWA experience)
   useEffect(() => {
@@ -31,43 +20,6 @@ export default function HomePage() {
     }
   }, [status, session, router])
 
-
-  const handleVerifyInviteCode = async () => {
-    if (!inviteCode || inviteCode.trim().length < 10) {
-      toast.error('Ange en giltig inbjudningskod')
-      return
-    }
-
-    setIsVerifying(true)
-
-    try {
-      const response = await fetch('/api/verify-invite-code', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: inviteCode.trim() })
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        toast.success('Inbjudningskod verifierad!', {
-          description: 'Du omdirigeras till kontoskapande...'
-        })
-        setInviteDialogOpen(false)
-        // Navigate to setup account with invitation token
-        setTimeout(() => {
-          router.push(`/setup-account?token=${data.invitationToken}`)
-        }, 1500)
-      } else {
-        toast.error(data.error || 'Ogiltig inbjudningskod')
-      }
-    } catch (error) {
-      console.error('Error verifying invite code:', error)
-      toast.error('Ett fel uppstod. Försök igen.')
-    } finally {
-      setIsVerifying(false)
-    }
-  }
 
   // Show loading while checking session (prevents flash of landing page)
   if (status === 'loading' || status === 'authenticated') {
@@ -116,46 +68,6 @@ export default function HomePage() {
               >
                 Coach Login
               </Link>
-              <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
-                <DialogTrigger asChild>
-                  <button
-                    className="flex items-center justify-center p-2.5 bg-gold-primary text-black rounded-lg hover:bg-gold-secondary transition-colors shadow-md"
-                    aria-label="Har du en kod?"
-                  >
-                    <Key className="w-5 h-5" />
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent">
-                      Ange din inbjudningskod
-                    </DialogTitle>
-                    <DialogDescription>
-                      Om du har fått en inbjudningskod från din coach, ange den här för att skapa ditt konto.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 pt-4">
-                    <div>
-                      <input
-                        type="text"
-                        placeholder="Ange inbjudningskod"
-                        value={inviteCode}
-                        onChange={(e) => setInviteCode(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleVerifyInviteCode()}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-primary focus:border-transparent outline-none"
-                        disabled={isVerifying}
-                      />
-                    </div>
-                    <button
-                      onClick={handleVerifyInviteCode}
-                      disabled={isVerifying}
-                      className="w-full px-6 py-3 bg-gradient-to-br from-gold-primary to-gold-secondary text-white font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isVerifying ? 'Verifierar...' : 'Verifiera kod'}
-                    </button>
-                  </div>
-                </DialogContent>
-              </Dialog>
             </div>
 
             {/* Mobile Menu Button */}
@@ -190,17 +102,6 @@ export default function HomePage() {
                 >
                   Coach Login
                 </Link>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false)
-                    setInviteDialogOpen(true)
-                  }}
-                  className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold bg-gold-primary text-black rounded-lg hover:bg-gold-secondary transition-colors shadow-md"
-                  aria-label="Har du en kod?"
-                >
-                  <Key className="w-4 h-4" />
-                  Har du en kod?
-                </button>
               </div>
             </div>
           )}

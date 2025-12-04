@@ -865,21 +865,6 @@ export default function ClientsPage() {
                         </div>
                       </Link>
                       <div className="flex items-center gap-2">
-                        {/* Generate/Regenerate GOLD Code Button */}
-                        {(!client.inviteCode || client.status === 'pending') && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleGenerateInviteCode(client.id)}
-                            disabled={generatingCodeFor === client.id}
-                            className="text-amber-600 hover:text-orange-500 hover:bg-gold-50 gap-2"
-                          >
-                            <RefreshCw className={`w-4 h-4 ${generatingCodeFor === client.id ? 'animate-spin' : ''}`} />
-                            <span className="hidden sm:inline">
-                              {client.inviteCode ? 'Ny kod' : 'Generera kod'}
-                            </span>
-                          </Button>
-                        )}
                         {/* Resend Invitation Email Button */}
                         {client.status === 'pending' && (
                           <Button
@@ -907,37 +892,6 @@ export default function ClientsPage() {
                       </div>
                     </div>
 
-                    {/* Show GOLD code for pending clients */}
-                    {client.status === 'pending' && client.inviteCode && (
-                      <div className="px-4 pb-4">
-                        <div className="bg-amber-50 border border-gray-300 rounded-lg p-3">
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2 flex-1">
-                              <Key className="w-4 h-4 text-amber-600" />
-                              <div>
-                                <p className="text-xs text-gray-400 mb-1">GOLD-kod</p>
-                                <code className="text-sm font-mono font-bold text-amber-600 tracking-wide">
-                                  {client.inviteCode}
-                                </code>
-                                {client.inviteCodeExpiresAt && (
-                                  <p className="text-xs text-gray-500 mt-1">
-                                    Giltig till: {formatExpiryDate(client.inviteCodeExpiresAt)}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => copyInviteCode(client.inviteCode || '')}
-                              className="text-amber-600 hover:bg-gray-200"
-                            >
-                              <Copy className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
