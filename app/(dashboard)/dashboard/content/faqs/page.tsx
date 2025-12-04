@@ -319,7 +319,10 @@ export default function FaqsPage() {
     const otherCategory = categories[newIndex]
 
     try {
-      // Swap order indices
+      // Use explicit index values to ensure proper ordering
+      const newOrderIndex = direction === 'up' ? otherCategory.orderIndex - 1 : otherCategory.orderIndex + 1
+
+      // Update both categories with new order indices
       await Promise.all([
         fetch(`/api/faq-categories/${category.id}`, {
           method: 'PATCH',
@@ -329,7 +332,7 @@ export default function FaqsPage() {
         fetch(`/api/faq-categories/${otherCategory.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderIndex: category.orderIndex }),
+          body: JSON.stringify({ orderIndex: category.orderIndex !== otherCategory.orderIndex ? category.orderIndex : newOrderIndex }),
         }),
       ])
 
@@ -359,7 +362,10 @@ export default function FaqsPage() {
     const otherQuestion = categoryQuestions[newIndex]
 
     try {
-      // Swap order indices
+      // Use explicit index values to ensure proper ordering
+      const newOrderIndex = direction === 'up' ? otherQuestion.orderIndex - 1 : otherQuestion.orderIndex + 1
+
+      // Update both questions with new order indices
       await Promise.all([
         fetch(`/api/faq-questions/${question.id}`, {
           method: 'PATCH',
@@ -369,7 +375,7 @@ export default function FaqsPage() {
         fetch(`/api/faq-questions/${otherQuestion.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderIndex: question.orderIndex }),
+          body: JSON.stringify({ orderIndex: question.orderIndex !== otherQuestion.orderIndex ? question.orderIndex : newOrderIndex }),
         }),
       ])
 
