@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { BookOpen, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { ArticleCard } from '@/components/article-card'
+import { DownloadPdfButton } from '@/components/download-pdf-button'
 
 type Article = {
   id: string
@@ -83,6 +84,15 @@ export default function CoachArticlesPage() {
           Resurser och guider för dig som coach
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent mt-4 sm:mt-6 opacity-30" />
+
+        {/* PDF Download Button */}
+        <div className="mt-4">
+          <DownloadPdfButton
+            audience="coach"
+            variant="outline"
+            className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10 hover:border-purple-500/50"
+          />
+        </div>
       </div>
 
       {/* Articles Grid */}

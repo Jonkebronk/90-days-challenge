@@ -28,6 +28,7 @@ import {
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { MDXPreview } from '@/components/mdx-preview'
+import { DownloadPdfButton } from '@/components/download-pdf-button'
 
 // Map icon names to components
 const iconMap: Record<string, LucideIcon> = {
@@ -441,6 +442,15 @@ export default function SkillTreePage() {
           Din resa till framgångsrik livsstilsförändring
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
+
+        {/* PDF Download Button */}
+        <div className="mt-4">
+          <DownloadPdfButton
+            audience="client"
+            variant="outline"
+            className="border-gold-primary/30 text-gold-light hover:bg-gold-primary/10 hover:border-gold-primary/50"
+          />
+        </div>
       </div>
 
       {isLoading ? (
