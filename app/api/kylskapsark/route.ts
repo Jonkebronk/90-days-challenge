@@ -169,15 +169,15 @@ function drawPage2(doc: jsPDF) {
 
   // Sektion 1: UTFORSKA NYTTAN
   y = drawSectionHeader(doc, y, 'UTFORSKA NYTTAN')
-  y = drawInputLines(doc, y, 'Vilka nyttor f\xe5r jag om jag n\xe5r m\xe5let? (Lista allt du kommer p\xe5)', 4)
+  y = drawInputLines(doc, y, 'Vilka nyttor f\xe5r jag om jag n\xe5r m\xe5let? (Lista allt du kommer p\xe5)', 3)
 
   // Sektion 2: UTFORSKA FÖRÄNDRINGEN
   y = drawSectionHeader(doc, y, 'UTFORSKA F\xd6R\xc4NDRINGEN')
-  y = drawInputLines(doc, y, 'Vad kommer att vara annorlunda? (Energi, sj\xe4lvf\xf6rtroende, kl\xe4der, relationer, aktiviteter)', 3)
+  y = drawInputLines(doc, y, 'Vad kommer att vara annorlunda? (Energi, sj\xe4lvf\xf6rtroende, kl\xe4der, relationer, aktiviteter)', 2)
 
   // Sektion 3: UTFORSKA HINDREN
   y = drawSectionHeader(doc, y, 'UTFORSKA HINDREN')
-  y = drawInputLines(doc, y, 'Vad kommer att vara l\xe4tt? Vad kommer att vara sv\xe5rt/ovant?', 3)
+  y = drawInputLines(doc, y, 'Vad kommer att vara l\xe4tt? Vad kommer att vara sv\xe5rt/ovant?', 2)
 
   // Sektion 4: TIDIGARE ERFARENHETER
   y = drawSectionHeader(doc, y, 'TIDIGARE ERFARENHETER')
