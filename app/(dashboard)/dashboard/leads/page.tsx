@@ -157,10 +157,7 @@ export default function LeadsPage() {
 
       if (response.ok) {
         const data = await response.json()
-        toast.success(`${lead.fullName} konverterad till klient!`, {
-          description: `Inbjudningskod: ${data.inviteCode}`,
-          duration: 10000,
-        })
+        toast.success(`${lead.fullName} konverterad till klient!`)
         fetchLeads()
         // Navigate to clients page after a short delay
         setTimeout(() => {
