@@ -70,6 +70,7 @@ export default function ClientsPage() {
     email: string
     inviteCode: string
     inviteCodeExpiresAt: string
+    emailSent?: boolean
   } | null>(null)
   const [copiedCode, setCopiedCode] = useState(false)
   const [generatingCodeFor, setGeneratingCodeFor] = useState<string | null>(null)
@@ -158,6 +159,7 @@ export default function ClientsPage() {
           email: data.client.email,
           inviteCode: data.client.inviteCode,
           inviteCodeExpiresAt: data.client.inviteCodeExpiresAt,
+          emailSent: data.emailSent,
         })
 
         // Close invite dialog and open success dialog
@@ -755,16 +757,21 @@ export default function ClientsPage() {
               <h4 className="font-semibold text-gray-900 mb-2">Instruktioner för klienten:</h4>
               <ol className="text-sm text-gray-600 space-y-2 list-decimal list-inside">
                 <li>Gå till inloggningssidan</li>
-                <li>Klicka på &quot;Har du en inbjudningskod?&quot;</li>
+                <li>Klicka på <span className="inline-flex items-center gap-1 font-medium text-gray-800">nyckel-ikonen 🔑</span> bredvid &quot;Har du en inbjudningskod?&quot;</li>
                 <li>Ange GOLD-koden ovan</li>
                 <li>Skapa ett lösenord och kom igång!</li>
               </ol>
             </div>
 
             {/* Email notification */}
-            <div className="flex items-center gap-2 text-sm text-gray-400">
-              <Mail className="w-4 h-4 text-amber-600" />
-              <span>En inbjudan har också skickats till {createdClientData?.email}</span>
+            <div className="flex items-center gap-2 text-sm">
+              <Mail className={`w-4 h-4 ${createdClientData?.emailSent ? 'text-green-600' : 'text-gray-400'}`} />
+              <span className={createdClientData?.emailSent ? 'text-green-600' : 'text-gray-400'}>
+                {createdClientData?.emailSent
+                  ? `En inbjudan har skickats till ${createdClientData?.email}`
+                  : `Inbjudan kunde inte skickas via e-post. Dela GOLD-koden manuellt med klienten.`
+                }
+              </span>
             </div>
           </div>
 

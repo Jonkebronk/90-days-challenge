@@ -177,10 +177,11 @@ export async function POST(request: NextRequest) {
 
     // Send invitation email
     const invitationUrl = `${process.env.NEXTAUTH_URL}/setup-account?token=${invitationToken}`
-    await sendInvitationEmail(email, invitationUrl, `${firstName} ${lastName}`, coach.name || undefined)
+    const emailSent = await sendInvitationEmail(email, invitationUrl, `${firstName} ${lastName}`, coach.name || undefined)
 
     return NextResponse.json({
       success: true,
+      emailSent,
       client: {
         id: client.id,
         name: client.name,
