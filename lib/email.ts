@@ -298,3 +298,86 @@ export async function sendWelcomeEmail(
     return false
   }
 }
+
+/**
+ * Send check-in reminder email (for Sunday cron job)
+ */
+export async function sendCheckInReminderEmail(
+  email: string,
+  name?: string,
+  coachName?: string
+): Promise<boolean> {
+  try {
+    // If no API key, log to console (development mode)
+    if (!process.env.RESEND_API_KEY) {
+      console.log('=================================')
+      console.log('CHECK-IN REMINDER EMAIL (dev mode)')
+      console.log('To:', email)
+      console.log('Name:', name || 'N/A')
+      console.log('=================================')
+      return true
+    }
+
+    const loginUrl = `${process.env.NEXTAUTH_URL}/login`
+
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: email,
+      subject: 'Påminnelse: Dags för veckans check-in! 📊',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 30px; border-radius: 10px;">
+            <h1 style="color: #FFD700; margin: 0 0 20px 0; font-size: 24px;">Dags för check-in! 📊</h1>
+
+            <p style="color: #fff; margin: 0 0 15px 0;">
+              Hej${name ? ` ${name}` : ''},
+            </p>
+
+            <p style="color: #ccc; margin: 0 0 20px 0;">
+              Det är söndag och dags för din vecko-check-in! Ta några minuter och rapportera hur din vecka har gått.
+            </p>
+
+            <div style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 8px; padding: 15px; margin: 20px 0;">
+              <p style="color: #FFD700; margin: 0; font-weight: bold;">Kom ihåg att:</p>
+              <ul style="color: #ccc; margin: 10px 0 0 0; padding-left: 20px;">
+                <li>Väga dig och logga vikten</li>
+                <li>Ta nya formbilder (om det är dags)</li>
+                <li>Berätta hur veckan har gått</li>
+              </ul>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${loginUrl}" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #1a1a2e; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                Gör din check-in nu
+              </a>
+            </div>
+
+            ${coachName ? `
+            <p style="color: #999; font-size: 14px; margin: 20px 0 0 0; text-align: center;">
+              ${coachName} ser fram emot att höra hur det går! 💪
+            </p>
+            ` : ''}
+
+            <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+
+            <p style="color: #666; font-size: 12px; margin: 0; text-align: center;">
+              Du får detta mejl eftersom du är aktiv klient hos Friskvårdskompassen.
+            </p>
+          </div>
+        </body>
+        </html>
+      `,
+    })
+
+    return true
+  } catch (error) {
+    console.error('Failed to send check-in reminder email:', error)
+    return false
+  }
+}

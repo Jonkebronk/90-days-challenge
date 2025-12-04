@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendCheckInReminders } from '@/lib/push-notifications'
+import { sendCheckInReminderEmail } from '@/lib/email'
+import { prisma } from '@/lib/prisma'
 
 // GET /api/cron/check-in-reminder - Send check-in reminders to all active clients
 // This endpoint should be called by a cron job on Sundays
@@ -13,12 +15,58 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const result = await sendCheckInReminders()
+    // Send push notifications
+    const pushResult = await sendCheckInReminders()
+
+    // Send emails to all active clients
+    const clients = await prisma.user.findMany({
+      where: {
+        role: 'client',
+        status: 'active',
+        email: { not: null },
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        firstName: true,
+        coach: {
+          select: { name: true },
+        },
+      },
+    })
+
+    let emailsSent = 0
+    let emailsFailed = 0
+
+    for (const client of clients) {
+      if (!client.email) continue
+
+      const clientName = client.name || client.firstName || undefined
+      const coachName = client.coach?.name || undefined
+
+      const success = await sendCheckInReminderEmail(
+        client.email,
+        clientName,
+        coachName
+      )
+
+      if (success) {
+        emailsSent++
+      } else {
+        emailsFailed++
+      }
+    }
 
     return NextResponse.json({
       success: true,
-      message: `Sent ${result.sent} reminders to ${result.total} clients`,
-      ...result,
+      message: `Påminnelser skickade: ${pushResult.sent} push, ${emailsSent} e-post`,
+      push: pushResult,
+      email: {
+        total: clients.length,
+        sent: emailsSent,
+        failed: emailsFailed,
+      },
     })
   } catch (error) {
     console.error('Error sending check-in reminders:', error)
