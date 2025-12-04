@@ -172,10 +172,6 @@ export default function ClientFaqsPage() {
                   })}
               </div>
 
-              {/* "se fler..." link if needed */}
-              {category.questions.length > 5 && (
-                <p className="text-sm text-gray-500 italic">se fler...</p>
-              )}
             </div>
           ))}
       </div>
