@@ -69,19 +69,7 @@ function drawPage1(doc: jsPDF) {
 
   // Sektion 1: MITT MÅL
   y = drawSectionHeader(doc, y, 'MITT M\xc5L')
-  y = drawInputLines(doc, y, 'Vad \xe4r ditt specifika, m\xe4tbara m\xe5l?', 2)
-
-  // Deadline with white background
-  doc.setTextColor(...LIGHT_GRAY)
-  doc.setFontSize(10)
-  doc.setFont('helvetica', 'normal')
-  doc.text('Deadline:', MARGIN, y)
-
-  // White box for deadline
-  doc.setFillColor(...WHITE)
-  doc.roundedRect(MARGIN + 22, y - 5, 50, 8, 1, 1, 'F')
-
-  y += 10
+  y = drawInputLines(doc, y, 'Vad \xe4r ditt specifika, m\xe4tbara m\xe5l?', 3)
 
   // Sektion 2: VARFÖR ÄR DETTA VIKTIGT FÖR MIG?
   y = drawSectionHeader(doc, y, 'VARF\xd6R \xc4R DETTA VIKTIGT F\xd6R MIG?')
@@ -93,35 +81,18 @@ function drawPage1(doc: jsPDF) {
 
   // Sektion 4: VAD HÄNDER OM JAG INTE GÖR FÖRÄNDRINGEN?
   y = drawSectionHeader(doc, y, 'VAD H\xc4NDER OM JAG INTE G\xd6R F\xd6R\xc4NDRINGEN?')
-  y = drawInputLines(doc, y, 'Hur ser livet ut om 1 \xe5r, 5 \xe5r om du INTE f\xf6r\xe4ndrar n\xe5got?', 2)
+  y = drawInputLines(doc, y, 'Hur ser livet ut om 1 \xe5r, 5 \xe5r om du INTE f\xf6r\xe4ndrar n\xe5got?', 3)
 
   // Sektion 5: NÄR DET BLIR TUFFT PÅMINNER JAG MIG OM
   y = drawSectionHeader(doc, y, 'N\xc4R DET BLIR TUFFT P\xc5MINNER JAG MIG OM:')
-  y = drawInputLines(doc, y, 'Vad ska du s\xe4ga till dig sj\xe4lv n\xe4r motivationen sviker?', 2)
+  y = drawInputLines(doc, y, 'Vad ska du s\xe4ga till dig sj\xe4lv n\xe4r motivationen sviker?', 3)
 
   // Sektion 6: MITT LÖFTE TILL MIG SJÄLV
   y = drawSectionHeader(doc, y, 'MITT L\xd6FTE TILL MIG SJ\xc4LV')
-  y = drawInputLines(doc, y, 'Skriv ett personligt \xe5tagande. Vad lovar du dig sj\xe4lv?', 2)
-
-  // Datum och Signatur with white backgrounds
-  y += 3
-  doc.setTextColor(...LIGHT_GRAY)
-  doc.setFontSize(10)
-  doc.setFont('helvetica', 'normal')
-  doc.text('Datum:', MARGIN, y)
-
-  // White box for datum
-  doc.setFillColor(...WHITE)
-  doc.roundedRect(MARGIN + 17, y - 5, 40, 8, 1, 1, 'F')
-
-  doc.text('Signatur:', 80, y)
-
-  // White box for signatur
-  doc.setFillColor(...WHITE)
-  doc.roundedRect(102, y - 5, PAGE_WIDTH - MARGIN - 102, 8, 1, 1, 'F')
+  y = drawInputLines(doc, y, 'Skriv ett personligt \xe5tagande. Vad lovar du dig sj\xe4lv?', 3)
 
   // Citat-ruta
-  y += 12
+  y += 5
   const quoteBoxHeight = 20
 
   // Guld border på citat-rutan (ingen separat bakgrund)
