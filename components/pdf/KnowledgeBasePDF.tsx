@@ -60,7 +60,7 @@ interface KnowledgeBasePDFProps {
 function PageFooter() {
   return (
     <View style={styles.footer} fixed>
-      <Text style={styles.footerText}>90-Dagars Utmaningen - Kunskapskartan</Text>
+      <Text style={styles.footerText}>Friskvårdskompassen - Kunskapskartan</Text>
       <Text
         style={styles.pageNumber}
         render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`}
@@ -124,8 +124,8 @@ export function KnowledgeBasePDF({
 
   return (
     <Document
-      title="90-Dagars Utmaningen - Kunskapskartan"
-      author="90-Dagars Utmaningen"
+      title="Friskvårdskompassen - Kunskapskartan"
+      author="Friskvårdskompassen"
       subject="Kunskapskartan"
       keywords="träning, kost, hälsa, livsstil"
     >

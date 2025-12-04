@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { MDXPreview } from '@/components/mdx-preview'
 
 // Fallback content if database is empty
-const FALLBACK_CONTENT = `# Välkommen till 90-Dagars Challenge!
+const FALLBACK_CONTENT = `# Välkommen till Friskvårdskompassen!
 
 Grattis till att du har tagit steget mot en hälsosammare livsstil! Detta är början på din transformation.
 
@@ -110,7 +110,7 @@ Vila och återhämta dig. Kontakta din coach så justerar vi programmet. Din hä
 Absolut! Använd ditt omdöme - välj proteinrika rätter med grönsaker. En social måltid per vecka påverkar inte dina resultat.
 
 **Hur snabbt kommer jag se resultat?**
-De flesta ser förändringar inom 2-4 veckor. Men kom ihåg: detta är en 90-dagars resa. Tålamod ger resultat!
+De flesta ser förändringar inom 2-4 veckor. Ha tålamod - konsistens ger resultat!
 
 ---
 

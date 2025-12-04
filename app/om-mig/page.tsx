@@ -328,7 +328,7 @@ export default function AboutMePage() {
                 href="/apply"
                 className="inline-block px-8 py-4 bg-gradient-to-r from-gold-light to-orange-500 text-[#0a0a0a] rounded-lg font-bold tracking-[1px] uppercase transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(255,215,0,0.4)]"
               >
-                Ansök till 90-Dagars Challenge
+                Ansök nu
               </Link>
             </div>
           </div>

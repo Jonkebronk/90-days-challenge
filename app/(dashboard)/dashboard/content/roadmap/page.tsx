@@ -251,9 +251,9 @@ export default function RoadmapPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">90-Dagars Roadmap</h1>
+          <h1 className="text-3xl font-bold">Roadmap</h1>
           <p className="text-muted-foreground mt-1">
-            Tilldela artiklar till specifika dagar i 90-dagars resan
+            Tilldela artiklar till specifika dagar i klientens resa
           </p>
         </div>
         <Button onClick={() => setIsAddDialogOpen(true)}>

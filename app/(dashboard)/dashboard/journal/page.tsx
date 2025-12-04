@@ -349,7 +349,7 @@ function ClientJournalContent() {
         <p className="text-gray-500 text-xs sm:text-sm tracking-[1px]">
           {isCoach
             ? 'Komplett översikt över klientens resa och framsteg'
-            : 'Din resa och framsteg i 90-Dagars Challenge'}
+            : 'Din resa och framsteg'}
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>

@@ -159,7 +159,7 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
               <div>
                 <h2 className="text-2xl font-bold mb-3 text-white">Välkommen till din resa! 🎉</h2>
                 <p className="text-[rgba(255,255,255,0.7)] leading-relaxed">
-                  Detta är din start check-in som markerar början på din 90-dagars transformation.
+                  Detta är din start check-in som markerar början på din transformation.
                   Vi kommer att dokumentera din utgångspunkt så att du kan följa din fantastiska utveckling!
                 </p>
               </div>
@@ -466,7 +466,7 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
                 🎉
               </div>
               <h1 className="text-3xl font-bold mb-4 bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-                Välkommen till din 90-dagars resa!
+                Välkommen till din resa!
               </h1>
               <p className="text-[rgba(255,255,255,0.8)] text-lg leading-relaxed mb-6">
                 Din coach har nu tagit emot din start check-in och ser fram emot att följa din resa mot dina mål.

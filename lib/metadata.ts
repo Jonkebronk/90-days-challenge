@@ -1,14 +1,14 @@
 import { Metadata } from 'next'
 
 export const siteConfig = {
-  name: '90-Dagars Utmaningen',
-  description: 'Transform din kropp och hälsa på 90 dagar. Få personlig coaching, skräddarsydda träningsprogram, kostplaner, dagliga check-ins och experthjälp för att nå dina hälsomål.',
-  url: process.env.NEXT_PUBLIC_APP_URL || 'https://90-days-challenge.com',
+  name: 'Friskvårdskompassen',
+  description: 'Din vägvisare till bättre hälsa. Få personlig coaching, skräddarsydda träningsprogram, kostplaner och experthjälp för att nå dina hälsomål.',
+  url: process.env.NEXT_PUBLIC_APP_URL || 'https://friskvardskompassen.com',
   ogImage: '/images/og-image.png',
-  author: '90-Dagars Utmaningen',
+  author: 'Friskvårdskompassen',
   keywords: [
-    '90 dagars utmaning',
-    '90 days challenge',
+    'friskvårdskompassen',
+    'hälsocoaching',
     'viktminskning',
     'muskelökning',
     'personlig tränare online',
@@ -22,7 +22,6 @@ export const siteConfig = {
     'kostschema',
     'personlig träning',
     'online coaching',
-    'fitnesskollning',
     'hälsocoach',
     'transformering',
     'livsstilsförändring',
@@ -73,7 +72,7 @@ export function constructMetadata({
       title,
       description,
       images: [image],
-      creator: '@90dagarsutmaning'
+      creator: '@friskvardskompassen'
     },
     icons: {
       icon: '/favicon.ico',

@@ -150,7 +150,7 @@ export default function CheckInPage() {
           Check-in
         </h1>
         <p className="text-gray-400 text-xs sm:text-sm tracking-[1px]">
-          {hasStartCheckIn ? 'Dokumentera din veckovisa framgång' : 'Börja din 90-dagars resa'}
+          {hasStartCheckIn ? 'Dokumentera din veckovisa framgång' : 'Börja din resa'}
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>

@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       const summaryLines = []
       if (isStartCheckIn) {
         summaryLines.push(`🎯 START CHECK-IN från ${user.name}`)
-        summaryLines.push(`${user.name} har nu påbörjat sin 90-dagars resa!`)
+        summaryLines.push(`${user.name} har nu påbörjat sin resa!`)
       } else {
         summaryLines.push(`📋 Veckorapport från ${user.name}`)
       }

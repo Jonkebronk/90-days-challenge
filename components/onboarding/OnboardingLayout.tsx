@@ -47,9 +47,9 @@ export function OnboardingLayout({
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">90</span>
+                <span className="text-primary-foreground font-bold text-lg">F</span>
               </div>
-              <span className="font-bold text-lg">90 Days Challenge</span>
+              <span className="font-bold text-lg">Friskvårdskompassen</span>
             </div>
             <div className="text-sm text-muted-foreground">
               Step {currentStep} of {totalSteps}

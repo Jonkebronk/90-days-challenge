@@ -14,7 +14,7 @@ export default function OnboardingLayout({
           <Link href="/" className="flex items-center justify-center group">
             <Image
               src="/images/logo-white.svg"
-              alt="90-Dagars Utmaningen"
+              alt="Friskvårdskompassen"
               width={240}
               height={50}
               className="h-10 w-auto object-contain transition-all group-hover:opacity-80"

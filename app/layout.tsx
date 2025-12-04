@@ -8,12 +8,12 @@ import { PWARegister } from "@/components/pwa-register";
 import { PullToRefresh } from "@/components/pull-to-refresh";
 
 export const metadata: Metadata = constructMetadata({
-  title: "90-Dagars Utmaningen - Transform Din Kropp & Hälsa",
-  description: "Transform din kropp och hälsa på 90 dagar. Få personlig coaching, skräddarsydda träningsprogram, kostplaner, dagliga check-ins och experthjälp för att nå dina hälsomål.",
+  title: "Friskvårdskompassen - Din vägvisare till bättre hälsa",
+  description: "Din vägvisare till bättre hälsa. Få personlig coaching, skräddarsydda träningsprogram, kostplaner och experthjälp för att nå dina hälsomål.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "90-Dagars Utmaningen",
+    title: "Friskvårdskompassen",
   },
 });
 
