@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const audience = searchParams.get('audience') || 'client'
-    const categoryIds = searchParams.get('categoryIds')?.split(',').filter(Boolean)
 
     // Validate audience parameter
     if (audience !== 'client' && audience !== 'coach') {
@@ -29,47 +28,96 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized to access coach content' }, { status: 403 })
     }
 
-    // Build category filter
-    const categoryFilter: any = {
-      audience,
-    }
-    if (categoryIds && categoryIds.length > 0) {
-      categoryFilter.id = { in: categoryIds }
-    }
+    let pdfData: any
 
-    // Fetch categories with their articles
-    const categories = await prisma.articleCategory.findMany({
-      where: categoryFilter,
-      orderBy: { orderIndex: 'asc' },
-      include: {
-        articles: {
-          where: {
-            published: true,
+    if (audience === 'client') {
+      // Fetch skill tree branches with articles (same structure as kunskapskartan)
+      const branches = await prisma.skillTreeBranch.findMany({
+        orderBy: { orderIndex: 'asc' },
+        include: {
+          articles: {
+            where: {
+              published: true,
+              skillTreeSubcategoryId: null, // Only articles not in subcategory
+            },
+            orderBy: { orderInBranch: 'asc' },
+            select: {
+              id: true,
+              title: true,
+              content: true,
+              difficulty: true,
+              estimatedReadingMinutes: true,
+              orderInBranch: true,
+            },
           },
-          orderBy: { orderIndex: 'asc' },
-          select: {
-            id: true,
-            title: true,
-            content: true,
-            difficulty: true,
-            estimatedReadingMinutes: true,
-            orderIndex: true,
+          subcategories: {
+            orderBy: { orderIndex: 'asc' },
+            include: {
+              articles: {
+                where: { published: true },
+                orderBy: { orderInBranch: 'asc' },
+                select: {
+                  id: true,
+                  title: true,
+                  content: true,
+                  difficulty: true,
+                  estimatedReadingMinutes: true,
+                  orderInBranch: true,
+                },
+              },
+            },
           },
         },
-      },
-    })
+      })
 
-    // Filter out categories with no articles
-    const categoriesWithArticles = categories.filter(cat => cat.articles.length > 0)
+      // Transform to PDF format
+      pdfData = {
+        type: 'skillTree',
+        branches: branches.filter(branch => {
+          const hasLooseArticles = branch.articles.length > 0
+          const hasSubcategoryArticles = branch.subcategories.some(sub => sub.articles.length > 0)
+          return hasLooseArticles || hasSubcategoryArticles
+        }),
+      }
+    } else {
+      // Coach articles - use category structure
+      const categories = await prisma.articleCategory.findMany({
+        where: { audience: 'coach' },
+        orderBy: { orderIndex: 'asc' },
+        include: {
+          articles: {
+            where: { published: true },
+            orderBy: { orderIndex: 'asc' },
+            select: {
+              id: true,
+              title: true,
+              content: true,
+              difficulty: true,
+              estimatedReadingMinutes: true,
+              orderIndex: true,
+            },
+          },
+        },
+      })
 
-    if (categoriesWithArticles.length === 0) {
+      pdfData = {
+        type: 'categories',
+        categories: categories.filter(cat => cat.articles.length > 0),
+      }
+    }
+
+    // Check if we have content
+    if (pdfData.type === 'skillTree' && pdfData.branches.length === 0) {
+      return NextResponse.json({ error: 'No articles found' }, { status: 404 })
+    }
+    if (pdfData.type === 'categories' && pdfData.categories.length === 0) {
       return NextResponse.json({ error: 'No articles found' }, { status: 404 })
     }
 
     // Generate PDF
     const pdfBuffer = await renderToBuffer(
       KnowledgeBasePDF({
-        categories: categoriesWithArticles,
+        data: pdfData,
         audience: audience as 'client' | 'coach',
       })
     )
@@ -77,7 +125,7 @@ export async function GET(request: NextRequest) {
     // Return PDF as downloadable file
     const filename = audience === 'coach'
       ? 'coach-kunskapsbank.pdf'
-      : 'kunskapsbank.pdf'
+      : 'kunskapskartan.pdf'
 
     // Convert Buffer to Uint8Array for NextResponse compatibility
     const uint8Array = new Uint8Array(pdfBuffer)

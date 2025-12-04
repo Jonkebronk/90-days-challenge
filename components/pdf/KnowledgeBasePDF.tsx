@@ -4,7 +4,7 @@ import { CoverPage } from './CoverPage'
 import { TableOfContents } from './TableOfContents'
 import { ChapterHeader } from './ChapterHeader'
 import { ArticlePage } from './ArticlePage'
-import { styles, colors } from './styles'
+import { styles } from './styles'
 
 interface Article {
   id: string
@@ -12,7 +12,24 @@ interface Article {
   content: string
   difficulty?: string | null
   estimatedReadingMinutes?: number | null
+  orderInBranch?: number
+  orderIndex?: number
+}
+
+interface Subcategory {
+  id: string
+  name: string
   orderIndex: number
+  articles: Article[]
+}
+
+interface Branch {
+  id: string
+  name: string
+  color: string
+  orderIndex: number
+  articles: Article[]
+  subcategories: Subcategory[]
 }
 
 interface Category {
@@ -23,10 +40,18 @@ interface Category {
   articles: Article[]
 }
 
-interface KnowledgeBasePDFProps {
+interface SkillTreeData {
+  type: 'skillTree'
+  branches: Branch[]
+}
+
+interface CategoryData {
+  type: 'categories'
   categories: Category[]
-  title?: string
-  subtitle?: string
+}
+
+interface KnowledgeBasePDFProps {
+  data: SkillTreeData | CategoryData
   audience?: 'client' | 'coach'
 }
 
@@ -34,7 +59,7 @@ interface KnowledgeBasePDFProps {
 function PageFooter() {
   return (
     <View style={styles.footer} fixed>
-      <Text style={styles.footerText}>90-Dagars Utmaningen - Kunskapsbank</Text>
+      <Text style={styles.footerText}>90-Dagars Utmaningen - Kunskapskartan</Text>
       <Text
         style={styles.pageNumber}
         render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`}
@@ -44,75 +69,174 @@ function PageFooter() {
 }
 
 export function KnowledgeBasePDF({
-  categories,
-  title = '90-DAGARS UTMANINGEN',
-  subtitle = 'Kunskapsbank',
+  data,
   audience = 'client',
 }: KnowledgeBasePDFProps) {
-  // Sort categories by orderIndex
-  const sortedCategories = [...categories].sort((a, b) => a.orderIndex - b.orderIndex)
+  // Build table of contents based on data type
+  const tocChapters: { number: number; title: string; subcategories?: { name: string; articles: { number: string; title: string }[] }[]; articles: { number: string; title: string }[] }[] = []
 
-  // Build table of contents data
-  const tocChapters = sortedCategories.map((cat, catIndex) => ({
-    number: catIndex + 1,
-    title: cat.name,
-    articles: cat.articles
-      .sort((a, b) => a.orderIndex - b.orderIndex)
-      .map((article, artIndex) => ({
-        number: `${catIndex + 1}.${artIndex + 1}`,
+  if (data.type === 'skillTree') {
+    data.branches.forEach((branch, branchIndex) => {
+      const chapterNumber = branchIndex + 1
+      const subcategoriesData: { name: string; articles: { number: string; title: string }[] }[] = []
+      let articleCounter = 1
+
+      // Add subcategories with their articles
+      branch.subcategories.forEach((sub) => {
+        if (sub.articles.length > 0) {
+          subcategoriesData.push({
+            name: sub.name,
+            articles: sub.articles.map((article) => ({
+              number: `${chapterNumber}.${articleCounter++}`,
+              title: article.title,
+            })),
+          })
+        }
+      })
+
+      // Add loose articles (not in subcategory)
+      const looseArticles = branch.articles.map((article) => ({
+        number: `${chapterNumber}.${articleCounter++}`,
         title: article.title,
-      })),
-  }))
+      }))
+
+      tocChapters.push({
+        number: chapterNumber,
+        title: branch.name,
+        subcategories: subcategoriesData.length > 0 ? subcategoriesData : undefined,
+        articles: looseArticles,
+      })
+    })
+  } else {
+    data.categories.forEach((category, catIndex) => {
+      tocChapters.push({
+        number: catIndex + 1,
+        title: category.name,
+        articles: category.articles.map((article, artIndex) => ({
+          number: `${catIndex + 1}.${artIndex + 1}`,
+          title: article.title,
+        })),
+      })
+    })
+  }
 
   return (
     <Document
-      title={`${title} - ${subtitle}`}
+      title="90-Dagars Utmaningen - Kunskapskartan"
       author="90-Dagars Utmaningen"
-      subject="Kunskapsbank"
+      subject="Kunskapskartan"
       keywords="träning, kost, hälsa, livsstil"
     >
       {/* Cover Page */}
       <CoverPage
-        title={title}
-        subtitle={audience === 'coach' ? 'Coach Kunskapsbank' : subtitle}
+        title="90-DAGARS UTMANINGEN"
+        subtitle={audience === 'coach' ? 'Coach Kunskapsbank' : 'Kunskapskartan'}
       />
 
       {/* Table of Contents */}
       <TableOfContents chapters={tocChapters} />
 
-      {/* Chapters (Categories) */}
-      {sortedCategories.map((category, catIndex) => {
-        const chapterNumber = catIndex + 1
-        const sortedArticles = [...category.articles].sort((a, b) => a.orderIndex - b.orderIndex)
+      {/* Chapters */}
+      {data.type === 'skillTree' ? (
+        // Render skill tree branches
+        data.branches.map((branch, branchIndex) => {
+          const chapterNumber = branchIndex + 1
+          let articleCounter = 1
 
-        return (
-          <React.Fragment key={category.id}>
-            {/* Chapter Header Page */}
-            <ChapterHeader
-              chapterNumber={chapterNumber}
-              title={category.name}
-              description={category.description || undefined}
-            />
+          // Collect all articles in order: subcategory articles first, then loose articles
+          const allArticlesWithMeta: { article: Article; subcategoryName?: string; articleNumber: string }[] = []
 
-            {/* Articles in this chapter */}
-            <Page size="A4" style={styles.page} wrap>
-              <PageFooter />
+          // Add subcategory articles
+          branch.subcategories.forEach((sub) => {
+            sub.articles.forEach((article) => {
+              allArticlesWithMeta.push({
+                article,
+                subcategoryName: sub.name,
+                articleNumber: `${chapterNumber}.${articleCounter++}`,
+              })
+            })
+          })
 
-              {sortedArticles.map((article, artIndex) => (
-                <ArticlePage
-                  key={article.id}
-                  title={article.title}
-                  content={article.content}
-                  categoryName={category.name}
-                  difficulty={article.difficulty || undefined}
-                  readingTime={article.estimatedReadingMinutes || undefined}
-                  articleNumber={`${chapterNumber}.${artIndex + 1}`}
-                />
-              ))}
-            </Page>
-          </React.Fragment>
-        )
-      })}
+          // Add loose articles
+          branch.articles.forEach((article) => {
+            allArticlesWithMeta.push({
+              article,
+              articleNumber: `${chapterNumber}.${articleCounter++}`,
+            })
+          })
+
+          return (
+            <React.Fragment key={branch.id}>
+              {/* Chapter Header Page */}
+              <ChapterHeader
+                chapterNumber={chapterNumber}
+                title={branch.name}
+              />
+
+              {/* Articles in this chapter */}
+              <Page size="A4" style={styles.page} wrap>
+                <PageFooter />
+
+                {allArticlesWithMeta.map(({ article, subcategoryName, articleNumber }, index) => (
+                  <React.Fragment key={article.id}>
+                    {/* Show subcategory header if it's the first article of a subcategory */}
+                    {subcategoryName && (index === 0 || allArticlesWithMeta[index - 1]?.subcategoryName !== subcategoryName) && (
+                      <View style={{ marginTop: index > 0 ? 15 : 0, marginBottom: 10 }}>
+                        <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#FFD700', textTransform: 'uppercase', letterSpacing: 1 }}>
+                          {subcategoryName}
+                        </Text>
+                        <View style={{ height: 1, backgroundColor: '#FFD700', marginTop: 3, opacity: 0.5 }} />
+                      </View>
+                    )}
+                    <ArticlePage
+                      title={article.title}
+                      content={article.content}
+                      categoryName={branch.name}
+                      difficulty={article.difficulty || undefined}
+                      readingTime={article.estimatedReadingMinutes || undefined}
+                      articleNumber={articleNumber}
+                    />
+                  </React.Fragment>
+                ))}
+              </Page>
+            </React.Fragment>
+          )
+        })
+      ) : (
+        // Render categories (for coach articles)
+        data.categories.map((category, catIndex) => {
+          const chapterNumber = catIndex + 1
+          const sortedArticles = [...category.articles].sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
+
+          return (
+            <React.Fragment key={category.id}>
+              {/* Chapter Header Page */}
+              <ChapterHeader
+                chapterNumber={chapterNumber}
+                title={category.name}
+                description={category.description || undefined}
+              />
+
+              {/* Articles in this chapter */}
+              <Page size="A4" style={styles.page} wrap>
+                <PageFooter />
+
+                {sortedArticles.map((article, artIndex) => (
+                  <ArticlePage
+                    key={article.id}
+                    title={article.title}
+                    content={article.content}
+                    categoryName={category.name}
+                    difficulty={article.difficulty || undefined}
+                    readingTime={article.estimatedReadingMinutes || undefined}
+                    articleNumber={`${chapterNumber}.${artIndex + 1}`}
+                  />
+                ))}
+              </Page>
+            </React.Fragment>
+          )
+        })
+      )}
     </Document>
   )
 }
