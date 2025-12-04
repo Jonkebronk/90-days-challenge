@@ -450,8 +450,8 @@ export default function SkillTreePage() {
           </p>
           <DownloadPdfButton
             audience="client"
-            variant="ghost"
-            className="bg-transparent border border-gold-primary/40 text-gold-light hover:bg-gold-primary/10 hover:border-gold-primary/60"
+            variant="default"
+            className="bg-gradient-to-r from-gold-primary to-gold-secondary text-black font-semibold hover:from-gold-light hover:to-gold-primary"
           />
         </div>
       </div>

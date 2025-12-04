@@ -28,13 +28,13 @@ function cleanContent(content: string): string {
   // Remove HTML comments
   cleaned = cleaned.replace(/<!--[\s\S]*?-->/g, '')
 
-  // Remove code blocks (``` ... ```)
-  cleaned = cleaned.replace(/```[\s\S]*?```/g, '[Kodblock - se webversion]')
+  // Remove code blocks (``` ... ```) completely
+  cleaned = cleaned.replace(/```[\s\S]*?```/g, '')
 
   // Remove inline code backticks but keep content
   cleaned = cleaned.replace(/`([^`]+)`/g, '$1')
 
-  // Convert bold **text** to just text (uppercase for emphasis)
+  // Convert bold **text** to just text
   cleaned = cleaned.replace(/\*\*([^*]+)\*\*/g, '$1')
 
   // Convert italic *text* or _text_ to just text
@@ -44,11 +44,30 @@ function cleanContent(content: string): string {
   // Convert links [text](url) to just text
   cleaned = cleaned.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
 
-  // Convert images ![alt](url) to [Bild: alt]
-  cleaned = cleaned.replace(/!\[([^\]]*)\]\([^)]+\)/g, (_, alt) => alt ? `[Bild: ${alt}]` : '')
+  // Convert images ![alt](url) to nothing (remove completely)
+  cleaned = cleaned.replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
 
   // Remove any remaining HTML tags
   cleaned = cleaned.replace(/<[^>]+>/g, '')
+
+  // Remove markdown tables (lines with | characters)
+  cleaned = cleaned.replace(/^\|.*\|$/gm, '')
+  cleaned = cleaned.replace(/^\s*\|[-:\s|]+\|\s*$/gm, '') // Table separator lines
+
+  // Remove emoji numbers and other problematic unicode
+  cleaned = cleaned.replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '') // Regional indicators
+  cleaned = cleaned.replace(/[\u{1F300}-\u{1F9FF}]/gu, '') // Misc symbols and pictographs
+  cleaned = cleaned.replace(/[\u{2600}-\u{26FF}]/gu, '') // Misc symbols
+  cleaned = cleaned.replace(/[\u{2700}-\u{27BF}]/gu, '') // Dingbats
+  cleaned = cleaned.replace(/[⃣]/g, '') // Combining enclosing keycap
+  cleaned = cleaned.replace(/[0-9]️⃣/g, '') // Number emojis
+  cleaned = cleaned.replace(/1️⃣|2️⃣|3️⃣|4️⃣|5️⃣|6️⃣|7️⃣|8️⃣|9️⃣|0️⃣/g, '')
+
+  // Remove other problematic characters
+  cleaned = cleaned.replace(/[ªº]/g, '') // Superscript indicators
+  cleaned = cleaned.replace(/<[ÆæØøÅå]|[ÆæØøÅå]>/g, '') // Stray angle brackets with nordic chars
+  cleaned = cleaned.replace(/<=|=>/g, '') // Arrow-like sequences
+  cleaned = cleaned.replace(/=ª/g, '')
 
   // Clean up extra whitespace and newlines
   cleaned = cleaned.replace(/\n{3,}/g, '\n\n')
