@@ -91,25 +91,19 @@ function drawPage1(doc: jsPDF) {
   y = drawSectionHeader(doc, y, 'MITT L\xd6FTE TILL MIG SJ\xc4LV')
   y = drawInputLines(doc, y, 'Skriv ett personligt \xe5tagande. Vad lovar du dig sj\xe4lv?', 2)
 
-  // Citat-ruta
-  y += 8
-  const quoteBoxHeight = 30
-
-  // Guld border på citat-rutan (ingen separat bakgrund)
-  doc.setDrawColor(...GOLD)
-  doc.setLineWidth(0.5)
-  doc.roundedRect(MARGIN, y, PAGE_WIDTH - 2 * MARGIN, quoteBoxHeight, 3, 3, 'S')
+  // Citat (utan box)
+  y += 10
 
   doc.setTextColor(...GOLD)
   doc.setFontSize(9)
   doc.setFont('helvetica', 'italic')
   const quote = '"Det finns inga lata m\xe4nniskor, det finns bara m\xe4nniskor med kraftl\xf6sa m\xe5ls\xe4ttningar som inte inspirerar dem."'
-  doc.text(quote, PAGE_WIDTH / 2, y + 12, { align: 'center', maxWidth: PAGE_WIDTH - 2 * MARGIN - 20 })
+  doc.text(quote, PAGE_WIDTH / 2, y, { align: 'center', maxWidth: PAGE_WIDTH - 2 * MARGIN - 10 })
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(8)
   doc.setTextColor(...LIGHT_GRAY)
-  doc.text('- Anthony Robbins', PAGE_WIDTH / 2, y + 24, { align: 'center' })
+  doc.text('- Anthony Robbins', PAGE_WIDTH / 2, y + 10, { align: 'center' })
 }
 
 function drawPage2(doc: jsPDF) {

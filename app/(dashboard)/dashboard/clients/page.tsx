@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus, Mail, User, X, Trash2, Copy, CheckCircle2, Key, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react'
+import { Plus, Mail, User, X, Trash2, Copy, CheckCircle2, Key, RefreshCw, ChevronDown, ChevronUp, Send } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -74,6 +74,7 @@ export default function ClientsPage() {
   } | null>(null)
   const [copiedCode, setCopiedCode] = useState(false)
   const [generatingCodeFor, setGeneratingCodeFor] = useState<string | null>(null)
+  const [sendingInvitationFor, setSendingInvitationFor] = useState<string | null>(null)
   const [newClient, setNewClient] = useState<NewClientForm>({
     // Personuppgifter
     firstName: '',
@@ -261,6 +262,28 @@ export default function ClientsPage() {
       console.error('Generate code error:', error)
     } finally {
       setGeneratingCodeFor(null)
+    }
+  }
+
+  const handleResendInvitation = async (clientId: string, clientEmail: string) => {
+    setSendingInvitationFor(clientId)
+    try {
+      const response = await fetch(`/api/clients/${clientId}/resend-invitation`, {
+        method: 'POST',
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        toast.success(`Inbjudan skickad till ${clientEmail}`)
+      } else {
+        toast.error(data.error || 'Kunde inte skicka inbjudan')
+      }
+    } catch (error) {
+      toast.error('Kunde inte skicka inbjudan')
+      console.error('Resend invitation error:', error)
+    } finally {
+      setSendingInvitationFor(null)
     }
   }
 
@@ -854,6 +877,21 @@ export default function ClientsPage() {
                             <RefreshCw className={`w-4 h-4 ${generatingCodeFor === client.id ? 'animate-spin' : ''}`} />
                             <span className="hidden sm:inline">
                               {client.inviteCode ? 'Ny kod' : 'Generera kod'}
+                            </span>
+                          </Button>
+                        )}
+                        {/* Resend Invitation Email Button */}
+                        {client.status === 'pending' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleResendInvitation(client.id, client.email)}
+                            disabled={sendingInvitationFor === client.id}
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 gap-2"
+                          >
+                            <Send className={`w-4 h-4 ${sendingInvitationFor === client.id ? 'animate-pulse' : ''}`} />
+                            <span className="hidden sm:inline">
+                              {sendingInvitationFor === client.id ? 'Skickar...' : 'Skicka inbjudan'}
                             </span>
                           </Button>
                         )}
