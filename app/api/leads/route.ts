@@ -24,8 +24,18 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
+    const includeConverted = searchParams.get('includeConverted') === 'true'
 
-    const where = status ? { status } : {}
+    // By default, exclude leads with status 'won' (converted to clients)
+    // unless specifically requested or filtering by that status
+    let where: any = {}
+
+    if (status) {
+      where.status = status
+    } else if (!includeConverted) {
+      // Exclude converted leads by default
+      where.status = { not: 'won' }
+    }
 
     const leads = await prisma.lead.findMany({
       where,
