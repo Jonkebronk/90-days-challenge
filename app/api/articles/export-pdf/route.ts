@@ -4,8 +4,22 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { KnowledgeBasePDF } from '@/components/pdf'
+import fs from 'fs'
+import path from 'path'
 
 export const dynamic = 'force-dynamic'
+
+// Read logo as base64 for PDF embedding
+function getLogoBase64(): string | undefined {
+  try {
+    const logoPath = path.join(process.cwd(), 'public', 'images', 'logo.png')
+    const logoBuffer = fs.readFileSync(logoPath)
+    return `data:image/png;base64,${logoBuffer.toString('base64')}`
+  } catch (error) {
+    console.error('Failed to read logo:', error)
+    return undefined
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -114,11 +128,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'No articles found' }, { status: 404 })
     }
 
+    // Get logo for cover page
+    const logoUrl = getLogoBase64()
+
     // Generate PDF
     const pdfBuffer = await renderToBuffer(
       KnowledgeBasePDF({
         data: pdfData,
         audience: audience as 'client' | 'coach',
+        logoUrl,
       })
     )
 

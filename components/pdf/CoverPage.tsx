@@ -1,17 +1,19 @@
 import React from 'react'
-import { Page, View, Text } from '@react-pdf/renderer'
+import { Page, View, Text, Image } from '@react-pdf/renderer'
 import { styles, colors } from './styles'
 
 interface CoverPageProps {
   title?: string
   subtitle?: string
   date?: string
+  logoUrl?: string
 }
 
 export function CoverPage({
-  title = '90-DAGARS UTMANINGEN',
-  subtitle = 'Kunskapsbank',
+  title = 'KUNSKAPSKARTAN',
+  subtitle = '90-Dagars Utmaningen',
   date,
+  logoUrl,
 }: CoverPageProps) {
   const formattedDate = date || new Date().toLocaleDateString('sv-SE', {
     year: 'numeric',
@@ -22,6 +24,18 @@ export function CoverPage({
   return (
     <Page size="A4" style={styles.coverPage}>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        {/* Logo */}
+        {logoUrl && (
+          <Image
+            src={logoUrl}
+            style={{
+              width: 120,
+              height: 120,
+              marginBottom: 30,
+            }}
+          />
+        )}
+
         {/* Top decoration */}
         <View style={styles.coverLine} />
 

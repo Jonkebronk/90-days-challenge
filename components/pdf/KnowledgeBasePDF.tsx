@@ -53,6 +53,7 @@ interface CategoryData {
 interface KnowledgeBasePDFProps {
   data: SkillTreeData | CategoryData
   audience?: 'client' | 'coach'
+  logoUrl?: string
 }
 
 // Footer component for content pages
@@ -71,6 +72,7 @@ function PageFooter() {
 export function KnowledgeBasePDF({
   data,
   audience = 'client',
+  logoUrl,
 }: KnowledgeBasePDFProps) {
   // Build table of contents based on data type
   const tocChapters: { number: number; title: string; subcategories?: { name: string; articles: { number: string; title: string }[] }[]; articles: { number: string; title: string }[] }[] = []
@@ -129,8 +131,9 @@ export function KnowledgeBasePDF({
     >
       {/* Cover Page */}
       <CoverPage
-        title="90-DAGARS UTMANINGEN"
-        subtitle={audience === 'coach' ? 'Coach Kunskapsbank' : 'Kunskapskartan'}
+        title="KUNSKAPSKARTAN"
+        subtitle={audience === 'coach' ? 'Coach Kunskapsbank' : '90-Dagars Utmaningen'}
+        logoUrl={logoUrl}
       />
 
       {/* Table of Contents */}
