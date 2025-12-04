@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { jsPDF } from 'jspdf'
+import fs from 'fs'
+import path from 'path'
 
 // Färger som matchar plattformens tema (hex utan #)
 const DARK_BG: [number, number, number] = [15, 15, 25]           // #0F0F19 - mörk bakgrund
@@ -16,6 +18,18 @@ const PAGE_WIDTH = 210
 const PAGE_HEIGHT = 297
 const MARGIN = 20
 
+// Load logo as base64
+function getLogoBase64(): string | null {
+  try {
+    const logoPath = path.join(process.cwd(), 'public', 'images', 'logo.png')
+    const logoBuffer = fs.readFileSync(logoPath)
+    return `data:image/png;base64,${logoBuffer.toString('base64')}`
+  } catch (error) {
+    console.error('Failed to read logo:', error)
+    return null
+  }
+}
+
 export async function GET() {
   try {
     const doc = new jsPDF({
@@ -24,8 +38,11 @@ export async function GET() {
       format: 'a4'
     })
 
+    // Load logo
+    const logoBase64 = getLogoBase64()
+
     // ===== SIDA 1 =====
-    drawPage1(doc)
+    drawPage1(doc, logoBase64)
 
     // ===== SIDA 2 =====
     doc.addPage()
@@ -47,29 +64,28 @@ export async function GET() {
   }
 }
 
-function drawPage1(doc: jsPDF) {
+function drawPage1(doc: jsPDF, logoBase64: string | null) {
   let y = 0
 
   // Hela sidan har samma mörka bakgrund
   doc.setFillColor(...CARD_BG)
   doc.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, 'F')
 
+  // Logo in top left corner
+  if (logoBase64) {
+    doc.addImage(logoBase64, 'PNG', MARGIN, 8, 20, 20)
+  }
+
   // Guld-linje under header
   doc.setDrawColor(...GOLD)
   doc.setLineWidth(1)
   doc.line(MARGIN, 40, PAGE_WIDTH - MARGIN, 40)
 
-  // Header text
+  // Header text (centered, but accounting for logo)
   doc.setTextColor(...GOLD)
-  doc.setFontSize(24)
+  doc.setFontSize(22)
   doc.setFont('helvetica', 'bold')
   doc.text('MITT M\xc5L OCH MINA DRIVKRAFTER', PAGE_WIDTH / 2, 25, { align: 'center' })
-
-  // Subheader
-  doc.setTextColor(...LIGHT_GRAY)
-  doc.setFontSize(10)
-  doc.setFont('helvetica', 'normal')
-  doc.text('90-Dagars Utmaningen', PAGE_WIDTH / 2, 33, { align: 'center' })
 
   y = 50
 
