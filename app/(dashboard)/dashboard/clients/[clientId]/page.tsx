@@ -736,37 +736,14 @@ export default function ClientDetailPage({ params }: PageProps) {
                 <Input
                   value={cardioForm.title}
                   onChange={(e) => setCardioForm({ ...cardioForm, title: e.target.value })}
-                  placeholder="Titel (t.ex. LISS Cardio)"
+                  placeholder="Titel (t.ex. Daglig aktivitet)"
                   className="bg-black/30 border-red-500/30 text-white"
                 />
-                <div className="grid grid-cols-2 gap-2">
-                  <Select
-                    value={cardioForm.cardioType}
-                    onValueChange={(value) => setCardioForm({ ...cardioForm, cardioType: value })}
-                  >
-                    <SelectTrigger className="bg-black/30 border-red-500/30 text-white">
-                      <SelectValue placeholder="Typ" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="LISS">LISS</SelectItem>
-                      <SelectItem value="MISS">MISS</SelectItem>
-                      <SelectItem value="HIIT">HIIT</SelectItem>
-                      <SelectItem value="Walking">Promenader</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    type="number"
-                    value={cardioForm.frequency}
-                    onChange={(e) => setCardioForm({ ...cardioForm, frequency: e.target.value })}
-                    placeholder="ggr/vecka"
-                    className="bg-black/30 border-red-500/30 text-white"
-                  />
-                </div>
                 <Textarea
                   value={cardioForm.notes}
                   onChange={(e) => setCardioForm({ ...cardioForm, notes: e.target.value })}
-                  placeholder="Instruktioner..."
-                  rows={2}
+                  placeholder="Beskrivning och instruktioner..."
+                  rows={5}
                   className="bg-black/30 border-red-500/30 text-white"
                 />
                 <div className="flex gap-2">
