@@ -2,26 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { sendInvitationEmail } from '@/lib/email'
 import crypto from 'crypto'
-
-// This would be replaced with actual email sending in production
-async function sendInvitationEmail(email: string, name: string, invitationToken: string) {
-  const invitationUrl = `${process.env.NEXTAUTH_URL}/setup-account?token=${invitationToken}`
-
-  console.log('=================================')
-  console.log('INVITATION EMAIL')
-  console.log('=================================')
-  console.log('To:', email)
-  console.log('Subject: Create Your Account - 90 Days Challenge')
-  console.log('Name:', name)
-  console.log('Invitation URL:', invitationUrl)
-  console.log('=================================')
-
-  // TODO: Integrate with email service (SendGrid, Resend, etc.)
-  // For now, just log the invitation
-
-  return true
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -194,7 +176,8 @@ export async function POST(request: NextRequest) {
     })
 
     // Send invitation email
-    await sendInvitationEmail(email, `${firstName} ${lastName}`, invitationToken)
+    const invitationUrl = `${process.env.NEXTAUTH_URL}/setup-account?token=${invitationToken}`
+    await sendInvitationEmail(email, invitationUrl, `${firstName} ${lastName}`, coach.name || undefined)
 
     return NextResponse.json({
       success: true,
