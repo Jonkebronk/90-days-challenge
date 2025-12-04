@@ -6,8 +6,9 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
-import { Lock, CheckCircle, AlertCircle } from 'lucide-react'
+import { ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react'
 
 function ResetPasswordContent() {
   const router = useRouter()
@@ -69,120 +70,134 @@ function ResetPasswordContent() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
-        <div className="max-w-md w-full">
-          <div className="bg-white/5 border-2 border-red-500/30 rounded-2xl p-8 backdrop-blur-[10px] text-center">
-            <div className="w-16 h-16 mx-auto mb-6 bg-red-500/10 rounded-full flex items-center justify-center">
-              <AlertCircle className="w-10 h-10 text-red-500" />
+      <div className="space-y-4">
+        <Link
+          href="/login"
+          className="inline-flex items-center gap-2 text-gold-primary hover:text-gold-secondary transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Tillbaka till inloggning</span>
+        </Link>
+        <Card className="bg-white border border-gray-200 shadow-lg">
+          <CardHeader className="space-y-1 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+              <AlertCircle className="w-10 h-10 text-red-600" />
             </div>
-
-            <h1 className="font-['Orbitron',sans-serif] text-xl font-bold tracking-[2px] uppercase text-gold-light mb-4">
+            <CardTitle className="text-2xl md:text-3xl font-bold text-red-600">
               Ogiltig länk
-            </h1>
-
-            <p className="text-gray-300 mb-6">
+            </CardTitle>
+            <CardDescription className="text-gray-600">
               Återställningslänken är ogiltig eller har utgått.
-            </p>
-
-            <Link href="/forgot-password">
-              <Button className="w-full bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold">
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Link href="/forgot-password" className="w-full">
+              <Button className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold">
                 Begär ny återställningslänk
               </Button>
             </Link>
-          </div>
-        </div>
+          </CardFooter>
+        </Card>
       </div>
     )
   }
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
-        <div className="max-w-md w-full">
-          <div className="bg-white/5 border-2 border-green-500/30 rounded-2xl p-8 backdrop-blur-[10px] text-center">
-            <div className="w-16 h-16 mx-auto mb-6 bg-green-500/10 rounded-full flex items-center justify-center">
-              <CheckCircle className="w-10 h-10 text-green-500" />
+      <div className="space-y-4">
+        <Link
+          href="/login"
+          className="inline-flex items-center gap-2 text-gold-primary hover:text-gold-secondary transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Tillbaka till inloggning</span>
+        </Link>
+        <Card className="bg-white border border-gray-200 shadow-lg">
+          <CardHeader className="space-y-1 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-10 h-10 text-green-600" />
             </div>
-
-            <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl font-bold tracking-[2px] uppercase text-gold-light mb-4">
+            <CardTitle className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gold-primary to-gold-secondary bg-clip-text text-transparent">
               Lösenord återställt!
-            </h1>
-
-            <p className="text-gray-300 mb-8">
+            </CardTitle>
+            <CardDescription className="text-gray-600">
               Ditt lösenord har uppdaterats. Du kan nu logga in med ditt nya lösenord.
-            </p>
-
-            <Link href="/login">
-              <Button className="w-full bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold">
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Link href="/login" className="w-full">
+              <Button className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold">
                 Gå till inloggning
               </Button>
             </Link>
-          </div>
-        </div>
+          </CardFooter>
+        </Card>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-6">
-      <div className="max-w-md w-full">
-        <div className="bg-white/5 border-2 border-gold-primary/20 rounded-2xl p-8 backdrop-blur-[10px]">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gold-primary/10 rounded-full flex items-center justify-center">
-              <Lock className="w-8 h-8 text-gold-light" />
-            </div>
-
-            <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl font-bold tracking-[2px] uppercase text-gold-light mb-2">
-              Välj nytt lösenord
-            </h1>
-
-            <p className="text-gray-400 text-sm">
-              Ange ditt nya lösenord nedan.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <Label className="text-gray-200">Nytt lösenord</Label>
+    <div className="space-y-4">
+      <Link
+        href="/login"
+        className="inline-flex items-center gap-2 text-gold-primary hover:text-gold-secondary transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span>Tillbaka till inloggning</span>
+      </Link>
+      <Card className="bg-white border border-gray-200 shadow-lg">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+            Välj nytt lösenord
+          </CardTitle>
+          <CardDescription className="text-gray-600">
+            Ange ditt nya lösenord nedan.
+          </CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-gray-700">Nytt lösenord</Label>
               <Input
+                id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-black/30 border-gold-primary/30 text-white"
                 placeholder="Minst 8 tecken"
+                disabled={isLoading}
                 required
                 minLength={8}
               />
             </div>
-
-            <div>
-              <Label className="text-gray-200">Bekräfta lösenord</Label>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-gray-700">Bekräfta lösenord</Label>
               <Input
+                id="confirmPassword"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="bg-black/30 border-gold-primary/30 text-white"
                 placeholder="Upprepa lösenordet"
+                disabled={isLoading}
                 required
               />
             </div>
-
+          </CardContent>
+          <CardFooter className="flex flex-col gap-4">
             <Button
               type="submit"
+              className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold"
               disabled={isLoading}
-              className="w-full bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold tracking-[1px] uppercase hover:scale-[1.02] transition-transform disabled:opacity-50"
             >
               {isLoading ? 'Sparar...' : 'Spara nytt lösenord'}
             </Button>
-          </form>
-
-          <p className="text-center text-sm text-gray-500 mt-6">
-            <Link href="/login" className="text-gold-light hover:underline">
-              Tillbaka till inloggning
-            </Link>
-          </p>
-        </div>
-      </div>
+            <p className="text-center text-sm text-gray-500">
+              <Link href="/login" className="text-gold-primary hover:text-gold-secondary transition-colors">
+                Tillbaka till inloggning
+              </Link>
+            </p>
+          </CardFooter>
+        </form>
+      </Card>
     </div>
   )
 }
@@ -190,7 +205,7 @@ function ResetPasswordContent() {
 export default function ResetPasswordPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="flex items-center justify-center p-8">
         <div className="w-8 h-8 border-4 border-gold-primary border-t-transparent rounded-full animate-spin" />
       </div>
     }>

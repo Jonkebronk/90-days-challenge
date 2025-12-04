@@ -445,7 +445,7 @@ export default function SkillTreePage() {
 
         {/* PDF Download Button */}
         <div className="mt-6 flex flex-col items-center gap-2">
-          <p className="text-gray-500 text-xs">
+          <p className="text-white/80 text-sm">
             Föredrar du att läsa på papper? Ladda ner hela kunskapskartan som PDF
           </p>
           <DownloadPdfButton
