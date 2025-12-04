@@ -447,8 +447,8 @@ export default function SkillTreePage() {
         <div className="mt-4">
           <DownloadPdfButton
             audience="client"
-            variant="outline"
-            className="border-gold-primary/30 text-gold-light hover:bg-gold-primary/10 hover:border-gold-primary/50"
+            variant="ghost"
+            className="bg-transparent border border-gold-primary/40 text-gold-light hover:bg-gold-primary/10 hover:border-gold-primary/60"
           />
         </div>
       </div>

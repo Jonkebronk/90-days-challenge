@@ -89,8 +89,8 @@ export default function CoachArticlesPage() {
         <div className="mt-4">
           <DownloadPdfButton
             audience="coach"
-            variant="outline"
-            className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10 hover:border-purple-500/50"
+            variant="ghost"
+            className="bg-transparent border border-purple-500/40 text-purple-400 hover:bg-purple-500/10 hover:border-purple-500/60"
           />
         </div>
       </div>
