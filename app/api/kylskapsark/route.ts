@@ -237,7 +237,7 @@ function drawSectionHeader(doc: jsPDF, y: number, title: string): number {
   doc.setLineWidth(0.8)
   doc.line(MARGIN, y + 2, PAGE_WIDTH - MARGIN, y + 2)
 
-  return y + 7
+  return y + 9
 }
 
 function drawInputLines(doc: jsPDF, y: number, label: string, numLines: number): number {
@@ -246,7 +246,7 @@ function drawInputLines(doc: jsPDF, y: number, label: string, numLines: number):
   doc.setFont('helvetica', 'normal')
   doc.text(label, MARGIN, y)
 
-  y += 3
+  y += 5
 
   // Draw white background boxes for writing
   const lineHeight = 7
