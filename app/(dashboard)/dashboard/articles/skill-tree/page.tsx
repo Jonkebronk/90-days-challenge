@@ -444,7 +444,10 @@ export default function SkillTreePage() {
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
 
         {/* PDF Download Button */}
-        <div className="mt-4">
+        <div className="mt-6 flex flex-col items-center gap-2">
+          <p className="text-gray-500 text-xs">
+            Föredrar du att läsa på papper? Ladda ner hela kunskapskartan som PDF
+          </p>
           <DownloadPdfButton
             audience="client"
             variant="ghost"
