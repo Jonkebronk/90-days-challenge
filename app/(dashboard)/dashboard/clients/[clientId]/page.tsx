@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import {
   ArrowLeft, Dumbbell, Calendar, ChevronRight, Heart, Zap, Clock, Flame, Trash2,
   User, Mail, Phone, MapPin, Ruler, Scale, Target, Brain, Utensils, Moon,
-  Activity, Sparkles, ChevronDown, ChevronUp, Image
+  Activity, Sparkles, ChevronDown, ChevronUp, Image, Pencil, X, Save
 } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -195,6 +195,39 @@ export default function ClientDetailPage({ params }: PageProps) {
   })
   const [isSavingCardio, setIsSavingCardio] = useState(false)
 
+  // Edit mode state
+  const [isEditing, setIsEditing] = useState(false)
+  const [isSavingClient, setIsSavingClient] = useState(false)
+  const [editForm, setEditForm] = useState({
+    phone: '',
+    city: '',
+    country: '',
+    age: '',
+    gender: '',
+    height: '',
+    currentWeight: '',
+    occupation: '',
+    // Training
+    currentTraining: '',
+    trainingExperience: '',
+    trainingGoal: '',
+    injuries: '',
+    // Nutrition
+    dietHistory: '',
+    allergies: '',
+    favoriteFood: '',
+    dislikedFood: '',
+    // Lifestyle
+    lifestyle: '',
+    stressLevel: '',
+    sleepHours: '',
+    previousCoaching: '',
+    // Motivation
+    whyJoin: '',
+    expectations: '',
+    biggestChallenges: '',
+  })
+
   // Helper to get next Monday
   const getNextMonday = () => {
     const today = new Date()
@@ -338,6 +371,60 @@ export default function ClientDetailPage({ params }: PageProps) {
     }
   }
 
+  const startEditing = () => {
+    if (!client) return
+    setEditForm({
+      phone: client.phone || '',
+      city: client.city || '',
+      country: client.country || '',
+      age: client.age?.toString() || '',
+      gender: client.gender || '',
+      height: client.height?.toString() || '',
+      currentWeight: client.currentWeight?.toString() || '',
+      occupation: client.occupation || '',
+      currentTraining: client.currentTraining || '',
+      trainingExperience: client.trainingExperience || '',
+      trainingGoal: client.trainingGoal || '',
+      injuries: client.injuries || '',
+      dietHistory: client.dietHistory || '',
+      allergies: client.allergies || '',
+      favoriteFood: client.favoriteFood || '',
+      dislikedFood: client.dislikedFood || '',
+      lifestyle: client.lifestyle || '',
+      stressLevel: client.stressLevel || '',
+      sleepHours: client.sleepHours || '',
+      previousCoaching: client.previousCoaching || '',
+      whyJoin: client.whyJoin || '',
+      expectations: client.expectations || '',
+      biggestChallenges: client.biggestChallenges || '',
+    })
+    setIsEditing(true)
+  }
+
+  const handleSaveClient = async () => {
+    setIsSavingClient(true)
+    try {
+      const response = await fetch(`/api/clients/${clientId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm)
+      })
+
+      if (response.ok) {
+        toast.success('Klientdata sparad!')
+        setIsEditing(false)
+        fetchClientData(clientId)
+      } else {
+        toast.error('Kunde inte spara')
+      }
+    } catch (error) {
+      console.error('Failed to save client:', error)
+      toast.error('Kunde inte spara')
+    } finally {
+      setIsSavingClient(false)
+    }
+  }
+
   const handleDeleteCardio = async () => {
     if (!cardioProgram) return
     if (!confirm('Är du säker på att du vill ta bort cardioprogrammet?')) return
@@ -470,6 +557,37 @@ export default function ClientDetailPage({ params }: PageProps) {
             {client.email}
           </p>
         </div>
+        {isEditing ? (
+          <div className="flex gap-2">
+            <Button
+              onClick={handleSaveClient}
+              disabled={isSavingClient}
+              size="sm"
+              className="bg-gradient-to-br from-green-500 to-green-600 text-white"
+            >
+              <Save className="w-4 h-4 mr-1" />
+              {isSavingClient ? 'Sparar...' : 'Spara'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditing(false)}
+              className="border-gray-500 text-gray-300"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        ) : (
+          <Button
+            onClick={startEditing}
+            variant="outline"
+            size="sm"
+            className="border-gold-primary/30 text-gold-light hover:bg-gold-50"
+          >
+            <Pencil className="w-4 h-4 mr-1" />
+            Redigera
+          </Button>
+        )}
       </div>
 
       {/* Quick Stats */}
@@ -613,49 +731,7 @@ export default function ClientDetailPage({ params }: PageProps) {
             </div>
           </CardHeader>
           <CardContent>
-            {cardioProgram ? (
-              <div className="space-y-3">
-                <div className="bg-red-500/5 p-3 rounded-lg border border-red-500/30">
-                  <h4 className="font-semibold text-gray-100">{cardioProgram.title}</h4>
-                  <div className="flex flex-wrap gap-2 mt-2 text-xs text-gray-400">
-                    {cardioProgram.cardioType && <span>{cardioProgram.cardioType}</span>}
-                    {cardioProgram.frequency && <span>• {cardioProgram.frequency}x/vecka</span>}
-                    {cardioProgram.durationMinutes && <span>• {cardioProgram.durationMinutes} min</span>}
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 border-red-500/30 text-red-400 hover:bg-red-500/10"
-                    onClick={() => {
-                      setCardioForm({
-                        title: cardioProgram.title,
-                        description: cardioProgram.description || '',
-                        cardioType: cardioProgram.cardioType || '',
-                        frequency: cardioProgram.frequency?.toString() || '',
-                        durationMinutes: cardioProgram.durationMinutes?.toString() || '',
-                        intensity: cardioProgram.intensity || '',
-                        preferredDays: cardioProgram.preferredDays || '',
-                        timing: cardioProgram.timing || '',
-                        notes: cardioProgram.notes || '',
-                      })
-                      setShowCardioForm(true)
-                    }}
-                  >
-                    Ändra
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-red-500/30 text-red-400 hover:bg-red-500/10"
-                    onClick={handleDeleteCardio}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            ) : showCardioForm ? (
+            {showCardioForm ? (
               <div className="space-y-3">
                 <Input
                   value={cardioForm.title}
@@ -712,6 +788,48 @@ export default function ClientDetailPage({ params }: PageProps) {
                   </Button>
                 </div>
               </div>
+            ) : cardioProgram ? (
+              <div className="space-y-3">
+                <div className="bg-red-500/5 p-3 rounded-lg border border-red-500/30">
+                  <h4 className="font-semibold text-gray-100">{cardioProgram.title}</h4>
+                  <div className="flex flex-wrap gap-2 mt-2 text-xs text-gray-400">
+                    {cardioProgram.cardioType && <span>{cardioProgram.cardioType}</span>}
+                    {cardioProgram.frequency && <span>• {cardioProgram.frequency}x/vecka</span>}
+                    {cardioProgram.durationMinutes && <span>• {cardioProgram.durationMinutes} min</span>}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 border-red-500/30 text-red-400 hover:bg-red-500/10"
+                    onClick={() => {
+                      setCardioForm({
+                        title: cardioProgram.title,
+                        description: cardioProgram.description || '',
+                        cardioType: cardioProgram.cardioType || '',
+                        frequency: cardioProgram.frequency?.toString() || '',
+                        durationMinutes: cardioProgram.durationMinutes?.toString() || '',
+                        intensity: cardioProgram.intensity || '',
+                        preferredDays: cardioProgram.preferredDays || '',
+                        timing: cardioProgram.timing || '',
+                        notes: cardioProgram.notes || '',
+                      })
+                      setShowCardioForm(true)
+                    }}
+                  >
+                    Ändra
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                    onClick={handleDeleteCardio}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
             ) : (
               <Button
                 onClick={() => setShowCardioForm(true)}
@@ -730,67 +848,179 @@ export default function ClientDetailPage({ params }: PageProps) {
         <h2 className="text-xl font-bold text-gold-light flex items-center gap-2">
           <Sparkles className="w-5 h-5" />
           Ansökningsinformation
+          {isEditing && <span className="text-sm font-normal text-gray-400">(redigeringsläge)</span>}
         </h2>
 
         {/* Contact Info */}
         <CollapsibleSection title="Kontaktuppgifter" icon={User} defaultOpen={true} color="blue">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-            <InfoField label="Telefon" value={client.phone} />
-            <InfoField label="Stad" value={client.city} />
-            <InfoField label="Land" value={client.country} />
-            <InfoField label="Yrke" value={client.occupation} />
+            {isEditing ? (
+              <>
+                <div className="space-y-1">
+                  <Label className="text-xs text-gray-500 uppercase">Telefon</Label>
+                  <Input value={editForm.phone} onChange={(e) => setEditForm({...editForm, phone: e.target.value})} className="bg-black/30 border-blue-500/30" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-gray-500 uppercase">Stad</Label>
+                  <Input value={editForm.city} onChange={(e) => setEditForm({...editForm, city: e.target.value})} className="bg-black/30 border-blue-500/30" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-gray-500 uppercase">Land</Label>
+                  <Input value={editForm.country} onChange={(e) => setEditForm({...editForm, country: e.target.value})} className="bg-black/30 border-blue-500/30" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs text-gray-500 uppercase">Yrke</Label>
+                  <Input value={editForm.occupation} onChange={(e) => setEditForm({...editForm, occupation: e.target.value})} className="bg-black/30 border-blue-500/30" />
+                </div>
+              </>
+            ) : (
+              <>
+                <InfoField label="Telefon" value={client.phone} />
+                <InfoField label="Stad" value={client.city} />
+                <InfoField label="Land" value={client.country} />
+                <InfoField label="Yrke" value={client.occupation} />
+              </>
+            )}
           </div>
         </CollapsibleSection>
 
         {/* Motivation */}
-        {(client.whyJoin || client.expectations || client.biggestChallenges || client.canFollowPlan) && (
+        {(isEditing || client.whyJoin || client.expectations || client.biggestChallenges || client.canFollowPlan) && (
           <CollapsibleSection title="Motivation & Mål" icon={Target} defaultOpen={true} color="gold">
             <div className="space-y-4 pt-4">
-              <InfoField label="Varför vill du gå med?" value={client.whyJoin} />
-              <InfoField label="Förväntningar" value={client.expectations} />
-              <InfoField label="Största utmaningar" value={client.biggestChallenges} />
-              <InfoField label="Kan följa en plan?" value={client.canFollowPlan} />
+              {isEditing ? (
+                <>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Varför vill du gå med?</Label>
+                    <Textarea value={editForm.whyJoin} onChange={(e) => setEditForm({...editForm, whyJoin: e.target.value})} className="bg-black/30 border-gold-primary/30" rows={2} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Förväntningar</Label>
+                    <Textarea value={editForm.expectations} onChange={(e) => setEditForm({...editForm, expectations: e.target.value})} className="bg-black/30 border-gold-primary/30" rows={2} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Största utmaningar</Label>
+                    <Textarea value={editForm.biggestChallenges} onChange={(e) => setEditForm({...editForm, biggestChallenges: e.target.value})} className="bg-black/30 border-gold-primary/30" rows={2} />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <InfoField label="Varför vill du gå med?" value={client.whyJoin} />
+                  <InfoField label="Förväntningar" value={client.expectations} />
+                  <InfoField label="Största utmaningar" value={client.biggestChallenges} />
+                  <InfoField label="Kan följa en plan?" value={client.canFollowPlan} />
+                </>
+              )}
             </div>
           </CollapsibleSection>
         )}
 
         {/* Training */}
-        {(client.currentTraining || client.trainingExperience || client.trainingGoal || client.injuries || client.availableTime || client.preferredSchedule) && (
-          <CollapsibleSection title="Träning" icon={Activity} color="green">
+        {(isEditing || client.currentTraining || client.trainingExperience || client.trainingGoal || client.injuries || client.availableTime || client.preferredSchedule) && (
+          <CollapsibleSection title="Träning" icon={Activity} defaultOpen={isEditing} color="green">
             <div className="space-y-4 pt-4">
-              <InfoField label="Nuvarande träning" value={client.currentTraining} />
-              <InfoField label="Träningserfarenhet" value={client.trainingExperience} />
-              <InfoField label="Träningsmål" value={client.trainingGoal} />
-              <InfoField label="Skador/Begränsningar" value={client.injuries} />
-              <InfoField label="Tillgänglig tid" value={client.availableTime} />
-              <InfoField label="Föredraget schema" value={client.preferredSchedule} />
+              {isEditing ? (
+                <>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Nuvarande träning</Label>
+                    <Textarea value={editForm.currentTraining} onChange={(e) => setEditForm({...editForm, currentTraining: e.target.value})} className="bg-black/30 border-green-500/30" rows={2} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Träningserfarenhet</Label>
+                    <Textarea value={editForm.trainingExperience} onChange={(e) => setEditForm({...editForm, trainingExperience: e.target.value})} className="bg-black/30 border-green-500/30" rows={2} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Träningsmål</Label>
+                    <Textarea value={editForm.trainingGoal} onChange={(e) => setEditForm({...editForm, trainingGoal: e.target.value})} className="bg-black/30 border-green-500/30" rows={2} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Skador/Begränsningar</Label>
+                    <Textarea value={editForm.injuries} onChange={(e) => setEditForm({...editForm, injuries: e.target.value})} className="bg-black/30 border-green-500/30" rows={2} />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <InfoField label="Nuvarande träning" value={client.currentTraining} />
+                  <InfoField label="Träningserfarenhet" value={client.trainingExperience} />
+                  <InfoField label="Träningsmål" value={client.trainingGoal} />
+                  <InfoField label="Skador/Begränsningar" value={client.injuries} />
+                  <InfoField label="Tillgänglig tid" value={client.availableTime} />
+                  <InfoField label="Föredraget schema" value={client.preferredSchedule} />
+                </>
+              )}
             </div>
           </CollapsibleSection>
         )}
 
         {/* Nutrition */}
-        {(client.dietHistory || client.macroExperience || client.favoriteFood || client.dislikedFood || client.allergies || client.supplements || client.digestionIssues) && (
-          <CollapsibleSection title="Kost & Näring" icon={Utensils} color="orange">
+        {(isEditing || client.dietHistory || client.macroExperience || client.favoriteFood || client.dislikedFood || client.allergies || client.supplements || client.digestionIssues) && (
+          <CollapsibleSection title="Kost & Näring" icon={Utensils} defaultOpen={isEditing} color="orange">
             <div className="space-y-4 pt-4">
-              <InfoField label="Kosthistorik" value={client.dietHistory} />
-              <InfoField label="Makroerfarenhet" value={client.macroExperience} />
-              <InfoField label="Favoritmat" value={client.favoriteFood} />
-              <InfoField label="Ogillar" value={client.dislikedFood} />
-              <InfoField label="Allergier" value={client.allergies} />
-              <InfoField label="Kosttillskott" value={client.supplements} />
-              <InfoField label="Matsmältningsproblem" value={client.digestionIssues} />
+              {isEditing ? (
+                <>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Kosthistorik</Label>
+                    <Textarea value={editForm.dietHistory} onChange={(e) => setEditForm({...editForm, dietHistory: e.target.value})} className="bg-black/30 border-orange-500/30" rows={2} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Favoritmat</Label>
+                    <Textarea value={editForm.favoriteFood} onChange={(e) => setEditForm({...editForm, favoriteFood: e.target.value})} className="bg-black/30 border-orange-500/30" rows={2} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Ogillar</Label>
+                    <Textarea value={editForm.dislikedFood} onChange={(e) => setEditForm({...editForm, dislikedFood: e.target.value})} className="bg-black/30 border-orange-500/30" rows={2} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Allergier</Label>
+                    <Input value={editForm.allergies} onChange={(e) => setEditForm({...editForm, allergies: e.target.value})} className="bg-black/30 border-orange-500/30" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <InfoField label="Kosthistorik" value={client.dietHistory} />
+                  <InfoField label="Makroerfarenhet" value={client.macroExperience} />
+                  <InfoField label="Favoritmat" value={client.favoriteFood} />
+                  <InfoField label="Ogillar" value={client.dislikedFood} />
+                  <InfoField label="Allergier" value={client.allergies} />
+                  <InfoField label="Kosttillskott" value={client.supplements} />
+                  <InfoField label="Matsmältningsproblem" value={client.digestionIssues} />
+                </>
+              )}
             </div>
           </CollapsibleSection>
         )}
 
         {/* Lifestyle */}
-        {(client.lifestyle || client.stressLevel || client.sleepHours || client.previousCoaching) && (
-          <CollapsibleSection title="Livsstil" icon={Moon} color="purple">
+        {(isEditing || client.lifestyle || client.stressLevel || client.sleepHours || client.previousCoaching) && (
+          <CollapsibleSection title="Livsstil" icon={Moon} defaultOpen={isEditing} color="purple">
             <div className="space-y-4 pt-4">
-              <InfoField label="Livsstil" value={client.lifestyle} />
-              <InfoField label="Stressnivå" value={client.stressLevel} />
-              <InfoField label="Sömn" value={client.sleepHours} />
-              <InfoField label="Tidigare coaching" value={client.previousCoaching} />
+              {isEditing ? (
+                <>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Livsstil</Label>
+                    <Textarea value={editForm.lifestyle} onChange={(e) => setEditForm({...editForm, lifestyle: e.target.value})} className="bg-black/30 border-purple-500/30" rows={2} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Stressnivå</Label>
+                    <Input value={editForm.stressLevel} onChange={(e) => setEditForm({...editForm, stressLevel: e.target.value})} className="bg-black/30 border-purple-500/30" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Sömn</Label>
+                    <Input value={editForm.sleepHours} onChange={(e) => setEditForm({...editForm, sleepHours: e.target.value})} className="bg-black/30 border-purple-500/30" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-gray-500 uppercase">Tidigare coaching</Label>
+                    <Textarea value={editForm.previousCoaching} onChange={(e) => setEditForm({...editForm, previousCoaching: e.target.value})} className="bg-black/30 border-purple-500/30" rows={2} />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <InfoField label="Livsstil" value={client.lifestyle} />
+                  <InfoField label="Stressnivå" value={client.stressLevel} />
+                  <InfoField label="Sömn" value={client.sleepHours} />
+                  <InfoField label="Tidigare coaching" value={client.previousCoaching} />
+                </>
+              )}
             </div>
           </CollapsibleSection>
         )}
