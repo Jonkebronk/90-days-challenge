@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
       where: {
         role: 'client',
         status: 'active',
-        email: { not: null },
+        email: { not: '' },
       },
       select: {
         id: true,

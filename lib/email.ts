@@ -1,6 +1,7 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Only initialize Resend if API key is available
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 const FROM_EMAIL = process.env.EMAIL_FROM || 'Friskvårdskompassen <noreply@friskvardskompassen.com>'
 
@@ -24,7 +25,7 @@ export async function sendPasswordResetEmail(
       return true
     }
 
-    await resend.emails.send({
+    await resend!.emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Återställ ditt lösenord - Friskvårdskompassen',
@@ -96,7 +97,7 @@ export async function sendNewPasswordEmail(
       return true
     }
 
-    await resend.emails.send({
+    await resend!.emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Ditt lösenord har återställts - Friskvårdskompassen',
@@ -174,7 +175,7 @@ export async function sendInvitationEmail(
       return true
     }
 
-    await resend.emails.send({
+    await resend!.emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Välkommen till Friskvårdskompassen!',
@@ -246,7 +247,7 @@ export async function sendWelcomeEmail(
       return true
     }
 
-    await resend.emails.send({
+    await resend!.emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Ditt konto är klart - Friskvårdskompassen',
@@ -320,7 +321,7 @@ export async function sendCheckInReminderEmail(
 
     const loginUrl = `${process.env.NEXTAUTH_URL}/login`
 
-    await resend.emails.send({
+    await resend!.emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: 'Påminnelse: Dags för veckans check-in! 📊',
