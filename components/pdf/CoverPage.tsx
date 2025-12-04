@@ -24,14 +24,15 @@ export function CoverPage({
   return (
     <Page size="A4" style={styles.coverPage}>
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        {/* Logo */}
+        {/* Logo - original aspect ratio is ~1.9:1 (3172x1666) */}
         {logoUrl && (
           <Image
             src={logoUrl}
             style={{
-              width: 180,
-              height: 180,
+              width: 250,
+              height: 131,
               marginBottom: 40,
+              objectFit: 'contain',
             }}
           />
         )}
