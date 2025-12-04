@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server'
 import { jsPDF } from 'jspdf'
-import fs from 'fs'
-import path from 'path'
 
 // Färger som matchar plattformens tema (hex utan #)
 const DARK_BG: [number, number, number] = [15, 15, 25]           // #0F0F19 - mörk bakgrund
@@ -18,18 +16,6 @@ const PAGE_WIDTH = 210
 const PAGE_HEIGHT = 297
 const MARGIN = 20
 
-// Load logo as base64
-function getLogoBase64(): string | null {
-  try {
-    const logoPath = path.join(process.cwd(), 'public', 'images', 'logo.png')
-    const logoBuffer = fs.readFileSync(logoPath)
-    return `data:image/png;base64,${logoBuffer.toString('base64')}`
-  } catch (error) {
-    console.error('Failed to read logo:', error)
-    return null
-  }
-}
-
 export async function GET() {
   try {
     const doc = new jsPDF({
@@ -38,11 +24,8 @@ export async function GET() {
       format: 'a4'
     })
 
-    // Load logo
-    const logoBase64 = getLogoBase64()
-
     // ===== SIDA 1 =====
-    drawPage1(doc, logoBase64)
+    drawPage1(doc)
 
     // ===== SIDA 2 =====
     doc.addPage()
@@ -64,30 +47,25 @@ export async function GET() {
   }
 }
 
-function drawPage1(doc: jsPDF, logoBase64: string | null) {
+function drawPage1(doc: jsPDF) {
   let y = 0
 
   // Hela sidan har samma mörka bakgrund
   doc.setFillColor(...CARD_BG)
   doc.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, 'F')
 
-  // Logo in top left corner
-  if (logoBase64) {
-    doc.addImage(logoBase64, 'PNG', MARGIN, 8, 20, 20)
-  }
-
   // Guld-linje under header
   doc.setDrawColor(...GOLD)
   doc.setLineWidth(1)
-  doc.line(MARGIN, 40, PAGE_WIDTH - MARGIN, 40)
+  doc.line(MARGIN, 35, PAGE_WIDTH - MARGIN, 35)
 
-  // Header text (centered, but accounting for logo)
+  // Header text
   doc.setTextColor(...GOLD)
   doc.setFontSize(22)
   doc.setFont('helvetica', 'bold')
   doc.text('MITT M\xc5L OCH MINA DRIVKRAFTER', PAGE_WIDTH / 2, 25, { align: 'center' })
 
-  y = 50
+  y = 45
 
   // Sektion 1: MITT MÅL
   y = drawSectionHeader(doc, y, 'MITT M\xc5L')
@@ -173,15 +151,15 @@ function drawPage2(doc: jsPDF) {
   // Guld-linje under header
   doc.setDrawColor(...GOLD)
   doc.setLineWidth(1)
-  doc.line(MARGIN, 30, PAGE_WIDTH - MARGIN, 30)
+  doc.line(MARGIN, 25, PAGE_WIDTH - MARGIN, 25)
 
   // Header text
   doc.setTextColor(...GOLD)
-  doc.setFontSize(20)
+  doc.setFontSize(18)
   doc.setFont('helvetica', 'bold')
-  doc.text('F\xd6RDJUPADE DRIVKRAFTSFR\xc5GOR', PAGE_WIDTH / 2, 19, { align: 'center' })
+  doc.text('F\xd6RDJUPADE DRIVKRAFTSFR\xc5GOR', PAGE_WIDTH / 2, 17, { align: 'center' })
 
-  y = 40
+  y = 32
 
   // Sektion 1: UTFORSKA NYTTAN
   y = drawSectionHeader(doc, y, 'UTFORSKA NYTTAN')
@@ -279,7 +257,7 @@ function drawPage2(doc: jsPDF) {
 
 function drawSectionHeader(doc: jsPDF, y: number, title: string): number {
   doc.setTextColor(...GOLD)
-  doc.setFontSize(11)
+  doc.setFontSize(10)
   doc.setFont('helvetica', 'bold')
   doc.text(title, MARGIN, y)
 
@@ -288,20 +266,20 @@ function drawSectionHeader(doc: jsPDF, y: number, title: string): number {
   doc.setLineWidth(0.8)
   doc.line(MARGIN, y + 2, PAGE_WIDTH - MARGIN, y + 2)
 
-  return y + 8
+  return y + 7
 }
 
 function drawInputLines(doc: jsPDF, y: number, label: string, numLines: number): number {
   doc.setTextColor(...LIGHT_GRAY)
-  doc.setFontSize(9)
+  doc.setFontSize(8)
   doc.setFont('helvetica', 'normal')
   doc.text(label, MARGIN, y)
 
-  y += 4
+  y += 3
 
   // Draw white background boxes for writing
-  const lineHeight = 8
-  const boxHeight = numLines * lineHeight + 4
+  const lineHeight = 7
+  const boxHeight = numLines * lineHeight + 3
 
   doc.setFillColor(...WHITE)
   doc.roundedRect(MARGIN, y - 2, PAGE_WIDTH - 2 * MARGIN, boxHeight, 2, 2, 'F')
@@ -311,9 +289,9 @@ function drawInputLines(doc: jsPDF, y: number, label: string, numLines: number):
   doc.setLineWidth(0.2)
 
   for (let i = 0; i < numLines; i++) {
-    const lineY = y + 4 + i * lineHeight
+    const lineY = y + 3 + i * lineHeight
     doc.line(MARGIN + 3, lineY, PAGE_WIDTH - MARGIN - 3, lineY)
   }
 
-  return y + boxHeight + 4
+  return y + boxHeight + 3
 }
