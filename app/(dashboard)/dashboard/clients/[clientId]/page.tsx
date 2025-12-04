@@ -141,7 +141,7 @@ function InfoField({ label, value }: { label: string; value: string | number | n
   if (!value) return null
   return (
     <div className="space-y-1">
-      <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">{label}</p>
+      <p className="text-xs text-gray-500 uppercase tracking-wide font-bold">{label}</p>
       <p className="text-gray-700 whitespace-pre-line">{value}</p>
     </div>
   )
