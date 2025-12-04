@@ -50,13 +50,9 @@ export async function GET() {
 function drawPage1(doc: jsPDF) {
   let y = 0
 
-  // Hela sidan har mörk bakgrund
-  doc.setFillColor(...DARK_BG)
-  doc.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, 'F')
-
-  // Header bakgrund med gradient-effekt
+  // Hela sidan har samma mörka bakgrund
   doc.setFillColor(...CARD_BG)
-  doc.rect(0, 0, PAGE_WIDTH, 40, 'F')
+  doc.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, 'F')
 
   // Guld-linje under header
   doc.setDrawColor(...GOLD)
@@ -133,10 +129,8 @@ function drawPage1(doc: jsPDF) {
   // Citat-ruta
   y += 12
   const quoteBoxHeight = 20
-  doc.setFillColor(...CARD_BG)
-  doc.roundedRect(MARGIN, y, PAGE_WIDTH - 2 * MARGIN, quoteBoxHeight, 3, 3, 'F')
 
-  // Guld border på citat-rutan
+  // Guld border på citat-rutan (ingen separat bakgrund)
   doc.setDrawColor(...GOLD)
   doc.setLineWidth(0.5)
   doc.roundedRect(MARGIN, y, PAGE_WIDTH - 2 * MARGIN, quoteBoxHeight, 3, 3, 'S')
@@ -156,13 +150,9 @@ function drawPage1(doc: jsPDF) {
 function drawPage2(doc: jsPDF) {
   let y = 0
 
-  // Hela sidan har mörk bakgrund
-  doc.setFillColor(...DARK_BG)
-  doc.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, 'F')
-
-  // Header bakgrund
+  // Hela sidan har samma mörka bakgrund
   doc.setFillColor(...CARD_BG)
-  doc.rect(0, 0, PAGE_WIDTH, 30, 'F')
+  doc.rect(0, 0, PAGE_WIDTH, PAGE_HEIGHT, 'F')
 
   // Guld-linje under header
   doc.setDrawColor(...GOLD)
@@ -245,10 +235,8 @@ function drawPage2(doc: jsPDF) {
 
   // Tips-ruta
   const tipsBoxHeight = 30
-  doc.setFillColor(...CARD_BG)
-  doc.roundedRect(MARGIN, y, PAGE_WIDTH - 2 * MARGIN, tipsBoxHeight, 3, 3, 'F')
 
-  // Guld border
+  // Guld border på tips-rutan (ingen separat bakgrund)
   doc.setDrawColor(...GOLD)
   doc.setLineWidth(0.5)
   doc.roundedRect(MARGIN, y, PAGE_WIDTH - 2 * MARGIN, tipsBoxHeight, 3, 3, 'S')
