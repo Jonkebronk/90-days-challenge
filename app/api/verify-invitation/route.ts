@@ -24,6 +24,13 @@ export async function GET(request: NextRequest) {
         email: true,
         status: true,
         password: true,
+        coach: {
+          select: {
+            name: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     })
 
@@ -42,6 +49,12 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Get coach name
+    const coachName = user.coach?.name ||
+      (user.coach?.firstName && user.coach?.lastName
+        ? `${user.coach.firstName} ${user.coach.lastName}`
+        : 'Din coach')
+
     return NextResponse.json({
       valid: true,
       client: {
@@ -50,6 +63,7 @@ export async function GET(request: NextRequest) {
         name: user.name,
         email: user.email,
       },
+      coachName,
     })
   } catch (error) {
     console.error('Verify invitation error:', error)

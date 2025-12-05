@@ -37,7 +37,7 @@ function SetupAccountContent() {
   const [clientInfo, setClientInfo] = useState<{ firstName: string; lastName: string; email: string } | null>(null)
   const [verifying, setVerifying] = useState(true)
   const [step, setStep] = useState(1) // 1 = password, 2 = GDPR consent
-  const [coachName, setCoachName] = useState('John Sund')
+  const [coachName, setCoachName] = useState('Din coach')
 
   const { register, handleSubmit, formState: { errors }, setValue, watch, trigger } = useForm<SetupForm>({
     resolver: zodResolver(setupSchema),
@@ -64,6 +64,9 @@ function SetupAccountContent() {
       .then((data) => {
         if (data.valid) {
           setClientInfo(data.client)
+          if (data.coachName) {
+            setCoachName(data.coachName)
+          }
         } else {
           setError(data.error || 'Invalid or expired invitation')
         }
