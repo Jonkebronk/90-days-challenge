@@ -84,7 +84,7 @@ export function DayColumn({
                 })
               }
             >
-              <SelectTrigger className="flex-1 h-8 bg-zinc-800 border-zinc-700 text-sm">
+              <SelectTrigger className="flex-1 h-8 bg-zinc-800 border-zinc-700 text-sm text-white">
                 <SelectValue placeholder={day.dayName || 'Select day'} />
               </SelectTrigger>
               <SelectContent>
