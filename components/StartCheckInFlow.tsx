@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 
 interface StartCheckInFlowProps {
@@ -26,8 +25,7 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
   }>({ front: null, side: null, back: null })
 
   const [formData, setFormData] = useState({
-    statusUpdate: '', // Will be used for "Berätta om dig"
-    mondayWeight: '', // Will use just this field for starting weight
+    mondayWeight: '', // Starting weight
     // Kroppsmått
     chest: '',
     waist: '',
@@ -86,7 +84,7 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
       })
 
       if (response.ok) {
-        setStep(7) // Go to completion screen
+        setStep(6) // Go to completion screen
       } else {
         toast.error('Något gick fel')
       }
@@ -150,7 +148,7 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
               <h1 className="text-2xl font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">Start Check-in</h1>
             </div>
 
-            <ProgressBar current={1} total={6} />
+            <ProgressBar current={1} total={5} />
 
             <div className="flex items-start gap-4 mb-8">
               <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold text-2xl">
@@ -177,59 +175,14 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
     )
   }
 
-  // Step 2: Berätta om dig
+  // Step 2: Starting weight
   if (step === 2) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
             <Header onBack={() => setStep(1)} />
-            <ProgressBar current={2} total={6} />
-
-            <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
-                {userName.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <h2 className="text-xl font-bold mb-2 text-white">Berätta om dig</h2>
-                <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                  Hur ser din utgångspunkt ut? Vad hoppas du uppnå under dessa 90 dagar?
-                </p>
-              </div>
-            </div>
-
-            <Textarea
-              value={formData.statusUpdate}
-              onChange={(e) => updateFormData('statusUpdate', e.target.value)}
-              placeholder="Berätta om din situation, dina mål och varför du vill göra denna förändring..."
-              rows={8}
-              maxLength={1000}
-              className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
-            />
-            <div className="text-right text-sm text-[rgba(255,255,255,0.6)] mt-1">
-              {formData.statusUpdate.length} / 1000
-            </div>
-
-            <Button
-              onClick={() => setStep(3)}
-              className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
-            >
-              Fortsätt
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  // Step 3: Starting weight
-  if (step === 3) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
-          <CardContent className="pt-6">
-            <Header onBack={() => setStep(2)} />
-            <ProgressBar current={3} total={6} />
+            <ProgressBar current={2} total={5} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -258,7 +211,7 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
             </div>
 
             <Button
-              onClick={() => setStep(4)}
+              onClick={() => setStep(3)}
               className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
@@ -269,8 +222,8 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
     )
   }
 
-  // Step 4: Body measurements
-  if (step === 4) {
+  // Step 3: Body measurements
+  if (step === 3) {
     const measurements = [
       { name: 'Bröst', field: 'chest', placeholder: 'cm' },
       { name: 'Midja', field: 'waist', placeholder: 'cm' },
@@ -285,8 +238,8 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
-            <Header onBack={() => setStep(3)} />
-            <ProgressBar current={4} total={6} />
+            <Header onBack={() => setStep(2)} />
+            <ProgressBar current={3} total={5} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -317,7 +270,7 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
             </div>
 
             <Button
-              onClick={() => setStep(5)}
+              onClick={() => setStep(4)}
               className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
@@ -328,14 +281,14 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
     )
   }
 
-  // Step 5: Form photos
-  if (step === 5) {
+  // Step 4: Form photos
+  if (step === 4) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
-            <Header onBack={() => setStep(4)} />
-            <ProgressBar current={5} total={6} />
+            <Header onBack={() => setStep(3)} />
+            <ProgressBar current={4} total={5} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -391,7 +344,7 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
             </div>
 
             <Button
-              onClick={() => setStep(6)}
+              onClick={() => setStep(5)}
               className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#FFD700] hover:to-[#FFD700] text-[#0a0a0a] font-semibold h-12 mt-6"
             >
               Fortsätt
@@ -402,14 +355,14 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
     )
   }
 
-  // Step 6: Review and submit
-  if (step === 6) {
+  // Step 5: Review and submit
+  if (step === 5) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.2)] backdrop-blur-[10px]">
           <CardContent className="pt-6">
-            <Header onBack={() => setStep(5)} />
-            <ProgressBar current={6} total={6} />
+            <Header onBack={() => setStep(4)} />
+            <ProgressBar current={5} total={5} />
 
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0a0a0a] font-semibold">
@@ -455,8 +408,8 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
     )
   }
 
-  // Step 7: Completion screen
-  if (step === 7) {
+  // Step 6: Completion screen
+  if (step === 6) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
         <Card className="w-full max-w-lg bg-[rgba(255,255,255,0.03)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
