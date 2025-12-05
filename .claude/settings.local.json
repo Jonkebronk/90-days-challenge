@@ -48,7 +48,10 @@
       "Bash(git checkout:*)",
       "Bash(railway link:*)",
       "WebFetch(domain:frontend-production-edec.up.railway.app)",
-      "WebFetch(domain:rpstrength.com)"
+      "WebFetch(domain:rpstrength.com)",
+      "WebFetch(domain:www.trainingpeaks.com)",
+      "WebFetch(domain:www.setforset.com)",
+      "WebFetch(domain:www.bodyspec.com)"
     ],
     "deny": [],
     "ask": []
