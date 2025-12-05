@@ -10,6 +10,8 @@ interface DownloadPdfButtonProps {
   categoryIds?: string[]
   branchId?: string
   branchName?: string
+  categoryId?: string
+  categoryName?: string
   variant?: 'default' | 'outline' | 'ghost'
   size?: 'default' | 'sm' | 'lg' | 'icon'
   className?: string
@@ -20,6 +22,8 @@ export function DownloadPdfButton({
   categoryIds,
   branchId,
   branchName,
+  categoryId,
+  categoryName,
   variant = 'outline',
   size = 'default',
   className,
@@ -40,6 +44,9 @@ export function DownloadPdfButton({
       if (branchId) {
         params.set('branchId', branchId)
       }
+      if (categoryId) {
+        params.set('categoryId', categoryId)
+      }
 
       const response = await fetch(`/api/articles/export-pdf?${params.toString()}`)
 
@@ -55,10 +62,21 @@ export function DownloadPdfButton({
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      // Use branchName for filename if provided
+      // Use branchName/categoryName for filename if provided
       let filename = 'kunskapsbank.pdf'
       if (audience === 'coach') {
-        filename = 'coach-kunskapsbank.pdf'
+        if (categoryName) {
+          const sanitizedName = categoryName
+            .toLowerCase()
+            .replace(/[åä]/g, 'a')
+            .replace(/ö/g, 'o')
+            .replace(/[^a-z0-9]/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '')
+          filename = `coach-kunskapsbank-${sanitizedName}.pdf`
+        } else {
+          filename = 'coach-kunskapsbank.pdf'
+        }
       } else if (branchName) {
         const sanitizedName = branchName
           .toLowerCase()

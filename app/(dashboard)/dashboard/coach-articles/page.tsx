@@ -8,6 +8,13 @@ import { BookOpen, ShieldCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { ArticleCard } from '@/components/article-card'
 import { DownloadPdfButton } from '@/components/download-pdf-button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 type Article = {
   id: string
@@ -23,10 +30,18 @@ type Article = {
   }
 }
 
+type Category = {
+  id: string
+  name: string
+  slug: string
+}
+
 export default function CoachArticlesPage() {
   const { data: session } = useSession()
   const router = useRouter()
   const [articles, setArticles] = useState<Article[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCategoryForPdf, setSelectedCategoryForPdf] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
 
   // Check if user is a coach
@@ -35,6 +50,7 @@ export default function CoachArticlesPage() {
   useEffect(() => {
     if (session?.user && isCoach) {
       fetchArticles()
+      fetchCategories()
     } else if (session && !isCoach) {
       router.push('/dashboard')
     }
@@ -56,6 +72,18 @@ export default function CoachArticlesPage() {
       toast.error('Ett fel uppstod')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/article-categories?audience=coach')
+      if (response.ok) {
+        const data = await response.json()
+        setCategories(data.categories || [])
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
     }
   }
 
@@ -85,13 +113,38 @@ export default function CoachArticlesPage() {
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent mt-4 sm:mt-6 opacity-30" />
 
-        {/* PDF Download Button */}
-        <div className="mt-4">
-          <DownloadPdfButton
-            audience="coach"
-            variant="default"
-            className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold hover:from-purple-400 hover:to-purple-500"
-          />
+        {/* PDF Download Section */}
+        <div className="mt-6 flex flex-col items-center gap-3">
+          <p className="text-gray-600 text-sm">
+            Föredrar du att läsa på papper? Ladda ner en kategori som PDF:
+          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <Select value={selectedCategoryForPdf} onValueChange={setSelectedCategoryForPdf}>
+              <SelectTrigger className="w-[250px] bg-white border-purple-300 text-gray-900">
+                <SelectValue placeholder="Välj kategori att ladda ner" />
+              </SelectTrigger>
+              <SelectContent className="bg-white border-purple-300">
+                {categories.map((category) => (
+                  <SelectItem
+                    key={category.id}
+                    value={category.id}
+                    className="text-gray-900 hover:bg-purple-100 focus:bg-purple-100"
+                  >
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedCategoryForPdf && (
+              <DownloadPdfButton
+                audience="coach"
+                categoryId={selectedCategoryForPdf}
+                categoryName={categories.find(c => c.id === selectedCategoryForPdf)?.name}
+                variant="default"
+                className="bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold hover:from-purple-400 hover:to-purple-500"
+              />
+            )}
+          </div>
         </div>
       </div>
 

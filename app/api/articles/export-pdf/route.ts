@@ -31,7 +31,8 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const audience = searchParams.get('audience') || 'client'
-    const branchId = searchParams.get('branchId') // Optional: filter to specific branch
+    const branchId = searchParams.get('branchId') // Optional: filter to specific branch (client)
+    const categoryId = searchParams.get('categoryId') // Optional: filter to specific category (coach)
 
     // Validate audience parameter
     if (audience !== 'client' && audience !== 'coach') {
@@ -101,8 +102,12 @@ export async function GET(request: NextRequest) {
       }
     } else {
       // Coach articles - use category structure
+      // If categoryId is provided, only fetch that category
       const categories = await prisma.articleCategory.findMany({
-        where: { audience: 'coach' },
+        where: {
+          audience: 'coach',
+          ...(categoryId ? { id: categoryId } : {}),
+        },
         orderBy: { orderIndex: 'asc' },
         include: {
           articles: {
@@ -120,9 +125,12 @@ export async function GET(request: NextRequest) {
         },
       })
 
+      const filteredCategories = categories.filter(cat => cat.articles.length > 0)
+
       pdfData = {
         type: 'categories',
-        categories: categories.filter(cat => cat.articles.length > 0),
+        categories: filteredCategories,
+        singleCategory: categoryId ? filteredCategories[0] : null, // Pass single category info for title
       }
     }
 
@@ -149,7 +157,19 @@ export async function GET(request: NextRequest) {
     // Return PDF as downloadable file
     let filename: string
     if (audience === 'coach') {
-      filename = 'coach-kunskapsbank.pdf'
+      if (pdfData.singleCategory) {
+        // Sanitize category name for filename
+        const categoryName = pdfData.singleCategory.name
+          .toLowerCase()
+          .replace(/[åä]/g, 'a')
+          .replace(/ö/g, 'o')
+          .replace(/[^a-z0-9]/g, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '')
+        filename = `coach-kunskapsbank-${categoryName}.pdf`
+      } else {
+        filename = 'coach-kunskapsbank.pdf'
+      }
     } else if (pdfData.singleBranch) {
       // Sanitize branch name for filename
       const branchName = pdfData.singleBranch.name

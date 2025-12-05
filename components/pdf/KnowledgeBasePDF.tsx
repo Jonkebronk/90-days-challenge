@@ -49,6 +49,7 @@ interface SkillTreeData {
 interface CategoryData {
   type: 'categories'
   categories: Category[]
+  singleCategory?: Category | null // Present when filtering to a single category
 }
 
 interface KnowledgeBasePDFProps {
@@ -126,26 +127,42 @@ export function KnowledgeBasePDF({
     })
   }
 
-  // Determine if this is a single branch PDF
+  // Determine if this is a single branch/category PDF
   const singleBranchName = data.type === 'skillTree' && data.singleBranch ? data.singleBranch.name : null
-  const documentTitle = singleBranchName
-    ? `Friskvårdskompassen - ${singleBranchName}`
-    : 'Friskvårdskompassen - Kunskapskartan'
-  const coverTitle = singleBranchName
-    ? singleBranchName.toUpperCase()
-    : 'KUNSKAPSKARTAN'
+  const singleCategoryName = data.type === 'categories' && data.singleCategory ? data.singleCategory.name : null
+  const singleName = singleBranchName || singleCategoryName
+
+  const documentTitle = singleName
+    ? `Friskvårdskompassen - ${singleName}`
+    : audience === 'coach'
+      ? 'Friskvårdskompassen - Coach Kunskapsbank'
+      : 'Friskvårdskompassen - Kunskapskartan'
+  const coverTitle = singleName
+    ? singleName.toUpperCase()
+    : audience === 'coach'
+      ? 'COACH KUNSKAPSBANK'
+      : 'KUNSKAPSKARTAN'
+
+  const subjectText = singleName
+    ? singleName
+    : audience === 'coach'
+      ? 'Coach Kunskapsbank'
+      : 'Kunskapskartan'
+  const subtitleText = singleName
+    ? (audience === 'coach' ? 'Coach Kunskapsbank' : 'Kunskapskartan')
+    : undefined
 
   return (
     <Document
       title={documentTitle}
       author="Friskvårdskompassen"
-      subject={singleBranchName || 'Kunskapskartan'}
+      subject={subjectText}
       keywords="träning, kost, hälsa, livsstil"
     >
       {/* Cover Page */}
       <CoverPage
         title={coverTitle}
-        subtitle={singleBranchName ? 'Kunskapskartan' : undefined}
+        subtitle={subtitleText}
         logoUrl={logoUrl}
       />
 
