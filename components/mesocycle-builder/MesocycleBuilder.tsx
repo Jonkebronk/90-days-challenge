@@ -320,7 +320,7 @@ export function MesocycleBuilder({
             value={mesocycle.goal}
             onValueChange={(value) => updateMesocycle({ goal: value })}
           >
-            <SelectTrigger className="w-28 h-7 text-xs bg-zinc-900 border-zinc-700 rounded-md">
+            <SelectTrigger className="w-28 h-7 text-xs bg-zinc-900 border-zinc-700 rounded-md text-white">
               <SelectValue placeholder="Select goal" />
             </SelectTrigger>
             <SelectContent>
@@ -341,7 +341,7 @@ export function MesocycleBuilder({
               updateMesocycle({ durationWeeks: parseInt(value) })
             }
           >
-            <SelectTrigger className="w-24 h-7 text-xs bg-zinc-900 border-zinc-700 rounded-md">
+            <SelectTrigger className="w-24 h-7 text-xs bg-zinc-900 border-zinc-700 rounded-md text-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -365,7 +365,7 @@ export function MesocycleBuilder({
                   startingRIR: e.target.value ? parseInt(e.target.value) : null,
                 })
               }
-              className="w-12 h-7 text-xs text-center bg-zinc-900 border-zinc-700 rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="w-12 h-7 text-xs text-center bg-zinc-900 border-zinc-700 rounded-md text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               placeholder="3"
             />
             <span className="text-zinc-500 text-xs">→</span>
@@ -377,7 +377,7 @@ export function MesocycleBuilder({
                   endingRIR: e.target.value ? parseInt(e.target.value) : null,
                 })
               }
-              className="w-12 h-7 text-xs text-center bg-zinc-900 border-zinc-700 rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="w-12 h-7 text-xs text-center bg-zinc-900 border-zinc-700 rounded-md text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               placeholder="0"
             />
           </div>
