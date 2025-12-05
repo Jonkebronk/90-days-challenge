@@ -35,7 +35,7 @@ import {
   Loader2,
   Layers,
 } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Mesocycle, MUSCLE_GROUP_COLORS } from '@/components/mesocycle-builder/types'
 
 // Types
@@ -142,11 +142,9 @@ function CycleHierarchyExplainer() {
 
 export default function TrainingCyclesPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const initialTab = searchParams.get('tab') || 'macrocycles'
 
   // State
-  const [activeTab, setActiveTab] = useState(initialTab)
+  const [activeTab, setActiveTab] = useState('macrocycles')
   const [macrocycles, setMacrocycles] = useState<Macrocycle[]>([])
   const [mesocycles, setMesocycles] = useState<Mesocycle[]>([])
   const [loadingMacro, setLoadingMacro] = useState(true)
