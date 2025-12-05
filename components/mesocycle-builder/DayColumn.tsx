@@ -69,7 +69,7 @@ export function DayColumn({
   const [isAddSlotOpen, setIsAddSlotOpen] = useState(false)
 
   return (
-    <div className={`flex flex-col bg-zinc-900/50 rounded-lg border border-zinc-800 ${compact ? 'flex-1' : 'flex-shrink-0 w-[280px] md:w-[320px]'}`}>
+    <div className={`flex flex-col bg-zinc-900/50 rounded-lg border border-zinc-800 ${compact ? 'flex-1' : 'flex-shrink-0 w-[200px] md:w-[220px] lg:w-[240px]'}`}>
       {/* Day Header - hidden in compact mode since we show weekday header above */}
       {!compact && (
         <div className="p-3 border-b border-zinc-800 flex items-center justify-between">

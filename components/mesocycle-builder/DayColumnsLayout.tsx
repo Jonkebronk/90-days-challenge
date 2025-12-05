@@ -62,7 +62,7 @@ export function DayColumnsLayout({
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const scrollAmount = 340 // Width of one column + gap
+      const scrollAmount = 250 // Width of one column + gap
       scrollRef.current.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth',
@@ -176,7 +176,7 @@ export function DayColumnsLayout({
 
         {/* Add Day Column */}
         <div
-          className="flex-shrink-0 w-[280px] md:w-[320px]"
+          className="flex-shrink-0 w-[200px] md:w-[220px] lg:w-[240px]"
           style={{ scrollSnapAlign: 'start' }}
         >
           <button
