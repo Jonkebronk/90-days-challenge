@@ -43,6 +43,7 @@ interface Category {
 interface SkillTreeData {
   type: 'skillTree'
   branches: Branch[]
+  singleBranch?: Branch | null // Present when filtering to a single branch
 }
 
 interface CategoryData {
@@ -57,10 +58,13 @@ interface KnowledgeBasePDFProps {
 }
 
 // Footer component for content pages
-function PageFooter() {
+function PageFooter({ branchName }: { branchName?: string }) {
+  const footerText = branchName
+    ? `Friskvårdskompassen - ${branchName}`
+    : 'Friskvårdskompassen - Kunskapskartan'
   return (
     <View style={styles.footer} fixed>
-      <Text style={styles.footerText}>Friskvårdskompassen - Kunskapskartan</Text>
+      <Text style={styles.footerText}>{footerText}</Text>
       <Text
         style={styles.pageNumber}
         render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`}
@@ -122,16 +126,26 @@ export function KnowledgeBasePDF({
     })
   }
 
+  // Determine if this is a single branch PDF
+  const singleBranchName = data.type === 'skillTree' && data.singleBranch ? data.singleBranch.name : null
+  const documentTitle = singleBranchName
+    ? `Friskvårdskompassen - ${singleBranchName}`
+    : 'Friskvårdskompassen - Kunskapskartan'
+  const coverTitle = singleBranchName
+    ? singleBranchName.toUpperCase()
+    : 'KUNSKAPSKARTAN'
+
   return (
     <Document
-      title="Friskvårdskompassen - Kunskapskartan"
+      title={documentTitle}
       author="Friskvårdskompassen"
-      subject="Kunskapskartan"
+      subject={singleBranchName || 'Kunskapskartan'}
       keywords="träning, kost, hälsa, livsstil"
     >
       {/* Cover Page */}
       <CoverPage
-        title="KUNSKAPSKARTAN"
+        title={coverTitle}
+        subtitle={singleBranchName ? 'Kunskapskartan' : undefined}
         logoUrl={logoUrl}
       />
 
@@ -177,7 +191,7 @@ export function KnowledgeBasePDF({
 
               {/* Articles in this chapter */}
               <Page size="A4" style={styles.page} wrap>
-                <PageFooter />
+                <PageFooter branchName={singleBranchName || undefined} />
 
                 {allArticlesWithMeta.map(({ article, subcategoryName, articleNumber }, index) => (
                   <React.Fragment key={article.id}>

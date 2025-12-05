@@ -29,6 +29,13 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import { MDXPreview } from '@/components/mdx-preview'
 import { DownloadPdfButton } from '@/components/download-pdf-button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 // Map icon names to components
 const iconMap: Record<string, LucideIcon> = {
@@ -77,6 +84,7 @@ export default function SkillTreePage() {
   const [isLoading, setIsLoading] = useState(true)
   const [expandedBranches, setExpandedBranches] = useState<string[]>([])
   const [rootExpanded, setRootExpanded] = useState(false)
+  const [selectedBranchForPdf, setSelectedBranchForPdf] = useState<string>('')
   const [skillTreeGuide, setSkillTreeGuide] = useState({
     title: 'Varför träning ensamt inte räcker',
     content: ''
@@ -443,16 +451,38 @@ export default function SkillTreePage() {
         </p>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
 
-        {/* PDF Download Button */}
-        <div className="mt-6 flex flex-col items-center gap-2">
+        {/* PDF Download Section */}
+        <div className="mt-6 flex flex-col items-center gap-3">
           <p className="text-white/80 text-sm">
-            Föredrar du att läsa på papper? Ladda ner hela kunskapskartan som PDF
+            Föredrar du att läsa på papper? Ladda ner en gren som PDF:
           </p>
-          <DownloadPdfButton
-            audience="client"
-            variant="default"
-            className="bg-gradient-to-r from-gold-primary to-gold-secondary text-black font-semibold hover:from-gold-light hover:to-gold-primary"
-          />
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <Select value={selectedBranchForPdf} onValueChange={setSelectedBranchForPdf}>
+              <SelectTrigger className="w-[250px] bg-gray-800/50 border-gold-primary/30 text-white">
+                <SelectValue placeholder="Välj gren att ladda ner" />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-800 border-gold-primary/30">
+                {branches.map((branch) => (
+                  <SelectItem
+                    key={branch.id}
+                    value={branch.id}
+                    className="text-white hover:bg-gold-primary/20 focus:bg-gold-primary/20"
+                  >
+                    {branch.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedBranchForPdf && (
+              <DownloadPdfButton
+                audience="client"
+                branchId={selectedBranchForPdf}
+                branchName={branches.find(b => b.id === selectedBranchForPdf)?.name}
+                variant="default"
+                className="bg-gradient-to-r from-gold-primary to-gold-secondary text-black font-semibold hover:from-gold-light hover:to-gold-primary"
+              />
+            )}
+          </div>
         </div>
       </div>
 

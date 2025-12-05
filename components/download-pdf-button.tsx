@@ -8,6 +8,8 @@ import { toast } from 'sonner'
 interface DownloadPdfButtonProps {
   audience?: 'client' | 'coach'
   categoryIds?: string[]
+  branchId?: string
+  branchName?: string
   variant?: 'default' | 'outline' | 'ghost'
   size?: 'default' | 'sm' | 'lg' | 'icon'
   className?: string
@@ -16,6 +18,8 @@ interface DownloadPdfButtonProps {
 export function DownloadPdfButton({
   audience = 'client',
   categoryIds,
+  branchId,
+  branchName,
   variant = 'outline',
   size = 'default',
   className,
@@ -33,6 +37,9 @@ export function DownloadPdfButton({
       if (categoryIds && categoryIds.length > 0) {
         params.set('categoryIds', categoryIds.join(','))
       }
+      if (branchId) {
+        params.set('branchId', branchId)
+      }
 
       const response = await fetch(`/api/articles/export-pdf?${params.toString()}`)
 
@@ -48,7 +55,21 @@ export function DownloadPdfButton({
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = audience === 'coach' ? 'coach-kunskapsbank.pdf' : 'kunskapsbank.pdf'
+      // Use branchName for filename if provided
+      let filename = 'kunskapsbank.pdf'
+      if (audience === 'coach') {
+        filename = 'coach-kunskapsbank.pdf'
+      } else if (branchName) {
+        const sanitizedName = branchName
+          .toLowerCase()
+          .replace(/[åä]/g, 'a')
+          .replace(/ö/g, 'o')
+          .replace(/[^a-z0-9]/g, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '')
+        filename = `kunskapskartan-${sanitizedName}.pdf`
+      }
+      link.download = filename
       document.body.appendChild(link)
       link.click()
 

@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const audience = searchParams.get('audience') || 'client'
+    const branchId = searchParams.get('branchId') // Optional: filter to specific branch
 
     // Validate audience parameter
     if (audience !== 'client' && audience !== 'coach') {
@@ -46,7 +47,9 @@ export async function GET(request: NextRequest) {
 
     if (audience === 'client') {
       // Fetch skill tree branches with articles (same structure as kunskapskartan)
+      // If branchId is provided, only fetch that branch
       const branches = await prisma.skillTreeBranch.findMany({
+        where: branchId ? { id: branchId } : undefined,
         orderBy: { orderIndex: 'asc' },
         include: {
           articles: {
@@ -85,13 +88,16 @@ export async function GET(request: NextRequest) {
       })
 
       // Transform to PDF format
+      const filteredBranches = branches.filter(branch => {
+        const hasLooseArticles = branch.articles.length > 0
+        const hasSubcategoryArticles = branch.subcategories.some(sub => sub.articles.length > 0)
+        return hasLooseArticles || hasSubcategoryArticles
+      })
+
       pdfData = {
         type: 'skillTree',
-        branches: branches.filter(branch => {
-          const hasLooseArticles = branch.articles.length > 0
-          const hasSubcategoryArticles = branch.subcategories.some(sub => sub.articles.length > 0)
-          return hasLooseArticles || hasSubcategoryArticles
-        }),
+        branches: filteredBranches,
+        singleBranch: branchId ? filteredBranches[0] : null, // Pass single branch info for title
       }
     } else {
       // Coach articles - use category structure
@@ -141,9 +147,22 @@ export async function GET(request: NextRequest) {
     )
 
     // Return PDF as downloadable file
-    const filename = audience === 'coach'
-      ? 'coach-kunskapsbank.pdf'
-      : 'kunskapskartan.pdf'
+    let filename: string
+    if (audience === 'coach') {
+      filename = 'coach-kunskapsbank.pdf'
+    } else if (pdfData.singleBranch) {
+      // Sanitize branch name for filename
+      const branchName = pdfData.singleBranch.name
+        .toLowerCase()
+        .replace(/[åä]/g, 'a')
+        .replace(/ö/g, 'o')
+        .replace(/[^a-z0-9]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+      filename = `kunskapskartan-${branchName}.pdf`
+    } else {
+      filename = 'kunskapskartan.pdf'
+    }
 
     // Convert Buffer to Uint8Array for NextResponse compatibility
     const uint8Array = new Uint8Array(pdfBuffer)
