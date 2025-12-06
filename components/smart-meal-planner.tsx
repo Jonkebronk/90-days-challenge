@@ -11,15 +11,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
 import {
-  Utensils,
-  Calendar,
   RefreshCw,
-  Flame,
   Beef,
   Wheat,
   Droplet,
@@ -27,7 +23,12 @@ import {
   Loader2,
   Scale,
   Activity,
-  TrendingDown
+  TrendingDown,
+  Search,
+  X,
+  Check,
+  ChevronUp,
+  Flame
 } from 'lucide-react'
 
 // Types
@@ -44,6 +45,32 @@ interface MealDistribution {
   protein: number
   fat: number
   carbs: number
+}
+
+interface RecipeCategory {
+  id: string
+  name: string
+  slug: string
+  color: string
+}
+
+interface SelectedRecipe {
+  id: string
+  title: string
+  imageUrl?: string
+  scaleFactor: number
+  scaledServings: number
+  macros: MacroTargets
+}
+
+// Mapping meal names to category slugs
+const MEAL_CATEGORY_MAP: Record<string, string> = {
+  'Frukost': 'frukost',
+  'Mellanmål 1': 'mellanmal',
+  'Mellanmål 2': 'mellanmal',
+  'Lunch': 'lunch',
+  'Middag': 'middag',
+  'Kvällsmål': 'kvallsmal',
 }
 
 // Kostschema types
@@ -110,264 +137,6 @@ interface RecipeMatch {
     fat: number
   }
 }
-
-interface MealSlot {
-  slot: string
-  recipe: {
-    id: string
-    title: string
-    imageUrl?: string
-    scaleFactor: number
-    scaledServings: number
-    macros: MacroTargets
-  }
-}
-
-interface DayPlan {
-  meals: MealSlot[]
-  totals: MacroTargets
-  deviation: {
-    calories: number
-    protein: number
-    carbs: number
-    fat: number
-  }
-  score: number
-}
-
-// Sub-components
-function MacroCircle({
-  label,
-  value,
-  total,
-  color,
-  icon: Icon
-}: {
-  label: string
-  value: number
-  total: number
-  color: string
-  icon: React.ElementType
-}) {
-  const percentage = Math.min(100, (value / total) * 100)
-  const circumference = 2 * Math.PI * 40
-  const strokeDashoffset = circumference - (percentage / 100) * circumference
-
-  return (
-    <div className="flex flex-col items-center">
-      <div className="relative w-24 h-24">
-        <svg className="w-24 h-24 -rotate-90">
-          <circle
-            cx="48"
-            cy="48"
-            r="40"
-            stroke="currentColor"
-            strokeWidth="8"
-            fill="none"
-            className="text-gray-700"
-          />
-          <circle
-            cx="48"
-            cy="48"
-            r="40"
-            stroke={color}
-            strokeWidth="8"
-            fill="none"
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
-            strokeLinecap="round"
-            className="transition-all duration-500"
-          />
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <Icon className="w-5 h-5 mb-1" style={{ color }} />
-          <span className="text-sm font-bold text-white">{Math.round(value)}g</span>
-        </div>
-      </div>
-      <span className="text-xs text-gray-400 mt-1">{label}</span>
-      <span className="text-xs text-gray-500">av {total}g</span>
-    </div>
-  )
-}
-
-function RecipeCard({
-  match,
-  onSelect
-}: {
-  match: RecipeMatch
-  onSelect?: () => void
-}) {
-  const scoreColor = match.score >= 0.8 ? 'text-green-400' :
-                     match.score >= 0.6 ? 'text-yellow-400' : 'text-red-400'
-
-  return (
-    <Card className="bg-gray-800 border-gray-700 hover:border-gold-primary/50 transition-all cursor-pointer" onClick={onSelect}>
-      <CardContent className="p-4">
-        <div className="flex gap-4">
-          {match.recipe.imageUrl && (
-            <img
-              src={match.recipe.imageUrl}
-              alt={match.recipe.title}
-              className="w-20 h-20 object-cover rounded-lg"
-            />
-          )}
-          <div className="flex-1">
-            <h4 className="font-semibold text-white">{match.recipe.title}</h4>
-            {match.recipe.description && (
-              <p className="text-sm text-gray-400 line-clamp-1">{match.recipe.description}</p>
-            )}
-
-            <div className="flex items-center gap-2 mt-2">
-              <Badge variant="outline" className={`${scoreColor} border-current`}>
-                {Math.round(match.score * 100)}% match
-              </Badge>
-              {match.scaleFactor !== 1 && (
-                <Badge variant="secondary" className="bg-gray-700 text-gray-300">
-                  {match.scaledServings} portioner
-                </Badge>
-              )}
-            </div>
-
-            <div className="flex gap-3 mt-2 text-xs text-gray-400">
-              <span className="flex items-center gap-1">
-                <Flame className="w-3 h-3 text-gold-primary" />
-                {match.scaledMacros.calories} kcal
-              </span>
-              <span className="flex items-center gap-1">
-                <Beef className="w-3 h-3 text-red-400" />
-                {match.scaledMacros.protein}g
-              </span>
-              <span className="flex items-center gap-1">
-                <Wheat className="w-3 h-3 text-yellow-400" />
-                {match.scaledMacros.carbs}g
-              </span>
-              <span className="flex items-center gap-1">
-                <Droplet className="w-3 h-3 text-blue-400" />
-                {match.scaledMacros.fat}g
-              </span>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-function DayPlanView({
-  plan,
-  target,
-  onRegenerate
-}: {
-  plan: DayPlan
-  target: MacroTargets
-  onRegenerate?: () => void
-}) {
-  const isWithinTolerance = (dev: number) => Math.abs(dev) <= 10
-
-  return (
-    <div className="space-y-4">
-      {/* Totals */}
-      <Card className="bg-gray-800 border-gray-700">
-        <CardContent className="p-4">
-          <div className="flex justify-between items-center mb-4">
-            <h4 className="font-semibold text-white">Dagens totaler</h4>
-            <Badge
-              className={plan.score >= 0.8 ? 'bg-green-600' : 'bg-gray-600'}
-            >
-              {Math.round(plan.score * 100)}% match
-            </Badge>
-          </div>
-
-          <div className="flex justify-around">
-            <MacroCircle
-              label="Protein"
-              value={plan.totals.protein}
-              total={target.protein}
-              color="#ef4444"
-              icon={Beef}
-            />
-            <MacroCircle
-              label="Kolhydrater"
-              value={plan.totals.carbs}
-              total={target.carbs}
-              color="#eab308"
-              icon={Wheat}
-            />
-            <MacroCircle
-              label="Fett"
-              value={plan.totals.fat}
-              total={target.fat}
-              color="#3b82f6"
-              icon={Droplet}
-            />
-          </div>
-
-          <div className="mt-4 text-center">
-            <span className="text-2xl font-bold text-white">{plan.totals.calories}</span>
-            <span className="text-gray-400 ml-1">/ {target.calories} kcal</span>
-          </div>
-
-          {/* Deviations */}
-          <div className="mt-4 grid grid-cols-4 gap-2 text-xs">
-            {(['calories', 'protein', 'carbs', 'fat'] as const).map(key => (
-              <div key={key} className="text-center">
-                <span className={`font-medium ${
-                  isWithinTolerance(plan.deviation[key]) ? 'text-green-400' : 'text-red-400'
-                }`}>
-                  {plan.deviation[key] > 0 ? '+' : ''}{plan.deviation[key].toFixed(1)}%
-                </span>
-                <br />
-                <span className="text-gray-500 capitalize">{key === 'calories' ? 'Kcal' : key}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Meals */}
-      <div className="space-y-3">
-        {plan.meals.map((meal, index) => (
-          <Card key={index} className="bg-gray-800 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex justify-between items-start">
-                <div>
-                  <Badge variant="outline" className="mb-2 border-gold-primary text-gold-primary">{meal.slot}</Badge>
-                  <h4 className="font-semibold text-white">{meal.recipe.title}</h4>
-                  <div className="flex gap-2 mt-1 text-xs text-gray-400">
-                    <span>{meal.recipe.macros.calories} kcal</span>
-                    <span>P: {meal.recipe.macros.protein}g</span>
-                    <span>K: {meal.recipe.macros.carbs}g</span>
-                    <span>F: {meal.recipe.macros.fat}g</span>
-                  </div>
-                  {meal.recipe.scaleFactor !== 1 && (
-                    <p className="text-xs text-gold-primary mt-1">
-                      Skalat till {meal.recipe.scaledServings} portioner
-                    </p>
-                  )}
-                </div>
-                {meal.recipe.imageUrl && (
-                  <img
-                    src={meal.recipe.imageUrl}
-                    alt={meal.recipe.title}
-                    className="w-16 h-16 object-cover rounded-lg"
-                  />
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {onRegenerate && (
-        <Button onClick={onRegenerate} variant="outline" className="w-full border-gray-600 text-white hover:bg-gray-700">
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Generera ny plan
-        </Button>
-      )}
-    </div>
-  )
-}
-
 // Main Component
 export function SmartMealPlanner() {
   // Input mode toggle
@@ -392,10 +161,14 @@ export function SmartMealPlanner() {
 
   // Other state
   const [vegetarian, setVegetarian] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [matches, setMatches] = useState<RecipeMatch[]>([])
-  const [dayPlan, setDayPlan] = useState<DayPlan | null>(null)
+
+  // Category and recipe state
+  const [categories, setCategories] = useState<RecipeCategory[]>([])
+  const [selectedRecipes, setSelectedRecipes] = useState<Record<number, SelectedRecipe | null>>({})
+  const [mealMatches, setMealMatches] = useState<Record<number, RecipeMatch[]>>({})
+  const [searchingMeal, setSearchingMeal] = useState<number | null>(null)
+  const [expandedMeal, setExpandedMeal] = useState<number | null>(null)
 
   // Weight-based calculation (Kostschema-verktyget formulas)
   const weightBasedMacros = useMemo((): MacroTargets => {
@@ -425,6 +198,22 @@ export function SmartMealPlanner() {
     }
   }, [useWeightBased, weightBasedMacros, manualMacros])
 
+  // Fetch categories on mount
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await fetch('/api/recipe-categories')
+        if (response.ok) {
+          const data = await response.json()
+          setCategories(data.categories || [])
+        }
+      } catch (err) {
+        console.error('Failed to fetch categories:', err)
+      }
+    }
+    fetchCategories()
+  }, [])
+
   // Calculate meal distribution when targets or frequency change
   useEffect(() => {
     const templates = MEAL_TEMPLATES[mealFrequency]
@@ -435,6 +224,9 @@ export function SmartMealPlanner() {
       fat: Math.round(targets.fat * t.f),
     }))
     setMealDistribution(distribution)
+    // Reset selected recipes when meal frequency changes
+    setSelectedRecipes({})
+    setMealMatches({})
   }, [targets, mealFrequency])
 
   // Helper to update a single meal's macro
@@ -464,41 +256,36 @@ export function SmartMealPlanner() {
     )
   }, [mealDistribution])
 
-  // For API calls, use actual calories
-  const calories = targets.calories
+  // Search recipes for a specific meal slot
+  const searchMealRecipes = useCallback(async (mealIndex: number) => {
+    const meal = mealDistribution[mealIndex]
+    if (!meal) return
 
-  // Calculate ratios from targets for API calls
-  const apiRatios = useMemo(() => {
-    const total = targets.protein * 4 + targets.carbs * 4 + targets.fat * 9
-    if (total === 0) return { protein: 30, carbs: 40, fat: 30 }
-    return {
-      protein: Math.round((targets.protein * 4 / total) * 100),
-      carbs: Math.round((targets.carbs * 4 / total) * 100),
-      fat: Math.round((targets.fat * 9 / total) * 100)
-    }
-  }, [targets])
-
-  const findRecipes = useCallback(async () => {
-    if (calories < 500) {
-      setError('Ange minst 500 kcal')
-      return
-    }
-
-    setIsLoading(true)
+    setSearchingMeal(mealIndex)
+    setExpandedMeal(mealIndex)
     setError(null)
 
     try {
+      // Find the category for this meal
+      const categorySlug = MEAL_CATEGORY_MAP[meal.name]
+      const category = categories.find(c => c.slug === categorySlug)
+
+      // Calculate meal's calorie target
+      const mealCalories = meal.protein * 4 + meal.carbs * 4 + meal.fat * 9
+
       const response = await fetch('/api/meal-planner/match', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          calories,
-          proteinRatio: apiRatios.protein,
-          carbsRatio: apiRatios.carbs,
-          fatRatio: apiRatios.fat,
+          calories: mealCalories,
+          protein: meal.protein,
+          carbs: meal.carbs,
+          fat: meal.fat,
+          categoryId: category?.id,
           vegetarian,
           limit: 10,
-          allowScaling: true
+          allowScaling: true,
+          minScore: 0.3
         })
       })
 
@@ -508,52 +295,42 @@ export function SmartMealPlanner() {
         throw new Error(data.error || 'Kunde inte hämta recept')
       }
 
-      setMatches(data.matches || [])
+      setMealMatches(prev => ({ ...prev, [mealIndex]: data.matches || [] }))
+
       if (data.matches?.length === 0) {
-        setError('Inga matchande recept hittades. Prova att justera dina mål.')
+        setError(`Inga ${meal.name.toLowerCase()}-recept hittades. Prova att justera makros.`)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ett fel uppstod')
     } finally {
-      setIsLoading(false)
+      setSearchingMeal(null)
     }
-  }, [calories, apiRatios, vegetarian])
+  }, [mealDistribution, categories, vegetarian])
 
-  const generateDayPlan = useCallback(async () => {
-    if (calories < 500) {
-      setError('Ange minst 500 kcal')
-      return
-    }
-
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      const response = await fetch('/api/meal-planner/day', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          calories,
-          proteinRatio: apiRatios.protein,
-          carbsRatio: apiRatios.carbs,
-          fatRatio: apiRatios.fat,
-          vegetarian
-        })
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Kunde inte generera dagsplan')
+  // Select a recipe for a meal slot
+  const selectRecipe = useCallback((mealIndex: number, match: RecipeMatch) => {
+    setSelectedRecipes(prev => ({
+      ...prev,
+      [mealIndex]: {
+        id: match.recipe.id,
+        title: match.recipe.title,
+        imageUrl: match.recipe.imageUrl,
+        scaleFactor: match.scaleFactor,
+        scaledServings: match.scaledServings,
+        macros: match.scaledMacros
       }
+    }))
+    setExpandedMeal(null)
+  }, [])
 
-      setDayPlan(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ett fel uppstod')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [calories, apiRatios, vegetarian])
+  // Remove selected recipe from meal slot
+  const removeRecipe = useCallback((mealIndex: number) => {
+    setSelectedRecipes(prev => {
+      const updated = { ...prev }
+      delete updated[mealIndex]
+      return updated
+    })
+  }, [])
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -819,12 +596,12 @@ export function SmartMealPlanner() {
         </CardContent>
       </Card>
 
-      {/* Meal Distribution */}
+      {/* Meal Plan */}
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
-          <CardTitle className="text-lg text-white">Måltidsfördelning</CardTitle>
+          <CardTitle className="text-lg text-white">Måltidsplan</CardTitle>
           <CardDescription className="text-gray-400">
-            Klicka på måltidstab för att välja antal måltider per dag
+            Välj antal måltider och sök recept för varje måltid
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -845,95 +622,203 @@ export function SmartMealPlanner() {
             ))}
           </div>
 
-          {/* Meal distribution table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-700">
-                  <th className="text-left py-2 px-1 text-gray-400 font-medium">Måltid</th>
-                  <th className="text-center py-2 px-1 text-green-400 font-medium">Protein</th>
-                  <th className="text-center py-2 px-1 text-red-400 font-medium">Fett</th>
-                  <th className="text-center py-2 px-1 text-yellow-400 font-medium">Kolhydrat</th>
-                  <th className="text-center py-2 px-1 text-gray-400 font-medium">Kcal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mealDistribution.map((meal, index) => (
-                  <tr key={index} className="border-b border-gray-700/50">
-                    <td className="py-2 px-1 text-white">{meal.name}</td>
-                    <td className="py-2 px-1">
-                      <Input
-                        type="text"
-                        inputMode="numeric"
-                        value={meal.protein || ''}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9]/g, '')
-                          updateMealMacro(index, 'protein', val ? parseInt(val, 10) : 0)
-                        }}
-                        className="w-16 mx-auto bg-gray-700 border-gray-600 text-green-400 text-center h-8"
-                      />
-                    </td>
-                    <td className="py-2 px-1">
-                      <Input
-                        type="text"
-                        inputMode="numeric"
-                        value={meal.fat || ''}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9]/g, '')
-                          updateMealMacro(index, 'fat', val ? parseInt(val, 10) : 0)
-                        }}
-                        className="w-16 mx-auto bg-gray-700 border-gray-600 text-red-400 text-center h-8"
-                      />
-                    </td>
-                    <td className="py-2 px-1">
-                      <Input
-                        type="text"
-                        inputMode="numeric"
-                        value={meal.carbs || ''}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9]/g, '')
-                          updateMealMacro(index, 'carbs', val ? parseInt(val, 10) : 0)
-                        }}
-                        className="w-16 mx-auto bg-gray-700 border-gray-600 text-yellow-400 text-center h-8"
-                      />
-                    </td>
-                    <td className="py-2 px-1 text-center text-gray-300">{getMealKcal(meal)}</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="border-t-2 border-gray-600">
-                  <td className="py-2 px-1 text-white font-medium">Summa</td>
-                  <td className={`py-2 px-1 text-center font-medium ${
-                    mealTotals.protein === targets.protein ? 'text-green-400' : 'text-orange-400'
-                  }`}>
-                    {mealTotals.protein}g
-                  </td>
-                  <td className={`py-2 px-1 text-center font-medium ${
-                    mealTotals.fat === targets.fat ? 'text-green-400' : 'text-orange-400'
-                  }`}>
-                    {mealTotals.fat}g
-                  </td>
-                  <td className={`py-2 px-1 text-center font-medium ${
-                    mealTotals.carbs === targets.carbs ? 'text-green-400' : 'text-orange-400'
-                  }`}>
-                    {mealTotals.carbs}g
-                  </td>
-                  <td className={`py-2 px-1 text-center font-medium ${
-                    Math.abs(mealTotals.calories - targets.calories) < 50 ? 'text-green-400' : 'text-orange-400'
-                  }`}>
-                    {mealTotals.calories}
-                  </td>
-                </tr>
-                <tr className="text-gray-500">
-                  <td className="py-1 px-1 text-xs">Mål</td>
-                  <td className="py-1 px-1 text-center text-xs">{targets.protein}g</td>
-                  <td className="py-1 px-1 text-center text-xs">{targets.fat}g</td>
-                  <td className="py-1 px-1 text-center text-xs">{targets.carbs}g</td>
-                  <td className="py-1 px-1 text-center text-xs">{targets.calories}</td>
-                </tr>
-              </tfoot>
-            </table>
+          {/* Meal cards */}
+          <div className="space-y-3">
+            {mealDistribution.map((meal, index) => {
+              const selected = selectedRecipes[index]
+              const matches = mealMatches[index] || []
+              const isExpanded = expandedMeal === index
+              const isSearching = searchingMeal === index
+              const categorySlug = MEAL_CATEGORY_MAP[meal.name]
+              const category = categories.find(c => c.slug === categorySlug)
+
+              return (
+                <div
+                  key={index}
+                  className="bg-gray-900 rounded-lg border border-gray-700 overflow-hidden"
+                >
+                  {/* Meal header */}
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <h4 className="text-white font-semibold text-lg">{meal.name}</h4>
+                        {category && (
+                          <Badge variant="outline" className="text-xs border-gray-600 text-gray-400">
+                            {category.name}
+                          </Badge>
+                        )}
+                      </div>
+                      <span className="text-gold-primary font-semibold">{getMealKcal(meal)} kcal</span>
+                    </div>
+
+                    {/* Macro targets for this meal */}
+                    <div className="flex gap-4 text-sm mb-4">
+                      <span className="flex items-center gap-1 text-red-400">
+                        <Beef className="w-3 h-3" /> {meal.protein}g
+                      </span>
+                      <span className="flex items-center gap-1 text-yellow-400">
+                        <Wheat className="w-3 h-3" /> {meal.carbs}g
+                      </span>
+                      <span className="flex items-center gap-1 text-blue-400">
+                        <Droplet className="w-3 h-3" /> {meal.fat}g
+                      </span>
+                    </div>
+
+                    {/* Selected recipe or search button */}
+                    {selected ? (
+                      <div className="bg-gray-800 rounded-lg p-3 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          {selected.imageUrl && (
+                            <img
+                              src={selected.imageUrl}
+                              alt={selected.title}
+                              className="w-12 h-12 rounded-lg object-cover"
+                            />
+                          )}
+                          <div>
+                            <p className="text-white font-medium">{selected.title}</p>
+                            <div className="flex gap-2 text-xs text-gray-400">
+                              <span>{selected.macros.calories} kcal</span>
+                              <span>P: {selected.macros.protein}g</span>
+                              <span>K: {selected.macros.carbs}g</span>
+                              <span>F: {selected.macros.fat}g</span>
+                            </div>
+                            {selected.scaleFactor !== 1 && (
+                              <span className="text-xs text-gold-primary">
+                                {selected.scaledServings} portioner
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setExpandedMeal(isExpanded ? null : index)}
+                            className="p-2 text-gray-400 hover:text-white transition-colors"
+                          >
+                            <RefreshCw className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => removeRecipe(index)}
+                            className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <Button
+                        onClick={() => searchMealRecipes(index)}
+                        disabled={isSearching}
+                        variant="outline"
+                        className="w-full border-gray-600 text-white hover:bg-gray-700"
+                      >
+                        {isSearching ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <Search className="w-4 h-4 mr-2" />
+                        )}
+                        Sök {meal.name.toLowerCase()}-recept
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Expanded recipe results */}
+                  {isExpanded && matches.length > 0 && (
+                    <div className="border-t border-gray-700 p-4 bg-gray-800/50">
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-sm text-gray-400">
+                          {matches.length} matchande recept
+                        </p>
+                        <button
+                          onClick={() => setExpandedMeal(null)}
+                          className="text-gray-400 hover:text-white"
+                        >
+                          <ChevronUp className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                        {matches.map((match) => (
+                          <div
+                            key={match.recipe.id}
+                            onClick={() => selectRecipe(index, match)}
+                            className="bg-gray-900 rounded-lg p-3 cursor-pointer hover:bg-gray-800 transition-colors flex items-center justify-between"
+                          >
+                            <div className="flex items-center gap-3">
+                              {match.recipe.imageUrl && (
+                                <img
+                                  src={match.recipe.imageUrl}
+                                  alt={match.recipe.title}
+                                  className="w-10 h-10 rounded object-cover"
+                                />
+                              )}
+                              <div>
+                                <p className="text-white text-sm font-medium">{match.recipe.title}</p>
+                                <div className="flex gap-2 text-xs text-gray-500">
+                                  <span>{match.scaledMacros.calories} kcal</span>
+                                  <span>P: {match.scaledMacros.protein}g</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge
+                                variant="outline"
+                                className={`text-xs ${
+                                  match.score >= 0.8 ? 'border-green-500 text-green-400' :
+                                  match.score >= 0.6 ? 'border-yellow-500 text-yellow-400' :
+                                  'border-gray-500 text-gray-400'
+                                }`}
+                              >
+                                {Math.round(match.score * 100)}%
+                              </Badge>
+                              <Check className="w-4 h-4 text-gray-500" />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Day totals summary */}
+          <div className="bg-gray-900 rounded-lg p-4 border-2 border-gold-primary/30">
+            <h4 className="text-white font-medium mb-3">Dagssumma</h4>
+            <div className="grid grid-cols-4 gap-4 text-center">
+              <div>
+                <span className={`text-xl font-bold ${
+                  mealTotals.protein === targets.protein ? 'text-green-400' : 'text-red-400'
+                }`}>
+                  {mealTotals.protein}g
+                </span>
+                <p className="text-xs text-gray-500">Protein ({targets.protein}g)</p>
+              </div>
+              <div>
+                <span className={`text-xl font-bold ${
+                  mealTotals.carbs === targets.carbs ? 'text-green-400' : 'text-yellow-400'
+                }`}>
+                  {mealTotals.carbs}g
+                </span>
+                <p className="text-xs text-gray-500">Kolhydrat ({targets.carbs}g)</p>
+              </div>
+              <div>
+                <span className={`text-xl font-bold ${
+                  mealTotals.fat === targets.fat ? 'text-green-400' : 'text-blue-400'
+                }`}>
+                  {mealTotals.fat}g
+                </span>
+                <p className="text-xs text-gray-500">Fett ({targets.fat}g)</p>
+              </div>
+              <div>
+                <span className={`text-xl font-bold ${
+                  Math.abs(mealTotals.calories - targets.calories) < 50 ? 'text-green-400' : 'text-gold-primary'
+                }`}>
+                  {mealTotals.calories}
+                </span>
+                <p className="text-xs text-gray-500">Kcal ({targets.calories})</p>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -948,70 +833,6 @@ export function SmartMealPlanner() {
         </Card>
       )}
 
-      {/* Tabs for different views */}
-      <Tabs defaultValue="match">
-        <TabsList className="grid w-full grid-cols-2 bg-gray-800">
-          <TabsTrigger value="match" className="flex items-center gap-2 data-[state=active]:bg-gold-primary data-[state=active]:text-white">
-            <Utensils className="w-4 h-4" />
-            Hitta recept
-          </TabsTrigger>
-          <TabsTrigger value="plan" className="flex items-center gap-2 data-[state=active]:bg-gold-primary data-[state=active]:text-white">
-            <Calendar className="w-4 h-4" />
-            Dagsplan
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Find recipes */}
-        <TabsContent value="match" className="space-y-4">
-          <Button
-            onClick={findRecipes}
-            disabled={isLoading}
-            className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white"
-          >
-            {isLoading ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Utensils className="w-4 h-4 mr-2" />
-            )}
-            Sök matchande recept
-          </Button>
-
-          {matches.length > 0 && (
-            <div className="space-y-3">
-              <p className="text-sm text-gray-400">
-                Hittade {matches.length} recept som matchar dina mål
-              </p>
-              {matches.map((match) => (
-                <RecipeCard key={match.recipe.id} match={match} />
-              ))}
-            </div>
-          )}
-        </TabsContent>
-
-        {/* Day plan */}
-        <TabsContent value="plan" className="space-y-4">
-          <Button
-            onClick={generateDayPlan}
-            disabled={isLoading}
-            className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white"
-          >
-            {isLoading ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Calendar className="w-4 h-4 mr-2" />
-            )}
-            Generera dagsplan
-          </Button>
-
-          {dayPlan && (
-            <DayPlanView
-              plan={dayPlan}
-              target={targets}
-              onRegenerate={generateDayPlan}
-            />
-          )}
-        </TabsContent>
-      </Tabs>
     </div>
   )
 }
