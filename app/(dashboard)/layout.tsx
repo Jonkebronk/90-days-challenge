@@ -65,6 +65,7 @@ const navigation = [
       { name: 'Livsmedelbanken', href: '/dashboard/content/food-items', icon: Apple },
       { name: 'Näringstabeller', href: '/dashboard/content/nutrition-admin', icon: Calculator },
       { name: 'Måltidsplaner', href: '/dashboard/content/meal-plans', icon: UtensilsCrossed },
+      { name: 'Måltidsplanerare', href: '/dashboard/tools/meal-planner', icon: Calculator },
       { name: 'Guider', href: '/dashboard/content/guides', icon: BookOpen },
       { name: 'Råvaruguide', href: '/dashboard/content/ingredient-guide', icon: ClipboardList },
       { name: 'Vanliga frågor', href: '/dashboard/content/faqs', icon: HelpCircle },
