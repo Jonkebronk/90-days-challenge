@@ -174,6 +174,10 @@ model User {
   // Cardio programs
   cardioPrograms CardioProgram[] @relation("CardioPrograms")
 
+  // Smart Meal Planner
+  smartMealPlans       SmartMealPlan[] @relation("UserSmartMealPlans")
+  coachSmartMealPlans  SmartMealPlan[] @relation("CoachSmartMealPlans")
+
   @@map("users")
 }
 
@@ -1402,6 +1406,7 @@ model Recipe {
   instructions        RecipeInstruction[]
   favorites           RecipeFavorite[]
   templateMealOptions TemplateMealOption[] // NEW: Meal plan templates using this recipe
+  smartMealPlanMeals  SmartMealPlanMeal[]  // Smart meal planner meals
 
   @@map("recipes")
 }
@@ -2245,4 +2250,123 @@ model AssignedMesocycle {
   mesocycle Mesocycle @relation(fields: [mesocycleId], references: [id], onDelete: Cascade)
 
   @@map("assigned_mesocycles")
+}
+
+// ========================================
+// SMART MEAL PLANNER SYSTEM
+// ========================================
+
+// SmartMealPlan - AI-generated meal plan with macro matching
+model SmartMealPlan {
+  id          String   @id @default(cuid())
+  userId      String   // Client this plan belongs to
+  coachId     String?  // Coach who created/assigned it
+
+  name        String   // "Vecka 1", "Min plan", etc.
+  type        String   // "day" | "week"
+  startDate   DateTime?
+  endDate     DateTime?
+
+  // Target macros
+  targetCalories  Float
+  targetProtein   Float
+  targetCarbs     Float
+  targetFat       Float
+
+  // Calculated totals
+  totalCalories   Float?
+  totalProtein    Float?
+  totalCarbs      Float?
+  totalFat        Float?
+
+  // Metadata
+  score           Float?   // Matching score (0-1)
+  isTemplate      Boolean  @default(false)
+  isActive        Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User     @relation("UserSmartMealPlans", fields: [userId], references: [id], onDelete: Cascade)
+  coach       User?    @relation("CoachSmartMealPlans", fields: [coachId], references: [id])
+  days        SmartMealPlanDay[]
+
+  @@index([userId])
+  @@index([coachId])
+  @@map("smart_meal_plans")
+}
+
+// SmartMealPlanDay - A day within a smart meal plan
+model SmartMealPlanDay {
+  id              String   @id @default(cuid())
+  smartMealPlanId String
+
+  dayNumber       Int      // 1-7 for week, 1 for day plan
+  dayName         String?  // "Måndag", "Tisdag", etc.
+  date            DateTime?
+
+  // Day targets (can vary from plan targets)
+  targetCalories  Float?
+  targetProtein   Float?
+  targetCarbs     Float?
+  targetFat       Float?
+
+  // Day totals
+  totalCalories   Float?
+  totalProtein    Float?
+  totalCarbs      Float?
+  totalFat        Float?
+
+  score           Float?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  smartMealPlan SmartMealPlan      @relation(fields: [smartMealPlanId], references: [id], onDelete: Cascade)
+  meals         SmartMealPlanMeal[]
+
+  @@unique([smartMealPlanId, dayNumber])
+  @@index([smartMealPlanId])
+  @@map("smart_meal_plan_days")
+}
+
+// SmartMealPlanMeal - Individual meal with recipe
+model SmartMealPlanMeal {
+  id                  String   @id @default(cuid())
+  smartMealPlanDayId  String
+
+  slot            String   // "Frukost", "Lunch", "Mellanmål", "Middag"
+  slotOrder       Int      // Order: 1, 2, 3, 4
+  targetRatio     Float?   // Share of day target (0.25, 0.35, etc.)
+
+  // Recipe link
+  recipeId        String
+
+  // Scaling
+  scaleFactor     Float    @default(1.0)
+  scaledServings  Float    @default(1.0)
+
+  // Calculated macros for this meal
+  calories        Float
+  protein         Float
+  carbs           Float
+  fat             Float
+
+  // Status
+  isCompleted     Boolean  @default(false)
+  completedAt     DateTime?
+  notes           String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  smartMealPlanDay SmartMealPlanDay @relation(fields: [smartMealPlanDayId], references: [id], onDelete: Cascade)
+  recipe           Recipe           @relation(fields: [recipeId], references: [id])
+
+  @@index([smartMealPlanDayId])
+  @@index([recipeId])
+  @@map("smart_meal_plan_meals")
 }
