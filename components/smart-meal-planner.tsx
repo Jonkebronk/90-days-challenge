@@ -3,9 +3,10 @@
 /**
  * Smart Meal Planner Component
  * Styled to match the 90 Days Challenge platform design
+ * Includes Kostschema-verktyget functionality
  */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
+import { Slider } from '@/components/ui/slider'
 import {
   Utensils,
   Calendar,
@@ -22,7 +24,10 @@ import {
   Wheat,
   Droplet,
   AlertCircle,
-  Loader2
+  Loader2,
+  Scale,
+  Activity,
+  TrendingDown
 } from 'lucide-react'
 
 // Types
@@ -38,6 +43,57 @@ interface MacroRatios {
   carbs: number
   fat: number
 }
+
+interface MealDistribution {
+  name: string
+  protein: number
+  fat: number
+  carbs: number
+}
+
+// Kostschema types
+type ActivityLevel = 25 | 30 | 35
+type WeightLossTempo = 550 | 770 | 1100
+type MealFrequency = 4 | 5 | 6
+
+const ACTIVITY_LABELS: Record<ActivityLevel, string> = {
+  25: 'Stillasittande',
+  30: 'Måttligt aktiv',
+  35: 'Mycket aktiv',
+}
+
+const TEMPO_LABELS: Record<WeightLossTempo, string> = {
+  550: '500g/vecka',
+  770: '700g/vecka',
+  1100: '1000g/vecka',
+}
+
+// Meal distribution templates with percentages (from Kostschema-verktyget)
+const MEAL_TEMPLATES: Record<MealFrequency, { name: string; p: number; f: number; k: number }[]> = {
+  4: [
+    { name: 'Frukost', p: 0.22, k: 0.25, f: 0.40 },
+    { name: 'Lunch', p: 0.28, k: 0.40, f: 0.05 },
+    { name: 'Middag', p: 0.28, k: 0.35, f: 0.05 },
+    { name: 'Kvällsmål', p: 0.22, k: 0.00, f: 0.50 },
+  ],
+  5: [
+    { name: 'Frukost', p: 0.19, k: 0.20, f: 0.35 },
+    { name: 'Mellanmål 1', p: 0.12, k: 0.05, f: 0.30 },
+    { name: 'Lunch', p: 0.25, k: 0.35, f: 0.05 },
+    { name: 'Middag', p: 0.25, k: 0.35, f: 0.05 },
+    { name: 'Kvällsmål', p: 0.19, k: 0.05, f: 0.25 },
+  ],
+  6: [
+    { name: 'Frukost', p: 0.19, k: 0.20, f: 0.30 },
+    { name: 'Mellanmål 1', p: 0.09, k: 0.03, f: 0.24 },
+    { name: 'Lunch', p: 0.25, k: 0.34, f: 0.05 },
+    { name: 'Mellanmål 2', p: 0.09, k: 0.03, f: 0.24 },
+    { name: 'Middag', p: 0.25, k: 0.34, f: 0.05 },
+    { name: 'Kvällsmål', p: 0.13, k: 0.06, f: 0.12 },
+  ],
+}
+
+const FAT_FACTOR = 0.7
 
 interface RecipeMatch {
   recipe: {
@@ -329,19 +385,92 @@ function DayPlanView({
 
 // Main Component
 export function SmartMealPlanner() {
-  // State
-  const [calories, setCalories] = useState(2000)
-  const [ratios, setRatios] = useState<MacroRatios>({ protein: 30, carbs: 40, fat: 30 })
-  const [vegetarian, setVegetarian] = useState(false)
+  // Input mode toggle
+  const [useWeightBased, setUseWeightBased] = useState(true)
 
+  // Weight-based calculation state (Kostschema-verktyget)
+  const [weight, setWeight] = useState(80)
+  const [activityLevel, setActivityLevel] = useState<ActivityLevel>(30)
+  const [weightLossTempo, setWeightLossTempo] = useState<WeightLossTempo>(550)
+  const [proteinFactor, setProteinFactor] = useState(2.5)
+
+  // Manual input state
+  const [manualCalories, setManualCalories] = useState(2000)
+  const [ratios, setRatios] = useState<MacroRatios>({ protein: 30, carbs: 40, fat: 30 })
+
+  // Meal distribution state
+  const [mealFrequency, setMealFrequency] = useState<MealFrequency>(5)
+  const [mealDistribution, setMealDistribution] = useState<MealDistribution[]>([])
+
+  // Other state
+  const [vegetarian, setVegetarian] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
   const [matches, setMatches] = useState<RecipeMatch[]>([])
   const [dayPlan, setDayPlan] = useState<DayPlan | null>(null)
 
-  // Computed
-  const targets = ratiosToGrams(calories, ratios)
+  // Weight-based calculation (Kostschema-verktyget formulas)
+  const weightBasedMacros = useMemo((): MacroTargets => {
+    const metabolism = weight * activityLevel
+    const calorieIntake = metabolism - weightLossTempo
+    const protein = Math.round(weight * proteinFactor)
+    const fat = Math.round(weight * FAT_FACTOR)
+    const proteinKcal = protein * 4
+    const fatKcal = fat * 9
+    const carbsKcal = Math.max(0, calorieIntake - proteinKcal - fatKcal)
+    const carbs = Math.round(carbsKcal / 4)
+    return { calories: calorieIntake, protein, fat, carbs }
+  }, [weight, activityLevel, weightLossTempo, proteinFactor])
+
+  // Computed targets based on input mode
+  const targets = useMemo((): MacroTargets => {
+    if (useWeightBased) {
+      return weightBasedMacros
+    }
+    return ratiosToGrams(manualCalories, ratios)
+  }, [useWeightBased, weightBasedMacros, manualCalories, ratios])
+
+  // Calculate meal distribution when targets or frequency change
+  useEffect(() => {
+    const templates = MEAL_TEMPLATES[mealFrequency]
+    const distribution = templates.map(t => ({
+      name: t.name,
+      protein: Math.round(targets.protein * t.p),
+      carbs: Math.round(targets.carbs * t.k),
+      fat: Math.round(targets.fat * t.f),
+    }))
+    setMealDistribution(distribution)
+  }, [targets, mealFrequency])
+
+  // Helper to update a single meal's macro
+  const updateMealMacro = (index: number, field: 'protein' | 'carbs' | 'fat', value: number) => {
+    setMealDistribution(prev => {
+      const updated = [...prev]
+      updated[index] = { ...updated[index], [field]: value }
+      return updated
+    })
+  }
+
+  // Calculate meal kcal
+  const getMealKcal = (meal: MealDistribution) => {
+    return meal.protein * 4 + meal.carbs * 4 + meal.fat * 9
+  }
+
+  // Calculate totals from meal distribution
+  const mealTotals = useMemo(() => {
+    return mealDistribution.reduce(
+      (acc, meal) => ({
+        protein: acc.protein + meal.protein,
+        carbs: acc.carbs + meal.carbs,
+        fat: acc.fat + meal.fat,
+        calories: acc.calories + getMealKcal(meal),
+      }),
+      { protein: 0, carbs: 0, fat: 0, calories: 0 }
+    )
+  }, [mealDistribution])
+
+  // For API calls, use actual calories
+  const calories = targets.calories
 
   // Handlers
   const handleRatioChange = (key: keyof MacroRatios, value: number) => {
@@ -456,116 +585,264 @@ export function SmartMealPlanner() {
       {/* Goal settings */}
       <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
-          <CardTitle className="text-lg text-white">Dina mål</CardTitle>
-          <CardDescription className="text-gray-400">Ställ in kalorier och makrofördelning</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg text-white">Dina mål</CardTitle>
+              <CardDescription className="text-gray-400">
+                {useWeightBased ? 'Beräkna makros från kroppsvikt' : 'Ange makros manuellt'}
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400">Viktbaserad</span>
+              <Switch
+                checked={useWeightBased}
+                onCheckedChange={setUseWeightBased}
+              />
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Calories */}
-          <div>
-            <Label htmlFor="calories" className="text-white">Dagligt kaloriintag</Label>
-            <div className="flex items-center gap-2 mt-2">
-              <Input
-                id="calories"
-                type="text"
-                inputMode="numeric"
-                value={calories || ''}
-                onChange={(e) => {
-                  const val = e.target.value.replace(/[^0-9]/g, '')
-                  setCalories(val ? parseInt(val, 10) : 0)
-                }}
-                placeholder="2000"
-                className="w-32 bg-gray-700 border-gray-600 text-white"
-              />
-              <span className="text-gray-400">kcal</span>
-            </div>
-          </div>
+          {useWeightBased ? (
+            <>
+              {/* Weight input */}
+              <div>
+                <Label className="text-white flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-gold-primary" />
+                  Kroppsvikt
+                </Label>
+                <div className="flex items-center gap-2 mt-2">
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    value={weight || ''}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/[^0-9]/g, '')
+                      setWeight(val ? parseInt(val, 10) : 0)
+                    }}
+                    placeholder="80"
+                    className="w-24 bg-gray-700 border-gray-600 text-white"
+                  />
+                  <span className="text-gray-400">kg</span>
+                </div>
+              </div>
 
-          {/* Macro distribution */}
-          <div className="space-y-4">
-            <Label className="text-white">Makrofördelning</Label>
+              {/* Activity Level */}
+              <div>
+                <Label className="text-white flex items-center gap-2 mb-3">
+                  <Activity className="w-4 h-4 text-green-400" />
+                  Aktivitetsnivå
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                  {([25, 30, 35] as ActivityLevel[]).map((level) => (
+                    <Button
+                      key={level}
+                      variant={activityLevel === level ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setActivityLevel(level)}
+                      className={activityLevel === level
+                        ? 'bg-gold-primary hover:bg-gold-secondary text-white'
+                        : 'border-gray-600 text-white hover:bg-gray-700'}
+                    >
+                      {ACTIVITY_LABELS[level]}
+                    </Button>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Ämnesomsättning: {weight * activityLevel} kcal
+                </p>
+              </div>
 
-            {/* Protein */}
-            <div className="flex items-center gap-4">
-              <div className="w-20 flex items-center gap-2">
-                <Beef className="w-4 h-4 text-red-400" />
-                <span className="text-sm text-white">Protein</span>
+              {/* Weight Loss Tempo */}
+              <div>
+                <Label className="text-white flex items-center gap-2 mb-3">
+                  <TrendingDown className="w-4 h-4 text-blue-400" />
+                  Viktnedgångstempo
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                  {([550, 770, 1100] as WeightLossTempo[]).map((tempo) => (
+                    <Button
+                      key={tempo}
+                      variant={weightLossTempo === tempo ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setWeightLossTempo(tempo)}
+                      className={weightLossTempo === tempo
+                        ? 'bg-gold-primary hover:bg-gold-secondary text-white'
+                        : 'border-gray-600 text-white hover:bg-gray-700'}
+                    >
+                      {TEMPO_LABELS[tempo]}
+                    </Button>
+                  ))}
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  value={ratios.protein || ''}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/[^0-9]/g, '')
-                    const num = val ? Math.min(100, parseInt(val, 10)) : 0
-                    setRatios(prev => ({ ...prev, protein: num }))
-                  }}
-                  className="w-16 bg-gray-700 border-gray-600 text-white text-center"
-                />
-                <span className="text-gray-400">%</span>
-              </div>
-              <span className="text-sm text-gray-400">
-                ({targets.protein}g)
-              </span>
-            </div>
 
-            {/* Carbs */}
-            <div className="flex items-center gap-4">
-              <div className="w-20 flex items-center gap-2">
-                <Wheat className="w-4 h-4 text-yellow-400" />
-                <span className="text-sm text-white">Carbs</span>
+              {/* Protein Factor Slider */}
+              <div>
+                <Label className="text-white flex items-center gap-2 mb-3">
+                  <Beef className="w-4 h-4 text-red-400" />
+                  Proteinfaktor: {proteinFactor.toFixed(1)} g/kg
+                </Label>
+                <div className="px-2">
+                  <Slider
+                    value={[proteinFactor]}
+                    onValueChange={(vals) => setProteinFactor(vals[0])}
+                    min={1.5}
+                    max={3.5}
+                    step={0.1}
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>1.5</span>
+                  <span>Protein: {weightBasedMacros.protein}g</span>
+                  <span>3.5</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  value={ratios.carbs || ''}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/[^0-9]/g, '')
-                    const num = val ? Math.min(100, parseInt(val, 10)) : 0
-                    setRatios(prev => ({ ...prev, carbs: num }))
-                  }}
-                  className="w-16 bg-gray-700 border-gray-600 text-white text-center"
-                />
-                <span className="text-gray-400">%</span>
-              </div>
-              <span className="text-sm text-gray-400">
-                ({targets.carbs}g)
-              </span>
-            </div>
 
-            {/* Fat */}
-            <div className="flex items-center gap-4">
-              <div className="w-20 flex items-center gap-2">
-                <Droplet className="w-4 h-4 text-blue-400" />
-                <span className="text-sm text-white">Fett</span>
+              {/* Calculated Macros Display */}
+              <div className="bg-gray-900 rounded-lg p-4">
+                <h4 className="text-sm font-medium text-white mb-3">Beräknade makros</h4>
+                <div className="grid grid-cols-4 gap-4 text-center">
+                  <div>
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Flame className="w-4 h-4 text-gold-primary" />
+                    </div>
+                    <span className="text-lg font-bold text-white">{weightBasedMacros.calories}</span>
+                    <p className="text-xs text-gray-400">kcal</p>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Beef className="w-4 h-4 text-red-400" />
+                    </div>
+                    <span className="text-lg font-bold text-white">{weightBasedMacros.protein}g</span>
+                    <p className="text-xs text-gray-400">Protein</p>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Wheat className="w-4 h-4 text-yellow-400" />
+                    </div>
+                    <span className="text-lg font-bold text-white">{weightBasedMacros.carbs}g</span>
+                    <p className="text-xs text-gray-400">Kolhydrat</p>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Droplet className="w-4 h-4 text-blue-400" />
+                    </div>
+                    <span className="text-lg font-bold text-white">{weightBasedMacros.fat}g</span>
+                    <p className="text-xs text-gray-400">Fett</p>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  value={ratios.fat || ''}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/[^0-9]/g, '')
-                    const num = val ? Math.min(100, parseInt(val, 10)) : 0
-                    setRatios(prev => ({ ...prev, fat: num }))
-                  }}
-                  className="w-16 bg-gray-700 border-gray-600 text-white text-center"
-                />
-                <span className="text-gray-400">%</span>
+            </>
+          ) : (
+            <>
+              {/* Manual Calories */}
+              <div>
+                <Label htmlFor="calories" className="text-white">Dagligt kaloriintag</Label>
+                <div className="flex items-center gap-2 mt-2">
+                  <Input
+                    id="calories"
+                    type="text"
+                    inputMode="numeric"
+                    value={manualCalories || ''}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/[^0-9]/g, '')
+                      setManualCalories(val ? parseInt(val, 10) : 0)
+                    }}
+                    placeholder="2000"
+                    className="w-32 bg-gray-700 border-gray-600 text-white"
+                  />
+                  <span className="text-gray-400">kcal</span>
+                </div>
               </div>
-              <span className="text-sm text-gray-400">
-                ({targets.fat}g)
-              </span>
-            </div>
 
-            {/* Total indicator */}
-            {(ratios.protein + ratios.carbs + ratios.fat) !== 100 && (
-              <p className="text-sm text-yellow-400">
-                Totalt: {ratios.protein + ratios.carbs + ratios.fat}% (bör vara 100%)
-              </p>
-            )}
-          </div>
+              {/* Macro distribution */}
+              <div className="space-y-4">
+                <Label className="text-white">Makrofördelning</Label>
+
+                {/* Protein */}
+                <div className="flex items-center gap-4">
+                  <div className="w-20 flex items-center gap-2">
+                    <Beef className="w-4 h-4 text-red-400" />
+                    <span className="text-sm text-white">Protein</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      value={ratios.protein || ''}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, '')
+                        const num = val ? Math.min(100, parseInt(val, 10)) : 0
+                        setRatios(prev => ({ ...prev, protein: num }))
+                      }}
+                      className="w-16 bg-gray-700 border-gray-600 text-white text-center"
+                    />
+                    <span className="text-gray-400">%</span>
+                  </div>
+                  <span className="text-sm text-gray-400">
+                    ({targets.protein}g)
+                  </span>
+                </div>
+
+                {/* Carbs */}
+                <div className="flex items-center gap-4">
+                  <div className="w-20 flex items-center gap-2">
+                    <Wheat className="w-4 h-4 text-yellow-400" />
+                    <span className="text-sm text-white">Carbs</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      value={ratios.carbs || ''}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, '')
+                        const num = val ? Math.min(100, parseInt(val, 10)) : 0
+                        setRatios(prev => ({ ...prev, carbs: num }))
+                      }}
+                      className="w-16 bg-gray-700 border-gray-600 text-white text-center"
+                    />
+                    <span className="text-gray-400">%</span>
+                  </div>
+                  <span className="text-sm text-gray-400">
+                    ({targets.carbs}g)
+                  </span>
+                </div>
+
+                {/* Fat */}
+                <div className="flex items-center gap-4">
+                  <div className="w-20 flex items-center gap-2">
+                    <Droplet className="w-4 h-4 text-blue-400" />
+                    <span className="text-sm text-white">Fett</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      value={ratios.fat || ''}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, '')
+                        const num = val ? Math.min(100, parseInt(val, 10)) : 0
+                        setRatios(prev => ({ ...prev, fat: num }))
+                      }}
+                      className="w-16 bg-gray-700 border-gray-600 text-white text-center"
+                    />
+                    <span className="text-gray-400">%</span>
+                  </div>
+                  <span className="text-sm text-gray-400">
+                    ({targets.fat}g)
+                  </span>
+                </div>
+
+                {/* Total indicator */}
+                {(ratios.protein + ratios.carbs + ratios.fat) !== 100 && (
+                  <p className="text-sm text-yellow-400">
+                    Totalt: {ratios.protein + ratios.carbs + ratios.fat}% (bör vara 100%)
+                  </p>
+                )}
+              </div>
+            </>
+          )}
 
           {/* Vegetarian */}
           <div className="flex items-center justify-between">
@@ -575,6 +852,124 @@ export function SmartMealPlanner() {
               checked={vegetarian}
               onCheckedChange={setVegetarian}
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Meal Distribution */}
+      <Card className="bg-gray-800 border-gray-700">
+        <CardHeader>
+          <CardTitle className="text-lg text-white">Måltidsfördelning</CardTitle>
+          <CardDescription className="text-gray-400">
+            Klicka på måltidstab för att välja antal måltider per dag
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Meal frequency tabs */}
+          <div className="flex gap-2">
+            {([4, 5, 6] as MealFrequency[]).map((freq) => (
+              <Button
+                key={freq}
+                variant={mealFrequency === freq ? 'default' : 'outline'}
+                onClick={() => setMealFrequency(freq)}
+                className={mealFrequency === freq
+                  ? 'bg-gold-primary hover:bg-gold-secondary text-white flex-1'
+                  : 'border-gray-600 text-white hover:bg-gray-700 flex-1'}
+              >
+                {freq} måltider
+              </Button>
+            ))}
+          </div>
+
+          {/* Meal distribution table */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-700">
+                  <th className="text-left py-2 px-1 text-gray-400 font-medium">Måltid</th>
+                  <th className="text-center py-2 px-1 text-green-400 font-medium">Protein</th>
+                  <th className="text-center py-2 px-1 text-red-400 font-medium">Fett</th>
+                  <th className="text-center py-2 px-1 text-yellow-400 font-medium">Kolhydrat</th>
+                  <th className="text-center py-2 px-1 text-gray-400 font-medium">Kcal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mealDistribution.map((meal, index) => (
+                  <tr key={index} className="border-b border-gray-700/50">
+                    <td className="py-2 px-1 text-white">{meal.name}</td>
+                    <td className="py-2 px-1">
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        value={meal.protein || ''}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^0-9]/g, '')
+                          updateMealMacro(index, 'protein', val ? parseInt(val, 10) : 0)
+                        }}
+                        className="w-16 mx-auto bg-gray-700 border-gray-600 text-green-400 text-center h-8"
+                      />
+                    </td>
+                    <td className="py-2 px-1">
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        value={meal.fat || ''}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^0-9]/g, '')
+                          updateMealMacro(index, 'fat', val ? parseInt(val, 10) : 0)
+                        }}
+                        className="w-16 mx-auto bg-gray-700 border-gray-600 text-red-400 text-center h-8"
+                      />
+                    </td>
+                    <td className="py-2 px-1">
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        value={meal.carbs || ''}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^0-9]/g, '')
+                          updateMealMacro(index, 'carbs', val ? parseInt(val, 10) : 0)
+                        }}
+                        className="w-16 mx-auto bg-gray-700 border-gray-600 text-yellow-400 text-center h-8"
+                      />
+                    </td>
+                    <td className="py-2 px-1 text-center text-gray-300">{getMealKcal(meal)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr className="border-t-2 border-gray-600">
+                  <td className="py-2 px-1 text-white font-medium">Summa</td>
+                  <td className={`py-2 px-1 text-center font-medium ${
+                    mealTotals.protein === targets.protein ? 'text-green-400' : 'text-orange-400'
+                  }`}>
+                    {mealTotals.protein}g
+                  </td>
+                  <td className={`py-2 px-1 text-center font-medium ${
+                    mealTotals.fat === targets.fat ? 'text-green-400' : 'text-orange-400'
+                  }`}>
+                    {mealTotals.fat}g
+                  </td>
+                  <td className={`py-2 px-1 text-center font-medium ${
+                    mealTotals.carbs === targets.carbs ? 'text-green-400' : 'text-orange-400'
+                  }`}>
+                    {mealTotals.carbs}g
+                  </td>
+                  <td className={`py-2 px-1 text-center font-medium ${
+                    Math.abs(mealTotals.calories - targets.calories) < 50 ? 'text-green-400' : 'text-orange-400'
+                  }`}>
+                    {mealTotals.calories}
+                  </td>
+                </tr>
+                <tr className="text-gray-500">
+                  <td className="py-1 px-1 text-xs">Mål</td>
+                  <td className="py-1 px-1 text-center text-xs">{targets.protein}g</td>
+                  <td className="py-1 px-1 text-center text-xs">{targets.fat}g</td>
+                  <td className="py-1 px-1 text-center text-xs">{targets.carbs}g</td>
+                  <td className="py-1 px-1 text-center text-xs">{targets.calories}</td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
         </CardContent>
       </Card>
