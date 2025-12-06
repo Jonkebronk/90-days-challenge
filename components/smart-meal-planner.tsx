@@ -38,11 +38,6 @@ interface MacroTargets {
   fat: number
 }
 
-interface MacroRatios {
-  protein: number
-  carbs: number
-  fat: number
-}
 
 interface MealDistribution {
   name: string
@@ -138,16 +133,6 @@ interface DayPlan {
     fat: number
   }
   score: number
-}
-
-// Utility: Convert ratios to grams
-function ratiosToGrams(calories: number, ratios: MacroRatios): MacroTargets {
-  return {
-    calories,
-    protein: Math.round((ratios.protein / 100) * calories / 4),
-    carbs: Math.round((ratios.carbs / 100) * calories / 4),
-    fat: Math.round((ratios.fat / 100) * calories / 9)
-  }
 }
 
 // Sub-components
@@ -394,9 +379,12 @@ export function SmartMealPlanner() {
   const [weightLossTempo, setWeightLossTempo] = useState<WeightLossTempo>(550)
   const [proteinFactor, setProteinFactor] = useState(2.5)
 
-  // Manual input state
-  const [manualCalories, setManualCalories] = useState(2000)
-  const [ratios, setRatios] = useState<MacroRatios>({ protein: 30, carbs: 40, fat: 30 })
+  // Manual input state (gram values)
+  const [manualMacros, setManualMacros] = useState<{ protein: number; carbs: number; fat: number }>({
+    protein: 150,
+    carbs: 200,
+    fat: 67
+  })
 
   // Meal distribution state
   const [mealFrequency, setMealFrequency] = useState<MealFrequency>(5)
@@ -427,8 +415,15 @@ export function SmartMealPlanner() {
     if (useWeightBased) {
       return weightBasedMacros
     }
-    return ratiosToGrams(manualCalories, ratios)
-  }, [useWeightBased, weightBasedMacros, manualCalories, ratios])
+    // Calculate calories from manual macros
+    const calculatedCalories = manualMacros.protein * 4 + manualMacros.carbs * 4 + manualMacros.fat * 9
+    return {
+      calories: calculatedCalories,
+      protein: manualMacros.protein,
+      carbs: manualMacros.carbs,
+      fat: manualMacros.fat
+    }
+  }, [useWeightBased, weightBasedMacros, manualMacros])
 
   // Calculate meal distribution when targets or frequency change
   useEffect(() => {
@@ -472,28 +467,16 @@ export function SmartMealPlanner() {
   // For API calls, use actual calories
   const calories = targets.calories
 
-  // Handlers
-  const handleRatioChange = (key: keyof MacroRatios, value: number) => {
-    const newRatios = { ...ratios, [key]: value }
-
-    // Auto-adjust other values to sum to 100
-    const remaining = 100 - value
-    const otherKeys = Object.keys(ratios).filter(k => k !== key) as (keyof MacroRatios)[]
-    const currentOtherSum = otherKeys.reduce((sum, k) => sum + ratios[k], 0)
-
-    if (currentOtherSum > 0) {
-      otherKeys.forEach(k => {
-        newRatios[k] = Math.round((ratios[k] / currentOtherSum) * remaining)
-      })
-    } else {
-      // Distribute evenly
-      otherKeys.forEach(k => {
-        newRatios[k] = Math.round(remaining / otherKeys.length)
-      })
+  // Calculate ratios from targets for API calls
+  const apiRatios = useMemo(() => {
+    const total = targets.protein * 4 + targets.carbs * 4 + targets.fat * 9
+    if (total === 0) return { protein: 30, carbs: 40, fat: 30 }
+    return {
+      protein: Math.round((targets.protein * 4 / total) * 100),
+      carbs: Math.round((targets.carbs * 4 / total) * 100),
+      fat: Math.round((targets.fat * 9 / total) * 100)
     }
-
-    setRatios(newRatios)
-  }
+  }, [targets])
 
   const findRecipes = useCallback(async () => {
     if (calories < 500) {
@@ -510,9 +493,9 @@ export function SmartMealPlanner() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           calories,
-          proteinRatio: ratios.protein,
-          carbsRatio: ratios.carbs,
-          fatRatio: ratios.fat,
+          proteinRatio: apiRatios.protein,
+          carbsRatio: apiRatios.carbs,
+          fatRatio: apiRatios.fat,
           vegetarian,
           limit: 10,
           allowScaling: true
@@ -534,7 +517,7 @@ export function SmartMealPlanner() {
     } finally {
       setIsLoading(false)
     }
-  }, [calories, ratios, vegetarian])
+  }, [calories, apiRatios, vegetarian])
 
   const generateDayPlan = useCallback(async () => {
     if (calories < 500) {
@@ -551,9 +534,9 @@ export function SmartMealPlanner() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           calories,
-          proteinRatio: ratios.protein,
-          carbsRatio: ratios.carbs,
-          fatRatio: ratios.fat,
+          proteinRatio: apiRatios.protein,
+          carbsRatio: apiRatios.carbs,
+          fatRatio: apiRatios.fat,
           vegetarian
         })
       })
@@ -570,7 +553,7 @@ export function SmartMealPlanner() {
     } finally {
       setIsLoading(false)
     }
-  }, [calories, ratios, vegetarian])
+  }, [calories, apiRatios, vegetarian])
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -634,17 +617,17 @@ export function SmartMealPlanner() {
                 </Label>
                 <div className="flex flex-wrap gap-2">
                   {([25, 30, 35] as ActivityLevel[]).map((level) => (
-                    <Button
+                    <button
                       key={level}
-                      variant={activityLevel === level ? 'default' : 'outline'}
-                      size="sm"
                       onClick={() => setActivityLevel(level)}
-                      className={activityLevel === level
-                        ? 'bg-gold-primary hover:bg-gold-secondary text-white'
-                        : 'border-gray-600 text-white hover:bg-gray-700'}
+                      className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                        activityLevel === level
+                          ? 'bg-gold-primary hover:bg-gold-secondary text-white'
+                          : 'border border-gray-600 text-white hover:bg-gray-700 bg-transparent'
+                      }`}
                     >
                       {ACTIVITY_LABELS[level]}
-                    </Button>
+                    </button>
                   ))}
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
@@ -660,17 +643,17 @@ export function SmartMealPlanner() {
                 </Label>
                 <div className="flex flex-wrap gap-2">
                   {([550, 770, 1100] as WeightLossTempo[]).map((tempo) => (
-                    <Button
+                    <button
                       key={tempo}
-                      variant={weightLossTempo === tempo ? 'default' : 'outline'}
-                      size="sm"
                       onClick={() => setWeightLossTempo(tempo)}
-                      className={weightLossTempo === tempo
-                        ? 'bg-gold-primary hover:bg-gold-secondary text-white'
-                        : 'border-gray-600 text-white hover:bg-gray-700'}
+                      className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                        weightLossTempo === tempo
+                          ? 'bg-gold-primary hover:bg-gold-secondary text-white'
+                          : 'border border-gray-600 text-white hover:bg-gray-700 bg-transparent'
+                      }`}
                     >
                       {TEMPO_LABELS[tempo]}
-                    </Button>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -735,33 +718,13 @@ export function SmartMealPlanner() {
             </>
           ) : (
             <>
-              {/* Manual Calories */}
-              <div>
-                <Label htmlFor="calories" className="text-white">Dagligt kaloriintag</Label>
-                <div className="flex items-center gap-2 mt-2">
-                  <Input
-                    id="calories"
-                    type="text"
-                    inputMode="numeric"
-                    value={manualCalories || ''}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/[^0-9]/g, '')
-                      setManualCalories(val ? parseInt(val, 10) : 0)
-                    }}
-                    placeholder="2000"
-                    className="w-32 bg-gray-700 border-gray-600 text-white"
-                  />
-                  <span className="text-gray-400">kcal</span>
-                </div>
-              </div>
-
-              {/* Macro distribution */}
+              {/* Macro inputs in grams */}
               <div className="space-y-4">
-                <Label className="text-white">Makrofördelning</Label>
+                <Label className="text-white">Makrofördelning (gram)</Label>
 
                 {/* Protein */}
                 <div className="flex items-center gap-4">
-                  <div className="w-20 flex items-center gap-2">
+                  <div className="w-24 flex items-center gap-2">
                     <Beef className="w-4 h-4 text-red-400" />
                     <span className="text-sm text-white">Protein</span>
                   </div>
@@ -769,49 +732,47 @@ export function SmartMealPlanner() {
                     <Input
                       type="text"
                       inputMode="numeric"
-                      value={ratios.protein || ''}
+                      value={manualMacros.protein || ''}
                       onChange={(e) => {
                         const val = e.target.value.replace(/[^0-9]/g, '')
-                        const num = val ? Math.min(100, parseInt(val, 10)) : 0
-                        setRatios(prev => ({ ...prev, protein: num }))
+                        setManualMacros(prev => ({ ...prev, protein: val ? parseInt(val, 10) : 0 }))
                       }}
-                      className="w-16 bg-gray-700 border-gray-600 text-white text-center"
+                      className="w-20 bg-gray-700 border-gray-600 text-white text-center"
                     />
-                    <span className="text-gray-400">%</span>
+                    <span className="text-gray-400">g</span>
                   </div>
-                  <span className="text-sm text-gray-400">
-                    ({targets.protein}g)
+                  <span className="text-sm text-gray-500">
+                    ({manualMacros.protein * 4} kcal)
                   </span>
                 </div>
 
                 {/* Carbs */}
                 <div className="flex items-center gap-4">
-                  <div className="w-20 flex items-center gap-2">
+                  <div className="w-24 flex items-center gap-2">
                     <Wheat className="w-4 h-4 text-yellow-400" />
-                    <span className="text-sm text-white">Carbs</span>
+                    <span className="text-sm text-white">Kolhydrat</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Input
                       type="text"
                       inputMode="numeric"
-                      value={ratios.carbs || ''}
+                      value={manualMacros.carbs || ''}
                       onChange={(e) => {
                         const val = e.target.value.replace(/[^0-9]/g, '')
-                        const num = val ? Math.min(100, parseInt(val, 10)) : 0
-                        setRatios(prev => ({ ...prev, carbs: num }))
+                        setManualMacros(prev => ({ ...prev, carbs: val ? parseInt(val, 10) : 0 }))
                       }}
-                      className="w-16 bg-gray-700 border-gray-600 text-white text-center"
+                      className="w-20 bg-gray-700 border-gray-600 text-white text-center"
                     />
-                    <span className="text-gray-400">%</span>
+                    <span className="text-gray-400">g</span>
                   </div>
-                  <span className="text-sm text-gray-400">
-                    ({targets.carbs}g)
+                  <span className="text-sm text-gray-500">
+                    ({manualMacros.carbs * 4} kcal)
                   </span>
                 </div>
 
                 {/* Fat */}
                 <div className="flex items-center gap-4">
-                  <div className="w-20 flex items-center gap-2">
+                  <div className="w-24 flex items-center gap-2">
                     <Droplet className="w-4 h-4 text-blue-400" />
                     <span className="text-sm text-white">Fett</span>
                   </div>
@@ -819,27 +780,29 @@ export function SmartMealPlanner() {
                     <Input
                       type="text"
                       inputMode="numeric"
-                      value={ratios.fat || ''}
+                      value={manualMacros.fat || ''}
                       onChange={(e) => {
                         const val = e.target.value.replace(/[^0-9]/g, '')
-                        const num = val ? Math.min(100, parseInt(val, 10)) : 0
-                        setRatios(prev => ({ ...prev, fat: num }))
+                        setManualMacros(prev => ({ ...prev, fat: val ? parseInt(val, 10) : 0 }))
                       }}
-                      className="w-16 bg-gray-700 border-gray-600 text-white text-center"
+                      className="w-20 bg-gray-700 border-gray-600 text-white text-center"
                     />
-                    <span className="text-gray-400">%</span>
+                    <span className="text-gray-400">g</span>
                   </div>
-                  <span className="text-sm text-gray-400">
-                    ({targets.fat}g)
+                  <span className="text-sm text-gray-500">
+                    ({manualMacros.fat * 9} kcal)
                   </span>
                 </div>
 
-                {/* Total indicator */}
-                {(ratios.protein + ratios.carbs + ratios.fat) !== 100 && (
-                  <p className="text-sm text-yellow-400">
-                    Totalt: {ratios.protein + ratios.carbs + ratios.fat}% (bör vara 100%)
-                  </p>
-                )}
+                {/* Total calories */}
+                <div className="bg-gray-900 rounded-lg p-3 mt-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Totalt kaloriintag:</span>
+                    <span className="text-lg font-bold text-gold-primary">
+                      {manualMacros.protein * 4 + manualMacros.carbs * 4 + manualMacros.fat * 9} kcal
+                    </span>
+                  </div>
+                </div>
               </div>
             </>
           )}
@@ -868,16 +831,17 @@ export function SmartMealPlanner() {
           {/* Meal frequency tabs */}
           <div className="flex gap-2">
             {([4, 5, 6] as MealFrequency[]).map((freq) => (
-              <Button
+              <button
                 key={freq}
-                variant={mealFrequency === freq ? 'default' : 'outline'}
                 onClick={() => setMealFrequency(freq)}
-                className={mealFrequency === freq
-                  ? 'bg-gold-primary hover:bg-gold-secondary text-white flex-1'
-                  : 'border-gray-600 text-white hover:bg-gray-700 flex-1'}
+                className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  mealFrequency === freq
+                    ? 'bg-gold-primary hover:bg-gold-secondary text-white'
+                    : 'border border-gray-600 text-white hover:bg-gray-700 bg-transparent'
+                }`}
               >
                 {freq} måltider
-              </Button>
+              </button>
             ))}
           </div>
 
