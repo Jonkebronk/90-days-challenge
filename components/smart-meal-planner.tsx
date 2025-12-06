@@ -2,12 +2,7 @@
 
 /**
  * Smart Meal Planner Component
- *
- * Allows users to:
- * - Set macro targets (kcal + P/F/C)
- * - See matching recipes from database
- * - Generate day plan or week plan
- * - Adjust servings and swap recipes
+ * Styled to match the 90 Days Challenge platform design
  */
 
 import { useState, useCallback } from 'react'
@@ -129,7 +124,7 @@ function MacroCircle({
             stroke="currentColor"
             strokeWidth="8"
             fill="none"
-            className="text-gray-200"
+            className="text-gray-700"
           />
           <circle
             cx="48"
@@ -146,11 +141,11 @@ function MacroCircle({
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <Icon className="w-5 h-5 mb-1" style={{ color }} />
-          <span className="text-sm font-bold">{Math.round(value)}g</span>
+          <span className="text-sm font-bold text-white">{Math.round(value)}g</span>
         </div>
       </div>
-      <span className="text-xs text-gray-500 mt-1">{label}</span>
-      <span className="text-xs text-gray-400">av {total}g</span>
+      <span className="text-xs text-gray-400 mt-1">{label}</span>
+      <span className="text-xs text-gray-500">av {total}g</span>
     </div>
   )
 }
@@ -162,11 +157,11 @@ function RecipeCard({
   match: RecipeMatch
   onSelect?: () => void
 }) {
-  const scoreColor = match.score >= 0.8 ? 'text-green-600' :
-                     match.score >= 0.6 ? 'text-yellow-600' : 'text-red-600'
+  const scoreColor = match.score >= 0.8 ? 'text-green-400' :
+                     match.score >= 0.6 ? 'text-yellow-400' : 'text-red-400'
 
   return (
-    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={onSelect}>
+    <Card className="bg-gray-800 border-gray-700 hover:border-gold-primary/50 transition-all cursor-pointer" onClick={onSelect}>
       <CardContent className="p-4">
         <div className="flex gap-4">
           {match.recipe.imageUrl && (
@@ -177,37 +172,37 @@ function RecipeCard({
             />
           )}
           <div className="flex-1">
-            <h4 className="font-semibold">{match.recipe.title}</h4>
+            <h4 className="font-semibold text-white">{match.recipe.title}</h4>
             {match.recipe.description && (
-              <p className="text-sm text-gray-500 line-clamp-1">{match.recipe.description}</p>
+              <p className="text-sm text-gray-400 line-clamp-1">{match.recipe.description}</p>
             )}
 
             <div className="flex items-center gap-2 mt-2">
-              <Badge variant="outline" className={scoreColor}>
+              <Badge variant="outline" className={`${scoreColor} border-current`}>
                 {Math.round(match.score * 100)}% match
               </Badge>
               {match.scaleFactor !== 1 && (
-                <Badge variant="secondary">
+                <Badge variant="secondary" className="bg-gray-700 text-gray-300">
                   {match.scaledServings} portioner
                 </Badge>
               )}
             </div>
 
-            <div className="flex gap-3 mt-2 text-xs text-gray-500">
+            <div className="flex gap-3 mt-2 text-xs text-gray-400">
               <span className="flex items-center gap-1">
-                <Flame className="w-3 h-3" />
+                <Flame className="w-3 h-3 text-gold-primary" />
                 {match.scaledMacros.calories} kcal
               </span>
               <span className="flex items-center gap-1">
-                <Beef className="w-3 h-3" />
+                <Beef className="w-3 h-3 text-red-400" />
                 {match.scaledMacros.protein}g
               </span>
               <span className="flex items-center gap-1">
-                <Wheat className="w-3 h-3" />
+                <Wheat className="w-3 h-3 text-yellow-400" />
                 {match.scaledMacros.carbs}g
               </span>
               <span className="flex items-center gap-1">
-                <Droplet className="w-3 h-3" />
+                <Droplet className="w-3 h-3 text-blue-400" />
                 {match.scaledMacros.fat}g
               </span>
             </div>
@@ -232,13 +227,12 @@ function DayPlanView({
   return (
     <div className="space-y-4">
       {/* Totals */}
-      <Card>
+      <Card className="bg-gray-800 border-gray-700">
         <CardContent className="p-4">
           <div className="flex justify-between items-center mb-4">
-            <h4 className="font-semibold">Dagens totaler</h4>
+            <h4 className="font-semibold text-white">Dagens totaler</h4>
             <Badge
-              variant={plan.score >= 0.8 ? 'default' : 'secondary'}
-              className={plan.score >= 0.8 ? 'bg-green-600' : ''}
+              className={plan.score >= 0.8 ? 'bg-green-600' : 'bg-gray-600'}
             >
               {Math.round(plan.score * 100)}% match
             </Badge>
@@ -269,8 +263,8 @@ function DayPlanView({
           </div>
 
           <div className="mt-4 text-center">
-            <span className="text-2xl font-bold">{plan.totals.calories}</span>
-            <span className="text-gray-500 ml-1">/ {target.calories} kcal</span>
+            <span className="text-2xl font-bold text-white">{plan.totals.calories}</span>
+            <span className="text-gray-400 ml-1">/ {target.calories} kcal</span>
           </div>
 
           {/* Deviations */}
@@ -278,12 +272,12 @@ function DayPlanView({
             {(['calories', 'protein', 'carbs', 'fat'] as const).map(key => (
               <div key={key} className="text-center">
                 <span className={`font-medium ${
-                  isWithinTolerance(plan.deviation[key]) ? 'text-green-600' : 'text-red-600'
+                  isWithinTolerance(plan.deviation[key]) ? 'text-green-400' : 'text-red-400'
                 }`}>
                   {plan.deviation[key] > 0 ? '+' : ''}{plan.deviation[key].toFixed(1)}%
                 </span>
                 <br />
-                <span className="text-gray-400 capitalize">{key === 'calories' ? 'Kcal' : key}</span>
+                <span className="text-gray-500 capitalize">{key === 'calories' ? 'Kcal' : key}</span>
               </div>
             ))}
           </div>
@@ -293,20 +287,20 @@ function DayPlanView({
       {/* Meals */}
       <div className="space-y-3">
         {plan.meals.map((meal, index) => (
-          <Card key={index}>
+          <Card key={index} className="bg-gray-800 border-gray-700">
             <CardContent className="p-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <Badge variant="outline" className="mb-2">{meal.slot}</Badge>
-                  <h4 className="font-semibold">{meal.recipe.title}</h4>
-                  <div className="flex gap-2 mt-1 text-xs text-gray-500">
+                  <Badge variant="outline" className="mb-2 border-gold-primary text-gold-primary">{meal.slot}</Badge>
+                  <h4 className="font-semibold text-white">{meal.recipe.title}</h4>
+                  <div className="flex gap-2 mt-1 text-xs text-gray-400">
                     <span>{meal.recipe.macros.calories} kcal</span>
                     <span>P: {meal.recipe.macros.protein}g</span>
                     <span>K: {meal.recipe.macros.carbs}g</span>
                     <span>F: {meal.recipe.macros.fat}g</span>
                   </div>
                   {meal.recipe.scaleFactor !== 1 && (
-                    <p className="text-xs text-blue-600 mt-1">
+                    <p className="text-xs text-gold-primary mt-1">
                       Skalat till {meal.recipe.scaledServings} portioner
                     </p>
                   )}
@@ -325,7 +319,7 @@ function DayPlanView({
       </div>
 
       {onRegenerate && (
-        <Button onClick={onRegenerate} variant="outline" className="w-full">
+        <Button onClick={onRegenerate} variant="outline" className="w-full border-gray-600 text-white hover:bg-gray-700">
           <RefreshCw className="w-4 h-4 mr-2" />
           Generera ny plan
         </Button>
@@ -374,6 +368,11 @@ export function SmartMealPlanner() {
   }
 
   const findRecipes = useCallback(async () => {
+    if (calories < 500) {
+      setError('Ange minst 500 kcal')
+      return
+    }
+
     setIsLoading(true)
     setError(null)
 
@@ -392,12 +391,16 @@ export function SmartMealPlanner() {
         })
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error('Kunde inte hämta recept')
+        throw new Error(data.error || 'Kunde inte hämta recept')
       }
 
-      const data = await response.json()
-      setMatches(data.matches)
+      setMatches(data.matches || [])
+      if (data.matches?.length === 0) {
+        setError('Inga matchande recept hittades. Prova att justera dina mål.')
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ett fel uppstod')
     } finally {
@@ -406,6 +409,11 @@ export function SmartMealPlanner() {
   }, [calories, ratios, vegetarian])
 
   const generateDayPlan = useCallback(async () => {
+    if (calories < 500) {
+      setError('Ange minst 500 kcal')
+      return
+    }
+
     setIsLoading(true)
     setError(null)
 
@@ -422,11 +430,12 @@ export function SmartMealPlanner() {
         })
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error('Kunde inte generera dagsplan')
+        throw new Error(data.error || 'Kunde inte generera dagsplan')
       }
 
-      const data = await response.json()
       setDayPlan(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ett fel uppstod')
@@ -436,32 +445,36 @@ export function SmartMealPlanner() {
   }, [calories, ratios, vegetarian])
 
   return (
-    <div className="max-w-4xl mx-auto p-4 space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-2xl font-bold">Smart Måltidsplanerare</h1>
-        <p className="text-gray-500">Hitta recept som passar dina makromål</p>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-gold-primary to-gold-secondary bg-clip-text text-transparent">
+          Smart Måltidsplanerare
+        </h1>
+        <p className="text-gray-400 mt-2">Hitta recept som passar dina makromål</p>
       </div>
 
       {/* Goal settings */}
-      <Card>
+      <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
-          <CardTitle className="text-lg">Dina mål</CardTitle>
-          <CardDescription>Ställ in kalorier och makrofördelning</CardDescription>
+          <CardTitle className="text-lg text-white">Dina mål</CardTitle>
+          <CardDescription className="text-gray-400">Ställ in kalorier och makrofördelning</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Calories */}
           <div>
-            <Label htmlFor="calories">Dagligt kaloriintag</Label>
+            <Label htmlFor="calories" className="text-white">Dagligt kaloriintag</Label>
             <div className="flex items-center gap-4 mt-2">
               <Input
                 id="calories"
                 type="number"
                 value={calories}
-                onChange={(e) => setCalories(Number(e.target.value))}
-                className="w-32"
+                onChange={(e) => setCalories(Number(e.target.value) || 0)}
+                className="w-32 bg-gray-700 border-gray-600 text-white"
+                min={500}
+                max={6000}
               />
-              <span className="text-gray-500">kcal</span>
+              <span className="text-gray-400">kcal</span>
               <Slider
                 value={[calories]}
                 onValueChange={([v]) => setCalories(v)}
@@ -475,13 +488,13 @@ export function SmartMealPlanner() {
 
           {/* Macro distribution */}
           <div className="space-y-4">
-            <Label>Makrofördelning</Label>
+            <Label className="text-white">Makrofördelning</Label>
 
             {/* Protein */}
             <div className="flex items-center gap-4">
               <div className="w-24 flex items-center gap-2">
-                <Beef className="w-4 h-4 text-red-500" />
-                <span className="text-sm">Protein</span>
+                <Beef className="w-4 h-4 text-red-400" />
+                <span className="text-sm text-white">Protein</span>
               </div>
               <Slider
                 value={[ratios.protein]}
@@ -491,7 +504,7 @@ export function SmartMealPlanner() {
                 step={5}
                 className="flex-1"
               />
-              <span className="w-20 text-right text-sm">
+              <span className="w-24 text-right text-sm text-gray-300">
                 {ratios.protein}% ({targets.protein}g)
               </span>
             </div>
@@ -499,8 +512,8 @@ export function SmartMealPlanner() {
             {/* Carbs */}
             <div className="flex items-center gap-4">
               <div className="w-24 flex items-center gap-2">
-                <Wheat className="w-4 h-4 text-yellow-500" />
-                <span className="text-sm">Carbs</span>
+                <Wheat className="w-4 h-4 text-yellow-400" />
+                <span className="text-sm text-white">Carbs</span>
               </div>
               <Slider
                 value={[ratios.carbs]}
@@ -510,7 +523,7 @@ export function SmartMealPlanner() {
                 step={5}
                 className="flex-1"
               />
-              <span className="w-20 text-right text-sm">
+              <span className="w-24 text-right text-sm text-gray-300">
                 {ratios.carbs}% ({targets.carbs}g)
               </span>
             </div>
@@ -518,8 +531,8 @@ export function SmartMealPlanner() {
             {/* Fat */}
             <div className="flex items-center gap-4">
               <div className="w-24 flex items-center gap-2">
-                <Droplet className="w-4 h-4 text-blue-500" />
-                <span className="text-sm">Fett</span>
+                <Droplet className="w-4 h-4 text-blue-400" />
+                <span className="text-sm text-white">Fett</span>
               </div>
               <Slider
                 value={[ratios.fat]}
@@ -529,7 +542,7 @@ export function SmartMealPlanner() {
                 step={5}
                 className="flex-1"
               />
-              <span className="w-20 text-right text-sm">
+              <span className="w-24 text-right text-sm text-gray-300">
                 {ratios.fat}% ({targets.fat}g)
               </span>
             </div>
@@ -537,7 +550,7 @@ export function SmartMealPlanner() {
 
           {/* Vegetarian */}
           <div className="flex items-center justify-between">
-            <Label htmlFor="vegetarian">Endast vegetariska recept</Label>
+            <Label htmlFor="vegetarian" className="text-white">Endast vegetariska recept</Label>
             <Switch
               id="vegetarian"
               checked={vegetarian}
@@ -549,8 +562,8 @@ export function SmartMealPlanner() {
 
       {/* Error */}
       {error && (
-        <Card className="border-red-200 bg-red-50">
-          <CardContent className="p-4 flex items-center gap-2 text-red-600">
+        <Card className="border-red-500/50 bg-red-500/10">
+          <CardContent className="p-4 flex items-center gap-2 text-red-400">
             <AlertCircle className="w-5 h-5" />
             {error}
           </CardContent>
@@ -559,12 +572,12 @@ export function SmartMealPlanner() {
 
       {/* Tabs for different views */}
       <Tabs defaultValue="match">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="match" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-2 bg-gray-800">
+          <TabsTrigger value="match" className="flex items-center gap-2 data-[state=active]:bg-gold-primary data-[state=active]:text-white">
             <Utensils className="w-4 h-4" />
             Hitta recept
           </TabsTrigger>
-          <TabsTrigger value="plan" className="flex items-center gap-2">
+          <TabsTrigger value="plan" className="flex items-center gap-2 data-[state=active]:bg-gold-primary data-[state=active]:text-white">
             <Calendar className="w-4 h-4" />
             Dagsplan
           </TabsTrigger>
@@ -575,7 +588,7 @@ export function SmartMealPlanner() {
           <Button
             onClick={findRecipes}
             disabled={isLoading}
-            className="w-full"
+            className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -587,7 +600,7 @@ export function SmartMealPlanner() {
 
           {matches.length > 0 && (
             <div className="space-y-3">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-400">
                 Hittade {matches.length} recept som matchar dina mål
               </p>
               {matches.map((match) => (
@@ -602,7 +615,7 @@ export function SmartMealPlanner() {
           <Button
             onClick={generateDayPlan}
             disabled={isLoading}
-            className="w-full"
+            className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
