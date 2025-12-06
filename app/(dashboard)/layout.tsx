@@ -66,6 +66,7 @@ const navigation = [
       { name: 'Näringstabeller', href: '/dashboard/content/nutrition-admin', icon: Calculator },
       { name: 'Måltidsplaner', href: '/dashboard/content/meal-plans', icon: UtensilsCrossed },
       { name: 'Guider', href: '/dashboard/content/guides', icon: BookOpen },
+      { name: 'Råvaruguide', href: '/dashboard/content/ingredient-guide', icon: ClipboardList },
       { name: 'Vanliga frågor', href: '/dashboard/content/faqs', icon: HelpCircle },
       { name: 'Övningar', href: '/dashboard/content/exercises', icon: Activity },
       { name: 'Träningsprogram', href: '/dashboard/content/workout-programs', icon: Zap },
