@@ -9,7 +9,6 @@ import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Slider } from '@/components/ui/slider'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
@@ -487,60 +486,85 @@ export function SmartMealPlanner() {
 
             {/* Protein */}
             <div className="flex items-center gap-4">
-              <div className="w-24 flex items-center gap-2">
+              <div className="w-20 flex items-center gap-2">
                 <Beef className="w-4 h-4 text-red-400" />
                 <span className="text-sm text-white">Protein</span>
               </div>
-              <Slider
-                value={[ratios.protein]}
-                onValueChange={([v]) => handleRatioChange('protein', v)}
-                min={10}
-                max={60}
-                step={5}
-                className="flex-1"
-              />
-              <span className="w-24 text-right text-sm text-gray-300">
-                {ratios.protein}% ({targets.protein}g)
+              <div className="flex items-center gap-2">
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  value={ratios.protein || ''}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, '')
+                    const num = val ? Math.min(100, parseInt(val, 10)) : 0
+                    setRatios(prev => ({ ...prev, protein: num }))
+                  }}
+                  className="w-16 bg-gray-700 border-gray-600 text-white text-center"
+                />
+                <span className="text-gray-400">%</span>
+              </div>
+              <span className="text-sm text-gray-400">
+                ({targets.protein}g)
               </span>
             </div>
 
             {/* Carbs */}
             <div className="flex items-center gap-4">
-              <div className="w-24 flex items-center gap-2">
+              <div className="w-20 flex items-center gap-2">
                 <Wheat className="w-4 h-4 text-yellow-400" />
                 <span className="text-sm text-white">Carbs</span>
               </div>
-              <Slider
-                value={[ratios.carbs]}
-                onValueChange={([v]) => handleRatioChange('carbs', v)}
-                min={10}
-                max={70}
-                step={5}
-                className="flex-1"
-              />
-              <span className="w-24 text-right text-sm text-gray-300">
-                {ratios.carbs}% ({targets.carbs}g)
+              <div className="flex items-center gap-2">
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  value={ratios.carbs || ''}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, '')
+                    const num = val ? Math.min(100, parseInt(val, 10)) : 0
+                    setRatios(prev => ({ ...prev, carbs: num }))
+                  }}
+                  className="w-16 bg-gray-700 border-gray-600 text-white text-center"
+                />
+                <span className="text-gray-400">%</span>
+              </div>
+              <span className="text-sm text-gray-400">
+                ({targets.carbs}g)
               </span>
             </div>
 
             {/* Fat */}
             <div className="flex items-center gap-4">
-              <div className="w-24 flex items-center gap-2">
+              <div className="w-20 flex items-center gap-2">
                 <Droplet className="w-4 h-4 text-blue-400" />
                 <span className="text-sm text-white">Fett</span>
               </div>
-              <Slider
-                value={[ratios.fat]}
-                onValueChange={([v]) => handleRatioChange('fat', v)}
-                min={10}
-                max={60}
-                step={5}
-                className="flex-1"
-              />
-              <span className="w-24 text-right text-sm text-gray-300">
-                {ratios.fat}% ({targets.fat}g)
+              <div className="flex items-center gap-2">
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  value={ratios.fat || ''}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, '')
+                    const num = val ? Math.min(100, parseInt(val, 10)) : 0
+                    setRatios(prev => ({ ...prev, fat: num }))
+                  }}
+                  className="w-16 bg-gray-700 border-gray-600 text-white text-center"
+                />
+                <span className="text-gray-400">%</span>
+              </div>
+              <span className="text-sm text-gray-400">
+                ({targets.fat}g)
               </span>
             </div>
+
+            {/* Total indicator */}
+            {(ratios.protein + ratios.carbs + ratios.fat) !== 100 && (
+              <p className="text-sm text-yellow-400">
+                Totalt: {ratios.protein + ratios.carbs + ratios.fat}% (bör vara 100%)
+              </p>
+            )}
           </div>
 
           {/* Vegetarian */}
