@@ -464,25 +464,20 @@ export function SmartMealPlanner() {
           {/* Calories */}
           <div>
             <Label htmlFor="calories" className="text-white">Dagligt kaloriintag</Label>
-            <div className="flex items-center gap-4 mt-2">
+            <div className="flex items-center gap-2 mt-2">
               <Input
                 id="calories"
-                type="number"
-                value={calories}
-                onChange={(e) => setCalories(Number(e.target.value) || 0)}
+                type="text"
+                inputMode="numeric"
+                value={calories || ''}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9]/g, '')
+                  setCalories(val ? parseInt(val, 10) : 0)
+                }}
+                placeholder="2000"
                 className="w-32 bg-gray-700 border-gray-600 text-white"
-                min={500}
-                max={6000}
               />
               <span className="text-gray-400">kcal</span>
-              <Slider
-                value={[calories]}
-                onValueChange={([v]) => setCalories(v)}
-                min={1200}
-                max={4000}
-                step={50}
-                className="flex-1"
-              />
             </div>
           </div>
 
