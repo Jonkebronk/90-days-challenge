@@ -178,7 +178,7 @@ export default function DashboardLayout({
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1 flex-1">
+            <nav className="hidden lg:flex items-center gap-1 flex-1 overflow-x-auto scrollbar-hide">
               {filteredNavigation.map((item) => {
                 const Icon = item.icon
 
@@ -193,7 +193,7 @@ export default function DashboardLayout({
                       <DropdownMenuTrigger asChild>
                         <button
                           className={`
-                            flex items-center gap-2 px-4 py-2 rounded-lg transition-all
+                            flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all whitespace-nowrap flex-shrink-0 text-sm
                             ${isDropdownActive
                               ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-medium'
                               : 'hover:bg-gray-100 text-gray-700 hover:text-gold-primary'
@@ -241,7 +241,7 @@ export default function DashboardLayout({
                     key={item.name}
                     href={item.href || '#'}
                     className={`
-                      flex items-center gap-2 px-4 py-2 rounded-lg transition-all
+                      flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all whitespace-nowrap flex-shrink-0 text-sm
                       ${isActive
                         ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-medium'
                         : 'hover:bg-gray-100 text-gray-700 hover:text-gold-primary'
@@ -353,7 +353,7 @@ export default function DashboardLayout({
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden"
+                className="lg:hidden"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
                 {mobileMenuOpen ? (
@@ -368,7 +368,7 @@ export default function DashboardLayout({
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 bg-white shadow-lg">
+          <div className="lg:hidden border-t border-gray-200 bg-white shadow-lg">
             <nav className="container mx-auto px-4 py-4 space-y-1">
               {filteredNavigation.map((item) => {
                 const Icon = item.icon
