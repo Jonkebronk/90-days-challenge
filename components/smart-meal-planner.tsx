@@ -7,7 +7,6 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -160,7 +159,6 @@ export function SmartMealPlanner() {
   const [mealDistribution, setMealDistribution] = useState<MealDistribution[]>([])
 
   // Other state
-  const [vegetarian, setVegetarian] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   // Category and recipe state
@@ -282,7 +280,6 @@ export function SmartMealPlanner() {
           carbs: meal.carbs,
           fat: meal.fat,
           categoryId: category?.id,
-          vegetarian,
           limit: 10,
           allowScaling: true,
           minScore: 0.3
@@ -305,7 +302,7 @@ export function SmartMealPlanner() {
     } finally {
       setSearchingMeal(null)
     }
-  }, [mealDistribution, categories, vegetarian])
+  }, [mealDistribution, categories])
 
   // Select a recipe for a meal slot
   const selectRecipe = useCallback((mealIndex: number, match: RecipeMatch) => {
@@ -584,15 +581,6 @@ export function SmartMealPlanner() {
             </>
           )}
 
-          {/* Vegetarian */}
-          <div className="flex items-center justify-between">
-            <Label htmlFor="vegetarian" className="text-white">Endast vegetariska recept</Label>
-            <Switch
-              id="vegetarian"
-              checked={vegetarian}
-              onCheckedChange={setVegetarian}
-            />
-          </div>
         </CardContent>
       </Card>
 
@@ -706,19 +694,18 @@ export function SmartMealPlanner() {
                         </div>
                       </div>
                     ) : (
-                      <Button
+                      <button
                         onClick={() => searchMealRecipes(index)}
                         disabled={isSearching}
-                        variant="outline"
-                        className="w-full border-gray-600 text-white hover:bg-gray-700"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-medium transition-colors bg-gray-800 border border-gray-600 text-white hover:bg-gray-700 disabled:opacity-50"
                       >
                         {isSearching ? (
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
-                          <Search className="w-4 h-4 mr-2" />
+                          <Search className="w-4 h-4" />
                         )}
                         Sök {meal.name.toLowerCase()}-recept
-                      </Button>
+                      </button>
                     )}
                   </div>
 
