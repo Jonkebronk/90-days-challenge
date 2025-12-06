@@ -163,10 +163,12 @@ export function SmartMealPlanner() {
 
   // Category and recipe state
   const [categories, setCategories] = useState<RecipeCategory[]>([])
-  const [selectedRecipes, setSelectedRecipes] = useState<Record<number, SelectedRecipe | null>>({})
+  const [selectedRecipes, setSelectedRecipes] = useState<Record<number, SelectedRecipe[]>>({})
   const [mealMatches, setMealMatches] = useState<Record<number, RecipeMatch[]>>({})
   const [searchingMeal, setSearchingMeal] = useState<number | null>(null)
   const [expandedMeal, setExpandedMeal] = useState<number | null>(null)
+
+  const MAX_RECIPES_PER_MEAL = 4
 
   // Weight-based calculation (Kostschema-verktyget formulas)
   const weightBasedMacros = useMemo((): MacroTargets => {
@@ -304,28 +306,42 @@ export function SmartMealPlanner() {
     }
   }, [mealDistribution, categories])
 
-  // Select a recipe for a meal slot
+  // Add a recipe to a meal slot (up to MAX_RECIPES_PER_MEAL)
   const selectRecipe = useCallback((mealIndex: number, match: RecipeMatch) => {
-    setSelectedRecipes(prev => ({
-      ...prev,
-      [mealIndex]: {
-        id: match.recipe.id,
-        title: match.recipe.title,
-        imageUrl: match.recipe.imageUrl,
-        scaleFactor: match.scaleFactor,
-        scaledServings: match.scaledServings,
-        macros: match.scaledMacros
+    setSelectedRecipes(prev => {
+      const current = prev[mealIndex] || []
+      // Check if already at max or recipe already added
+      if (current.length >= MAX_RECIPES_PER_MEAL) return prev
+      if (current.some(r => r.id === match.recipe.id)) return prev
+
+      return {
+        ...prev,
+        [mealIndex]: [
+          ...current,
+          {
+            id: match.recipe.id,
+            title: match.recipe.title,
+            imageUrl: match.recipe.imageUrl,
+            scaleFactor: match.scaleFactor,
+            scaledServings: match.scaledServings,
+            macros: match.scaledMacros
+          }
+        ]
       }
-    }))
-    setExpandedMeal(null)
+    })
   }, [])
 
-  // Remove selected recipe from meal slot
-  const removeRecipe = useCallback((mealIndex: number) => {
+  // Remove a specific recipe from meal slot
+  const removeRecipe = useCallback((mealIndex: number, recipeId: string) => {
     setSelectedRecipes(prev => {
-      const updated = { ...prev }
-      delete updated[mealIndex]
-      return updated
+      const current = prev[mealIndex] || []
+      const updated = current.filter(r => r.id !== recipeId)
+      if (updated.length === 0) {
+        const newState = { ...prev }
+        delete newState[mealIndex]
+        return newState
+      }
+      return { ...prev, [mealIndex]: updated }
     })
   }, [])
 
@@ -613,12 +629,13 @@ export function SmartMealPlanner() {
           {/* Meal cards */}
           <div className="space-y-3">
             {mealDistribution.map((meal, index) => {
-              const selected = selectedRecipes[index]
+              const selectedList = selectedRecipes[index] || []
               const matches = mealMatches[index] || []
               const isExpanded = expandedMeal === index
               const isSearching = searchingMeal === index
               const categorySlug = MEAL_CATEGORY_MAP[meal.name]
               const category = categories.find(c => c.slug === categorySlug)
+              const canAddMore = selectedList.length < MAX_RECIPES_PER_MEAL
 
               return (
                 <div
@@ -633,6 +650,11 @@ export function SmartMealPlanner() {
                         {category && (
                           <Badge variant="outline" className="text-xs border-gray-600 text-gray-400">
                             {category.name}
+                          </Badge>
+                        )}
+                        {selectedList.length > 0 && (
+                          <Badge className="text-xs bg-gold-primary/20 text-gold-primary border-none">
+                            {selectedList.length}/{MAX_RECIPES_PER_MEAL} alternativ
                           </Badge>
                         )}
                       </div>
@@ -652,48 +674,46 @@ export function SmartMealPlanner() {
                       </span>
                     </div>
 
-                    {/* Selected recipe or search button */}
-                    {selected ? (
-                      <div className="bg-gray-800 rounded-lg p-3 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {selected.imageUrl && (
-                            <img
-                              src={selected.imageUrl}
-                              alt={selected.title}
-                              className="w-12 h-12 rounded-lg object-cover"
-                            />
-                          )}
-                          <div>
-                            <p className="text-white font-medium">{selected.title}</p>
-                            <div className="flex gap-2 text-xs text-gray-400">
-                              <span>{selected.macros.calories} kcal</span>
-                              <span>P: {selected.macros.protein}g</span>
-                              <span>K: {selected.macros.carbs}g</span>
-                              <span>F: {selected.macros.fat}g</span>
+                    {/* Selected recipes list */}
+                    {selectedList.length > 0 && (
+                      <div className="space-y-2 mb-3">
+                        {selectedList.map((recipe, recipeIndex) => (
+                          <div key={recipe.id} className="bg-gray-800 rounded-lg p-3 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs text-gray-500 w-5">{recipeIndex + 1}.</span>
+                              {recipe.imageUrl && (
+                                <img
+                                  src={recipe.imageUrl}
+                                  alt={recipe.title}
+                                  className="w-10 h-10 rounded-lg object-cover"
+                                />
+                              )}
+                              <div>
+                                <p className="text-white font-medium text-sm">{recipe.title}</p>
+                                <div className="flex gap-2 text-xs text-gray-400">
+                                  <span>{recipe.macros.calories} kcal</span>
+                                  <span>P: {recipe.macros.protein}g</span>
+                                </div>
+                                {recipe.scaleFactor !== 1 && (
+                                  <span className="text-xs text-gold-primary">
+                                    {recipe.scaledServings} portioner
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                            {selected.scaleFactor !== 1 && (
-                              <span className="text-xs text-gold-primary">
-                                {selected.scaledServings} portioner
-                              </span>
-                            )}
+                            <button
+                              onClick={() => removeRecipe(index, recipe.id)}
+                              className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
                           </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => setExpandedMeal(isExpanded ? null : index)}
-                            className="p-2 text-gray-400 hover:text-white transition-colors"
-                          >
-                            <RefreshCw className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => removeRecipe(index)}
-                            className="p-2 text-gray-400 hover:text-red-400 transition-colors"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
+                        ))}
                       </div>
-                    ) : (
+                    )}
+
+                    {/* Search button - always visible if can add more */}
+                    {canAddMore && (
                       <button
                         onClick={() => searchMealRecipes(index)}
                         disabled={isSearching}
@@ -704,7 +724,7 @@ export function SmartMealPlanner() {
                         ) : (
                           <Search className="w-4 h-4" />
                         )}
-                        Sök {meal.name.toLowerCase()}-recept
+                        {selectedList.length === 0 ? `Sök ${meal.name.toLowerCase()}-recept` : 'Lägg till alternativ'}
                       </button>
                     )}
                   </div>
@@ -714,7 +734,7 @@ export function SmartMealPlanner() {
                     <div className="border-t border-gray-700 p-4 bg-gray-800/50">
                       <div className="flex items-center justify-between mb-3">
                         <p className="text-sm text-gray-400">
-                          {matches.length} matchande recept
+                          {matches.length} matchande recept - klicka för att lägga till
                         </p>
                         <button
                           onClick={() => setExpandedMeal(null)}
@@ -724,43 +744,54 @@ export function SmartMealPlanner() {
                         </button>
                       </div>
                       <div className="space-y-2 max-h-64 overflow-y-auto">
-                        {matches.map((match) => (
-                          <div
-                            key={match.recipe.id}
-                            onClick={() => selectRecipe(index, match)}
-                            className="bg-gray-900 rounded-lg p-3 cursor-pointer hover:bg-gray-800 transition-colors flex items-center justify-between"
-                          >
-                            <div className="flex items-center gap-3">
-                              {match.recipe.imageUrl && (
-                                <img
-                                  src={match.recipe.imageUrl}
-                                  alt={match.recipe.title}
-                                  className="w-10 h-10 rounded object-cover"
-                                />
-                              )}
-                              <div>
-                                <p className="text-white text-sm font-medium">{match.recipe.title}</p>
-                                <div className="flex gap-2 text-xs text-gray-500">
-                                  <span>{match.scaledMacros.calories} kcal</span>
-                                  <span>P: {match.scaledMacros.protein}g</span>
+                        {matches.map((match) => {
+                          const isAlreadySelected = selectedList.some(r => r.id === match.recipe.id)
+                          return (
+                            <div
+                              key={match.recipe.id}
+                              onClick={() => !isAlreadySelected && selectRecipe(index, match)}
+                              className={`bg-gray-900 rounded-lg p-3 flex items-center justify-between ${
+                                isAlreadySelected
+                                  ? 'opacity-50 cursor-not-allowed'
+                                  : 'cursor-pointer hover:bg-gray-800'
+                              } transition-colors`}
+                            >
+                              <div className="flex items-center gap-3">
+                                {match.recipe.imageUrl && (
+                                  <img
+                                    src={match.recipe.imageUrl}
+                                    alt={match.recipe.title}
+                                    className="w-10 h-10 rounded object-cover"
+                                  />
+                                )}
+                                <div>
+                                  <p className="text-white text-sm font-medium">{match.recipe.title}</p>
+                                  <div className="flex gap-2 text-xs text-gray-500">
+                                    <span>{match.scaledMacros.calories} kcal</span>
+                                    <span>P: {match.scaledMacros.protein}g</span>
+                                  </div>
                                 </div>
                               </div>
+                              <div className="flex items-center gap-2">
+                                <Badge
+                                  variant="outline"
+                                  className={`text-xs ${
+                                    match.score >= 0.8 ? 'border-green-500 text-green-400' :
+                                    match.score >= 0.6 ? 'border-yellow-500 text-yellow-400' :
+                                    'border-gray-500 text-gray-400'
+                                  }`}
+                                >
+                                  {Math.round(match.score * 100)}%
+                                </Badge>
+                                {isAlreadySelected ? (
+                                  <Check className="w-4 h-4 text-green-500" />
+                                ) : (
+                                  <Check className="w-4 h-4 text-gray-500" />
+                                )}
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Badge
-                                variant="outline"
-                                className={`text-xs ${
-                                  match.score >= 0.8 ? 'border-green-500 text-green-400' :
-                                  match.score >= 0.6 ? 'border-yellow-500 text-yellow-400' :
-                                  'border-gray-500 text-gray-400'
-                                }`}
-                              >
-                                {Math.round(match.score * 100)}%
-                              </Badge>
-                              <Check className="w-4 h-4 text-gray-500" />
-                            </div>
-                          </div>
-                        ))}
+                          )
+                        })}
                       </div>
                     </div>
                   )}
