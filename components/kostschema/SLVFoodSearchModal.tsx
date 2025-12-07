@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { Search, Loader2, X, Database } from 'lucide-react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import { Search, Loader2, X, Database, ChevronLeft } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -28,6 +28,149 @@ interface SLVFoodSearchModalProps {
   mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'evening'
 }
 
+// Subcategories for each meal type and macro category
+const SUBCATEGORIES: Record<string, Record<string, { label: string; searchTerm: string }[]>> = {
+  breakfast: {
+    kolhydrat: [
+      { label: 'Havregryn', searchTerm: 'havregryn' },
+      { label: 'Gröt', searchTerm: 'gröt' },
+      { label: 'Müsli', searchTerm: 'müsli' },
+      { label: 'Flingor', searchTerm: 'flingor' },
+      { label: 'Bröd', searchTerm: 'bröd' },
+      { label: 'Knäckebröd', searchTerm: 'knäckebröd' },
+      { label: 'Yoghurt', searchTerm: 'yoghurt' },
+      { label: 'Frukt', searchTerm: 'frukt' },
+    ],
+    protein: [
+      { label: 'Ägg', searchTerm: 'ägg' },
+      { label: 'Kvarg', searchTerm: 'kvarg' },
+      { label: 'Keso', searchTerm: 'keso' },
+      { label: 'Skinka', searchTerm: 'skinka' },
+      { label: 'Kalkon', searchTerm: 'kalkon' },
+    ],
+    fett: [
+      { label: 'Ägg', searchTerm: 'ägg' },
+      { label: 'Avokado', searchTerm: 'avokado' },
+      { label: 'Nötter', searchTerm: 'nötter' },
+      { label: 'Ost', searchTerm: 'ost' },
+      { label: 'Smör', searchTerm: 'smör' },
+    ],
+  },
+  lunch: {
+    kolhydrat: [
+      { label: 'Ris', searchTerm: 'ris' },
+      { label: 'Pasta', searchTerm: 'pasta' },
+      { label: 'Potatis', searchTerm: 'potatis' },
+      { label: 'Bulgur', searchTerm: 'bulgur' },
+      { label: 'Quinoa', searchTerm: 'quinoa' },
+      { label: 'Bröd', searchTerm: 'bröd' },
+      { label: 'Tortilla', searchTerm: 'tortilla' },
+    ],
+    protein: [
+      { label: 'Kyckling', searchTerm: 'kyckling' },
+      { label: 'Kalkon', searchTerm: 'kalkon' },
+      { label: 'Nötfärs', searchTerm: 'nötfärs' },
+      { label: 'Fisk', searchTerm: 'fisk' },
+      { label: 'Lax', searchTerm: 'lax' },
+      { label: 'Tonfisk', searchTerm: 'tonfisk' },
+      { label: 'Ägg', searchTerm: 'ägg' },
+    ],
+    fett: [
+      { label: 'Avokado', searchTerm: 'avokado' },
+      { label: 'Olivolja', searchTerm: 'olivolja' },
+      { label: 'Nötter', searchTerm: 'nötter' },
+      { label: 'Ost', searchTerm: 'ost' },
+    ],
+  },
+  dinner: {
+    kolhydrat: [
+      { label: 'Ris', searchTerm: 'ris' },
+      { label: 'Pasta', searchTerm: 'pasta' },
+      { label: 'Potatis', searchTerm: 'potatis' },
+      { label: 'Sötpotatis', searchTerm: 'sötpotatis' },
+      { label: 'Bulgur', searchTerm: 'bulgur' },
+      { label: 'Couscous', searchTerm: 'couscous' },
+    ],
+    protein: [
+      { label: 'Kyckling', searchTerm: 'kyckling' },
+      { label: 'Nötfärs', searchTerm: 'nötfärs' },
+      { label: 'Fläsk', searchTerm: 'fläsk' },
+      { label: 'Lax', searchTerm: 'lax' },
+      { label: 'Torsk', searchTerm: 'torsk' },
+      { label: 'Räkor', searchTerm: 'räk' },
+    ],
+    fett: [
+      { label: 'Olivolja', searchTerm: 'olivolja' },
+      { label: 'Smör', searchTerm: 'smör' },
+      { label: 'Grädde', searchTerm: 'grädde' },
+      { label: 'Ost', searchTerm: 'ost' },
+    ],
+  },
+  snack: {
+    kolhydrat: [
+      { label: 'Frukt', searchTerm: 'frukt' },
+      { label: 'Banan', searchTerm: 'banan' },
+      { label: 'Äpple', searchTerm: 'äpple' },
+      { label: 'Knäckebröd', searchTerm: 'knäckebröd' },
+      { label: 'Riskakor', searchTerm: 'riskakor' },
+    ],
+    protein: [
+      { label: 'Kvarg', searchTerm: 'kvarg' },
+      { label: 'Keso', searchTerm: 'keso' },
+      { label: 'Yoghurt', searchTerm: 'yoghurt' },
+      { label: 'Ägg', searchTerm: 'ägg' },
+      { label: 'Nötter', searchTerm: 'nötter' },
+    ],
+    fett: [
+      { label: 'Nötter', searchTerm: 'nötter' },
+      { label: 'Mandlar', searchTerm: 'mandel' },
+      { label: 'Jordnötssmör', searchTerm: 'jordnötssmör' },
+      { label: 'Avokado', searchTerm: 'avokado' },
+    ],
+  },
+  evening: {
+    kolhydrat: [
+      { label: 'Kvarg', searchTerm: 'kvarg' },
+      { label: 'Yoghurt', searchTerm: 'yoghurt' },
+      { label: 'Bär', searchTerm: 'bär' },
+    ],
+    protein: [
+      { label: 'Kvarg', searchTerm: 'kvarg' },
+      { label: 'Keso', searchTerm: 'keso' },
+      { label: 'Ägg', searchTerm: 'ägg' },
+    ],
+    fett: [
+      { label: 'Nötter', searchTerm: 'nötter' },
+      { label: 'Jordnötssmör', searchTerm: 'jordnötssmör' },
+      { label: 'Ost', searchTerm: 'ost' },
+    ],
+  },
+}
+
+// Default subcategories when no meal type specified
+const DEFAULT_SUBCATEGORIES: Record<string, { label: string; searchTerm: string }[]> = {
+  kolhydrat: [
+    { label: 'Ris', searchTerm: 'ris' },
+    { label: 'Pasta', searchTerm: 'pasta' },
+    { label: 'Potatis', searchTerm: 'potatis' },
+    { label: 'Bröd', searchTerm: 'bröd' },
+    { label: 'Havregryn', searchTerm: 'havregryn' },
+  ],
+  protein: [
+    { label: 'Kyckling', searchTerm: 'kyckling' },
+    { label: 'Nötfärs', searchTerm: 'nötfärs' },
+    { label: 'Fisk', searchTerm: 'fisk' },
+    { label: 'Ägg', searchTerm: 'ägg' },
+    { label: 'Kvarg', searchTerm: 'kvarg' },
+  ],
+  fett: [
+    { label: 'Avokado', searchTerm: 'avokado' },
+    { label: 'Nötter', searchTerm: 'nötter' },
+    { label: 'Olivolja', searchTerm: 'olivolja' },
+    { label: 'Ost', searchTerm: 'ost' },
+  ],
+}
+
 export function SLVFoodSearchModal({
   isOpen,
   onClose,
@@ -40,6 +183,18 @@ export function SLVFoodSearchModal({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [hasSearched, setHasSearched] = useState(false)
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
+
+  // Get subcategories for current meal type and category (memoized)
+  const subcategories = useMemo(() => {
+    if (mealType && category && SUBCATEGORIES[mealType]?.[category]) {
+      return SUBCATEGORIES[mealType][category]
+    }
+    if (category && DEFAULT_SUBCATEGORIES[category]) {
+      return DEFAULT_SUBCATEGORIES[category]
+    }
+    return []
+  }, [mealType, category])
 
   // Search function - can be called with or without query
   const searchFoods = useCallback(async (query: string = '') => {
@@ -80,26 +235,40 @@ export function SLVFoodSearchModal({
     }
   }, [category, mealType])
 
-  // Auto-search when modal opens with a category
+  // Auto-search when modal opens with a category (only if no subcategories available)
   useEffect(() => {
-    if (isOpen && category && !searchTerm) {
-      searchFoods('')
+    if (isOpen && category && !searchTerm && !selectedSubcategory) {
+      // Check if we have subcategories to show - if so, don't auto-search
+      const subs = mealType && SUBCATEGORIES[mealType]?.[category]
+        ? SUBCATEGORIES[mealType][category]
+        : DEFAULT_SUBCATEGORIES[category]
+      if (!subs || subs.length === 0) {
+        searchFoods('')
+      }
     }
-  }, [isOpen, category, searchFoods, searchTerm])
+  }, [isOpen, category, mealType, searchTerm, selectedSubcategory, searchFoods])
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchTerm) {
-        searchFoods(searchTerm)
-      } else if (category) {
-        // Re-search with just category when search term is cleared
-        searchFoods('')
+        // Combine search term with selected subcategory if any
+        if (selectedSubcategory) {
+          const sub = subcategories.find(s => s.label === selectedSubcategory)
+          if (sub) {
+            // Search within the subcategory
+            searchFoods(`${sub.searchTerm} ${searchTerm}`)
+          } else {
+            searchFoods(searchTerm)
+          }
+        } else {
+          searchFoods(searchTerm)
+        }
       }
     }, 500)
 
     return () => clearTimeout(timer)
-  }, [searchTerm, searchFoods, category])
+  }, [searchTerm, searchFoods, selectedSubcategory, subcategories])
 
   // Reset state when modal closes
   useEffect(() => {
@@ -108,8 +277,23 @@ export function SLVFoodSearchModal({
       setResults([])
       setError(null)
       setHasSearched(false)
+      setSelectedSubcategory(null)
     }
   }, [isOpen])
+
+  // Handle subcategory selection
+  const handleSubcategorySelect = (searchTermValue: string, label: string) => {
+    setSelectedSubcategory(label)
+    searchFoods(searchTermValue)
+  }
+
+  // Go back to subcategory selection
+  const handleBack = () => {
+    setSelectedSubcategory(null)
+    setResults([])
+    setSearchTerm('')
+    setHasSearched(false)
+  }
 
   const handleSelect = (food: SLVFood) => {
     onSelect(food)
@@ -146,9 +330,11 @@ export function SLVFoodSearchModal({
           <Input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={category
-              ? `Filtrera ${getCategoryLabel()}r...`
-              : "Sök livsmedel (t.ex. kyckling, havre, ägg...)"
+            placeholder={selectedSubcategory
+              ? `Filtrera inom ${selectedSubcategory}...`
+              : category
+                ? `Sök ${getCategoryLabel()}r eller välj kategori...`
+                : "Sök livsmedel (t.ex. kyckling, havre, ägg...)"
             }
             className="pl-10 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
             autoFocus
@@ -165,6 +351,35 @@ export function SLVFoodSearchModal({
 
         {/* Results */}
         <div className="flex-1 overflow-y-auto mt-4 min-h-[200px]">
+          {/* Step 1: Show subcategory buttons when no subcategory selected */}
+          {!selectedSubcategory && subcategories.length > 0 && !searchTerm && (
+            <div className="space-y-3">
+              <p className="text-sm text-zinc-400 mb-3">Välj kategori:</p>
+              <div className="grid grid-cols-2 gap-2">
+                {subcategories.map((sub) => (
+                  <button
+                    key={sub.label}
+                    onClick={() => handleSubcategorySelect(sub.searchTerm, sub.label)}
+                    className="p-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-gold-500/50 transition-all text-left"
+                  >
+                    <span className="text-white font-medium">{sub.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Back button when subcategory is selected */}
+          {selectedSubcategory && (
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-1 text-sm text-zinc-400 hover:text-white mb-3 transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Tillbaka till kategorier
+            </button>
+          )}
+
           {isLoading && (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-gold-500" />
@@ -180,7 +395,7 @@ export function SLVFoodSearchModal({
 
           {!isLoading && !error && hasSearched && results.length === 0 && (
             <div className="text-center py-8 text-zinc-400">
-              Inga livsmedel hittades för &quot;{searchTerm}&quot;
+              Inga livsmedel hittades för &quot;{selectedSubcategory || searchTerm}&quot;
             </div>
           )}
 
@@ -214,7 +429,7 @@ export function SLVFoodSearchModal({
             </div>
           )}
 
-          {!isLoading && !hasSearched && !category && (
+          {!isLoading && !hasSearched && !category && !searchTerm && (
             <div className="text-center py-8 text-zinc-500">
               <Database className="h-12 w-12 mx-auto mb-3 opacity-30" />
               <p>Skriv minst 2 tecken för att söka</p>

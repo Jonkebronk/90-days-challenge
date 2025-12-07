@@ -51,7 +51,11 @@
       "WebFetch(domain:rpstrength.com)",
       "WebFetch(domain:www.trainingpeaks.com)",
       "WebFetch(domain:www.setforset.com)",
-      "WebFetch(domain:www.bodyspec.com)"
+      "WebFetch(domain:www.bodyspec.com)",
+      "Bash(npx prisma generate:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:dataportal.livsmedelsverket.se)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []
