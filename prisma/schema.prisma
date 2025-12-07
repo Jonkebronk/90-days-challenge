@@ -308,6 +308,11 @@ model FoodItem {
   commonServingSize String?
   imageUrl          String? // URL to food item image
 
+  // Livsmedelsverket (SLV) integration
+  slvNummer         Int?     // Livsmedelsverkets ID-nummer
+  slvNamn           String?  // Officiellt namn i SLV-databasen
+  foodGroup         String?  // Kött, Fisk, Mejeri, Spannmål, etc.
+
   // Approval and recommendation system
   isRecommended Boolean   @default(false) // Thumbs up flag
   notes         String?   @db.Text // Coach comments/notes (visible to clients)
@@ -324,6 +329,7 @@ model FoodItem {
   mealPlanItems      MealPlanItem[]
   shoppingListItems  ShoppingListItem[]
 
+  @@index([slvNummer])
   @@map("food_items")
 }
 

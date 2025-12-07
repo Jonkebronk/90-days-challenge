@@ -1,0 +1,117 @@
+'use client'
+
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { ActivityLevel, IngredientOverrides, CustomFood } from '@/lib/kostschema/types'
+import { useMacroCalculation } from '@/lib/kostschema/hooks/useMacroCalculation'
+import { useScaledMeals } from '@/lib/kostschema/hooks/useScaledMeals'
+import { MacroCalculatorForm } from './MacroCalculatorForm'
+import { MacroSummary } from './MacroSummary'
+import { MealPlanDisplay } from './MealPlanDisplay'
+import { SLVFoodSearchModal } from './SLVFoodSearchModal'
+
+interface IngredientChangeTarget {
+  mealType: string
+  category: 'protein' | 'kolhydrat' | 'fett'
+  index: number
+}
+
+export function KostschemaCalculator() {
+  // Form state
+  const [bodyWeight, setBodyWeight] = useState<number>(85)
+  const [activityLevel, setActivityLevel] = useState<ActivityLevel>('moderate')
+  const [weightLossTempo, setWeightLossTempo] = useState<number>(700)
+  const [proteinFactor, setProteinFactor] = useState<number>(2.2)
+  const [mealCount, setMealCount] = useState<number>(5)
+
+  // Modal state
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
+  const [changeTarget, setChangeTarget] = useState<IngredientChangeTarget | null>(null)
+
+  // Custom ingredient overrides
+  const [ingredientOverrides, setIngredientOverrides] = useState<IngredientOverrides>({})
+
+  // Calculate macros based on input
+  const macroTargets = useMacroCalculation({
+    bodyWeight,
+    activityLevel,
+    weightLossTempo,
+    proteinFactor
+  })
+
+  // Get scaled meals based on macro targets and overrides
+  const meals = useScaledMeals(macroTargets, mealCount, ingredientOverrides)
+
+  // Handle ingredient change request
+  const handleChangeIngredient = (
+    mealType: string,
+    category: 'protein' | 'kolhydrat' | 'fett',
+    index: number
+  ) => {
+    setChangeTarget({ mealType, category, index })
+    setIsSearchModalOpen(true)
+  }
+
+  // Handle food selection from SLV
+  const handleFoodSelect = (food: CustomFood) => {
+    if (!changeTarget) return
+
+    // Create override key and add to state
+    const overrideKey = `${changeTarget.mealType}:${changeTarget.category}:${changeTarget.index}`
+
+    setIngredientOverrides(prev => ({
+      ...prev,
+      [overrideKey]: food
+    }))
+
+    toast.success(
+      `Ingrediens bytt till: ${food.name}`,
+      {
+        description: `P: ${food.protein}g | K: ${food.carbs}g | F: ${food.fat}g | ${food.kcal} kcal/100g`
+      }
+    )
+
+    setIsSearchModalOpen(false)
+    setChangeTarget(null)
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Input form */}
+      <MacroCalculatorForm
+        bodyWeight={bodyWeight}
+        setBodyWeight={setBodyWeight}
+        activityLevel={activityLevel}
+        setActivityLevel={setActivityLevel}
+        weightLossTempo={weightLossTempo}
+        setWeightLossTempo={setWeightLossTempo}
+        proteinFactor={proteinFactor}
+        setProteinFactor={setProteinFactor}
+      />
+
+      {/* Calculated macros */}
+      {bodyWeight > 0 && <MacroSummary macros={macroTargets} />}
+
+      {/* Meal plan */}
+      {bodyWeight > 0 && (
+        <MealPlanDisplay
+          meals={meals}
+          mealCount={mealCount}
+          setMealCount={setMealCount}
+          onChangeIngredient={handleChangeIngredient}
+        />
+      )}
+
+      {/* SLV Food Search Modal */}
+      <SLVFoodSearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => {
+          setIsSearchModalOpen(false)
+          setChangeTarget(null)
+        }}
+        onSelect={handleFoodSelect}
+        category={changeTarget?.category}
+      />
+    </div>
+  )
+}
