@@ -111,15 +111,15 @@ export function MacroCalculatorForm({
           <Slider
             value={[proteinFactor]}
             onValueChange={(value) => setProteinFactor(value[0])}
-            min={1.5}
-            max={3.5}
+            min={1.6}
+            max={2.5}
             step={0.1}
             className="py-2"
           />
           <div className="flex justify-between text-xs text-zinc-500">
-            <span>1.5 g/kg</span>
+            <span>1.6 g/kg</span>
+            <span>2.0 g/kg</span>
             <span>2.5 g/kg</span>
-            <span>3.5 g/kg</span>
           </div>
         </div>
       </CardContent>

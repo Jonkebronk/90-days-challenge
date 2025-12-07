@@ -31,7 +31,7 @@ export function KostschemaCalculator() {
   const [bodyWeight, setBodyWeight] = useState<number>(85)
   const [activityLevel, setActivityLevel] = useState<ActivityLevel>('moderate')
   const [weightLossTempo, setWeightLossTempo] = useState<number>(700)
-  const [proteinFactor, setProteinFactor] = useState<number>(2.2)
+  const [proteinFactor, setProteinFactor] = useState<number>(2.0)
   const [mealCount, setMealCount] = useState<number>(5)
 
   // Modal state
