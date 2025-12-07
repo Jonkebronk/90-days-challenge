@@ -211,7 +211,7 @@ export function SLVFoodSearchModal({
 
     try {
       // Build URL with category and meal filters
-      let url = `/api/slv-proxy?limit=15`
+      let url = `/api/slv-proxy?limit=30`
       if (query) {
         url += `&q=${encodeURIComponent(query)}`
       }
@@ -324,6 +324,17 @@ export function SLVFoodSearchModal({
           )}
         </DialogHeader>
 
+        {/* Back button - shown prominently when subcategory is selected */}
+        {selectedSubcategory && (
+          <button
+            onClick={handleBack}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 hover:text-white transition-colors w-fit"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            <span className="text-sm">Tillbaka till kategorier</span>
+          </button>
+        )}
+
         {/* Search Input */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
@@ -367,17 +378,6 @@ export function SLVFoodSearchModal({
                 ))}
               </div>
             </div>
-          )}
-
-          {/* Back button when subcategory is selected */}
-          {selectedSubcategory && (
-            <button
-              onClick={handleBack}
-              className="flex items-center gap-1 text-sm text-zinc-400 hover:text-white mb-3 transition-colors"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Tillbaka till kategorier
-            </button>
           )}
 
           {isLoading && (
