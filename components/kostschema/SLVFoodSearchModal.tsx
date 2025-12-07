@@ -210,8 +210,8 @@ export function SLVFoodSearchModal({
     setHasSearched(true)
 
     try {
-      // Build URL with category and meal filters
-      let url = `/api/slv-proxy?limit=30`
+      // Build URL with category and meal filters - high limit to show all results
+      let url = `/api/slv-proxy?limit=100`
       if (query) {
         url += `&q=${encodeURIComponent(query)}`
       }

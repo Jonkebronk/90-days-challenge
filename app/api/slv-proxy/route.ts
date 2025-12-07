@@ -269,15 +269,15 @@ async function searchFoods(
     filtered = filtered.filter(f => matchesCategoryKeywords(f.namn, category, meal))
   }
 
-  // Limit to fetch nutrition for - increased to get more variety
-  // 50 items × 2 requests each = 100 API calls (still manageable with batching)
-  const toFetch = filtered.slice(0, Math.min(50, filtered.length))
+  // Limit to fetch nutrition for - high limit to show all results
+  // 100 items × 2 requests each = 200 API calls (batched for speed)
+  const toFetch = filtered.slice(0, Math.min(100, filtered.length))
 
-  // Fetch nutrition for each (in parallel, max 10 at a time to avoid rate limiting)
+  // Fetch nutrition for each (in parallel, max 15 at a time for speed)
   const results: TransformedFood[] = []
 
-  for (let i = 0; i < toFetch.length; i += 10) {
-    const batch = toFetch.slice(i, i + 10)
+  for (let i = 0; i < toFetch.length; i += 15) {
+    const batch = toFetch.slice(i, i + 15)
     const batchResults = await Promise.all(
       batch.map(food => fetchFoodWithNutrition(food.nummer))
     )
