@@ -39,7 +39,9 @@ const SUBCATEGORIES: Record<string, Record<string, { label: string; searchTerm: 
       { label: 'Bröd', searchTerm: 'bröd' },
       { label: 'Knäckebröd', searchTerm: 'knäckebröd' },
       { label: 'Yoghurt', searchTerm: 'yoghurt' },
-      { label: 'Frukt', searchTerm: 'frukt' },
+      { label: 'Banan', searchTerm: 'banan' },
+      { label: 'Äpple', searchTerm: 'äpple' },
+      { label: 'Bär', searchTerm: 'bär' },
     ],
     protein: [
       { label: 'Ägg', searchTerm: 'ägg' },
@@ -108,11 +110,13 @@ const SUBCATEGORIES: Record<string, Record<string, { label: string; searchTerm: 
   },
   snack: {
     kolhydrat: [
-      { label: 'Frukt', searchTerm: 'frukt' },
       { label: 'Banan', searchTerm: 'banan' },
       { label: 'Äpple', searchTerm: 'äpple' },
+      { label: 'Päron', searchTerm: 'päron' },
+      { label: 'Apelsin', searchTerm: 'apelsin' },
+      { label: 'Bär', searchTerm: 'bär' },
       { label: 'Knäckebröd', searchTerm: 'knäckebröd' },
-      { label: 'Riskakor', searchTerm: 'riskakor' },
+      { label: 'Riskakor', searchTerm: 'riskak' },
     ],
     protein: [
       { label: 'Kvarg', searchTerm: 'kvarg' },
