@@ -233,8 +233,35 @@ async function searchFoods(
   }
 
   // If category specified but no query, use category keywords to pre-filter
+  // Also try to get diverse results by sampling from different keyword matches
   if (category && !query) {
-    filtered = foods.filter(f => matchesCategoryKeywords(f.namn, category, meal))
+    const keywords = meal && MEAL_SPECIFIC_KEYWORDS[meal]?.[category]
+      ? MEAL_SPECIFIC_KEYWORDS[meal][category]
+      : CATEGORY_KEYWORDS[category] || []
+
+    // Get matches for each keyword separately, then combine for diversity
+    const matchesByKeyword: SLVFoodItem[][] = keywords.map(keyword => {
+      const regex = new RegExp(`(^|\\s|-)${keyword}`, 'i')
+      return foods.filter(f => regex.test(f.namn.toLowerCase())).slice(0, 5)
+    })
+
+    // Interleave results from different keywords for diversity
+    const diverse: SLVFoodItem[] = []
+    const maxPerRound = 2
+    let round = 0
+    while (diverse.length < 25 && round < 10) {
+      for (const matches of matchesByKeyword) {
+        const startIdx = round * maxPerRound
+        const items = matches.slice(startIdx, startIdx + maxPerRound)
+        for (const item of items) {
+          if (!diverse.find(d => d.nummer === item.nummer)) {
+            diverse.push(item)
+          }
+        }
+      }
+      round++
+    }
+    filtered = diverse
   }
 
   // If we have a query AND category, filter by both
