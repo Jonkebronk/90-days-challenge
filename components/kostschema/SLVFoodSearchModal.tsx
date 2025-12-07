@@ -40,9 +40,10 @@ export function SLVFoodSearchModal({
   const [error, setError] = useState<string | null>(null)
   const [hasSearched, setHasSearched] = useState(false)
 
-  // Debounced search
-  const searchFoods = useCallback(async (query: string) => {
-    if (query.length < 2) {
+  // Search function - can be called with or without query
+  const searchFoods = useCallback(async (query: string = '') => {
+    // Allow empty query when category is specified (for auto-search)
+    if (query.length < 2 && query.length > 0) {
       setResults([])
       setHasSearched(false)
       return
@@ -54,7 +55,10 @@ export function SLVFoodSearchModal({
 
     try {
       // Build URL with category filter if specified
-      let url = `/api/slv-proxy?q=${encodeURIComponent(query)}&limit=15`
+      let url = `/api/slv-proxy?limit=15`
+      if (query) {
+        url += `&q=${encodeURIComponent(query)}`
+      }
       if (category) {
         url += `&category=${category}`
       }
@@ -72,16 +76,26 @@ export function SLVFoodSearchModal({
     }
   }, [category])
 
+  // Auto-search when modal opens with a category
+  useEffect(() => {
+    if (isOpen && category && !searchTerm) {
+      searchFoods('')
+    }
+  }, [isOpen, category, searchFoods, searchTerm])
+
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchTerm) {
         searchFoods(searchTerm)
+      } else if (category) {
+        // Re-search with just category when search term is cleared
+        searchFoods('')
       }
     }, 500)
 
     return () => clearTimeout(timer)
-  }, [searchTerm, searchFoods])
+  }, [searchTerm, searchFoods, category])
 
   // Reset state when modal closes
   useEffect(() => {
@@ -128,7 +142,10 @@ export function SLVFoodSearchModal({
           <Input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Sök livsmedel (t.ex. kyckling, havre, ägg...)"
+            placeholder={category
+              ? `Filtrera ${getCategoryLabel()}r...`
+              : "Sök livsmedel (t.ex. kyckling, havre, ägg...)"
+            }
             className="pl-10 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
             autoFocus
           />
@@ -193,7 +210,7 @@ export function SLVFoodSearchModal({
             </div>
           )}
 
-          {!isLoading && !hasSearched && (
+          {!isLoading && !hasSearched && !category && (
             <div className="text-center py-8 text-zinc-500">
               <Database className="h-12 w-12 mx-auto mb-3 opacity-30" />
               <p>Skriv minst 2 tecken för att söka</p>
