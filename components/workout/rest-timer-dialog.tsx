@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Plus } from 'lucide-react'
+import { X, Plus, Minimize2, Maximize2 } from 'lucide-react'
 
 interface RestTimerDialogProps {
   isOpen: boolean
@@ -10,6 +10,15 @@ interface RestTimerDialogProps {
   remainingSeconds: number
   onStop: () => void
   onAddTime: (seconds: number) => void
+  onMinimize?: () => void
+}
+
+interface MinimizedRestBarProps {
+  totalSeconds: number
+  remainingSeconds: number
+  onStop: () => void
+  onAddTime: (seconds: number) => void
+  onExpand: () => void
 }
 
 export function RestTimerDialog({
@@ -17,7 +26,8 @@ export function RestTimerDialog({
   totalSeconds,
   remainingSeconds,
   onStop,
-  onAddTime
+  onAddTime,
+  onMinimize
 }: RestTimerDialogProps) {
   const audioContextRef = useRef<AudioContext | null>(null)
   const [hideInfo, setHideInfo] = useState(false)
@@ -95,22 +105,53 @@ export function RestTimerDialog({
         padding: '1rem',
       }}
     >
-      {/* Stäng-knapp */}
-      <button
-        onClick={onStop}
+      {/* Top buttons */}
+      <div
         style={{
           position: 'fixed',
           top: '1.5rem',
+          left: '1.5rem',
           right: '1.5rem',
-          color: '#fff',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'space-between',
           zIndex: 100000,
         }}
       >
-        <X style={{ width: 40, height: 40 }} />
-      </button>
+        {/* Minimize button */}
+        {onMinimize && (
+          <button
+            onClick={onMinimize}
+            style={{
+              color: '#fff',
+              background: 'rgba(255,255,255,0.1)',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '0.75rem',
+              borderRadius: '0.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+            }}
+          >
+            <Minimize2 style={{ width: 24, height: 24 }} />
+            <span style={{ fontSize: '0.875rem' }}>Minimera</span>
+          </button>
+        )}
+
+        {/* Close button */}
+        <button
+          onClick={onStop}
+          style={{
+            color: '#fff',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            marginLeft: 'auto',
+          }}
+        >
+          <X style={{ width: 40, height: 40 }} />
+        </button>
+      </div>
 
       {/* Titel */}
       <h2 style={{ fontSize: '1.5rem', color: '#fff', marginBottom: '2rem' }}>Vila</h2>
@@ -129,7 +170,7 @@ export function RestTimerDialog({
             strokeLinecap="round"
             strokeDasharray={2 * Math.PI * 120}
             strokeDashoffset={2 * Math.PI * 120 * (1 - progress)}
-            style={{ transition: 'stroke-dashoffset 1s linear' }}
+            style={{ transition: 'stroke-dashoffset 0.1s linear' }}
           />
         </svg>
         <div
@@ -268,4 +309,160 @@ export function RestTimerDialog({
   }
 
   return dialogContent
+}
+
+// Minimized rest timer bar component
+export function MinimizedRestBar({
+  totalSeconds,
+  remainingSeconds,
+  onStop,
+  onAddTime,
+  onExpand
+}: MinimizedRestBarProps) {
+  // Formatera tid
+  const minutes = Math.floor(remainingSeconds / 60)
+  const seconds = remainingSeconds % 60
+  const timeDisplay = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+
+  // Progress
+  const progress = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0
+  const progressColor = progress > 0.5 ? '#22c55e' : progress > 0.25 ? '#f59e0b' : '#ef4444'
+
+  const barContent = (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 9999,
+        backgroundColor: '#18181b',
+        borderTop: '1px solid #3f3f46',
+        padding: '0.75rem 1rem',
+        boxShadow: '0 -4px 20px rgba(0,0,0,0.3)',
+      }}
+    >
+      {/* Progress bar */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          height: '3px',
+          width: `${progress * 100}%`,
+          backgroundColor: progressColor,
+          transition: 'width 0.1s linear, background-color 0.3s',
+        }}
+      />
+
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          maxWidth: '64rem',
+          margin: '0 auto',
+        }}
+      >
+        {/* Timer display */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.75rem', color: '#a1a1aa', fontWeight: 500 }}>VILA</span>
+            <span
+              style={{
+                fontFamily: 'monospace',
+                fontSize: '1.5rem',
+                fontWeight: 700,
+                color: '#fff',
+              }}
+            >
+              {timeDisplay}
+            </span>
+          </div>
+
+          {/* Mini progress circle */}
+          <svg width={32} height={32} style={{ transform: 'rotate(-90deg)' }}>
+            <circle cx={16} cy={16} r={14} fill="none" stroke="#3f3f46" strokeWidth={3} />
+            <circle
+              cx={16}
+              cy={16}
+              r={14}
+              fill="none"
+              stroke={progressColor}
+              strokeWidth={3}
+              strokeLinecap="round"
+              strokeDasharray={2 * Math.PI * 14}
+              strokeDashoffset={2 * Math.PI * 14 * (1 - progress)}
+              style={{ transition: 'stroke-dashoffset 0.1s linear' }}
+            />
+          </svg>
+        </div>
+
+        {/* Buttons */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <button
+            onClick={() => onAddTime(30)}
+            style={{
+              padding: '0.5rem 0.75rem',
+              borderRadius: '0.5rem',
+              border: '1px solid #3f3f46',
+              background: '#27272a',
+              color: '#fff',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+            }}
+          >
+            <Plus style={{ width: 16, height: 16 }} />
+            30s
+          </button>
+
+          <button
+            onClick={onExpand}
+            style={{
+              padding: '0.5rem 0.75rem',
+              borderRadius: '0.5rem',
+              border: '1px solid #3f3f46',
+              background: '#27272a',
+              color: '#fff',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+            }}
+          >
+            <Maximize2 style={{ width: 16, height: 16 }} />
+            <span className="hidden sm:inline">Expandera</span>
+          </button>
+
+          <button
+            onClick={onStop}
+            style={{
+              padding: '0.5rem 0.75rem',
+              borderRadius: '0.5rem',
+              border: 'none',
+              background: '#dc2626',
+              color: '#fff',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+            }}
+          >
+            Stoppa
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+
+  if (typeof window !== 'undefined') {
+    return createPortal(barContent, document.body)
+  }
+
+  return barContent
 }

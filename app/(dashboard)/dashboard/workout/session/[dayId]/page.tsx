@@ -29,8 +29,10 @@ import {
   Trash2,
   Timer
 } from 'lucide-react'
-import { RestTimerDialog } from '@/components/workout/rest-timer-dialog'
+import { RestTimerDialog, MinimizedRestBar } from '@/components/workout/rest-timer-dialog'
 import Link from 'next/link'
+import { signOut } from 'next-auth/react'
+import { toast } from 'sonner'
 
 interface Exercise {
   id: string
@@ -92,6 +94,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [isResting, setIsResting] = useState(false)
   const [originalRestTime, setOriginalRestTime] = useState(0)
   const [showRestDialog, setShowRestDialog] = useState(false)
+  const [restEndTime, setRestEndTime] = useState<Date | null>(null)
+  const [isRestMinimized, setIsRestMinimized] = useState(false)
 
   // Exercise tracking
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0)
@@ -150,23 +154,44 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     return () => clearInterval(interval)
   }, [isRunning, startTime])
 
+  // Rest timer effect - uses endTime for accurate timing even when app is backgrounded
   useEffect(() => {
-    let interval: NodeJS.Timeout
-    if (isResting && restTimerSeconds > 0) {
-      interval = setInterval(() => {
-        setRestTimerSeconds(prev => {
-          if (prev <= 1) {
-            setIsResting(false)
-            // Play sound notification
-            playRestCompleteSound()
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
+    if (!isResting || !restEndTime) return
+
+    const updateTimer = () => {
+      const now = Date.now()
+      const remaining = Math.max(0, Math.ceil((restEndTime.getTime() - now) / 1000))
+      setRestTimerSeconds(remaining)
+
+      if (remaining <= 0) {
+        setIsResting(false)
+        setShowRestDialog(false)
+        setIsRestMinimized(false)
+        playRestCompleteSound()
+      }
     }
+
+    updateTimer() // Update immediately (catches time passed while in background)
+    const interval = setInterval(updateTimer, 100) // 100ms for smoother countdown
+
     return () => clearInterval(interval)
-  }, [isResting, restTimerSeconds])
+  }, [isResting, restEndTime])
+
+  // Helper function for API error handling
+  const handleApiResponse = async (response: Response, errorMessage: string): Promise<Response | null> => {
+    if (response.status === 401) {
+      toast.error('Din session har löpt ut. Du loggas in igen.')
+      signOut({ callbackUrl: '/login' })
+      return null
+    }
+
+    if (!response.ok) {
+      toast.error(errorMessage)
+      return null
+    }
+
+    return response
+  }
 
   // Keep inputs empty when changing exercises
   useEffect(() => {
@@ -200,25 +225,44 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     oscillator.stop(audioContext.currentTime + 0.5)
   }
 
-  // Start rest timer with dialog
+  // Start rest timer with dialog (uses endTime for accurate timing)
   const startRestTimer = (seconds: number) => {
+    const endTime = new Date(Date.now() + seconds * 1000)
+    setRestEndTime(endTime)
     setRestTimerSeconds(seconds)
     setOriginalRestTime(seconds)
     setIsResting(true)
     setShowRestDialog(true)
+    setIsRestMinimized(false)
   }
 
   // Stop rest timer and close dialog
   const stopRestTimer = () => {
     setIsResting(false)
     setRestTimerSeconds(0)
+    setRestEndTime(null)
     setShowRestDialog(false)
+    setIsRestMinimized(false)
   }
 
   // Add time to rest timer
   const addRestTime = (seconds: number) => {
-    setRestTimerSeconds(prev => prev + seconds)
-    setOriginalRestTime(prev => prev + seconds)
+    if (restEndTime) {
+      setRestEndTime(new Date(restEndTime.getTime() + seconds * 1000))
+      setOriginalRestTime(prev => prev + seconds)
+    }
+  }
+
+  // Minimize rest timer
+  const minimizeRestTimer = () => {
+    setShowRestDialog(false)
+    setIsRestMinimized(true)
+  }
+
+  // Expand rest timer from minimized
+  const expandRestTimer = () => {
+    setIsRestMinimized(false)
+    setShowRestDialog(true)
   }
 
   const fetchWorkoutDay = async (id: string) => {
@@ -367,63 +411,57 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         })
       })
 
-      if (response.ok) {
-        const data = await response.json()
+      const validResponse = await handleApiResponse(response, 'Kunde inte logga set')
+      if (!validResponse) return
 
-        // Update local state with the ID from the server
-        setSetLogs(prev => ({
-          ...prev,
-          [exerciseId]: [
-            ...(prev[exerciseId] || []),
-            {
-              id: data.set.id,
-              exerciseId,
-              setNumber,
-              setType: currentSetType,
-              reps,
-              weightKg: weight,
-              notes: weightNotes,
-              timeSeconds,
-              completed: true
-            }
-          ]
-        }))
+      const data = await validResponse.json()
 
-        // Pre-fill form with same values for next set (instead of clearing)
-        // Values stay the same, user can adjust if needed
-        // setCurrentReps('') - Keep the value
-        // setCurrentWeight('') - Keep the value
-        // setCurrentTimeSeconds('') - Keep the value
-
-        // Check if we should move to next exercise
-        // Find the actual index of the exercise that was just completed
-        const completedExerciseIndex = workoutDay?.exercises.findIndex(ex => ex.exercise.id === exerciseId) ?? -1
-        const exercise = completedExerciseIndex >= 0 ? workoutDay?.exercises[completedExerciseIndex] : null
-
-        if (exercise && setLogs[exerciseId]?.length + 1 >= exercise.sets) {
-          // All sets complete for this exercise - collapse it immediately
-          const newExpanded = new Set(expandedExercises)
-          newExpanded.delete(completedExerciseIndex)
-          setExpandedExercises(newExpanded)
-
-          // Find the next incomplete exercise
-          const nextIncompleteIndex = workoutDay?.exercises.findIndex((ex, idx) => {
-            if (idx <= completedExerciseIndex) return false
-            const exSets = setLogs[ex.exercise.id] || []
-            return exSets.length < ex.sets
-          }) ?? -1
-
-          if (nextIncompleteIndex >= 0) {
-            // Move to next incomplete exercise after a short delay
-            setTimeout(() => {
-              setCurrentExerciseIndex(nextIncompleteIndex)
-              setExpandedExercises(new Set([nextIncompleteIndex]))
-            }, 500)
+      // Update local state with the ID from the server
+      setSetLogs(prev => ({
+        ...prev,
+        [exerciseId]: [
+          ...(prev[exerciseId] || []),
+          {
+            id: data.set.id,
+            exerciseId,
+            setNumber,
+            setType: currentSetType,
+            reps,
+            weightKg: weight,
+            notes: weightNotes,
+            timeSeconds,
+            completed: true
           }
+        ]
+      }))
+
+      // Check if we should move to next exercise
+      const completedExerciseIndex = workoutDay?.exercises.findIndex(ex => ex.exercise.id === exerciseId) ?? -1
+      const exercise = completedExerciseIndex >= 0 ? workoutDay?.exercises[completedExerciseIndex] : null
+
+      if (exercise && setLogs[exerciseId]?.length + 1 >= exercise.sets) {
+        // All sets complete for this exercise - collapse it immediately
+        const newExpanded = new Set(expandedExercises)
+        newExpanded.delete(completedExerciseIndex)
+        setExpandedExercises(newExpanded)
+
+        // Find the next incomplete exercise
+        const nextIncompleteIndex = workoutDay?.exercises.findIndex((ex, idx) => {
+          if (idx <= completedExerciseIndex) return false
+          const exSets = setLogs[ex.exercise.id] || []
+          return exSets.length < ex.sets
+        }) ?? -1
+
+        if (nextIncompleteIndex >= 0) {
+          setTimeout(() => {
+            setCurrentExerciseIndex(nextIncompleteIndex)
+            setExpandedExercises(new Set([nextIncompleteIndex]))
+          }, 500)
         }
       }
     } catch (error) {
       console.error('Error logging set:', error)
+      toast.error('Kunde inte logga set')
     }
   }
 
@@ -456,28 +494,30 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         })
       })
 
-      if (response.ok) {
-        // Update local state
-        setSetLogs(prev => {
-          const updated = { ...prev }
-          const exerciseSets = updated[editingSet.exerciseId]
-          if (exerciseSets) {
-            const idx = exerciseSets.findIndex(s => s.id === editingSet.id)
-            if (idx !== -1) {
-              exerciseSets[idx] = {
-                ...exerciseSets[idx],
-                reps: parseInt(editReps) || null,
-                weightKg: weight,
-                notes: weightNotes
-              }
+      const validResponse = await handleApiResponse(response, 'Kunde inte uppdatera set')
+      if (!validResponse) return
+
+      // Update local state
+      setSetLogs(prev => {
+        const updated = { ...prev }
+        const exerciseSets = updated[editingSet.exerciseId]
+        if (exerciseSets) {
+          const idx = exerciseSets.findIndex(s => s.id === editingSet.id)
+          if (idx !== -1) {
+            exerciseSets[idx] = {
+              ...exerciseSets[idx],
+              reps: parseInt(editReps) || null,
+              weightKg: weight,
+              notes: weightNotes
             }
           }
-          return updated
-        })
-        setEditingSet(null)
-      }
+        }
+        return updated
+      })
+      setEditingSet(null)
     } catch (error) {
       console.error('Error updating set:', error)
+      toast.error('Kunde inte uppdatera set')
     } finally {
       setIsUpdatingSet(false)
     }
@@ -492,19 +532,21 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         method: 'DELETE'
       })
 
-      if (response.ok) {
-        // Update local state - remove the set
-        setSetLogs(prev => {
-          const updated = { ...prev }
-          const exerciseSets = updated[setToDelete.exerciseId]
-          if (exerciseSets) {
-            updated[setToDelete.exerciseId] = exerciseSets.filter(s => s.id !== setToDelete.id)
-          }
-          return updated
-        })
-      }
+      const validResponse = await handleApiResponse(response, 'Kunde inte ta bort set')
+      if (!validResponse) return
+
+      // Update local state - remove the set
+      setSetLogs(prev => {
+        const updated = { ...prev }
+        const exerciseSets = updated[setToDelete.exerciseId]
+        if (exerciseSets) {
+          updated[setToDelete.exerciseId] = exerciseSets.filter(s => s.id !== setToDelete.id)
+        }
+        return updated
+      })
     } catch (error) {
       console.error('Error deleting set:', error)
+      toast.error('Kunde inte ta bort set')
     }
   }
 
@@ -518,14 +560,16 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         method: 'DELETE'
       })
 
-      if (response.ok) {
-        router.push('/dashboard/workout')
-      }
+      const validResponse = await handleApiResponse(response, 'Kunde inte avbryta passet')
+      if (!validResponse) return
+
+      router.push('/dashboard/workout')
     } catch (error) {
       console.error('Error cancelling session:', error)
+      toast.error('Ett fel uppstod')
     } finally {
       setIsCancelling(false)
-      setShowCancelModal(false) // Always close modal
+      setShowCancelModal(false)
     }
   }
 
@@ -546,15 +590,17 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         })
       })
 
-      if (response.ok) {
-        setIsRunning(false)
-        // Show success and redirect
-        setTimeout(() => {
-          router.push('/dashboard/workout')
-        }, 2000)
-      }
+      const validResponse = await handleApiResponse(response, 'Kunde inte spara träningspasset')
+      if (!validResponse) return
+
+      setIsRunning(false)
+      toast.success('Träningspass avslutat!')
+      setTimeout(() => {
+        router.push('/dashboard/workout')
+      }, 2000)
     } catch (error) {
       console.error('Error completing workout:', error)
+      toast.error('Ett fel uppstod')
     } finally {
       setIsCompleting(false)
     }
@@ -1166,7 +1212,19 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         remainingSeconds={restTimerSeconds}
         onStop={stopRestTimer}
         onAddTime={addRestTime}
+        onMinimize={minimizeRestTimer}
       />
+
+      {/* Minimized Rest Timer Bar */}
+      {isRestMinimized && isResting && (
+        <MinimizedRestBar
+          totalSeconds={originalRestTime}
+          remainingSeconds={restTimerSeconds}
+          onStop={stopRestTimer}
+          onAddTime={addRestTime}
+          onExpand={expandRestTimer}
+        />
+      )}
     </div>
   )
 }
