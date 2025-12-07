@@ -21,8 +21,8 @@ interface SLVFood {
 }
 
 interface OriginalIngredient {
-  amount: number           // Original weight in grams (e.g., 58)
-  macroPer100g: number     // Macro content per 100g (e.g., 62 for carbs)
+  amount: number
+  macroPer100g: number
   macroType: 'protein' | 'carbs' | 'fat'
 }
 
@@ -158,7 +158,6 @@ const SUBCATEGORIES: Record<string, Record<string, { label: string; searchTerm: 
   },
 }
 
-// Default subcategories when no meal type specified
 const DEFAULT_SUBCATEGORIES: Record<string, { label: string; searchTerm: string }[]> = {
   kolhydrat: [
     { label: 'Ris', searchTerm: 'ris' },
@@ -196,38 +195,27 @@ export function SLVFoodSearchModal({
   const [error, setError] = useState<string | null>(null)
   const [hasSearched, setHasSearched] = useState(false)
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
-
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const ITEMS_PER_PAGE = 20
 
-  // Calculate equivalent weight for substitution preview
   const calculateNewWeight = useCallback((food: SLVFood): number | null => {
     if (!originalIngredient) return null
     const { amount, macroPer100g, macroType } = originalIngredient
-
-    // Get the macro content per 100g from the new food
     const newMacroPer100g = macroType === 'protein' ? food.protein
       : macroType === 'carbs' ? food.carbs
       : food.fat
-
-    // Avoid division by zero
     if (newMacroPer100g <= 0) return null
-
-    // Calculate: new_weight = (original_macro_amount / new_macro_per_100g) * 100
     const originalMacroAmount = amount * (macroPer100g / 100)
     return Math.round((originalMacroAmount / newMacroPer100g) * 100)
   }, [originalIngredient])
 
-  // Get the original macro amount for display
   const originalMacroAmount = useMemo(() => {
     if (!originalIngredient) return null
     return Math.round(originalIngredient.amount * (originalIngredient.macroPer100g / 100))
   }, [originalIngredient])
 
-  // Get macro label for display
   const macroLabel = useMemo(() => {
     if (!originalIngredient) return ''
     switch (originalIngredient.macroType) {
@@ -237,7 +225,6 @@ export function SLVFoodSearchModal({
     }
   }, [originalIngredient])
 
-  // Get subcategories for current meal type and category (memoized)
   const subcategories = useMemo(() => {
     if (mealType && category && SUBCATEGORIES[mealType]?.[category]) {
       return SUBCATEGORIES[mealType][category]
@@ -248,9 +235,7 @@ export function SLVFoodSearchModal({
     return []
   }, [mealType, category])
 
-  // Search function - can be called with or without query and page
   const searchFoods = useCallback(async (query: string = '', page: number = 1) => {
-    // Allow empty query when category is specified (for auto-search)
     if (query.length < 2 && query.length > 0) {
       setResults([])
       setHasSearched(false)
@@ -262,17 +247,10 @@ export function SLVFoodSearchModal({
     setHasSearched(true)
 
     try {
-      // Build URL with category, meal filters and pagination
       let url = `/api/slv-proxy?limit=${ITEMS_PER_PAGE}&page=${page}`
-      if (query) {
-        url += `&q=${encodeURIComponent(query)}`
-      }
-      if (category) {
-        url += `&category=${category}`
-      }
-      if (mealType) {
-        url += `&meal=${mealType}`
-      }
+      if (query) url += `&q=${encodeURIComponent(query)}`
+      if (category) url += `&category=${category}`
+      if (mealType) url += `&meal=${mealType}`
 
       const response = await fetch(url)
       if (!response.ok) throw new Error('Sökningen misslyckades')
@@ -282,7 +260,7 @@ export function SLVFoodSearchModal({
       setTotalCount(data.totalCount || 0)
       setTotalPages(data.totalPages || 1)
       setCurrentPage(data.currentPage || 1)
-    } catch (err) {
+    } catch {
       setError('Kunde inte hämta data från Livsmedelsverket')
       setResults([])
     } finally {
@@ -290,10 +268,8 @@ export function SLVFoodSearchModal({
     }
   }, [category, mealType])
 
-  // Auto-search when modal opens with a category (only if no subcategories available)
   useEffect(() => {
     if (isOpen && category && !searchTerm && !selectedSubcategory) {
-      // Check if we have subcategories to show - if so, don't auto-search
       const subs = mealType && SUBCATEGORIES[mealType]?.[category]
         ? SUBCATEGORIES[mealType][category]
         : DEFAULT_SUBCATEGORIES[category]
@@ -303,15 +279,12 @@ export function SLVFoodSearchModal({
     }
   }, [isOpen, category, mealType, searchTerm, selectedSubcategory, searchFoods])
 
-  // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchTerm) {
-        // Combine search term with selected subcategory if any
         if (selectedSubcategory) {
           const sub = subcategories.find(s => s.label === selectedSubcategory)
           if (sub) {
-            // Search within the subcategory
             searchFoods(`${sub.searchTerm} ${searchTerm}`)
           } else {
             searchFoods(searchTerm)
@@ -321,11 +294,9 @@ export function SLVFoodSearchModal({
         }
       }
     }, 500)
-
     return () => clearTimeout(timer)
   }, [searchTerm, searchFoods, selectedSubcategory, subcategories])
 
-  // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
       setSearchTerm('')
@@ -339,14 +310,12 @@ export function SLVFoodSearchModal({
     }
   }, [isOpen])
 
-  // Handle subcategory selection
   const handleSubcategorySelect = (searchTermValue: string, label: string) => {
     setSelectedSubcategory(label)
     setCurrentPage(1)
     searchFoods(searchTermValue, 1)
   }
 
-  // Go back to subcategory selection
   const handleBack = () => {
     setSelectedSubcategory(null)
     setResults([])
@@ -357,12 +326,9 @@ export function SLVFoodSearchModal({
     setTotalCount(0)
   }
 
-  // Handle page change
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return
     setCurrentPage(newPage)
-
-    // Re-search with new page
     const query = selectedSubcategory
       ? subcategories.find(s => s.label === selectedSubcategory)?.searchTerm || ''
       : searchTerm
@@ -383,186 +349,205 @@ export function SLVFoodSearchModal({
     }
   }
 
+  const getCategoryColor = () => {
+    switch (category) {
+      case 'protein': return 'from-rose-500/20 to-transparent border-rose-500/30'
+      case 'kolhydrat': return 'from-blue-500/20 to-transparent border-blue-500/30'
+      case 'fett': return 'from-amber-500/20 to-transparent border-amber-500/30'
+      default: return 'from-gold-500/20 to-transparent border-gold-500/30'
+    }
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="bg-zinc-900 border-zinc-700 max-w-xl max-h-[80vh] overflow-hidden flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="text-white flex items-center gap-2">
-            <Database className="h-5 w-5 text-gold-500" />
-            Sök i Livsmedelsverkets databas
-          </DialogTitle>
-          {category && (
-            <p className="text-sm text-zinc-400">
-              Byt {getCategoryLabel()}
-            </p>
-          )}
-        </DialogHeader>
-
-        {/* Back button - shown prominently when subcategory is selected */}
-        {selectedSubcategory && (
-          <button
-            onClick={handleBack}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 hover:text-white transition-colors w-fit"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            <span className="text-sm">Tillbaka till kategorier</span>
-          </button>
-        )}
-
-        {/* Search Input */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-          <Input
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={selectedSubcategory
-              ? `Filtrera inom ${selectedSubcategory}...`
-              : category
-                ? `Sök ${getCategoryLabel()}r eller välj kategori...`
-                : "Sök livsmedel (t.ex. kyckling, havre, ägg...)"
-            }
-            className="pl-10 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
-            autoFocus
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
+      <DialogContent className="bg-zinc-900 border-zinc-700 max-w-xl max-h-[85vh] overflow-hidden flex flex-col p-0">
+        {/* Header with gradient */}
+        <div className={`bg-gradient-to-b ${getCategoryColor()} border-b border-zinc-700/50 p-5`}>
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2 text-lg">
+              <Database className="h-5 w-5 text-gold-500" />
+              Sök i Livsmedelsverkets databas
+            </DialogTitle>
+            {category && (
+              <p className="text-sm text-zinc-300 mt-1">
+                Byt {getCategoryLabel()}
+              </p>
+            )}
+          </DialogHeader>
         </div>
 
-        {/* Results */}
-        <div className="flex-1 overflow-y-auto mt-4 min-h-[200px]">
-          {/* Step 1: Show subcategory buttons when no subcategory selected */}
-          {!selectedSubcategory && subcategories.length > 0 && !searchTerm && (
-            <div className="space-y-3">
-              <p className="text-sm text-zinc-400 mb-3">Välj kategori:</p>
-              <div className="grid grid-cols-2 gap-2">
-                {subcategories.map((sub) => (
-                  <button
-                    key={sub.label}
-                    onClick={() => handleSubcategorySelect(sub.searchTerm, sub.label)}
-                    className="p-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-gold-500/50 transition-all text-left"
-                  >
-                    <span className="text-white font-medium">{sub.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+        <div className="p-4 flex flex-col gap-4 flex-1 overflow-hidden">
+          {/* Back button */}
+          {selectedSubcategory && (
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-200 hover:text-white transition-all w-fit shadow-sm"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <span className="text-sm font-medium">Tillbaka till kategorier</span>
+            </button>
           )}
 
-          {isLoading && (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-gold-500" />
-              <span className="ml-2 text-zinc-400">Söker...</span>
-            </div>
-          )}
+          {/* Search Input */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={selectedSubcategory
+                ? `Filtrera inom ${selectedSubcategory}...`
+                : category
+                  ? `Sök ${getCategoryLabel()}r eller välj kategori...`
+                  : "Sök livsmedel (t.ex. kyckling, havre, ägg...)"
+              }
+              className="pl-10 bg-zinc-800 border-zinc-600 text-white placeholder:text-zinc-400 h-11 text-base focus:border-gold-500 focus:ring-gold-500/20"
+              autoFocus
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-1 rounded-full hover:bg-zinc-700 transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
 
-          {error && (
-            <div className="text-center py-8 text-red-400">
-              {error}
-            </div>
-          )}
-
-          {!isLoading && !error && hasSearched && results.length === 0 && (
-            <div className="text-center py-8 text-zinc-400">
-              Inga livsmedel hittades för &quot;{selectedSubcategory || searchTerm}&quot;
-            </div>
-          )}
-
-          {!isLoading && !error && results.length > 0 && (
-            <>
-              {/* Results count */}
-              <div className="text-xs text-zinc-500 mb-2">
-                Visar {(currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} av {totalCount} resultat
-              </div>
-
-              <div className="space-y-2">
-                {results.map((food) => {
-                  const newWeight = calculateNewWeight(food)
-                  return (
+          {/* Results */}
+          <div className="flex-1 overflow-y-auto min-h-[200px]">
+            {/* Category buttons */}
+            {!selectedSubcategory && subcategories.length > 0 && !searchTerm && (
+              <div className="space-y-3">
+                <p className="text-sm text-zinc-400 font-medium">Välj kategori:</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {subcategories.map((sub) => (
                     <button
-                      key={food.slvNummer}
-                      onClick={() => handleSelect(food)}
-                      className="w-full p-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-gold-500/50 transition-all text-left"
+                      key={sub.label}
+                      onClick={() => handleSubcategorySelect(sub.searchTerm, sub.label)}
+                      className="p-4 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700 hover:border-gold-500/50 transition-all text-left group shadow-sm hover:shadow-md"
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="font-medium text-white">{food.name}</div>
-                          <div className="text-xs text-zinc-500 mt-0.5">
-                            SLV #{food.slvNummer} · {food.type}
+                      <span className="text-white font-medium group-hover:text-gold-400 transition-colors">{sub.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {isLoading && (
+              <div className="flex flex-col items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-gold-500 mb-3" />
+                <span className="text-zinc-400">Söker...</span>
+              </div>
+            )}
+
+            {error && (
+              <div className="text-center py-8 px-4 bg-red-500/10 rounded-xl border border-red-500/20">
+                <p className="text-red-400">{error}</p>
+              </div>
+            )}
+
+            {!isLoading && !error && hasSearched && results.length === 0 && (
+              <div className="text-center py-12 text-zinc-400">
+                <p>Inga livsmedel hittades för &quot;{selectedSubcategory || searchTerm}&quot;</p>
+              </div>
+            )}
+
+            {!isLoading && !error && results.length > 0 && (
+              <>
+                <div className="text-xs text-zinc-500 mb-3 font-medium">
+                  Visar {(currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} av {totalCount} resultat
+                </div>
+
+                <div className="space-y-2">
+                  {results.map((food) => {
+                    const newWeight = calculateNewWeight(food)
+                    return (
+                      <button
+                        key={food.slvNummer}
+                        onClick={() => handleSelect(food)}
+                        className="w-full p-4 rounded-xl bg-zinc-800/60 hover:bg-zinc-700/80 border border-zinc-700/50 hover:border-gold-500/50 transition-all text-left group shadow-sm hover:shadow-lg"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-white group-hover:text-gold-400 transition-colors truncate">
+                              {food.name}
+                            </div>
+                            <div className="text-xs text-zinc-500 mt-1">
+                              SLV #{food.slvNummer} · {food.type}
+                            </div>
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            {newWeight ? (
+                              <div className="bg-gold-500/20 border border-gold-500/30 rounded-lg px-3 py-1.5">
+                                <div className="text-gold-400 font-bold text-lg">{newWeight}g</div>
+                                <div className="text-xs text-gold-500/70">≈ {originalMacroAmount}g {macroLabel}</div>
+                              </div>
+                            ) : (
+                              <div className="bg-zinc-700/50 rounded-lg px-3 py-1.5">
+                                <div className="text-orange-400 font-semibold">{food.kcal} kcal</div>
+                                <div className="text-xs text-zinc-500">/100g</div>
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <div className="text-right text-sm">
-                          {newWeight ? (
-                            <>
-                              <div className="text-gold-500 font-bold">{newWeight}g</div>
-                              <div className="text-xs text-zinc-500">≈ {originalMacroAmount}g {macroLabel}</div>
-                            </>
-                          ) : (
-                            <>
-                              <div className="text-orange-400 font-medium">{food.kcal} kcal</div>
-                              <div className="text-xs text-zinc-500">/100g</div>
-                            </>
-                          )}
+                        <div className="flex gap-2 mt-3">
+                          <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-rose-500/20 text-rose-400 border border-rose-500/20">
+                            P: {food.protein}g
+                          </span>
+                          <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/20">
+                            K: {food.carbs}g
+                          </span>
+                          <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-400 border border-amber-500/20">
+                            F: {food.fat}g
+                          </span>
                         </div>
-                      </div>
-                      <div className="flex gap-4 mt-2 text-xs">
-                        <span className="text-red-400">P: {food.protein}g</span>
-                        <span className="text-blue-400">K: {food.carbs}g</span>
-                        <span className="text-yellow-400">F: {food.fat}g</span>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
-
-              {/* Pagination controls */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-zinc-800">
-                  <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-300 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Föregående
-                  </button>
-
-                  <span className="text-sm text-zinc-400">
-                    Sida {currentPage} av {totalPages}
-                  </span>
-
-                  <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-300 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Nästa
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
+                      </button>
+                    )
+                  })}
                 </div>
-              )}
-            </>
-          )}
 
-          {!isLoading && !hasSearched && !category && !searchTerm && (
-            <div className="text-center py-8 text-zinc-500">
-              <Database className="h-12 w-12 mx-auto mb-3 opacity-30" />
-              <p>Skriv minst 2 tecken för att söka</p>
-              <p className="text-xs mt-1">Data från Livsmedelsverkets livsmedelsdatabas</p>
-            </div>
-          )}
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-3 mt-4 pt-4 border-t border-zinc-800">
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="flex items-center gap-1 px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-300 hover:bg-zinc-700 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Föregående
+                    </button>
+                    <span className="text-sm text-zinc-400 font-medium px-3">
+                      {currentPage} / {totalPages}
+                    </span>
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="flex items-center gap-1 px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-300 hover:bg-zinc-700 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    >
+                      Nästa
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+
+            {!isLoading && !hasSearched && !category && !searchTerm && (
+              <div className="text-center py-12 text-zinc-500">
+                <Database className="h-16 w-16 mx-auto mb-4 opacity-20" />
+                <p className="font-medium">Skriv minst 2 tecken för att söka</p>
+                <p className="text-xs mt-2 text-zinc-600">Data från Livsmedelsverkets livsmedelsdatabas</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Footer */}
-        <div className="pt-4 border-t border-zinc-800">
+        <div className="p-4 border-t border-zinc-800 bg-zinc-900/80">
           <button
             onClick={onClose}
-            className="w-full py-2.5 px-4 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-300 hover:bg-zinc-700 transition-colors"
+            className="w-full py-3 px-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl text-zinc-300 hover:text-white font-medium transition-all"
           >
             Avbryt
           </button>

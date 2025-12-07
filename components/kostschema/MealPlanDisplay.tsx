@@ -1,6 +1,5 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScaledMeal } from '@/lib/kostschema/types'
 import { MealCard } from './MealCard'
 import { calculateDailyTotals } from '@/lib/kostschema/hooks/useScaledMeals'
@@ -23,28 +22,32 @@ export function MealPlanDisplay({ meals, mealCount, setMealCount, onChangeIngred
   const totals = calculateDailyTotals(meals)
 
   return (
-    <Card className="bg-zinc-900 border-zinc-800">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg text-white">Måltidsplan</CardTitle>
-          <div className="flex gap-2">
-            {mealCountOptions.map((option) => (
-              <button
-                key={option.value}
-                onClick={() => setMealCount(option.value)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  mealCount === option.value
-                    ? 'bg-gold-600 text-white'
-                    : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
+    <div className="space-y-4">
+      {/* Header with meal count selector */}
+      <div className="flex items-center justify-between bg-gradient-to-r from-zinc-800/80 to-zinc-900/80 rounded-2xl p-5 border border-zinc-700/50">
+        <div>
+          <h2 className="text-xl font-bold text-white">Måltidsplan</h2>
+          <p className="text-sm text-zinc-400 mt-1">Klicka på en ingrediens för att byta</p>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-3">
+        <div className="flex gap-2">
+          {mealCountOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => setMealCount(option.value)}
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                mealCount === option.value
+                  ? 'bg-gold-600 text-white shadow-lg shadow-gold-600/25'
+                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700'
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Meal cards */}
+      <div className="space-y-4">
         {meals.map((meal) => (
           <MealCard
             key={meal.type}
@@ -53,22 +56,33 @@ export function MealPlanDisplay({ meals, mealCount, setMealCount, onChangeIngred
             onAddIngredient={onAddIngredient}
           />
         ))}
+      </div>
 
-        {/* Daily totals */}
-        {meals.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-zinc-700">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-zinc-400 font-medium">Dagssumma (baserat på första alternativet)</span>
-              <div className="flex gap-4">
-                <span className="text-orange-400 font-semibold">{totals.kcal} kcal</span>
-                <span className="text-red-400">P: {totals.protein}g</span>
-                <span className="text-blue-400">K: {totals.carbs}g</span>
-                <span className="text-yellow-400">F: {totals.fat}g</span>
-              </div>
+      {/* Daily totals */}
+      {meals.length > 0 && (
+        <div className="bg-gradient-to-r from-zinc-800 to-zinc-900 rounded-2xl p-5 border border-zinc-700/50">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-zinc-400 font-medium">Dagssumma</span>
+              <p className="text-xs text-zinc-500 mt-0.5">Baserat på första alternativet per kategori</p>
+            </div>
+            <div className="flex gap-3">
+              <span className="px-4 py-2 rounded-xl text-sm font-bold bg-orange-500/20 text-orange-400 border border-orange-500/20">
+                {totals.kcal} kcal
+              </span>
+              <span className="px-3 py-2 rounded-xl text-sm font-semibold bg-rose-500/15 text-rose-400">
+                P: {totals.protein}g
+              </span>
+              <span className="px-3 py-2 rounded-xl text-sm font-semibold bg-blue-500/15 text-blue-400">
+                K: {totals.carbs}g
+              </span>
+              <span className="px-3 py-2 rounded-xl text-sm font-semibold bg-amber-500/15 text-amber-400">
+                F: {totals.fat}g
+              </span>
             </div>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </div>
   )
 }
