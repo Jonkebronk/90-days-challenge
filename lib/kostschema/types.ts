@@ -99,7 +99,11 @@ export interface CustomFood {
   carbs: number
   fat: number
   kcal: number
+  customAmount?: number // Override the calculated amount with a fixed gram value
 }
 
 // Key format: "mealType:category:index" e.g. "breakfast:protein:0"
 export type IngredientOverrides = Record<string, CustomFood>
+
+// Set of override keys for deleted ingredients
+export type DeletedIngredients = Set<string>

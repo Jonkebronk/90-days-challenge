@@ -1,33 +1,122 @@
 'use client'
 
-import { useState } from 'react'
-import { ChevronDown, ChevronUp, Plus, RefreshCw } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { ChevronDown, ChevronUp, Plus, RefreshCw, Trash2, Check, X } from 'lucide-react'
 import { ScaledMeal, ScaledIngredient } from '@/lib/kostschema/types'
 
 interface MealCardProps {
   meal: ScaledMeal
   onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
   onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
+  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
+  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number, grams: number) => void
 }
 
 function IngredientItem({
   ingredient,
-  onClick
+  onSwap,
+  onDelete,
+  onUpdateGrams
 }: {
   ingredient: ScaledIngredient
-  onClick: () => void
+  onSwap: () => void
+  onDelete?: () => void
+  onUpdateGrams?: (grams: number) => void
 }) {
+  const [isEditingGrams, setIsEditingGrams] = useState(false)
+  const [editValue, setEditValue] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (isEditingGrams && inputRef.current) {
+      inputRef.current.focus()
+      inputRef.current.select()
+    }
+  }, [isEditingGrams])
+
+  const handleGramsClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (onUpdateGrams) {
+      setEditValue(Math.round(ingredient.scaledAmount).toString())
+      setIsEditingGrams(true)
+    }
+  }
+
+  const handleSaveGrams = () => {
+    const newGrams = parseInt(editValue)
+    if (!isNaN(newGrams) && newGrams > 0 && onUpdateGrams) {
+      onUpdateGrams(newGrams)
+    }
+    setIsEditingGrams(false)
+  }
+
+  const handleCancelEdit = () => {
+    setIsEditingGrams(false)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveGrams()
+    } else if (e.key === 'Escape') {
+      handleCancelEdit()
+    }
+  }
+
   return (
-    <button
-      onClick={onClick}
-      className="w-full flex items-center gap-2.5 px-3 py-2.5 bg-zinc-900/60 hover:bg-zinc-800 rounded-lg text-left transition-all group border border-transparent hover:border-gold-500/30"
-    >
-      <RefreshCw className="h-3.5 w-3.5 text-zinc-600 group-hover:text-gold-500 transition-colors flex-shrink-0" />
-      <span className="text-sm text-zinc-200 group-hover:text-white truncate">
-        <span className="text-gold-500 font-semibold">{Math.round(ingredient.scaledAmount)}g</span>
-        {' '}{ingredient.name}
-      </span>
-    </button>
+    <div className="w-full flex items-center gap-1.5 px-2 py-2 bg-zinc-900/60 hover:bg-zinc-800 rounded-lg transition-all group border border-transparent hover:border-zinc-700">
+      {/* Swap button */}
+      <button
+        onClick={onSwap}
+        className="p-1.5 rounded hover:bg-zinc-700 transition-colors"
+        title="Byt ingrediens"
+      >
+        <RefreshCw className="h-3.5 w-3.5 text-zinc-500 group-hover:text-gold-500 transition-colors" />
+      </button>
+
+      {/* Grams + Name */}
+      <div className="flex-1 flex items-center gap-1 min-w-0">
+        {isEditingGrams ? (
+          <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+            <input
+              ref={inputRef}
+              type="number"
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onBlur={handleSaveGrams}
+              className="w-16 px-1.5 py-0.5 text-sm bg-zinc-800 border border-gold-500 rounded text-gold-500 font-semibold focus:outline-none"
+              min="1"
+            />
+            <span className="text-sm text-gold-500 font-semibold">g</span>
+          </div>
+        ) : (
+          <button
+            onClick={handleGramsClick}
+            className={`text-sm text-gold-500 font-semibold hover:bg-gold-500/20 px-1.5 py-0.5 rounded transition-colors ${onUpdateGrams ? 'cursor-pointer' : 'cursor-default'}`}
+            title={onUpdateGrams ? 'Klicka för att ändra gram' : undefined}
+          >
+            {Math.round(ingredient.scaledAmount)}g
+          </button>
+        )}
+        <span className="text-sm text-zinc-200 group-hover:text-white truncate">
+          {ingredient.name}
+        </span>
+      </div>
+
+      {/* Delete button */}
+      {onDelete && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete()
+          }}
+          className="p-1.5 rounded hover:bg-red-500/20 transition-colors opacity-0 group-hover:opacity-100"
+          title="Ta bort ingrediens"
+        >
+          <Trash2 className="h-3.5 w-3.5 text-zinc-500 hover:text-red-400 transition-colors" />
+        </button>
+      )}
+    </div>
   )
 }
 
@@ -38,7 +127,9 @@ function IngredientColumn({
   mealType,
   color,
   onChangeIngredient,
-  onAddIngredient
+  onAddIngredient,
+  onDeleteIngredient,
+  onUpdateGrams
 }: {
   title: string
   ingredients: ScaledIngredient[]
@@ -47,6 +138,8 @@ function IngredientColumn({
   color: 'rose' | 'blue' | 'amber'
   onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
   onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
+  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
+  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number, grams: number) => void
 }) {
   const colorClasses = {
     rose: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
@@ -82,7 +175,9 @@ function IngredientColumn({
             )}
             <IngredientItem
               ingredient={ingredient}
-              onClick={() => onChangeIngredient?.(mealType, category, index)}
+              onSwap={() => onChangeIngredient?.(mealType, category, index)}
+              onDelete={onDeleteIngredient ? () => onDeleteIngredient(mealType, category, index) : undefined}
+              onUpdateGrams={onUpdateGrams ? (grams) => onUpdateGrams(mealType, category, index, grams) : undefined}
             />
           </div>
         ))}
@@ -105,7 +200,7 @@ function IngredientColumn({
   )
 }
 
-export function MealCard({ meal, onChangeIngredient, onAddIngredient }: MealCardProps) {
+export function MealCard({ meal, onChangeIngredient, onAddIngredient, onDeleteIngredient, onUpdateGrams }: MealCardProps) {
   const [isExpanded, setIsExpanded] = useState(true)
 
   return (
@@ -158,6 +253,8 @@ export function MealCard({ meal, onChangeIngredient, onAddIngredient }: MealCard
               color="blue"
               onChangeIngredient={onChangeIngredient}
               onAddIngredient={onAddIngredient}
+              onDeleteIngredient={onDeleteIngredient}
+              onUpdateGrams={onUpdateGrams}
             />
             <IngredientColumn
               title="Protein"
@@ -167,6 +264,8 @@ export function MealCard({ meal, onChangeIngredient, onAddIngredient }: MealCard
               color="rose"
               onChangeIngredient={onChangeIngredient}
               onAddIngredient={onAddIngredient}
+              onDeleteIngredient={onDeleteIngredient}
+              onUpdateGrams={onUpdateGrams}
             />
             <IngredientColumn
               title="Fett"
@@ -176,6 +275,8 @@ export function MealCard({ meal, onChangeIngredient, onAddIngredient }: MealCard
               color="amber"
               onChangeIngredient={onChangeIngredient}
               onAddIngredient={onAddIngredient}
+              onDeleteIngredient={onDeleteIngredient}
+              onUpdateGrams={onUpdateGrams}
             />
           </div>
 

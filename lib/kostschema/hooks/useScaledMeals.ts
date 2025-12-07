@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { MacroTargets, ScaledMeal, ScaledIngredient, TemplateIngredient, IngredientOverrides, CustomFood } from '../types'
+import { MacroTargets, ScaledMeal, ScaledIngredient, TemplateIngredient, IngredientOverrides, CustomFood, DeletedIngredients } from '../types'
 import { mealDistributions, mealTemplates, foodDatabase } from '../meal-templates'
 
 /**
@@ -40,9 +40,13 @@ function scaleIngredient(
 
   const macroPer100g = food[macroType]
 
-  // Calculate grams needed to reach target macro
+  // Use custom amount if provided, otherwise calculate based on macro target
   let scaledAmount = item.amount
-  if (macroPer100g > 0 && targetMacro > 0) {
+  if (customFood?.customAmount !== undefined) {
+    // User has manually set the amount
+    scaledAmount = customFood.customAmount
+  } else if (macroPer100g > 0 && targetMacro > 0) {
+    // Calculate grams needed to reach target macro
     scaledAmount = Math.round((targetMacro / macroPer100g) * 100)
   }
 
@@ -72,7 +76,8 @@ function scaleIngredient(
 export function useScaledMeals(
   macroTargets: MacroTargets,
   mealCount: number,
-  overrides: IngredientOverrides = {}
+  overrides: IngredientOverrides = {},
+  deletedIngredients: DeletedIngredients = new Set()
 ): ScaledMeal[] {
   return useMemo(() => {
     const distribution = mealDistributions[mealCount]
@@ -114,26 +119,35 @@ export function useScaledMeals(
       const mealCarbsTarget = macroTargets.carbs * carbsShare
       const mealFatTarget = macroTargets.fat * fatShare
 
-      // Scale protein sources
-      const scaledProtein = template.protein.map((item, index) => {
-        const overrideKey = getOverrideKey(meal.type, 'protein', index)
-        const customFood = overrides[overrideKey]
-        return scaleIngredient(item, mealProteinTarget, 'protein', customFood)
-      })
+      // Scale protein sources (filter out deleted)
+      const scaledProtein = template.protein
+        .map((item, index) => {
+          const overrideKey = getOverrideKey(meal.type, 'protein', index)
+          if (deletedIngredients.has(overrideKey)) return null
+          const customFood = overrides[overrideKey]
+          return scaleIngredient(item, mealProteinTarget, 'protein', customFood)
+        })
+        .filter((item): item is ScaledIngredient => item !== null)
 
-      // Scale carb sources
-      const scaledKolhydrat = template.kolhydrat.map((item, index) => {
-        const overrideKey = getOverrideKey(meal.type, 'kolhydrat', index)
-        const customFood = overrides[overrideKey]
-        return scaleIngredient(item, mealCarbsTarget, 'carbs', customFood)
-      })
+      // Scale carb sources (filter out deleted)
+      const scaledKolhydrat = template.kolhydrat
+        .map((item, index) => {
+          const overrideKey = getOverrideKey(meal.type, 'kolhydrat', index)
+          if (deletedIngredients.has(overrideKey)) return null
+          const customFood = overrides[overrideKey]
+          return scaleIngredient(item, mealCarbsTarget, 'carbs', customFood)
+        })
+        .filter((item): item is ScaledIngredient => item !== null)
 
-      // Scale fat sources
-      const scaledFett = template.fett.map((item, index) => {
-        const overrideKey = getOverrideKey(meal.type, 'fett', index)
-        const customFood = overrides[overrideKey]
-        return scaleIngredient(item, mealFatTarget, 'fat', customFood)
-      })
+      // Scale fat sources (filter out deleted)
+      const scaledFett = template.fett
+        .map((item, index) => {
+          const overrideKey = getOverrideKey(meal.type, 'fett', index)
+          if (deletedIngredients.has(overrideKey)) return null
+          const customFood = overrides[overrideKey]
+          return scaleIngredient(item, mealFatTarget, 'fat', customFood)
+        })
+        .filter((item): item is ScaledIngredient => item !== null)
 
       // Tillagg - don't scale, keep original amounts
       const scaledTillagg = template.tillagg.map(item => {
@@ -208,7 +222,7 @@ export function useScaledMeals(
         }
       }
     })
-  }, [macroTargets, mealCount, overrides])
+  }, [macroTargets, mealCount, overrides, deletedIngredients])
 }
 
 /**

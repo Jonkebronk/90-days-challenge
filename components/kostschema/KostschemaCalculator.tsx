@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { toast } from 'sonner'
-import { ActivityLevel, IngredientOverrides, CustomFood } from '@/lib/kostschema/types'
+import { ActivityLevel, IngredientOverrides, CustomFood, DeletedIngredients } from '@/lib/kostschema/types'
 import { useMacroCalculation } from '@/lib/kostschema/hooks/useMacroCalculation'
 import { useScaledMeals } from '@/lib/kostschema/hooks/useScaledMeals'
 import { MacroCalculatorForm } from './MacroCalculatorForm'
@@ -47,6 +47,9 @@ export function KostschemaCalculator() {
   // Custom ingredient overrides
   const [ingredientOverrides, setIngredientOverrides] = useState<IngredientOverrides>({})
 
+  // Deleted ingredients
+  const [deletedIngredients, setDeletedIngredients] = useState<DeletedIngredients>(new Set())
+
   // Calculate macros based on input
   const macroTargets = useMacroCalculation({
     bodyWeight,
@@ -56,7 +59,7 @@ export function KostschemaCalculator() {
   })
 
   // Get scaled meals based on macro targets and overrides
-  const meals = useScaledMeals(macroTargets, mealCount, ingredientOverrides)
+  const meals = useScaledMeals(macroTargets, mealCount, ingredientOverrides, deletedIngredients)
 
   // Compute original ingredient data for substitution preview
   const originalIngredient = useMemo((): OriginalIngredient | undefined => {
@@ -139,6 +142,61 @@ export function KostschemaCalculator() {
     setChangeTarget(null)
   }
 
+  // Handle delete ingredient
+  const handleDeleteIngredient = (
+    mealType: string,
+    category: 'protein' | 'kolhydrat' | 'fett',
+    index: number
+  ) => {
+    const overrideKey = `${mealType}:${category}:${index}`
+    setDeletedIngredients(prev => new Set([...prev, overrideKey]))
+    toast.success('Ingrediens borttagen')
+  }
+
+  // Handle update grams
+  const handleUpdateGrams = (
+    mealType: string,
+    category: 'protein' | 'kolhydrat' | 'fett',
+    index: number,
+    grams: number
+  ) => {
+    const overrideKey = `${mealType}:${category}:${index}`
+
+    // Find the current ingredient to get its food data
+    const meal = meals.find(m => m.type === mealType)
+    if (!meal) return
+
+    const ingredient = meal.template[category]?.[index]
+    if (!ingredient) return
+
+    // Check if we have an existing override or need to create one from the ingredient
+    const existingOverride = ingredientOverrides[overrideKey]
+
+    if (existingOverride) {
+      // Update existing override with new custom amount
+      setIngredientOverrides(prev => ({
+        ...prev,
+        [overrideKey]: { ...existingOverride, customAmount: grams }
+      }))
+    } else {
+      // Create a new override with the current ingredient's data
+      // We need to get the nutrition per 100g
+      const factor = ingredient.scaledAmount > 0 ? 100 / ingredient.scaledAmount : 1
+      setIngredientOverrides(prev => ({
+        ...prev,
+        [overrideKey]: {
+          slvNummer: ingredient.slvNummer || 0,
+          name: ingredient.name,
+          protein: Math.round(ingredient.macros.protein * factor * 10) / 10,
+          carbs: Math.round(ingredient.macros.carbs * factor * 10) / 10,
+          fat: Math.round(ingredient.macros.fat * factor * 10) / 10,
+          kcal: Math.round(ingredient.macros.kcal * factor),
+          customAmount: grams
+        }
+      }))
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Input form */}
@@ -164,6 +222,8 @@ export function KostschemaCalculator() {
           setMealCount={setMealCount}
           onChangeIngredient={handleChangeIngredient}
           onAddIngredient={handleAddIngredient}
+          onDeleteIngredient={handleDeleteIngredient}
+          onUpdateGrams={handleUpdateGrams}
         />
       )}
 
