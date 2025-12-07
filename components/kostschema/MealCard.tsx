@@ -13,12 +13,10 @@ interface MealCardProps {
 
 function IngredientItem({
   ingredient,
-  onClick,
-  isAlternative = false
+  onClick
 }: {
   ingredient: ScaledIngredient
   onClick: () => void
-  isAlternative?: boolean
 }) {
   return (
     <button
@@ -27,7 +25,6 @@ function IngredientItem({
     >
       <RefreshCw className="h-3.5 w-3.5 text-zinc-500 group-hover:text-gold-500 transition-colors flex-shrink-0" />
       <span className="text-sm text-zinc-100 truncate">
-        {isAlternative && <span className="text-zinc-500 mr-1">eller</span>}
         {Math.round(ingredient.scaledAmount)}g {ingredient.name}
       </span>
     </button>
@@ -39,7 +36,6 @@ function IngredientColumn({
   ingredients,
   category,
   mealType,
-  color,
   onChangeIngredient,
   onAddIngredient
 }: {
@@ -47,34 +43,45 @@ function IngredientColumn({
   ingredients: ScaledIngredient[]
   category: 'protein' | 'kolhydrat' | 'fett'
   mealType: string
-  color: string
   onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
   onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
 }) {
   return (
-    <div className="space-y-1.5">
-      <h4 className={`text-xs font-medium ${color} uppercase tracking-wide`}>{title}</h4>
-      <div className="space-y-1">
+    <div className="bg-zinc-800/40 border border-zinc-700/50 rounded-lg overflow-hidden">
+      {/* Header */}
+      <div className="bg-zinc-700/50 px-3 py-2 border-b border-zinc-700/50">
+        <p className="text-xs font-bold text-zinc-300 uppercase tracking-wide">{title}</p>
+      </div>
+
+      {/* Content */}
+      <div className="p-3 space-y-0">
         {ingredients.map((ingredient, index) => (
-          <IngredientItem
-            key={ingredient.id}
-            ingredient={ingredient}
-            onClick={() => onChangeIngredient?.(mealType, category, index)}
-            isAlternative={index > 0}
-          />
+          <div key={ingredient.id}>
+            {index > 0 && (
+              <div className="flex items-center gap-2 py-2">
+                <div className="h-px flex-1 bg-zinc-700" />
+                <span className="text-xs text-gold-500 font-bold uppercase px-1">ELLER</span>
+                <div className="h-px flex-1 bg-zinc-700" />
+              </div>
+            )}
+            <IngredientItem
+              ingredient={ingredient}
+              onClick={() => onChangeIngredient?.(mealType, category, index)}
+            />
+          </div>
         ))}
 
         {ingredients.length === 0 && (
-          <div className="px-3 py-2 text-sm text-zinc-500 italic">Ingen källa</div>
+          <div className="py-2 text-sm text-zinc-500 italic">Ingen källa</div>
         )}
 
         {onAddIngredient && (
           <button
             onClick={() => onAddIngredient(mealType, category)}
-            className="w-full flex items-center gap-2 px-3 py-1.5 text-zinc-500 hover:text-gold-500 text-xs transition-colors"
+            className="w-full flex items-center justify-center gap-1.5 mt-2 pt-2 border-t border-zinc-700/50 text-zinc-500 hover:text-gold-500 text-xs transition-colors"
           >
             <Plus className="h-3 w-3" />
-            <span>Lägg till</span>
+            <span>Lägg till alternativ</span>
           </button>
         )}
       </div>
@@ -114,13 +121,12 @@ export function MealCard({ meal, onChangeIngredient, onAddIngredient }: MealCard
 
       {isExpanded && (
         <CardContent className="pt-0 pb-4 px-4">
-          <div className="grid grid-cols-3 gap-4 pt-3">
+          <div className="grid grid-cols-3 gap-3 pt-3">
             <IngredientColumn
               title="Kolhydrat"
               ingredients={meal.template.kolhydrat}
               category="kolhydrat"
               mealType={meal.type}
-              color="text-blue-400"
               onChangeIngredient={onChangeIngredient}
               onAddIngredient={onAddIngredient}
             />
@@ -129,7 +135,6 @@ export function MealCard({ meal, onChangeIngredient, onAddIngredient }: MealCard
               ingredients={meal.template.protein}
               category="protein"
               mealType={meal.type}
-              color="text-red-400"
               onChangeIngredient={onChangeIngredient}
               onAddIngredient={onAddIngredient}
             />
@@ -138,7 +143,6 @@ export function MealCard({ meal, onChangeIngredient, onAddIngredient }: MealCard
               ingredients={meal.template.fett}
               category="fett"
               mealType={meal.type}
-              color="text-yellow-400"
               onChangeIngredient={onChangeIngredient}
               onAddIngredient={onAddIngredient}
             />
