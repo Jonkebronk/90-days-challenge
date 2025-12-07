@@ -1,51 +1,36 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, X, Plus } from 'lucide-react'
+import { ChevronDown, ChevronUp, Plus, RefreshCw } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { ScaledMeal, ScaledIngredient } from '@/lib/kostschema/types'
 
 interface MealCardProps {
   meal: ScaledMeal
   onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
-  onRemoveIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
   onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
 }
 
-function IngredientInput({
+function IngredientItem({
   ingredient,
   onClick,
-  onRemove,
-  showRemove = true
+  isAlternative = false
 }: {
   ingredient: ScaledIngredient
   onClick: () => void
-  onRemove?: () => void
-  showRemove?: boolean
+  isAlternative?: boolean
 }) {
   return (
-    <div className="flex items-center gap-2">
-      <button
-        onClick={onClick}
-        className="flex-1 flex items-center gap-2 px-3 py-2.5 bg-zinc-800/80 border border-zinc-700 rounded-lg text-left hover:border-gold-500/50 hover:bg-zinc-800 transition-all group"
-      >
-        <span className="text-zinc-500">•</span>
-        <span className="text-white">
-          {Math.round(ingredient.scaledAmount)}g {ingredient.name}
-        </span>
-      </button>
-      {showRemove && onRemove && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onRemove()
-          }}
-          className="p-2 text-zinc-500 hover:text-red-400 hover:bg-zinc-800 rounded transition-colors"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      )}
-    </div>
+    <button
+      onClick={onClick}
+      className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-800/60 rounded-lg text-left hover:bg-zinc-700/60 transition-colors group"
+    >
+      <RefreshCw className="h-3.5 w-3.5 text-zinc-500 group-hover:text-gold-500 transition-colors flex-shrink-0" />
+      <span className="text-sm text-zinc-100 truncate">
+        {isAlternative && <span className="text-zinc-500 mr-1">eller</span>}
+        {Math.round(ingredient.scaledAmount)}g {ingredient.name}
+      </span>
+    </button>
   )
 }
 
@@ -54,46 +39,42 @@ function IngredientColumn({
   ingredients,
   category,
   mealType,
+  color,
   onChangeIngredient,
-  onRemoveIngredient,
   onAddIngredient
 }: {
   title: string
   ingredients: ScaledIngredient[]
   category: 'protein' | 'kolhydrat' | 'fett'
   mealType: string
+  color: string
   onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
-  onRemoveIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
   onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
 }) {
   return (
-    <div className="space-y-2">
-      <h4 className="text-sm font-medium text-zinc-400">{title}</h4>
-      <div className="space-y-2">
+    <div className="space-y-1.5">
+      <h4 className={`text-xs font-medium ${color} uppercase tracking-wide`}>{title}</h4>
+      <div className="space-y-1">
         {ingredients.map((ingredient, index) => (
-          <div key={ingredient.id}>
-            {index > 0 && (
-              <div className="text-center py-1">
-                <span className="text-xs font-semibold text-gold-500">ELLER</span>
-              </div>
-            )}
-            <IngredientInput
-              ingredient={ingredient}
-              onClick={() => onChangeIngredient?.(mealType, category, index)}
-              onRemove={ingredients.length > 1 ? () => onRemoveIngredient?.(mealType, category, index) : undefined}
-              showRemove={ingredients.length > 1}
-            />
-          </div>
+          <IngredientItem
+            key={ingredient.id}
+            ingredient={ingredient}
+            onClick={() => onChangeIngredient?.(mealType, category, index)}
+            isAlternative={index > 0}
+          />
         ))}
 
-        {/* Add alternative button */}
+        {ingredients.length === 0 && (
+          <div className="px-3 py-2 text-sm text-zinc-500 italic">Ingen källa</div>
+        )}
+
         {onAddIngredient && (
           <button
             onClick={() => onAddIngredient(mealType, category)}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 border border-dashed border-zinc-700 rounded-lg text-gold-500 text-sm hover:border-gold-500/50 hover:bg-zinc-800/50 transition-all"
+            className="w-full flex items-center gap-2 px-3 py-1.5 text-zinc-500 hover:text-gold-500 text-xs transition-colors"
           >
-            <Plus className="h-4 w-4" />
-            <span>Lägg till alternativ</span>
+            <Plus className="h-3 w-3" />
+            <span>Lägg till</span>
           </button>
         )}
       </div>
@@ -101,7 +82,7 @@ function IngredientColumn({
   )
 }
 
-export function MealCard({ meal, onChangeIngredient, onRemoveIngredient, onAddIngredient }: MealCardProps) {
+export function MealCard({ meal, onChangeIngredient, onAddIngredient }: MealCardProps) {
   const [isExpanded, setIsExpanded] = useState(true)
 
   return (
@@ -113,81 +94,69 @@ export function MealCard({ meal, onChangeIngredient, onRemoveIngredient, onAddIn
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="font-semibold text-white">{meal.name}</div>
-            <div className="text-xs text-zinc-500">({meal.kcalPercent}% av dagsbehov)</div>
+            <div className="text-xs text-zinc-500">({meal.kcalPercent}%)</div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex gap-3 text-sm">
-              <span className="text-orange-400">{meal.kcal} kcal</span>
-              <span className="text-red-400">P: {meal.protein}g</span>
-              <span className="text-blue-400">K: {meal.carbs}g</span>
-              <span className="text-yellow-400">F: {meal.fat}g</span>
+            <div className="flex gap-4 text-xs">
+              <span className="text-orange-400 font-medium">{meal.kcal} kcal</span>
+              <span className="text-red-400">P {meal.protein}g</span>
+              <span className="text-blue-400">K {meal.carbs}g</span>
+              <span className="text-yellow-400">F {meal.fat}g</span>
             </div>
             {isExpanded ? (
-              <ChevronUp className="w-5 h-5 text-zinc-400" />
+              <ChevronUp className="w-4 h-4 text-zinc-500" />
             ) : (
-              <ChevronDown className="w-5 h-5 text-zinc-400" />
+              <ChevronDown className="w-4 h-4 text-zinc-500" />
             )}
           </div>
         </div>
       </CardHeader>
 
       {isExpanded && (
-        <CardContent className="pt-0 pb-4 px-4 border-t border-zinc-800">
-          <div className="grid grid-cols-3 gap-6 mt-4">
+        <CardContent className="pt-0 pb-4 px-4">
+          <div className="grid grid-cols-3 gap-4 pt-3">
             <IngredientColumn
-              title="Kolhydratskälla"
+              title="Kolhydrat"
               ingredients={meal.template.kolhydrat}
               category="kolhydrat"
               mealType={meal.type}
+              color="text-blue-400"
               onChangeIngredient={onChangeIngredient}
-              onRemoveIngredient={onRemoveIngredient}
               onAddIngredient={onAddIngredient}
             />
             <IngredientColumn
-              title="Proteinkälla"
+              title="Protein"
               ingredients={meal.template.protein}
               category="protein"
               mealType={meal.type}
+              color="text-red-400"
               onChangeIngredient={onChangeIngredient}
-              onRemoveIngredient={onRemoveIngredient}
               onAddIngredient={onAddIngredient}
             />
             <IngredientColumn
-              title="Fettkälla"
+              title="Fett"
               ingredients={meal.template.fett}
               category="fett"
               mealType={meal.type}
+              color="text-yellow-400"
               onChangeIngredient={onChangeIngredient}
-              onRemoveIngredient={onRemoveIngredient}
               onAddIngredient={onAddIngredient}
             />
           </div>
 
-          {/* Tillägg (additions) */}
-          {meal.template.tillagg.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-zinc-800">
-              <h4 className="text-sm font-medium text-zinc-400 mb-2">Tillägg</h4>
-              <div className="flex flex-wrap gap-2">
-                {meal.template.tillagg.map((item) => (
-                  <div key={item.id} className="px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 rounded-lg text-sm text-zinc-300">
-                    {Math.round(item.scaledAmount)}g {item.name}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Kosttillskott (supplements) */}
-          {meal.template.kosttillskott && meal.template.kosttillskott.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-zinc-800">
-              <h4 className="text-sm font-medium text-zinc-400 mb-2">Kosttillskott</h4>
-              <div className="flex flex-wrap gap-2">
-                {meal.template.kosttillskott.map((item) => (
-                  <div key={item.id} className="px-3 py-1.5 bg-purple-500/10 border border-purple-500/30 rounded-lg text-sm text-purple-300">
-                    {item.amount} {item.unit} {item.name}
-                  </div>
-                ))}
-              </div>
+          {/* Tillägg & Kosttillskott - kompakt rad */}
+          {(meal.template.tillagg.length > 0 || (meal.template.kosttillskott && meal.template.kosttillskott.length > 0)) && (
+            <div className="mt-3 pt-3 border-t border-zinc-800/50 flex flex-wrap gap-2">
+              {meal.template.tillagg.map((item) => (
+                <span key={item.id} className="px-2 py-1 bg-zinc-800/50 rounded text-xs text-zinc-400">
+                  {Math.round(item.scaledAmount)}g {item.name}
+                </span>
+              ))}
+              {meal.template.kosttillskott?.map((item) => (
+                <span key={item.id} className="px-2 py-1 bg-purple-500/10 rounded text-xs text-purple-400">
+                  {item.amount} {item.unit} {item.name}
+                </span>
+              ))}
             </div>
           )}
         </CardContent>

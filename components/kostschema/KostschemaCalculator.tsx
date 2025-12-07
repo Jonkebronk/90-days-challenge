@@ -66,23 +66,6 @@ export function KostschemaCalculator() {
     setIsSearchModalOpen(true)
   }
 
-  // Handle remove ingredient
-  const handleRemoveIngredient = (
-    mealType: string,
-    category: 'protein' | 'kolhydrat' | 'fett',
-    index: number
-  ) => {
-    // Remove the override if it exists
-    const overrideKey = `${mealType}:${category}:${index}`
-    setIngredientOverrides(prev => {
-      const newOverrides = { ...prev }
-      delete newOverrides[overrideKey]
-      return newOverrides
-    })
-
-    toast.info('Ingrediens borttagen')
-  }
-
   // Handle food selection from SLV
   const handleFoodSelect = (food: CustomFood) => {
     if (!changeTarget) return
@@ -130,7 +113,6 @@ export function KostschemaCalculator() {
           mealCount={mealCount}
           setMealCount={setMealCount}
           onChangeIngredient={handleChangeIngredient}
-          onRemoveIngredient={handleRemoveIngredient}
           onAddIngredient={handleAddIngredient}
         />
       )}
