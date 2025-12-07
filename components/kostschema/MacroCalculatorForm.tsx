@@ -102,10 +102,10 @@ export function MacroCalculatorForm({
           </div>
         </div>
 
-        {/* Protein Factor */}
+        {/* Protein */}
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <Label className="text-zinc-300">Proteinfaktor</Label>
+            <Label className="text-zinc-300">Protein</Label>
             <span className="text-gold-500 font-semibold">{proteinFactor.toFixed(1)} g/kg</span>
           </div>
           <Slider
@@ -120,6 +120,24 @@ export function MacroCalculatorForm({
             <span>1.6 g/kg</span>
             <span>2.0 g/kg</span>
             <span>2.5 g/kg</span>
+          </div>
+        </div>
+
+        {/* Fat & Carbs info */}
+        <div className="grid grid-cols-2 gap-4 pt-2">
+          <div className="p-3 rounded-lg bg-zinc-800 border border-zinc-700">
+            <div className="flex justify-between items-center">
+              <Label className="text-zinc-300">Fett</Label>
+              <span className="text-gold-500 font-semibold">0.7 g/kg</span>
+            </div>
+            <p className="text-xs text-zinc-500 mt-1">Fast värde</p>
+          </div>
+          <div className="p-3 rounded-lg bg-zinc-800 border border-zinc-700">
+            <div className="flex justify-between items-center">
+              <Label className="text-zinc-300">Kolhydrater</Label>
+              <span className="text-gold-500 font-semibold">Resterande</span>
+            </div>
+            <p className="text-xs text-zinc-500 mt-1">Kalorier kvar</p>
           </div>
         </div>
       </CardContent>
