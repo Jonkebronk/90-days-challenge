@@ -20,12 +20,19 @@ interface SLVFood {
   kcal: number
 }
 
+interface OriginalIngredient {
+  amount: number           // Original weight in grams (e.g., 58)
+  macroPer100g: number     // Macro content per 100g (e.g., 62 for carbs)
+  macroType: 'protein' | 'carbs' | 'fat'
+}
+
 interface SLVFoodSearchModalProps {
   isOpen: boolean
   onClose: () => void
   onSelect: (food: SLVFood) => void
   category?: 'protein' | 'kolhydrat' | 'fett'
   mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'evening'
+  originalIngredient?: OriginalIngredient
 }
 
 // Subcategories for each meal type and macro category
@@ -180,7 +187,8 @@ export function SLVFoodSearchModal({
   onClose,
   onSelect,
   category,
-  mealType
+  mealType,
+  originalIngredient
 }: SLVFoodSearchModalProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [results, setResults] = useState<SLVFood[]>([])
@@ -194,6 +202,40 @@ export function SLVFoodSearchModal({
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const ITEMS_PER_PAGE = 20
+
+  // Calculate equivalent weight for substitution preview
+  const calculateNewWeight = useCallback((food: SLVFood): number | null => {
+    if (!originalIngredient) return null
+    const { amount, macroPer100g, macroType } = originalIngredient
+
+    // Get the macro content per 100g from the new food
+    const newMacroPer100g = macroType === 'protein' ? food.protein
+      : macroType === 'carbs' ? food.carbs
+      : food.fat
+
+    // Avoid division by zero
+    if (newMacroPer100g <= 0) return null
+
+    // Calculate: new_weight = (original_macro_amount / new_macro_per_100g) * 100
+    const originalMacroAmount = amount * (macroPer100g / 100)
+    return Math.round((originalMacroAmount / newMacroPer100g) * 100)
+  }, [originalIngredient])
+
+  // Get the original macro amount for display
+  const originalMacroAmount = useMemo(() => {
+    if (!originalIngredient) return null
+    return Math.round(originalIngredient.amount * (originalIngredient.macroPer100g / 100))
+  }, [originalIngredient])
+
+  // Get macro label for display
+  const macroLabel = useMemo(() => {
+    if (!originalIngredient) return ''
+    switch (originalIngredient.macroType) {
+      case 'protein': return 'protein'
+      case 'carbs': return 'kolhydrater'
+      case 'fat': return 'fett'
+    }
+  }, [originalIngredient])
 
   // Get subcategories for current meal type and category (memoized)
   const subcategories = useMemo(() => {
@@ -439,31 +481,43 @@ export function SLVFoodSearchModal({
               </div>
 
               <div className="space-y-2">
-                {results.map((food) => (
-                  <button
-                    key={food.slvNummer}
-                    onClick={() => handleSelect(food)}
-                    className="w-full p-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-gold-500/50 transition-all text-left"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="font-medium text-white">{food.name}</div>
-                        <div className="text-xs text-zinc-500 mt-0.5">
-                          SLV #{food.slvNummer} · {food.type}
+                {results.map((food) => {
+                  const newWeight = calculateNewWeight(food)
+                  return (
+                    <button
+                      key={food.slvNummer}
+                      onClick={() => handleSelect(food)}
+                      className="w-full p-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-gold-500/50 transition-all text-left"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="font-medium text-white">{food.name}</div>
+                          <div className="text-xs text-zinc-500 mt-0.5">
+                            SLV #{food.slvNummer} · {food.type}
+                          </div>
+                        </div>
+                        <div className="text-right text-sm">
+                          {newWeight ? (
+                            <>
+                              <div className="text-gold-500 font-bold">{newWeight}g</div>
+                              <div className="text-xs text-zinc-500">≈ {originalMacroAmount}g {macroLabel}</div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="text-orange-400 font-medium">{food.kcal} kcal</div>
+                              <div className="text-xs text-zinc-500">/100g</div>
+                            </>
+                          )}
                         </div>
                       </div>
-                      <div className="text-right text-sm">
-                        <div className="text-orange-400 font-medium">{food.kcal} kcal</div>
-                        <div className="text-xs text-zinc-500">/100g</div>
+                      <div className="flex gap-4 mt-2 text-xs">
+                        <span className="text-red-400">P: {food.protein}g</span>
+                        <span className="text-blue-400">K: {food.carbs}g</span>
+                        <span className="text-yellow-400">F: {food.fat}g</span>
                       </div>
-                    </div>
-                    <div className="flex gap-4 mt-2 text-xs">
-                      <span className="text-red-400">P: {food.protein}g</span>
-                      <span className="text-blue-400">K: {food.carbs}g</span>
-                      <span className="text-yellow-400">F: {food.fat}g</span>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  )
+                })}
               </div>
 
               {/* Pagination controls */}

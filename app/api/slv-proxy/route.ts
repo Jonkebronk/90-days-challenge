@@ -238,11 +238,19 @@ async function searchFoods(
 
   // Filter out recipes/prepared foods by excluding common recipe indicators in names
   const recipePatterns = [
+    // Prepared/homemade indicators
     /hemlagad/i,
     /tillagad/i,
     /restaurang/i,
+    /servering/i,
+    /färdiglagad/i,
+    // Cooking methods with ingredients
     /stekt m\./i,
     /kokt m\./i,
+    /friterad/i,
+    /ugns(?:bakad|stekt|gratinerad)/i,
+    /panerad/i,
+    // Dishes and meals
     /gratäng/i,
     /gryta/i,
     /sås m\./i,
@@ -252,7 +260,7 @@ async function searchFoods(
     /pizza/i,
     /lasagne/i,
     /pannkak/i,
-    /våffla/i,
+    /våffla m\./i,
     /tårta/i,
     /kaka m\./i,
     /bulle m\./i,
@@ -260,10 +268,20 @@ async function searchFoods(
     /macka/i,
     /wrap m\./i,
     /rulle m\./i,
+    /wok/i,
+    /curry m\./i,
+    /stuvning/i,
+    /köttbull/i,
+    /frikadell/i,
+    // Context indicators
     /buffé/i,
     /måltid/i,
     /portion/i,
     /tallrik/i,
+    /skolmat/i,
+    /snabbmat/i,
+    // Compound dishes (contains "med" + multiple ingredients)
+    / med .+ och /i,
   ]
 
   const foods = allFoods.filter(f => {

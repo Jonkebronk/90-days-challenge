@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { toast } from 'sonner'
 import { ActivityLevel, IngredientOverrides, CustomFood } from '@/lib/kostschema/types'
 import { useMacroCalculation } from '@/lib/kostschema/hooks/useMacroCalculation'
@@ -14,6 +14,12 @@ interface IngredientChangeTarget {
   mealType: string
   category: 'protein' | 'kolhydrat' | 'fett'
   index: number
+}
+
+interface OriginalIngredient {
+  amount: number
+  macroPer100g: number
+  macroType: 'protein' | 'carbs' | 'fat'
 }
 
 // Map meal types to API meal filter
@@ -51,6 +57,40 @@ export function KostschemaCalculator() {
 
   // Get scaled meals based on macro targets and overrides
   const meals = useScaledMeals(macroTargets, mealCount, ingredientOverrides)
+
+  // Compute original ingredient data for substitution preview
+  const originalIngredient = useMemo((): OriginalIngredient | undefined => {
+    if (!changeTarget) return undefined
+
+    // Find the meal matching the target
+    const meal = meals.find(m => m.type === changeTarget.mealType)
+    if (!meal) return undefined
+
+    // Get the ingredient from the appropriate category
+    const categoryKey = changeTarget.category === 'kolhydrat' ? 'kolhydrat'
+      : changeTarget.category === 'protein' ? 'protein' : 'fett'
+    const ingredient = meal.template[categoryKey]?.[changeTarget.index]
+    if (!ingredient) return undefined
+
+    // Map category to macro type
+    const macroType: 'protein' | 'carbs' | 'fat' =
+      changeTarget.category === 'protein' ? 'protein'
+        : changeTarget.category === 'kolhydrat' ? 'carbs' : 'fat'
+
+    // Calculate macro per 100g from the scaled ingredient's macros
+    // Formula: macroPer100g = (macros[type] / scaledAmount) * 100
+    const macroValue = macroType === 'protein' ? ingredient.macros.protein
+      : macroType === 'carbs' ? ingredient.macros.carbs : ingredient.macros.fat
+    const macroPer100g = ingredient.scaledAmount > 0
+      ? (macroValue / ingredient.scaledAmount) * 100
+      : 0
+
+    return {
+      amount: ingredient.scaledAmount,
+      macroPer100g,
+      macroType
+    }
+  }, [changeTarget, meals])
 
   // Handle ingredient change request
   const handleChangeIngredient = (
@@ -137,6 +177,7 @@ export function KostschemaCalculator() {
         onSelect={handleFoodSelect}
         category={changeTarget?.category}
         mealType={changeTarget ? getMealApiType(changeTarget.mealType) : undefined}
+        originalIngredient={originalIngredient}
       />
     </div>
   )
