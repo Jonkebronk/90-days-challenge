@@ -105,11 +105,18 @@ async function fetchFoodWithNutrition(nummer: number): Promise<TransformedFood |
 
 /**
  * Check if a food name matches any category keywords
+ * Uses word boundary matching to avoid false positives (e.g., "ris" in "Gris")
  */
 function matchesCategoryKeywords(name: string, category: string): boolean {
   const keywords = CATEGORY_KEYWORDS[category] || []
   const lowerName = name.toLowerCase()
-  return keywords.some(keyword => lowerName.includes(keyword))
+
+  return keywords.some(keyword => {
+    // Create regex with word boundary or start/end of string
+    // This prevents "ris" from matching "Gris"
+    const regex = new RegExp(`(^|\\s|-)${keyword}`, 'i')
+    return regex.test(lowerName)
+  })
 }
 
 /**
