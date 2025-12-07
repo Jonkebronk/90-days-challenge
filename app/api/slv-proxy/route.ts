@@ -234,7 +234,10 @@ async function searchFoods(
   meal: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'evening' | null = null
 ): Promise<SearchResult> {
   // Fetch all foods from SLV database
-  const foods = await fetchAllFoods()
+  const allFoods = await fetchAllFoods()
+
+  // Filter to only show raw ingredients (Analyserat), not recipes (Beräknat)
+  const foods = allFoods.filter(f => f.livsmedelsTyp === 'Analyserat')
 
   // Filter by search query
   let filtered = foods
