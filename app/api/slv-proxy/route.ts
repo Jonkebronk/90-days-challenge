@@ -26,6 +26,13 @@ interface TransformedFood {
   kcal: number
 }
 
+// Category-specific search terms to help filter results
+const CATEGORY_KEYWORDS: Record<string, string[]> = {
+  protein: ['kyckling', 'kalkon', 'nöt', 'fläsk', 'fisk', 'lax', 'torsk', 'räk', 'ägg', 'kvarg', 'keso', 'cottage', 'skinka', 'köttfärs', 'biff', 'filé', 'sej', 'tonfisk', 'makrill', 'protein', 'whey', 'casein'],
+  kolhydrat: ['ris', 'pasta', 'potatis', 'bröd', 'havre', 'müsli', 'gryn', 'flingor', 'quinoa', 'couscous', 'bulgur', 'bönor', 'linser', 'majs', 'vete', 'råg', 'korn', 'bovete', 'amarant', 'hirs'],
+  fett: ['olja', 'olivolja', 'rapsolja', 'kokosolja', 'smör', 'nötter', 'mandel', 'valnöt', 'cashew', 'jordnöt', 'avokado', 'frön', 'linfrön', 'chiafrön', 'solrosfrön', 'pumpafrön', 'ost', 'grädde', 'majonnäs']
+}
+
 /**
  * GET /api/slv-proxy
  * Search Livsmedelsverket's food database
@@ -33,12 +40,14 @@ interface TransformedFood {
  * Query params:
  * - q: Search query (filters by name)
  * - nummer: Get specific food by SLV number
+ * - category: Filter by category (protein, kolhydrat, fett)
  * - limit: Max results (default 20)
  */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const query = searchParams.get('q')
   const nummer = searchParams.get('nummer')
+  const category = searchParams.get('category') as 'protein' | 'kolhydrat' | 'fett' | null
   const limit = parseInt(searchParams.get('limit') || '20')
 
   try {
@@ -51,8 +60,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ food })
     }
 
-    // Search for foods
-    const foods = await searchFoods(query || '', limit)
+    // Search for foods with optional category filter
+    const foods = await searchFoods(query || '', limit, category)
     return NextResponse.json({ foods, count: foods.length })
 
   } catch (error) {
@@ -95,12 +104,44 @@ async function fetchFoodWithNutrition(nummer: number): Promise<TransformedFood |
 }
 
 /**
+ * Check if a food name matches any category keywords
+ */
+function matchesCategoryKeywords(name: string, category: string): boolean {
+  const keywords = CATEGORY_KEYWORDS[category] || []
+  const lowerName = name.toLowerCase()
+  return keywords.some(keyword => lowerName.includes(keyword))
+}
+
+/**
+ * Filter foods by nutritional profile based on category
+ */
+function matchesCategoryNutrition(food: TransformedFood, category: string): boolean {
+  switch (category) {
+    case 'protein':
+      // High protein: >15g protein per 100g AND protein is dominant macro
+      return food.protein > 15 && food.protein > food.carbs && food.protein > food.fat
+    case 'kolhydrat':
+      // High carb: >30g carbs per 100g AND carbs is dominant macro
+      return food.carbs > 30 && food.carbs > food.protein
+    case 'fett':
+      // High fat: >15g fat per 100g AND fat is significant
+      return food.fat > 15
+    default:
+      return true
+  }
+}
+
+/**
  * Search foods and fetch nutrition for matches
  */
-async function searchFoods(query: string, limit: number): Promise<TransformedFood[]> {
+async function searchFoods(
+  query: string,
+  limit: number,
+  category: 'protein' | 'kolhydrat' | 'fett' | null = null
+): Promise<TransformedFood[]> {
   // Fetch a larger batch to filter from (SLV API doesn't have text search)
   const response = await fetch(
-    `${SLV_BASE_URL}/livsmedel?limit=500&offset=0`,
+    `${SLV_BASE_URL}/livsmedel?limit=1000&offset=0`,
     { headers: { 'Accept': 'application/json' } }
   )
 
@@ -112,25 +153,49 @@ async function searchFoods(query: string, limit: number): Promise<TransformedFoo
   const foods: SLVFoodItem[] = data.livsmedel || []
 
   // Filter by search query
-  const filtered = query
-    ? foods.filter(f => f.namn.toLowerCase().includes(query.toLowerCase()))
-    : foods
+  let filtered = foods
+  if (query) {
+    filtered = foods.filter(f => f.namn.toLowerCase().includes(query.toLowerCase()))
+  }
 
-  // Limit results
-  const limited = filtered.slice(0, limit)
+  // If category specified but no query, use category keywords to pre-filter
+  if (category && !query) {
+    filtered = foods.filter(f => matchesCategoryKeywords(f.namn, category))
+  }
+
+  // Limit to fetch nutrition for (we'll filter more after)
+  const toFetch = filtered.slice(0, Math.min(50, filtered.length))
 
   // Fetch nutrition for each (in parallel, max 10 at a time)
   const results: TransformedFood[] = []
 
-  for (let i = 0; i < limited.length; i += 10) {
-    const batch = limited.slice(i, i + 10)
+  for (let i = 0; i < toFetch.length; i += 10) {
+    const batch = toFetch.slice(i, i + 10)
     const batchResults = await Promise.all(
       batch.map(food => fetchFoodWithNutrition(food.nummer))
     )
     results.push(...batchResults.filter((f): f is TransformedFood => f !== null))
   }
 
-  return results
+  // Filter by nutritional profile if category is specified
+  let finalResults = results
+  if (category) {
+    finalResults = results.filter(f => matchesCategoryNutrition(f, category))
+  }
+
+  // Sort by relevance (highest macro content for category)
+  if (category) {
+    finalResults.sort((a, b) => {
+      switch (category) {
+        case 'protein': return b.protein - a.protein
+        case 'kolhydrat': return b.carbs - a.carbs
+        case 'fett': return b.fat - a.fat
+        default: return 0
+      }
+    })
+  }
+
+  return finalResults.slice(0, limit)
 }
 
 /**

@@ -52,6 +52,37 @@ export function KostschemaCalculator() {
     setIsSearchModalOpen(true)
   }
 
+  // Handle add ingredient (opens modal to add new alternative)
+  const handleAddIngredient = (
+    mealType: string,
+    category: 'protein' | 'kolhydrat' | 'fett'
+  ) => {
+    // Find the current meal to get the next available index
+    const meal = meals.find(m => m.type === mealType)
+    if (!meal) return
+
+    const currentCount = meal.template[category].length
+    setChangeTarget({ mealType, category, index: currentCount })
+    setIsSearchModalOpen(true)
+  }
+
+  // Handle remove ingredient
+  const handleRemoveIngredient = (
+    mealType: string,
+    category: 'protein' | 'kolhydrat' | 'fett',
+    index: number
+  ) => {
+    // Remove the override if it exists
+    const overrideKey = `${mealType}:${category}:${index}`
+    setIngredientOverrides(prev => {
+      const newOverrides = { ...prev }
+      delete newOverrides[overrideKey]
+      return newOverrides
+    })
+
+    toast.info('Ingrediens borttagen')
+  }
+
   // Handle food selection from SLV
   const handleFoodSelect = (food: CustomFood) => {
     if (!changeTarget) return
@@ -99,6 +130,8 @@ export function KostschemaCalculator() {
           mealCount={mealCount}
           setMealCount={setMealCount}
           onChangeIngredient={handleChangeIngredient}
+          onRemoveIngredient={handleRemoveIngredient}
+          onAddIngredient={handleAddIngredient}
         />
       )}
 

@@ -53,7 +53,13 @@ export function SLVFoodSearchModal({
     setHasSearched(true)
 
     try {
-      const response = await fetch(`/api/slv-proxy?q=${encodeURIComponent(query)}&limit=15`)
+      // Build URL with category filter if specified
+      let url = `/api/slv-proxy?q=${encodeURIComponent(query)}&limit=15`
+      if (category) {
+        url += `&category=${category}`
+      }
+
+      const response = await fetch(url)
       if (!response.ok) throw new Error('Sökningen misslyckades')
 
       const data = await response.json()
@@ -64,7 +70,7 @@ export function SLVFoodSearchModal({
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [category])
 
   // Debounce search input
   useEffect(() => {

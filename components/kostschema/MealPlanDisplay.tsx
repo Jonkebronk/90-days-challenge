@@ -10,6 +10,8 @@ interface MealPlanDisplayProps {
   mealCount: number
   setMealCount: (count: number) => void
   onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
+  onRemoveIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
+  onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
 }
 
 const mealCountOptions = [
@@ -18,7 +20,7 @@ const mealCountOptions = [
   { value: 6, label: '6 måltider' }
 ]
 
-export function MealPlanDisplay({ meals, mealCount, setMealCount, onChangeIngredient }: MealPlanDisplayProps) {
+export function MealPlanDisplay({ meals, mealCount, setMealCount, onChangeIngredient, onRemoveIngredient, onAddIngredient }: MealPlanDisplayProps) {
   const totals = calculateDailyTotals(meals)
 
   return (
@@ -45,7 +47,13 @@ export function MealPlanDisplay({ meals, mealCount, setMealCount, onChangeIngred
       </CardHeader>
       <CardContent className="space-y-3">
         {meals.map((meal) => (
-          <MealCard key={meal.type} meal={meal} onChangeIngredient={onChangeIngredient} />
+          <MealCard
+            key={meal.type}
+            meal={meal}
+            onChangeIngredient={onChangeIngredient}
+            onRemoveIngredient={onRemoveIngredient}
+            onAddIngredient={onAddIngredient}
+          />
         ))}
 
         {/* Daily totals */}
