@@ -12,7 +12,7 @@ interface SLVFoodItem {
 interface SLVNutrient {
   namn: string
   forkortning: string
-  värde: number | null
+  varde: number | null
   enhet: string
 }
 
@@ -244,7 +244,7 @@ async function searchFoods(
 function transformFood(food: SLVFoodItem, nutrients: SLVNutrient[]): TransformedFood {
   const getNutrientValue = (abbreviation: string): number => {
     const nutrient = nutrients.find(n => n.forkortning === abbreviation)
-    return nutrient?.värde ?? 0
+    return nutrient?.varde ?? 0
   }
 
   return {
