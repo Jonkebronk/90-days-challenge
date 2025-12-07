@@ -251,9 +251,9 @@ function transformFood(food: SLVFoodItem, nutrients: SLVNutrient[]): Transformed
     slvNummer: food.nummer,
     name: food.namn,
     type: food.livsmedelsTyp,
-    protein: Math.round(getNutrientValue('PROT') * 10) / 10,
-    carbs: Math.round(getNutrientValue('CHO') * 10) / 10,
-    fat: Math.round(getNutrientValue('FAT') * 10) / 10,
-    kcal: Math.round(getNutrientValue('ENER'))
+    protein: Math.round(getNutrientValue('Prot') * 10) / 10,
+    carbs: Math.round(getNutrientValue('Kolh') * 10) / 10,
+    fat: Math.round(getNutrientValue('Fett') * 10) / 10,
+    kcal: Math.round(getNutrientValue('Ener'))
   }
 }
