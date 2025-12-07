@@ -74,23 +74,36 @@ export async function GET(request: NextRequest) {
 }
 
 /**
+ * Fetch with timeout helper
+ */
+async function fetchWithTimeout(url: string, timeoutMs: number = 5000): Promise<Response> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    const response = await fetch(url, {
+      headers: { 'Accept': 'application/json' },
+      signal: controller.signal
+    })
+    return response
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
+/**
  * Fetch a single food item with its nutritional values
  */
 async function fetchFoodWithNutrition(nummer: number): Promise<TransformedFood | null> {
   try {
-    // Fetch food item
-    const foodResponse = await fetch(`${SLV_BASE_URL}/livsmedel/${nummer}`, {
-      headers: { 'Accept': 'application/json' }
-    })
+    // Fetch food item and nutrition in parallel
+    const [foodResponse, nutritionResponse] = await Promise.all([
+      fetchWithTimeout(`${SLV_BASE_URL}/livsmedel/${nummer}`, 5000),
+      fetchWithTimeout(`${SLV_BASE_URL}/livsmedel/${nummer}/naringsvarden`, 5000)
+    ])
 
     if (!foodResponse.ok) return null
     const foodData: SLVFoodItem = await foodResponse.json()
-
-    // Fetch nutritional values
-    const nutritionResponse = await fetch(
-      `${SLV_BASE_URL}/livsmedel/${nummer}/naringsvarden`,
-      { headers: { 'Accept': 'application/json' } }
-    )
 
     const nutrients: SLVNutrient[] = nutritionResponse.ok
       ? await nutritionResponse.json()
@@ -98,7 +111,7 @@ async function fetchFoodWithNutrition(nummer: number): Promise<TransformedFood |
 
     return transformFood(foodData, nutrients)
   } catch (error) {
-    console.error(`Error fetching food ${nummer}:`, error)
+    // Silently fail for individual foods - don't log to avoid spam
     return null
   }
 }
@@ -189,14 +202,15 @@ async function searchFoods(
     filtered = filtered.filter(f => matchesCategoryKeywords(f.namn, category))
   }
 
-  // Limit to fetch nutrition for (we'll filter more after)
-  const toFetch = filtered.slice(0, Math.min(50, filtered.length))
+  // Limit to fetch nutrition for - keep it small to avoid timeouts
+  // 20 items × 2 requests each = 40 API calls (more manageable)
+  const toFetch = filtered.slice(0, Math.min(20, filtered.length))
 
-  // Fetch nutrition for each (in parallel, max 10 at a time)
+  // Fetch nutrition for each (in parallel, max 5 at a time to avoid rate limiting)
   const results: TransformedFood[] = []
 
-  for (let i = 0; i < toFetch.length; i += 10) {
-    const batch = toFetch.slice(i, i + 10)
+  for (let i = 0; i < toFetch.length; i += 5) {
+    const batch = toFetch.slice(i, i + 5)
     const batchResults = await Promise.all(
       batch.map(food => fetchFoodWithNutrition(food.nummer))
     )

@@ -9,7 +9,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 
 interface SLVFood {
   slvNummer: number
@@ -221,13 +220,12 @@ export function SLVFoodSearchModal({
 
         {/* Footer */}
         <div className="pt-4 border-t border-zinc-800">
-          <Button
-            variant="outline"
+          <button
             onClick={onClose}
-            className="w-full border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+            className="w-full py-2.5 px-4 bg-zinc-800 border border-zinc-700 rounded-lg text-zinc-300 hover:bg-zinc-700 transition-colors"
           >
             Avbryt
-          </Button>
+          </button>
         </div>
       </DialogContent>
     </Dialog>
