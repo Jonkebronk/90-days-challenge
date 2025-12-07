@@ -236,8 +236,41 @@ async function searchFoods(
   // Fetch all foods from SLV database
   const allFoods = await fetchAllFoods()
 
-  // Filter to only show raw ingredients (Analyserat), not recipes (Beräknat)
-  const foods = allFoods.filter(f => f.livsmedelsTyp === 'Analyserat')
+  // Filter out recipes/prepared foods by excluding common recipe indicators in names
+  const recipePatterns = [
+    /hemlagad/i,
+    /tillagad/i,
+    /restaurang/i,
+    /stekt m\./i,
+    /kokt m\./i,
+    /gratäng/i,
+    /gryta/i,
+    /sås m\./i,
+    /sallad m\./i,
+    /soppa m\./i,
+    /paj m\./i,
+    /pizza/i,
+    /lasagne/i,
+    /pannkak/i,
+    /våffla/i,
+    /tårta/i,
+    /kaka m\./i,
+    /bulle m\./i,
+    /smörgås/i,
+    /macka/i,
+    /wrap m\./i,
+    /rulle m\./i,
+    /buffé/i,
+    /måltid/i,
+    /portion/i,
+    /tallrik/i,
+  ]
+
+  const foods = allFoods.filter(f => {
+    const name = f.namn.toLowerCase()
+    // Exclude if name matches any recipe pattern
+    return !recipePatterns.some(pattern => pattern.test(name))
+  })
 
   // Filter by search query
   let filtered = foods
