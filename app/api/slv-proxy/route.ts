@@ -132,6 +132,30 @@ function matchesCategoryNutrition(food: TransformedFood, category: string): bool
 }
 
 /**
+ * Fetch all foods from SLV database (in batches)
+ */
+async function fetchAllFoods(): Promise<SLVFoodItem[]> {
+  const allFoods: SLVFoodItem[] = []
+  const batchSize = 1000
+  const offsets = [0, 1000, 2000] // Cover all ~2575 items
+
+  const batchPromises = offsets.map(offset =>
+    fetch(`${SLV_BASE_URL}/livsmedel?limit=${batchSize}&offset=${offset}`, {
+      headers: { 'Accept': 'application/json' }
+    }).then(res => res.ok ? res.json() : { livsmedel: [] })
+  )
+
+  const results = await Promise.all(batchPromises)
+  results.forEach(data => {
+    if (data.livsmedel) {
+      allFoods.push(...data.livsmedel)
+    }
+  })
+
+  return allFoods
+}
+
+/**
  * Search foods and fetch nutrition for matches
  */
 async function searchFoods(
@@ -139,18 +163,8 @@ async function searchFoods(
   limit: number,
   category: 'protein' | 'kolhydrat' | 'fett' | null = null
 ): Promise<TransformedFood[]> {
-  // Fetch a larger batch to filter from (SLV API doesn't have text search)
-  const response = await fetch(
-    `${SLV_BASE_URL}/livsmedel?limit=1000&offset=0`,
-    { headers: { 'Accept': 'application/json' } }
-  )
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch foods from SLV')
-  }
-
-  const data = await response.json()
-  const foods: SLVFoodItem[] = data.livsmedel || []
+  // Fetch all foods from SLV database
+  const foods = await fetchAllFoods()
 
   // Filter by search query
   let filtered = foods
@@ -161,6 +175,11 @@ async function searchFoods(
   // If category specified but no query, use category keywords to pre-filter
   if (category && !query) {
     filtered = foods.filter(f => matchesCategoryKeywords(f.namn, category))
+  }
+
+  // If we have a query AND category, filter by both
+  if (query && category) {
+    filtered = filtered.filter(f => matchesCategoryKeywords(f.namn, category))
   }
 
   // Limit to fetch nutrition for (we'll filter more after)
