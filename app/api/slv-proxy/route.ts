@@ -71,7 +71,8 @@ const MEAL_SPECIFIC_KEYWORDS: Record<string, Record<string, string[]>> = {
  * - nummer: Get specific food by SLV number
  * - category: Filter by category (protein, kolhydrat, fett)
  * - meal: Filter by meal type (breakfast, lunch, dinner, snack, evening)
- * - limit: Max results (default 20)
+ * - limit: Max results per page (default 20)
+ * - page: Page number (default 1)
  */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -80,6 +81,7 @@ export async function GET(request: NextRequest) {
   const category = searchParams.get('category') as 'protein' | 'kolhydrat' | 'fett' | null
   const meal = searchParams.get('meal') as 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'evening' | null
   const limit = parseInt(searchParams.get('limit') || '20')
+  const page = parseInt(searchParams.get('page') || '1')
 
   try {
     // If specific nummer is requested, fetch that food with nutrition
@@ -92,8 +94,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Search for foods with optional category and meal filter
-    const foods = await searchFoods(query || '', limit, category, meal)
-    return NextResponse.json({ foods, count: foods.length })
+    const result = await searchFoods(query || '', limit, page, category, meal)
+    return NextResponse.json(result)
 
   } catch (error) {
     console.error('SLV Proxy error:', error)
@@ -214,15 +216,23 @@ async function fetchAllFoods(): Promise<SLVFoodItem[]> {
   return allFoods
 }
 
+interface SearchResult {
+  foods: TransformedFood[]
+  totalCount: number
+  totalPages: number
+  currentPage: number
+}
+
 /**
- * Search foods and fetch nutrition for matches
+ * Search foods and fetch nutrition for matches with pagination
  */
 async function searchFoods(
   query: string,
   limit: number,
+  page: number,
   category: 'protein' | 'kolhydrat' | 'fett' | null = null,
   meal: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'evening' | null = null
-): Promise<TransformedFood[]> {
+): Promise<SearchResult> {
   // Fetch all foods from SLV database
   const foods = await fetchAllFoods()
 
@@ -233,35 +243,23 @@ async function searchFoods(
   }
 
   // If category specified but no query, use category keywords to pre-filter
-  // Also try to get diverse results by sampling from different keyword matches
   if (category && !query) {
     const keywords = meal && MEAL_SPECIFIC_KEYWORDS[meal]?.[category]
       ? MEAL_SPECIFIC_KEYWORDS[meal][category]
       : CATEGORY_KEYWORDS[category] || []
 
-    // Get matches for each keyword separately, then combine for diversity
-    const matchesByKeyword: SLVFoodItem[][] = keywords.map(keyword => {
+    // Get all matches for all keywords
+    const allMatches: SLVFoodItem[] = []
+    for (const keyword of keywords) {
       const regex = new RegExp(`(^|\\s|-)${keyword}`, 'i')
-      return foods.filter(f => regex.test(f.namn.toLowerCase())).slice(0, 5)
-    })
-
-    // Interleave results from different keywords for diversity
-    const diverse: SLVFoodItem[] = []
-    const maxPerRound = 2
-    let round = 0
-    while (diverse.length < 25 && round < 10) {
-      for (const matches of matchesByKeyword) {
-        const startIdx = round * maxPerRound
-        const items = matches.slice(startIdx, startIdx + maxPerRound)
-        for (const item of items) {
-          if (!diverse.find(d => d.nummer === item.nummer)) {
-            diverse.push(item)
-          }
+      const matches = foods.filter(f => regex.test(f.namn.toLowerCase()))
+      for (const match of matches) {
+        if (!allMatches.find(m => m.nummer === match.nummer)) {
+          allMatches.push(match)
         }
       }
-      round++
     }
-    filtered = diverse
+    filtered = allMatches
   }
 
   // If we have a query AND category, filter by both
@@ -269,31 +267,28 @@ async function searchFoods(
     filtered = filtered.filter(f => matchesCategoryKeywords(f.namn, category, meal))
   }
 
-  // Limit to fetch nutrition for - high limit to show all results
-  // 100 items × 2 requests each = 200 API calls (batched for speed)
-  const toFetch = filtered.slice(0, Math.min(100, filtered.length))
+  // Calculate pagination
+  const totalCount = filtered.length
+  const totalPages = Math.ceil(totalCount / limit)
+  const offset = (page - 1) * limit
 
-  // Fetch nutrition for each (in parallel, max 15 at a time for speed)
+  // Get items for current page
+  const pageItems = filtered.slice(offset, offset + limit)
+
+  // Fetch nutrition for page items (in parallel, max 15 at a time)
   const results: TransformedFood[] = []
 
-  for (let i = 0; i < toFetch.length; i += 15) {
-    const batch = toFetch.slice(i, i + 15)
+  for (let i = 0; i < pageItems.length; i += 15) {
+    const batch = pageItems.slice(i, i + 15)
     const batchResults = await Promise.all(
       batch.map(food => fetchFoodWithNutrition(food.nummer))
     )
     results.push(...batchResults.filter((f): f is TransformedFood => f !== null))
   }
 
-  // Filter by nutritional profile only if NO search query
-  // When user searches for specific food (like "bröd"), show all matches
-  let finalResults = results
-  if (category && !query) {
-    finalResults = results.filter(f => matchesCategoryNutrition(f, category))
-  }
-
   // Sort by relevance (highest macro content for category)
   if (category) {
-    finalResults.sort((a, b) => {
+    results.sort((a, b) => {
       switch (category) {
         case 'protein': return b.protein - a.protein
         case 'kolhydrat': return b.carbs - a.carbs
@@ -303,7 +298,12 @@ async function searchFoods(
     })
   }
 
-  return finalResults.slice(0, limit)
+  return {
+    foods: results,
+    totalCount,
+    totalPages,
+    currentPage: page
+  }
 }
 
 /**

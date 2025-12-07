@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { Search, Loader2, X, Database, ChevronLeft } from 'lucide-react'
+import { Search, Loader2, X, Database, ChevronLeft, ChevronRight } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -185,6 +185,12 @@ export function SLVFoodSearchModal({
   const [hasSearched, setHasSearched] = useState(false)
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+  const ITEMS_PER_PAGE = 20
+
   // Get subcategories for current meal type and category (memoized)
   const subcategories = useMemo(() => {
     if (mealType && category && SUBCATEGORIES[mealType]?.[category]) {
@@ -196,8 +202,8 @@ export function SLVFoodSearchModal({
     return []
   }, [mealType, category])
 
-  // Search function - can be called with or without query
-  const searchFoods = useCallback(async (query: string = '') => {
+  // Search function - can be called with or without query and page
+  const searchFoods = useCallback(async (query: string = '', page: number = 1) => {
     // Allow empty query when category is specified (for auto-search)
     if (query.length < 2 && query.length > 0) {
       setResults([])
@@ -210,8 +216,8 @@ export function SLVFoodSearchModal({
     setHasSearched(true)
 
     try {
-      // Build URL with category and meal filters - high limit to show all results
-      let url = `/api/slv-proxy?limit=100`
+      // Build URL with category, meal filters and pagination
+      let url = `/api/slv-proxy?limit=${ITEMS_PER_PAGE}&page=${page}`
       if (query) {
         url += `&q=${encodeURIComponent(query)}`
       }
@@ -227,6 +233,9 @@ export function SLVFoodSearchModal({
 
       const data = await response.json()
       setResults(data.foods || [])
+      setTotalCount(data.totalCount || 0)
+      setTotalPages(data.totalPages || 1)
+      setCurrentPage(data.currentPage || 1)
     } catch (err) {
       setError('Kunde inte hämta data från Livsmedelsverket')
       setResults([])
@@ -278,13 +287,17 @@ export function SLVFoodSearchModal({
       setError(null)
       setHasSearched(false)
       setSelectedSubcategory(null)
+      setCurrentPage(1)
+      setTotalPages(1)
+      setTotalCount(0)
     }
   }, [isOpen])
 
   // Handle subcategory selection
   const handleSubcategorySelect = (searchTermValue: string, label: string) => {
     setSelectedSubcategory(label)
-    searchFoods(searchTermValue)
+    setCurrentPage(1)
+    searchFoods(searchTermValue, 1)
   }
 
   // Go back to subcategory selection
@@ -293,6 +306,21 @@ export function SLVFoodSearchModal({
     setResults([])
     setSearchTerm('')
     setHasSearched(false)
+    setCurrentPage(1)
+    setTotalPages(1)
+    setTotalCount(0)
+  }
+
+  // Handle page change
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return
+    setCurrentPage(newPage)
+
+    // Re-search with new page
+    const query = selectedSubcategory
+      ? subcategories.find(s => s.label === selectedSubcategory)?.searchTerm || ''
+      : searchTerm
+    searchFoods(query, newPage)
   }
 
   const handleSelect = (food: SLVFood) => {
@@ -400,33 +428,67 @@ export function SLVFoodSearchModal({
           )}
 
           {!isLoading && !error && results.length > 0 && (
-            <div className="space-y-2">
-              {results.map((food) => (
-                <button
-                  key={food.slvNummer}
-                  onClick={() => handleSelect(food)}
-                  className="w-full p-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-gold-500/50 transition-all text-left"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="font-medium text-white">{food.name}</div>
-                      <div className="text-xs text-zinc-500 mt-0.5">
-                        SLV #{food.slvNummer} · {food.type}
+            <>
+              {/* Results count */}
+              <div className="text-xs text-zinc-500 mb-2">
+                Visar {(currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} av {totalCount} resultat
+              </div>
+
+              <div className="space-y-2">
+                {results.map((food) => (
+                  <button
+                    key={food.slvNummer}
+                    onClick={() => handleSelect(food)}
+                    className="w-full p-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-gold-500/50 transition-all text-left"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="font-medium text-white">{food.name}</div>
+                        <div className="text-xs text-zinc-500 mt-0.5">
+                          SLV #{food.slvNummer} · {food.type}
+                        </div>
+                      </div>
+                      <div className="text-right text-sm">
+                        <div className="text-orange-400 font-medium">{food.kcal} kcal</div>
+                        <div className="text-xs text-zinc-500">/100g</div>
                       </div>
                     </div>
-                    <div className="text-right text-sm">
-                      <div className="text-orange-400 font-medium">{food.kcal} kcal</div>
-                      <div className="text-xs text-zinc-500">/100g</div>
+                    <div className="flex gap-4 mt-2 text-xs">
+                      <span className="text-red-400">P: {food.protein}g</span>
+                      <span className="text-blue-400">K: {food.carbs}g</span>
+                      <span className="text-yellow-400">F: {food.fat}g</span>
                     </div>
-                  </div>
-                  <div className="flex gap-4 mt-2 text-xs">
-                    <span className="text-red-400">P: {food.protein}g</span>
-                    <span className="text-blue-400">K: {food.carbs}g</span>
-                    <span className="text-yellow-400">F: {food.fat}g</span>
-                  </div>
-                </button>
-              ))}
-            </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Pagination controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-zinc-800">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-300 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Föregående
+                  </button>
+
+                  <span className="text-sm text-zinc-400">
+                    Sida {currentPage} av {totalPages}
+                  </span>
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-300 hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Nästa
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+            </>
           )}
 
           {!isLoading && !hasSearched && !category && !searchTerm && (
