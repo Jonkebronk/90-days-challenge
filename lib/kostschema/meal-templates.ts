@@ -32,88 +32,40 @@ export const foodDatabase: Record<number, { protein: number; carbs: number; fat:
   703: { protein: 3.5, carbs: 5.0, fat: 0.3, kcal: 35, name: 'Blandade grönsaker' }
 }
 
-// Meal templates with base amounts (scaled dynamically)
-// These are the default ingredient options for each meal type
+// Meal templates - start empty, user adds ingredients via SLV search
 export const mealTemplates: Record<string, MealTemplate> = {
   breakfast: {
-    kolhydrat: [
-      { id: 1, amount: 50, unit: 'g', name: 'Havregryn', foodId: '', slvNummer: 519 },
-      { id: 2, amount: 415, unit: 'g', name: 'Naturell yoghurt 0.5% fett', foodId: '', slvNummer: 156 }
-    ],
-    protein: [
-      { id: 1, amount: 150, unit: 'g', name: 'Kvarg', foodId: '', slvNummer: 191 },
-      { id: 2, amount: 150, unit: 'g', name: 'Keso max 1.5% fett', foodId: '', slvNummer: 185 },
-      { id: 3, amount: 29, unit: 'g', name: 'Whey proteinpulver', foodId: '', slvNummer: 2368 }
-    ],
-    fett: [
-      { id: 1, amount: 130, unit: 'g', name: 'Ägg (medelstort ca 65g)', foodId: '', slvNummer: 340 }
-    ],
-    tillagg: [
-      { id: 1, amount: 50, unit: 'g', name: 'Hallon/Blåbär', foodId: '', slvNummer: 636 }
-    ],
-    kosttillskott: [
-      { id: 1, amount: 3, unit: 'st', name: 'Omega-3' },
-      { id: 2, amount: 1, unit: 'st', name: 'Multivitamin' }
-    ]
+    kolhydrat: [],
+    protein: [],
+    fett: [],
+    tillagg: [],
+    kosttillskott: []
   },
   snack: {
     kolhydrat: [],
-    protein: [
-      { id: 1, amount: 130, unit: 'g', name: 'Kvarg', foodId: '', slvNummer: 191 },
-      { id: 2, amount: 130, unit: 'g', name: 'Keso max 1.5% fett', foodId: '', slvNummer: 185 },
-      { id: 3, amount: 25, unit: 'g', name: 'Whey proteinpulver', foodId: '', slvNummer: 2368 }
-    ],
-    fett: [
-      { id: 1, amount: 80, unit: 'g', name: 'Avokado', foodId: '', slvNummer: 602 },
-      { id: 2, amount: 26, unit: 'g', name: 'Naturella nötter utan salt', foodId: '', slvNummer: 819 }
-    ],
+    protein: [],
+    fett: [],
     tillagg: [],
     kosttillskott: []
   },
   lunch: {
-    kolhydrat: [
-      { id: 1, amount: 70, unit: 'g', name: 'Ris (okokt)', foodId: '', slvNummer: 558 },
-      { id: 2, amount: 321, unit: 'g', name: 'Potatis', foodId: '', slvNummer: 688 }
-    ],
-    protein: [
-      { id: 1, amount: 180, unit: 'g', name: 'Kyckling', foodId: '', slvNummer: 1534 },
-      { id: 2, amount: 180, unit: 'g', name: 'Magert nötkött', foodId: '', slvNummer: 1443 },
-      { id: 3, amount: 180, unit: 'g', name: 'Kalkon', foodId: '', slvNummer: 1559 }
-    ],
+    kolhydrat: [],
+    protein: [],
     fett: [],
-    tillagg: [
-      { id: 1, amount: 200, unit: 'g', name: 'Blandade grönsaker', foodId: '', slvNummer: 703 }
-    ],
+    tillagg: [],
     kosttillskott: []
   },
   dinner: {
-    kolhydrat: [
-      { id: 1, amount: 70, unit: 'g', name: 'Ris (okokt)', foodId: '', slvNummer: 558 },
-      { id: 2, amount: 70, unit: 'g', name: 'Mathavre', foodId: '', slvNummer: 520 },
-      { id: 3, amount: 70, unit: 'g', name: 'Matvete', foodId: '', slvNummer: 544 },
-      { id: 4, amount: 70, unit: 'g', name: 'Bönpasta', foodId: '', slvNummer: 2392 }
-    ],
-    protein: [
-      { id: 1, amount: 180, unit: 'g', name: 'Kyckling', foodId: '', slvNummer: 1534 },
-      { id: 2, amount: 180, unit: 'g', name: 'Magert nötkött', foodId: '', slvNummer: 1443 },
-      { id: 3, amount: 180, unit: 'g', name: 'Kalkon', foodId: '', slvNummer: 1559 }
-    ],
+    kolhydrat: [],
+    protein: [],
     fett: [],
-    tillagg: [
-      { id: 1, amount: 200, unit: 'g', name: 'Blandade grönsaker', foodId: '', slvNummer: 703 }
-    ],
+    tillagg: [],
     kosttillskott: []
   },
   evening: {
     kolhydrat: [],
-    protein: [
-      { id: 1, amount: 175, unit: 'g', name: 'Kvarg', foodId: '', slvNummer: 191 },
-      { id: 2, amount: 175, unit: 'g', name: 'Keso', foodId: '', slvNummer: 184 },
-      { id: 3, amount: 37, unit: 'g', name: 'Casein', foodId: '', slvNummer: 2369 }
-    ],
-    fett: [
-      { id: 1, amount: 15, unit: 'g', name: 'Naturella nötter utan salt', foodId: '', slvNummer: 819 }
-    ],
+    protein: [],
+    fett: [],
     tillagg: [],
     kosttillskott: []
   }

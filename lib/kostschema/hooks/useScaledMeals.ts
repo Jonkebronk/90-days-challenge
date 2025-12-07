@@ -66,6 +66,64 @@ function scaleIngredient(
 }
 
 /**
+ * Scale a custom food that was added via override (no template item)
+ */
+function scaleCustomFood(
+  customFood: CustomFood,
+  targetMacro: number,
+  macroType: 'protein' | 'carbs' | 'fat',
+  id: number
+): ScaledIngredient {
+  const macroPer100g = customFood[macroType === 'carbs' ? 'carbs' : macroType]
+
+  // Use custom amount if provided, otherwise calculate based on macro target
+  let scaledAmount = 100 // default
+  if (customFood.customAmount !== undefined) {
+    scaledAmount = customFood.customAmount
+  } else if (macroPer100g > 0 && targetMacro > 0) {
+    scaledAmount = Math.round((targetMacro / macroPer100g) * 100)
+  }
+
+  const factor = scaledAmount / 100
+  return {
+    id,
+    amount: scaledAmount,
+    unit: 'g',
+    name: customFood.name,
+    foodId: '',
+    slvNummer: customFood.slvNummer,
+    scaledAmount,
+    macros: {
+      protein: Math.round(customFood.protein * factor * 10) / 10,
+      carbs: Math.round(customFood.carbs * factor * 10) / 10,
+      fat: Math.round(customFood.fat * factor * 10) / 10,
+      kcal: Math.round(customFood.kcal * factor)
+    }
+  }
+}
+
+/**
+ * Get all override indices for a meal/category combination
+ */
+function getOverrideIndices(
+  overrides: IngredientOverrides,
+  mealType: string,
+  category: string
+): number[] {
+  const prefix = `${mealType}:${category}:`
+  const indices: number[] = []
+  for (const key of Object.keys(overrides)) {
+    if (key.startsWith(prefix)) {
+      const index = parseInt(key.slice(prefix.length))
+      if (!isNaN(index)) {
+        indices.push(index)
+      }
+    }
+  }
+  return indices.sort((a, b) => a - b)
+}
+
+/**
  * Hook to calculate scaled meals based on macro targets
  *
  * Key improvement: Distributes each macro ONLY to meals that have sources for it.
@@ -83,16 +141,22 @@ export function useScaledMeals(
     const distribution = mealDistributions[mealCount]
     if (!distribution) return []
 
-    // First pass: determine which meals have which macro sources
+    // First pass: determine which meals have which macro sources (including overrides)
     const mealConfigs = distribution.map(meal => {
       const templateType = meal.type.startsWith('snack') ? 'snack' : meal.type
       const template = mealTemplates[templateType] || mealTemplates.snack
+
+      // Check both template and overrides for sources
+      const proteinOverrides = getOverrideIndices(overrides, meal.type, 'protein')
+      const carbsOverrides = getOverrideIndices(overrides, meal.type, 'kolhydrat')
+      const fatOverrides = getOverrideIndices(overrides, meal.type, 'fett')
+
       return {
         meal,
         template,
-        hasProtein: template.protein.length > 0,
-        hasCarbs: template.kolhydrat.length > 0,
-        hasFat: template.fett.length > 0
+        hasProtein: template.protein.length > 0 || proteinOverrides.length > 0,
+        hasCarbs: template.kolhydrat.length > 0 || carbsOverrides.length > 0,
+        hasFat: template.fett.length > 0 || fatOverrides.length > 0
       }
     })
 
@@ -119,35 +183,73 @@ export function useScaledMeals(
       const mealCarbsTarget = macroTargets.carbs * carbsShare
       const mealFatTarget = macroTargets.fat * fatShare
 
-      // Scale protein sources (filter out deleted)
-      const scaledProtein = template.protein
-        .map((item, index) => {
+      // Scale protein sources (template + overrides, filter out deleted)
+      const proteinOverrideIndices = getOverrideIndices(overrides, meal.type, 'protein')
+      const scaledProtein: ScaledIngredient[] = []
+
+      // First, process template items
+      template.protein.forEach((item, index) => {
+        const overrideKey = getOverrideKey(meal.type, 'protein', index)
+        if (deletedIngredients.has(overrideKey)) return
+        const customFood = overrides[overrideKey]
+        scaledProtein.push(scaleIngredient(item, mealProteinTarget, 'protein', customFood))
+      })
+
+      // Then, add override-only items (indices beyond template)
+      proteinOverrideIndices.forEach(index => {
+        if (index >= template.protein.length) {
           const overrideKey = getOverrideKey(meal.type, 'protein', index)
-          if (deletedIngredients.has(overrideKey)) return null
+          if (deletedIngredients.has(overrideKey)) return
           const customFood = overrides[overrideKey]
-          return scaleIngredient(item, mealProteinTarget, 'protein', customFood)
-        })
-        .filter((item): item is ScaledIngredient => item !== null)
+          if (customFood) {
+            scaledProtein.push(scaleCustomFood(customFood, mealProteinTarget, 'protein', index + 1000))
+          }
+        }
+      })
 
-      // Scale carb sources (filter out deleted)
-      const scaledKolhydrat = template.kolhydrat
-        .map((item, index) => {
+      // Scale carb sources (template + overrides, filter out deleted)
+      const carbsOverrideIndices = getOverrideIndices(overrides, meal.type, 'kolhydrat')
+      const scaledKolhydrat: ScaledIngredient[] = []
+
+      template.kolhydrat.forEach((item, index) => {
+        const overrideKey = getOverrideKey(meal.type, 'kolhydrat', index)
+        if (deletedIngredients.has(overrideKey)) return
+        const customFood = overrides[overrideKey]
+        scaledKolhydrat.push(scaleIngredient(item, mealCarbsTarget, 'carbs', customFood))
+      })
+
+      carbsOverrideIndices.forEach(index => {
+        if (index >= template.kolhydrat.length) {
           const overrideKey = getOverrideKey(meal.type, 'kolhydrat', index)
-          if (deletedIngredients.has(overrideKey)) return null
+          if (deletedIngredients.has(overrideKey)) return
           const customFood = overrides[overrideKey]
-          return scaleIngredient(item, mealCarbsTarget, 'carbs', customFood)
-        })
-        .filter((item): item is ScaledIngredient => item !== null)
+          if (customFood) {
+            scaledKolhydrat.push(scaleCustomFood(customFood, mealCarbsTarget, 'carbs', index + 2000))
+          }
+        }
+      })
 
-      // Scale fat sources (filter out deleted)
-      const scaledFett = template.fett
-        .map((item, index) => {
+      // Scale fat sources (template + overrides, filter out deleted)
+      const fatOverrideIndices = getOverrideIndices(overrides, meal.type, 'fett')
+      const scaledFett: ScaledIngredient[] = []
+
+      template.fett.forEach((item, index) => {
+        const overrideKey = getOverrideKey(meal.type, 'fett', index)
+        if (deletedIngredients.has(overrideKey)) return
+        const customFood = overrides[overrideKey]
+        scaledFett.push(scaleIngredient(item, mealFatTarget, 'fat', customFood))
+      })
+
+      fatOverrideIndices.forEach(index => {
+        if (index >= template.fett.length) {
           const overrideKey = getOverrideKey(meal.type, 'fett', index)
-          if (deletedIngredients.has(overrideKey)) return null
+          if (deletedIngredients.has(overrideKey)) return
           const customFood = overrides[overrideKey]
-          return scaleIngredient(item, mealFatTarget, 'fat', customFood)
-        })
-        .filter((item): item is ScaledIngredient => item !== null)
+          if (customFood) {
+            scaledFett.push(scaleCustomFood(customFood, mealFatTarget, 'fat', index + 3000))
+          }
+        }
+      })
 
       // Tillagg - don't scale, keep original amounts
       const scaledTillagg = template.tillagg.map(item => {
