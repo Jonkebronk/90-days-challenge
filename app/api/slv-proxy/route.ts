@@ -33,6 +33,35 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
   fett: ['olja', 'olivolja', 'rapsolja', 'kokosolja', 'smör', 'nötter', 'mandel', 'valnöt', 'cashew', 'jordnöt', 'avokado', 'frön', 'linfrön', 'chiafrön', 'solrosfrön', 'pumpafrön', 'ost', 'grädde', 'majonnäs']
 }
 
+// Meal-specific keywords for each category
+const MEAL_SPECIFIC_KEYWORDS: Record<string, Record<string, string[]>> = {
+  breakfast: {
+    kolhydrat: ['havre', 'gryn', 'gröt', 'müsli', 'flingor', 'bröd', 'knäckebröd', 'yoghurt', 'fil', 'smoothie', 'juice', 'frukt', 'banan', 'äpple', 'blåbär', 'hallon', 'jordgubb'],
+    protein: ['ägg', 'kvarg', 'keso', 'cottage', 'yoghurt', 'skinka', 'kalkon', 'protein', 'whey'],
+    fett: ['ägg', 'avokado', 'nötter', 'mandel', 'jordnötssmör', 'ost', 'smör']
+  },
+  lunch: {
+    kolhydrat: ['ris', 'pasta', 'potatis', 'bröd', 'bulgur', 'quinoa', 'couscous', 'nudlar', 'tortilla', 'wrap'],
+    protein: ['kyckling', 'kalkon', 'nöt', 'fläsk', 'fisk', 'lax', 'tonfisk', 'ägg', 'bönor', 'linser', 'tofu'],
+    fett: ['avokado', 'olja', 'olivolja', 'nötter', 'frön', 'ost', 'dressing']
+  },
+  dinner: {
+    kolhydrat: ['ris', 'pasta', 'potatis', 'sötpotatis', 'bulgur', 'quinoa', 'couscous', 'nudlar', 'bröd'],
+    protein: ['kyckling', 'kalkon', 'nöt', 'fläsk', 'fisk', 'lax', 'torsk', 'sej', 'räk', 'köttfärs', 'biff', 'filé'],
+    fett: ['avokado', 'olja', 'olivolja', 'smör', 'grädde', 'ost', 'nötter']
+  },
+  snack: {
+    kolhydrat: ['frukt', 'banan', 'äpple', 'päron', 'bär', 'knäckebröd', 'riskakor', 'müslibar', 'smoothie'],
+    protein: ['kvarg', 'keso', 'cottage', 'yoghurt', 'ägg', 'skinka', 'protein', 'nötter'],
+    fett: ['nötter', 'mandel', 'cashew', 'jordnötssmör', 'avokado', 'frön', 'ost']
+  },
+  evening: {
+    kolhydrat: ['kvarg', 'keso', 'yoghurt', 'frukt', 'bär', 'hallon', 'blåbär'],
+    protein: ['kvarg', 'keso', 'cottage', 'casein', 'ägg', 'yoghurt'],
+    fett: ['nötter', 'mandel', 'jordnötssmör', 'ost', 'avokado']
+  }
+}
+
 /**
  * GET /api/slv-proxy
  * Search Livsmedelsverket's food database
@@ -41,6 +70,7 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
  * - q: Search query (filters by name)
  * - nummer: Get specific food by SLV number
  * - category: Filter by category (protein, kolhydrat, fett)
+ * - meal: Filter by meal type (breakfast, lunch, dinner, snack, evening)
  * - limit: Max results (default 20)
  */
 export async function GET(request: NextRequest) {
@@ -48,6 +78,7 @@ export async function GET(request: NextRequest) {
   const query = searchParams.get('q')
   const nummer = searchParams.get('nummer')
   const category = searchParams.get('category') as 'protein' | 'kolhydrat' | 'fett' | null
+  const meal = searchParams.get('meal') as 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'evening' | null
   const limit = parseInt(searchParams.get('limit') || '20')
 
   try {
@@ -60,8 +91,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ food })
     }
 
-    // Search for foods with optional category filter
-    const foods = await searchFoods(query || '', limit, category)
+    // Search for foods with optional category and meal filter
+    const foods = await searchFoods(query || '', limit, category, meal)
     return NextResponse.json({ foods, count: foods.length })
 
   } catch (error) {
@@ -119,9 +150,17 @@ async function fetchFoodWithNutrition(nummer: number): Promise<TransformedFood |
 /**
  * Check if a food name matches any category keywords
  * Uses word boundary matching to avoid false positives (e.g., "ris" in "Gris")
+ * If meal type is specified, use meal-specific keywords for better relevance
  */
-function matchesCategoryKeywords(name: string, category: string): boolean {
-  const keywords = CATEGORY_KEYWORDS[category] || []
+function matchesCategoryKeywords(name: string, category: string, meal?: string | null): boolean {
+  // Use meal-specific keywords if available, otherwise fallback to general
+  let keywords: string[]
+  if (meal && MEAL_SPECIFIC_KEYWORDS[meal]?.[category]) {
+    keywords = MEAL_SPECIFIC_KEYWORDS[meal][category]
+  } else {
+    keywords = CATEGORY_KEYWORDS[category] || []
+  }
+
   const lowerName = name.toLowerCase()
 
   return keywords.some(keyword => {
@@ -181,7 +220,8 @@ async function fetchAllFoods(): Promise<SLVFoodItem[]> {
 async function searchFoods(
   query: string,
   limit: number,
-  category: 'protein' | 'kolhydrat' | 'fett' | null = null
+  category: 'protein' | 'kolhydrat' | 'fett' | null = null,
+  meal: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'evening' | null = null
 ): Promise<TransformedFood[]> {
   // Fetch all foods from SLV database
   const foods = await fetchAllFoods()
@@ -194,12 +234,12 @@ async function searchFoods(
 
   // If category specified but no query, use category keywords to pre-filter
   if (category && !query) {
-    filtered = foods.filter(f => matchesCategoryKeywords(f.namn, category))
+    filtered = foods.filter(f => matchesCategoryKeywords(f.namn, category, meal))
   }
 
   // If we have a query AND category, filter by both
   if (query && category) {
-    filtered = filtered.filter(f => matchesCategoryKeywords(f.namn, category))
+    filtered = filtered.filter(f => matchesCategoryKeywords(f.namn, category, meal))
   }
 
   // Limit to fetch nutrition for - keep it small to avoid timeouts

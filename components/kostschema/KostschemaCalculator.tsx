@@ -16,6 +16,16 @@ interface IngredientChangeTarget {
   index: number
 }
 
+// Map meal types to API meal filter
+function getMealApiType(mealType: string): 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'evening' | undefined {
+  if (mealType === 'breakfast') return 'breakfast'
+  if (mealType === 'lunch') return 'lunch'
+  if (mealType === 'dinner') return 'dinner'
+  if (mealType.startsWith('snack')) return 'snack'
+  if (mealType === 'evening') return 'evening'
+  return undefined
+}
+
 export function KostschemaCalculator() {
   // Form state
   const [bodyWeight, setBodyWeight] = useState<number>(85)
@@ -126,6 +136,7 @@ export function KostschemaCalculator() {
         }}
         onSelect={handleFoodSelect}
         category={changeTarget?.category}
+        mealType={changeTarget ? getMealApiType(changeTarget.mealType) : undefined}
       />
     </div>
   )

@@ -25,13 +25,15 @@ interface SLVFoodSearchModalProps {
   onClose: () => void
   onSelect: (food: SLVFood) => void
   category?: 'protein' | 'kolhydrat' | 'fett'
+  mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'evening'
 }
 
 export function SLVFoodSearchModal({
   isOpen,
   onClose,
   onSelect,
-  category
+  category,
+  mealType
 }: SLVFoodSearchModalProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [results, setResults] = useState<SLVFood[]>([])
@@ -53,13 +55,16 @@ export function SLVFoodSearchModal({
     setHasSearched(true)
 
     try {
-      // Build URL with category filter if specified
+      // Build URL with category and meal filters
       let url = `/api/slv-proxy?limit=15`
       if (query) {
         url += `&q=${encodeURIComponent(query)}`
       }
       if (category) {
         url += `&category=${category}`
+      }
+      if (mealType) {
+        url += `&meal=${mealType}`
       }
 
       const response = await fetch(url)
@@ -73,7 +78,7 @@ export function SLVFoodSearchModal({
     } finally {
       setIsLoading(false)
     }
-  }, [category])
+  }, [category, mealType])
 
   // Auto-search when modal opens with a category
   useEffect(() => {
