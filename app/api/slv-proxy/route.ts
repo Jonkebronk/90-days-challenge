@@ -242,8 +242,10 @@ async function searchFoods(
  * Transform SLV data to our format
  */
 function transformFood(food: SLVFoodItem, nutrients: SLVNutrient[]): TransformedFood {
-  const getNutrientValue = (abbreviation: string): number => {
-    const nutrient = nutrients.find(n => n.forkortning === abbreviation)
+  const getNutrientValue = (abbreviation: string, unit?: string): number => {
+    const nutrient = nutrients.find(n =>
+      n.forkortning === abbreviation && (!unit || n.enhet === unit)
+    )
     return nutrient?.varde ?? 0
   }
 
@@ -254,6 +256,6 @@ function transformFood(food: SLVFoodItem, nutrients: SLVNutrient[]): Transformed
     protein: Math.round(getNutrientValue('Prot') * 10) / 10,
     carbs: Math.round(getNutrientValue('Kolh') * 10) / 10,
     fat: Math.round(getNutrientValue('Fett') * 10) / 10,
-    kcal: Math.round(getNutrientValue('Ener'))
+    kcal: Math.round(getNutrientValue('Ener', 'kcal'))
   }
 }
