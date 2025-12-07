@@ -80,10 +80,10 @@ export const mealTemplates: Record<string, MealTemplate> = {
       { id: 2, amount: 180, unit: 'g', name: 'Magert nötkött', foodId: '', slvNummer: 1443 },
       { id: 3, amount: 180, unit: 'g', name: 'Kalkon', foodId: '', slvNummer: 1559 }
     ],
-    fett: [
+    fett: [],
+    tillagg: [
       { id: 1, amount: 200, unit: 'g', name: 'Blandade grönsaker', foodId: '', slvNummer: 703 }
     ],
-    tillagg: [],
     kosttillskott: []
   },
   dinner: {
@@ -98,10 +98,10 @@ export const mealTemplates: Record<string, MealTemplate> = {
       { id: 2, amount: 180, unit: 'g', name: 'Magert nötkött', foodId: '', slvNummer: 1443 },
       { id: 3, amount: 180, unit: 'g', name: 'Kalkon', foodId: '', slvNummer: 1559 }
     ],
-    fett: [
+    fett: [],
+    tillagg: [
       { id: 1, amount: 200, unit: 'g', name: 'Blandade grönsaker', foodId: '', slvNummer: 703 }
     ],
-    tillagg: [],
     kosttillskott: []
   },
   evening: {
