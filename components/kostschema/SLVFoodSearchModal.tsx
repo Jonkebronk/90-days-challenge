@@ -21,16 +21,23 @@ interface SLVFood {
 }
 
 interface OriginalIngredient {
+  name: string
   amount: number
   macroPer100g: number
   macroType: 'protein' | 'carbs' | 'fat'
+  macros: {
+    protein: number
+    carbs: number
+    fat: number
+    kcal: number
+  }
 }
 
 interface SLVFoodSearchModalProps {
   isOpen: boolean
   onClose: () => void
   onSelect: (food: SLVFood) => void
-  category?: 'protein' | 'kolhydrat' | 'fett'
+  category?: 'protein' | 'kolhydrat' | 'fett' | 'tillagg'
   mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'evening'
   originalIngredient?: OriginalIngredient
 }
@@ -64,6 +71,12 @@ const SUBCATEGORIES: Record<string, Record<string, { label: string; searchTerm: 
       { label: 'Ost', searchTerm: 'ost' },
       { label: 'Smör', searchTerm: 'smör' },
     ],
+    tillagg: [
+      { label: 'Tomat', searchTerm: 'tomat' },
+      { label: 'Gurka', searchTerm: 'gurka' },
+      { label: 'Paprika', searchTerm: 'paprika' },
+      { label: 'Spenat', searchTerm: 'spenat' },
+    ],
   },
   lunch: {
     kolhydrat: [
@@ -90,6 +103,15 @@ const SUBCATEGORIES: Record<string, Record<string, { label: string; searchTerm: 
       { label: 'Nötter', searchTerm: 'nötter' },
       { label: 'Ost', searchTerm: 'ost' },
     ],
+    tillagg: [
+      { label: 'Sallad', searchTerm: 'sallad' },
+      { label: 'Tomat', searchTerm: 'tomat' },
+      { label: 'Gurka', searchTerm: 'gurka' },
+      { label: 'Paprika', searchTerm: 'paprika' },
+      { label: 'Broccoli', searchTerm: 'broccoli' },
+      { label: 'Morot', searchTerm: 'morot' },
+      { label: 'Lök', searchTerm: 'lök' },
+    ],
   },
   dinner: {
     kolhydrat: [
@@ -113,6 +135,15 @@ const SUBCATEGORIES: Record<string, Record<string, { label: string; searchTerm: 
       { label: 'Smör', searchTerm: 'smör' },
       { label: 'Grädde', searchTerm: 'grädde' },
       { label: 'Ost', searchTerm: 'ost' },
+    ],
+    tillagg: [
+      { label: 'Sallad', searchTerm: 'sallad' },
+      { label: 'Tomat', searchTerm: 'tomat' },
+      { label: 'Gurka', searchTerm: 'gurka' },
+      { label: 'Broccoli', searchTerm: 'broccoli' },
+      { label: 'Sparris', searchTerm: 'sparris' },
+      { label: 'Zucchini', searchTerm: 'zucchini' },
+      { label: 'Svamp', searchTerm: 'svamp' },
     ],
   },
   snack: {
@@ -138,6 +169,12 @@ const SUBCATEGORIES: Record<string, Record<string, { label: string; searchTerm: 
       { label: 'Jordnötssmör', searchTerm: 'jordnötssmör' },
       { label: 'Avokado', searchTerm: 'avokado' },
     ],
+    tillagg: [
+      { label: 'Morot', searchTerm: 'morot' },
+      { label: 'Gurka', searchTerm: 'gurka' },
+      { label: 'Selleri', searchTerm: 'selleri' },
+      { label: 'Paprika', searchTerm: 'paprika' },
+    ],
   },
   evening: {
     kolhydrat: [
@@ -154,6 +191,10 @@ const SUBCATEGORIES: Record<string, Record<string, { label: string; searchTerm: 
       { label: 'Nötter', searchTerm: 'nötter' },
       { label: 'Jordnötssmör', searchTerm: 'jordnötssmör' },
       { label: 'Ost', searchTerm: 'ost' },
+    ],
+    tillagg: [
+      { label: 'Gurka', searchTerm: 'gurka' },
+      { label: 'Tomat', searchTerm: 'tomat' },
     ],
   },
 }
@@ -178,6 +219,14 @@ const DEFAULT_SUBCATEGORIES: Record<string, { label: string; searchTerm: string 
     { label: 'Nötter', searchTerm: 'nötter' },
     { label: 'Olivolja', searchTerm: 'olivolja' },
     { label: 'Ost', searchTerm: 'ost' },
+  ],
+  tillagg: [
+    { label: 'Sallad', searchTerm: 'sallad' },
+    { label: 'Tomat', searchTerm: 'tomat' },
+    { label: 'Gurka', searchTerm: 'gurka' },
+    { label: 'Broccoli', searchTerm: 'broccoli' },
+    { label: 'Morot', searchTerm: 'morot' },
+    { label: 'Paprika', searchTerm: 'paprika' },
   ],
 }
 
@@ -345,6 +394,7 @@ export function SLVFoodSearchModal({
       case 'protein': return 'proteinkälla'
       case 'kolhydrat': return 'kolhydratskälla'
       case 'fett': return 'fettkälla'
+      case 'tillagg': return 'grönsak/sallad'
       default: return 'ingrediens'
     }
   }
@@ -354,6 +404,7 @@ export function SLVFoodSearchModal({
       case 'protein': return 'from-rose-500/20 to-transparent border-rose-500/30'
       case 'kolhydrat': return 'from-blue-500/20 to-transparent border-blue-500/30'
       case 'fett': return 'from-amber-500/20 to-transparent border-amber-500/30'
+      case 'tillagg': return 'from-emerald-500/20 to-transparent border-emerald-500/30'
       default: return 'from-gold-500/20 to-transparent border-gold-500/30'
     }
   }
@@ -377,6 +428,27 @@ export function SLVFoodSearchModal({
         </div>
 
         <div className="p-4 flex flex-col gap-4 flex-1 overflow-hidden">
+          {/* Nuvarande ingrediens */}
+          {originalIngredient && (
+            <div className="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700/50">
+              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2 font-medium">Nuvarande</p>
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-white font-medium">{originalIngredient.name}</p>
+                  <div className="flex gap-2 mt-1">
+                    <span className="text-xs text-rose-400">P: {originalIngredient.macros.protein}g</span>
+                    <span className="text-xs text-blue-400">K: {originalIngredient.macros.carbs}g</span>
+                    <span className="text-xs text-amber-400">F: {originalIngredient.macros.fat}g</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-gold-500">{originalIngredient.amount}g</p>
+                  <p className="text-sm text-zinc-500">{originalIngredient.macros.kcal} kcal</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Back button */}
           {selectedSubcategory && (
             <button

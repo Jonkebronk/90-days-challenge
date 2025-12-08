@@ -251,19 +251,75 @@ export function useScaledMeals(
         }
       })
 
-      // Tillagg - don't scale, keep original amounts
-      const scaledTillagg = template.tillagg.map(item => {
-        const food = getFoodNutrition(item.slvNummer)
-        const factor = item.amount / 100
-        return {
-          ...item,
-          scaledAmount: item.amount,
-          macros: food ? {
-            protein: Math.round(food.protein * factor * 10) / 10,
-            carbs: Math.round(food.carbs * factor * 10) / 10,
-            fat: Math.round(food.fat * factor * 10) / 10,
-            kcal: Math.round(food.kcal * factor)
-          } : { protein: 0, carbs: 0, fat: 0, kcal: 0 }
+      // Tillagg - user-added via overrides (no scaling, use fixed amounts)
+      const tillaggOverrideIndices = getOverrideIndices(overrides, meal.type, 'tillagg')
+      const scaledTillagg: ScaledIngredient[] = []
+
+      // Process template tillägg items
+      template.tillagg.forEach((item, index) => {
+        const overrideKey = getOverrideKey(meal.type, 'tillagg', index)
+        if (deletedIngredients.has(overrideKey)) return
+        const customFood = overrides[overrideKey]
+        if (customFood) {
+          // Use custom food with fixed amount
+          const amount = customFood.customAmount ?? 100
+          const factor = amount / 100
+          scaledTillagg.push({
+            id: item.id,
+            amount,
+            unit: 'g',
+            name: customFood.name,
+            foodId: '',
+            slvNummer: customFood.slvNummer,
+            scaledAmount: amount,
+            macros: {
+              protein: Math.round(customFood.protein * factor * 10) / 10,
+              carbs: Math.round(customFood.carbs * factor * 10) / 10,
+              fat: Math.round(customFood.fat * factor * 10) / 10,
+              kcal: Math.round(customFood.kcal * factor)
+            }
+          })
+        } else {
+          const food = getFoodNutrition(item.slvNummer)
+          const factor = item.amount / 100
+          scaledTillagg.push({
+            ...item,
+            scaledAmount: item.amount,
+            macros: food ? {
+              protein: Math.round(food.protein * factor * 10) / 10,
+              carbs: Math.round(food.carbs * factor * 10) / 10,
+              fat: Math.round(food.fat * factor * 10) / 10,
+              kcal: Math.round(food.kcal * factor)
+            } : { protein: 0, carbs: 0, fat: 0, kcal: 0 }
+          })
+        }
+      })
+
+      // Add override-only tillägg items (indices beyond template)
+      tillaggOverrideIndices.forEach(index => {
+        if (index >= template.tillagg.length) {
+          const overrideKey = getOverrideKey(meal.type, 'tillagg', index)
+          if (deletedIngredients.has(overrideKey)) return
+          const customFood = overrides[overrideKey]
+          if (customFood) {
+            const amount = customFood.customAmount ?? 100
+            const factor = amount / 100
+            scaledTillagg.push({
+              id: index + 4000,
+              amount,
+              unit: 'g',
+              name: customFood.name,
+              foodId: '',
+              slvNummer: customFood.slvNummer,
+              scaledAmount: amount,
+              macros: {
+                protein: Math.round(customFood.protein * factor * 10) / 10,
+                carbs: Math.round(customFood.carbs * factor * 10) / 10,
+                fat: Math.round(customFood.fat * factor * 10) / 10,
+                kcal: Math.round(customFood.kcal * factor)
+              }
+            })
+          }
         }
       })
 

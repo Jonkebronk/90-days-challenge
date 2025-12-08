@@ -8,10 +8,12 @@ interface MealPlanDisplayProps {
   meals: ScaledMeal[]
   mealCount: number
   setMealCount: (count: number) => void
-  onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
-  onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
-  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
-  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number, grams: number) => void
+  onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number) => void
+  onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg') => void
+  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number) => void
+  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number, grams: number) => void
+  onAddSupplement?: (mealType: string, supplementId: number) => void
+  onRemoveSupplement?: (mealType: string, supplementId: number) => void
 }
 
 const mealCountOptions = [
@@ -20,7 +22,17 @@ const mealCountOptions = [
   { value: 6, label: '6 måltider' }
 ]
 
-export function MealPlanDisplay({ meals, mealCount, setMealCount, onChangeIngredient, onAddIngredient, onDeleteIngredient, onUpdateGrams }: MealPlanDisplayProps) {
+export function MealPlanDisplay({
+  meals,
+  mealCount,
+  setMealCount,
+  onChangeIngredient,
+  onAddIngredient,
+  onDeleteIngredient,
+  onUpdateGrams,
+  onAddSupplement,
+  onRemoveSupplement
+}: MealPlanDisplayProps) {
   const totals = calculateDailyTotals(meals)
 
   return (
@@ -58,6 +70,8 @@ export function MealPlanDisplay({ meals, mealCount, setMealCount, onChangeIngred
             onAddIngredient={onAddIngredient}
             onDeleteIngredient={onDeleteIngredient}
             onUpdateGrams={onUpdateGrams}
+            onAddSupplement={onAddSupplement}
+            onRemoveSupplement={onRemoveSupplement}
           />
         ))}
       </div>

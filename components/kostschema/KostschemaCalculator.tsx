@@ -9,10 +9,11 @@ import { MacroCalculatorForm } from './MacroCalculatorForm'
 import { MacroSummary } from './MacroSummary'
 import { MealPlanDisplay } from './MealPlanDisplay'
 import { SLVFoodSearchModal } from './SLVFoodSearchModal'
+import { SupplementPickerModal } from './SupplementPickerModal'
 
 interface IngredientChangeTarget {
   mealType: string
-  category: 'protein' | 'kolhydrat' | 'fett'
+  category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg'
   index: number
 }
 
@@ -21,6 +22,9 @@ interface OriginalIngredient {
   macroPer100g: number
   macroType: 'protein' | 'carbs' | 'fat'
 }
+
+// Supplement overrides per meal type
+type SupplementOverrides = Record<string, { id: number; amount: number; unit: string; name: string }[]>
 
 // Map meal types to API meal filter
 function getMealApiType(mealType: string): 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'evening' | undefined {
@@ -44,11 +48,18 @@ export function KostschemaCalculator() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
   const [changeTarget, setChangeTarget] = useState<IngredientChangeTarget | null>(null)
 
+  // Supplement modal state
+  const [isSupplementModalOpen, setIsSupplementModalOpen] = useState(false)
+  const [supplementMealType, setSupplementMealType] = useState<string | null>(null)
+
   // Custom ingredient overrides
   const [ingredientOverrides, setIngredientOverrides] = useState<IngredientOverrides>({})
 
   // Deleted ingredients
   const [deletedIngredients, setDeletedIngredients] = useState<DeletedIngredients>(new Set())
+
+  // Supplement overrides per meal
+  const [supplementOverrides, setSupplementOverrides] = useState<SupplementOverrides>({})
 
   // Calculate macros based on input
   const macroTargets = useMacroCalculation({
@@ -62,7 +73,7 @@ export function KostschemaCalculator() {
   const meals = useScaledMeals(macroTargets, mealCount, ingredientOverrides, deletedIngredients)
 
   // Compute original ingredient data for substitution preview
-  const originalIngredient = useMemo((): OriginalIngredient | undefined => {
+  const originalIngredient = useMemo(() => {
     if (!changeTarget) return undefined
 
     // Find the meal matching the target
@@ -70,15 +81,21 @@ export function KostschemaCalculator() {
     if (!meal) return undefined
 
     // Get the ingredient from the appropriate category
-    const categoryKey = changeTarget.category === 'kolhydrat' ? 'kolhydrat'
-      : changeTarget.category === 'protein' ? 'protein' : 'fett'
+    const categoryKey = changeTarget.category
     const ingredient = meal.template[categoryKey]?.[changeTarget.index]
-    if (!ingredient) return undefined
 
-    // Map category to macro type
+    // For tillagg (new ingredients), there may be no existing ingredient
+    if (!ingredient) {
+      // For tillagg, we don't need original ingredient data for swap preview
+      if (changeTarget.category === 'tillagg') return undefined
+      return undefined
+    }
+
+    // Map category to macro type (tillagg uses carbs as default for weight calculation)
     const macroType: 'protein' | 'carbs' | 'fat' =
       changeTarget.category === 'protein' ? 'protein'
-        : changeTarget.category === 'kolhydrat' ? 'carbs' : 'fat'
+        : changeTarget.category === 'kolhydrat' ? 'carbs'
+        : changeTarget.category === 'tillagg' ? 'carbs' : 'fat'
 
     // Calculate macro per 100g from the scaled ingredient's macros
     // Formula: macroPer100g = (macros[type] / scaledAmount) * 100
@@ -89,16 +106,23 @@ export function KostschemaCalculator() {
       : 0
 
     return {
-      amount: ingredient.scaledAmount,
+      name: ingredient.name,
+      amount: Math.round(ingredient.scaledAmount),
       macroPer100g,
-      macroType
+      macroType,
+      macros: {
+        protein: Math.round(ingredient.macros.protein),
+        carbs: Math.round(ingredient.macros.carbs),
+        fat: Math.round(ingredient.macros.fat),
+        kcal: Math.round(ingredient.macros.kcal)
+      }
     }
   }, [changeTarget, meals])
 
   // Handle ingredient change request
   const handleChangeIngredient = (
     mealType: string,
-    category: 'protein' | 'kolhydrat' | 'fett',
+    category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg',
     index: number
   ) => {
     setChangeTarget({ mealType, category, index })
@@ -108,7 +132,7 @@ export function KostschemaCalculator() {
   // Handle add ingredient (opens modal to add new alternative)
   const handleAddIngredient = (
     mealType: string,
-    category: 'protein' | 'kolhydrat' | 'fett'
+    category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg'
   ) => {
     // Find the current meal to get the next available index
     const meal = meals.find(m => m.type === mealType)
@@ -145,7 +169,7 @@ export function KostschemaCalculator() {
   // Handle delete ingredient
   const handleDeleteIngredient = (
     mealType: string,
-    category: 'protein' | 'kolhydrat' | 'fett',
+    category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg',
     index: number
   ) => {
     const overrideKey = `${mealType}:${category}:${index}`
@@ -156,7 +180,7 @@ export function KostschemaCalculator() {
   // Handle update grams
   const handleUpdateGrams = (
     mealType: string,
-    category: 'protein' | 'kolhydrat' | 'fett',
+    category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg',
     index: number,
     grams: number
   ) => {
@@ -197,6 +221,49 @@ export function KostschemaCalculator() {
     }
   }
 
+  // Handle add supplement - opens supplement picker modal
+  const handleAddSupplement = (mealType: string) => {
+    setSupplementMealType(mealType)
+    setIsSupplementModalOpen(true)
+  }
+
+  // Handle supplement selection from modal
+  const handleSupplementSelect = (supplement: { id: number; amount: number; unit: string; name: string }) => {
+    if (!supplementMealType) return
+
+    setSupplementOverrides(prev => ({
+      ...prev,
+      [supplementMealType]: [...(prev[supplementMealType] || []), supplement]
+    }))
+
+    toast.success(`${supplement.name} tillagt`)
+    setIsSupplementModalOpen(false)
+    setSupplementMealType(null)
+  }
+
+  // Handle remove supplement
+  const handleRemoveSupplement = (mealType: string, supplementId: number) => {
+    setSupplementOverrides(prev => ({
+      ...prev,
+      [mealType]: (prev[mealType] || []).filter(s => s.id !== supplementId)
+    }))
+    toast.success('Kosttillskott borttaget')
+  }
+
+  // Merge supplement overrides into meals
+  const mealsWithSupplements = useMemo(() => {
+    return meals.map(meal => ({
+      ...meal,
+      template: {
+        ...meal.template,
+        kosttillskott: [
+          ...(meal.template.kosttillskott || []),
+          ...(supplementOverrides[meal.type] || [])
+        ]
+      }
+    }))
+  }, [meals, supplementOverrides])
+
   return (
     <div className="space-y-6">
       {/* Input form */}
@@ -217,13 +284,15 @@ export function KostschemaCalculator() {
       {/* Meal plan */}
       {bodyWeight > 0 && (
         <MealPlanDisplay
-          meals={meals}
+          meals={mealsWithSupplements}
           mealCount={mealCount}
           setMealCount={setMealCount}
           onChangeIngredient={handleChangeIngredient}
           onAddIngredient={handleAddIngredient}
           onDeleteIngredient={handleDeleteIngredient}
           onUpdateGrams={handleUpdateGrams}
+          onAddSupplement={handleAddSupplement}
+          onRemoveSupplement={handleRemoveSupplement}
         />
       )}
 
@@ -238,6 +307,17 @@ export function KostschemaCalculator() {
         category={changeTarget?.category}
         mealType={changeTarget ? getMealApiType(changeTarget.mealType) : undefined}
         originalIngredient={originalIngredient}
+      />
+
+      {/* Supplement Picker Modal */}
+      <SupplementPickerModal
+        isOpen={isSupplementModalOpen}
+        onClose={() => {
+          setIsSupplementModalOpen(false)
+          setSupplementMealType(null)
+        }}
+        onSelect={handleSupplementSelect}
+        existingSupplements={supplementMealType ? (supplementOverrides[supplementMealType] || []) : []}
       />
     </div>
   )

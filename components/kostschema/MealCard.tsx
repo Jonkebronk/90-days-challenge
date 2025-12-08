@@ -6,10 +6,12 @@ import { ScaledMeal, ScaledIngredient } from '@/lib/kostschema/types'
 
 interface MealCardProps {
   meal: ScaledMeal
-  onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
-  onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
-  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
-  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number, grams: number) => void
+  onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number) => void
+  onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg') => void
+  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number) => void
+  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number, grams: number) => void
+  onAddSupplement?: (mealType: string, supplementId: number) => void
+  onRemoveSupplement?: (mealType: string, supplementId: number) => void
 }
 
 function IngredientItem({
@@ -133,24 +135,26 @@ function IngredientColumn({
 }: {
   title: string
   ingredients: ScaledIngredient[]
-  category: 'protein' | 'kolhydrat' | 'fett'
+  category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg'
   mealType: string
-  color: 'rose' | 'blue' | 'amber'
-  onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
-  onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
-  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
-  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number, grams: number) => void
+  color: 'rose' | 'blue' | 'amber' | 'emerald'
+  onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number) => void
+  onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg') => void
+  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number) => void
+  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number, grams: number) => void
 }) {
   const colorClasses = {
     rose: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
     blue: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
-    amber: 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+    amber: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
+    emerald: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
   }
 
   const headerColors = {
     rose: 'bg-rose-500/5 border-rose-500/10',
     blue: 'bg-blue-500/5 border-blue-500/10',
-    amber: 'bg-amber-500/5 border-amber-500/10'
+    amber: 'bg-amber-500/5 border-amber-500/10',
+    emerald: 'bg-emerald-500/5 border-emerald-500/10'
   }
 
   return (
@@ -167,10 +171,10 @@ function IngredientColumn({
         {ingredients.map((ingredient, index) => (
           <div key={ingredient.id}>
             {index > 0 && (
-              <div className="flex items-center gap-2 py-2">
-                <div className="h-px flex-1 bg-zinc-700/50" />
-                <span className="text-[10px] text-gold-500/80 font-bold uppercase tracking-wider px-1">eller</span>
-                <div className="h-px flex-1 bg-zinc-700/50" />
+              <div className="flex items-center gap-2 py-3">
+                <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent via-gold-500/40 to-gold-500/40" />
+                <span className="text-xs text-gold-400 font-bold uppercase tracking-widest px-3 py-1 bg-gold-500/15 rounded-full border border-gold-500/30">eller</span>
+                <div className="h-0.5 flex-1 bg-gradient-to-l from-transparent via-gold-500/40 to-gold-500/40" />
               </div>
             )}
             <IngredientItem
@@ -200,7 +204,15 @@ function IngredientColumn({
   )
 }
 
-export function MealCard({ meal, onChangeIngredient, onAddIngredient, onDeleteIngredient, onUpdateGrams }: MealCardProps) {
+export function MealCard({
+  meal,
+  onChangeIngredient,
+  onAddIngredient,
+  onDeleteIngredient,
+  onUpdateGrams,
+  onAddSupplement,
+  onRemoveSupplement
+}: MealCardProps) {
   const [isExpanded, setIsExpanded] = useState(true)
 
   return (
@@ -280,21 +292,91 @@ export function MealCard({ meal, onChangeIngredient, onAddIngredient, onDeleteIn
             />
           </div>
 
-          {/* Tillägg & Kosttillskott */}
-          {(meal.template.tillagg.length > 0 || (meal.template.kosttillskott && meal.template.kosttillskott.length > 0)) && (
-            <div className="mt-4 pt-4 border-t border-zinc-700/30 flex flex-wrap gap-2">
-              {meal.template.tillagg.map((item) => (
-                <span key={item.id} className="px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs text-emerald-400 font-medium">
-                  {Math.round(item.scaledAmount)}g {item.name}
-                </span>
-              ))}
-              {meal.template.kosttillskott?.map((item) => (
-                <span key={item.id} className="px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full text-xs text-purple-400 font-medium">
-                  {item.amount} {item.unit} {item.name}
-                </span>
-              ))}
+          {/* Tillägg (Grönsaker/Sallad) */}
+          <div className="mt-4 pt-4 border-t border-zinc-700/30">
+            <div className="rounded-xl overflow-hidden border bg-emerald-500/5 border-emerald-500/10">
+              <div className="px-3 py-2.5 border-b bg-emerald-500/5 border-emerald-500/10">
+                <p className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+                  Tillägg (grönsaker/sallad)
+                </p>
+              </div>
+              <div className="p-2.5 space-y-0 bg-zinc-800/30">
+                {meal.template.tillagg.map((item, index) => (
+                  <div key={item.id}>
+                    {index > 0 && (
+                      <div className="flex items-center gap-2 py-3">
+                        <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent via-gold-500/40 to-gold-500/40" />
+                        <span className="text-xs text-gold-400 font-bold uppercase tracking-widest px-3 py-1 bg-gold-500/15 rounded-full border border-gold-500/30">eller</span>
+                        <div className="h-0.5 flex-1 bg-gradient-to-l from-transparent via-gold-500/40 to-gold-500/40" />
+                      </div>
+                    )}
+                    <IngredientItem
+                      ingredient={item}
+                      onSwap={() => onChangeIngredient?.(meal.type, 'tillagg', index)}
+                      onDelete={onDeleteIngredient ? () => onDeleteIngredient(meal.type, 'tillagg', index) : undefined}
+                      onUpdateGrams={onUpdateGrams ? (grams) => onUpdateGrams(meal.type, 'tillagg', index, grams) : undefined}
+                    />
+                  </div>
+                ))}
+                {meal.template.tillagg.length === 0 && (
+                  <div className="py-3 text-sm text-zinc-600 italic text-center">Ingen tillägg</div>
+                )}
+                {onAddIngredient && (
+                  <button
+                    onClick={() => onAddIngredient(meal.type, 'tillagg')}
+                    className="w-full flex items-center justify-center gap-1.5 mt-2 pt-2 border-t border-zinc-700/30 text-zinc-500 hover:text-emerald-400 text-xs transition-colors py-1.5"
+                  >
+                    <Plus className="h-3 w-3" />
+                    <span>Lägg till grönsaker/sallad</span>
+                  </button>
+                )}
+              </div>
             </div>
-          )}
+          </div>
+
+          {/* Kosttillskott */}
+          <div className="mt-3">
+            <div className="rounded-xl overflow-hidden border bg-purple-500/5 border-purple-500/10">
+              <div className="px-3 py-2.5 border-b bg-purple-500/5 border-purple-500/10">
+                <p className="text-xs font-bold uppercase tracking-wider text-purple-400">
+                  Kosttillskott
+                </p>
+              </div>
+              <div className="p-2.5 bg-zinc-800/30">
+                {meal.template.kosttillskott && meal.template.kosttillskott.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {meal.template.kosttillskott.map((item) => (
+                      <div
+                        key={item.id}
+                        className="group flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full text-xs text-purple-400 font-medium"
+                      >
+                        <span>{item.amount} {item.unit} {item.name}</span>
+                        {onRemoveSupplement && (
+                          <button
+                            onClick={() => onRemoveSupplement(meal.type, item.id)}
+                            className="opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-2 text-sm text-zinc-600 italic text-center">Inga kosttillskott</div>
+                )}
+                {onAddSupplement && (
+                  <button
+                    onClick={() => onAddSupplement(meal.type, 0)}
+                    className="w-full flex items-center justify-center gap-1.5 mt-2 pt-2 border-t border-zinc-700/30 text-zinc-500 hover:text-purple-400 text-xs transition-colors py-1.5"
+                  >
+                    <Plus className="h-3 w-3" />
+                    <span>Lägg till kosttillskott</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
