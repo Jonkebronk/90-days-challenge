@@ -181,13 +181,21 @@ export function useScaledMeals(
   overrides: IngredientOverrides = {},
   deletedIngredients: DeletedIngredients = new Set()
 ): ScaledMeal[] {
-  // Get selected ingredients from the library store
-  const selectedProtein = useIngredientLibraryStore(state => state.protein)
-  const selectedKolhydrat = useIngredientLibraryStore(state => state.kolhydrat)
-  const selectedFett = useIngredientLibraryStore(state => state.fett)
+  // Get selected ingredients from the library store (all meals combined)
+  const meals = useIngredientLibraryStore(state => state.meals)
+
+  // Combine ingredients from all meals
+  const selectedProtein = useMemo(() =>
+    Object.values(meals).flatMap(m => m.protein), [meals])
+  const selectedKolhydrat = useMemo(() =>
+    Object.values(meals).flatMap(m => m.kolhydrat), [meals])
+  const selectedFett = useMemo(() =>
+    Object.values(meals).flatMap(m => m.fett), [meals])
 
   // Combine all selected ingredients for nutrition lookup
-  const allSelected = [...selectedProtein, ...selectedKolhydrat, ...selectedFett]
+  const allSelected = useMemo(() =>
+    [...selectedProtein, ...selectedKolhydrat, ...selectedFett],
+    [selectedProtein, selectedKolhydrat, selectedFett])
 
   return useMemo(() => {
     const distribution = mealDistributions[mealCount]

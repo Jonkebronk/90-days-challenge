@@ -246,7 +246,7 @@ export function KostschemaCalculator() {
     }))
   }, [meals, tillaggOverrides, supplementOverrides])
 
-  const selectedCount = ingredientStore.protein.length + ingredientStore.kolhydrat.length + ingredientStore.fett.length
+  const selectedCount = ingredientStore.getTotalCount()
 
   return (
     <div className="space-y-6">
