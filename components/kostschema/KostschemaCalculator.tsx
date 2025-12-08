@@ -2,13 +2,16 @@
 
 import { useState, useMemo } from 'react'
 import { toast } from 'sonner'
+import { Package } from 'lucide-react'
 import { ActivityLevel, IngredientOverrides, CustomFood, DeletedIngredients, FreeTextItem } from '@/lib/kostschema/types'
 import { useMacroCalculation } from '@/lib/kostschema/hooks/useMacroCalculation'
 import { useScaledMeals } from '@/lib/kostschema/hooks/useScaledMeals'
+import { useIngredientLibraryStore } from '@/lib/stores/ingredient-library-store'
 import { MacroCalculatorForm } from './MacroCalculatorForm'
 import { MacroSummary } from './MacroSummary'
 import { MealPlanDisplay } from './MealPlanDisplay'
 import { SLVFoodSearchModal } from './SLVFoodSearchModal'
+import { IngredientLibraryPanel } from './IngredientLibraryPanel'
 
 interface IngredientChangeTarget {
   mealType: string
@@ -39,7 +42,11 @@ export function KostschemaCalculator() {
 
   // Modal state
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false)
   const [changeTarget, setChangeTarget] = useState<IngredientChangeTarget | null>(null)
+
+  // Get selected ingredient count from store
+  const ingredientStore = useIngredientLibraryStore()
 
   // Custom ingredient overrides
   const [ingredientOverrides, setIngredientOverrides] = useState<IngredientOverrides>({})
@@ -239,8 +246,30 @@ export function KostschemaCalculator() {
     }))
   }, [meals, tillaggOverrides, supplementOverrides])
 
+  const selectedCount = ingredientStore.protein.length + ingredientStore.kolhydrat.length + ingredientStore.fett.length
+
   return (
     <div className="space-y-6">
+      {/* Header with ingredient library button */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Kostschema Generator</h1>
+          <p className="text-sm text-zinc-400 mt-1">Beräkna makros och skapa måltidsplan</p>
+        </div>
+        <button
+          onClick={() => setIsLibraryOpen(true)}
+          className="flex items-center gap-2 px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-700 hover:border-zinc-600 hover:text-white transition-colors"
+        >
+          <Package className="h-4 w-4 text-gold-500" />
+          <span>Välj råvaror</span>
+          {selectedCount > 0 && (
+            <span className="ml-1 px-2 py-0.5 bg-gold-500/20 text-gold-400 text-xs font-medium rounded-full">
+              {selectedCount}
+            </span>
+          )}
+        </button>
+      </div>
+
       {/* Input form */}
       <MacroCalculatorForm
         bodyWeight={bodyWeight}
@@ -284,6 +313,12 @@ export function KostschemaCalculator() {
         category={changeTarget?.category}
         mealType={changeTarget ? getMealApiType(changeTarget.mealType) : undefined}
         originalIngredient={originalIngredient}
+      />
+
+      {/* Ingredient Library Panel */}
+      <IngredientLibraryPanel
+        isOpen={isLibraryOpen}
+        onClose={() => setIsLibraryOpen(false)}
       />
     </div>
   )
