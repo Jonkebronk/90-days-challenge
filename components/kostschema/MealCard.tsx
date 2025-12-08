@@ -73,14 +73,14 @@ function IngredientItem({
   }
 
   return (
-    <div className="w-full flex items-center gap-1.5 px-2 py-2 bg-zinc-900/60 hover:bg-zinc-800 rounded-lg transition-all group border border-transparent hover:border-zinc-700">
+    <div className="w-full flex items-center gap-1.5 px-2 py-2 bg-white hover:bg-zinc-50 rounded-lg transition-all group border border-transparent hover:border-zinc-200">
       {/* Swap button */}
       <button
         onClick={onSwap}
-        className="p-1.5 rounded hover:bg-zinc-700 transition-colors"
+        className="p-1.5 rounded hover:bg-zinc-100 transition-colors"
         title="Byt ingrediens"
       >
-        <RefreshCw className="h-3.5 w-3.5 text-zinc-500 group-hover:text-gold-500 transition-colors" />
+        <RefreshCw className="h-3.5 w-3.5 text-zinc-400 group-hover:text-gold-600 transition-colors" />
       </button>
 
       {/* Grams + Name */}
@@ -94,21 +94,21 @@ function IngredientItem({
               onChange={(e) => setEditValue(e.target.value)}
               onKeyDown={handleKeyDown}
               onBlur={handleSaveGrams}
-              className="w-16 px-1.5 py-0.5 text-sm bg-zinc-800 border border-gold-500 rounded text-gold-500 font-semibold focus:outline-none"
+              className="w-16 px-1.5 py-0.5 text-sm bg-white border border-gold-500 rounded text-gold-600 font-semibold focus:outline-none"
               min="1"
             />
-            <span className="text-sm text-gold-500 font-semibold">g</span>
+            <span className="text-sm text-gold-600 font-semibold">g</span>
           </div>
         ) : (
           <button
             onClick={handleGramsClick}
-            className={`text-sm text-gold-500 font-semibold hover:bg-gold-500/20 px-1.5 py-0.5 rounded transition-colors ${onUpdateGrams ? 'cursor-pointer' : 'cursor-default'}`}
+            className={`text-sm text-gold-600 font-semibold hover:bg-gold-100 px-1.5 py-0.5 rounded transition-colors ${onUpdateGrams ? 'cursor-pointer' : 'cursor-default'}`}
             title={onUpdateGrams ? 'Klicka för att ändra gram' : undefined}
           >
             {Math.round(ingredient.scaledAmount)}g
           </button>
         )}
-        <span className="text-sm text-zinc-200 group-hover:text-white truncate">
+        <span className="text-sm text-zinc-700 group-hover:text-zinc-900 truncate">
           {ingredient.name}
         </span>
       </div>
@@ -120,10 +120,10 @@ function IngredientItem({
             e.stopPropagation()
             onDelete()
           }}
-          className="p-1.5 rounded hover:bg-red-500/20 transition-colors opacity-0 group-hover:opacity-100"
+          className="p-1.5 rounded hover:bg-red-100 transition-colors opacity-0 group-hover:opacity-100"
           title="Ta bort ingrediens"
         >
-          <Trash2 className="h-3.5 w-3.5 text-zinc-500 hover:text-red-400 transition-colors" />
+          <Trash2 className="h-3.5 w-3.5 text-zinc-400 hover:text-red-500 transition-colors" />
         </button>
       )}
     </div>
@@ -152,19 +152,19 @@ function IngredientColumn({
   onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number, grams: number) => void
 }) {
   const colorClasses = {
-    rose: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
-    blue: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
-    amber: 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+    rose: 'bg-rose-50 border-rose-200 text-rose-600',
+    blue: 'bg-blue-50 border-blue-200 text-blue-600',
+    amber: 'bg-amber-50 border-amber-200 text-amber-600'
   }
 
   const headerColors = {
-    rose: 'bg-rose-500/5 border-rose-500/10',
-    blue: 'bg-blue-500/5 border-blue-500/10',
-    amber: 'bg-amber-500/5 border-amber-500/10'
+    rose: 'bg-rose-100 border-rose-200',
+    blue: 'bg-blue-100 border-blue-200',
+    amber: 'bg-amber-100 border-amber-200'
   }
 
   return (
-    <div className={`rounded-xl overflow-hidden border ${headerColors[color]}`}>
+    <div className={`rounded-xl overflow-hidden border ${colorClasses[color]}`}>
       {/* Header */}
       <div className={`px-3 py-2.5 border-b ${headerColors[color]}`}>
         <p className={`text-xs font-bold uppercase tracking-wider ${colorClasses[color].split(' ')[2]}`}>
@@ -173,7 +173,7 @@ function IngredientColumn({
       </div>
 
       {/* Content */}
-      <div className="p-2.5 space-y-0 bg-zinc-800/30">
+      <div className="p-2.5 space-y-0 bg-white/80">
         {ingredients.map((ingredient, index) => (
           <div key={ingredient.id}>
             {index > 0 && (
@@ -193,13 +193,13 @@ function IngredientColumn({
         ))}
 
         {ingredients.length === 0 && (
-          <div className="py-3 text-sm text-zinc-600 italic text-center">Ingen källa</div>
+          <div className="py-3 text-sm text-zinc-400 italic text-center">Ingen källa</div>
         )}
 
         {onAddIngredient && (
           <button
             onClick={() => onAddIngredient(mealType, category)}
-            className="w-full flex items-center justify-center gap-1.5 mt-2 pt-2 border-t border-zinc-700/30 text-zinc-500 hover:text-gold-500 text-xs transition-colors py-1.5"
+            className="w-full flex items-center justify-center gap-1.5 mt-2 pt-2 border-t border-zinc-200 text-zinc-400 hover:text-gold-600 text-xs transition-colors py-1.5"
           >
             <Plus className="h-3 w-3" />
             <span>Lägg till alternativ</span>
@@ -237,15 +237,15 @@ function FreeTextInput({
   }
 
   const colorClass = color === 'emerald'
-    ? 'focus:border-emerald-500 focus:ring-emerald-500/20'
-    : 'focus:border-purple-500 focus:ring-purple-500/20'
+    ? 'focus:border-emerald-400 focus:ring-emerald-200'
+    : 'focus:border-purple-400 focus:ring-purple-200'
 
   const buttonColor = color === 'emerald'
-    ? 'text-emerald-400 hover:bg-emerald-500/20'
-    : 'text-purple-400 hover:bg-purple-500/20'
+    ? 'text-emerald-600 hover:bg-emerald-100'
+    : 'text-purple-600 hover:bg-purple-100'
 
   return (
-    <div className="flex gap-2 mt-2 pt-2 border-t border-zinc-700/30">
+    <div className="flex gap-2 mt-2 pt-2 border-t border-zinc-200">
       <input
         ref={inputRef}
         type="text"
@@ -253,7 +253,7 @@ function FreeTextInput({
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className={`flex-1 px-3 py-1.5 text-sm bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder:text-zinc-500 ${colorClass}`}
+        className={`flex-1 px-3 py-1.5 text-sm bg-white border border-zinc-300 rounded-lg text-zinc-800 placeholder:text-zinc-400 ${colorClass}`}
       />
       <button
         onClick={handleAdd}
@@ -280,39 +280,39 @@ export function MealCard({
   const [isExpanded, setIsExpanded] = useState(true)
 
   return (
-    <div className="bg-gradient-to-b from-zinc-800/80 to-zinc-900/80 rounded-2xl overflow-hidden border border-zinc-700/50 shadow-lg">
+    <div className="bg-zinc-100 rounded-2xl overflow-hidden border border-zinc-200 shadow-lg">
       {/* Header */}
       <button
-        className="w-full cursor-pointer py-4 px-5 hover:bg-zinc-800/50 transition-colors"
+        className="w-full cursor-pointer py-4 px-5 hover:bg-zinc-200/50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="font-semibold text-white text-lg">{meal.name}</div>
-            <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded-full">
+            <div className="font-semibold text-zinc-800 text-lg">{meal.name}</div>
+            <span className="text-xs text-zinc-500 bg-zinc-200 px-2 py-0.5 rounded-full">
               {meal.kcalPercent}%
             </span>
           </div>
           <div className="flex items-center gap-5">
             {/* Macro pills */}
             <div className="flex gap-2">
-              <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/20">
+              <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-orange-100 text-orange-600 border border-orange-200">
                 {meal.kcal} kcal
               </span>
-              <span className="px-2.5 py-1.5 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-400">
+              <span className="px-2.5 py-1.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-600">
                 P {meal.protein}g
               </span>
-              <span className="px-2.5 py-1.5 rounded-full text-xs font-semibold bg-blue-500/15 text-blue-400">
+              <span className="px-2.5 py-1.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-600">
                 K {meal.carbs}g
               </span>
-              <span className="px-2.5 py-1.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400">
+              <span className="px-2.5 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-600">
                 F {meal.fat}g
               </span>
             </div>
             {isExpanded ? (
-              <ChevronUp className="w-5 h-5 text-zinc-500" />
+              <ChevronUp className="w-5 h-5 text-zinc-400" />
             ) : (
-              <ChevronDown className="w-5 h-5 text-zinc-500" />
+              <ChevronDown className="w-5 h-5 text-zinc-400" />
             )}
           </div>
         </div>
@@ -357,26 +357,26 @@ export function MealCard({
           </div>
 
           {/* Tillägg (Grönsaker/Sallad/Sås) */}
-          <div className="mt-4 pt-4 border-t border-zinc-700/30">
-            <div className="rounded-xl overflow-hidden border bg-emerald-500/5 border-emerald-500/10">
-              <div className="px-3 py-2.5 border-b bg-emerald-500/5 border-emerald-500/10">
-                <p className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+          <div className="mt-4 pt-4 border-t border-zinc-200">
+            <div className="rounded-xl overflow-hidden border bg-emerald-50 border-emerald-200">
+              <div className="px-3 py-2.5 border-b bg-emerald-100 border-emerald-200">
+                <p className="text-xs font-bold uppercase tracking-wider text-emerald-600">
                   Tillägg (grönsaker/sallad/sås)
                 </p>
               </div>
-              <div className="p-2.5 bg-zinc-800/30">
+              <div className="p-2.5 bg-white/80">
                 {meal.tillaggItems && meal.tillaggItems.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {meal.tillaggItems.map((item, index) => (
                       <div
                         key={item.id}
-                        className="group flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs text-emerald-400 font-medium"
+                        className="group flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 border border-emerald-200 rounded-full text-xs text-emerald-700 font-medium"
                       >
                         <span>{item.text}</span>
                         {onRemoveTillagg && (
                           <button
                             onClick={() => onRemoveTillagg(meal.type, index)}
-                            className="opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
+                            className="opacity-0 group-hover:opacity-100 hover:text-red-500 transition-all"
                           >
                             <X className="h-3 w-3" />
                           </button>
@@ -385,7 +385,7 @@ export function MealCard({
                     ))}
                   </div>
                 ) : (
-                  <div className="py-2 text-sm text-zinc-600 italic text-center">Inga tillägg</div>
+                  <div className="py-2 text-sm text-zinc-400 italic text-center">Inga tillägg</div>
                 )}
                 {onAddTillagg && (
                   <FreeTextInput
@@ -400,25 +400,25 @@ export function MealCard({
 
           {/* Kosttillskott */}
           <div className="mt-3">
-            <div className="rounded-xl overflow-hidden border bg-purple-500/5 border-purple-500/10">
-              <div className="px-3 py-2.5 border-b bg-purple-500/5 border-purple-500/10">
-                <p className="text-xs font-bold uppercase tracking-wider text-purple-400">
+            <div className="rounded-xl overflow-hidden border bg-purple-50 border-purple-200">
+              <div className="px-3 py-2.5 border-b bg-purple-100 border-purple-200">
+                <p className="text-xs font-bold uppercase tracking-wider text-purple-600">
                   Kosttillskott
                 </p>
               </div>
-              <div className="p-2.5 bg-zinc-800/30">
+              <div className="p-2.5 bg-white/80">
                 {meal.supplementItems && meal.supplementItems.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {meal.supplementItems.map((item, index) => (
                       <div
                         key={item.id}
-                        className="group flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full text-xs text-purple-400 font-medium"
+                        className="group flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 border border-purple-200 rounded-full text-xs text-purple-700 font-medium"
                       >
                         <span>{item.text}</span>
                         {onRemoveSupplement && (
                           <button
                             onClick={() => onRemoveSupplement(meal.type, index)}
-                            className="opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
+                            className="opacity-0 group-hover:opacity-100 hover:text-red-500 transition-all"
                           >
                             <X className="h-3 w-3" />
                           </button>
@@ -427,7 +427,7 @@ export function MealCard({
                     ))}
                   </div>
                 ) : (
-                  <div className="py-2 text-sm text-zinc-600 italic text-center">Inga kosttillskott</div>
+                  <div className="py-2 text-sm text-zinc-400 italic text-center">Inga kosttillskott</div>
                 )}
                 {onAddSupplement && (
                   <FreeTextInput
