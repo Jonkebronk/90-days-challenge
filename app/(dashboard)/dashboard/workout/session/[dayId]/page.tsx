@@ -227,6 +227,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
   // Start rest timer with dialog (uses endTime for accurate timing)
   const startRestTimer = (seconds: number) => {
+    // Blur any focused input to prevent iOS "Shake to Undo" dialog
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
     const endTime = new Date(Date.now() + seconds * 1000)
     setRestEndTime(endTime)
     setRestTimerSeconds(seconds)
@@ -383,6 +387,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
   const logSet = async (exerciseId: string, programExerciseId: string, setNumber: number) => {
     if (!sessionId) return
+
+    // Blur any focused input to prevent iOS "Shake to Undo" dialog
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
 
     const reps = currentSetType !== 'TIME' ? (parseInt(currentReps) || null) : null
     // Parse weight - extract number if possible, keep original text as note
@@ -917,108 +926,85 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   )}
 
 
-                  {/* Logged Sets */}
+                  {/* Logged Sets - Compact view */}
                   {exerciseSets.length > 0 && (
-                    <div className="p-3 sm:p-4 bg-green-500/10 border border-green-500/30 rounded-lg space-y-2">
-                      <Label className="text-sm font-bold text-green-400">Genomförda sets</Label>
+                    <div className="space-y-1">
                       {exerciseSets.map((set, setIdx) => {
                         const isEditing = editingSet?.id === set.id
                         return (
-                          <div
-                            key={set.id || setIdx}
-                            className="bg-zinc-800/50 border border-green-500/20 rounded-lg overflow-hidden"
-                          >
+                          <div key={set.id || setIdx}>
                             {isEditing ? (
                               /* Inline edit mode */
-                              <div className="p-3 space-y-3">
-                                <div className="flex items-center gap-2">
-                                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
-                                    <Check className="w-5 h-5 text-white" />
-                                  </div>
-                                  <span className="text-sm font-bold text-white">Set {set.setNumber}:</span>
-                                </div>
+                              <div className="p-2 bg-zinc-800/50 rounded-lg space-y-2">
                                 <div className="flex items-center gap-2">
                                   <Input
                                     type="number"
                                     value={editReps}
                                     onChange={(e) => setEditReps(e.target.value)}
                                     placeholder="Reps"
-                                    className="w-20 h-10 text-center font-semibold bg-zinc-700 border-zinc-600 text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    className="w-16 h-9 text-center text-sm font-medium bg-zinc-700 border-zinc-600 text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                   />
-                                  <span className="text-gray-400">×</span>
+                                  <span className="text-gray-500 text-sm">×</span>
                                   <Input
                                     type="text"
                                     value={editWeight}
                                     onChange={(e) => setEditWeight(e.target.value)}
                                     placeholder="Vikt"
-                                    className="flex-1 h-10 font-semibold bg-zinc-700 border-zinc-600 text-white"
+                                    className="w-20 h-9 text-sm font-medium bg-zinc-700 border-zinc-600 text-white"
                                   />
                                   <button
                                     onClick={updateSet}
                                     disabled={isUpdatingSet}
-                                    className="p-2 rounded-lg bg-green-500 hover:bg-green-600 text-white transition-colors disabled:opacity-50"
+                                    className="p-1.5 rounded bg-green-500 hover:bg-green-600 text-white transition-colors disabled:opacity-50"
                                     title="Spara"
                                   >
-                                    <Check className="w-5 h-5" />
+                                    <Check className="w-4 h-4" />
                                   </button>
                                   <button
                                     onClick={() => setEditingSet(null)}
-                                    className="p-2 rounded-lg bg-zinc-700 hover:bg-zinc-600 text-gray-300 transition-colors"
+                                    className="p-1.5 rounded bg-zinc-700 hover:bg-zinc-600 text-gray-300 transition-colors"
                                     title="Avbryt"
                                   >
-                                    <X className="w-5 h-5" />
+                                    <X className="w-4 h-4" />
                                   </button>
                                 </div>
                               </div>
                             ) : (
-                              /* Display mode */
-                              <div className="flex items-center gap-3 p-3">
-                                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
-                                  <Check className="w-5 h-5 text-white" />
-                                </div>
-                                <div className="flex items-center gap-2 flex-1 flex-wrap">
-                                  <span className="text-sm font-bold text-white">
-                                    Set {set.setNumber}:
-                                  </span>
+                              /* Display mode - compact single line */
+                              <div className="flex items-center gap-2 py-1 px-2 rounded hover:bg-white/5 group">
+                                <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                                <span className="text-sm text-gray-400">S{set.setNumber}</span>
+                                <span className="text-sm text-white font-medium">
                                   {set.setType === 'TIME' ? (
-                                    <span className="text-base font-semibold text-gray-200">
-                                      {set.timeSeconds}s
-                                    </span>
+                                    `${set.timeSeconds}s`
                                   ) : (
                                     <>
-                                      <span className="text-base font-semibold text-gray-200">
-                                        {set.reps || 0} reps
-                                      </span>
+                                      {set.reps || 0}
                                       {set.setType === 'WEIGHT' && (set.weightKg || set.notes) && (
-                                        <>
-                                          <span className="text-sm text-gray-400">×</span>
-                                          <span className="text-base font-semibold text-gray-200">
-                                            {set.notes || `${set.weightKg} kg`}
-                                          </span>
-                                        </>
+                                        <span className="text-gray-400"> × {set.notes || `${set.weightKg}kg`}</span>
                                       )}
                                       {set.setType === 'BODYWEIGHT' && (
-                                        <span className="text-xs text-gray-400 ml-1">(kroppsvikt)</span>
+                                        <span className="text-gray-500 text-xs ml-1">(bw)</span>
                                       )}
                                     </>
                                   )}
-                                </div>
-                                {/* Edit/Delete buttons */}
+                                </span>
+                                {/* Edit/Delete - visible on hover */}
                                 {set.id && (
-                                  <div className="flex items-center gap-1">
+                                  <div className="flex items-center gap-0.5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button
                                       onClick={() => openEditModal(set)}
-                                      className="p-2 rounded-lg hover:bg-white/10 transition-colors"
-                                      title="Redigera set"
+                                      className="p-1 rounded hover:bg-white/10 transition-colors"
+                                      title="Redigera"
                                     >
-                                      <Pencil className="w-4 h-4 text-gray-400 hover:text-white" />
+                                      <Pencil className="w-3.5 h-3.5 text-gray-500 hover:text-white" />
                                     </button>
                                     <button
                                       onClick={() => deleteSetDirectly(set)}
-                                      className="p-2 rounded-lg hover:bg-red-500/20 transition-colors"
-                                      title="Ta bort set"
+                                      className="p-1 rounded hover:bg-red-500/20 transition-colors"
+                                      title="Ta bort"
                                     >
-                                      <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-400" />
+                                      <Trash2 className="w-3.5 h-3.5 text-gray-500 hover:text-red-400" />
                                     </button>
                                   </div>
                                 )}
@@ -1047,6 +1033,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             value={currentReps}
                             onChange={(e) => setCurrentReps(e.target.value)}
                             placeholder={exercise.reps || '8-12'}
+                            autoComplete="off"
+                            autoCorrect="off"
+                            spellCheck={false}
                             className="h-12 sm:h-14 text-lg sm:text-xl font-semibold bg-zinc-900 border-zinc-500 text-white placeholder:text-gray-500 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 shadow-inner [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>
@@ -1058,6 +1047,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             value={currentWeight}
                             onChange={(e) => setCurrentWeight(e.target.value)}
                             placeholder={exerciseSets.length > 0 ? exerciseSets[exerciseSets.length - 1].weightKg?.toString() : "0"}
+                            autoComplete="off"
+                            autoCorrect="off"
+                            spellCheck={false}
                             className="h-12 sm:h-14 text-lg sm:text-xl font-semibold bg-zinc-900 border-zinc-500 text-white placeholder:text-gray-500 focus:border-gold-primary focus:ring-2 focus:ring-gold-primary/20 shadow-inner"
                           />
                         </div>

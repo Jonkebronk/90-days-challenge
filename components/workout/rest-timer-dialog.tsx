@@ -332,21 +332,22 @@ export function MinimizedRestBar({
     <div
       style={{
         position: 'fixed',
-        bottom: 0,
+        top: 0,
         left: 0,
         right: 0,
         zIndex: 9999,
         backgroundColor: '#18181b',
-        borderTop: '1px solid #3f3f46',
+        borderBottom: '1px solid #3f3f46',
         padding: '0.75rem 1rem',
-        boxShadow: '0 -4px 20px rgba(0,0,0,0.3)',
+        paddingTop: 'calc(0.75rem + env(safe-area-inset-top, 0px))',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
       }}
     >
       {/* Progress bar */}
       <div
         style={{
           position: 'absolute',
-          top: 0,
+          bottom: 0,
           left: 0,
           height: '3px',
           width: `${progress * 100}%`,
