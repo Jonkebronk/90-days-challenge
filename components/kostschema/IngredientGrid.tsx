@@ -2,6 +2,7 @@
 
 import { Loader2 } from 'lucide-react'
 import { IngredientCard } from './IngredientCard'
+import { Category, MealType } from '@/lib/stores/ingredient-library-store'
 
 interface TransformedFood {
   slvNummer: number
@@ -14,11 +15,12 @@ interface TransformedFood {
 
 interface IngredientGridProps {
   foods: TransformedFood[]
-  category: 'protein' | 'kolhydrat' | 'fett'
+  category: Category
+  meal: MealType
   isLoading: boolean
 }
 
-export function IngredientGrid({ foods, category, isLoading }: IngredientGridProps) {
+export function IngredientGrid({ foods, category, meal, isLoading }: IngredientGridProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -43,6 +45,7 @@ export function IngredientGrid({ foods, category, isLoading }: IngredientGridPro
           key={food.slvNummer}
           food={food}
           category={category}
+          meal={meal}
         />
       ))}
     </div>

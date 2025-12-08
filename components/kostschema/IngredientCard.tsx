@@ -1,7 +1,7 @@
 'use client'
 
 import { Check } from 'lucide-react'
-import { useIngredientLibraryStore, SelectedIngredient } from '@/lib/stores/ingredient-library-store'
+import { useIngredientLibraryStore, SelectedIngredient, Category, MealType } from '@/lib/stores/ingredient-library-store'
 
 interface TransformedFood {
   slvNummer: number
@@ -14,12 +14,13 @@ interface TransformedFood {
 
 interface IngredientCardProps {
   food: TransformedFood
-  category: 'protein' | 'kolhydrat' | 'fett'
+  category: Category
+  meal: MealType
 }
 
-export function IngredientCard({ food, category }: IngredientCardProps) {
+export function IngredientCard({ food, category, meal }: IngredientCardProps) {
   const { isSelected, toggleIngredient } = useIngredientLibraryStore()
-  const selected = isSelected(category, food.slvNummer)
+  const selected = isSelected(meal, category, food.slvNummer)
 
   const handleToggle = () => {
     const ingredient: SelectedIngredient = {
@@ -30,7 +31,7 @@ export function IngredientCard({ food, category }: IngredientCardProps) {
       fat: food.fat,
       kcal: food.kcal
     }
-    toggleIngredient(category, ingredient)
+    toggleIngredient(meal, category, ingredient)
   }
 
   // Highlight the dominant macro based on category
@@ -50,11 +51,11 @@ export function IngredientCard({ food, category }: IngredientCardProps) {
       className={`p-3 rounded-xl border transition-all text-left w-full ${
         selected
           ? 'bg-gold-500/20 border-gold-500 ring-2 ring-gold-500/50'
-          : 'bg-zinc-800/80 border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800'
+          : 'bg-zinc-100 border-zinc-200 hover:border-gold-400 hover:bg-zinc-50'
       }`}
     >
       <div className="flex justify-between items-start gap-2 mb-2">
-        <span className="text-sm font-medium text-white line-clamp-2 flex-1">
+        <span className={`text-sm font-medium line-clamp-2 flex-1 ${selected ? 'text-white' : 'text-zinc-800'}`}>
           {food.name}
         </span>
         {selected && (
@@ -65,18 +66,18 @@ export function IngredientCard({ food, category }: IngredientCardProps) {
       </div>
 
       <div className="flex gap-2 text-xs flex-wrap">
-        <span className={`${color === 'rose' ? 'text-rose-400 font-semibold' : 'text-rose-400/70'}`}>
+        <span className={`${color === 'rose' ? 'text-rose-600 font-semibold' : 'text-rose-500/80'}`}>
           P: {Math.round(food.protein)}g
         </span>
-        <span className={`${color === 'blue' ? 'text-blue-400 font-semibold' : 'text-blue-400/70'}`}>
+        <span className={`${color === 'blue' ? 'text-blue-600 font-semibold' : 'text-blue-500/80'}`}>
           K: {Math.round(food.carbs)}g
         </span>
-        <span className={`${color === 'amber' ? 'text-amber-400 font-semibold' : 'text-amber-400/70'}`}>
+        <span className={`${color === 'amber' ? 'text-amber-600 font-semibold' : 'text-amber-500/80'}`}>
           F: {Math.round(food.fat)}g
         </span>
       </div>
 
-      <div className="text-xs text-zinc-500 mt-1.5">
+      <div className={`text-xs mt-1.5 ${selected ? 'text-zinc-400' : 'text-zinc-500'}`}>
         {Math.round(food.kcal)} kcal/100g
       </div>
     </button>

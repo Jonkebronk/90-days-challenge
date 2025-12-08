@@ -1,5 +1,6 @@
 // Zustand store for Ingredient Library
 // Global state management with localStorage persistence
+// Supports per-meal ingredient selection
 
 'use client'
 
@@ -15,158 +16,170 @@ export interface SelectedIngredient {
   kcal: number
 }
 
-type Category = 'protein' | 'kolhydrat' | 'fett'
-type PresetType = 'standard' | 'bulking' | 'cutting' | 'vegetarian'
+export type Category = 'protein' | 'kolhydrat' | 'fett'
+export type MealType = 'frukost' | 'mellanmal' | 'lunch' | 'middag' | 'kvallsmal'
 
-interface IngredientLibraryState {
+export interface MealIngredients {
   protein: SelectedIngredient[]
   kolhydrat: SelectedIngredient[]
   fett: SelectedIngredient[]
-
-  // Actions
-  addIngredient: (category: Category, ingredient: SelectedIngredient) => void
-  removeIngredient: (category: Category, slvNummer: number) => void
-  toggleIngredient: (category: Category, ingredient: SelectedIngredient) => void
-  isSelected: (category: Category, slvNummer: number) => boolean
-  applyPreset: (preset: PresetType) => void
-  clearCategory: (category: Category) => void
-  clearAll: () => void
-  getCount: () => number
 }
 
-// Predefined presets with real SLV data
-const PRESETS: Record<PresetType, { protein: SelectedIngredient[], kolhydrat: SelectedIngredient[], fett: SelectedIngredient[] }> = {
-  standard: {
-    protein: [
-      { slvNummer: 1534, name: 'Kycklingfilé', protein: 23.1, carbs: 0, fat: 1.2, kcal: 106 },
-      { slvNummer: 1559, name: 'Kalkonfilé', protein: 24.0, carbs: 0, fat: 1.0, kcal: 104 },
-      { slvNummer: 340, name: 'Ägg', protein: 12.5, carbs: 0.5, fat: 10.0, kcal: 143 },
-      { slvNummer: 191, name: 'Kvarg naturell', protein: 12.0, carbs: 3.5, fat: 0.2, kcal: 64 },
-      { slvNummer: 1443, name: 'Nötfärs 5%', protein: 21.0, carbs: 0, fat: 5.0, kcal: 130 },
-    ],
-    kolhydrat: [
-      { slvNummer: 519, name: 'Havregryn', protein: 13.0, carbs: 58.0, fat: 7.0, kcal: 365 },
-      { slvNummer: 558, name: 'Ris', protein: 7.0, carbs: 78.0, fat: 0.5, kcal: 350 },
-      { slvNummer: 688, name: 'Potatis', protein: 2.0, carbs: 17.0, fat: 0.1, kcal: 77 },
-      { slvNummer: 156, name: 'Yoghurt naturell', protein: 5.0, carbs: 6.0, fat: 0.5, kcal: 48 },
-    ],
-    fett: [
-      { slvNummer: 602, name: 'Avokado', protein: 2.0, carbs: 2.0, fat: 20.0, kcal: 190 },
-      { slvNummer: 819, name: 'Blandade nötter', protein: 20.0, carbs: 10.0, fat: 55.0, kcal: 600 },
-    ]
-  },
-  cutting: {
-    protein: [
-      { slvNummer: 1534, name: 'Kycklingfilé', protein: 23.1, carbs: 0, fat: 1.2, kcal: 106 },
-      { slvNummer: 1559, name: 'Kalkonfilé', protein: 24.0, carbs: 0, fat: 1.0, kcal: 104 },
-      { slvNummer: 191, name: 'Kvarg naturell', protein: 12.0, carbs: 3.5, fat: 0.2, kcal: 64 },
-      { slvNummer: 185, name: 'Keso 1.5%', protein: 12.5, carbs: 3.0, fat: 1.5, kcal: 75 },
-      { slvNummer: 340, name: 'Äggvita', protein: 11.0, carbs: 0.7, fat: 0.2, kcal: 49 },
-    ],
-    kolhydrat: [
-      { slvNummer: 519, name: 'Havregryn', protein: 13.0, carbs: 58.0, fat: 7.0, kcal: 365 },
-      { slvNummer: 688, name: 'Potatis', protein: 2.0, carbs: 17.0, fat: 0.1, kcal: 77 },
-      { slvNummer: 636, name: 'Hallon', protein: 1.2, carbs: 5.0, fat: 0.6, kcal: 32 },
-    ],
-    fett: [
-      { slvNummer: 602, name: 'Avokado', protein: 2.0, carbs: 2.0, fat: 20.0, kcal: 190 },
-    ]
-  },
-  bulking: {
-    protein: [
-      { slvNummer: 1534, name: 'Kycklingfilé', protein: 23.1, carbs: 0, fat: 1.2, kcal: 106 },
-      { slvNummer: 1443, name: 'Nötfärs 5%', protein: 21.0, carbs: 0, fat: 5.0, kcal: 130 },
-      { slvNummer: 340, name: 'Ägg', protein: 12.5, carbs: 0.5, fat: 10.0, kcal: 143 },
-      { slvNummer: 191, name: 'Kvarg naturell', protein: 12.0, carbs: 3.5, fat: 0.2, kcal: 64 },
-      { slvNummer: 184, name: 'Keso naturell', protein: 13.0, carbs: 2.5, fat: 4.0, kcal: 98 },
-    ],
-    kolhydrat: [
-      { slvNummer: 519, name: 'Havregryn', protein: 13.0, carbs: 58.0, fat: 7.0, kcal: 365 },
-      { slvNummer: 558, name: 'Ris', protein: 7.0, carbs: 78.0, fat: 0.5, kcal: 350 },
-      { slvNummer: 688, name: 'Potatis', protein: 2.0, carbs: 17.0, fat: 0.1, kcal: 77 },
-      { slvNummer: 520, name: 'Mathavre', protein: 11.0, carbs: 60.0, fat: 5.0, kcal: 340 },
-    ],
-    fett: [
-      { slvNummer: 602, name: 'Avokado', protein: 2.0, carbs: 2.0, fat: 20.0, kcal: 190 },
-      { slvNummer: 819, name: 'Blandade nötter', protein: 20.0, carbs: 10.0, fat: 55.0, kcal: 600 },
-    ]
-  },
-  vegetarian: {
-    protein: [
-      { slvNummer: 340, name: 'Ägg', protein: 12.5, carbs: 0.5, fat: 10.0, kcal: 143 },
-      { slvNummer: 191, name: 'Kvarg naturell', protein: 12.0, carbs: 3.5, fat: 0.2, kcal: 64 },
-      { slvNummer: 185, name: 'Keso 1.5%', protein: 12.5, carbs: 3.0, fat: 1.5, kcal: 75 },
-      { slvNummer: 184, name: 'Keso naturell', protein: 13.0, carbs: 2.5, fat: 4.0, kcal: 98 },
-    ],
-    kolhydrat: [
-      { slvNummer: 519, name: 'Havregryn', protein: 13.0, carbs: 58.0, fat: 7.0, kcal: 365 },
-      { slvNummer: 558, name: 'Ris', protein: 7.0, carbs: 78.0, fat: 0.5, kcal: 350 },
-      { slvNummer: 688, name: 'Potatis', protein: 2.0, carbs: 17.0, fat: 0.1, kcal: 77 },
-      { slvNummer: 2392, name: 'Bönpasta', protein: 22.0, carbs: 45.0, fat: 2.0, kcal: 290 },
-    ],
-    fett: [
-      { slvNummer: 602, name: 'Avokado', protein: 2.0, carbs: 2.0, fat: 20.0, kcal: 190 },
-      { slvNummer: 819, name: 'Blandade nötter', protein: 20.0, carbs: 10.0, fat: 55.0, kcal: 600 },
-    ]
-  }
+interface IngredientLibraryState {
+  meals: Record<MealType, MealIngredients>
+  activeMeal: MealType
+
+  // Actions
+  setActiveMeal: (meal: MealType) => void
+  addIngredient: (meal: MealType, category: Category, ingredient: SelectedIngredient) => void
+  removeIngredient: (meal: MealType, category: Category, slvNummer: number) => void
+  toggleIngredient: (meal: MealType, category: Category, ingredient: SelectedIngredient) => void
+  isSelected: (meal: MealType, category: Category, slvNummer: number) => boolean
+  clearCategory: (meal: MealType, category: Category) => void
+  clearMeal: (meal: MealType) => void
+  clearAll: () => void
+  getMealCount: (meal: MealType) => number
+  getTotalCount: () => number
+}
+
+const createEmptyMeal = (): MealIngredients => ({
+  protein: [],
+  kolhydrat: [],
+  fett: []
+})
+
+const createEmptyMeals = (): Record<MealType, MealIngredients> => ({
+  frukost: createEmptyMeal(),
+  mellanmal: createEmptyMeal(),
+  lunch: createEmptyMeal(),
+  middag: createEmptyMeal(),
+  kvallsmal: createEmptyMeal()
+})
+
+export const MEAL_LABELS: Record<MealType, string> = {
+  frukost: 'Frukost',
+  mellanmal: 'Mellanmål',
+  lunch: 'Lunch',
+  middag: 'Middag',
+  kvallsmal: 'Kvällsmål'
 }
 
 export const useIngredientLibraryStore = create<IngredientLibraryState>()(
   persist(
     (set, get) => ({
-      protein: [],
-      kolhydrat: [],
-      fett: [],
+      meals: createEmptyMeals(),
+      activeMeal: 'frukost',
 
-      addIngredient: (category, ingredient) =>
+      setActiveMeal: (meal) => set({ activeMeal: meal }),
+
+      addIngredient: (meal, category, ingredient) =>
         set(state => {
+          const currentMeal = state.meals[meal]
           // Don't add duplicates
-          if (state[category].some(i => i.slvNummer === ingredient.slvNummer)) {
+          if (currentMeal[category].some(i => i.slvNummer === ingredient.slvNummer)) {
             return state
           }
           return {
-            [category]: [...state[category], ingredient]
+            meals: {
+              ...state.meals,
+              [meal]: {
+                ...currentMeal,
+                [category]: [...currentMeal[category], ingredient]
+              }
+            }
           }
         }),
 
-      removeIngredient: (category, slvNummer) =>
-        set(state => ({
-          [category]: state[category].filter(i => i.slvNummer !== slvNummer)
-        })),
+      removeIngredient: (meal, category, slvNummer) =>
+        set(state => {
+          const currentMeal = state.meals[meal]
+          return {
+            meals: {
+              ...state.meals,
+              [meal]: {
+                ...currentMeal,
+                [category]: currentMeal[category].filter(i => i.slvNummer !== slvNummer)
+              }
+            }
+          }
+        }),
 
-      toggleIngredient: (category, ingredient) => {
+      toggleIngredient: (meal, category, ingredient) => {
         const state = get()
-        const exists = state[category].some(i => i.slvNummer === ingredient.slvNummer)
+        const exists = state.meals[meal][category].some(i => i.slvNummer === ingredient.slvNummer)
         if (exists) {
-          state.removeIngredient(category, ingredient.slvNummer)
+          state.removeIngredient(meal, category, ingredient.slvNummer)
         } else {
-          state.addIngredient(category, ingredient)
+          state.addIngredient(meal, category, ingredient)
         }
       },
 
-      isSelected: (category, slvNummer) =>
-        get()[category].some(i => i.slvNummer === slvNummer),
+      isSelected: (meal, category, slvNummer) =>
+        get().meals[meal][category].some(i => i.slvNummer === slvNummer),
 
-      applyPreset: (preset) =>
-        set({
-          protein: [...PRESETS[preset].protein],
-          kolhydrat: [...PRESETS[preset].kolhydrat],
-          fett: [...PRESETS[preset].fett]
-        }),
+      clearCategory: (meal, category) =>
+        set(state => ({
+          meals: {
+            ...state.meals,
+            [meal]: {
+              ...state.meals[meal],
+              [category]: []
+            }
+          }
+        })),
 
-      clearCategory: (category) =>
-        set({ [category]: [] }),
+      clearMeal: (meal) =>
+        set(state => ({
+          meals: {
+            ...state.meals,
+            [meal]: createEmptyMeal()
+          }
+        })),
 
       clearAll: () =>
-        set({ protein: [], kolhydrat: [], fett: [] }),
+        set({ meals: createEmptyMeals() }),
 
-      getCount: () => {
+      getMealCount: (meal) => {
         const state = get()
-        return state.protein.length + state.kolhydrat.length + state.fett.length
+        const m = state.meals[meal]
+        return m.protein.length + m.kolhydrat.length + m.fett.length
+      },
+
+      getTotalCount: () => {
+        const state = get()
+        let total = 0
+        for (const meal of Object.values(state.meals)) {
+          total += meal.protein.length + meal.kolhydrat.length + meal.fett.length
+        }
+        return total
       }
     }),
     {
-      name: 'ingredient-library',
+      name: 'ingredient-library-v2',
+      version: 2,
+      migrate: (persistedState: any, version: number) => {
+        // Migration from v1 (global) to v2 (per-meal)
+        if (version < 2) {
+          // If old format with global protein/kolhydrat/fett, migrate to frukost
+          if (persistedState.protein || persistedState.kolhydrat || persistedState.fett) {
+            return {
+              meals: {
+                frukost: {
+                  protein: persistedState.protein || [],
+                  kolhydrat: persistedState.kolhydrat || [],
+                  fett: persistedState.fett || []
+                },
+                mellanmal: createEmptyMeal(),
+                lunch: createEmptyMeal(),
+                middag: createEmptyMeal(),
+                kvallsmal: createEmptyMeal()
+              },
+              activeMeal: 'frukost'
+            }
+          }
+        }
+        return persistedState
+      }
     }
   )
 )
