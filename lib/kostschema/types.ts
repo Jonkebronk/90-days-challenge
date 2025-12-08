@@ -63,6 +63,12 @@ export interface ScaledIngredient extends TemplateIngredient {
   }
 }
 
+// Simple text item for free text entries
+export interface FreeTextItem {
+  id: number
+  text: string
+}
+
 export interface ScaledMeal {
   type: string
   name: string
@@ -79,6 +85,8 @@ export interface ScaledMeal {
     tillagg: ScaledIngredient[]
     kosttillskott: { id: number; amount: number; unit: string; name: string }[]
   }
+  tillaggItems?: FreeTextItem[]
+  supplementItems?: FreeTextItem[]
 }
 
 // Activity factors for TDEE calculation

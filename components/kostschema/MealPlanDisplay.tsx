@@ -8,12 +8,14 @@ interface MealPlanDisplayProps {
   meals: ScaledMeal[]
   mealCount: number
   setMealCount: (count: number) => void
-  onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number) => void
-  onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg') => void
-  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number) => void
-  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number, grams: number) => void
-  onAddSupplement?: (mealType: string, supplementId: number) => void
-  onRemoveSupplement?: (mealType: string, supplementId: number) => void
+  onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
+  onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
+  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
+  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number, grams: number) => void
+  onAddTillagg?: (mealType: string, text: string) => void
+  onRemoveTillagg?: (mealType: string, index: number) => void
+  onAddSupplement?: (mealType: string, text: string) => void
+  onRemoveSupplement?: (mealType: string, index: number) => void
 }
 
 const mealCountOptions = [
@@ -30,6 +32,8 @@ export function MealPlanDisplay({
   onAddIngredient,
   onDeleteIngredient,
   onUpdateGrams,
+  onAddTillagg,
+  onRemoveTillagg,
   onAddSupplement,
   onRemoveSupplement
 }: MealPlanDisplayProps) {
@@ -70,6 +74,8 @@ export function MealPlanDisplay({
             onAddIngredient={onAddIngredient}
             onDeleteIngredient={onDeleteIngredient}
             onUpdateGrams={onUpdateGrams}
+            onAddTillagg={onAddTillagg}
+            onRemoveTillagg={onRemoveTillagg}
             onAddSupplement={onAddSupplement}
             onRemoveSupplement={onRemoveSupplement}
           />

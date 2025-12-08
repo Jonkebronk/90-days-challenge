@@ -6,12 +6,20 @@ import { ScaledMeal, ScaledIngredient } from '@/lib/kostschema/types'
 
 interface MealCardProps {
   meal: ScaledMeal
-  onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number) => void
-  onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg') => void
-  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number) => void
-  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number, grams: number) => void
-  onAddSupplement?: (mealType: string, supplementId: number) => void
-  onRemoveSupplement?: (mealType: string, supplementId: number) => void
+  onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
+  onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
+  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
+  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number, grams: number) => void
+  onAddTillagg?: (mealType: string, text: string) => void
+  onRemoveTillagg?: (mealType: string, index: number) => void
+  onAddSupplement?: (mealType: string, text: string) => void
+  onRemoveSupplement?: (mealType: string, index: number) => void
+}
+
+// Simple text item for tillägg and kosttillskott
+interface FreeTextItem {
+  id: number
+  text: string
 }
 
 function IngredientItem({
@@ -135,26 +143,24 @@ function IngredientColumn({
 }: {
   title: string
   ingredients: ScaledIngredient[]
-  category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg'
+  category: 'protein' | 'kolhydrat' | 'fett'
   mealType: string
-  color: 'rose' | 'blue' | 'amber' | 'emerald'
-  onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number) => void
-  onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg') => void
-  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number) => void
-  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett' | 'tillagg', index: number, grams: number) => void
+  color: 'rose' | 'blue' | 'amber'
+  onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
+  onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
+  onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
+  onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number, grams: number) => void
 }) {
   const colorClasses = {
     rose: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
     blue: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
-    amber: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-    emerald: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+    amber: 'bg-amber-500/10 border-amber-500/20 text-amber-400'
   }
 
   const headerColors = {
     rose: 'bg-rose-500/5 border-rose-500/10',
     blue: 'bg-blue-500/5 border-blue-500/10',
-    amber: 'bg-amber-500/5 border-amber-500/10',
-    emerald: 'bg-emerald-500/5 border-emerald-500/10'
+    amber: 'bg-amber-500/5 border-amber-500/10'
   }
 
   return (
@@ -204,12 +210,70 @@ function IngredientColumn({
   )
 }
 
+// Simple text input component for Tillägg and Kosttillskott
+function FreeTextInput({
+  placeholder,
+  onAdd,
+  color
+}: {
+  placeholder: string
+  onAdd: (text: string) => void
+  color: 'emerald' | 'purple'
+}) {
+  const [value, setValue] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const handleAdd = () => {
+    if (value.trim()) {
+      onAdd(value.trim())
+      setValue('')
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleAdd()
+    }
+  }
+
+  const colorClass = color === 'emerald'
+    ? 'focus:border-emerald-500 focus:ring-emerald-500/20'
+    : 'focus:border-purple-500 focus:ring-purple-500/20'
+
+  const buttonColor = color === 'emerald'
+    ? 'text-emerald-400 hover:bg-emerald-500/20'
+    : 'text-purple-400 hover:bg-purple-500/20'
+
+  return (
+    <div className="flex gap-2 mt-2 pt-2 border-t border-zinc-700/30">
+      <input
+        ref={inputRef}
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        className={`flex-1 px-3 py-1.5 text-sm bg-zinc-800 border border-zinc-600 rounded-lg text-white placeholder:text-zinc-500 ${colorClass}`}
+      />
+      <button
+        onClick={handleAdd}
+        disabled={!value.trim()}
+        className={`px-3 py-1.5 rounded-lg transition-colors ${buttonColor} disabled:opacity-40 disabled:cursor-not-allowed`}
+      >
+        <Plus className="h-4 w-4" />
+      </button>
+    </div>
+  )
+}
+
 export function MealCard({
   meal,
   onChangeIngredient,
   onAddIngredient,
   onDeleteIngredient,
   onUpdateGrams,
+  onAddTillagg,
+  onRemoveTillagg,
   onAddSupplement,
   onRemoveSupplement
 }: MealCardProps) {
@@ -292,43 +356,43 @@ export function MealCard({
             />
           </div>
 
-          {/* Tillägg (Grönsaker/Sallad) */}
+          {/* Tillägg (Grönsaker/Sallad/Sås) */}
           <div className="mt-4 pt-4 border-t border-zinc-700/30">
             <div className="rounded-xl overflow-hidden border bg-emerald-500/5 border-emerald-500/10">
               <div className="px-3 py-2.5 border-b bg-emerald-500/5 border-emerald-500/10">
                 <p className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                  Tillägg (grönsaker/sallad)
+                  Tillägg (grönsaker/sallad/sås)
                 </p>
               </div>
-              <div className="p-2.5 space-y-0 bg-zinc-800/30">
-                {meal.template.tillagg.map((item, index) => (
-                  <div key={item.id}>
-                    {index > 0 && (
-                      <div className="flex items-center gap-2 py-3">
-                        <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent via-gold-500/40 to-gold-500/40" />
-                        <span className="text-xs text-gold-400 font-bold uppercase tracking-widest px-3 py-1 bg-gold-500/15 rounded-full border border-gold-500/30">eller</span>
-                        <div className="h-0.5 flex-1 bg-gradient-to-l from-transparent via-gold-500/40 to-gold-500/40" />
+              <div className="p-2.5 bg-zinc-800/30">
+                {meal.tillaggItems && meal.tillaggItems.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {meal.tillaggItems.map((item, index) => (
+                      <div
+                        key={item.id}
+                        className="group flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs text-emerald-400 font-medium"
+                      >
+                        <span>{item.text}</span>
+                        {onRemoveTillagg && (
+                          <button
+                            onClick={() => onRemoveTillagg(meal.type, index)}
+                            className="opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        )}
                       </div>
-                    )}
-                    <IngredientItem
-                      ingredient={item}
-                      onSwap={() => onChangeIngredient?.(meal.type, 'tillagg', index)}
-                      onDelete={onDeleteIngredient ? () => onDeleteIngredient(meal.type, 'tillagg', index) : undefined}
-                      onUpdateGrams={onUpdateGrams ? (grams) => onUpdateGrams(meal.type, 'tillagg', index, grams) : undefined}
-                    />
+                    ))}
                   </div>
-                ))}
-                {meal.template.tillagg.length === 0 && (
-                  <div className="py-3 text-sm text-zinc-600 italic text-center">Ingen tillägg</div>
+                ) : (
+                  <div className="py-2 text-sm text-zinc-600 italic text-center">Inga tillägg</div>
                 )}
-                {onAddIngredient && (
-                  <button
-                    onClick={() => onAddIngredient(meal.type, 'tillagg')}
-                    className="w-full flex items-center justify-center gap-1.5 mt-2 pt-2 border-t border-zinc-700/30 text-zinc-500 hover:text-emerald-400 text-xs transition-colors py-1.5"
-                  >
-                    <Plus className="h-3 w-3" />
-                    <span>Lägg till grönsaker/sallad</span>
-                  </button>
+                {onAddTillagg && (
+                  <FreeTextInput
+                    placeholder="t.ex. Sallad, 100g gurka, Sås..."
+                    onAdd={(text) => onAddTillagg(meal.type, text)}
+                    color="emerald"
+                  />
                 )}
               </div>
             </div>
@@ -343,17 +407,17 @@ export function MealCard({
                 </p>
               </div>
               <div className="p-2.5 bg-zinc-800/30">
-                {meal.template.kosttillskott && meal.template.kosttillskott.length > 0 ? (
+                {meal.supplementItems && meal.supplementItems.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
-                    {meal.template.kosttillskott.map((item) => (
+                    {meal.supplementItems.map((item, index) => (
                       <div
                         key={item.id}
                         className="group flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full text-xs text-purple-400 font-medium"
                       >
-                        <span>{item.amount} {item.unit} {item.name}</span>
+                        <span>{item.text}</span>
                         {onRemoveSupplement && (
                           <button
-                            onClick={() => onRemoveSupplement(meal.type, item.id)}
+                            onClick={() => onRemoveSupplement(meal.type, index)}
                             className="opacity-0 group-hover:opacity-100 hover:text-red-400 transition-all"
                           >
                             <X className="h-3 w-3" />
@@ -366,13 +430,11 @@ export function MealCard({
                   <div className="py-2 text-sm text-zinc-600 italic text-center">Inga kosttillskott</div>
                 )}
                 {onAddSupplement && (
-                  <button
-                    onClick={() => onAddSupplement(meal.type, 0)}
-                    className="w-full flex items-center justify-center gap-1.5 mt-2 pt-2 border-t border-zinc-700/30 text-zinc-500 hover:text-purple-400 text-xs transition-colors py-1.5"
-                  >
-                    <Plus className="h-3 w-3" />
-                    <span>Lägg till kosttillskott</span>
-                  </button>
+                  <FreeTextInput
+                    placeholder="t.ex. Omega-3 3st, Kreatin 5g..."
+                    onAdd={(text) => onAddSupplement(meal.type, text)}
+                    color="purple"
+                  />
                 )}
               </div>
             </div>
