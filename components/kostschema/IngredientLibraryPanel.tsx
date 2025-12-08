@@ -44,7 +44,7 @@ export function IngredientLibraryPanel({ isOpen, onClose }: IngredientLibraryPan
       const res = await fetch(`/api/slv-proxy?${params}`)
       if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
-      setFoods(data.results || [])
+      setFoods(data.foods || [])
     } catch (error) {
       console.error('Error fetching foods:', error)
       setFoods([])
