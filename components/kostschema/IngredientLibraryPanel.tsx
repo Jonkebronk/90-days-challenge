@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { X, Search, Package, Trash2 } from 'lucide-react'
 import { useIngredientLibraryStore } from '@/lib/stores/ingredient-library-store'
 import { IngredientGrid } from './IngredientGrid'
-import { IngredientPresets } from './IngredientPresets'
 
 interface TransformedFood {
   slvNummer: number
@@ -131,9 +130,6 @@ export function IngredientLibraryPanel({ isOpen, onClose }: IngredientLibraryPan
             />
           </div>
         </div>
-
-        {/* Presets */}
-        <IngredientPresets />
 
         {/* Category tabs */}
         <div className="px-4 py-3 border-b border-zinc-700 flex gap-2">
