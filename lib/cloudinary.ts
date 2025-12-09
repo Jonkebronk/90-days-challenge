@@ -82,4 +82,27 @@ export function getOptimizedImageUrl(
   })
 }
 
+/**
+ * Upload a product image to Cloudinary
+ * @param file - Base64 data URI
+ * @returns Secure URL of the uploaded image
+ */
+export async function uploadProductImage(file: string): Promise<string> {
+  try {
+    const result = await cloudinary.uploader.upload(file, {
+      folder: 'products',
+      transformation: [
+        { width: 500, height: 500, crop: 'limit' },
+        { quality: 'auto:good' },
+        { fetch_format: 'auto' },
+      ],
+    })
+
+    return result.secure_url
+  } catch (error) {
+    console.error('Cloudinary product upload error:', error)
+    throw new Error('Failed to upload product image')
+  }
+}
+
 export default cloudinary

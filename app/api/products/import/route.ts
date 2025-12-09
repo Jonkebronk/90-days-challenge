@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { uploadProductImage } from '@/lib/cloudinary'
 
 interface ImportProduct {
   ean?: string
@@ -52,6 +53,18 @@ export async function POST(req: NextRequest) {
         // Generate EAN if not provided
         const ean = p.ean || `IMPORT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
+        // Upload image to Cloudinary if it's a base64 data URI
+        let imageUrl = p.image || null
+        if (imageUrl && imageUrl.startsWith('data:image')) {
+          try {
+            imageUrl = await uploadProductImage(imageUrl)
+          } catch (uploadError) {
+            console.error('Image upload failed:', uploadError)
+            // Continue without image if upload fails
+            imageUrl = null
+          }
+        }
+
         // Upsert - update if exists, create if not
         const existing = await prisma.product.findUnique({ where: { ean } })
 
@@ -62,7 +75,7 @@ export async function POST(req: NextRequest) {
               name: p.name,
               brand: p.brand || null,
               category: p.category || existing.category || null,
-              image: p.image || existing.image || null,
+              image: imageUrl || existing.image || null,
               kcal: p.kcal || 0,
               protein: p.protein || 0,
               carbs: p.carbs || 0,
@@ -83,7 +96,7 @@ export async function POST(req: NextRequest) {
               name: p.name,
               brand: p.brand || null,
               category: p.category || null,
-              image: p.image || null,
+              image: imageUrl,
               kcal: p.kcal || 0,
               protein: p.protein || 0,
               carbs: p.carbs || 0,
