@@ -135,36 +135,47 @@ export function PhotoCaptureTab() {
           {pendingAnalysis.items.map((item, idx) => (
             <div key={idx} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-gray-900">{item.name}</span>
-                  {item.source === 'slv' ? (
-                    <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
-                      <Database className="w-3 h-3" />
-                      SLV
-                    </span>
-                  ) : item.source === 'estimate' ? (
-                    <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
-                      <Sparkles className="w-3 h-3" />
-                      Uppskattat
-                    </span>
-                  ) : item.confidence && (
-                    <span className={`text-xs px-1.5 py-0.5 rounded ${
-                      item.confidence === 'high' ? 'bg-green-100 text-green-700' :
-                      item.confidence === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-red-100 text-red-700'
-                    }`}>
-                      {item.confidence === 'high' ? 'Säker' :
-                       item.confidence === 'medium' ? 'Osäker' : 'Gissning'}
-                    </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-900">{item.name}</span>
+                    {item.source === 'slv' ? (
+                      <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
+                        <Database className="w-3 h-3" />
+                        SLV
+                      </span>
+                    ) : item.source === 'estimate' ? (
+                      <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
+                        <Sparkles className="w-3 h-3" />
+                        Uppskattat
+                      </span>
+                    ) : item.confidence && (
+                      <span className={`text-xs px-1.5 py-0.5 rounded ${
+                        item.confidence === 'high' ? 'bg-green-100 text-green-700' :
+                        item.confidence === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-red-100 text-red-700'
+                      }`}>
+                        {item.confidence === 'high' ? 'Säker' :
+                         item.confidence === 'medium' ? 'Osäker' : 'Gissning'}
+                      </span>
+                    )}
+                  </div>
+                  {item.source === 'slv' && item.slv_name && (
+                    <div className="text-xs text-emerald-600 mt-0.5 flex items-center gap-1">
+                      <span className="text-gray-400">→</span>
+                      <span className="truncate">{item.slv_name}</span>
+                      {item.slv_nummer && (
+                        <span className="text-gray-400 text-[10px]">#{item.slv_nummer}</span>
+                      )}
+                    </div>
+                  )}
+                  {item.source === 'estimate' && (
+                    <div className="text-xs text-amber-600 mt-0.5">
+                      Hittades inte i SLV - använder uppskattade värden
+                    </div>
                   )}
                 </div>
-                <div className="font-semibold text-gold-primary">{Math.round(item.kcal)} kcal</div>
+                <div className="font-semibold text-gold-primary ml-2">{Math.round(item.kcal)} kcal</div>
               </div>
-              {item.slv_name && item.slv_name !== item.name && (
-                <div className="text-xs text-gray-500 mt-0.5">
-                  Matchat: {item.slv_name}
-                </div>
-              )}
               <div className="flex items-center justify-between mt-2">
                 <div className="flex items-center gap-2">
                   {editingIdx === idx ? (
