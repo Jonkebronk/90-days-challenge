@@ -1,22 +1,40 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Barcode, Camera, Loader2, Check, X, Plus, Search } from 'lucide-react'
+import { Barcode, Camera, Loader2, Check, X, Plus, Search, AlertCircle, Database, Globe } from 'lucide-react'
 import { useFoodLogStore, Product } from '@/lib/stores/food-log-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
+interface OpenFoodFactsProduct {
+  code: string
+  product_name: string
+  brands?: string
+  nutriments: {
+    'energy-kcal_100g'?: number
+    proteins_100g?: number
+    carbohydrates_100g?: number
+    fat_100g?: number
+    fiber_100g?: number
+  }
+  image_url?: string
+}
+
 export function BarcodeScannerTab() {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const scanningRef = useRef(false) // Use ref for closure
   const [isScanning, setIsScanning] = useState(false)
   const [manualEan, setManualEan] = useState('')
   const [foundProduct, setFoundProduct] = useState<Product | null>(null)
+  const [offProduct, setOffProduct] = useState<OpenFoodFactsProduct | null>(null)
   const [portionG, setPortionG] = useState('100')
   const [notFound, setNotFound] = useState(false)
   const [showNewProductForm, setShowNewProductForm] = useState(false)
+  const [isLookingUp, setIsLookingUp] = useState(false)
+  const [barcodeSupported, setBarcodeSupported] = useState<boolean | null>(null)
 
-  const { isLoading, lookupProduct, createLog } = useFoodLogStore()
+  const { isLoading, lookupProduct, createLog, cacheProduct } = useFoodLogStore()
 
   const [newProduct, setNewProduct] = useState({
     name: '',
@@ -27,7 +45,13 @@ export function BarcodeScannerTab() {
     fat: ''
   })
 
+  // Check BarcodeDetector support on mount
+  useEffect(() => {
+    setBarcodeSupported('BarcodeDetector' in window)
+  }, [])
+
   const stopScanner = useCallback(() => {
+    scanningRef.current = false
     if (videoRef.current?.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream
       stream.getTracks().forEach(track => track.stop())
@@ -35,6 +59,62 @@ export function BarcodeScannerTab() {
     }
     setIsScanning(false)
   }, [])
+
+  // Search Open Food Facts
+  const searchOpenFoodFacts = async (ean: string): Promise<OpenFoodFactsProduct | null> => {
+    try {
+      const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${ean}.json`)
+      if (!res.ok) return null
+
+      const data = await res.json()
+      if (data.status !== 1 || !data.product) return null
+
+      return {
+        code: data.code,
+        product_name: data.product.product_name || data.product.product_name_sv || 'Okänd produkt',
+        brands: data.product.brands,
+        nutriments: data.product.nutriments || {},
+        image_url: data.product.image_url
+      }
+    } catch (error) {
+      console.error('Open Food Facts lookup failed:', error)
+      return null
+    }
+  }
+
+  const handleEanLookup = async (ean: string) => {
+    setNotFound(false)
+    setFoundProduct(null)
+    setOffProduct(null)
+    setManualEan(ean)
+    setIsLookingUp(true)
+
+    try {
+      // First check local database
+      const localProduct = await lookupProduct(ean)
+      if (localProduct) {
+        setFoundProduct(localProduct)
+        setIsLookingUp(false)
+        return
+      }
+
+      // Then check Open Food Facts
+      const offResult = await searchOpenFoodFacts(ean)
+      if (offResult && offResult.product_name) {
+        setOffProduct(offResult)
+        setIsLookingUp(false)
+        return
+      }
+
+      // Not found anywhere
+      setNotFound(true)
+    } catch (error) {
+      console.error('Lookup failed:', error)
+      setNotFound(true)
+    } finally {
+      setIsLookingUp(false)
+    }
+  }
 
   const startScanner = async () => {
     try {
@@ -44,6 +124,7 @@ export function BarcodeScannerTab() {
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream
+        scanningRef.current = true
         setIsScanning(true)
 
         if ('BarcodeDetector' in window) {
@@ -52,7 +133,7 @@ export function BarcodeScannerTab() {
           })
 
           const detectBarcode = async () => {
-            if (!videoRef.current || !isScanning) return
+            if (!videoRef.current || !scanningRef.current) return
 
             try {
               const barcodes = await barcodeDetector.detect(videoRef.current)
@@ -66,31 +147,27 @@ export function BarcodeScannerTab() {
               // Detection failed, continue
             }
 
-            if (isScanning) {
+            if (scanningRef.current) {
               requestAnimationFrame(detectBarcode)
             }
           }
 
           videoRef.current.onloadedmetadata = () => {
-            detectBarcode()
+            if (scanningRef.current) {
+              detectBarcode()
+            }
           }
+        } else {
+          // BarcodeDetector not supported, show message after 2 seconds
+          setTimeout(() => {
+            if (scanningRef.current) {
+              stopScanner()
+            }
+          }, 2000)
         }
       }
     } catch (error) {
       console.error('Camera access denied:', error)
-    }
-  }
-
-  const handleEanLookup = async (ean: string) => {
-    setNotFound(false)
-    setFoundProduct(null)
-    setManualEan(ean)
-
-    const product = await lookupProduct(ean)
-    if (product) {
-      setFoundProduct(product)
-    } else {
-      setNotFound(true)
     }
   }
 
@@ -122,6 +199,63 @@ export function BarcodeScannerTab() {
     })
 
     setFoundProduct(null)
+    setManualEan('')
+    setPortionG('100')
+  }
+
+  // Log product from Open Food Facts and save to local DB
+  const handleLogOffProduct = async () => {
+    if (!offProduct) return
+
+    const portion = parseFloat(portionG) || 100
+    const ratio = portion / 100
+
+    const kcal = offProduct.nutriments['energy-kcal_100g'] || 0
+    const protein = offProduct.nutriments.proteins_100g || 0
+    const carbs = offProduct.nutriments.carbohydrates_100g || 0
+    const fat = offProduct.nutriments.fat_100g || 0
+
+    // Save to local database first
+    try {
+      const res = await fetch('/api/products/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ean: offProduct.code,
+          name: offProduct.product_name,
+          brand: offProduct.brands || null,
+          kcal,
+          protein,
+          carbs,
+          fat,
+          source: 'openfoodfacts'
+        })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        if (data.product) {
+          cacheProduct(data.product)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to save product:', error)
+    }
+
+    // Log the food
+    await createLog({
+      type: 'barcode',
+      items: [{
+        name: offProduct.product_name,
+        portionG: portion,
+        kcal: Math.round(kcal * ratio),
+        protein: Math.round(protein * ratio * 10) / 10,
+        carbs: Math.round(carbs * ratio * 10) / 10,
+        fat: Math.round(fat * ratio * 10) / 10
+      }]
+    })
+
+    setOffProduct(null)
     setManualEan('')
     setPortionG('100')
   }
@@ -174,6 +308,17 @@ export function BarcodeScannerTab() {
       stopScanner()
     }
   }, [stopScanner])
+
+  // Show loading state
+  if (isLookingUp) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-gold-primary mb-3" />
+        <p className="text-gray-600">Söker efter produkt...</p>
+        <p className="text-sm text-gray-400 mt-1">EAN: {manualEan}</p>
+      </div>
+    )
+  }
 
   // Show new product form
   if (showNewProductForm) {
@@ -269,7 +414,7 @@ export function BarcodeScannerTab() {
     )
   }
 
-  // Show product details
+  // Show local product details
   if (foundProduct) {
     const portion = parseFloat(portionG) || 100
     const ratio = portion / 100
@@ -278,15 +423,19 @@ export function BarcodeScannerTab() {
       <div className="space-y-4">
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-gray-900">{foundProduct.name}</h3>
-              {foundProduct.brand && (
-                <p className="text-sm text-gray-500">{foundProduct.brand}</p>
-              )}
+            <div className="flex items-center gap-2">
+              <Database className="w-4 h-4 text-emerald-600" />
+              <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">Lokal databas</span>
             </div>
             <Button variant="ghost" size="sm" onClick={() => { setFoundProduct(null); setManualEan('') }}>
               <X className="w-4 h-4" />
             </Button>
+          </div>
+          <div className="mt-2">
+            <h3 className="font-semibold text-gray-900">{foundProduct.name}</h3>
+            {foundProduct.brand && (
+              <p className="text-sm text-gray-500">{foundProduct.brand}</p>
+            )}
           </div>
 
           <div className="mt-3 text-sm text-gray-600">
@@ -331,6 +480,90 @@ export function BarcodeScannerTab() {
     )
   }
 
+  // Show Open Food Facts product
+  if (offProduct) {
+    const portion = parseFloat(portionG) || 100
+    const ratio = portion / 100
+    const kcal = offProduct.nutriments['energy-kcal_100g'] || 0
+    const protein = offProduct.nutriments.proteins_100g || 0
+    const carbs = offProduct.nutriments.carbohydrates_100g || 0
+    const fat = offProduct.nutriments.fat_100g || 0
+
+    return (
+      <div className="space-y-4">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-blue-600" />
+              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Open Food Facts</span>
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => { setOffProduct(null); setManualEan('') }}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+
+          <div className="mt-2 flex gap-3">
+            {offProduct.image_url && (
+              <img
+                src={offProduct.image_url}
+                alt={offProduct.product_name}
+                className="w-16 h-16 object-cover rounded-lg"
+              />
+            )}
+            <div>
+              <h3 className="font-semibold text-gray-900">{offProduct.product_name}</h3>
+              {offProduct.brands && (
+                <p className="text-sm text-gray-500">{offProduct.brands}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-3 text-sm text-gray-600">
+            Per 100g: {Math.round(kcal)} kcal · P: {Math.round(protein)}g · K: {Math.round(carbs)}g · F: {Math.round(fat)}g
+          </div>
+        </div>
+
+        <div>
+          <Label>Portion (gram)</Label>
+          <Input
+            type="number"
+            value={portionG}
+            onChange={(e) => setPortionG(e.target.value)}
+          />
+        </div>
+
+        <div className="bg-gradient-to-r from-gold-primary/10 to-orange-100 border border-gold-primary/20 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-gray-900">Beräknat intag</span>
+            <span className="font-bold text-lg bg-gradient-to-r from-gold-primary to-orange-500 bg-clip-text text-transparent">
+              {Math.round(kcal * ratio)} kcal
+            </span>
+          </div>
+          <div className="text-sm text-gray-600 text-right mt-1">
+            P: {Math.round(protein * ratio * 10) / 10}g · K: {Math.round(carbs * ratio * 10) / 10}g · F: {Math.round(fat * ratio * 10) / 10}g
+          </div>
+        </div>
+
+        <div className="text-xs text-gray-500 text-center">
+          Produkten sparas automatiskt till din lokala databas
+        </div>
+
+        <Button
+          onClick={handleLogOffProduct}
+          disabled={isLoading}
+          className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
+        >
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <Check className="w-4 h-4 mr-2" />
+          )}
+          Spara & logga produkt
+        </Button>
+      </div>
+    )
+  }
+
   // Show not found message
   if (notFound) {
     return (
@@ -341,6 +574,7 @@ export function BarcodeScannerTab() {
           </div>
           <p className="font-semibold text-amber-800">Produkt hittades inte</p>
           <p className="text-sm text-amber-600 mt-1">EAN: {manualEan}</p>
+          <p className="text-xs text-amber-500 mt-2">Varken i lokal databas eller Open Food Facts</p>
         </div>
 
         <div className="flex gap-3">
@@ -356,7 +590,7 @@ export function BarcodeScannerTab() {
             className="flex-1 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Lägg till
+            Lägg till manuellt
           </Button>
         </div>
       </div>
@@ -366,6 +600,17 @@ export function BarcodeScannerTab() {
   // Show scanner/search UI
   return (
     <div className="space-y-4">
+      {/* BarcodeDetector warning */}
+      {barcodeSupported === false && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2">
+          <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-amber-700">
+            <p className="font-medium">Streckkodsskanning stöds inte i din webbläsare</p>
+            <p className="text-xs mt-1">Använd manuell inmatning nedan eller prova Chrome på Android</p>
+          </div>
+        </div>
+      )}
+
       {/* Camera scanner */}
       {isScanning ? (
         <div className="relative rounded-xl overflow-hidden bg-gray-900">
@@ -373,6 +618,7 @@ export function BarcodeScannerTab() {
             ref={videoRef}
             autoPlay
             playsInline
+            muted
             className="w-full h-48 object-cover"
           />
           <div className="absolute inset-0 flex items-center justify-center">
@@ -387,13 +633,14 @@ export function BarcodeScannerTab() {
             <X className="w-4 h-4" />
           </Button>
           <div className="absolute bottom-2 left-0 right-0 text-center text-sm text-white bg-black/50 py-1">
-            Rikta kameran mot streckkoden
+            {barcodeSupported ? 'Rikta kameran mot streckkoden' : 'Streckkodsskanning stöds inte...'}
           </div>
         </div>
       ) : (
         <button
           onClick={startScanner}
-          className="w-full py-10 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group"
+          disabled={barcodeSupported === false}
+          className="w-full py-10 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-primary/20 to-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
             <Camera className="w-6 h-6 text-gold-primary" />
@@ -425,6 +672,11 @@ export function BarcodeScannerTab() {
         >
           <Search className="w-4 h-4" />
         </Button>
+      </div>
+
+      {/* Info text */}
+      <div className="text-xs text-gray-500 text-center">
+        Söker först i din databas, sedan i Open Food Facts
       </div>
     </div>
   )
