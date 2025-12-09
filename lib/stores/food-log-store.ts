@@ -275,19 +275,22 @@ export const useFoodLogStore = create<FoodLogState>((set, get) => ({
         body: JSON.stringify({ image: base64Image })
       })
 
-      if (!res.ok) throw new Error('Failed to analyze')
+      const data = await res.json()
 
-      const { analysis } = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to analyze')
+      }
 
       set({
-        pendingAnalysis: analysis,
+        pendingAnalysis: data.analysis,
         pendingImage: base64Image,
         isLoading: false
       })
 
-      return analysis
-    } catch (error) {
-      set({ error: 'Kunde inte analysera bilden', isLoading: false })
+      return data.analysis
+    } catch (error: any) {
+      const message = error?.message || 'Kunde inte analysera bilden'
+      set({ error: message, isLoading: false })
       return null
     }
   },
