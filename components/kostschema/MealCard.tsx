@@ -1,8 +1,18 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { ChevronDown, ChevronUp, Plus, RefreshCw, Trash2, Check, X, Dumbbell, Clock, ShoppingBag, Pencil } from 'lucide-react'
+import { ChevronDown, ChevronUp, Plus, RefreshCw, Trash2, Check, X, Dumbbell, Clock, ShoppingBag, Pencil, Sparkles } from 'lucide-react'
 import { ScaledMeal, ScaledIngredient, MealTiming } from '@/lib/kostschema/types'
+import { RecipeSuggestionPanel } from './RecipeSuggestionPanel'
+
+interface Recipe {
+  name: string
+  description: string
+  instructions: string[]
+  tips: string
+  suggestedSpices: string[]
+  cookingTime: string
+}
 
 interface MealCardProps {
   meal: ScaledMeal & { mealTiming?: MealTiming }
@@ -359,6 +369,59 @@ export function MealCard({
   onRemoveSupplement
 }: MealCardProps) {
   const [isExpanded, setIsExpanded] = useState(true)
+  const [recipe, setRecipe] = useState<Recipe | null>(null)
+  const [isLoadingRecipe, setIsLoadingRecipe] = useState(false)
+
+  // Fetch recipe suggestion from AI
+  const fetchRecipeSuggestion = async () => {
+    setIsLoadingRecipe(true)
+    setRecipe(null)
+
+    try {
+      // Collect all ingredients from the meal
+      const ingredients = [
+        ...meal.template.kolhydrat.map(i => ({
+          name: i.name,
+          amount: Math.round(i.scaledAmount),
+          category: 'kolhydrat' as const
+        })),
+        ...meal.template.protein.map(i => ({
+          name: i.name,
+          amount: Math.round(i.scaledAmount),
+          category: 'protein' as const
+        })),
+        ...meal.template.fett.map(i => ({
+          name: i.name,
+          amount: Math.round(i.scaledAmount),
+          category: 'fett' as const
+        }))
+      ]
+
+      // Collect tillagg texts
+      const tillagg = meal.tillaggItems?.map(item => item.text) || []
+
+      const response = await fetch('/api/meals/suggest-recipe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ingredients,
+          tillagg,
+          mealType: meal.type
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch recipe')
+      }
+
+      const data = await response.json()
+      setRecipe(data.recipe)
+    } catch (error) {
+      console.error('Error fetching recipe:', error)
+    } finally {
+      setIsLoadingRecipe(false)
+    }
+  }
 
   // Determine card styling based on workout status
   const isPreWorkout = meal.mealTiming?.isPreWorkout
@@ -395,6 +458,19 @@ export function MealCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="font-semibold text-zinc-800 text-lg">{meal.name}</div>
+            {/* Recipe suggestion button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                fetchRecipeSuggestion()
+              }}
+              disabled={isLoadingRecipe}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 border border-amber-200 hover:from-amber-200 hover:to-orange-200 transition-all disabled:opacity-50"
+              title="Fa receptforslag fran AI"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Recept</span>
+            </button>
             {/* Time indicator */}
             {meal.mealTiming && (
               <span className="flex items-center gap-1 text-xs text-zinc-500 bg-zinc-200 px-2 py-0.5 rounded-full">
@@ -581,6 +657,16 @@ export function MealCard({
               </div>
             </div>
           </div>
+
+          {/* Recipe Suggestion Panel */}
+          {(isLoadingRecipe || recipe) && (
+            <RecipeSuggestionPanel
+              recipe={recipe || { name: '', description: '', instructions: [], tips: '', suggestedSpices: [], cookingTime: '' }}
+              isLoading={isLoadingRecipe}
+              onClose={() => setRecipe(null)}
+              onRefresh={fetchRecipeSuggestion}
+            />
+          )}
         </div>
       )}
     </div>
