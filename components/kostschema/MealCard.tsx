@@ -279,8 +279,33 @@ export function MealCard({
 }: MealCardProps) {
   const [isExpanded, setIsExpanded] = useState(true)
 
+  // Determine card styling based on workout status
+  const isPreWorkout = meal.mealTiming?.isPreWorkout
+  const isPostWorkout = meal.mealTiming?.isPostWorkout
+
+  const cardBorderClass = isPreWorkout
+    ? 'border-2 border-emerald-400 shadow-emerald-500/20'
+    : isPostWorkout
+      ? 'border-2 border-blue-400 shadow-blue-500/20'
+      : 'border border-zinc-200'
+
   return (
-    <div className="bg-zinc-100 rounded-2xl overflow-hidden border border-zinc-200 shadow-lg">
+    <div className={`bg-zinc-100 rounded-2xl overflow-hidden shadow-lg ${cardBorderClass}`}>
+      {/* Pre/Post workout banner */}
+      {(isPreWorkout || isPostWorkout) && (
+        <div className={`py-1.5 px-4 flex items-center justify-center gap-2 ${
+          isPreWorkout
+            ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white'
+            : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
+        }`}>
+          <Dumbbell className="w-4 h-4" />
+          <span className="text-sm font-bold tracking-wide">
+            {isPreWorkout ? 'PRE-WORKOUT MÅLTID' : 'POST-WORKOUT MÅLTID'}
+          </span>
+          <Dumbbell className="w-4 h-4" />
+        </div>
+      )}
+
       {/* Header */}
       <button
         className="w-full cursor-pointer py-4 px-5 hover:bg-zinc-200/50 transition-colors"
@@ -289,26 +314,12 @@ export function MealCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="font-semibold text-zinc-800 text-lg">{meal.name}</div>
-            {/* Time and workout indicator */}
+            {/* Time indicator */}
             {meal.mealTiming && (
-              <div className="flex items-center gap-2">
-                <span className="flex items-center gap-1 text-xs text-zinc-500 bg-zinc-200 px-2 py-0.5 rounded-full">
-                  <Clock className="w-3 h-3" />
-                  {meal.mealTiming.time}
-                </span>
-                {meal.mealTiming.isPreWorkout && (
-                  <span className="flex items-center gap-1 text-xs text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
-                    <Dumbbell className="w-3 h-3" />
-                    Pre-workout
-                  </span>
-                )}
-                {meal.mealTiming.isPostWorkout && (
-                  <span className="flex items-center gap-1 text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full border border-blue-200">
-                    <Dumbbell className="w-3 h-3" />
-                    Post-workout
-                  </span>
-                )}
-              </div>
+              <span className="flex items-center gap-1 text-xs text-zinc-500 bg-zinc-200 px-2 py-0.5 rounded-full">
+                <Clock className="w-3 h-3" />
+                {meal.mealTiming.time}
+              </span>
             )}
             {!meal.mealTiming && (
               <span className="text-xs text-zinc-500 bg-zinc-200 px-2 py-0.5 rounded-full">

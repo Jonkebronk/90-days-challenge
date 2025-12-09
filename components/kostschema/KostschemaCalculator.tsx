@@ -531,6 +531,8 @@ export function KostschemaCalculator() {
         onRemoveSupplement={handleRemoveSupplement}
         onClearMealPlan={handleClearMealPlan}
         mealTimings={mealTimings}
+        isTrainingDay={currentDayConfig.isTrainingDay}
+        trainingTime={currentDayConfig.trainingTime}
       />
 
       {/* SLV Food Search Modal */}

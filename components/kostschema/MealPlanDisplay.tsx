@@ -1,6 +1,6 @@
 'use client'
 
-import { Trash2 } from 'lucide-react'
+import { Trash2, Dumbbell, Clock } from 'lucide-react'
 import { ScaledMeal, MealTiming } from '@/lib/kostschema/types'
 import { MealCard } from './MealCard'
 import { calculateDailyTotals } from '@/lib/kostschema/hooks/useScaledMeals'
@@ -19,6 +19,34 @@ interface MealPlanDisplayProps {
   onRemoveSupplement?: (mealType: string, index: number) => void
   onClearMealPlan?: () => void
   mealTimings?: MealTiming[]
+  isTrainingDay?: boolean
+  trainingTime?: string
+}
+
+// Workout separator component
+function WorkoutSeparator({ time }: { time?: string }) {
+  return (
+    <div className="relative py-2">
+      <div className="absolute inset-0 flex items-center">
+        <div className="w-full border-t-2 border-dashed border-emerald-500/30" />
+      </div>
+      <div className="relative flex justify-center">
+        <div className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-500/20 via-emerald-500/30 to-emerald-500/20 rounded-2xl border-2 border-emerald-500/40 shadow-lg shadow-emerald-500/10">
+          <Dumbbell className="w-6 h-6 text-emerald-400" />
+          <div className="text-center">
+            <span className="text-lg font-bold text-emerald-400 tracking-wide">TRÄNINGSPASS</span>
+            {time && (
+              <div className="flex items-center justify-center gap-1 text-xs text-emerald-300/80 mt-0.5">
+                <Clock className="w-3 h-3" />
+                <span>{time}</span>
+              </div>
+            )}
+          </div>
+          <Dumbbell className="w-6 h-6 text-emerald-400" />
+        </div>
+      </div>
+    </div>
+  )
 }
 
 const mealCountOptions = [
@@ -40,9 +68,17 @@ export function MealPlanDisplay({
   onAddSupplement,
   onRemoveSupplement,
   onClearMealPlan,
-  mealTimings
+  mealTimings,
+  isTrainingDay,
+  trainingTime
 }: MealPlanDisplayProps) {
   const totals = calculateDailyTotals(meals)
+
+  // Find the index where we should insert the workout separator
+  // It goes after the last pre-workout meal and before the first post-workout meal
+  const workoutInsertIndex = isTrainingDay
+    ? meals.findIndex(meal => meal.mealTiming?.isPostWorkout)
+    : -1
 
   return (
     <div className="space-y-4">
@@ -80,21 +116,28 @@ export function MealPlanDisplay({
         </div>
       </div>
 
-      {/* Meal cards */}
+      {/* Meal cards with workout separator */}
       <div className="space-y-4">
-        {meals.map((meal) => (
-          <MealCard
-            key={meal.type}
-            meal={meal}
-            onChangeIngredient={onChangeIngredient}
-            onAddIngredient={onAddIngredient}
-            onDeleteIngredient={onDeleteIngredient}
-            onUpdateGrams={onUpdateGrams}
-            onAddTillagg={onAddTillagg}
-            onRemoveTillagg={onRemoveTillagg}
-            onAddSupplement={onAddSupplement}
-            onRemoveSupplement={onRemoveSupplement}
-          />
+        {meals.map((meal, index) => (
+          <div key={meal.type}>
+            {/* Insert workout separator before post-workout meal */}
+            {workoutInsertIndex === index && (
+              <div className="mb-4">
+                <WorkoutSeparator time={trainingTime} />
+              </div>
+            )}
+            <MealCard
+              meal={meal}
+              onChangeIngredient={onChangeIngredient}
+              onAddIngredient={onAddIngredient}
+              onDeleteIngredient={onDeleteIngredient}
+              onUpdateGrams={onUpdateGrams}
+              onAddTillagg={onAddTillagg}
+              onRemoveTillagg={onRemoveTillagg}
+              onAddSupplement={onAddSupplement}
+              onRemoveSupplement={onRemoveSupplement}
+            />
+          </div>
         ))}
       </div>
 
