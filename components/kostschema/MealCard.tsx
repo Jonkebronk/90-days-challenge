@@ -246,36 +246,39 @@ function IngredientColumn({
   onUpdateName?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number, name: string) => void
   onFindProducts?: (ingredientName: string, mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
 }) {
-  const colorClasses = {
-    rose: 'bg-rose-50 border-rose-200 text-rose-600',
-    blue: 'bg-blue-50 border-blue-200 text-blue-600',
-    amber: 'bg-amber-50 border-amber-200 text-amber-600'
+  const accentColors = {
+    rose: 'bg-rose-500',
+    blue: 'bg-blue-500',
+    amber: 'bg-amber-500'
   }
 
-  const headerColors = {
-    rose: 'bg-rose-100 border-rose-200',
-    blue: 'bg-blue-100 border-blue-200',
-    amber: 'bg-amber-100 border-amber-200'
+  const textColors = {
+    rose: 'text-rose-600',
+    blue: 'text-blue-600',
+    amber: 'text-amber-600'
   }
 
   return (
-    <div className={`rounded-xl overflow-hidden border ${colorClasses[color]}`}>
+    <div className="rounded-lg border border-zinc-200 bg-white overflow-hidden">
+      {/* Colored accent line */}
+      <div className={`h-1 ${accentColors[color]}`} />
+
       {/* Header */}
-      <div className={`px-3 py-2.5 border-b ${headerColors[color]}`}>
-        <p className={`text-xs font-bold uppercase tracking-wider ${colorClasses[color].split(' ')[2]}`}>
+      <div className="px-3 py-2 border-b border-zinc-100">
+        <p className={`text-xs font-medium uppercase tracking-wide ${textColors[color]}`}>
           {title}
         </p>
       </div>
 
       {/* Content */}
-      <div className="p-2.5 space-y-0 bg-white/80">
+      <div className="p-2">
         {ingredients.map((ingredient, index) => (
           <div key={ingredient.id}>
             {index > 0 && (
-              <div className="flex items-center gap-2 py-3">
-                <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent via-gold-500/40 to-gold-500/40" />
-                <span className="text-xs text-gold-400 font-bold uppercase tracking-widest px-3 py-1 bg-gold-500/15 rounded-full border border-gold-500/30">eller</span>
-                <div className="h-0.5 flex-1 bg-gradient-to-l from-transparent via-gold-500/40 to-gold-500/40" />
+              <div className="flex items-center gap-2 py-2">
+                <div className="h-px flex-1 bg-zinc-200" />
+                <span className="text-[10px] text-zinc-400 font-medium uppercase">eller</span>
+                <div className="h-px flex-1 bg-zinc-200" />
               </div>
             )}
             <IngredientItem
@@ -290,16 +293,16 @@ function IngredientColumn({
         ))}
 
         {ingredients.length === 0 && (
-          <div className="py-3 text-sm text-zinc-400 italic text-center">Ingen källa</div>
+          <div className="py-2 text-sm text-zinc-400 italic text-center">Ingen källa</div>
         )}
 
         {onAddIngredient && (
           <button
             onClick={() => onAddIngredient(mealType, category)}
-            className="w-full flex items-center justify-center gap-1.5 mt-2 pt-2 border-t border-zinc-200 text-zinc-400 hover:text-gold-600 text-xs transition-colors py-1.5"
+            className="w-full flex items-center justify-center gap-1 mt-2 pt-2 border-t border-zinc-100 text-zinc-400 hover:text-zinc-600 text-xs transition-colors py-1"
           >
             <Plus className="h-3 w-3" />
-            <span>Lägg till alternativ</span>
+            <span>Lägg till</span>
           </button>
         )}
       </div>
@@ -307,7 +310,7 @@ function IngredientColumn({
   )
 }
 
-// Simple text input component for Tillägg and Kosttillskott
+// Compact inline text input for Tillägg and Kosttillskott
 function FreeTextInput({
   placeholder,
   onAdd,
@@ -318,48 +321,57 @@ function FreeTextInput({
   color: 'emerald' | 'purple'
 }) {
   const [value, setValue] = useState('')
+  const [isOpen, setIsOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleAdd = () => {
     if (value.trim()) {
       onAdd(value.trim())
       setValue('')
+      setIsOpen(false)
     }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleAdd()
+    } else if (e.key === 'Escape') {
+      setIsOpen(false)
+      setValue('')
     }
   }
 
-  const colorClass = color === 'emerald'
-    ? 'focus:border-emerald-400 focus:ring-emerald-200'
-    : 'focus:border-purple-400 focus:ring-purple-200'
-
   const buttonColor = color === 'emerald'
-    ? 'text-emerald-600 hover:bg-emerald-100'
-    : 'text-purple-600 hover:bg-purple-100'
+    ? 'text-emerald-500 hover:text-emerald-600'
+    : 'text-purple-500 hover:text-purple-600'
+
+  if (!isOpen) {
+    return (
+      <button
+        onClick={() => {
+          setIsOpen(true)
+          setTimeout(() => inputRef.current?.focus(), 0)
+        }}
+        className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs ${buttonColor} hover:bg-zinc-100 rounded transition-colors`}
+      >
+        <Plus className="h-3 w-3" />
+      </button>
+    )
+  }
 
   return (
-    <div className="flex gap-2 mt-2 pt-2 border-t border-zinc-200">
-      <input
-        ref={inputRef}
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        className={`flex-1 px-3 py-1.5 text-sm bg-white border border-zinc-300 rounded-lg text-zinc-800 placeholder:text-zinc-400 ${colorClass}`}
-      />
-      <button
-        onClick={handleAdd}
-        disabled={!value.trim()}
-        className={`px-3 py-1.5 rounded-lg transition-colors ${buttonColor} disabled:opacity-40 disabled:cursor-not-allowed`}
-      >
-        <Plus className="h-4 w-4" />
-      </button>
-    </div>
+    <input
+      ref={inputRef}
+      type="text"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onKeyDown={handleKeyDown}
+      onBlur={() => {
+        if (!value.trim()) setIsOpen(false)
+      }}
+      placeholder={placeholder}
+      className="w-24 px-2 py-0.5 text-xs bg-white border border-zinc-300 rounded text-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400"
+    />
   )
 }
 
@@ -442,36 +454,42 @@ export function MealCard({
   const isPostWorkout = meal.mealTiming?.isPostWorkout
 
   const cardBorderClass = isPreWorkout
-    ? 'border-2 border-emerald-400 shadow-emerald-500/20'
+    ? 'border-l-4 border-l-emerald-500 border-y border-r border-zinc-200'
     : isPostWorkout
-      ? 'border-2 border-blue-400 shadow-blue-500/20'
+      ? 'border-l-4 border-l-blue-500 border-y border-r border-zinc-200'
       : 'border border-zinc-200'
 
   return (
-    <div className={`bg-zinc-100 rounded-2xl overflow-hidden shadow-lg ${cardBorderClass}`}>
+    <div className={`bg-white rounded-xl overflow-hidden ${cardBorderClass}`}>
       {/* Pre/Post workout banner */}
       {(isPreWorkout || isPostWorkout) && (
-        <div className={`py-1.5 px-4 flex items-center justify-center gap-2 ${
+        <div className={`py-1 px-4 flex items-center justify-center gap-2 ${
           isPreWorkout
-            ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white'
-            : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
+            ? 'bg-emerald-50 text-emerald-700 border-b border-emerald-100'
+            : 'bg-blue-50 text-blue-700 border-b border-blue-100'
         }`}>
-          <Dumbbell className="w-4 h-4" />
-          <span className="text-sm font-bold tracking-wide">
-            {isPreWorkout ? 'PRE-WORKOUT MÅLTID' : 'POST-WORKOUT MÅLTID'}
+          <Dumbbell className="w-3.5 h-3.5" />
+          <span className="text-xs font-semibold tracking-wide uppercase">
+            {isPreWorkout ? 'Pre-workout' : 'Post-workout'}
           </span>
-          <Dumbbell className="w-4 h-4" />
         </div>
       )}
 
       {/* Header */}
       <button
-        className="w-full cursor-pointer py-4 px-5 hover:bg-zinc-200/50 transition-colors"
+        className="w-full cursor-pointer py-3 px-4 hover:bg-zinc-50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="font-semibold text-zinc-800 text-lg">{meal.name}</div>
+            <div className="font-medium text-zinc-900">{meal.name}</div>
+            {/* Time indicator */}
+            {meal.mealTiming && (
+              <span className="flex items-center gap-1 text-xs text-zinc-400">
+                <Clock className="w-3 h-3" />
+                {meal.mealTiming.time}
+              </span>
+            )}
             {/* Recipe suggestion button */}
             <button
               onClick={(e) => {
@@ -479,66 +497,26 @@ export function MealCard({
                 fetchRecipeSuggestion()
               }}
               disabled={isLoadingRecipe}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 border border-amber-200 hover:from-amber-200 hover:to-orange-200 transition-all disabled:opacity-50"
-              title="Fa receptforslag fran AI"
+              className="flex items-center gap-1 px-2 py-0.5 rounded text-xs text-amber-600 hover:bg-amber-50 transition-colors disabled:opacity-50"
+              title="Få receptförslag från AI"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="w-3 h-3" />
               <span>Recept</span>
             </button>
-            {/* Time indicator */}
-            {meal.mealTiming && (
-              <span className="flex items-center gap-1 text-xs text-zinc-500 bg-zinc-200 px-2 py-0.5 rounded-full">
-                <Clock className="w-3 h-3" />
-                {meal.mealTiming.time}
-              </span>
-            )}
-            {!meal.mealTiming && (
-              <span className="text-xs text-zinc-500 bg-zinc-200 px-2 py-0.5 rounded-full">
-                {meal.kcalPercent}%
-              </span>
-            )}
           </div>
-          <div className="flex items-center gap-5">
-            {/* Macro pills with targets */}
-            <div className="flex gap-2">
-              <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-orange-100 text-orange-600 border border-orange-200">
-                {meal.kcal} kcal
-              </span>
-              <div className="flex flex-col items-center">
-                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-600">
-                  P {meal.protein}g
-                </span>
-                {meal.mealTiming && (
-                  <span className="text-[10px] text-rose-400 mt-0.5">
-                    mål: {meal.mealTiming.proteinGrams}g
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-600">
-                  K {meal.carbs}g
-                </span>
-                {meal.mealTiming && (
-                  <span className="text-[10px] text-blue-400 mt-0.5">
-                    mål: {meal.mealTiming.carbsGrams}g
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-600">
-                  F {meal.fat}g
-                </span>
-                {meal.mealTiming && (
-                  <span className="text-[10px] text-amber-400 mt-0.5">
-                    mål: {meal.mealTiming.fatGrams}g
-                  </span>
-                )}
-              </div>
+          <div className="flex items-center gap-4">
+            {/* Macro display - cleaner */}
+            <div className="flex items-center gap-3 text-xs">
+              <span className="font-semibold text-zinc-700">{meal.kcal} kcal</span>
+              <span className="text-zinc-300">|</span>
+              <span className="text-rose-600">P {meal.protein}g</span>
+              <span className="text-blue-600">K {meal.carbs}g</span>
+              <span className="text-amber-600">F {meal.fat}g</span>
             </div>
             {isExpanded ? (
-              <ChevronUp className="w-5 h-5 text-zinc-400" />
+              <ChevronUp className="w-4 h-4 text-zinc-400" />
             ) : (
-              <ChevronDown className="w-5 h-5 text-zinc-400" />
+              <ChevronDown className="w-4 h-4 text-zinc-400" />
             )}
           </div>
         </div>
@@ -588,82 +566,69 @@ export function MealCard({
             />
           </div>
 
-          {/* Tillägg (Grönsaker/Sallad/Sås) */}
-          <div className="mt-4 pt-4 border-t border-zinc-200">
-            <div className="rounded-xl overflow-hidden border bg-emerald-50 border-emerald-200">
-              <div className="px-3 py-2.5 border-b bg-emerald-100 border-emerald-200">
-                <p className="text-xs font-bold uppercase tracking-wider text-emerald-600">
-                  Tillägg (grönsaker/sallad/sås)
-                </p>
-              </div>
-              <div className="p-2.5 bg-white/80">
+          {/* Tillägg & Kosttillskott - Compact inline */}
+          <div className="mt-4 pt-3 border-t border-zinc-100 space-y-3">
+            {/* Tillägg */}
+            <div className="flex items-start gap-2">
+              <span className="text-xs text-emerald-600 font-medium shrink-0 pt-1">Tillägg:</span>
+              <div className="flex flex-wrap gap-1.5 flex-1">
                 {meal.tillaggItems && meal.tillaggItems.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {meal.tillaggItems.map((item, index) => (
-                      <div
-                        key={item.id}
-                        className="group flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 border border-emerald-200 rounded-full text-xs text-emerald-700 font-medium"
-                      >
-                        <span>{item.text}</span>
-                        {onRemoveTillagg && (
-                          <button
-                            onClick={() => onRemoveTillagg(meal.type, index)}
-                            className="opacity-0 group-hover:opacity-100 hover:text-red-500 transition-all"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                  meal.tillaggItems.map((item, index) => (
+                    <span
+                      key={item.id}
+                      className="group inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-xs"
+                    >
+                      {item.text}
+                      {onRemoveTillagg && (
+                        <button
+                          onClick={() => onRemoveTillagg(meal.type, index)}
+                          className="opacity-0 group-hover:opacity-100 hover:text-red-500 transition-opacity"
+                        >
+                          <X className="h-2.5 w-2.5" />
+                        </button>
+                      )}
+                    </span>
+                  ))
                 ) : (
-                  <div className="py-2 text-sm text-zinc-400 italic text-center">Inga tillägg</div>
+                  <span className="text-xs text-zinc-400 italic">Inga tillägg</span>
                 )}
                 {onAddTillagg && (
                   <FreeTextInput
-                    placeholder="t.ex. Sallad, 100g gurka, Sås..."
+                    placeholder="Lägg till..."
                     onAdd={(text) => onAddTillagg(meal.type, text)}
                     color="emerald"
                   />
                 )}
               </div>
             </div>
-          </div>
 
-          {/* Kosttillskott */}
-          <div className="mt-3">
-            <div className="rounded-xl overflow-hidden border bg-purple-50 border-purple-200">
-              <div className="px-3 py-2.5 border-b bg-purple-100 border-purple-200">
-                <p className="text-xs font-bold uppercase tracking-wider text-purple-600">
-                  Kosttillskott
-                </p>
-              </div>
-              <div className="p-2.5 bg-white/80">
+            {/* Kosttillskott */}
+            <div className="flex items-start gap-2">
+              <span className="text-xs text-purple-600 font-medium shrink-0 pt-1">Tillskott:</span>
+              <div className="flex flex-wrap gap-1.5 flex-1">
                 {meal.supplementItems && meal.supplementItems.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {meal.supplementItems.map((item, index) => (
-                      <div
-                        key={item.id}
-                        className="group flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 border border-purple-200 rounded-full text-xs text-purple-700 font-medium"
-                      >
-                        <span>{item.text}</span>
-                        {onRemoveSupplement && (
-                          <button
-                            onClick={() => onRemoveSupplement(meal.type, index)}
-                            className="opacity-0 group-hover:opacity-100 hover:text-red-500 transition-all"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                  meal.supplementItems.map((item, index) => (
+                    <span
+                      key={item.id}
+                      className="group inline-flex items-center gap-1 px-2 py-0.5 bg-purple-50 text-purple-700 rounded text-xs"
+                    >
+                      {item.text}
+                      {onRemoveSupplement && (
+                        <button
+                          onClick={() => onRemoveSupplement(meal.type, index)}
+                          className="opacity-0 group-hover:opacity-100 hover:text-red-500 transition-opacity"
+                        >
+                          <X className="h-2.5 w-2.5" />
+                        </button>
+                      )}
+                    </span>
+                  ))
                 ) : (
-                  <div className="py-2 text-sm text-zinc-400 italic text-center">Inga kosttillskott</div>
+                  <span className="text-xs text-zinc-400 italic">Inga tillskott</span>
                 )}
                 {onAddSupplement && (
                   <FreeTextInput
-                    placeholder="t.ex. Omega-3 3st, Kreatin 5g..."
+                    placeholder="Lägg till..."
                     onAdd={(text) => onAddSupplement(meal.type, text)}
                     color="purple"
                   />

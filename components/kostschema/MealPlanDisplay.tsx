@@ -25,43 +25,25 @@ interface MealPlanDisplayProps {
   trainingTime?: string
 }
 
-// Workout separator component
+// Workout separator component - minimal design
 function WorkoutSeparator({ time }: { time?: string }) {
   return (
-    <div className="relative py-4">
-      {/* Background lines */}
+    <div className="relative py-3">
+      {/* Simple line */}
       <div className="absolute inset-0 flex items-center">
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
-      </div>
-      <div className="absolute inset-0 flex items-center">
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent translate-y-1" />
-      </div>
-      <div className="absolute inset-0 flex items-center">
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent -translate-y-1" />
+        <div className="w-full h-px bg-emerald-200" />
       </div>
 
       {/* Center badge */}
       <div className="relative flex justify-center">
-        <div className="flex items-center gap-4 px-8 py-3 bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-500 rounded-full shadow-xl shadow-emerald-500/30 border border-emerald-400/50">
-          <div className="flex items-center gap-1">
-            <Dumbbell className="w-5 h-5 text-white animate-pulse" />
-            <Dumbbell className="w-4 h-4 text-emerald-200 -ml-2 rotate-45" />
-          </div>
-          <div className="text-center">
-            <span className="text-base font-black text-white tracking-widest drop-shadow-lg">
-              TRÄNINGSPASS
-            </span>
-            {time && (
-              <div className="flex items-center justify-center gap-1 text-emerald-100 mt-0.5">
-                <Clock className="w-3 h-3" />
-                <span className="text-xs font-semibold">{time}</span>
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-1">
-            <Dumbbell className="w-4 h-4 text-emerald-200 -mr-2 -rotate-45" />
-            <Dumbbell className="w-5 h-5 text-white animate-pulse" />
-          </div>
+        <div className="flex items-center gap-2 px-4 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full">
+          <Dumbbell className="w-4 h-4 text-emerald-600" />
+          <span className="text-sm font-medium text-emerald-700">
+            Träning
+          </span>
+          {time && (
+            <span className="text-xs text-emerald-500">{time}</span>
+          )}
         </div>
       </div>
     </div>
@@ -104,33 +86,32 @@ export function MealPlanDisplay({
   return (
     <div className="space-y-4">
       {/* Header with meal count selector */}
-      <div className="flex items-center justify-between bg-gradient-to-r from-zinc-800/80 to-zinc-900/80 rounded-2xl p-5 border border-zinc-700/50">
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-white">Måltidsplan</h2>
-          <p className="text-sm text-zinc-400 mt-1">Klicka på en ingrediens för att byta</p>
+          <h2 className="text-lg font-semibold text-white">Måltidsplan</h2>
         </div>
         <div className="flex items-center gap-3">
           {onClearMealPlan && (
             <button
               onClick={onClearMealPlan}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/30 transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
             >
-              <Trash2 className="w-4 h-4" />
-              Töm måltidsplan
+              <Trash2 className="w-3.5 h-3.5" />
+              Töm
             </button>
           )}
-          <div className="flex gap-2">
+          <div className="flex gap-1 bg-zinc-800 rounded-lg p-1">
             {mealCountOptions.map((option) => (
               <button
                 key={option.value}
                 onClick={() => setMealCount(option.value)}
-                className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                   mealCount === option.value
-                    ? 'bg-gold-600 text-white shadow-lg shadow-gold-600/25'
-                    : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700'
+                    ? 'bg-zinc-700 text-white'
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
-                {option.label}
+                {option.value}
               </button>
             ))}
           </div>
@@ -166,26 +147,14 @@ export function MealPlanDisplay({
 
       {/* Daily totals */}
       {meals.length > 0 && (
-        <div className="bg-gradient-to-r from-zinc-800 to-zinc-900 rounded-2xl p-5 border border-zinc-700/50">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-zinc-400 font-medium">Dagssumma</span>
-              <p className="text-xs text-zinc-500 mt-0.5">Baserat på första alternativet per kategori</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="px-4 py-2 rounded-xl text-sm font-bold bg-orange-500/20 text-orange-400 border border-orange-500/20">
-                {totals.kcal} kcal
-              </span>
-              <span className="px-3 py-2 rounded-xl text-sm font-semibold bg-rose-500/15 text-rose-400">
-                P: {totals.protein}g
-              </span>
-              <span className="px-3 py-2 rounded-xl text-sm font-semibold bg-blue-500/15 text-blue-400">
-                K: {totals.carbs}g
-              </span>
-              <span className="px-3 py-2 rounded-xl text-sm font-semibold bg-amber-500/15 text-amber-400">
-                F: {totals.fat}g
-              </span>
-            </div>
+        <div className="flex items-center justify-between py-3 px-4 bg-zinc-800/50 rounded-lg">
+          <span className="text-sm text-zinc-400">Totalt</span>
+          <div className="flex items-center gap-4 text-sm">
+            <span className="font-semibold text-zinc-200">{totals.kcal} kcal</span>
+            <span className="text-zinc-500">|</span>
+            <span className="text-rose-400">P {totals.protein}g</span>
+            <span className="text-blue-400">K {totals.carbs}g</span>
+            <span className="text-amber-400">F {totals.fat}g</span>
           </div>
         </div>
       )}

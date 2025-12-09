@@ -495,6 +495,10 @@ export function KostschemaCalculator() {
     setTillaggOverrides({})
     setSupplementOverrides({})
     setIsMealPlanCleared(true)
+
+    // Clear the persisted ingredient library store (fixes refresh bug)
+    useIngredientLibraryStore.getState().clearAll()
+
     toast.success('Måltidsplan tömd')
   }
 
