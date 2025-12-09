@@ -24,6 +24,7 @@ interface OpenFoodFactsProduct {
 
 export function BarcodeScannerTab() {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const scanningRef = useRef(false) // Use ref for closure
   const [isScanning, setIsScanning] = useState(false)
   const [manualEan, setManualEan] = useState('')
@@ -34,6 +35,8 @@ export function BarcodeScannerTab() {
   const [showNewProductForm, setShowNewProductForm] = useState(false)
   const [isLookingUp, setIsLookingUp] = useState(false)
   const [barcodeSupported, setBarcodeSupported] = useState<boolean | null>(null)
+  const [isIOS, setIsIOS] = useState(false)
+  const [isProcessingImage, setIsProcessingImage] = useState(false)
 
   const { isLoading, lookupProduct, createLog, cacheProduct } = useFoodLogStore()
 
@@ -46,8 +49,13 @@ export function BarcodeScannerTab() {
     fat: ''
   })
 
-  // Check BarcodeDetector support on mount
+  // Check BarcodeDetector support and iOS on mount
   useEffect(() => {
+    // Detect iOS
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    setIsIOS(isIOSDevice)
+
     // With the polyfill, BarcodeDetector is always available
     BarcodeDetector.getSupportedFormats()
       .then(formats => {
@@ -57,6 +65,59 @@ export function BarcodeScannerTab() {
         setBarcodeSupported(false)
       })
   }, [])
+
+  // Handle photo capture for barcode scanning (iOS fallback)
+  const handlePhotoCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsProcessingImage(true)
+
+    try {
+      // Create image from file
+      const img = new Image()
+      const imageUrl = URL.createObjectURL(file)
+
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve()
+        img.onerror = reject
+        img.src = imageUrl
+      })
+
+      // Create canvas and draw image
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width
+      canvas.height = img.height
+      const ctx = canvas.getContext('2d')
+      if (!ctx) throw new Error('Could not get canvas context')
+      ctx.drawImage(img, 0, 0)
+
+      // Use BarcodeDetector on the image
+      const barcodeDetector = new BarcodeDetector({
+        formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e']
+      })
+
+      const barcodes = await barcodeDetector.detect(canvas)
+
+      URL.revokeObjectURL(imageUrl)
+
+      if (barcodes.length > 0) {
+        const ean = barcodes[0].rawValue
+        handleEanLookup(ean)
+      } else {
+        // No barcode found in image
+        alert('Ingen streckkod hittades i bilden. Försök ta en tydligare bild eller ange EAN manuellt.')
+      }
+    } catch (error) {
+      console.error('Barcode detection from image failed:', error)
+      alert('Kunde inte läsa streckkoden. Försök ange EAN manuellt.')
+    } finally {
+      setIsProcessingImage(false)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
 
   const stopScanner = useCallback(() => {
     scanningRef.current = false
@@ -126,12 +187,28 @@ export function BarcodeScannerTab() {
 
   const startScanner = async () => {
     try {
+      // Request camera with specific constraints for barcode scanning
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }
+        video: {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false
       })
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream
+
+        // Wait for video to be ready before starting scanning
+        await new Promise<void>((resolve) => {
+          if (videoRef.current) {
+            videoRef.current.onloadedmetadata = () => {
+              videoRef.current?.play().then(() => resolve()).catch(() => resolve())
+            }
+          }
+        })
+
         scanningRef.current = true
         setIsScanning(true)
 
@@ -160,14 +237,13 @@ export function BarcodeScannerTab() {
           }
         }
 
-        videoRef.current.onloadedmetadata = () => {
-          if (scanningRef.current) {
-            detectBarcode()
-          }
-        }
+        // Start detection
+        detectBarcode()
       }
     } catch (error) {
       console.error('Camera access denied:', error)
+      // If camera fails, show manual input message
+      setBarcodeSupported(false)
     }
   }
 
@@ -612,14 +688,46 @@ export function BarcodeScannerTab() {
         </div>
       )}
 
-      {/* Camera scanner */}
-      {isScanning ? (
+      {/* Camera scanner - different UI for iOS vs other browsers */}
+      {isProcessingImage ? (
+        <div className="flex flex-col items-center justify-center py-10 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+          <Loader2 className="w-8 h-8 animate-spin text-gold-primary mb-3" />
+          <p className="text-gray-600">Letar efter streckkod...</p>
+        </div>
+      ) : isIOS ? (
+        // iOS: Use photo capture approach
+        <div>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full py-10 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group"
+          >
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-primary/20 to-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Camera className="w-6 h-6 text-gold-primary" />
+            </div>
+            <div className="text-center">
+              <p className="font-semibold text-gray-900">Ta foto av streckkod</p>
+              <p className="text-sm text-gray-500">Kameran öppnas för att fota streckkoden</p>
+            </div>
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={handlePhotoCapture}
+          />
+        </div>
+      ) : isScanning ? (
+        // Non-iOS: Live video scanning
         <div className="relative rounded-xl overflow-hidden bg-gray-900">
           <video
             ref={videoRef}
             autoPlay
             playsInline
             muted
+            disablePictureInPicture
+            disableRemotePlayback
             className="w-full h-48 object-cover"
           />
           <div className="absolute inset-0 flex items-center justify-center">
@@ -638,6 +746,7 @@ export function BarcodeScannerTab() {
           </div>
         </div>
       ) : (
+        // Non-iOS: Start scanner button
         <button
           onClick={startScanner}
           className="w-full py-10 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group"
