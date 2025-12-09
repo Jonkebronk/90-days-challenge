@@ -407,7 +407,7 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
 
                 {!slvLoading && slvSearchTerm.length >= 2 && slvResults.length === 0 && (
                   <p className="text-sm text-gray-500 text-center py-2">
-                    Inga resultat för "{slvSearchTerm}"
+                    Inga resultat för &quot;{slvSearchTerm}&quot;
                   </p>
                 )}
 
