@@ -5,13 +5,21 @@ import { ChevronDown, ChevronUp, Plus, RefreshCw, Trash2, Check, X, Dumbbell, Cl
 import { ScaledMeal, ScaledIngredient, MealTiming } from '@/lib/kostschema/types'
 import { RecipeSuggestionPanel } from './RecipeSuggestionPanel'
 
-interface Recipe {
+interface RecipeSuggestion {
+  id: string
   name: string
   description: string
+  estimatedMacros: {
+    kcal: number
+    protein: number
+    carbs: number
+    fat: number
+  }
+  cookingTime: string
+  difficulty: 'enkel' | 'medel' | 'avancerad'
   instructions: string[]
   tips: string
-  suggestedSpices: string[]
-  cookingTime: string
+  seasonings: string[]
 }
 
 interface MealCardProps {
@@ -369,13 +377,13 @@ export function MealCard({
   onRemoveSupplement
 }: MealCardProps) {
   const [isExpanded, setIsExpanded] = useState(true)
-  const [recipe, setRecipe] = useState<Recipe | null>(null)
+  const [recipes, setRecipes] = useState<RecipeSuggestion[]>([])
   const [isLoadingRecipe, setIsLoadingRecipe] = useState(false)
 
-  // Fetch recipe suggestion from AI
+  // Fetch recipe suggestions from AI
   const fetchRecipeSuggestion = async () => {
     setIsLoadingRecipe(true)
-    setRecipe(null)
+    setRecipes([])
 
     try {
       // Collect all ingredients from the meal
@@ -400,24 +408,30 @@ export function MealCard({
       // Collect tillagg texts
       const tillagg = meal.tillaggItems?.map(item => item.text) || []
 
+      // Determine pre/post workout status
+      const isPreWorkout = meal.mealTiming?.isPreWorkout || false
+      const isPostWorkout = meal.mealTiming?.isPostWorkout || false
+
       const response = await fetch('/api/meals/suggest-recipe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ingredients,
           tillagg,
-          mealType: meal.type
+          mealType: meal.type,
+          isPreWorkout,
+          isPostWorkout
         })
       })
 
       if (!response.ok) {
-        throw new Error('Failed to fetch recipe')
+        throw new Error('Failed to fetch recipes')
       }
 
       const data = await response.json()
-      setRecipe(data.recipe)
+      setRecipes(data.recipes || [])
     } catch (error) {
-      console.error('Error fetching recipe:', error)
+      console.error('Error fetching recipes:', error)
     } finally {
       setIsLoadingRecipe(false)
     }
@@ -659,11 +673,11 @@ export function MealCard({
           </div>
 
           {/* Recipe Suggestion Panel */}
-          {(isLoadingRecipe || recipe) && (
+          {(isLoadingRecipe || recipes.length > 0) && (
             <RecipeSuggestionPanel
-              recipe={recipe || { name: '', description: '', instructions: [], tips: '', suggestedSpices: [], cookingTime: '' }}
+              recipes={recipes}
               isLoading={isLoadingRecipe}
-              onClose={() => setRecipe(null)}
+              onClose={() => setRecipes([])}
               onRefresh={fetchRecipeSuggestion}
             />
           )}
