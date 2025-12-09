@@ -64,39 +64,38 @@ async function searchSLV(foodName: string): Promise<SLVFood | null> {
   }
 }
 
-const ANALYSIS_PROMPT = `Du är en expert på matidentifiering och näringsvärden. Analysera matbilden och identifiera varje livsmedel.
+const ANALYSIS_PROMPT = `Du är en svensk matexpert. ALLA svar ska vara på SVENSKA.
 
-## STEG 1: Identifiera referensobjekt
-Leta efter storleksreferenser: tallrik (standard 26cm), bestick, händer, glas, skål.
+## VIKTIGT - IDENTIFIERA ENDAST MAT
+- Identifiera ENDAST ätbara livsmedel
+- IGNORERA: tallrikar, bestick, servetter, glas, skålar, dekorationer
+- Om du ser 3 kokta ägg, rapportera endast "Kokt ägg" - INTE tallriken
 
-## STEG 2: Identifiera varje livsmedel
-För varje synligt livsmedel, ange:
-- Svenskt namn (var specifik och använd enkla råvarunamn: "kycklingfilé", "kokt ris", "broccoli")
-- VIKTIGT: Använd namn som matchar Livsmedelsverkets databas (enkla, svenska råvarunamn)
-- Kategori: protein/kolhydrat/fett/grönsak/mejeri/frukt/dryck/tillbehör
-- Tillagningsmetod om synligt (stekt, kokt, rå, grillad)
+## STEG 1: Identifiera varje livsmedel (på svenska)
+För varje synligt livsmedel:
+- Använd SVENSKA namn: "kokt ägg", "kycklingfilé", "kokt ris", "broccoli"
+- search_term ska vara ett enkelt svenskt ord för SLV-sökning:
+  - "kokt ägg" → search_term: "ägg"
+  - "grillad kycklingfilé" → search_term: "kyckling"
+  - "kokt pasta" → search_term: "pasta"
+  - "stekt lax" → search_term: "lax"
 
-## STEG 3: Uppskatta portioner
-Använd dessa riktlinjer:
-- En knytnäve ≈ 1 dl eller 100g grönsaker/frukt
-- Handflata (utan fingrar) ≈ 100g kött/fisk
-- Tumme ≈ 15g fett (smör, olja)
+## STEG 2: Uppskatta portioner
+- Ett ägg ≈ 50-60g
+- Handflata ≈ 100g kött/fisk
+- Knytnäve ≈ 100g grönsaker
 - Tennisboll ≈ 150g potatis/ris
-- Standardtallrik full ≈ 400-500g total mat
 
-## STEG 4: Uppskatta näringsvärden
-Baserat på din kunskap om livsmedel, uppskatta näringsvärden FÖR HELA PORTIONEN (inte per 100g):
-- kcal (kalorier)
-- protein (gram)
-- kolhydrater (gram)
-- fett (gram)
+## STEG 3: Uppskatta näringsvärden (för hela portionen)
+Baserat på din kunskap, uppskatta per portion (inte per 100g):
+- kcal, protein, kolhydrater, fett
 
-Svara ENDAST med JSON:
+Svara ENDAST med JSON (alla texter på svenska):
 {
   "items": [
     {
-      "name": "Enkelt svenskt råvarunamn",
-      "search_term": "Sökterm för Livsmedelsverket (t.ex. 'kyckling' för 'grillad kycklingfilé')",
+      "name": "Svenskt namn",
+      "search_term": "enkelt svenskt sökord för SLV",
       "category": "protein|carb|fat|vegetable|dairy|fruit|drink|other",
       "portion_g": <number>,
       "confidence": "high|medium|low",
@@ -108,7 +107,7 @@ Svara ENDAST med JSON:
       }
     }
   ],
-  "notes": "Kort kommentar om osäkerheter"
+  "notes": "Kort svensk kommentar"
 }`
 
 // Fallback nutrition values per 100g when SLV lookup fails
