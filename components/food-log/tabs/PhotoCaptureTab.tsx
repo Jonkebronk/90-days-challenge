@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
-import { Camera, Upload, Loader2, Check, X, Edit2 } from 'lucide-react'
+import { Camera, Upload, Loader2, Check, X, Edit2, Database, Sparkles } from 'lucide-react'
 import { useFoodLogStore } from '@/lib/stores/food-log-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -137,7 +137,17 @@ export function PhotoCaptureTab() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-gray-900">{item.name}</span>
-                  {item.confidence && (
+                  {item.source === 'slv' ? (
+                    <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
+                      <Database className="w-3 h-3" />
+                      SLV
+                    </span>
+                  ) : item.source === 'estimate' ? (
+                    <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
+                      <Sparkles className="w-3 h-3" />
+                      Uppskattat
+                    </span>
+                  ) : item.confidence && (
                     <span className={`text-xs px-1.5 py-0.5 rounded ${
                       item.confidence === 'high' ? 'bg-green-100 text-green-700' :
                       item.confidence === 'medium' ? 'bg-yellow-100 text-yellow-700' :
@@ -150,6 +160,11 @@ export function PhotoCaptureTab() {
                 </div>
                 <div className="font-semibold text-gold-primary">{Math.round(item.kcal)} kcal</div>
               </div>
+              {item.slv_name && item.slv_name !== item.name && (
+                <div className="text-xs text-gray-500 mt-0.5">
+                  Matchat: {item.slv_name}
+                </div>
+              )}
               <div className="flex items-center justify-between mt-2">
                 <div className="flex items-center gap-2">
                   {editingIdx === idx ? (

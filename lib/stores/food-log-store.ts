@@ -36,6 +36,9 @@ export interface AIAnalysisResult {
     protein: number
     carbs: number
     fat: number
+    source?: 'slv' | 'estimate'
+    slv_name?: string
+    slv_nummer?: number
   }[]
   total: {
     kcal: number
