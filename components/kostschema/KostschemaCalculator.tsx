@@ -85,6 +85,9 @@ export function KostschemaCalculator() {
   // ID counter for free text items
   const [nextId, setNextId] = useState(1)
 
+  // Track if meal plan is cleared (empty mode)
+  const [isMealPlanCleared, setIsMealPlanCleared] = useState(false)
+
   // Current day's configuration
   const currentDayConfig = weekConfig[selectedDay]
 
@@ -188,6 +191,9 @@ export function KostschemaCalculator() {
 
     const overrideKey = `${changeTarget.mealType}:${changeTarget.category}:${changeTarget.index}`
 
+    // Exit cleared mode when adding ingredient
+    setIsMealPlanCleared(false)
+
     setIngredientOverrides(prev => ({
       ...prev,
       [overrideKey]: food
@@ -290,22 +296,24 @@ export function KostschemaCalculator() {
     }))
   }
 
-  // Handle clear meal plan - reset all overrides
+  // Handle clear meal plan - completely empty the plan
   const handleClearMealPlan = () => {
     setIngredientOverrides({})
     setDeletedIngredients(new Set())
     setTillaggOverrides({})
     setSupplementOverrides({})
+    setIsMealPlanCleared(true)
     toast.success('Måltidsplan tömd')
   }
 
   // Handle import from image - fill view directly
   const handleImportToView = (plan: any) => {
-    // Clear existing overrides
+    // Clear existing overrides and exit cleared mode
     setIngredientOverrides({})
     setDeletedIngredients(new Set())
     setTillaggOverrides({})
     setSupplementOverrides({})
+    setIsMealPlanCleared(false)
 
     // Update meal count to match imported plan
     const importedMealCount = plan.meals.length
@@ -396,14 +404,35 @@ export function KostschemaCalculator() {
   }
 
   // Add tillaggItems, supplementItems, and mealTimings to meals
+  // If meal plan is cleared, return empty meals (no ingredients)
   const mealsWithExtras = useMemo(() => {
+    if (isMealPlanCleared) {
+      // Return meal structure but with empty ingredients
+      return meals.map((meal, index) => ({
+        ...meal,
+        template: {
+          protein: [],
+          kolhydrat: [],
+          fett: [],
+          tillagg: [],
+          kosttillskott: []
+        },
+        kcal: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        tillaggItems: [],
+        supplementItems: [],
+        mealTiming: mealTimings[index]
+      }))
+    }
     return meals.map((meal, index) => ({
       ...meal,
       tillaggItems: tillaggOverrides[meal.type] || [],
       supplementItems: supplementOverrides[meal.type] || [],
       mealTiming: mealTimings[index] // Add per-meal timing/targets
     }))
-  }, [meals, tillaggOverrides, supplementOverrides, mealTimings])
+  }, [meals, tillaggOverrides, supplementOverrides, mealTimings, isMealPlanCleared])
 
   const selectedCount = ingredientStore.getTotalCount()
 
