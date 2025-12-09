@@ -7,11 +7,23 @@ import {
   Package,
   Upload,
   ImageIcon,
-  Save
+  Save,
+  Search,
+  Database
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+
+interface SLVFood {
+  slvNummer: number
+  name: string
+  type: string
+  protein: number
+  carbs: number
+  fat: number
+  kcal: number
+}
 
 interface Product {
   id: string
@@ -57,6 +69,12 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
   const [success, setSuccess] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [newImageBase64, setNewImageBase64] = useState<string | null>(null)
+
+  // SLV search state
+  const [showSLVSearch, setShowSLVSearch] = useState(false)
+  const [slvSearchTerm, setSlvSearchTerm] = useState('')
+  const [slvResults, setSlvResults] = useState<SLVFood[]>([])
+  const [slvLoading, setSlvLoading] = useState(false)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -123,8 +141,55 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
     setError(null)
     setSuccess(false)
     setNewImageBase64(null)
+    setShowSLVSearch(false)
+    setSlvSearchTerm('')
+    setSlvResults([])
     if (fileInputRef.current) fileInputRef.current.value = ''
     onClose()
+  }
+
+  // SLV search function
+  const searchSLV = async (query: string) => {
+    if (query.length < 2) {
+      setSlvResults([])
+      return
+    }
+
+    setSlvLoading(true)
+    try {
+      const res = await fetch(`/api/slv-proxy?q=${encodeURIComponent(query)}&limit=10`)
+      if (res.ok) {
+        const data = await res.json()
+        setSlvResults(data.foods || [])
+      }
+    } catch (err) {
+      console.error('SLV search error:', err)
+    } finally {
+      setSlvLoading(false)
+    }
+  }
+
+  // Handle SLV search input with debounce
+  useEffect(() => {
+    if (!showSLVSearch) return
+    const timer = setTimeout(() => {
+      searchSLV(slvSearchTerm)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [slvSearchTerm, showSLVSearch])
+
+  // Apply SLV food data to form
+  const handleSLVSelect = (food: SLVFood) => {
+    setFormData(prev => ({
+      ...prev,
+      kcal: food.kcal.toString(),
+      protein: food.protein.toString(),
+      carbs: food.carbs.toString(),
+      fat: food.fat.toString(),
+    }))
+    setShowSLVSearch(false)
+    setSlvSearchTerm('')
+    setSlvResults([])
   }
 
   const handleSubmit = async () => {
@@ -278,7 +343,82 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
 
           {/* Macros */}
           <div className="border-t pt-4">
-            <h3 className="font-medium text-gray-900 mb-3">Näringsvärden (per 100g)</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-medium text-gray-900">Näringsvärden (per 100g)</h3>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowSLVSearch(!showSLVSearch)
+                  if (!showSLVSearch && formData.name) {
+                    setSlvSearchTerm(formData.name.split(' ')[0]) // Pre-fill with first word of name
+                  }
+                }}
+                className="text-xs gap-1.5"
+              >
+                <Database className="w-3.5 h-3.5" />
+                {showSLVSearch ? 'Stäng SLV' : 'Hämta från SLV'}
+              </Button>
+            </div>
+
+            {/* SLV Search Panel */}
+            {showSLVSearch && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="relative mb-2">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    value={slvSearchTerm}
+                    onChange={(e) => setSlvSearchTerm(e.target.value)}
+                    placeholder="Sök livsmedel (t.ex. banan, kyckling...)"
+                    className="pl-9 bg-white"
+                    autoFocus
+                  />
+                </div>
+
+                {slvLoading && (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                    <span className="ml-2 text-sm text-gray-600">Söker...</span>
+                  </div>
+                )}
+
+                {!slvLoading && slvResults.length > 0 && (
+                  <div className="max-h-48 overflow-y-auto space-y-1">
+                    {slvResults.map((food) => (
+                      <button
+                        key={food.slvNummer}
+                        onClick={() => handleSLVSelect(food)}
+                        className="w-full text-left p-2 rounded-lg hover:bg-blue-100 transition-colors"
+                      >
+                        <div className="font-medium text-sm text-gray-900 truncate">
+                          {food.name}
+                        </div>
+                        <div className="flex gap-2 mt-1 text-xs">
+                          <span className="text-orange-600">{food.kcal} kcal</span>
+                          <span className="text-rose-600">P: {food.protein}g</span>
+                          <span className="text-blue-600">K: {food.carbs}g</span>
+                          <span className="text-amber-600">F: {food.fat}g</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {!slvLoading && slvSearchTerm.length >= 2 && slvResults.length === 0 && (
+                  <p className="text-sm text-gray-500 text-center py-2">
+                    Inga resultat för "{slvSearchTerm}"
+                  </p>
+                )}
+
+                {slvSearchTerm.length < 2 && (
+                  <p className="text-xs text-gray-500 text-center">
+                    Skriv minst 2 tecken för att söka i Livsmedelsverkets databas
+                  </p>
+                )}
+              </div>
+            )}
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div>
                 <Label htmlFor="kcal" className="text-sm">Kcal</Label>
