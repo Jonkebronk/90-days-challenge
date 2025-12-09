@@ -53,7 +53,7 @@ function MacroBadge({ label, value, color }: { label: string, value: number, col
       <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${colorClasses[color]}`}>
         {label}
       </div>
-      <span className="text-sm text-zinc-200">{value}</span>
+      <span className="text-sm text-zinc-700">{value}</span>
     </div>
   )
 }
@@ -490,13 +490,13 @@ export function MealCard({
   const isPostWorkout = meal.mealTiming?.isPostWorkout
 
   return (
-    <div className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800">
+    <div className="bg-white rounded-2xl overflow-hidden border border-zinc-200 shadow-sm">
       {/* Pre/Post workout banner */}
       {(isPreWorkout || isPostWorkout) && (
         <div className={`py-1.5 px-4 flex items-center justify-center gap-2 ${
           isPreWorkout
-            ? 'bg-emerald-500/10 text-emerald-400 border-b border-emerald-500/20'
-            : 'bg-blue-500/10 text-blue-400 border-b border-blue-500/20'
+            ? 'bg-emerald-50 text-emerald-700 border-b border-emerald-200'
+            : 'bg-blue-50 text-blue-700 border-b border-blue-200'
         }`}>
           <Dumbbell className="w-3.5 h-3.5" />
           <span className="text-xs font-semibold tracking-wide uppercase">
@@ -507,7 +507,7 @@ export function MealCard({
 
       {/* Header */}
       <button
-        className="w-full cursor-pointer py-4 px-5 hover:bg-zinc-800/50 transition-colors"
+        className="w-full cursor-pointer py-4 px-5 hover:bg-zinc-50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center justify-between">
@@ -524,12 +524,12 @@ export function MealCard({
                 onKeyDown={(e) => { if (e.key === 'Enter') handleSaveMealName(); else if (e.key === 'Escape') setIsEditingMealName(false) }}
                 onBlur={handleSaveMealName}
                 onClick={(e) => e.stopPropagation()}
-                className="px-2 py-0.5 text-lg font-semibold bg-zinc-800 border border-amber-500 rounded text-white focus:outline-none"
+                className="px-2 py-0.5 text-lg font-semibold bg-white border border-amber-500 rounded text-zinc-900 focus:outline-none"
               />
             ) : (
               <span
                 onClick={(e) => { if (onUpdateMealName) { e.stopPropagation(); setIsEditingMealName(true) } }}
-                className={`text-lg font-semibold text-white ${onUpdateMealName ? 'cursor-text hover:text-amber-400' : ''}`}
+                className={`text-lg font-semibold text-zinc-900 ${onUpdateMealName ? 'cursor-text hover:text-amber-600' : ''}`}
               >
                 {meal.name}
               </span>
@@ -543,7 +543,7 @@ export function MealCard({
             <button
               onClick={(e) => { e.stopPropagation(); fetchRecipeSuggestion() }}
               disabled={isLoadingRecipe}
-              className="flex items-center gap-1 px-2 py-0.5 rounded text-xs text-amber-500 hover:bg-amber-500/10 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1 px-2 py-0.5 rounded text-xs text-amber-600 hover:bg-amber-50 transition-colors disabled:opacity-50"
               title="Få receptförslag från AI"
             >
               <Sparkles className="w-3 h-3" />
@@ -620,27 +620,27 @@ export function MealCard({
           />
 
           {/* Tillägg & Kosttillskott */}
-          <div className="pt-3 border-t border-zinc-700 space-y-3">
+          <div className="pt-3 border-t border-zinc-200 space-y-3">
             {/* Tillägg */}
             <div className="flex items-start gap-2">
-              <span className="text-xs text-emerald-400 font-medium shrink-0 pt-1">Tillägg:</span>
+              <span className="text-xs text-emerald-600 font-medium shrink-0 pt-1">Tillägg:</span>
               <div className="flex flex-wrap gap-1.5 flex-1">
                 {meal.tillaggItems && meal.tillaggItems.length > 0 ? (
                   meal.tillaggItems.map((item, index) => (
                     <span
                       key={item.id}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-xs"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-xs"
                     >
                       {item.text}
                       {onRemoveTillagg && (
-                        <button onClick={() => onRemoveTillagg(meal.type, index)} className="hover:text-red-400">
+                        <button onClick={() => onRemoveTillagg(meal.type, index)} className="hover:text-red-500">
                           <X className="h-2.5 w-2.5" />
                         </button>
                       )}
                     </span>
                   ))
                 ) : (
-                  <span className="text-xs text-zinc-500 italic">Inga tillägg</span>
+                  <span className="text-xs text-zinc-400 italic">Inga tillägg</span>
                 )}
                 {onAddTillagg && (
                   <FreeTextInput placeholder="Lägg till..." onAdd={(text) => onAddTillagg(meal.type, text)} color="emerald" />
@@ -650,24 +650,24 @@ export function MealCard({
 
             {/* Kosttillskott */}
             <div className="flex items-start gap-2">
-              <span className="text-xs text-purple-400 font-medium shrink-0 pt-1">Tillskott:</span>
+              <span className="text-xs text-purple-600 font-medium shrink-0 pt-1">Tillskott:</span>
               <div className="flex flex-wrap gap-1.5 flex-1">
                 {meal.supplementItems && meal.supplementItems.length > 0 ? (
                   meal.supplementItems.map((item, index) => (
                     <span
                       key={item.id}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded text-xs"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-50 text-purple-700 rounded text-xs"
                     >
                       {item.text}
                       {onRemoveSupplement && (
-                        <button onClick={() => onRemoveSupplement(meal.type, index)} className="hover:text-red-400">
+                        <button onClick={() => onRemoveSupplement(meal.type, index)} className="hover:text-red-500">
                           <X className="h-2.5 w-2.5" />
                         </button>
                       )}
                     </span>
                   ))
                 ) : (
-                  <span className="text-xs text-zinc-500 italic">Inga tillskott</span>
+                  <span className="text-xs text-zinc-400 italic">Inga tillskott</span>
                 )}
                 {onAddSupplement && (
                   <FreeTextInput placeholder="Lägg till..." onAdd={(text) => onAddSupplement(meal.type, text)} color="purple" />
