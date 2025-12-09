@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { toast } from 'sonner'
-import { Package } from 'lucide-react'
+import { Package, Upload } from 'lucide-react'
 import {
   ActivityLevel,
   IngredientOverrides,
@@ -22,6 +22,7 @@ import { MacroInputPanel } from './MacroInputPanel'
 import { MealPlanDisplay } from './MealPlanDisplay'
 import { SLVFoodSearchModal } from './SLVFoodSearchModal'
 import { IngredientLibraryPanel } from './IngredientLibraryPanel'
+import { ImportFromImageDialog } from '@/components/meal-plan/ImportFromImageDialog'
 
 interface IngredientChangeTarget {
   mealType: string
@@ -65,6 +66,7 @@ export function KostschemaCalculator() {
   // Modal state
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
   const [isLibraryOpen, setIsLibraryOpen] = useState(false)
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false)
   const [changeTarget, setChangeTarget] = useState<IngredientChangeTarget | null>(null)
 
   // Get selected ingredient count from store
@@ -297,6 +299,102 @@ export function KostschemaCalculator() {
     toast.success('Måltidsplan tömd')
   }
 
+  // Handle import from image - fill view directly
+  const handleImportToView = (plan: any) => {
+    // Clear existing overrides
+    setIngredientOverrides({})
+    setDeletedIngredients(new Set())
+    setTillaggOverrides({})
+    setSupplementOverrides({})
+
+    // Update meal count to match imported plan
+    const importedMealCount = plan.meals.length
+    if (importedMealCount >= 4 && importedMealCount <= 6) {
+      setMealCount(importedMealCount)
+    }
+
+    // Update day config with imported totals
+    const newDayConfig: DayConfig = {
+      ...currentDayConfig,
+      totalCalories: Math.round(plan.totals.kcal),
+      totalProtein: Math.round(plan.totals.protein),
+      totalCarbs: Math.round(plan.totals.carbs),
+      totalFat: Math.round(plan.totals.fat)
+    }
+    handleDayConfigChange(newDayConfig)
+
+    // Map meal types based on meal count
+    const mealTypeMap: Record<number, string[]> = {
+      4: ['breakfast', 'lunch', 'dinner', 'evening'],
+      5: ['breakfast', 'snack1', 'lunch', 'dinner', 'evening'],
+      6: ['breakfast', 'snack1', 'lunch', 'snack2', 'dinner', 'evening']
+    }
+    const mealTypes = mealTypeMap[importedMealCount] || mealTypeMap[5]
+
+    // Create ingredient overrides from imported items
+    const newOverrides: IngredientOverrides = {}
+    const newTillagg: Record<string, FreeTextItem[]> = {}
+    const newSupplements: Record<string, FreeTextItem[]> = {}
+    let itemId = 1
+
+    plan.meals.forEach((meal: any, mealIndex: number) => {
+      const mealType = mealTypes[mealIndex] || `meal_${mealIndex + 1}`
+
+      meal.items.forEach((item: any, itemIndex: number) => {
+        // Determine category based on macros (simplified heuristic)
+        let category: 'protein' | 'kolhydrat' | 'fett' = 'protein'
+        const proteinRatio = item.protein / (item.protein + item.carbs + item.fat + 0.1)
+        const carbsRatio = item.carbs / (item.protein + item.carbs + item.fat + 0.1)
+        const fatRatio = item.fat / (item.protein + item.carbs + item.fat + 0.1)
+
+        if (carbsRatio > proteinRatio && carbsRatio > fatRatio) {
+          category = 'kolhydrat'
+        } else if (fatRatio > proteinRatio && fatRatio > carbsRatio) {
+          category = 'fett'
+        }
+
+        // Check if it's a supplement (very low macros, usually vitamins/omega-3)
+        const totalMacros = item.protein + item.carbs + item.fat
+        if (totalMacros < 5 && item.amount <= 10) {
+          // Add as supplement
+          if (!newSupplements[mealType]) newSupplements[mealType] = []
+          newSupplements[mealType].push({ id: itemId++, text: item.name })
+          return
+        }
+
+        // Create override key
+        const overrideKey = `${mealType}:${category}:${itemIndex}`
+
+        // Create CustomFood from imported item
+        const customFood: CustomFood = {
+          slvNummer: item.slv_match?.slvNummer || 0,
+          name: item.alternatives && item.alternatives.length > 0
+            ? `${item.name} eller ${item.alternatives.join(' eller ')}`
+            : item.name,
+          protein: item.protein,
+          carbs: item.carbs,
+          fat: item.fat,
+          kcal: item.kcal,
+          customAmount: item.amount
+        }
+
+        newOverrides[overrideKey] = customFood
+      })
+    })
+
+    // Apply all at once
+    setIngredientOverrides(newOverrides)
+    setTillaggOverrides(newTillagg)
+    setSupplementOverrides(newSupplements)
+    setNextId(itemId)
+
+    toast.success('Kostschema importerat!', {
+      description: `${plan.meals.length} måltider med ${plan.meals.reduce((acc: number, m: any) => acc + m.items.length, 0)} ingredienser`
+    })
+
+    setIsImportDialogOpen(false)
+  }
+
   // Add tillaggItems, supplementItems, and mealTimings to meals
   const mealsWithExtras = useMemo(() => {
     return meals.map((meal, index) => ({
@@ -311,24 +409,33 @@ export function KostschemaCalculator() {
 
   return (
     <div className="space-y-6">
-      {/* Header with ingredient library button */}
+      {/* Header with buttons */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Kostschema Generator</h1>
           <p className="text-sm text-zinc-400 mt-1">Konfigurera makros per dag och skapa måltidsplan</p>
         </div>
-        <button
-          onClick={() => setIsLibraryOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-700 hover:border-zinc-600 hover:text-white transition-colors"
-        >
-          <Package className="h-4 w-4 text-gold-500" />
-          <span>Välj råvaror</span>
-          {selectedCount > 0 && (
-            <span className="ml-1 px-2 py-0.5 bg-gold-500/20 text-gold-400 text-xs font-medium rounded-full">
-              {selectedCount}
-            </span>
-          )}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsImportDialogOpen(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-500 hover:bg-amber-500/20 hover:border-amber-500/50 transition-colors"
+          >
+            <Upload className="h-4 w-4" />
+            <span>Importera från bild</span>
+          </button>
+          <button
+            onClick={() => setIsLibraryOpen(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-700 hover:border-zinc-600 hover:text-white transition-colors"
+          >
+            <Package className="h-4 w-4 text-gold-500" />
+            <span>Välj råvaror</span>
+            {selectedCount > 0 && (
+              <span className="ml-1 px-2 py-0.5 bg-gold-500/20 text-gold-400 text-xs font-medium rounded-full">
+                {selectedCount}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Week Day Selector */}
@@ -388,6 +495,13 @@ export function KostschemaCalculator() {
       <IngredientLibraryPanel
         isOpen={isLibraryOpen}
         onClose={() => setIsLibraryOpen(false)}
+      />
+
+      {/* Import from Image Dialog */}
+      <ImportFromImageDialog
+        open={isImportDialogOpen}
+        onOpenChange={setIsImportDialogOpen}
+        onImport={handleImportToView}
       />
     </div>
   )
