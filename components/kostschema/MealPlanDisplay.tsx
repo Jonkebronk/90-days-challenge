@@ -1,12 +1,12 @@
 'use client'
 
 import { Trash2 } from 'lucide-react'
-import { ScaledMeal } from '@/lib/kostschema/types'
+import { ScaledMeal, MealTiming } from '@/lib/kostschema/types'
 import { MealCard } from './MealCard'
 import { calculateDailyTotals } from '@/lib/kostschema/hooks/useScaledMeals'
 
 interface MealPlanDisplayProps {
-  meals: ScaledMeal[]
+  meals: (ScaledMeal & { mealTiming?: MealTiming })[]
   mealCount: number
   setMealCount: (count: number) => void
   onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
@@ -18,6 +18,7 @@ interface MealPlanDisplayProps {
   onAddSupplement?: (mealType: string, text: string) => void
   onRemoveSupplement?: (mealType: string, index: number) => void
   onClearMealPlan?: () => void
+  mealTimings?: MealTiming[]
 }
 
 const mealCountOptions = [
@@ -38,7 +39,8 @@ export function MealPlanDisplay({
   onRemoveTillagg,
   onAddSupplement,
   onRemoveSupplement,
-  onClearMealPlan
+  onClearMealPlan,
+  mealTimings
 }: MealPlanDisplayProps) {
   const totals = calculateDailyTotals(meals)
 

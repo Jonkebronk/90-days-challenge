@@ -3,12 +3,22 @@
 import { useState, useMemo } from 'react'
 import { toast } from 'sonner'
 import { Package } from 'lucide-react'
-import { ActivityLevel, IngredientOverrides, CustomFood, DeletedIngredients, FreeTextItem } from '@/lib/kostschema/types'
-import { useMacroCalculation } from '@/lib/kostschema/hooks/useMacroCalculation'
+import {
+  ActivityLevel,
+  IngredientOverrides,
+  CustomFood,
+  DeletedIngredients,
+  FreeTextItem,
+  DayOfWeek,
+  DayConfig,
+  MacroSourceMode,
+  MealTiming
+} from '@/lib/kostschema/types'
 import { useScaledMeals } from '@/lib/kostschema/hooks/useScaledMeals'
 import { useIngredientLibraryStore } from '@/lib/stores/ingredient-library-store'
-import { MacroCalculatorForm } from './MacroCalculatorForm'
-import { MacroSummary } from './MacroSummary'
+import { createDefaultWeekConfig, calculateMealDistribution } from '@/lib/kostschema/macro-distribution'
+import { WeekDaySelector } from './WeekDaySelector'
+import { MacroInputPanel } from './MacroInputPanel'
 import { MealPlanDisplay } from './MealPlanDisplay'
 import { SLVFoodSearchModal } from './SLVFoodSearchModal'
 import { IngredientLibraryPanel } from './IngredientLibraryPanel'
@@ -32,12 +42,24 @@ function getMealApiType(mealType: string): 'breakfast' | 'lunch' | 'dinner' | 's
 // Free text items per meal type
 type FreeTextOverrides = Record<string, FreeTextItem[]>
 
+// Get today's day of week
+function getTodayDayOfWeek(): DayOfWeek {
+  const days: DayOfWeek[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+  return days[new Date().getDay()]
+}
+
 export function KostschemaCalculator() {
-  // Form state
+  // Week configuration state
+  const [weekConfig, setWeekConfig] = useState<Record<DayOfWeek, DayConfig>>(() => createDefaultWeekConfig())
+  const [selectedDay, setSelectedDay] = useState<DayOfWeek>(getTodayDayOfWeek())
+  const [macroSourceMode, setMacroSourceMode] = useState<MacroSourceMode>('manual')
+
+  // Calculator inputs (for calculate mode)
   const [bodyWeight, setBodyWeight] = useState<number>(85)
   const [activityLevel, setActivityLevel] = useState<ActivityLevel>('moderate')
-  const [weightLossTempo, setWeightLossTempo] = useState<number>(700)
   const [proteinFactor, setProteinFactor] = useState<number>(2.5)
+
+  // Meal count
   const [mealCount, setMealCount] = useState<number>(5)
 
   // Modal state
@@ -61,13 +83,22 @@ export function KostschemaCalculator() {
   // ID counter for free text items
   const [nextId, setNextId] = useState(1)
 
-  // Calculate macros based on input
-  const macroTargets = useMacroCalculation({
-    bodyWeight,
-    activityLevel,
-    weightLossTempo,
-    proteinFactor
-  })
+  // Current day's configuration
+  const currentDayConfig = weekConfig[selectedDay]
+
+  // Calculate meal timings with macro distribution
+  const mealTimings = useMemo(() => {
+    return calculateMealDistribution(currentDayConfig, mealCount)
+  }, [currentDayConfig, mealCount])
+
+  // Create macro targets from day config for useScaledMeals
+  const macroTargets = useMemo(() => ({
+    kcal: currentDayConfig.totalCalories,
+    protein: currentDayConfig.totalProtein,
+    carbs: currentDayConfig.totalCarbs,
+    fat: currentDayConfig.totalFat,
+    tdee: currentDayConfig.totalCalories // Not used for scaling
+  }), [currentDayConfig])
 
   // Get scaled meals based on macro targets and overrides
   const meals = useScaledMeals(macroTargets, mealCount, ingredientOverrides, deletedIngredients)
@@ -105,6 +136,26 @@ export function KostschemaCalculator() {
       }
     }
   }, [changeTarget, meals])
+
+  // Handle day config change
+  const handleDayConfigChange = (newConfig: DayConfig) => {
+    setWeekConfig(prev => ({
+      ...prev,
+      [selectedDay]: newConfig
+    }))
+  }
+
+  // Handle toggle training for a day
+  const handleToggleTraining = (day: DayOfWeek) => {
+    setWeekConfig(prev => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        isTrainingDay: !prev[day].isTrainingDay,
+        trainingTime: !prev[day].isTrainingDay ? '15:00' : undefined
+      }
+    }))
+  }
 
   // Handle ingredient change request
   const handleChangeIngredient = (
@@ -246,14 +297,15 @@ export function KostschemaCalculator() {
     toast.success('Måltidsplan tömd')
   }
 
-  // Add tillaggItems and supplementItems to meals
+  // Add tillaggItems, supplementItems, and mealTimings to meals
   const mealsWithExtras = useMemo(() => {
-    return meals.map(meal => ({
+    return meals.map((meal, index) => ({
       ...meal,
       tillaggItems: tillaggOverrides[meal.type] || [],
-      supplementItems: supplementOverrides[meal.type] || []
+      supplementItems: supplementOverrides[meal.type] || [],
+      mealTiming: mealTimings[index] // Add per-meal timing/targets
     }))
-  }, [meals, tillaggOverrides, supplementOverrides])
+  }, [meals, tillaggOverrides, supplementOverrides, mealTimings])
 
   const selectedCount = ingredientStore.getTotalCount()
 
@@ -263,7 +315,7 @@ export function KostschemaCalculator() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Kostschema Generator</h1>
-          <p className="text-sm text-zinc-400 mt-1">Beräkna makros och skapa måltidsplan</p>
+          <p className="text-sm text-zinc-400 mt-1">Konfigurera makros per dag och skapa måltidsplan</p>
         </div>
         <button
           onClick={() => setIsLibraryOpen(true)}
@@ -279,38 +331,45 @@ export function KostschemaCalculator() {
         </button>
       </div>
 
-      {/* Input form */}
-      <MacroCalculatorForm
-        bodyWeight={bodyWeight}
-        setBodyWeight={setBodyWeight}
-        activityLevel={activityLevel}
-        setActivityLevel={setActivityLevel}
-        weightLossTempo={weightLossTempo}
-        setWeightLossTempo={setWeightLossTempo}
-        proteinFactor={proteinFactor}
-        setProteinFactor={setProteinFactor}
+      {/* Week Day Selector */}
+      <WeekDaySelector
+        selectedDay={selectedDay}
+        onSelectDay={setSelectedDay}
+        weekConfig={weekConfig}
+        onToggleTraining={handleToggleTraining}
       />
 
-      {/* Calculated macros */}
-      {bodyWeight > 0 && <MacroSummary macros={macroTargets} />}
+      {/* Macro Input Panel */}
+      <MacroInputPanel
+        dayConfig={currentDayConfig}
+        selectedDay={selectedDay}
+        macroSourceMode={macroSourceMode}
+        onMacroSourceModeChange={setMacroSourceMode}
+        onDayConfigChange={handleDayConfigChange}
+        bodyWeight={bodyWeight}
+        onBodyWeightChange={setBodyWeight}
+        activityLevel={activityLevel}
+        onActivityLevelChange={setActivityLevel}
+        proteinFactor={proteinFactor}
+        onProteinFactorChange={setProteinFactor}
+      />
 
       {/* Meal plan */}
-      {bodyWeight > 0 && (
-        <MealPlanDisplay
-          meals={mealsWithExtras}
-          mealCount={mealCount}
-          setMealCount={setMealCount}
-          onChangeIngredient={handleChangeIngredient}
-          onAddIngredient={handleAddIngredient}
-          onDeleteIngredient={handleDeleteIngredient}
-          onUpdateGrams={handleUpdateGrams}
-          onAddTillagg={handleAddTillagg}
-          onRemoveTillagg={handleRemoveTillagg}
-          onAddSupplement={handleAddSupplement}
-          onRemoveSupplement={handleRemoveSupplement}
-          onClearMealPlan={handleClearMealPlan}
-        />
-      )}
+      <MealPlanDisplay
+        meals={mealsWithExtras}
+        mealCount={mealCount}
+        setMealCount={setMealCount}
+        onChangeIngredient={handleChangeIngredient}
+        onAddIngredient={handleAddIngredient}
+        onDeleteIngredient={handleDeleteIngredient}
+        onUpdateGrams={handleUpdateGrams}
+        onAddTillagg={handleAddTillagg}
+        onRemoveTillagg={handleRemoveTillagg}
+        onAddSupplement={handleAddSupplement}
+        onRemoveSupplement={handleRemoveSupplement}
+        onClearMealPlan={handleClearMealPlan}
+        mealTimings={mealTimings}
+      />
 
       {/* SLV Food Search Modal */}
       <SLVFoodSearchModal
