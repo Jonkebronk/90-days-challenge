@@ -1,5 +1,6 @@
 'use client'
 
+import { Trash2 } from 'lucide-react'
 import { ScaledMeal } from '@/lib/kostschema/types'
 import { MealCard } from './MealCard'
 import { calculateDailyTotals } from '@/lib/kostschema/hooks/useScaledMeals'
@@ -16,6 +17,7 @@ interface MealPlanDisplayProps {
   onRemoveTillagg?: (mealType: string, index: number) => void
   onAddSupplement?: (mealType: string, text: string) => void
   onRemoveSupplement?: (mealType: string, index: number) => void
+  onClearMealPlan?: () => void
 }
 
 const mealCountOptions = [
@@ -35,7 +37,8 @@ export function MealPlanDisplay({
   onAddTillagg,
   onRemoveTillagg,
   onAddSupplement,
-  onRemoveSupplement
+  onRemoveSupplement,
+  onClearMealPlan
 }: MealPlanDisplayProps) {
   const totals = calculateDailyTotals(meals)
 
@@ -47,20 +50,31 @@ export function MealPlanDisplay({
           <h2 className="text-xl font-bold text-white">Måltidsplan</h2>
           <p className="text-sm text-zinc-400 mt-1">Klicka på en ingrediens för att byta</p>
         </div>
-        <div className="flex gap-2">
-          {mealCountOptions.map((option) => (
+        <div className="flex items-center gap-3">
+          {onClearMealPlan && (
             <button
-              key={option.value}
-              onClick={() => setMealCount(option.value)}
-              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                mealCount === option.value
-                  ? 'bg-gold-600 text-white shadow-lg shadow-gold-600/25'
-                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700'
-              }`}
+              onClick={onClearMealPlan}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/30 transition-all"
             >
-              {option.label}
+              <Trash2 className="w-4 h-4" />
+              Töm måltidsplan
             </button>
-          ))}
+          )}
+          <div className="flex gap-2">
+            {mealCountOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => setMealCount(option.value)}
+                className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                  mealCount === option.value
+                    ? 'bg-gold-600 text-white shadow-lg shadow-gold-600/25'
+                    : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

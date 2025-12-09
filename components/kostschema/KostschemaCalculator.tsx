@@ -237,6 +237,15 @@ export function KostschemaCalculator() {
     }))
   }
 
+  // Handle clear meal plan - reset all overrides
+  const handleClearMealPlan = () => {
+    setIngredientOverrides({})
+    setDeletedIngredients(new Set())
+    setTillaggOverrides({})
+    setSupplementOverrides({})
+    toast.success('Måltidsplan tömd')
+  }
+
   // Add tillaggItems and supplementItems to meals
   const mealsWithExtras = useMemo(() => {
     return meals.map(meal => ({
@@ -299,6 +308,7 @@ export function KostschemaCalculator() {
           onRemoveTillagg={handleRemoveTillagg}
           onAddSupplement={handleAddSupplement}
           onRemoveSupplement={handleRemoveSupplement}
+          onClearMealPlan={handleClearMealPlan}
         />
       )}
 
