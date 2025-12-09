@@ -5,19 +5,45 @@ import Anthropic from '@anthropic-ai/sdk'
 
 const anthropic = new Anthropic()
 
-const ANALYSIS_PROMPT = `Du är en näringsanalytiker. Analysera matbilden och uppskatta näringsinnehållet.
+const ANALYSIS_PROMPT = `Du är en expert på näringsanalys och portionsstorlekar. Analysera matbilden noggrant.
 
-Identifiera alla synliga livsmedel och uppskatta:
-1. Namn på varje livsmedel (på svenska)
-2. Uppskattad portionsstorlek i gram
-3. Uppskattade makronäringsämnen (kcal, protein, kolhydrater, fett)
+## STEG 1: Identifiera referensobjekt
+Leta efter storleksreferenser: tallrik (standard 26cm), bestick, händer, glas, skål.
+Använd dessa för att uppskatta portionsstorlekar mer exakt.
 
-Svara ENDAST med JSON i detta exakta format:
+## STEG 2: Identifiera varje livsmedel
+För varje synligt livsmedel, ange:
+- Svenskt namn (var specifik: "kycklingfilé" inte bara "kyckling")
+- Kategori: protein/kolhydrat/fett/grönsak/mejeri/frukt/dryck/tillbehör
+- Tillagningsmetod om synligt (stekt, kokt, rå, grillad)
+
+## STEG 3: Uppskatta portioner
+Använd dessa riktlinjer:
+- En knytnäve ≈ 1 dl eller 100g grönsaker/frukt
+- Handflata (utan fingrar) ≈ 100g kött/fisk
+- Tumme ≈ 15g fett (smör, olja)
+- Tennisboll ≈ 150g potatis/ris
+- Standardtallrik full ≈ 400-500g total mat
+
+## STEG 4: Beräkna näringsvärden
+Använd svenska genomsnittsvärden per 100g:
+- Kycklingfilé: 110 kcal, 23g protein, 0g kolhydrater, 1.5g fett
+- Lax: 180 kcal, 20g protein, 0g kolhydrater, 11g fett
+- Kokt ris: 130 kcal, 2.7g protein, 28g kolhydrater, 0.3g fett
+- Kokt pasta: 130 kcal, 4.5g protein, 26g kolhydrater, 0.6g fett
+- Kokt potatis: 80 kcal, 2g protein, 17g kolhydrater, 0.1g fett
+- Havregrynsgröt: 70 kcal, 2.5g protein, 12g kolhydrater, 1.5g fett
+- Kvarg naturell: 60 kcal, 10g protein, 4g kolhydrater, 0.2g fett
+- Ägg (1 st): 80 kcal, 7g protein, 0.5g kolhydrater, 6g fett
+
+Svara ENDAST med JSON:
 {
   "items": [
     {
-      "name": "Livsmedlets namn på svenska",
+      "name": "Specifikt namn på svenska",
+      "category": "protein|carb|fat|vegetable|dairy|fruit|drink|other",
       "portion_g": <number>,
+      "confidence": "high|medium|low",
       "kcal": <number>,
       "protein": <number>,
       "carbs": <number>,
@@ -29,11 +55,11 @@ Svara ENDAST med JSON i detta exakta format:
     "protein": <number>,
     "carbs": <number>,
     "fat": <number>
-  }
+  },
+  "notes": "Kort kommentar om osäkerheter, t.ex. 'Svårt att bedöma mängd sås'"
 }
 
-Var konservativ med uppskattningarna. Om osäker, ange lägre portionsstorlekar.
-Inga kommentarer eller förklaringar - ENDAST JSON.`
+VIKTIGT: Var realistisk med portioner. En normal lunch är 400-700 kcal, middag 500-900 kcal.`
 
 export async function POST(req: NextRequest) {
   try {

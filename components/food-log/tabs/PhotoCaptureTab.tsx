@@ -135,7 +135,19 @@ export function PhotoCaptureTab() {
           {pendingAnalysis.items.map((item, idx) => (
             <div key={idx} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <div className="flex items-center justify-between">
-                <div className="font-medium text-gray-900">{item.name}</div>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-gray-900">{item.name}</span>
+                  {item.confidence && (
+                    <span className={`text-xs px-1.5 py-0.5 rounded ${
+                      item.confidence === 'high' ? 'bg-green-100 text-green-700' :
+                      item.confidence === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-red-100 text-red-700'
+                    }`}>
+                      {item.confidence === 'high' ? 'Säker' :
+                       item.confidence === 'medium' ? 'Osäker' : 'Gissning'}
+                    </span>
+                  )}
+                </div>
                 <div className="font-semibold text-gold-primary">{Math.round(item.kcal)} kcal</div>
               </div>
               <div className="flex items-center justify-between mt-2">
@@ -175,6 +187,13 @@ export function PhotoCaptureTab() {
             </div>
           ))}
         </div>
+
+        {/* AI Notes */}
+        {pendingAnalysis.notes && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+            <span className="font-medium">OBS:</span> {pendingAnalysis.notes}
+          </div>
+        )}
 
         {/* Totals */}
         <div className="bg-gradient-to-r from-gold-primary/10 to-orange-100 border border-gold-primary/20 rounded-lg p-4">

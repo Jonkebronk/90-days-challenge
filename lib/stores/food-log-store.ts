@@ -29,7 +29,9 @@ export interface FoodLog {
 export interface AIAnalysisResult {
   items: {
     name: string
+    category?: string
     portion_g: number
+    confidence?: 'high' | 'medium' | 'low'
     kcal: number
     protein: number
     carbs: number
@@ -41,6 +43,7 @@ export interface AIAnalysisResult {
     carbs: number
     fat: number
   }
+  notes?: string
 }
 
 export interface Product {
