@@ -437,73 +437,42 @@ export function ImportFromImageDialog({
                             {cat.label}
                           </span>
                         </div>
-                        <div className="divide-y divide-gray-100 bg-white/80">
+                        <div className="bg-white/80 p-2">
                           {categoryItems.map((item) => {
                             const itemIndex = meal.items.indexOf(item)
                             const isSearching = searchingItem?.mealIndex === mealIndex && searchingItem?.itemIndex === itemIndex
+                            const hasAlternatives = (item.alternatives_enriched && item.alternatives_enriched.length > 0) ||
+                                                   (item.alternatives && item.alternatives.length > 0)
+
+                            // Extract main ingredient name (before "eller" or "/")
+                            const mainName = item.name.split(/\s+eller\s+/i)[0].split('/')[0].trim()
 
                             return (
-                              <div key={itemIndex} className="p-2.5">
-                                <div className="flex items-start justify-between gap-2">
-                                  <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
+                              <div key={itemIndex} className="mb-2 last:mb-0">
+                                {/* Main ingredient box */}
+                                <div className="bg-gray-50 border border-gray-200 rounded-lg p-2.5">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div className="flex-1 min-w-0">
                                       <span className="font-medium text-gray-900 text-sm">
-                                        {item.name}
+                                        {mainName}
                                       </span>
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-0.5">
-                                      {item.amount}{item.unit} · P: {item.protein}g · K: {item.carbs}g · F: {item.fat}g · {Math.round(item.kcal)} kcal
-                                    </div>
-                                    {/* Show alternatives with SLV matches */}
-                                    {item.alternatives_enriched && item.alternatives_enriched.length > 0 && (
-                                      <div className="mt-1.5 pl-3 border-l-2 border-amber-300">
-                                        <div className="text-xs text-amber-700 font-medium mb-1">
-                                          Alternativ:
-                                        </div>
-                                        {item.alternatives_enriched.map((alt, altIndex) => (
-                                          <div key={altIndex} className="text-xs text-gray-600 mb-0.5">
-                                            <div className="flex items-center gap-1">
-                                              <span className="text-amber-500">•</span>
-                                              {alt.name}
-                                            </div>
-                                            {alt.slv_match && (
-                                              <div className="ml-3 text-emerald-600 flex items-center gap-1">
-                                                <Check className="w-2.5 h-2.5" />
-                                                <span>SLV: {alt.slv_match.name}</span>
-                                              </div>
-                                            )}
-                                          </div>
-                                        ))}
+                                      <div className="text-xs text-gray-500 mt-0.5">
+                                        {item.amount}{item.unit} · P: {item.protein}g · K: {item.carbs}g · F: {item.fat}g · {Math.round(item.kcal)} kcal
                                       </div>
-                                    )}
-                                    {/* Fallback: show plain alternatives if no enriched data */}
-                                    {!item.alternatives_enriched && item.alternatives && item.alternatives.length > 0 && (
-                                      <div className="mt-1.5 pl-3 border-l-2 border-amber-300">
-                                        <div className="text-xs text-amber-700 font-medium mb-1">
-                                          Alternativ:
-                                        </div>
-                                        {item.alternatives.map((alt, altIndex) => (
-                                          <div key={altIndex} className="text-xs text-gray-600 flex items-center gap-1">
-                                            <span className="text-amber-500">•</span>
-                                            {alt}
-                                          </div>
-                                        ))}
-                                      </div>
-                                    )}
-                                    <div className="flex items-center gap-2 mt-1">
-                                      {item.slv_match ? (
+                                      {item.slv_match && (
                                         <button
                                           onClick={() => openSLVSearch(mealIndex, itemIndex, item.name)}
-                                          className="text-xs text-emerald-600 flex items-center gap-1 hover:text-emerald-700 hover:underline"
+                                          className="text-xs text-emerald-600 flex items-center gap-1 mt-1 hover:text-emerald-700 hover:underline"
                                         >
                                           <Check className="w-3 h-3" />
                                           SLV: {item.slv_match.name}
                                           <Edit2 className="w-3 h-3 ml-1" />
                                         </button>
-                                      ) : (
+                                      )}
+                                      {!item.slv_match && (
                                         <button
                                           onClick={() => openSLVSearch(mealIndex, itemIndex, item.name)}
-                                          className="text-xs text-amber-600 flex items-center gap-1 hover:text-amber-700 hover:underline"
+                                          className="text-xs text-amber-600 flex items-center gap-1 mt-1 hover:text-amber-700 hover:underline"
                                         >
                                           <AlertCircle className="w-3 h-3" />
                                           Ingen SLV-matchning
@@ -513,6 +482,54 @@ export function ImportFromImageDialog({
                                     </div>
                                   </div>
                                 </div>
+
+                                {/* ELLER divider and alternative boxes */}
+                                {item.alternatives_enriched && item.alternatives_enriched.map((alt, altIndex) => (
+                                  <div key={altIndex}>
+                                    {/* ELLER divider */}
+                                    <div className="flex items-center gap-2 py-1.5 px-2">
+                                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-300 to-transparent" />
+                                      <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded">ELLER</span>
+                                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-300 to-transparent" />
+                                    </div>
+                                    {/* Alternative box */}
+                                    <div className="bg-amber-50/50 border border-amber-200 rounded-lg p-2.5">
+                                      <span className="font-medium text-gray-900 text-sm">
+                                        {alt.name}
+                                      </span>
+                                      {alt.slv_match && (
+                                        <div className="text-xs text-emerald-600 flex items-center gap-1 mt-1">
+                                          <Check className="w-3 h-3" />
+                                          SLV: {alt.slv_match.name}
+                                        </div>
+                                      )}
+                                      {!alt.slv_match && (
+                                        <div className="text-xs text-amber-600 flex items-center gap-1 mt-1">
+                                          <AlertCircle className="w-3 h-3" />
+                                          Ingen SLV-matchning
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+
+                                {/* Fallback: plain alternatives without enriched data */}
+                                {!item.alternatives_enriched && item.alternatives && item.alternatives.map((alt, altIndex) => (
+                                  <div key={altIndex}>
+                                    {/* ELLER divider */}
+                                    <div className="flex items-center gap-2 py-1.5 px-2">
+                                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-300 to-transparent" />
+                                      <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded">ELLER</span>
+                                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-300 to-transparent" />
+                                    </div>
+                                    {/* Alternative box */}
+                                    <div className="bg-amber-50/50 border border-amber-200 rounded-lg p-2.5">
+                                      <span className="font-medium text-gray-900 text-sm">
+                                        {alt}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))}
 
                                 {/* Inline SLV search */}
                                 {isSearching && (

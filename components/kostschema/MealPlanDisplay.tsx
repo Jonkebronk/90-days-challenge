@@ -26,23 +26,40 @@ interface MealPlanDisplayProps {
 // Workout separator component
 function WorkoutSeparator({ time }: { time?: string }) {
   return (
-    <div className="relative py-2">
+    <div className="relative py-4">
+      {/* Background lines */}
       <div className="absolute inset-0 flex items-center">
-        <div className="w-full border-t-2 border-dashed border-emerald-500/30" />
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
       </div>
+      <div className="absolute inset-0 flex items-center">
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent translate-y-1" />
+      </div>
+      <div className="absolute inset-0 flex items-center">
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent -translate-y-1" />
+      </div>
+
+      {/* Center badge */}
       <div className="relative flex justify-center">
-        <div className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-500/20 via-emerald-500/30 to-emerald-500/20 rounded-2xl border-2 border-emerald-500/40 shadow-lg shadow-emerald-500/10">
-          <Dumbbell className="w-6 h-6 text-emerald-400" />
+        <div className="flex items-center gap-4 px-8 py-3 bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-500 rounded-full shadow-xl shadow-emerald-500/30 border border-emerald-400/50">
+          <div className="flex items-center gap-1">
+            <Dumbbell className="w-5 h-5 text-white animate-pulse" />
+            <Dumbbell className="w-4 h-4 text-emerald-200 -ml-2 rotate-45" />
+          </div>
           <div className="text-center">
-            <span className="text-lg font-bold text-emerald-400 tracking-wide">TRÄNINGSPASS</span>
+            <span className="text-base font-black text-white tracking-widest drop-shadow-lg">
+              TRÄNINGSPASS
+            </span>
             {time && (
-              <div className="flex items-center justify-center gap-1 text-xs text-emerald-300/80 mt-0.5">
+              <div className="flex items-center justify-center gap-1 text-emerald-100 mt-0.5">
                 <Clock className="w-3 h-3" />
-                <span>{time}</span>
+                <span className="text-xs font-semibold">{time}</span>
               </div>
             )}
           </div>
-          <Dumbbell className="w-6 h-6 text-emerald-400" />
+          <div className="flex items-center gap-1">
+            <Dumbbell className="w-4 h-4 text-emerald-200 -mr-2 -rotate-45" />
+            <Dumbbell className="w-5 h-5 text-white animate-pulse" />
+          </div>
         </div>
       </div>
     </div>
