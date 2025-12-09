@@ -23,6 +23,7 @@ import { WeekDaySelector } from './WeekDaySelector'
 import { MacroInputPanel } from './MacroInputPanel'
 import { MealPlanDisplay } from './MealPlanDisplay'
 import { SLVFoodSearchModal } from './SLVFoodSearchModal'
+import { ProductSearchModal } from './ProductSearchModal'
 import { IngredientLibraryPanel } from './IngredientLibraryPanel'
 import { ImportFromImageDialog } from '@/components/meal-plan/ImportFromImageDialog'
 
@@ -347,6 +348,110 @@ export function KostschemaCalculator() {
     }
   }
 
+  // Handle update name
+  const handleUpdateName = (
+    mealType: string,
+    category: 'protein' | 'kolhydrat' | 'fett',
+    index: number,
+    name: string
+  ) => {
+    const overrideKey = `${mealType}:${category}:${index}`
+
+    const meal = meals.find(m => m.type === mealType)
+    if (!meal) return
+
+    const ingredient = meal.template[category]?.[index]
+    if (!ingredient) return
+
+    const existingOverride = ingredientOverrides[overrideKey]
+
+    if (existingOverride) {
+      setIngredientOverrides(prev => ({
+        ...prev,
+        [overrideKey]: { ...existingOverride, name }
+      }))
+    } else {
+      const factor = ingredient.scaledAmount > 0 ? 100 / ingredient.scaledAmount : 1
+      setIngredientOverrides(prev => ({
+        ...prev,
+        [overrideKey]: {
+          slvNummer: ingredient.slvNummer || 0,
+          name,
+          protein: Math.round(ingredient.macros.protein * factor * 10) / 10,
+          carbs: Math.round(ingredient.macros.carbs * factor * 10) / 10,
+          fat: Math.round(ingredient.macros.fat * factor * 10) / 10,
+          kcal: Math.round(ingredient.macros.kcal * factor),
+          customAmount: ingredient.scaledAmount
+        }
+      }))
+    }
+  }
+
+  // Handle find products from product library
+  const [productSearchTerm, setProductSearchTerm] = useState('')
+  const [isProductSearchOpen, setIsProductSearchOpen] = useState(false)
+  const [productSearchTarget, setProductSearchTarget] = useState<{
+    mealType: string
+    category: 'protein' | 'kolhydrat' | 'fett'
+    index: number
+  } | null>(null)
+
+  const handleFindProducts = (
+    ingredientName: string,
+    mealType: string,
+    category: 'protein' | 'kolhydrat' | 'fett',
+    index: number
+  ) => {
+    setProductSearchTerm(ingredientName)
+    setProductSearchTarget({ mealType, category, index })
+    setIsProductSearchOpen(true)
+  }
+
+  // Handle product selection from ProductSearchModal
+  const handleProductSelect = (product: {
+    id: string
+    name: string
+    kcal: number
+    protein: number
+    carbs: number
+    fat: number
+  }) => {
+    if (!productSearchTarget) return
+
+    const overrideKey = `${productSearchTarget.mealType}:${productSearchTarget.category}:${productSearchTarget.index}`
+
+    // Get original ingredient for amount reference
+    const meal = meals.find(m => m.type === productSearchTarget.mealType)
+    const ingredient = meal?.template[productSearchTarget.category]?.[productSearchTarget.index]
+    const currentAmount = ingredient?.scaledAmount || 100
+
+    // Create CustomFood from product
+    const customFood: CustomFood = {
+      slvNummer: 0,
+      name: product.name,
+      protein: product.protein,
+      carbs: product.carbs,
+      fat: product.fat,
+      kcal: product.kcal,
+      customAmount: Math.round(currentAmount)
+    }
+
+    setIngredientOverrides(prev => ({
+      ...prev,
+      [overrideKey]: customFood
+    }))
+
+    toast.success(
+      `Produkt vald: ${product.name}`,
+      {
+        description: `P: ${product.protein}g | K: ${product.carbs}g | F: ${product.fat}g | ${product.kcal} kcal/100g`
+      }
+    )
+
+    setIsProductSearchOpen(false)
+    setProductSearchTarget(null)
+  }
+
   // Handle add tillägg (free text)
   const handleAddTillagg = (mealType: string, text: string) => {
     setTillaggOverrides(prev => ({
@@ -588,6 +693,8 @@ export function KostschemaCalculator() {
         onAddIngredient={handleAddIngredient}
         onDeleteIngredient={handleDeleteIngredient}
         onUpdateGrams={handleUpdateGrams}
+        onUpdateName={handleUpdateName}
+        onFindProducts={handleFindProducts}
         onAddTillagg={handleAddTillagg}
         onRemoveTillagg={handleRemoveTillagg}
         onAddSupplement={handleAddSupplement}
@@ -622,6 +729,17 @@ export function KostschemaCalculator() {
         open={isImportDialogOpen}
         onOpenChange={setIsImportDialogOpen}
         onImport={handleImportToView}
+      />
+
+      {/* Product Search Modal */}
+      <ProductSearchModal
+        isOpen={isProductSearchOpen}
+        onClose={() => {
+          setIsProductSearchOpen(false)
+          setProductSearchTarget(null)
+        }}
+        onSelect={handleProductSelect}
+        initialSearchTerm={productSearchTerm}
       />
     </div>
   )

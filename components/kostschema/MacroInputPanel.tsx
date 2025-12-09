@@ -154,9 +154,10 @@ export function MacroInputPanel({
             <label className="block text-sm text-zinc-400 mb-1.5">Kroppsvikt (kg)</label>
             <input
               type="number"
-              value={bodyWeight}
-              onChange={(e) => onBodyWeightChange(Number(e.target.value))}
-              className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500"
+              value={bodyWeight || ''}
+              onChange={(e) => onBodyWeightChange(Number(e.target.value) || 0)}
+              placeholder="0"
+              className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
           </div>
           <div>
@@ -176,9 +177,10 @@ export function MacroInputPanel({
             <input
               type="number"
               step="0.1"
-              value={proteinFactor}
-              onChange={(e) => onProteinFactorChange(Number(e.target.value))}
-              className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500"
+              value={proteinFactor || ''}
+              onChange={(e) => onProteinFactorChange(Number(e.target.value) || 0)}
+              placeholder="0"
+              className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
           </div>
         </div>
@@ -223,36 +225,40 @@ export function MacroInputPanel({
           <label className="block text-sm text-zinc-400 mb-1.5">Kalorier</label>
           <input
             type="number"
-            value={dayConfig.totalCalories}
-            onChange={(e) => handleMacroChange('totalCalories', Number(e.target.value))}
-            className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500"
+            value={dayConfig.totalCalories || ''}
+            onChange={(e) => handleMacroChange('totalCalories', Number(e.target.value) || 0)}
+            placeholder="0"
+            className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </div>
         <div>
           <label className="block text-sm text-zinc-400 mb-1.5">Protein (g)</label>
           <input
             type="number"
-            value={dayConfig.totalProtein}
-            onChange={(e) => handleMacroChange('totalProtein', Number(e.target.value))}
-            className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500"
+            value={dayConfig.totalProtein || ''}
+            onChange={(e) => handleMacroChange('totalProtein', Number(e.target.value) || 0)}
+            placeholder="0"
+            className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </div>
         <div>
           <label className="block text-sm text-zinc-400 mb-1.5">Kolhydrater (g)</label>
           <input
             type="number"
-            value={dayConfig.totalCarbs}
-            onChange={(e) => handleMacroChange('totalCarbs', Number(e.target.value))}
-            className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500"
+            value={dayConfig.totalCarbs || ''}
+            onChange={(e) => handleMacroChange('totalCarbs', Number(e.target.value) || 0)}
+            placeholder="0"
+            className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </div>
         <div>
           <label className="block text-sm text-zinc-400 mb-1.5">Fett (g)</label>
           <input
             type="number"
-            value={dayConfig.totalFat}
-            onChange={(e) => handleMacroChange('totalFat', Number(e.target.value))}
-            className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500"
+            value={dayConfig.totalFat || ''}
+            onChange={(e) => handleMacroChange('totalFat', Number(e.target.value) || 0)}
+            placeholder="0"
+            className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </div>
       </div>

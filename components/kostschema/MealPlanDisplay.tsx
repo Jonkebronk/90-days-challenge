@@ -13,6 +13,8 @@ interface MealPlanDisplayProps {
   onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
   onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
   onUpdateGrams?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number, grams: number) => void
+  onUpdateName?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number, name: string) => void
+  onFindProducts?: (ingredientName: string, mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
   onAddTillagg?: (mealType: string, text: string) => void
   onRemoveTillagg?: (mealType: string, index: number) => void
   onAddSupplement?: (mealType: string, text: string) => void
@@ -80,6 +82,8 @@ export function MealPlanDisplay({
   onAddIngredient,
   onDeleteIngredient,
   onUpdateGrams,
+  onUpdateName,
+  onFindProducts,
   onAddTillagg,
   onRemoveTillagg,
   onAddSupplement,
@@ -149,6 +153,8 @@ export function MealPlanDisplay({
               onAddIngredient={onAddIngredient}
               onDeleteIngredient={onDeleteIngredient}
               onUpdateGrams={onUpdateGrams}
+              onUpdateName={onUpdateName}
+              onFindProducts={onFindProducts}
               onAddTillagg={onAddTillagg}
               onRemoveTillagg={onRemoveTillagg}
               onAddSupplement={onAddSupplement}

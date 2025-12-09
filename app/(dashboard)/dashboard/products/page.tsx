@@ -20,11 +20,14 @@ import {
   MoreHorizontal,
   Edit2,
   X,
-  Check
+  Check,
+  Plus,
+  Camera
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { LabelScannerModal } from '@/components/products/LabelScannerModal'
 
 interface Product {
   id: string
@@ -64,6 +67,7 @@ export default function ProductsPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [editCategory, setEditCategory] = useState<string>('')
+  const [isLabelScannerOpen, setIsLabelScannerOpen] = useState(false)
 
   const fetchProducts = useCallback(async () => {
     setIsLoading(true)
@@ -125,6 +129,15 @@ export default function ProductsPage() {
               <p className="text-sm text-gray-500">{totalProducts} produkter sparade</p>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                onClick={() => setIsLabelScannerOpen(true)}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                size="sm"
+              >
+                <Camera className="w-4 h-4 mr-2" />
+                Quick Add
+              </Button>
+              <div className="h-6 w-px bg-gray-200" />
               <Button
                 variant={viewMode === 'grid' ? 'default' : 'outline'}
                 size="sm"
@@ -304,6 +317,13 @@ export default function ProductsPage() {
           </div>
         </div>
       )}
+
+      {/* Label Scanner Modal */}
+      <LabelScannerModal
+        isOpen={isLabelScannerOpen}
+        onClose={() => setIsLabelScannerOpen(false)}
+        onProductAdded={fetchProducts}
+      />
     </div>
   )
 }
