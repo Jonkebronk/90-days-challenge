@@ -31,6 +31,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { LabelScannerModal } from '@/components/products/LabelScannerModal'
+import { ManualProductModal } from '@/components/products/ManualProductModal'
 
 interface Product {
   id: string
@@ -80,6 +81,7 @@ export default function ProductsPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [editCategory, setEditCategory] = useState<string>('')
   const [isLabelScannerOpen, setIsLabelScannerOpen] = useState(false)
+  const [isManualAddOpen, setIsManualAddOpen] = useState(false)
 
   const fetchProducts = useCallback(async () => {
     setIsLoading(true)
@@ -146,13 +148,24 @@ export default function ProductsPage() {
               <p className="text-xs sm:text-sm text-gray-500">{totalProducts} produkter</p>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2">
+              {/* Desktop: Manual Add button */}
+              <Button
+                onClick={() => setIsManualAddOpen(true)}
+                variant="outline"
+                size="sm"
+                className="hidden sm:flex"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Lägg till manuellt
+              </Button>
+              {/* Camera/Scan button */}
               <Button
                 onClick={() => setIsLabelScannerOpen(true)}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 size="sm"
               >
                 <Camera className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Quick Add</span>
+                <span className="hidden sm:inline">Skanna</span>
               </Button>
               <div className="hidden sm:block h-6 w-px bg-gray-200" />
               <Button
@@ -370,6 +383,13 @@ export default function ProductsPage() {
       <LabelScannerModal
         isOpen={isLabelScannerOpen}
         onClose={() => setIsLabelScannerOpen(false)}
+        onProductAdded={fetchProducts}
+      />
+
+      {/* Manual Product Add Modal */}
+      <ManualProductModal
+        isOpen={isManualAddOpen}
+        onClose={() => setIsManualAddOpen(false)}
         onProductAdded={fetchProducts}
       />
     </div>

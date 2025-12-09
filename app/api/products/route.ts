@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { ean, name, brand, category, image, kcal, protein, carbs, fat, fiber, source } = body
+    const { ean, name, brand, category, image, kcal, protein, carbs, fat, fiber, sugar, salt, source } = body
 
     if (!ean || !name) {
       return NextResponse.json({ error: 'EAN and name are required' }, { status: 400 })
@@ -126,6 +126,8 @@ export async function POST(req: NextRequest) {
         carbs: carbs || 0,
         fat: fat || 0,
         fiber: fiber || null,
+        sugar: sugar || null,
+        salt: salt || null,
         source: source || 'manual'
       }
     })
