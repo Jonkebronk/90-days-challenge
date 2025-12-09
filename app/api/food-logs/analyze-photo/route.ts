@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     }
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1024,
       messages: [
         {
@@ -125,8 +125,20 @@ export async function POST(req: NextRequest) {
         raw: analysisText
       }, { status: 500 })
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error analyzing photo:', error)
+
+    // Return more specific error messages
+    if (error?.status === 401) {
+      return NextResponse.json({ error: 'Invalid API key' }, { status: 500 })
+    }
+    if (error?.status === 429) {
+      return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
+    }
+    if (error?.message) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
     return NextResponse.json({ error: 'Failed to analyze photo' }, { status: 500 })
   }
 }
