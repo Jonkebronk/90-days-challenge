@@ -53,7 +53,7 @@ function MacroBadge({ label, value, color }: { label: string, value: number, col
       <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${colorClasses[color]}`}>
         {label}
       </div>
-      <span className="text-sm text-zinc-600">{value}</span>
+      <span className="text-sm text-zinc-200">{value}</span>
     </div>
   )
 }
