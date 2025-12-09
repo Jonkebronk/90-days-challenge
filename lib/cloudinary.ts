@@ -1,24 +1,10 @@
 import { v2 as cloudinary } from 'cloudinary'
 
 // Configure Cloudinary
-const cloudName = process.env.CLOUDINARY_CLOUD_NAME
-const apiKey = process.env.CLOUDINARY_API_KEY
-const apiSecret = process.env.CLOUDINARY_API_SECRET
-
-// Debug: Log credential presence (not values) on startup
-console.log('[Cloudinary Config]', {
-  hasCloudName: !!cloudName,
-  cloudNameLength: cloudName?.length,
-  hasApiKey: !!apiKey,
-  apiKeyLength: apiKey?.length,
-  hasApiSecret: !!apiSecret,
-  apiSecretLength: apiSecret?.length,
-})
-
 cloudinary.config({
-  cloud_name: cloudName,
-  api_key: apiKey,
-  api_secret: apiSecret,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
 export interface CloudinaryUploadResult {
