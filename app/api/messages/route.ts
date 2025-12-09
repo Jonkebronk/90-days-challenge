@@ -44,6 +44,16 @@ export async function GET(request: Request) {
               email: true,
               role: true
             }
+          },
+          reactions: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true
+                }
+              }
+            }
           }
         },
         orderBy: {

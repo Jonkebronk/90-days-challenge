@@ -140,6 +140,7 @@ model User {
   userExerciseNotes       UserExerciseNote[]
   sentMessages            Message[]                @relation("SentMessages")
   receivedMessages        Message[]                @relation("ReceivedMessages")
+  messageReactions        MessageReaction[]
 
   // Meal Plan Template System
   mealPlanTemplateAssignments        MealPlanTemplateAssignment[] @relation("MealPlanTemplateAssignments")
@@ -1860,12 +1861,29 @@ model Message {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  sender   User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender    User              @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver  User              @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  reactions MessageReaction[]
 
   @@index([senderId, receiverId])
   @@index([createdAt])
   @@map("messages")
+}
+
+// Message Reactions - Like/emoji reactions on messages
+model MessageReaction {
+  id        String   @id @default(cuid())
+  messageId String
+  userId    String
+  emoji     String   // e.g. "❤️", "👍", "😂", "😮", "😢", "😡"
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId, emoji]) // One reaction type per user per message
+  @@index([messageId])
+  @@map("message_reactions")
 }
 
 // Onboarding Progress - Track client onboarding journey

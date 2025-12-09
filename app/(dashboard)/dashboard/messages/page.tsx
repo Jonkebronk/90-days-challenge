@@ -5,12 +5,23 @@ import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
-import { Send, Image as ImageIcon, X, ZoomIn, MessageCircle } from 'lucide-react'
+import { Send, Image as ImageIcon, X, ZoomIn, MessageCircle, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { FAQPanel } from '@/components/messages/FAQPanel'
+import { MessageReactions } from '@/components/messages/MessageReactions'
 import { format } from 'date-fns'
 import { sv } from 'date-fns/locale'
 import { useNotificationSound } from '@/lib/hooks/useNotificationSound'
+
+interface Reaction {
+  id: string
+  emoji: string
+  userId: string
+  user: {
+    id: string
+    name: string | null
+  }
+}
 
 interface Message {
   id: string
@@ -32,6 +43,7 @@ interface Message {
     email: string
     role: string
   }
+  reactions: Reaction[]
 }
 
 // Track unread counts per contact
@@ -47,6 +59,9 @@ export default function MessagesPage() {
   const [sending, setSending] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [unreadCounts, setUnreadCounts] = useState<UnreadCounts>({})
+  const [pendingImages, setPendingImages] = useState<string[]>([])
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const lastMessageCountRef = useRef<number>(0)
   const { playSound } = useNotificationSound()
@@ -171,7 +186,7 @@ export default function MessagesPage() {
   }
 
   const sendMessage = async () => {
-    if (!newMessage.trim() || !otherUserId) return
+    if ((!newMessage.trim() && pendingImages.length === 0) || !otherUserId) return
 
     setSending(true)
     try {
@@ -179,8 +194,9 @@ export default function MessagesPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          content: newMessage,
-          receiverId: otherUserId
+          content: newMessage || (pendingImages.length > 0 ? '📷' : ''),
+          receiverId: otherUserId,
+          images: pendingImages
         })
       })
 
@@ -188,6 +204,7 @@ export default function MessagesPage() {
         const data = await response.json()
         setMessages([...messages, data.message])
         setNewMessage('')
+        setPendingImages([])
       } else {
         toast.error('Kunde inte skicka meddelande')
       }
@@ -197,6 +214,95 @@ export default function MessagesPage() {
     } finally {
       setSending(false)
     }
+  }
+
+  const handleReact = async (messageId: string, emoji: string) => {
+    try {
+      const response = await fetch(`/api/messages/${messageId}/reactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emoji })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        // Update local state
+        setMessages(prev => prev.map(msg => {
+          if (msg.id === messageId) {
+            if (data.action === 'added') {
+              return {
+                ...msg,
+                reactions: [...(msg.reactions || []), data.reaction]
+              }
+            } else {
+              // Remove the reaction
+              return {
+                ...msg,
+                reactions: (msg.reactions || []).filter(
+                  r => !(r.userId === userId && r.emoji === emoji)
+                )
+              }
+            }
+          }
+          return msg
+        }))
+      }
+    } catch (error) {
+      console.error('Error reacting to message:', error)
+    }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+
+    setUploadingImage(true)
+    try {
+      for (const file of Array.from(files)) {
+        // Check file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error('Bilden är för stor (max 10MB)')
+          continue
+        }
+
+        // Convert to base64 and upload to Cloudinary
+        const reader = new FileReader()
+        reader.onload = async () => {
+          try {
+            const base64 = reader.result as string
+            const response = await fetch('/api/upload', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                image: base64,
+                folder: 'messages'
+              })
+            })
+
+            if (response.ok) {
+              const data = await response.json()
+              setPendingImages(prev => [...prev, data.url])
+            } else {
+              toast.error('Kunde inte ladda upp bilden')
+            }
+          } catch (err) {
+            console.error('Upload error:', err)
+            toast.error('Ett fel uppstod vid uppladdning')
+          }
+        }
+        reader.readAsDataURL(file)
+      }
+    } finally {
+      setUploadingImage(false)
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
+  const removePendingImage = (index: number) => {
+    setPendingImages(prev => prev.filter((_, i) => i !== index))
   }
 
   const scrollToBottom = () => {
@@ -327,7 +433,7 @@ export default function MessagesPage() {
                   return (
                     <div
                       key={message.id}
-                      className="space-y-1"
+                      className="space-y-1 group"
                     >
                       {/* Sender name */}
                       <p className={`text-xs font-semibold ${isMine ? 'text-right' : 'text-left'} ${
@@ -337,51 +443,61 @@ export default function MessagesPage() {
                       </p>
 
                       <div className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
-                        <div
-                          className={`max-w-[85%] sm:max-w-[70%] ${
-                            isCheckIn
-                              ? 'bg-blue-50 border-2 border-blue-200'
-                              : 'bg-gray-100 border border-gray-200'
-                          } rounded-2xl p-3 sm:p-4`}
-                        >
-                          {/* Check-in header */}
-                          {isCheckIn && (
-                            <div className="mb-2 pb-2 border-b border-blue-200">
-                              <p className="text-xs font-bold text-blue-600">VECKORAPPORT</p>
-                            </div>
-                          )}
+                        <div className="relative">
+                          <div
+                            className={`max-w-[85%] sm:max-w-[70%] ${
+                              isCheckIn
+                                ? 'bg-blue-50 border-2 border-blue-200'
+                                : 'bg-gray-100 border border-gray-200'
+                            } rounded-2xl p-3 sm:p-4`}
+                          >
+                            {/* Check-in header */}
+                            {isCheckIn && (
+                              <div className="mb-2 pb-2 border-b border-blue-200">
+                                <p className="text-xs font-bold text-blue-600">VECKORAPPORT</p>
+                              </div>
+                            )}
 
-                          {/* Message content */}
-                          <p className="whitespace-pre-wrap text-sm sm:text-base text-gray-700">
-                            {message.content}
-                          </p>
+                            {/* Message content */}
+                            <p className="whitespace-pre-wrap text-sm sm:text-base text-gray-700">
+                              {message.content}
+                            </p>
 
-                          {/* Images */}
-                          {message.images && message.images.length > 0 && (
-                            <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                              {message.images.map((img, idx) => (
-                                <div
-                                  key={idx}
-                                  className="relative group cursor-pointer"
-                                  onClick={() => setSelectedImage(img)}
-                                >
-                                  <img
-                                    src={img}
-                                    alt={`Bild ${idx + 1}`}
-                                    className="w-full h-20 sm:h-24 object-cover rounded-lg"
-                                  />
-                                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all rounded-lg flex items-center justify-center">
-                                    <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                            {/* Images */}
+                            {message.images && message.images.length > 0 && (
+                              <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                {message.images.map((img, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="relative group/img cursor-pointer"
+                                    onClick={() => setSelectedImage(img)}
+                                  >
+                                    <img
+                                      src={img}
+                                      alt={`Bild ${idx + 1}`}
+                                      className="w-full h-20 sm:h-24 object-cover rounded-lg"
+                                    />
+                                    <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/40 transition-all rounded-lg flex items-center justify-center">
+                                      <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover/img:opacity-100 transition-opacity" />
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                                ))}
+                              </div>
+                            )}
 
-                          {/* Timestamp */}
-                          <p className="text-xs mt-2 text-gray-400">
-                            {format(new Date(message.createdAt), 'PPp', { locale: sv })}
-                          </p>
+                            {/* Timestamp */}
+                            <p className="text-xs mt-2 text-gray-400">
+                              {format(new Date(message.createdAt), 'PPp', { locale: sv })}
+                            </p>
+                          </div>
+
+                          {/* Reactions */}
+                          <MessageReactions
+                            messageId={message.id}
+                            reactions={message.reactions || []}
+                            currentUserId={userId}
+                            onReact={handleReact}
+                          />
                         </div>
                       </div>
                     </div>
@@ -393,6 +509,27 @@ export default function MessagesPage() {
 
             {/* Input Area */}
             <div className="flex-shrink-0 p-3 sm:p-4 border-t-2 border-gray-200 bg-gray-50">
+              {/* Pending images preview */}
+              {pendingImages.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {pendingImages.map((img, idx) => (
+                    <div key={idx} className="relative">
+                      <img
+                        src={img}
+                        alt={`Bild ${idx + 1}`}
+                        className="w-16 h-16 object-cover rounded-lg border-2 border-gray-200"
+                      />
+                      <button
+                        onClick={() => removePendingImage(idx)}
+                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="flex items-center gap-2 mb-2">
                 <FAQPanel
                   onSelectAnswer={(answer) => setNewMessage(answer)}
@@ -400,6 +537,29 @@ export default function MessagesPage() {
                 />
               </div>
               <div className="flex gap-2">
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                />
+                {/* Image upload button */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingImage}
+                  className="border-2 border-gray-300 hover:border-gold-primary h-10 sm:h-12 px-3"
+                >
+                  {uploadingImage ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <ImageIcon className="w-4 h-4" />
+                  )}
+                </Button>
                 <Input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
@@ -410,7 +570,7 @@ export default function MessagesPage() {
                 />
                 <Button
                   onClick={sendMessage}
-                  disabled={sending || !newMessage.trim()}
+                  disabled={sending || (!newMessage.trim() && pendingImages.length === 0)}
                   className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold disabled:opacity-50 h-10 sm:h-12 px-4"
                 >
                   <Send className="w-4 h-4" />
