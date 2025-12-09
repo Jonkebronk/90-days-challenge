@@ -21,9 +21,23 @@ interface SLVFood {
   kcal: number
 }
 
+interface AlternativeItem {
+  name: string
+  slv_match?: {
+    slvNummer: number
+    name: string
+    slv_protein: number
+    slv_fat: number
+    slv_carbs: number
+    slv_kcal: number
+  } | null
+}
+
 interface ParsedItem {
   name: string
   alternatives?: string[]
+  alternatives_search_terms?: string[]
+  alternatives_enriched?: AlternativeItem[]
   amount: number
   unit: string
   protein: number
@@ -31,6 +45,7 @@ interface ParsedItem {
   carbs: number
   kcal: number
   search_term?: string
+  category?: 'protein' | 'kolhydrat' | 'fett'
 }
 
 interface ParsedMeal {
@@ -143,6 +158,14 @@ När en ingrediens har "/" eller "eller" betyder det alternativ som kan bytas ut
 - "Ris (okokt)/mathavre/matvete/bönpasta" → alternatives: ["Mathavre", "Matvete", "Bönpasta"]
 - "Havregryn eller 415g Naturell yoghurt" → alternatives: ["Naturell yoghurt 0.5% fett"]
 
+KATEGORI - VIKTIGT:
+Varje ingrediens ska kategoriseras baserat på dess PRIMÄRA makronäring:
+- "protein": Kyckling, nötkött, fisk, ägg, kvarg, keso, proteinpulver, bönor etc.
+- "kolhydrat": Ris, pasta, havregryn, bröd, frukt, potatis, grönsaker etc.
+- "fett": Olja, smör, nötter, avokado, ost, grädde etc.
+
+Använd makrovärdena som hjälp - om protein är högst → "protein", om kolhydrater är högst → "kolhydrat", om fett är högst → "fett".
+
 ÖVRIGA REGLER:
 - Extrahera EXAKT de värden som står i schemat (mängd, protein, fett, kolhydrater, kcal)
 - Mängd är oftast i gram, men kan vara "styck" för ägg, vitaminer etc.
@@ -166,7 +189,8 @@ Returnera ENDAST JSON i detta format:
           "fat": 3.4,
           "carbs": 26,
           "kcal": 176.5,
-          "search_term": "havregryn"
+          "search_term": "havregryn",
+          "category": "kolhydrat"
         }
       ]
     }
@@ -180,7 +204,11 @@ search_term ska vara ett enkelt svenskt grundord för sökning i Livsmedelsverke
 - "Blandade grönsaker" → search_term: "grönsaker"
 - "Ägg (medelstort ca 65g)" → search_term: "ägg"
 - "Naturella nötter utan salt" → search_term: "nötter"
-- "Avokado" → search_term: "avokado"`
+- "Avokado" → search_term: "avokado"
+
+alternatives_search_terms ska vara en lista med söktermer för varje alternativ:
+- alternatives: ["Naturell yoghurt 0.5% fett"] → alternatives_search_terms: ["yoghurt"]
+- alternatives: ["Magert nötkött", "Kalkon"] → alternatives_search_terms: ["nötkött", "kalkon"]`
 
 export async function POST(req: NextRequest) {
   try {
@@ -260,7 +288,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid meal plan structure' }, { status: 500 })
     }
 
-    // Enrich each ingredient with SLV match
+    // Enrich each ingredient with SLV match (including alternatives)
     const enrichedMeals = await Promise.all(
       parsedPlan.meals.map(async (meal) => {
         const enrichedItems = await Promise.all(
@@ -268,8 +296,41 @@ export async function POST(req: NextRequest) {
             const searchTerm = item.search_term || item.name
             const slvMatch = await searchSLV(searchTerm)
 
+            // Also search SLV for each alternative
+            let alternativesEnriched: AlternativeItem[] = []
+            if (item.alternatives && item.alternatives.length > 0) {
+              const altSearchTerms = item.alternatives_search_terms || item.alternatives
+              alternativesEnriched = await Promise.all(
+                item.alternatives.map(async (alt, index) => {
+                  const altSearchTerm = altSearchTerms[index] || alt
+                  const altSlvMatch = await searchSLV(altSearchTerm)
+                  return {
+                    name: alt,
+                    slv_match: altSlvMatch ? {
+                      slvNummer: altSlvMatch.slvNummer,
+                      name: altSlvMatch.name,
+                      slv_protein: altSlvMatch.protein,
+                      slv_fat: altSlvMatch.fat,
+                      slv_carbs: altSlvMatch.carbs,
+                      slv_kcal: altSlvMatch.kcal
+                    } : null
+                  }
+                })
+              )
+            }
+
+            // Determine category based on macros if not set
+            let category = item.category
+            if (!category) {
+              const maxMacro = Math.max(item.protein, item.carbs, item.fat)
+              if (maxMacro === item.protein) category = 'protein'
+              else if (maxMacro === item.carbs) category = 'kolhydrat'
+              else category = 'fett'
+            }
+
             return {
               ...item,
+              category,
               slv_match: slvMatch ? {
                 slvNummer: slvMatch.slvNummer,
                 name: slvMatch.name,
@@ -278,7 +339,8 @@ export async function POST(req: NextRequest) {
                 slv_fat: slvMatch.fat,
                 slv_carbs: slvMatch.carbs,
                 slv_kcal: slvMatch.kcal
-              } : null
+              } : null,
+              alternatives_enriched: alternativesEnriched.length > 0 ? alternativesEnriched : undefined
             }
           })
         )

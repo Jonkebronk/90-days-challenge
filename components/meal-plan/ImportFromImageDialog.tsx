@@ -43,9 +43,15 @@ interface SLVFood {
   kcal: number
 }
 
+interface AlternativeItem {
+  name: string
+  slv_match?: SLVMatch | null
+}
+
 interface ParsedItem {
   name: string
   alternatives?: string[]
+  alternatives_enriched?: AlternativeItem[]
   amount: number
   unit: string
   protein: number
@@ -53,6 +59,7 @@ interface ParsedItem {
   carbs: number
   kcal: number
   slv_match: SLVMatch | null
+  category?: 'protein' | 'kolhydrat' | 'fett'
 }
 
 interface ParsedMeal {
@@ -408,115 +415,162 @@ export function ImportFromImageDialog({
                 )}
               </button>
 
-              {/* Meal items */}
+              {/* Meal items - categorized */}
               {expandedMeals.has(mealIndex) && (
-                <div className="divide-y divide-gray-100">
-                  {meal.items.map((item, itemIndex) => {
-                    const isSearching = searchingItem?.mealIndex === mealIndex && searchingItem?.itemIndex === itemIndex
+                <div className="p-3 space-y-3">
+                  {/* Group items by category */}
+                  {(['kolhydrat', 'protein', 'fett'] as const).map(category => {
+                    const categoryItems = meal.items.filter(item => item.category === category)
+                    if (categoryItems.length === 0) return null
+
+                    const categoryLabels = {
+                      protein: { label: 'Proteinkällor', color: 'rose', bgColor: 'bg-rose-50', borderColor: 'border-rose-200', textColor: 'text-rose-700' },
+                      kolhydrat: { label: 'Kolhydratskällor', color: 'blue', bgColor: 'bg-blue-50', borderColor: 'border-blue-200', textColor: 'text-blue-700' },
+                      fett: { label: 'Fettkällor', color: 'amber', bgColor: 'bg-amber-50', borderColor: 'border-amber-200', textColor: 'text-amber-700' }
+                    }
+                    const cat = categoryLabels[category]
 
                     return (
-                      <div key={itemIndex} className="p-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium text-gray-900 truncate">
-                                {item.name}
-                              </span>
-                            </div>
-                            <div className="text-xs text-gray-500 mt-0.5">
-                              {item.amount}{item.unit} · P: {item.protein}g · K: {item.carbs}g · F: {item.fat}g · {Math.round(item.kcal)} kcal
-                            </div>
-                            {/* Show alternatives */}
-                            {item.alternatives && item.alternatives.length > 0 && (
-                              <div className="mt-1.5 pl-3 border-l-2 border-amber-300">
-                                <div className="text-xs text-amber-700 font-medium mb-1">
-                                  Alternativ:
-                                </div>
-                                {item.alternatives.map((alt, altIndex) => (
-                                  <div key={altIndex} className="text-xs text-gray-600 flex items-center gap-1">
-                                    <span className="text-amber-500">•</span>
-                                    {alt}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                            <div className="flex items-center gap-2 mt-1">
-                              {item.slv_match ? (
-                                <button
-                                  onClick={() => openSLVSearch(mealIndex, itemIndex, item.name)}
-                                  className="text-xs text-emerald-600 flex items-center gap-1 hover:text-emerald-700 hover:underline"
-                                >
-                                  <Check className="w-3 h-3" />
-                                  SLV: {item.slv_match.name}
-                                  <Edit2 className="w-3 h-3 ml-1" />
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => openSLVSearch(mealIndex, itemIndex, item.name)}
-                                  className="text-xs text-amber-600 flex items-center gap-1 hover:text-amber-700 hover:underline"
-                                >
-                                  <AlertCircle className="w-3 h-3" />
-                                  Ingen SLV-matchning
-                                  <Search className="w-3 h-3 ml-1" />
-                                </button>
-                              )}
-                            </div>
-                          </div>
+                      <div key={category} className={`${cat.bgColor} ${cat.borderColor} border rounded-lg overflow-hidden`}>
+                        <div className={`px-3 py-1.5 ${cat.bgColor} border-b ${cat.borderColor}`}>
+                          <span className={`text-xs font-bold uppercase tracking-wide ${cat.textColor}`}>
+                            {cat.label}
+                          </span>
                         </div>
+                        <div className="divide-y divide-gray-100 bg-white/80">
+                          {categoryItems.map((item) => {
+                            const itemIndex = meal.items.indexOf(item)
+                            const isSearching = searchingItem?.mealIndex === mealIndex && searchingItem?.itemIndex === itemIndex
 
-                        {/* Inline SLV search */}
-                        {isSearching && (
-                          <div className="mt-3 border border-gray-200 rounded-lg bg-gray-50 p-3">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Search className="w-4 h-4 text-gray-400" />
-                              <Input
-                                value={slvSearchTerm}
-                                onChange={(e) => setSlvSearchTerm(e.target.value)}
-                                placeholder="Sök i Livsmedelsverket..."
-                                className="flex-1 h-8 text-sm"
-                                autoFocus
-                              />
-                              <button
-                                onClick={closeSLVSearch}
-                                className="p-1 hover:bg-gray-200 rounded"
-                              >
-                                <X className="w-4 h-4 text-gray-500" />
-                              </button>
-                            </div>
-
-                            {isSearchingSLV && (
-                              <div className="flex items-center gap-2 py-2 text-sm text-gray-500">
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                Söker...
-                              </div>
-                            )}
-
-                            {!isSearchingSLV && slvSearchResults.length > 0 && (
-                              <div className="max-h-48 overflow-y-auto space-y-1">
-                                {slvSearchResults.map((food) => (
-                                  <button
-                                    key={food.slvNummer}
-                                    onClick={() => selectSLVMatch(food)}
-                                    className="w-full text-left p-2 hover:bg-white rounded border border-transparent hover:border-emerald-200 transition-colors"
-                                  >
-                                    <div className="font-medium text-sm text-gray-900 truncate">
-                                      {food.name}
+                            return (
+                              <div key={itemIndex} className="p-2.5">
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium text-gray-900 text-sm">
+                                        {item.name}
+                                      </span>
                                     </div>
                                     <div className="text-xs text-gray-500 mt-0.5">
-                                      P: {food.protein}g · K: {food.carbs}g · F: {food.fat}g · {food.kcal} kcal/100g
+                                      {item.amount}{item.unit} · P: {item.protein}g · K: {item.carbs}g · F: {item.fat}g · {Math.round(item.kcal)} kcal
                                     </div>
-                                  </button>
-                                ))}
-                              </div>
-                            )}
+                                    {/* Show alternatives with SLV matches */}
+                                    {item.alternatives_enriched && item.alternatives_enriched.length > 0 && (
+                                      <div className="mt-1.5 pl-3 border-l-2 border-amber-300">
+                                        <div className="text-xs text-amber-700 font-medium mb-1">
+                                          Alternativ:
+                                        </div>
+                                        {item.alternatives_enriched.map((alt, altIndex) => (
+                                          <div key={altIndex} className="text-xs text-gray-600 mb-0.5">
+                                            <div className="flex items-center gap-1">
+                                              <span className="text-amber-500">•</span>
+                                              {alt.name}
+                                            </div>
+                                            {alt.slv_match && (
+                                              <div className="ml-3 text-emerald-600 flex items-center gap-1">
+                                                <Check className="w-2.5 h-2.5" />
+                                                <span>SLV: {alt.slv_match.name}</span>
+                                              </div>
+                                            )}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                    {/* Fallback: show plain alternatives if no enriched data */}
+                                    {!item.alternatives_enriched && item.alternatives && item.alternatives.length > 0 && (
+                                      <div className="mt-1.5 pl-3 border-l-2 border-amber-300">
+                                        <div className="text-xs text-amber-700 font-medium mb-1">
+                                          Alternativ:
+                                        </div>
+                                        {item.alternatives.map((alt, altIndex) => (
+                                          <div key={altIndex} className="text-xs text-gray-600 flex items-center gap-1">
+                                            <span className="text-amber-500">•</span>
+                                            {alt}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                    <div className="flex items-center gap-2 mt-1">
+                                      {item.slv_match ? (
+                                        <button
+                                          onClick={() => openSLVSearch(mealIndex, itemIndex, item.name)}
+                                          className="text-xs text-emerald-600 flex items-center gap-1 hover:text-emerald-700 hover:underline"
+                                        >
+                                          <Check className="w-3 h-3" />
+                                          SLV: {item.slv_match.name}
+                                          <Edit2 className="w-3 h-3 ml-1" />
+                                        </button>
+                                      ) : (
+                                        <button
+                                          onClick={() => openSLVSearch(mealIndex, itemIndex, item.name)}
+                                          className="text-xs text-amber-600 flex items-center gap-1 hover:text-amber-700 hover:underline"
+                                        >
+                                          <AlertCircle className="w-3 h-3" />
+                                          Ingen SLV-matchning
+                                          <Search className="w-3 h-3 ml-1" />
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
 
-                            {!isSearchingSLV && slvSearchTerm.length >= 2 && slvSearchResults.length === 0 && (
-                              <div className="text-sm text-gray-500 py-2">
-                                Inga resultat för &quot;{slvSearchTerm}&quot;
+                                {/* Inline SLV search */}
+                                {isSearching && (
+                                  <div className="mt-3 border border-gray-200 rounded-lg bg-gray-50 p-3">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <Search className="w-4 h-4 text-gray-400" />
+                                      <Input
+                                        value={slvSearchTerm}
+                                        onChange={(e) => setSlvSearchTerm(e.target.value)}
+                                        placeholder="Sök i Livsmedelsverket..."
+                                        className="flex-1 h-8 text-sm"
+                                        autoFocus
+                                      />
+                                      <button
+                                        onClick={closeSLVSearch}
+                                        className="p-1 hover:bg-gray-200 rounded"
+                                      >
+                                        <X className="w-4 h-4 text-gray-500" />
+                                      </button>
+                                    </div>
+
+                                    {isSearchingSLV && (
+                                      <div className="flex items-center gap-2 py-2 text-sm text-gray-500">
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        Söker...
+                                      </div>
+                                    )}
+
+                                    {!isSearchingSLV && slvSearchResults.length > 0 && (
+                                      <div className="max-h-48 overflow-y-auto space-y-1">
+                                        {slvSearchResults.map((food) => (
+                                          <button
+                                            key={food.slvNummer}
+                                            onClick={() => selectSLVMatch(food)}
+                                            className="w-full text-left p-2 hover:bg-white rounded border border-transparent hover:border-emerald-200 transition-colors"
+                                          >
+                                            <div className="font-medium text-sm text-gray-900 truncate">
+                                              {food.name}
+                                            </div>
+                                            <div className="text-xs text-gray-500 mt-0.5">
+                                              P: {food.protein}g · K: {food.carbs}g · F: {food.fat}g · {food.kcal} kcal/100g
+                                            </div>
+                                          </button>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {!isSearchingSLV && slvSearchTerm.length >= 2 && slvSearchResults.length === 0 && (
+                                      <div className="text-sm text-gray-500 py-2">
+                                        Inga resultat för &quot;{slvSearchTerm}&quot;
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
-                        )}
+                            )
+                          })}
+                        </div>
                       </div>
                     )
                   })}
