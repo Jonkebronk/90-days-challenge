@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
   X,
   Plus,
   Loader2,
   Package,
-  Info
+  Info,
+  Upload,
+  ImageIcon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -40,9 +42,11 @@ const SOURCES = [
 ]
 
 export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualProductModalProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -58,8 +62,31 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
     salt: '',
     category: '',
     source: 'ica',
-    image: ''
   })
+
+  // Convert file to base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
+
+  // Handle image selection
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      const base64 = await fileToBase64(file)
+      setImagePreview(base64)
+    } catch (error) {
+      console.error('Error reading file:', error)
+      setError('Kunde inte läsa bilden')
+    }
+  }
 
   const resetForm = () => {
     setFormData({
@@ -75,10 +102,11 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
       salt: '',
       category: '',
       source: 'ica',
-      image: ''
     })
+    setImagePreview(null)
     setError(null)
     setSuccess(false)
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   const handleClose = () => {
@@ -102,23 +130,24 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
     setError(null)
 
     try {
-      const res = await fetch('/api/products', {
+      // Use the import endpoint which handles Cloudinary uploads
+      const res = await fetch('/api/products/import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name.trim(),
           brand: formData.brand.trim() || null,
-          ean: formData.ean.trim() || `manual-${Date.now()}`,
+          ean: formData.ean.trim() || undefined, // Let API generate if empty
           kcal: parseFloat(formData.kcal) || 0,
           protein: parseFloat(formData.protein) || 0,
           carbs: parseFloat(formData.carbs) || 0,
           fat: parseFloat(formData.fat) || 0,
-          fiber: parseFloat(formData.fiber) || 0,
-          sugar: parseFloat(formData.sugar) || 0,
-          salt: parseFloat(formData.salt) || 0,
+          fiber: formData.fiber ? parseFloat(formData.fiber) : null,
+          sugar: formData.sugar ? parseFloat(formData.sugar) : null,
+          salt: formData.salt ? parseFloat(formData.salt) : null,
           category: formData.category || null,
           source: formData.source,
-          image: formData.image.trim() || null
+          image: imagePreview || null // base64 image - will be uploaded to Cloudinary
         })
       })
 
@@ -171,6 +200,55 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
             </div>
           </div>
 
+          {/* Image upload */}
+          <div>
+            <Label className="text-sm">Produktbild</Label>
+            <div className="mt-2 flex items-start gap-4">
+              {/* Preview */}
+              <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0">
+                {imagePreview ? (
+                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                ) : (
+                  <ImageIcon className="w-8 h-8 text-gray-300" />
+                )}
+              </div>
+              {/* Upload button */}
+              <div className="flex-1">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="mb-2"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Välj bild
+                </Button>
+                <p className="text-xs text-gray-500">
+                  Ladda upp en produktbild. Den sparas automatiskt till Cloudinary.
+                </p>
+                {imagePreview && (
+                  <button
+                    onClick={() => {
+                      setImagePreview(null)
+                      if (fileInputRef.current) fileInputRef.current.value = ''
+                    }}
+                    className="text-xs text-red-500 hover:text-red-700 mt-1"
+                  >
+                    Ta bort bild
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Basic info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -195,28 +273,16 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="ean">EAN/Streckkod</Label>
-              <Input
-                id="ean"
-                value={formData.ean}
-                onChange={(e) => setFormData(prev => ({ ...prev, ean: e.target.value }))}
-                placeholder="t.ex. 7310865001234"
-                className="mt-1"
-              />
-              <p className="text-xs text-gray-500 mt-1">Lämna tomt för att generera automatiskt</p>
-            </div>
-            <div>
-              <Label htmlFor="image">Bild-URL</Label>
-              <Input
-                id="image"
-                value={formData.image}
-                onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
-                placeholder="https://..."
-                className="mt-1"
-              />
-            </div>
+          <div>
+            <Label htmlFor="ean">EAN/Streckkod</Label>
+            <Input
+              id="ean"
+              value={formData.ean}
+              onChange={(e) => setFormData(prev => ({ ...prev, ean: e.target.value }))}
+              placeholder="t.ex. 7310865001234"
+              className="mt-1"
+            />
+            <p className="text-xs text-gray-500 mt-1">Lämna tomt för att generera automatiskt</p>
           </div>
 
           {/* Macros - the important ones */}
