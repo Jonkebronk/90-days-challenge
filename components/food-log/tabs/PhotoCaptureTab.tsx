@@ -3,6 +3,8 @@
 import { useState, useRef, useCallback } from 'react'
 import { Camera, Upload, Loader2, Check, X, Edit2 } from 'lucide-react'
 import { useFoodLogStore } from '@/lib/stores/food-log-store'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 export function PhotoCaptureTab() {
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -25,7 +27,6 @@ export function PhotoCaptureTab() {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Convert to base64
     const reader = new FileReader()
     reader.onload = async (event) => {
       const base64 = event.target?.result as string
@@ -34,7 +35,6 @@ export function PhotoCaptureTab() {
     }
     reader.readAsDataURL(file)
 
-    // Reset input
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -123,7 +123,7 @@ export function PhotoCaptureTab() {
               alt="Captured food"
               className="w-full h-48 object-cover"
             />
-            <div className="absolute top-2 right-2 bg-emerald-500 text-white px-2 py-1 rounded text-xs font-medium">
+            <div className="absolute top-2 right-2 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] px-3 py-1 rounded-full text-xs font-bold">
               Analyserad
             </div>
           </div>
@@ -131,47 +131,44 @@ export function PhotoCaptureTab() {
 
         {/* Items list */}
         <div className="space-y-2">
-          <h3 className="font-medium text-sm text-zinc-400">Identifierade livsmedel</h3>
+          <h3 className="font-medium text-sm text-gray-600">Identifierade livsmedel</h3>
           {pendingAnalysis.items.map((item, idx) => (
-            <div key={idx} className="bg-zinc-800 rounded-lg p-3">
+            <div key={idx} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <div className="flex items-center justify-between">
-                <div className="font-medium">{item.name}</div>
-                <div className="text-emerald-400">{Math.round(item.kcal)} kcal</div>
+                <div className="font-medium text-gray-900">{item.name}</div>
+                <div className="font-semibold text-gold-primary">{Math.round(item.kcal)} kcal</div>
               </div>
-              <div className="flex items-center justify-between mt-1">
+              <div className="flex items-center justify-between mt-2">
                 <div className="flex items-center gap-2">
                   {editingIdx === idx ? (
                     <div className="flex items-center gap-1">
-                      <input
+                      <Input
                         type="number"
                         value={editValue}
                         onChange={(e) => setEditValue(e.target.value)}
-                        className="w-16 bg-zinc-700 rounded px-2 py-1 text-sm"
+                        className="w-20 h-8 text-sm"
                         autoFocus
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') handlePortionSave()
                           if (e.key === 'Escape') setEditingIdx(null)
                         }}
                       />
-                      <span className="text-xs text-zinc-500">g</span>
-                      <button
-                        onClick={handlePortionSave}
-                        className="p-1 text-emerald-400 hover:text-emerald-300"
-                      >
-                        <Check className="w-4 h-4" />
-                      </button>
+                      <span className="text-xs text-gray-500">g</span>
+                      <Button size="sm" variant="ghost" onClick={handlePortionSave} className="h-8 w-8 p-0">
+                        <Check className="w-4 h-4 text-green-600" />
+                      </Button>
                     </div>
                   ) : (
                     <button
                       onClick={() => handlePortionEdit(idx)}
-                      className="flex items-center gap-1 text-sm text-zinc-400 hover:text-zinc-300"
+                      className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
                     >
                       <span>{Math.round(item.portion_g)}g</span>
                       <Edit2 className="w-3 h-3" />
                     </button>
                   )}
                 </div>
-                <div className="text-xs text-zinc-500">
+                <div className="text-xs text-gray-500">
                   P: {Math.round(item.protein)}g · K: {Math.round(item.carbs)}g · F: {Math.round(item.fat)}g
                 </div>
               </div>
@@ -180,37 +177,40 @@ export function PhotoCaptureTab() {
         </div>
 
         {/* Totals */}
-        <div className="bg-zinc-800 rounded-lg p-3">
+        <div className="bg-gradient-to-r from-gold-primary/10 to-orange-100 border border-gold-primary/20 rounded-lg p-4">
           <div className="flex items-center justify-between">
-            <span className="font-medium">Totalt</span>
-            <span className="text-emerald-400 font-bold">{Math.round(pendingAnalysis.total.kcal)} kcal</span>
+            <span className="font-semibold text-gray-900">Totalt</span>
+            <span className="font-bold text-lg bg-gradient-to-r from-gold-primary to-orange-500 bg-clip-text text-transparent">
+              {Math.round(pendingAnalysis.total.kcal)} kcal
+            </span>
           </div>
-          <div className="text-sm text-zinc-400 text-right mt-1">
+          <div className="text-sm text-gray-600 text-right mt-1">
             P: {Math.round(pendingAnalysis.total.protein)}g · K: {Math.round(pendingAnalysis.total.carbs)}g · F: {Math.round(pendingAnalysis.total.fat)}g
           </div>
         </div>
 
         {/* Actions */}
         <div className="flex gap-3">
-          <button
+          <Button
+            variant="outline"
             onClick={handleCancel}
-            className="flex-1 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 border-gray-300"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4 mr-2" />
             Avbryt
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleConfirm}
             disabled={isLoading}
-            className="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex-1 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
           >
             {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             ) : (
-              <Check className="w-4 h-4" />
+              <Check className="w-4 h-4 mr-2" />
             )}
             Bekräfta & logga
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -221,7 +221,7 @@ export function PhotoCaptureTab() {
     <div className="space-y-4">
       {/* Error message */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
           {error}
         </div>
       )}
@@ -235,29 +235,29 @@ export function PhotoCaptureTab() {
             className="w-full h-48 object-cover"
           />
           {isLoading && (
-            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-              <div className="text-center">
-                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-emerald-400" />
-                <p className="text-sm">Analyserar bild...</p>
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <div className="text-center text-white">
+                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
+                <p className="text-sm font-medium">Analyserar bild...</p>
               </div>
             </div>
           )}
         </div>
       )}
 
-      {/* Capture buttons */}
+      {/* Capture button */}
       {!capturedImage && (
         <div className="space-y-3">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="w-full py-12 rounded-xl border-2 border-dashed border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800/50 transition-colors flex flex-col items-center justify-center gap-3"
+            className="w-full py-12 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group"
           >
-            <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center">
-              <Camera className="w-8 h-8 text-emerald-400" />
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold-primary/20 to-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Camera className="w-8 h-8 text-gold-primary" />
             </div>
             <div className="text-center">
-              <p className="font-medium">Ta foto eller välj bild</p>
-              <p className="text-sm text-zinc-500 mt-1">AI analyserar automatiskt innehållet</p>
+              <p className="font-semibold text-gray-900">Ta foto eller välj bild</p>
+              <p className="text-sm text-gray-500 mt-1">AI analyserar automatiskt innehållet</p>
             </div>
           </button>
 

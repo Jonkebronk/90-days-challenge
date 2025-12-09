@@ -3,6 +3,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Barcode, Camera, Loader2, Check, X, Plus, Search } from 'lucide-react'
 import { useFoodLogStore, Product } from '@/lib/stores/food-log-store'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 export function BarcodeScannerTab() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -15,7 +18,6 @@ export function BarcodeScannerTab() {
 
   const { isLoading, lookupProduct, createLog } = useFoodLogStore()
 
-  // New product form state
   const [newProduct, setNewProduct] = useState({
     name: '',
     brand: '',
@@ -44,7 +46,6 @@ export function BarcodeScannerTab() {
         videoRef.current.srcObject = stream
         setIsScanning(true)
 
-        // Try to use BarcodeDetector if available
         if ('BarcodeDetector' in window) {
           const barcodeDetector = new (window as any).BarcodeDetector({
             formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e']
@@ -70,7 +71,6 @@ export function BarcodeScannerTab() {
             }
           }
 
-          // Start detection after video is ready
           videoRef.current.onloadedmetadata = () => {
             detectBarcode()
           }
@@ -121,14 +121,12 @@ export function BarcodeScannerTab() {
       items: [item]
     })
 
-    // Reset
     setFoundProduct(null)
     setManualEan('')
     setPortionG('100')
   }
 
   const handleCreateAndLogProduct = async () => {
-    // Create product via API
     try {
       const res = await fetch('/api/products/import', {
         method: 'POST',
@@ -147,7 +145,6 @@ export function BarcodeScannerTab() {
 
       if (!res.ok) throw new Error('Failed to create product')
 
-      // Now log it
       const portion = parseFloat(portionG) || 100
       const ratio = portion / 100
 
@@ -163,7 +160,6 @@ export function BarcodeScannerTab() {
         }]
       })
 
-      // Reset
       setShowNewProductForm(false)
       setNotFound(false)
       setManualEan('')
@@ -173,7 +169,6 @@ export function BarcodeScannerTab() {
     }
   }
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       stopScanner()
@@ -185,85 +180,91 @@ export function BarcodeScannerTab() {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-medium">Lägg till ny produkt</h3>
-          <button
-            onClick={() => setShowNewProductForm(false)}
-            className="text-zinc-400 hover:text-zinc-300"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <h3 className="font-semibold text-gray-900">Lägg till ny produkt</h3>
+          <Button variant="ghost" size="sm" onClick={() => setShowNewProductForm(false)}>
+            <X className="w-4 h-4" />
+          </Button>
         </div>
 
-        <div className="bg-zinc-800 rounded-lg p-3">
-          <div className="text-sm text-zinc-400">EAN</div>
-          <div className="font-mono">{manualEan}</div>
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+          <div className="text-sm text-gray-500">EAN</div>
+          <div className="font-mono text-gray-900">{manualEan}</div>
         </div>
 
         <div className="space-y-3">
-          <input
-            type="text"
-            placeholder="Produktnamn *"
-            value={newProduct.name}
-            onChange={(e) => setNewProduct(p => ({ ...p, name: e.target.value }))}
-            className="w-full bg-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-500"
-          />
-          <input
-            type="text"
-            placeholder="Varumärke"
-            value={newProduct.brand}
-            onChange={(e) => setNewProduct(p => ({ ...p, brand: e.target.value }))}
-            className="w-full bg-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-500"
-          />
+          <div>
+            <Label>Produktnamn *</Label>
+            <Input
+              placeholder="Produktnamn"
+              value={newProduct.name}
+              onChange={(e) => setNewProduct(p => ({ ...p, name: e.target.value }))}
+            />
+          </div>
+          <div>
+            <Label>Varumärke</Label>
+            <Input
+              placeholder="Varumärke"
+              value={newProduct.brand}
+              onChange={(e) => setNewProduct(p => ({ ...p, brand: e.target.value }))}
+            />
+          </div>
           <div className="grid grid-cols-2 gap-3">
-            <input
-              type="number"
-              placeholder="kcal/100g *"
-              value={newProduct.kcal}
-              onChange={(e) => setNewProduct(p => ({ ...p, kcal: e.target.value }))}
-              className="bg-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-500"
-            />
-            <input
-              type="number"
-              placeholder="Protein/100g *"
-              value={newProduct.protein}
-              onChange={(e) => setNewProduct(p => ({ ...p, protein: e.target.value }))}
-              className="bg-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-500"
-            />
-            <input
-              type="number"
-              placeholder="Kolhydrater/100g"
-              value={newProduct.carbs}
-              onChange={(e) => setNewProduct(p => ({ ...p, carbs: e.target.value }))}
-              className="bg-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-500"
-            />
-            <input
-              type="number"
-              placeholder="Fett/100g"
-              value={newProduct.fat}
-              onChange={(e) => setNewProduct(p => ({ ...p, fat: e.target.value }))}
-              className="bg-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-500"
-            />
+            <div>
+              <Label>kcal/100g *</Label>
+              <Input
+                type="number"
+                placeholder="0"
+                value={newProduct.kcal}
+                onChange={(e) => setNewProduct(p => ({ ...p, kcal: e.target.value }))}
+              />
+            </div>
+            <div>
+              <Label>Protein/100g *</Label>
+              <Input
+                type="number"
+                placeholder="0"
+                value={newProduct.protein}
+                onChange={(e) => setNewProduct(p => ({ ...p, protein: e.target.value }))}
+              />
+            </div>
+            <div>
+              <Label>Kolhydrater/100g</Label>
+              <Input
+                type="number"
+                placeholder="0"
+                value={newProduct.carbs}
+                onChange={(e) => setNewProduct(p => ({ ...p, carbs: e.target.value }))}
+              />
+            </div>
+            <div>
+              <Label>Fett/100g</Label>
+              <Input
+                type="number"
+                placeholder="0"
+                value={newProduct.fat}
+                onChange={(e) => setNewProduct(p => ({ ...p, fat: e.target.value }))}
+              />
+            </div>
           </div>
 
           <div>
-            <label className="text-sm text-zinc-400">Portion (g)</label>
-            <input
+            <Label>Portion (g)</Label>
+            <Input
               type="number"
               value={portionG}
               onChange={(e) => setPortionG(e.target.value)}
-              className="w-full bg-zinc-800 rounded-lg px-4 py-3 text-white mt-1"
             />
           </div>
         </div>
 
-        <button
+        <Button
           onClick={handleCreateAndLogProduct}
           disabled={!newProduct.name || !newProduct.kcal}
-          className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
         >
-          <Check className="w-4 h-4" />
+          <Check className="w-4 h-4 mr-2" />
           Skapa & logga
-        </button>
+        </Button>
       </div>
     )
   }
@@ -275,64 +276,57 @@ export function BarcodeScannerTab() {
 
     return (
       <div className="space-y-4">
-        <div className="bg-zinc-800 rounded-lg p-4">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium">{foundProduct.name}</h3>
+              <h3 className="font-semibold text-gray-900">{foundProduct.name}</h3>
               {foundProduct.brand && (
-                <p className="text-sm text-zinc-400">{foundProduct.brand}</p>
+                <p className="text-sm text-gray-500">{foundProduct.brand}</p>
               )}
             </div>
-            <button
-              onClick={() => {
-                setFoundProduct(null)
-                setManualEan('')
-              }}
-              className="text-zinc-400 hover:text-zinc-300"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <Button variant="ghost" size="sm" onClick={() => { setFoundProduct(null); setManualEan('') }}>
+              <X className="w-4 h-4" />
+            </Button>
           </div>
 
-          <div className="mt-3 text-sm text-zinc-400">
+          <div className="mt-3 text-sm text-gray-600">
             Per 100g: {foundProduct.kcal} kcal · P: {foundProduct.protein}g · K: {foundProduct.carbs}g · F: {foundProduct.fat}g
           </div>
         </div>
 
         <div>
-          <label className="text-sm text-zinc-400">Portion (gram)</label>
-          <input
+          <Label>Portion (gram)</Label>
+          <Input
             type="number"
             value={portionG}
             onChange={(e) => setPortionG(e.target.value)}
-            className="w-full bg-zinc-800 rounded-lg px-4 py-3 text-white mt-1"
           />
         </div>
 
-        <div className="bg-zinc-800 rounded-lg p-3">
+        <div className="bg-gradient-to-r from-gold-primary/10 to-orange-100 border border-gold-primary/20 rounded-lg p-4">
           <div className="flex items-center justify-between">
-            <span className="font-medium">Beräknat intag</span>
-            <span className="text-emerald-400 font-bold">
+            <span className="font-semibold text-gray-900">Beräknat intag</span>
+            <span className="font-bold text-lg bg-gradient-to-r from-gold-primary to-orange-500 bg-clip-text text-transparent">
               {Math.round(foundProduct.kcal * ratio)} kcal
             </span>
           </div>
-          <div className="text-sm text-zinc-400 text-right mt-1">
+          <div className="text-sm text-gray-600 text-right mt-1">
             P: {Math.round(foundProduct.protein * ratio * 10) / 10}g · K: {Math.round(foundProduct.carbs * ratio * 10) / 10}g · F: {Math.round(foundProduct.fat * ratio * 10) / 10}g
           </div>
         </div>
 
-        <button
+        <Button
           onClick={handleLogProduct}
           disabled={isLoading}
-          className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
         >
           {isLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
           ) : (
-            <Check className="w-4 h-4" />
+            <Check className="w-4 h-4 mr-2" />
           )}
           Logga produkt
-        </button>
+        </Button>
       </div>
     )
   }
@@ -341,29 +335,29 @@ export function BarcodeScannerTab() {
   if (notFound) {
     return (
       <div className="space-y-4">
-        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 text-center">
-          <Barcode className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-          <p className="text-amber-400 font-medium">Produkt hittades inte</p>
-          <p className="text-sm text-zinc-400 mt-1">EAN: {manualEan}</p>
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 text-center">
+          <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
+            <Barcode className="w-6 h-6 text-amber-600" />
+          </div>
+          <p className="font-semibold text-amber-800">Produkt hittades inte</p>
+          <p className="text-sm text-amber-600 mt-1">EAN: {manualEan}</p>
         </div>
 
         <div className="flex gap-3">
-          <button
-            onClick={() => {
-              setNotFound(false)
-              setManualEan('')
-            }}
-            className="flex-1 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 transition-colors"
+          <Button
+            variant="outline"
+            onClick={() => { setNotFound(false); setManualEan('') }}
+            className="flex-1 border-gray-300"
           >
             Sök igen
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setShowNewProductForm(true)}
-            className="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 mr-2" />
             Lägg till
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -374,7 +368,7 @@ export function BarcodeScannerTab() {
     <div className="space-y-4">
       {/* Camera scanner */}
       {isScanning ? (
-        <div className="relative rounded-xl overflow-hidden bg-black">
+        <div className="relative rounded-xl overflow-hidden bg-gray-900">
           <video
             ref={videoRef}
             autoPlay
@@ -382,51 +376,55 @@ export function BarcodeScannerTab() {
             className="w-full h-48 object-cover"
           />
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-48 h-24 border-2 border-emerald-400 rounded-lg" />
+            <div className="w-48 h-24 border-2 border-gold-primary rounded-lg shadow-lg" />
           </div>
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={stopScanner}
-            className="absolute top-2 right-2 p-2 bg-black/50 rounded-lg"
+            className="absolute top-2 right-2 bg-black/50 text-white hover:bg-black/70"
           >
-            <X className="w-5 h-5" />
-          </button>
-          <div className="absolute bottom-2 left-0 right-0 text-center text-sm text-zinc-300">
+            <X className="w-4 h-4" />
+          </Button>
+          <div className="absolute bottom-2 left-0 right-0 text-center text-sm text-white bg-black/50 py-1">
             Rikta kameran mot streckkoden
           </div>
         </div>
       ) : (
         <button
           onClick={startScanner}
-          className="w-full py-8 rounded-xl border-2 border-dashed border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800/50 transition-colors flex flex-col items-center justify-center gap-3"
+          className="w-full py-10 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group"
         >
-          <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center">
-            <Camera className="w-6 h-6 text-emerald-400" />
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-primary/20 to-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Camera className="w-6 h-6 text-gold-primary" />
           </div>
           <div className="text-center">
-            <p className="font-medium">Starta kamera</p>
-            <p className="text-sm text-zinc-500">Scanna produktens streckkod</p>
+            <p className="font-semibold text-gray-900">Starta kamera</p>
+            <p className="text-sm text-gray-500">Scanna produktens streckkod</p>
           </div>
         </button>
       )}
 
       {/* Manual EAN input */}
       <div className="relative">
-        <input
+        <Input
           type="text"
           inputMode="numeric"
           placeholder="Eller ange EAN manuellt..."
           value={manualEan}
           onChange={(e) => setManualEan(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleManualSearch()}
-          className="w-full bg-zinc-800 rounded-lg px-4 py-3 pr-12 text-white placeholder-zinc-500"
+          className="pr-12"
         />
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={handleManualSearch}
           disabled={!manualEan.trim()}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-zinc-400 hover:text-zinc-300 disabled:opacity-50"
+          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
         >
-          <Search className="w-5 h-5" />
-        </button>
+          <Search className="w-4 h-4" />
+        </Button>
       </div>
     </div>
   )

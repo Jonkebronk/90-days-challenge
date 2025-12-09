@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import { FileJson, Check, AlertCircle, Loader2 } from 'lucide-react'
 import { useFoodLogStore, FoodLogItem } from '@/lib/stores/food-log-store'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 
 const exampleJson = `[
   {
@@ -42,7 +45,6 @@ export function JsonImportTab() {
     try {
       const data = JSON.parse(jsonInput)
 
-      // Handle both array and object with items
       let items: any[] = []
       if (Array.isArray(data)) {
         items = data
@@ -54,7 +56,6 @@ export function JsonImportTab() {
         throw new Error('Okänt format')
       }
 
-      // Validate and normalize items
       const validated = items.map((item, idx) => {
         if (!item.name) {
           throw new Error(`Produkt ${idx + 1} saknar namn`)
@@ -90,7 +91,6 @@ export function JsonImportTab() {
       items: parsedItems
     })
 
-    // Reset
     setJsonInput('')
     setParsedItems(null)
   }
@@ -115,20 +115,22 @@ export function JsonImportTab() {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-medium text-sm text-zinc-400">Förhandsvisning</h3>
-          <span className="text-sm text-zinc-500">{parsedItems.length} produkter</span>
+          <h3 className="font-semibold text-gray-900">Förhandsvisning</h3>
+          <span className="text-sm text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+            {parsedItems.length} produkter
+          </span>
         </div>
 
         <div className="space-y-2 max-h-64 overflow-y-auto">
           {parsedItems.map((item, idx) => (
-            <div key={idx} className="bg-zinc-800 rounded-lg p-3">
+            <div key={idx} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <div className="flex items-center justify-between">
-                <div className="font-medium text-sm">{item.name}</div>
-                <div className="text-emerald-400 text-sm">{Math.round(item.kcal)} kcal</div>
+                <div className="font-medium text-gray-900 text-sm">{item.name}</div>
+                <div className="font-semibold text-gold-primary text-sm">{Math.round(item.kcal)} kcal</div>
               </div>
               <div className="flex items-center justify-between mt-1">
-                <div className="text-xs text-zinc-500">{Math.round(item.portionG)}g</div>
-                <div className="text-xs text-zinc-500">
+                <div className="text-xs text-gray-500">{Math.round(item.portionG)}g</div>
+                <div className="text-xs text-gray-500">
                   P: {Math.round(item.protein)}g · K: {Math.round(item.carbs)}g · F: {Math.round(item.fat)}g
                 </div>
               </div>
@@ -136,35 +138,38 @@ export function JsonImportTab() {
           ))}
         </div>
 
-        <div className="bg-zinc-800 rounded-lg p-3">
+        <div className="bg-gradient-to-r from-gold-primary/10 to-orange-100 border border-gold-primary/20 rounded-lg p-4">
           <div className="flex items-center justify-between">
-            <span className="font-medium">Totalt</span>
-            <span className="text-emerald-400 font-bold">{Math.round(totals.kcal)} kcal</span>
+            <span className="font-semibold text-gray-900">Totalt</span>
+            <span className="font-bold text-lg bg-gradient-to-r from-gold-primary to-orange-500 bg-clip-text text-transparent">
+              {Math.round(totals.kcal)} kcal
+            </span>
           </div>
-          <div className="text-sm text-zinc-400 text-right mt-1">
+          <div className="text-sm text-gray-600 text-right mt-1">
             P: {Math.round(totals.protein)}g · K: {Math.round(totals.carbs)}g · F: {Math.round(totals.fat)}g
           </div>
         </div>
 
         <div className="flex gap-3">
-          <button
+          <Button
+            variant="outline"
             onClick={() => setParsedItems(null)}
-            className="flex-1 py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 transition-colors"
+            className="flex-1 border-gray-300"
           >
             Tillbaka
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleImport}
             disabled={isLoading}
-            className="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
           >
             {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             ) : (
-              <Check className="w-4 h-4" />
+              <Check className="w-4 h-4 mr-2" />
             )}
             Importera & logga
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -174,39 +179,39 @@ export function JsonImportTab() {
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-sm text-zinc-400">JSON-data</label>
-        <textarea
+        <Label>JSON-data</Label>
+        <Textarea
           value={jsonInput}
           onChange={(e) => setJsonInput(e.target.value)}
           placeholder={exampleJson}
           rows={8}
-          className="w-full mt-1 bg-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-600 font-mono text-sm resize-none"
+          className="mt-1 font-mono text-sm"
         />
       </div>
 
       {parseError && (
-        <div className="flex items-center gap-2 text-red-400 text-sm">
-          <AlertCircle className="w-4 h-4" />
+        <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 border border-red-200 rounded-lg p-3">
+          <AlertCircle className="w-4 h-4 flex-shrink-0" />
           {parseError}
         </div>
       )}
 
-      <button
+      <Button
         onClick={handleParse}
-        className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 transition-colors flex items-center justify-center gap-2"
+        className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] hover:opacity-90"
       >
-        <FileJson className="w-4 h-4" />
+        <FileJson className="w-4 h-4 mr-2" />
         Förhandsgranska
-      </button>
+      </Button>
 
-      <div className="text-xs text-zinc-500 space-y-1">
-        <p>Stödda format:</p>
-        <ul className="list-disc list-inside ml-2">
+      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-3 space-y-1">
+        <p className="font-medium text-gray-700">Stödda format:</p>
+        <ul className="list-disc list-inside ml-2 space-y-0.5">
           <li>Array med produkter</li>
           <li>Objekt med items-array</li>
           <li>Enskild produkt</li>
         </ul>
-        <p className="mt-2">Obligatoriska fält: name</p>
+        <p className="mt-2">Obligatoriska fält: <span className="font-medium">name</span></p>
         <p>Valfria: portionG, kcal, protein, carbs, fat</p>
       </div>
     </div>

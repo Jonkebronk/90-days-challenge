@@ -1,6 +1,7 @@
 'use client'
 
 import { useFoodLogStore } from '@/lib/stores/food-log-store'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Flame, Beef, Wheat, Droplet } from 'lucide-react'
 
 interface MacroProgressProps {
@@ -9,31 +10,31 @@ interface MacroProgressProps {
   current: number
   target: number | null
   unit: string
-  color: string
+  colorClass: string
 }
 
-function MacroProgress({ label, icon, current, target, unit, color }: MacroProgressProps) {
+function MacroProgress({ label, icon, current, target, unit, colorClass }: MacroProgressProps) {
   const percentage = target && target > 0 ? Math.min((current / target) * 100, 100) : 0
   const isOver = target && current > target
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
       <div className="flex items-center justify-between text-sm">
-        <div className="flex items-center gap-1.5 text-zinc-400">
-          {icon}
-          <span>{label}</span>
+        <div className="flex items-center gap-2 text-gray-600">
+          <span className={colorClass}>{icon}</span>
+          <span className="font-medium">{label}</span>
         </div>
-        <span className={isOver ? 'text-red-400' : 'text-white'}>
+        <span className={`font-semibold ${isOver ? 'text-red-500' : 'text-gray-900'}`}>
           {Math.round(current)}
-          {target && <span className="text-zinc-500">/{Math.round(target)}</span>}
-          <span className="text-zinc-500 ml-1">{unit}</span>
+          {target && <span className="text-gray-400 font-normal">/{Math.round(target)}</span>}
+          <span className="text-gray-400 font-normal ml-1">{unit}</span>
         </span>
       </div>
       {target && (
-        <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+        <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all duration-300 ${color} ${
-              isOver ? 'bg-red-500' : ''
+            className={`h-full rounded-full transition-all duration-500 ${
+              isOver ? 'bg-red-500' : colorClass.replace('text-', 'bg-')
             }`}
             style={{ width: `${percentage}%` }}
           />
@@ -48,39 +49,44 @@ export function DailySummaryCard() {
 
   if (!dailySummary) {
     return (
-      <div className="bg-zinc-900 rounded-2xl p-6 animate-pulse">
-        <div className="h-4 bg-zinc-800 rounded w-1/3 mb-4" />
-        <div className="space-y-4">
-          <div className="h-8 bg-zinc-800 rounded" />
-          <div className="h-8 bg-zinc-800 rounded" />
-          <div className="h-8 bg-zinc-800 rounded" />
-          <div className="h-8 bg-zinc-800 rounded" />
-        </div>
-      </div>
+      <Card className="bg-white border border-gray-200">
+        <CardContent className="p-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-4 bg-gray-200 rounded w-1/3" />
+            <div className="space-y-3">
+              <div className="h-8 bg-gray-100 rounded" />
+              <div className="h-8 bg-gray-100 rounded" />
+              <div className="h-8 bg-gray-100 rounded" />
+              <div className="h-8 bg-gray-100 rounded" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     )
   }
 
   const { logged, targets } = dailySummary
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-zinc-300">Dagens intag</h2>
-        {dailySummary.logCount > 0 && (
-          <span className="text-sm text-zinc-500">
-            {dailySummary.logCount} {dailySummary.logCount === 1 ? 'måltid' : 'måltider'}
-          </span>
-        )}
-      </div>
-
-      <div className="space-y-3">
+    <Card className="bg-white border border-gray-200">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg font-semibold text-gray-900">Dagens intag</CardTitle>
+          {dailySummary.logCount > 0 && (
+            <span className="text-sm text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+              {dailySummary.logCount} {dailySummary.logCount === 1 ? 'måltid' : 'måltider'}
+            </span>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
         <MacroProgress
           label="Kalorier"
           icon={<Flame className="w-4 h-4" />}
           current={logged.kcal}
           target={targets?.kcal || null}
           unit="kcal"
-          color="bg-orange-500"
+          colorClass="text-orange-500"
         />
 
         <MacroProgress
@@ -89,7 +95,7 @@ export function DailySummaryCard() {
           current={logged.protein}
           target={targets?.protein || null}
           unit="g"
-          color="bg-red-500"
+          colorClass="text-red-500"
         />
 
         <MacroProgress
@@ -98,7 +104,7 @@ export function DailySummaryCard() {
           current={logged.carbs}
           target={targets?.carbs || null}
           unit="g"
-          color="bg-amber-500"
+          colorClass="text-amber-500"
         />
 
         <MacroProgress
@@ -107,15 +113,15 @@ export function DailySummaryCard() {
           current={logged.fat}
           target={targets?.fat || null}
           unit="g"
-          color="bg-yellow-500"
+          colorClass="text-yellow-500"
         />
-      </div>
 
-      {!targets && (
-        <p className="text-sm text-zinc-500 text-center pt-2">
-          Skapa ett kostschema för att se mål
-        </p>
-      )}
-    </div>
+        {!targets && (
+          <p className="text-sm text-gray-500 text-center pt-2 border-t border-gray-100">
+            Skapa ett kostschema för att se mål
+          </p>
+        )}
+      </CardContent>
+    </Card>
   )
 }

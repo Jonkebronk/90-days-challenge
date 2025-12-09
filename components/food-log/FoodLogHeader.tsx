@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react'
 import { useFoodLogStore } from '@/lib/stores/food-log-store'
+import { Button } from '@/components/ui/button'
 
 export function FoodLogHeader() {
   const { selectedDate, setSelectedDate } = useFoodLogStore()
@@ -45,35 +46,50 @@ export function FoodLogHeader() {
   }
 
   return (
-    <div className="flex items-center justify-between">
-      <h1 className="text-2xl font-bold">Matlogg</h1>
+    <div className="text-center">
+      {/* Gold line */}
+      <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
 
-      <div className="flex items-center gap-2">
-        <button
+      {/* Title */}
+      <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
+        Matlogg
+      </h1>
+
+      {/* Gold line */}
+      <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
+
+      {/* Date navigation */}
+      <div className="flex items-center justify-center gap-2 mt-6">
+        <Button
+          variant="outline"
+          size="icon"
           onClick={() => changeDate(-1)}
-          className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition-colors"
+          className="border-gray-300 hover:bg-gold-primary/10 hover:border-gold-primary"
         >
           <ChevronLeft className="w-5 h-5" />
-        </button>
+        </Button>
 
-        <button
+        <Button
+          variant="outline"
           onClick={goToToday}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+          className={`px-6 font-medium transition-all ${
             isToday()
-              ? 'bg-emerald-600 text-white'
-              : 'bg-zinc-800 hover:bg-zinc-700'
+              ? 'bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0a0a0a] border-transparent hover:opacity-90'
+              : 'border-gray-300 hover:bg-gold-primary/10 hover:border-gold-primary'
           }`}
         >
-          <CalendarDays className="w-4 h-4" />
+          <CalendarDays className="w-4 h-4 mr-2" />
           {formatDate(selectedDate)}
-        </button>
+        </Button>
 
-        <button
+        <Button
+          variant="outline"
+          size="icon"
           onClick={() => changeDate(1)}
-          className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition-colors"
+          className="border-gray-300 hover:bg-gold-primary/10 hover:border-gold-primary"
         >
           <ChevronRight className="w-5 h-5" />
-        </button>
+        </Button>
       </div>
     </div>
   )

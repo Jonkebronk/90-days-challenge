@@ -2,50 +2,56 @@
 
 import { Camera, Barcode, FileJson } from 'lucide-react'
 import { useFoodLogStore } from '@/lib/stores/food-log-store'
+import { Card, CardContent } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PhotoCaptureTab } from './tabs/PhotoCaptureTab'
 import { BarcodeScannerTab } from './tabs/BarcodeScannerTab'
 import { JsonImportTab } from './tabs/JsonImportTab'
-
-const tabs = [
-  { id: 'photo' as const, label: 'Fota mat', icon: Camera },
-  { id: 'barcode' as const, label: 'Streckkod', icon: Barcode },
-  { id: 'import' as const, label: 'Importera', icon: FileJson }
-]
 
 export function InputMethodTabs() {
   const { activeTab, setActiveTab } = useFoodLogStore()
 
   return (
-    <div className="bg-zinc-900 rounded-2xl overflow-hidden">
-      {/* Tab headers */}
-      <div className="flex border-b border-zinc-800">
-        {tabs.map(tab => {
-          const Icon = tab.icon
-          const isActive = activeTab === tab.id
-
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 font-medium transition-colors ${
-                isActive
-                  ? 'text-emerald-400 border-b-2 border-emerald-400 bg-zinc-800/50'
-                  : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/30'
-              }`}
+    <Card className="bg-white border border-gray-200">
+      <CardContent className="p-0">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+          <TabsList className="w-full grid grid-cols-3 bg-gray-100 rounded-none rounded-t-xl border-b border-gray-200 p-1">
+            <TabsTrigger
+              value="photo"
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] rounded-lg py-2.5"
             >
-              <Icon className="w-4 h-4" />
-              <span className="text-sm">{tab.label}</span>
-            </button>
-          )
-        })}
-      </div>
+              <Camera className="w-4 h-4" />
+              <span className="hidden sm:inline">Fota mat</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="barcode"
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] rounded-lg py-2.5"
+            >
+              <Barcode className="w-4 h-4" />
+              <span className="hidden sm:inline">Streckkod</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="import"
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] rounded-lg py-2.5"
+            >
+              <FileJson className="w-4 h-4" />
+              <span className="hidden sm:inline">Importera</span>
+            </TabsTrigger>
+          </TabsList>
 
-      {/* Tab content */}
-      <div className="p-4">
-        {activeTab === 'photo' && <PhotoCaptureTab />}
-        {activeTab === 'barcode' && <BarcodeScannerTab />}
-        {activeTab === 'import' && <JsonImportTab />}
-      </div>
-    </div>
+          <div className="p-4 sm:p-6">
+            <TabsContent value="photo" className="mt-0">
+              <PhotoCaptureTab />
+            </TabsContent>
+            <TabsContent value="barcode" className="mt-0">
+              <BarcodeScannerTab />
+            </TabsContent>
+            <TabsContent value="import" className="mt-0">
+              <JsonImportTab />
+            </TabsContent>
+          </div>
+        </Tabs>
+      </CardContent>
+    </Card>
   )
 }
