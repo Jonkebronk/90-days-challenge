@@ -19,10 +19,39 @@ interface SLVFood {
   slvNummer: number
   name: string
   type: string
+  // Macros
   protein: number
   carbs: number
   fat: number
   kcal: number
+  fiber: number | null
+  sugar: number | null
+  salt: number | null
+  // Fat breakdown
+  saturatedFat: number | null
+  monounsatFat: number | null
+  polyunsatFat: number | null
+  cholesterol: number | null
+  // Vitamins
+  vitaminA: number | null
+  vitaminD: number | null
+  vitaminE: number | null
+  vitaminC: number | null
+  vitaminB6: number | null
+  vitaminB12: number | null
+  thiamin: number | null
+  riboflavin: number | null
+  niacin: number | null
+  folate: number | null
+  // Minerals
+  calcium: number | null
+  iron: number | null
+  magnesium: number | null
+  phosphorus: number | null
+  potassium: number | null
+  zinc: number | null
+  selenium: number | null
+  iodine: number | null
 }
 
 interface Product {
@@ -39,6 +68,33 @@ interface Product {
   fiber?: number | null
   sugar?: number | null
   salt?: number | null
+  // Fat breakdown
+  saturatedFat?: number | null
+  monounsatFat?: number | null
+  polyunsatFat?: number | null
+  cholesterol?: number | null
+  // Vitamins
+  vitaminA?: number | null
+  vitaminD?: number | null
+  vitaminE?: number | null
+  vitaminC?: number | null
+  vitaminB6?: number | null
+  vitaminB12?: number | null
+  thiamin?: number | null
+  riboflavin?: number | null
+  niacin?: number | null
+  folate?: number | null
+  // Minerals
+  calcium?: number | null
+  iron?: number | null
+  magnesium?: number | null
+  phosphorus?: number | null
+  potassium?: number | null
+  zinc?: number | null
+  selenium?: number | null
+  iodine?: number | null
+  // SLV reference
+  slvNummer?: number | null
   source: string
 }
 
@@ -88,6 +144,20 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
     sugar: '',
     salt: '',
     category: '',
+    // Micronutrients
+    saturatedFat: '',
+    vitaminA: '',
+    vitaminD: '',
+    vitaminC: '',
+    vitaminB12: '',
+    folate: '',
+    calcium: '',
+    iron: '',
+    magnesium: '',
+    potassium: '',
+    zinc: '',
+    iodine: '',
+    slvNummer: null as number | null,
   })
 
   // Initialize form when product changes
@@ -104,6 +174,20 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
         sugar: product.sugar?.toString() || '',
         salt: product.salt?.toString() || '',
         category: product.category || '',
+        // Micronutrients
+        saturatedFat: product.saturatedFat?.toString() || '',
+        vitaminA: product.vitaminA?.toString() || '',
+        vitaminD: product.vitaminD?.toString() || '',
+        vitaminC: product.vitaminC?.toString() || '',
+        vitaminB12: product.vitaminB12?.toString() || '',
+        folate: product.folate?.toString() || '',
+        calcium: product.calcium?.toString() || '',
+        iron: product.iron?.toString() || '',
+        magnesium: product.magnesium?.toString() || '',
+        potassium: product.potassium?.toString() || '',
+        zinc: product.zinc?.toString() || '',
+        iodine: product.iodine?.toString() || '',
+        slvNummer: product.slvNummer || null,
       })
       setImagePreview(product.image || null)
       setNewImageBase64(null)
@@ -182,10 +266,28 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
   const handleSLVSelect = (food: SLVFood) => {
     setFormData(prev => ({
       ...prev,
+      // Macros
       kcal: food.kcal.toString(),
       protein: food.protein.toString(),
       carbs: food.carbs.toString(),
       fat: food.fat.toString(),
+      fiber: food.fiber?.toString() || '',
+      sugar: food.sugar?.toString() || '',
+      salt: food.salt?.toString() || '',
+      // Micronutrients
+      saturatedFat: food.saturatedFat?.toString() || '',
+      vitaminA: food.vitaminA?.toString() || '',
+      vitaminD: food.vitaminD?.toString() || '',
+      vitaminC: food.vitaminC?.toString() || '',
+      vitaminB12: food.vitaminB12?.toString() || '',
+      folate: food.folate?.toString() || '',
+      calcium: food.calcium?.toString() || '',
+      iron: food.iron?.toString() || '',
+      magnesium: food.magnesium?.toString() || '',
+      potassium: food.potassium?.toString() || '',
+      zinc: food.zinc?.toString() || '',
+      iodine: food.iodine?.toString() || '',
+      slvNummer: food.slvNummer,
     }))
     setShowSLVSearch(false)
     setSlvSearchTerm('')
@@ -219,7 +321,21 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
           sugar: formData.sugar ? parseFloat(formData.sugar) : null,
           salt: formData.salt ? parseFloat(formData.salt) : null,
           category: formData.category || null,
-          image: newImageBase64 || undefined // Only send if new image uploaded
+          image: newImageBase64 || undefined,
+          // Micronutrients
+          saturatedFat: formData.saturatedFat ? parseFloat(formData.saturatedFat) : null,
+          vitaminA: formData.vitaminA ? parseFloat(formData.vitaminA) : null,
+          vitaminD: formData.vitaminD ? parseFloat(formData.vitaminD) : null,
+          vitaminC: formData.vitaminC ? parseFloat(formData.vitaminC) : null,
+          vitaminB12: formData.vitaminB12 ? parseFloat(formData.vitaminB12) : null,
+          folate: formData.folate ? parseFloat(formData.folate) : null,
+          calcium: formData.calcium ? parseFloat(formData.calcium) : null,
+          iron: formData.iron ? parseFloat(formData.iron) : null,
+          magnesium: formData.magnesium ? parseFloat(formData.magnesium) : null,
+          potassium: formData.potassium ? parseFloat(formData.potassium) : null,
+          zinc: formData.zinc ? parseFloat(formData.zinc) : null,
+          iodine: formData.iodine ? parseFloat(formData.iodine) : null,
+          slvNummer: formData.slvNummer || null,
         })
       })
 

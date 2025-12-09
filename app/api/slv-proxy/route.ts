@@ -20,10 +20,39 @@ interface TransformedFood {
   slvNummer: number
   name: string
   type: string
+  // Macros
   protein: number
   carbs: number
   fat: number
   kcal: number
+  fiber: number | null
+  sugar: number | null
+  salt: number | null
+  // Fat breakdown
+  saturatedFat: number | null
+  monounsatFat: number | null
+  polyunsatFat: number | null
+  cholesterol: number | null
+  // Vitamins
+  vitaminA: number | null
+  vitaminD: number | null
+  vitaminE: number | null
+  vitaminC: number | null
+  vitaminB6: number | null
+  vitaminB12: number | null
+  thiamin: number | null
+  riboflavin: number | null
+  niacin: number | null
+  folate: number | null
+  // Minerals
+  calcium: number | null
+  iron: number | null
+  magnesium: number | null
+  phosphorus: number | null
+  potassium: number | null
+  zinc: number | null
+  selenium: number | null
+  iodine: number | null
 }
 
 // Category-specific search terms to help filter results
@@ -364,20 +393,55 @@ async function searchFoods(
  * Transform SLV data to our format
  */
 function transformFood(food: SLVFoodItem, nutrients: SLVNutrient[]): TransformedFood {
-  const getNutrientValue = (abbreviation: string, unit?: string): number => {
+  const getNutrientValue = (abbreviation: string, unit?: string): number | null => {
     const nutrient = nutrients.find(n =>
       n.forkortning === abbreviation && (!unit || n.enhet === unit)
     )
-    return nutrient?.varde ?? 0
+    return nutrient?.varde ?? null
+  }
+
+  const round = (val: number | null, decimals: number = 1): number | null => {
+    if (val === null) return null
+    const factor = Math.pow(10, decimals)
+    return Math.round(val * factor) / factor
   }
 
   return {
     slvNummer: food.nummer,
     name: food.namn,
     type: food.livsmedelsTyp,
-    protein: Math.round(getNutrientValue('Prot') * 10) / 10,
-    carbs: Math.round(getNutrientValue('Kolh') * 10) / 10,
-    fat: Math.round(getNutrientValue('Fett') * 10) / 10,
-    kcal: Math.round(getNutrientValue('Ener', 'kcal'))
+    // Macros (required, default to 0)
+    protein: round(getNutrientValue('Prot')) ?? 0,
+    carbs: round(getNutrientValue('Kolh')) ?? 0,
+    fat: round(getNutrientValue('Fett')) ?? 0,
+    kcal: Math.round(getNutrientValue('Ener', 'kcal') ?? 0),
+    fiber: round(getNutrientValue('Fibe')),
+    sugar: round(getNutrientValue('Mono/disack')),  // Total sugars
+    salt: round(getNutrientValue('NaCl'), 2),
+    // Fat breakdown
+    saturatedFat: round(getNutrientValue('Mfet')),
+    monounsatFat: round(getNutrientValue('Mone')),
+    polyunsatFat: round(getNutrientValue('Pole')),
+    cholesterol: round(getNutrientValue('Kole')),
+    // Vitamins
+    vitaminA: round(getNutrientValue('VitA')),
+    vitaminD: round(getNutrientValue('VitD'), 2),
+    vitaminE: round(getNutrientValue('VitE'), 2),
+    vitaminC: round(getNutrientValue('VitC')),
+    vitaminB6: round(getNutrientValue('VitB6'), 3),
+    vitaminB12: round(getNutrientValue('VitB12'), 3),
+    thiamin: round(getNutrientValue('Tiam'), 3),
+    riboflavin: round(getNutrientValue('Ribo'), 3),
+    niacin: round(getNutrientValue('Niac'), 2),
+    folate: round(getNutrientValue('Folat')),
+    // Minerals
+    calcium: round(getNutrientValue('Ca')),
+    iron: round(getNutrientValue('Fe'), 2),
+    magnesium: round(getNutrientValue('Mg')),
+    phosphorus: round(getNutrientValue('P')),
+    potassium: round(getNutrientValue('K')),
+    zinc: round(getNutrientValue('Zn'), 2),
+    selenium: round(getNutrientValue('Se'), 2),
+    iodine: round(getNutrientValue('I'), 2),
   }
 }

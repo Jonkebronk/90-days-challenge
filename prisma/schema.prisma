@@ -2429,7 +2429,7 @@ model Product {
 
   image     String?  // URL to product image
 
-  // Nutrition per 100g
+  // Nutrition per 100g - Macros
   kcal      Decimal  @db.Decimal(7, 2)
   protein   Decimal  @db.Decimal(6, 2)
   carbs     Decimal  @db.Decimal(6, 2)
@@ -2437,6 +2437,37 @@ model Product {
   fiber     Decimal? @db.Decimal(6, 2)
   sugar     Decimal? @db.Decimal(6, 2)
   salt      Decimal? @db.Decimal(6, 3)
+
+  // Fat breakdown (g)
+  saturatedFat    Decimal? @db.Decimal(6, 2)  // Mättade fettsyror
+  monounsatFat    Decimal? @db.Decimal(6, 2)  // Enkelomättade fettsyror
+  polyunsatFat    Decimal? @db.Decimal(6, 2)  // Fleromättade fettsyror
+  cholesterol     Decimal? @db.Decimal(6, 2)  // Kolesterol (mg)
+
+  // Vitamins
+  vitaminA        Decimal? @db.Decimal(8, 2)  // µg RE
+  vitaminD        Decimal? @db.Decimal(6, 2)  // µg
+  vitaminE        Decimal? @db.Decimal(6, 2)  // mg
+  vitaminC        Decimal? @db.Decimal(6, 2)  // mg
+  vitaminB6       Decimal? @db.Decimal(6, 3)  // mg
+  vitaminB12      Decimal? @db.Decimal(6, 3)  // µg
+  thiamin         Decimal? @db.Decimal(6, 3)  // mg (B1)
+  riboflavin      Decimal? @db.Decimal(6, 3)  // mg (B2)
+  niacin          Decimal? @db.Decimal(6, 2)  // mg (B3)
+  folate          Decimal? @db.Decimal(6, 2)  // µg
+
+  // Minerals
+  calcium         Decimal? @db.Decimal(7, 2)  // mg
+  iron            Decimal? @db.Decimal(6, 2)  // mg
+  magnesium       Decimal? @db.Decimal(6, 2)  // mg
+  phosphorus      Decimal? @db.Decimal(7, 2)  // mg
+  potassium       Decimal? @db.Decimal(7, 2)  // mg
+  zinc            Decimal? @db.Decimal(6, 2)  // mg
+  selenium        Decimal? @db.Decimal(6, 2)  // µg
+  iodine          Decimal? @db.Decimal(6, 2)  // µg
+
+  // SLV reference
+  slvNummer       Int?     // Livsmedelsverkets nummer
 
   // Source tracking
   source    String   @default("manual") // "manual" | "openfoodfacts" | "ai" | "import"

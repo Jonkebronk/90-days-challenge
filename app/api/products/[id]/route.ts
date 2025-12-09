@@ -88,7 +88,15 @@ export async function PUT(
 
     const { id } = await params
     const body = await req.json()
-    const { name, brand, category, image, kcal, protein, carbs, fat, fiber, sugar, salt, source } = body
+    const {
+      name, brand, category, image, kcal, protein, carbs, fat, fiber, sugar, salt, source,
+      // Micronutrients
+      saturatedFat, monounsatFat, polyunsatFat, cholesterol,
+      vitaminA, vitaminD, vitaminE, vitaminC, vitaminB6, vitaminB12,
+      thiamin, riboflavin, niacin, folate,
+      calcium, iron, magnesium, phosphorus, potassium, zinc, selenium, iodine,
+      slvNummer
+    } = body
 
     // Get existing product to preserve image if not updating
     const existing = await prisma.product.findFirst({
@@ -124,10 +132,37 @@ export async function PUT(
         protein: protein || 0,
         carbs: carbs || 0,
         fat: fat || 0,
-        fiber: fiber || null,
-        sugar: sugar || null,
-        salt: salt || null,
-        source: source || existing.source || 'manual'
+        fiber: fiber ?? null,
+        sugar: sugar ?? null,
+        salt: salt ?? null,
+        // Fat breakdown
+        saturatedFat: saturatedFat ?? null,
+        monounsatFat: monounsatFat ?? null,
+        polyunsatFat: polyunsatFat ?? null,
+        cholesterol: cholesterol ?? null,
+        // Vitamins
+        vitaminA: vitaminA ?? null,
+        vitaminD: vitaminD ?? null,
+        vitaminE: vitaminE ?? null,
+        vitaminC: vitaminC ?? null,
+        vitaminB6: vitaminB6 ?? null,
+        vitaminB12: vitaminB12 ?? null,
+        thiamin: thiamin ?? null,
+        riboflavin: riboflavin ?? null,
+        niacin: niacin ?? null,
+        folate: folate ?? null,
+        // Minerals
+        calcium: calcium ?? null,
+        iron: iron ?? null,
+        magnesium: magnesium ?? null,
+        phosphorus: phosphorus ?? null,
+        potassium: potassium ?? null,
+        zinc: zinc ?? null,
+        selenium: selenium ?? null,
+        iodine: iodine ?? null,
+        // SLV reference
+        slvNummer: slvNummer ?? null,
+        source: slvNummer ? 'slv' : (source || existing.source || 'manual')
       }
     })
 
