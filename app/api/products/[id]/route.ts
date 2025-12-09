@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { uploadProductImage } from '@/lib/cloudinary'
 
 // Helper to check if the param is an EAN (numeric string) or ID (cuid)
 function isEan(value: string): boolean {
@@ -87,21 +88,46 @@ export async function PUT(
 
     const { id } = await params
     const body = await req.json()
-    const { name, brand, category, image, kcal, protein, carbs, fat, fiber, source } = body
+    const { name, brand, category, image, kcal, protein, carbs, fat, fiber, sugar, salt, source } = body
+
+    // Get existing product to preserve image if not updating
+    const existing = await prisma.product.findFirst({
+      where: isEan(id) ? { ean: id } : { id }
+    })
+
+    if (!existing) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+    }
+
+    // Handle image upload to Cloudinary if it's a base64 data URI
+    let imageUrl = existing.image
+    if (image && image.startsWith('data:image')) {
+      try {
+        imageUrl = await uploadProductImage(image)
+      } catch (uploadError) {
+        console.error('Image upload failed:', uploadError)
+        // Keep existing image if upload fails
+      }
+    } else if (image) {
+      // It's already a URL, use it
+      imageUrl = image
+    }
 
     const product = await prisma.product.update({
-      where: isEan(id) ? { ean: id } : { id },
+      where: { id: existing.id },
       data: {
         name,
         brand: brand || null,
         category: category || null,
-        image: image || null,
+        image: imageUrl,
         kcal: kcal || 0,
         protein: protein || 0,
         carbs: carbs || 0,
         fat: fat || 0,
         fiber: fiber || null,
-        source: source || 'manual'
+        sugar: sugar || null,
+        salt: salt || null,
+        source: source || existing.source || 'manual'
       }
     })
 

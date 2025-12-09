@@ -32,6 +32,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { LabelScannerModal } from '@/components/products/LabelScannerModal'
 import { ManualProductModal } from '@/components/products/ManualProductModal'
+import { EditProductModal } from '@/components/products/EditProductModal'
 
 interface Product {
   id: string
@@ -307,77 +308,13 @@ export default function ProductsPage() {
         )}
       </div>
 
-      {/* Edit category modal */}
-      {editingProduct && (
-        <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-          <div className="bg-white rounded-t-2xl sm:rounded-xl w-full sm:max-w-md p-4 sm:p-6 max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">Kategorisera produkt</h3>
-              <Button variant="ghost" size="sm" onClick={() => setEditingProduct(null)}>
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-
-            <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg">
-              {editingProduct.image && (
-                <img
-                  src={editingProduct.image}
-                  alt={editingProduct.name}
-                  className="w-12 h-12 object-cover rounded"
-                />
-              )}
-              <div className="min-w-0 flex-1">
-                <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{editingProduct.name}</p>
-                {editingProduct.brand && (
-                  <p className="text-xs sm:text-sm text-gray-500 truncate">{editingProduct.brand}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <Label className="text-sm">Kategori</Label>
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5 sm:gap-2 mt-2">
-                {CATEGORIES.filter(c => c.id !== 'all').map(cat => {
-                  const Icon = cat.icon
-                  const isSelected = editCategory === cat.id || (cat.id === 'uncategorized' && !editCategory)
-
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => setEditCategory(cat.id === 'uncategorized' ? '' : cat.id)}
-                      className={`flex flex-col items-center gap-0.5 sm:gap-1 p-2 sm:p-3 rounded-lg border transition-all ${
-                        isSelected
-                          ? 'border-gold-primary bg-gold-primary/10'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${isSelected ? 'text-gold-primary' : 'text-gray-400'}`} />
-                      <span className="text-[10px] sm:text-xs">{cat.label}</span>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            <div className="flex gap-2 sm:gap-3">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => setEditingProduct(null)}
-              >
-                Avbryt
-              </Button>
-              <Button
-                className="flex-1 bg-gold-primary text-black hover:bg-gold-primary/90"
-                onClick={() => handleUpdateCategory(editingProduct.id, editCategory || null)}
-              >
-                <Check className="w-4 h-4 mr-1 sm:mr-2" />
-                Spara
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Edit Product Modal */}
+      <EditProductModal
+        isOpen={!!editingProduct}
+        product={editingProduct}
+        onClose={() => setEditingProduct(null)}
+        onProductUpdated={fetchProducts}
+      />
 
       {/* Label Scanner Modal */}
       <LabelScannerModal
