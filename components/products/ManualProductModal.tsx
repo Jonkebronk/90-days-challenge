@@ -115,14 +115,9 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
   }
 
   const handleSubmit = async () => {
-    // Validation
+    // Validation - only name is required
     if (!formData.name.trim()) {
       setError('Produktnamn krävs')
-      return
-    }
-
-    if (!formData.kcal || parseFloat(formData.kcal) < 0) {
-      setError('Kcal måste anges')
       return
     }
 
@@ -290,7 +285,7 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
             <h3 className="font-medium text-gray-900 mb-3">Näringsvärden (per 100g)</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div>
-                <Label htmlFor="kcal" className="text-sm">Kcal *</Label>
+                <Label htmlFor="kcal" className="text-sm">Kcal</Label>
                 <Input
                   id="kcal"
                   type="number"
