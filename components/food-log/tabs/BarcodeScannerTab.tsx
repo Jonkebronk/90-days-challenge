@@ -1,12 +1,20 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Barcode, Camera, Loader2, Check, X, Plus, Search, AlertCircle, Database, Globe } from 'lucide-react'
-import { Html5Qrcode } from 'html5-qrcode'
+import { Barcode, Camera, Loader2, Check, X, Plus, Search, AlertCircle, Database, Globe, ScanLine } from 'lucide-react'
 import { useFoodLogStore, Product } from '@/lib/stores/food-log-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+
+// Type for native BarcodeDetector API
+declare global {
+  interface Window {
+    BarcodeDetector?: new (options?: { formats: string[] }) => {
+      detect: (source: ImageBitmapSource) => Promise<Array<{ rawValue: string; format: string }>>
+    }
+  }
+}
 
 interface OpenFoodFactsProduct {
   code: string
@@ -23,11 +31,10 @@ interface OpenFoodFactsProduct {
 }
 
 export function BarcodeScannerTab() {
-  const scannerRef = useRef<Html5Qrcode | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const scannerContainerId = 'barcode-scanner-container'
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const streamRef = useRef<MediaStream | null>(null)
+  const animationRef = useRef<number | null>(null)
   const [isScanning, setIsScanning] = useState(false)
-  const [isProcessingPhoto, setIsProcessingPhoto] = useState(false)
   const [manualEan, setManualEan] = useState('')
   const [foundProduct, setFoundProduct] = useState<Product | null>(null)
   const [offProduct, setOffProduct] = useState<OpenFoodFactsProduct | null>(null)
@@ -36,9 +43,7 @@ export function BarcodeScannerTab() {
   const [showNewProductForm, setShowNewProductForm] = useState(false)
   const [isLookingUp, setIsLookingUp] = useState(false)
   const [scannerError, setScannerError] = useState<string | null>(null)
-
-  // Detect iOS
-  const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent)
+  const [hasNativeSupport, setHasNativeSupport] = useState(false)
 
   const { isLoading, lookupProduct, createLog, cacheProduct } = useFoodLogStore()
 
@@ -51,19 +56,33 @@ export function BarcodeScannerTab() {
     fat: ''
   })
 
+  // Check for native BarcodeDetector support
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'BarcodeDetector' in window) {
+      setHasNativeSupport(true)
+    }
+  }, [])
+
   // Stop scanner
-  const stopScanner = useCallback(async () => {
-    if (scannerRef.current) {
-      try {
-        await scannerRef.current.stop()
-        scannerRef.current.clear()
-      } catch (e) {
-        // Ignore errors when stopping
-      }
-      scannerRef.current = null
+  const stopScanner = useCallback(() => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current)
+      animationRef.current = null
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop())
+      streamRef.current = null
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null
     }
     setIsScanning(false)
   }, [])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => stopScanner()
+  }, [stopScanner])
 
   // Search Open Food Facts
   const searchOpenFoodFacts = async (ean: string): Promise<OpenFoodFactsProduct | null> => {
@@ -121,73 +140,71 @@ export function BarcodeScannerTab() {
     }
   }
 
+  // Start native barcode scanning
   const startScanner = async () => {
     setScannerError(null)
 
     try {
-      // Create scanner instance
-      const html5Qrcode = new Html5Qrcode(scannerContainerId, {
-        verbose: false,
-        formatsToSupport: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] // EAN, UPC, Code128, etc.
+      // Request camera access
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'environment',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
       })
-      scannerRef.current = html5Qrcode
+
+      streamRef.current = stream
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+        videoRef.current.setAttribute('playsinline', 'true')
+        await videoRef.current.play()
+      }
+
       setIsScanning(true)
 
-      // Detect iOS
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+      // Create BarcodeDetector
+      if (!window.BarcodeDetector) {
+        throw new Error('BarcodeDetector not supported')
+      }
 
-      // Start scanning with iOS-optimized settings
-      await html5Qrcode.start(
-        { facingMode: 'environment' },
-        {
-          fps: isIOS ? 5 : 10, // Lower FPS on iOS for stability
-          qrbox: { width: 250, height: 150 },
-          aspectRatio: isIOS ? 1.333333 : 1.777778, // 4:3 on iOS, 16:9 otherwise
-          disableFlip: false
-        },
-        async (decodedText) => {
-          // Success - barcode detected
-          await stopScanner()
-          handleEanLookup(decodedText)
-        },
-        () => {
-          // Ignore scan failures (no barcode in frame)
+      const detector = new window.BarcodeDetector({
+        formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39']
+      })
+
+      // Scan loop
+      const scanFrame = async () => {
+        if (!videoRef.current || !streamRef.current) return
+
+        try {
+          const barcodes = await detector.detect(videoRef.current)
+          if (barcodes.length > 0) {
+            const barcode = barcodes[0]
+            stopScanner()
+            handleEanLookup(barcode.rawValue)
+            return
+          }
+        } catch (err) {
+          // Ignore detection errors, continue scanning
         }
-      )
+
+        animationRef.current = requestAnimationFrame(scanFrame)
+      }
+
+      animationRef.current = requestAnimationFrame(scanFrame)
     } catch (error: any) {
       console.error('Scanner error:', error)
       setIsScanning(false)
 
-      if (error.toString().includes('Permission')) {
-        setScannerError('Kameraåtkomst nekad. Tillåt kameraåtkomst i webbläsarens inställningar.')
-      } else if (error.toString().includes('NotFound') || error.toString().includes('NotAllowed')) {
-        setScannerError('Ingen kamera hittades eller åtkomst nekad.')
+      if (error.name === 'NotAllowedError') {
+        setScannerError('Kameraåtkomst nekad. Tillåt kameraåtkomst i inställningar.')
+      } else if (error.name === 'NotFoundError') {
+        setScannerError('Ingen kamera hittades.')
+      } else if (error.message?.includes('BarcodeDetector')) {
+        setScannerError('Din webbläsare stödjer inte streckkodsskanning. Ange EAN manuellt.')
       } else {
-        setScannerError('Kunde inte starta kameran. Använd manuell inmatning.')
-      }
-    }
-  }
-
-  // Photo-based barcode scanning (for iOS)
-  const handlePhotoScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setIsProcessingPhoto(true)
-    setScannerError(null)
-
-    try {
-      const html5Qrcode = new Html5Qrcode('photo-scanner-temp', { verbose: false })
-      const result = await html5Qrcode.scanFile(file, true)
-      html5Qrcode.clear()
-      handleEanLookup(result)
-    } catch (error) {
-      console.error('Photo scan failed:', error)
-      setScannerError('Kunde inte läsa streckkoden. Försök ta en tydligare bild eller ange EAN manuellt.')
-    } finally {
-      setIsProcessingPhoto(false)
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
+        setScannerError('Kunde inte starta kameran. Ange EAN manuellt.')
       }
     }
   }
@@ -324,28 +341,6 @@ export function BarcodeScannerTab() {
       console.error('Failed to create product:', error)
     }
   }
-
-  // Ensure video element has iOS-compatible attributes
-  useEffect(() => {
-    if (isScanning) {
-      const container = document.getElementById(scannerContainerId)
-      if (container) {
-        const video = container.querySelector('video')
-        if (video) {
-          video.setAttribute('playsinline', 'true')
-          video.setAttribute('webkit-playsinline', 'true')
-          video.setAttribute('muted', 'true')
-          video.muted = true
-        }
-      }
-    }
-  }, [isScanning])
-
-  useEffect(() => {
-    return () => {
-      stopScanner()
-    }
-  }, [stopScanner])
 
   // Show loading state
   if (isLookingUp) {
@@ -646,81 +641,55 @@ export function BarcodeScannerTab() {
         </div>
       )}
 
-      {/* Photo-based scanning for iOS */}
-      {isIOS ? (
-        <div className="space-y-3">
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isProcessingPhoto}
-            className="w-full py-10 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group disabled:opacity-50"
-          >
-            {isProcessingPhoto ? (
-              <>
-                <Loader2 className="w-8 h-8 animate-spin text-gold-primary" />
-                <p className="text-sm text-gray-600">Läser streckkod...</p>
-              </>
-            ) : (
-              <>
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-primary/20 to-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Camera className="w-6 h-6 text-gold-primary" />
-                </div>
-                <div className="text-center">
-                  <p className="font-semibold text-gray-900">Ta foto av streckkod</p>
-                  <p className="text-sm text-gray-500">Öppnar kameran för att fota</p>
-                </div>
-              </>
-            )}
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={handlePhotoScan}
+      {/* Native barcode scanner */}
+      {isScanning ? (
+        <div className="relative rounded-xl overflow-hidden bg-gray-900">
+          <video
+            ref={videoRef}
+            className="w-full h-64 object-cover"
+            playsInline
+            muted
+            autoPlay
           />
-          {/* Hidden container for photo scanner */}
-          <div id="photo-scanner-temp" className="hidden" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={stopScanner}
+            className="absolute top-2 right-2 bg-black/50 text-white hover:bg-black/70 z-10"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+
+          {/* Scanning overlay */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-64 h-32 border-2 border-gold-primary rounded-lg relative">
+              <div className="absolute inset-0 bg-gold-primary/10" />
+              <ScanLine className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-gold-primary animate-pulse" />
+            </div>
+          </div>
+
+          <div className="absolute bottom-0 left-0 right-0 text-center text-sm text-white bg-black/50 py-2">
+            Rikta kameran mot streckkoden
+          </div>
         </div>
       ) : (
-        <>
-          {/* Live barcode scanner for non-iOS */}
-          {isScanning ? (
-            <div className="relative rounded-xl overflow-hidden bg-gray-900">
-              <div
-                id={scannerContainerId}
-                className="w-full"
-                style={{ minHeight: '300px' }}
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={stopScanner}
-                className="absolute top-2 right-2 bg-black/50 text-white hover:bg-black/70 z-10"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-              <div className="absolute bottom-0 left-0 right-0 text-center text-sm text-white bg-black/50 py-2">
-                Rikta kameran mot streckkoden
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={startScanner}
-              className="w-full py-10 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group"
-            >
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-primary/20 to-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Camera className="w-6 h-6 text-gold-primary" />
-              </div>
-              <div className="text-center">
-                <p className="font-semibold text-gray-900">Starta scanner</p>
-                <p className="text-sm text-gray-500">Live-skanning av streckkod</p>
-              </div>
-            </button>
-          )}
-          {/* Hidden container for scanner when not scanning */}
-          {!isScanning && <div id={scannerContainerId} className="hidden" />}
-        </>
+        <button
+          onClick={startScanner}
+          disabled={!hasNativeSupport}
+          className="w-full py-10 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-primary/20 to-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Camera className="w-6 h-6 text-gold-primary" />
+          </div>
+          <div className="text-center">
+            <p className="font-semibold text-gray-900">
+              {hasNativeSupport ? 'Starta scanner' : 'Scanner ej tillgänglig'}
+            </p>
+            <p className="text-sm text-gray-500">
+              {hasNativeSupport ? 'Live-skanning av streckkod' : 'Ange EAN manuellt nedan'}
+            </p>
+          </div>
+        </button>
       )}
 
       {/* Manual EAN input */}
@@ -728,7 +697,7 @@ export function BarcodeScannerTab() {
         <Input
           type="text"
           inputMode="numeric"
-          placeholder="Eller ange EAN manuellt..."
+          placeholder="Ange EAN manuellt..."
           value={manualEan}
           onChange={(e) => setManualEan(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleManualSearch()}
