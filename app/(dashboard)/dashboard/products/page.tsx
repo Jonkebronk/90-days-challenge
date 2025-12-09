@@ -22,7 +22,10 @@ import {
   X,
   Check,
   Plus,
-  Camera
+  Camera,
+  Database,
+  Store,
+  Globe
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -43,6 +46,13 @@ interface Product {
   source: string
 }
 
+const SOURCES = [
+  { id: 'all', label: 'Alla', icon: Database },
+  { id: 'openfoodfacts', label: 'Open Food Facts', icon: Globe },
+  { id: 'ica', label: 'ICA', icon: Store },
+  { id: 'coop', label: 'COOP', icon: Store },
+]
+
 const CATEGORIES = [
   { id: 'all', label: 'Alla', icon: Package },
   { id: 'mejeri', label: 'Mejeri', icon: Milk },
@@ -61,9 +71,11 @@ const CATEGORIES = [
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({})
+  const [sourceCounts, setSourceCounts] = useState<Record<string, number>>({})
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [selectedSource, setSelectedSource] = useState('all')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [editCategory, setEditCategory] = useState<string>('')
@@ -77,6 +89,9 @@ export default function ProductsPage() {
       if (selectedCategory && selectedCategory !== 'all') {
         url += `&category=${encodeURIComponent(selectedCategory)}`
       }
+      if (selectedSource && selectedSource !== 'all') {
+        url += `&source=${encodeURIComponent(selectedSource)}`
+      }
 
       const res = await fetch(url)
       if (!res.ok) throw new Error('Failed to fetch')
@@ -84,12 +99,13 @@ export default function ProductsPage() {
       const data = await res.json()
       setProducts(data.products || [])
       setCategoryCounts(data.categoryCounts || {})
+      setSourceCounts(data.sourceCounts || {})
     } catch (error) {
       console.error('Failed to fetch products:', error)
     } finally {
       setIsLoading(false)
     }
-  }, [searchQuery, selectedCategory])
+  }, [searchQuery, selectedCategory, selectedSource])
 
   useEffect(() => {
     fetchProducts()
@@ -116,7 +132,7 @@ export default function ProductsPage() {
     }
   }
 
-  const totalProducts = Object.values(categoryCounts).reduce((a, b) => a + b, 0)
+  const totalProducts = Object.values(sourceCounts).reduce((a, b) => a + b, 0)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -156,6 +172,37 @@ export default function ProductsPage() {
                 <List className="w-4 h-4" />
               </Button>
             </div>
+          </div>
+
+          {/* Source tabs (database filter) */}
+          <div className="flex gap-1.5 mb-3 overflow-x-auto scrollbar-hide">
+            {SOURCES.map(src => {
+              const count = src.id === 'all' ? totalProducts : (sourceCounts[src.id] || 0)
+              const Icon = src.icon
+              const isActive = selectedSource === src.id
+
+              return (
+                <button
+                  key={src.id}
+                  onClick={() => setSelectedSource(src.id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap transition-all text-sm ${
+                    isActive
+                      ? 'bg-emerald-600 text-white font-medium'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{src.label}</span>
+                  {count > 0 && (
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                      isActive ? 'bg-white/20' : 'bg-gray-200'
+                    }`}>
+                      {count}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
           </div>
 
           {/* Search */}

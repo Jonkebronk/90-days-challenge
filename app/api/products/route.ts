@@ -15,10 +15,16 @@ export async function GET(req: NextRequest) {
     const q = searchParams.get('q')
     const ean = searchParams.get('ean')
     const category = searchParams.get('category')
+    const source = searchParams.get('source')
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
 
     const where: any = {}
+
+    // Filter by source (database)
+    if (source && source !== 'all') {
+      where.source = source
+    }
 
     if (ean) {
       where.ean = ean
@@ -39,7 +45,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    const [products, total, categories] = await Promise.all([
+    const [products, total, categories, sources] = await Promise.all([
       prisma.product.findMany({
         where,
         take: limit,
@@ -47,10 +53,16 @@ export async function GET(req: NextRequest) {
         orderBy: { name: 'asc' }
       }),
       prisma.product.count({ where }),
-      // Get category counts
+      // Get category counts (respects source filter)
       prisma.product.groupBy({
         by: ['category'],
+        where: source && source !== 'all' ? { source } : undefined,
         _count: { category: true }
+      }),
+      // Get source counts (always show all sources)
+      prisma.product.groupBy({
+        by: ['source'],
+        _count: { source: true }
       })
     ])
 
@@ -61,12 +73,19 @@ export async function GET(req: NextRequest) {
       return acc
     }, {})
 
+    // Transform source counts
+    const sourceCounts = sources.reduce((acc: Record<string, number>, src) => {
+      acc[src.source] = src._count.source
+      return acc
+    }, {})
+
     return NextResponse.json({
       products,
       total,
       limit,
       offset,
-      categoryCounts
+      categoryCounts,
+      sourceCounts
     })
   } catch (error) {
     console.error('Error fetching products:', error)

@@ -56,7 +56,8 @@
       "Bash(curl:*)",
       "WebFetch(domain:dataportal.livsmedelsverket.se)",
       "Bash(git rm:*)",
-      "Bash(node scripts/count-products.js:*)"
+      "Bash(node scripts/count-products.js:*)",
+      "Bash(npx next build:*)"
     ],
     "deny": [],
     "ask": []
