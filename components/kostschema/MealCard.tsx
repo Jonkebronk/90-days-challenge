@@ -197,7 +197,7 @@ function IngredientItem({
             e.stopPropagation()
             onFindProducts()
           }}
-          className="p-1.5 rounded hover:bg-emerald-100 transition-colors opacity-0 group-hover:opacity-100"
+          className="p-1.5 rounded hover:bg-emerald-100 transition-colors"
           title="Hitta matchande produkter"
         >
           <ShoppingBag className="h-3.5 w-3.5 text-zinc-400 hover:text-emerald-600 transition-colors" />
@@ -211,7 +211,7 @@ function IngredientItem({
             e.stopPropagation()
             onDelete()
           }}
-          className="p-1.5 rounded hover:bg-red-100 transition-colors opacity-0 group-hover:opacity-100"
+          className="p-1.5 rounded hover:bg-red-100 transition-colors"
           title="Ta bort ingrediens"
         >
           <Trash2 className="h-3.5 w-3.5 text-zinc-400 hover:text-red-500 transition-colors" />
@@ -576,13 +576,13 @@ export function MealCard({
                   meal.tillaggItems.map((item, index) => (
                     <span
                       key={item.id}
-                      className="group inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-xs"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-xs"
                     >
                       {item.text}
                       {onRemoveTillagg && (
                         <button
                           onClick={() => onRemoveTillagg(meal.type, index)}
-                          className="opacity-0 group-hover:opacity-100 hover:text-red-500 transition-opacity"
+                          className="hover:text-red-500 transition-colors"
                         >
                           <X className="h-2.5 w-2.5" />
                         </button>
@@ -610,13 +610,13 @@ export function MealCard({
                   meal.supplementItems.map((item, index) => (
                     <span
                       key={item.id}
-                      className="group inline-flex items-center gap-1 px-2 py-0.5 bg-purple-50 text-purple-700 rounded text-xs"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-50 text-purple-700 rounded text-xs"
                     >
                       {item.text}
                       {onRemoveSupplement && (
                         <button
                           onClick={() => onRemoveSupplement(meal.type, index)}
-                          className="opacity-0 group-hover:opacity-100 hover:text-red-500 transition-opacity"
+                          className="hover:text-red-500 transition-colors"
                         >
                           <X className="h-2.5 w-2.5" />
                         </button>
