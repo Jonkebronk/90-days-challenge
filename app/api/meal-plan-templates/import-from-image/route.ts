@@ -47,20 +47,21 @@ interface ParsedPlan {
 // Search SLV database for a food item
 async function searchSLV(foodName: string): Promise<SLVFood | null> {
   try {
-    // Clean up the search term
-    const searchTerm = foodName.toLowerCase()
+    // Clean up the search term - extract just the main ingredient
+    const cleanedName = foodName.toLowerCase()
       .replace(/\d+g?\s*/g, '') // Remove amounts like "415g"
       .replace(/\s*(eller|och)\s*/gi, ' ') // Remove "eller" and "och"
-      .replace(/[%.,]/g, '') // Remove special chars
+      .replace(/[%.,()]/g, '') // Remove special chars
+      .replace(/\s*(max|min|ca|cirka)\s+\d+[\d.,]*%?\s*/gi, '') // Remove "max 1.5%" etc
       .trim()
-      .split(/\s+/)
-      .filter(t => t.length > 2)
-      .slice(0, 2) // Take first 2 words
-      .join(' ')
 
-    if (!searchTerm) return null
+    // Get first meaningful word for search
+    const words = cleanedName.split(/\s+/).filter(t => t.length > 2)
+    const searchTerm = words[0] || cleanedName
 
-    const url = `${getBaseUrl()}/api/slv-proxy?q=${encodeURIComponent(searchTerm)}&limit=5`
+    if (!searchTerm || searchTerm.length < 2) return null
+
+    const url = `${getBaseUrl()}/api/slv-proxy?q=${encodeURIComponent(searchTerm)}&limit=15`
     const response = await fetch(url, {
       headers: { 'Accept': 'application/json' }
     })
@@ -72,13 +73,59 @@ async function searchSLV(foodName: string): Promise<SLVFood | null> {
 
     if (foods.length === 0) return null
 
-    // Find best match
-    const lowerName = foodName.toLowerCase()
-    const exactMatch = foods.find(f =>
-      lowerName.includes(f.name.toLowerCase().split(' ')[0])
-    )
+    // Score each result for best match
+    const scoredFoods = foods.map(food => {
+      const foodNameLower = food.name.toLowerCase()
+      const searchLower = searchTerm.toLowerCase()
+      let score = 0
 
-    return exactMatch || foods[0]
+      // Exact match on first word - highest priority
+      const foodFirstWord = foodNameLower.split(/[,\s]+/)[0]
+      if (foodFirstWord === searchLower) {
+        score += 100
+      }
+      // Food name starts with search term
+      else if (foodNameLower.startsWith(searchLower)) {
+        score += 80
+      }
+      // First word starts with search term
+      else if (foodFirstWord.startsWith(searchLower)) {
+        score += 60
+      }
+      // Search term is a standalone word in food name
+      else if (foodNameLower.split(/[,\s]+/).includes(searchLower)) {
+        score += 40
+      }
+      // Partial match
+      else if (foodNameLower.includes(searchLower)) {
+        score += 20
+      }
+
+      // Prefer shorter names (more specific)
+      score -= foodNameLower.length * 0.1
+
+      // Prefer items without "med", "u.", "i" etc (more basic ingredients)
+      if (/\s(med|u\.|i|på|till)\s/.test(foodNameLower)) {
+        score -= 15
+      }
+
+      // Prefer raw/basic forms
+      if (/\b(rå|färsk|okokt)\b/.test(foodNameLower)) {
+        score += 5
+      }
+
+      return { food, score }
+    })
+
+    // Sort by score descending
+    scoredFoods.sort((a, b) => b.score - a.score)
+
+    // Only return if we have a reasonable match
+    if (scoredFoods[0].score >= 20) {
+      return scoredFoods[0].food
+    }
+
+    return null
   } catch (error) {
     console.error('SLV search failed:', error)
     return null
@@ -89,9 +136,15 @@ const MEAL_PLAN_PROMPT = `Du är expert på att läsa och extrahera data från k
 
 Analysera bilden och extrahera ALLA måltider och ingredienser.
 
-VIKTIGT:
+KRITISKT VIKTIGT FÖR ALTERNATIV:
+När en ingrediens har "/" eller "eller" betyder det alternativ som kan bytas ut mot varandra:
+- "Kvarg/keso max 1.5% fett" → name: "Kvarg/keso max 1.5% fett", alternatives: ["Keso max 1.5% fett"]
+- "Kyckling/magert nötkött/Kalkon" → name: "Kyckling/magert nötkött/Kalkon", alternatives: ["Magert nötkött", "Kalkon"]
+- "Ris (okokt)/mathavre/matvete/bönpasta" → alternatives: ["Mathavre", "Matvete", "Bönpasta"]
+- "Havregryn eller 415g Naturell yoghurt" → alternatives: ["Naturell yoghurt 0.5% fett"]
+
+ÖVRIGA REGLER:
 - Extrahera EXAKT de värden som står i schemat (mängd, protein, fett, kolhydrater, kcal)
-- Om en ingrediens har alternativ (t.ex. "Havregryn eller 415g Naturell yoghurt"), sätt huvudingrediensen som "name" och alternativet i "alternatives"
 - Mängd är oftast i gram, men kan vara "styck" för ägg, vitaminer etc.
 - Leta efter måltidsrubriker som "Måltid 1", "Måltid 2", "Frukost", "Lunch" etc.
 - Ignorera tomma rader eller rubriker utan ingredienser
@@ -120,12 +173,14 @@ Returnera ENDAST JSON i detta format:
   ]
 }
 
-search_term ska vara ett enkelt svenskt ord för sökning i Livsmedelsverkets databas:
-- "Kvarg/ keso max 1.5% fett" → search_term: "kvarg"
-- "Kyckling/ magert nötkött/ Kalkon" → search_term: "kyckling"
+search_term ska vara ett enkelt svenskt grundord för sökning i Livsmedelsverkets databas:
+- "Kvarg/keso max 1.5% fett" → search_term: "kvarg"
+- "Kyckling/magert nötkött/Kalkon" → search_term: "kyckling"
 - "Ris (okokt)" → search_term: "ris"
 - "Blandade grönsaker" → search_term: "grönsaker"
-- "Ägg (medelstort ca 65g)" → search_term: "ägg"`
+- "Ägg (medelstort ca 65g)" → search_term: "ägg"
+- "Naturella nötter utan salt" → search_term: "nötter"
+- "Avokado" → search_term: "avokado"`
 
 export async function POST(req: NextRequest) {
   try {
