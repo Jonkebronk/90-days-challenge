@@ -24,8 +24,10 @@ interface OpenFoodFactsProduct {
 
 export function BarcodeScannerTab() {
   const scannerRef = useRef<Html5Qrcode | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const scannerContainerId = 'barcode-scanner-container'
   const [isScanning, setIsScanning] = useState(false)
+  const [isProcessingPhoto, setIsProcessingPhoto] = useState(false)
   const [manualEan, setManualEan] = useState('')
   const [foundProduct, setFoundProduct] = useState<Product | null>(null)
   const [offProduct, setOffProduct] = useState<OpenFoodFactsProduct | null>(null)
@@ -34,6 +36,9 @@ export function BarcodeScannerTab() {
   const [showNewProductForm, setShowNewProductForm] = useState(false)
   const [isLookingUp, setIsLookingUp] = useState(false)
   const [scannerError, setScannerError] = useState<string | null>(null)
+
+  // Detect iOS
+  const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent)
 
   const { isLoading, lookupProduct, createLog, cacheProduct } = useFoodLogStore()
 
@@ -159,6 +164,30 @@ export function BarcodeScannerTab() {
         setScannerError('Ingen kamera hittades eller åtkomst nekad.')
       } else {
         setScannerError('Kunde inte starta kameran. Använd manuell inmatning.')
+      }
+    }
+  }
+
+  // Photo-based barcode scanning (for iOS)
+  const handlePhotoScan = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsProcessingPhoto(true)
+    setScannerError(null)
+
+    try {
+      const html5Qrcode = new Html5Qrcode('photo-scanner-temp', { verbose: false })
+      const result = await html5Qrcode.scanFile(file, true)
+      html5Qrcode.clear()
+      handleEanLookup(result)
+    } catch (error) {
+      console.error('Photo scan failed:', error)
+      setScannerError('Kunde inte läsa streckkoden. Försök ta en tydligare bild eller ange EAN manuellt.')
+    } finally {
+      setIsProcessingPhoto(false)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
       }
     }
   }
@@ -617,43 +646,82 @@ export function BarcodeScannerTab() {
         </div>
       )}
 
-      {/* Live barcode scanner */}
-      {isScanning ? (
-        <div className="relative rounded-xl overflow-hidden bg-gray-900">
-          <div
-            id={scannerContainerId}
-            className="w-full"
-            style={{ minHeight: '300px' }}
-          />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={stopScanner}
-            className="absolute top-2 right-2 bg-black/50 text-white hover:bg-black/70 z-10"
+      {/* Photo-based scanning for iOS */}
+      {isIOS ? (
+        <div className="space-y-3">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isProcessingPhoto}
+            className="w-full py-10 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group disabled:opacity-50"
           >
-            <X className="w-4 h-4" />
-          </Button>
-          <div className="absolute bottom-0 left-0 right-0 text-center text-sm text-white bg-black/50 py-2">
-            Rikta kameran mot streckkoden
-          </div>
+            {isProcessingPhoto ? (
+              <>
+                <Loader2 className="w-8 h-8 animate-spin text-gold-primary" />
+                <p className="text-sm text-gray-600">Läser streckkod...</p>
+              </>
+            ) : (
+              <>
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-primary/20 to-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Camera className="w-6 h-6 text-gold-primary" />
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-gray-900">Ta foto av streckkod</p>
+                  <p className="text-sm text-gray-500">Öppnar kameran för att fota</p>
+                </div>
+              </>
+            )}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={handlePhotoScan}
+          />
+          {/* Hidden container for photo scanner */}
+          <div id="photo-scanner-temp" className="hidden" />
         </div>
       ) : (
-        <button
-          onClick={startScanner}
-          className="w-full py-10 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group"
-        >
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-primary/20 to-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Camera className="w-6 h-6 text-gold-primary" />
-          </div>
-          <div className="text-center">
-            <p className="font-semibold text-gray-900">Starta scanner</p>
-            <p className="text-sm text-gray-500">Live-skanning av streckkod</p>
-          </div>
-        </button>
+        <>
+          {/* Live barcode scanner for non-iOS */}
+          {isScanning ? (
+            <div className="relative rounded-xl overflow-hidden bg-gray-900">
+              <div
+                id={scannerContainerId}
+                className="w-full"
+                style={{ minHeight: '300px' }}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={stopScanner}
+                className="absolute top-2 right-2 bg-black/50 text-white hover:bg-black/70 z-10"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+              <div className="absolute bottom-0 left-0 right-0 text-center text-sm text-white bg-black/50 py-2">
+                Rikta kameran mot streckkoden
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={startScanner}
+              className="w-full py-10 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group"
+            >
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-primary/20 to-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Camera className="w-6 h-6 text-gold-primary" />
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-gray-900">Starta scanner</p>
+                <p className="text-sm text-gray-500">Live-skanning av streckkod</p>
+              </div>
+            </button>
+          )}
+          {/* Hidden container for scanner when not scanning */}
+          {!isScanning && <div id={scannerContainerId} className="hidden" />}
+        </>
       )}
-
-      {/* Hidden container for scanner when not scanning */}
-      {!isScanning && <div id={scannerContainerId} className="hidden" />}
 
       {/* Manual EAN input */}
       <div className="relative">

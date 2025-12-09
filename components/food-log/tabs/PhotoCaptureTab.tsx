@@ -93,10 +93,26 @@ export function PhotoCaptureTab() {
     updatedItems[idx] = {
       ...item,
       portion_g: newPortion,
+      // Update active values
       kcal: Math.round(item.kcal * ratio),
       protein: Math.round(item.protein * ratio * 10) / 10,
       carbs: Math.round(item.carbs * ratio * 10) / 10,
-      fat: Math.round(item.fat * ratio * 10) / 10
+      fat: Math.round(item.fat * ratio * 10) / 10,
+      // Update AI estimate
+      ai_estimate: item.ai_estimate ? {
+        kcal: Math.round(item.ai_estimate.kcal * ratio),
+        protein: Math.round(item.ai_estimate.protein * ratio * 10) / 10,
+        carbs: Math.round(item.ai_estimate.carbs * ratio * 10) / 10,
+        fat: Math.round(item.ai_estimate.fat * ratio * 10) / 10
+      } : item.ai_estimate,
+      // Update SLV values
+      slv_values: item.slv_values ? {
+        ...item.slv_values,
+        kcal: Math.round(item.slv_values.kcal * ratio),
+        protein: Math.round(item.slv_values.protein * ratio * 10) / 10,
+        carbs: Math.round(item.slv_values.carbs * ratio * 10) / 10,
+        fat: Math.round(item.slv_values.fat * ratio * 10) / 10
+      } : null
     }
 
     const total = updatedItems.reduce(
