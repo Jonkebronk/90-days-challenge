@@ -1,18 +1,50 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Micronutrients } from '@/lib/kostschema/types'
-import { RDI, MICRONUTRIENT_KEYS, calculateRDIPercent, getRDIColorClass, getRDITextColorClass } from '@/lib/kostschema/rdi-constants'
-import { Loader2 } from 'lucide-react'
+import {
+  DEMOGRAPHIC_PROFILES,
+  MICRONUTRIENT_KEYS,
+  NUTRIENT_META,
+  DEFAULT_PROFILE_ID,
+  calculateRDIPercent,
+  getRDIForProfile,
+  getRDIColorClass,
+  getRDITextColorClass
+} from '@/lib/kostschema/rdi-constants'
+import { Loader2, ChevronDown } from 'lucide-react'
 
 interface NutritionSummaryPanelProps {
   micronutrients: Micronutrients
   isLoading?: boolean
 }
 
+const STORAGE_KEY = 'nutrition-profile-id'
+
 export function NutritionSummaryPanel({ micronutrients, isLoading }: NutritionSummaryPanelProps) {
+  const [profileId, setProfileId] = useState(DEFAULT_PROFILE_ID)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
+  // Load saved profile from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved && DEMOGRAPHIC_PROFILES.some(p => p.id === saved)) {
+      setProfileId(saved)
+    }
+  }, [])
+
+  // Save profile to localStorage
+  const handleProfileChange = (newProfileId: string) => {
+    setProfileId(newProfileId)
+    localStorage.setItem(STORAGE_KEY, newProfileId)
+    setIsDropdownOpen(false)
+  }
+
+  const selectedProfile = DEMOGRAPHIC_PROFILES.find(p => p.id === profileId)
+
   // Split into vitamins and minerals
-  const vitamins = MICRONUTRIENT_KEYS.filter(key => RDI[key]?.category === 'vitamin')
-  const minerals = MICRONUTRIENT_KEYS.filter(key => RDI[key]?.category === 'mineral')
+  const vitamins = MICRONUTRIENT_KEYS.filter(key => NUTRIENT_META[key]?.category === 'vitamin')
+  const minerals = MICRONUTRIENT_KEYS.filter(key => NUTRIENT_META[key]?.category === 'mineral')
 
   if (isLoading) {
     return (
@@ -39,12 +71,113 @@ export function NutritionSummaryPanel({ micronutrients, isLoading }: NutritionSu
     )
   }
 
+  // Group profiles for dropdown
+  const groupedProfiles = {
+    barn: DEMOGRAPHIC_PROFILES.filter(p => p.group === 'barn'),
+    kvinna: DEMOGRAPHIC_PROFILES.filter(p => p.group === 'kvinna'),
+    man: DEMOGRAPHIC_PROFILES.filter(p => p.group === 'man'),
+    special: DEMOGRAPHIC_PROFILES.filter(p => p.group === 'special'),
+  }
+
   return (
     <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 space-y-6">
-      {/* Header */}
-      <div>
-        <h3 className="text-lg font-semibold text-white">Mikronutrienter</h3>
-        <p className="text-zinc-500 text-sm">% av rekommenderat dagligt intag (RDI)</p>
+      {/* Header with profile selector */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="text-lg font-semibold text-white">Mikronutrienter</h3>
+          <p className="text-zinc-500 text-sm">% av rekommenderat dagligt intag (RDI)</p>
+        </div>
+
+        {/* Profile dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex items-center gap-2 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-zinc-300 hover:bg-zinc-700 hover:border-zinc-600 transition-colors"
+          >
+            <span className="text-zinc-500">Norm:</span>
+            <span className="font-medium text-gold-400">{selectedProfile?.label}</span>
+            <ChevronDown className={`h-4 w-4 text-zinc-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isDropdownOpen && (
+            <>
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 z-10"
+                onClick={() => setIsDropdownOpen(false)}
+              />
+
+              {/* Dropdown menu */}
+              <div className="absolute right-0 top-full mt-1 z-20 w-56 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl overflow-hidden">
+                <div className="max-h-80 overflow-y-auto">
+                  {/* Barn */}
+                  <div className="px-3 py-1.5 bg-zinc-900 text-xs font-medium text-zinc-500 uppercase tracking-wide">
+                    Barn
+                  </div>
+                  {groupedProfiles.barn.map(profile => (
+                    <button
+                      key={profile.id}
+                      onClick={() => handleProfileChange(profile.id)}
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-zinc-700 transition-colors ${
+                        profile.id === profileId ? 'bg-zinc-700 text-gold-400' : 'text-zinc-300'
+                      }`}
+                    >
+                      {profile.label}
+                    </button>
+                  ))}
+
+                  {/* Kvinna */}
+                  <div className="px-3 py-1.5 bg-zinc-900 text-xs font-medium text-zinc-500 uppercase tracking-wide">
+                    Kvinna
+                  </div>
+                  {groupedProfiles.kvinna.map(profile => (
+                    <button
+                      key={profile.id}
+                      onClick={() => handleProfileChange(profile.id)}
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-zinc-700 transition-colors ${
+                        profile.id === profileId ? 'bg-zinc-700 text-gold-400' : 'text-zinc-300'
+                      }`}
+                    >
+                      {profile.label}
+                    </button>
+                  ))}
+
+                  {/* Man */}
+                  <div className="px-3 py-1.5 bg-zinc-900 text-xs font-medium text-zinc-500 uppercase tracking-wide">
+                    Man
+                  </div>
+                  {groupedProfiles.man.map(profile => (
+                    <button
+                      key={profile.id}
+                      onClick={() => handleProfileChange(profile.id)}
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-zinc-700 transition-colors ${
+                        profile.id === profileId ? 'bg-zinc-700 text-gold-400' : 'text-zinc-300'
+                      }`}
+                    >
+                      {profile.label}
+                    </button>
+                  ))}
+
+                  {/* Special */}
+                  <div className="px-3 py-1.5 bg-zinc-900 text-xs font-medium text-zinc-500 uppercase tracking-wide">
+                    Special
+                  </div>
+                  {groupedProfiles.special.map(profile => (
+                    <button
+                      key={profile.id}
+                      onClick={() => handleProfileChange(profile.id)}
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-zinc-700 transition-colors ${
+                        profile.id === profileId ? 'bg-zinc-700 text-gold-400' : 'text-zinc-300'
+                      }`}
+                    >
+                      {profile.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Bar Chart Section */}
@@ -55,8 +188,8 @@ export function NutritionSummaryPanel({ micronutrients, isLoading }: NutritionSu
           <div className="space-y-2">
             {vitamins.map(key => {
               const value = micronutrients[key as keyof Micronutrients]
-              const percent = calculateRDIPercent(key, value)
-              const rdiInfo = RDI[key]
+              const percent = calculateRDIPercent(key, value, profileId)
+              const rdiInfo = getRDIForProfile(key, profileId)
 
               return (
                 <div key={key} className="flex items-center gap-3">
@@ -82,8 +215,8 @@ export function NutritionSummaryPanel({ micronutrients, isLoading }: NutritionSu
           <div className="space-y-2">
             {minerals.map(key => {
               const value = micronutrients[key as keyof Micronutrients]
-              const percent = calculateRDIPercent(key, value)
-              const rdiInfo = RDI[key]
+              const percent = calculateRDIPercent(key, value, profileId)
+              const rdiInfo = getRDIForProfile(key, profileId)
 
               return (
                 <div key={key} className="flex items-center gap-3">
@@ -121,8 +254,8 @@ export function NutritionSummaryPanel({ micronutrients, isLoading }: NutritionSu
             <tbody>
               {MICRONUTRIENT_KEYS.map(key => {
                 const value = micronutrients[key as keyof Micronutrients]
-                const percent = calculateRDIPercent(key, value)
-                const rdiInfo = RDI[key]
+                const percent = calculateRDIPercent(key, value, profileId)
+                const rdiInfo = getRDIForProfile(key, profileId)
 
                 return (
                   <tr key={key} className="border-b border-zinc-800/50">
