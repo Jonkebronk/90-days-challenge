@@ -61,6 +61,7 @@ export interface ScaledIngredient extends TemplateIngredient {
     fat: number
     kcal: number
   }
+  micronutrients?: Micronutrients
 }
 
 // Simple text item for free text entries
@@ -98,6 +99,30 @@ export const ACTIVITY_FACTORS: Record<ActivityLevel, number> = {
 
 // Calories per kg of body fat (approximately 7700 kcal per kg)
 export const KCAL_PER_KG_FAT = 7700
+
+// Micronutrients interface for vitamins and minerals
+export interface Micronutrients {
+  // Vitamins
+  vitaminA: number | null    // µg RE
+  vitaminD: number | null    // µg
+  vitaminE: number | null    // mg
+  vitaminC: number | null    // mg
+  vitaminB6: number | null   // mg
+  vitaminB12: number | null  // µg
+  thiamin: number | null     // mg (B1)
+  riboflavin: number | null  // mg (B2)
+  niacin: number | null      // mg (B3)
+  folate: number | null      // µg
+  // Minerals
+  calcium: number | null     // mg
+  iron: number | null        // mg
+  magnesium: number | null   // mg
+  phosphorus: number | null  // mg
+  potassium: number | null   // mg
+  zinc: number | null        // mg
+  selenium: number | null    // µg
+  iodine: number | null      // µg
+}
 
 // Custom ingredient from SLV search
 export interface CustomFood {

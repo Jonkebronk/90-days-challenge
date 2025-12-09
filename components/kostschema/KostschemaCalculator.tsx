@@ -25,7 +25,9 @@ import { MealPlanDisplay } from './MealPlanDisplay'
 import { SLVFoodSearchModal } from './SLVFoodSearchModal'
 import { ProductSearchModal } from './ProductSearchModal'
 import { IngredientLibraryPanel } from './IngredientLibraryPanel'
+import { NutritionSummaryPanel } from './NutritionSummaryPanel'
 import { ImportFromImageDialog } from '@/components/meal-plan/ImportFromImageDialog'
+import { useMicronutrients } from '@/lib/kostschema/hooks/useMicronutrients'
 
 interface IngredientChangeTarget {
   mealType: string
@@ -632,6 +634,9 @@ export function KostschemaCalculator() {
 
   const selectedCount = ingredientStore.getTotalCount()
 
+  // Calculate micronutrients from meals
+  const { micronutrients, isLoading: micronutrientsLoading } = useMicronutrients(mealsWithExtras)
+
   return (
     <div className="space-y-6">
       {/* Header with buttons */}
@@ -707,6 +712,12 @@ export function KostschemaCalculator() {
         mealTimings={mealTimings}
         isTrainingDay={currentDayConfig.isTrainingDay}
         trainingTime={currentDayConfig.trainingTime}
+      />
+
+      {/* Micronutrient Summary Panel */}
+      <NutritionSummaryPanel
+        micronutrients={micronutrients}
+        isLoading={micronutrientsLoading}
       />
 
       {/* SLV Food Search Modal */}
