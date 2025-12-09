@@ -2390,7 +2390,12 @@ model Product {
   ean       String   @unique // EAN-13 barcode
   name      String
   brand     String?
-  category  String?  // "mejeri" | "kött" | "fisk" | "bröd" | "frukt" | "grönsaker" | "dryck" | "snacks" | "fryst" | "torrvaror" | "övrigt"
+
+  // ICA-style categorization
+  mainCategory String?  // "Frukt & Grönt" | "Kött, Chark & Fågel" | "Fisk & Skaldjur" | "Mejeri & Ost" | "Bröd & Kakor" | "Vegetariskt" | "Färdigmat" | "Glass, Godis & Snacks" | "Dryck" | "Skafferi" | "Fryst" | "Övrigt"
+  subCategory  String?  // More specific: "Yoghurt" | "Ost" | "Kyckling" | etc.
+  category     String?  // Legacy field - kept for backwards compatibility
+
   image     String?  // URL to product image
 
   // Nutrition per 100g
@@ -2399,6 +2404,8 @@ model Product {
   carbs     Decimal  @db.Decimal(6, 2)
   fat       Decimal  @db.Decimal(6, 2)
   fiber     Decimal? @db.Decimal(6, 2)
+  sugar     Decimal? @db.Decimal(6, 2)
+  salt      Decimal? @db.Decimal(6, 3)
 
   // Source tracking
   source    String   @default("manual") // "manual" | "openfoodfacts" | "ai" | "import"
@@ -2410,6 +2417,8 @@ model Product {
 
   @@index([ean])
   @@index([name])
+  @@index([mainCategory])
+  @@index([subCategory])
   @@index([category])
   @@map("products")
 }

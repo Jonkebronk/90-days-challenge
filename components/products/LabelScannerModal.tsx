@@ -70,6 +70,7 @@ export function LabelScannerModal({ isOpen, onClose, onProductAdded }: LabelScan
     sugar: '',
     salt: ''
   })
+  const [showFlash, setShowFlash] = useState(false)
 
   // Start camera
   const startCamera = useCallback(async () => {
@@ -121,6 +122,10 @@ export function LabelScannerModal({ isOpen, onClose, onProductAdded }: LabelScan
 
   // Handle label capture
   const handleCaptureLabelImage = async () => {
+    // Flash effect
+    setShowFlash(true)
+    setTimeout(() => setShowFlash(false), 200)
+
     const image = captureImage()
     if (!image) return
 
@@ -134,6 +139,10 @@ export function LabelScannerModal({ isOpen, onClose, onProductAdded }: LabelScan
 
   // Handle product image capture
   const handleCaptureProductImage = () => {
+    // Flash effect
+    setShowFlash(true)
+    setTimeout(() => setShowFlash(false), 200)
+
     const image = captureImage()
     if (image) {
       setProductImage(image)
@@ -340,8 +349,17 @@ export function LabelScannerModal({ isOpen, onClose, onProductAdded }: LabelScan
                       <Loader2 className="w-8 h-8 animate-spin text-white" />
                     </div>
                   )}
-                  {/* Scanning overlay */}
+                  {/* Scanning overlay with corners */}
                   <div className="absolute inset-4 border-2 border-dashed border-white/50 rounded-lg pointer-events-none" />
+                  {/* Photo mode indicator */}
+                  <div className="absolute top-2 left-2 bg-black/60 px-2 py-1 rounded text-xs text-white flex items-center gap-1">
+                    <Camera className="w-3 h-3" />
+                    FOTO
+                  </div>
+                  {/* Flash effect */}
+                  {showFlash && (
+                    <div className="absolute inset-0 bg-white animate-pulse pointer-events-none" />
+                  )}
                 </div>
 
                 <Button
@@ -376,6 +394,15 @@ export function LabelScannerModal({ isOpen, onClose, onProductAdded }: LabelScan
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Loader2 className="w-8 h-8 animate-spin text-white" />
                 </div>
+              )}
+              {/* Photo mode indicator */}
+              <div className="absolute top-2 left-2 bg-black/60 px-2 py-1 rounded text-xs text-white flex items-center gap-1">
+                <Camera className="w-3 h-3" />
+                FOTO
+              </div>
+              {/* Flash effect */}
+              {showFlash && (
+                <div className="absolute inset-0 bg-white animate-pulse pointer-events-none" />
               )}
             </div>
 
