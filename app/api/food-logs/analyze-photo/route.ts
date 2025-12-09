@@ -64,7 +64,7 @@ async function searchSLV(foodName: string): Promise<SLVFood | null> {
   }
 }
 
-const ANALYSIS_PROMPT = `Du är en expert på matidentifiering. Analysera matbilden och identifiera varje livsmedel.
+const ANALYSIS_PROMPT = `Du är en expert på matidentifiering och näringsvärden. Analysera matbilden och identifiera varje livsmedel.
 
 ## STEG 1: Identifiera referensobjekt
 Leta efter storleksreferenser: tallrik (standard 26cm), bestick, händer, glas, skål.
@@ -84,6 +84,13 @@ Använd dessa riktlinjer:
 - Tennisboll ≈ 150g potatis/ris
 - Standardtallrik full ≈ 400-500g total mat
 
+## STEG 4: Uppskatta näringsvärden
+Baserat på din kunskap om livsmedel, uppskatta näringsvärden FÖR HELA PORTIONEN (inte per 100g):
+- kcal (kalorier)
+- protein (gram)
+- kolhydrater (gram)
+- fett (gram)
+
 Svara ENDAST med JSON:
 {
   "items": [
@@ -92,13 +99,17 @@ Svara ENDAST med JSON:
       "search_term": "Sökterm för Livsmedelsverket (t.ex. 'kyckling' för 'grillad kycklingfilé')",
       "category": "protein|carb|fat|vegetable|dairy|fruit|drink|other",
       "portion_g": <number>,
-      "confidence": "high|medium|low"
+      "confidence": "high|medium|low",
+      "ai_estimate": {
+        "kcal": <number>,
+        "protein": <number>,
+        "carbs": <number>,
+        "fat": <number>
+      }
     }
   ],
   "notes": "Kort kommentar om osäkerheter"
-}
-
-VIKTIGT: Ange INTE näringsvärden - dessa hämtas från Livsmedelsverkets databas.`
+}`
 
 // Fallback nutrition values per 100g when SLV lookup fails
 const FALLBACK_NUTRITION: Record<string, { kcal: number; protein: number; carbs: number; fat: number }> = {
@@ -204,43 +215,68 @@ export async function POST(req: NextRequest) {
         throw new Error('Invalid analysis structure')
       }
 
-      // Step 2: Enrich each item with SLV nutrition data
+      // Step 2: Enrich each item with BOTH AI estimates AND SLV nutrition data
       const enrichedItems = await Promise.all(
         aiResult.items.map(async (item: any) => {
           const searchTerm = item.search_term || item.name
           const slvFood = await searchSLV(searchTerm)
+          const ratio = item.portion_g / 100
 
-          if (slvFood) {
-            // Calculate nutrition based on portion size
-            const ratio = item.portion_g / 100
-            return {
-              name: item.name,
-              category: item.category,
-              portion_g: item.portion_g,
-              confidence: item.confidence,
-              kcal: Math.round(slvFood.kcal * ratio),
-              protein: Math.round(slvFood.protein * ratio * 10) / 10,
-              carbs: Math.round(slvFood.carbs * ratio * 10) / 10,
-              fat: Math.round(slvFood.fat * ratio * 10) / 10,
-              source: 'slv',
-              slv_name: slvFood.name,
-              slv_nummer: slvFood.slvNummer
-            }
-          } else {
-            // Use fallback values
-            const fallback = getFallbackNutrition(item.name)
-            const ratio = item.portion_g / 100
-            return {
-              name: item.name,
-              category: item.category,
-              portion_g: item.portion_g,
-              confidence: item.confidence,
-              kcal: Math.round(fallback.kcal * ratio),
-              protein: Math.round(fallback.protein * ratio * 10) / 10,
-              carbs: Math.round(fallback.carbs * ratio * 10) / 10,
-              fat: Math.round(fallback.fat * ratio * 10) / 10,
-              source: 'estimate'
-            }
+          // Get AI's own estimate (from the prompt response)
+          const aiEstimate = item.ai_estimate || {
+            kcal: 0,
+            protein: 0,
+            carbs: 0,
+            fat: 0
+          }
+
+          // Calculate SLV values if found
+          const slvValues = slvFood ? {
+            kcal: Math.round(slvFood.kcal * ratio),
+            protein: Math.round(slvFood.protein * ratio * 10) / 10,
+            carbs: Math.round(slvFood.carbs * ratio * 10) / 10,
+            fat: Math.round(slvFood.fat * ratio * 10) / 10,
+            slv_name: slvFood.name,
+            slv_nummer: slvFood.slvNummer
+          } : null
+
+          // Determine which source is selected by default (SLV if available)
+          const selectedSource = slvFood ? 'slv' : 'ai'
+
+          // The "active" values are from the selected source
+          const activeValues = selectedSource === 'slv' && slvValues
+            ? slvValues
+            : {
+                kcal: Math.round(aiEstimate.kcal),
+                protein: Math.round(aiEstimate.protein * 10) / 10,
+                carbs: Math.round(aiEstimate.carbs * 10) / 10,
+                fat: Math.round(aiEstimate.fat * 10) / 10
+              }
+
+          return {
+            name: item.name,
+            category: item.category,
+            portion_g: item.portion_g,
+            confidence: item.confidence,
+            // Active values (used for totals and logging)
+            kcal: activeValues.kcal,
+            protein: activeValues.protein,
+            carbs: activeValues.carbs,
+            fat: activeValues.fat,
+            // Both sources for comparison
+            ai_estimate: {
+              kcal: Math.round(aiEstimate.kcal),
+              protein: Math.round(aiEstimate.protein * 10) / 10,
+              carbs: Math.round(aiEstimate.carbs * 10) / 10,
+              fat: Math.round(aiEstimate.fat * 10) / 10
+            },
+            slv_values: slvValues,
+            // Which source is currently selected
+            selected_source: selectedSource,
+            // Legacy fields for backwards compatibility
+            source: selectedSource,
+            slv_name: slvValues?.slv_name,
+            slv_nummer: slvValues?.slv_nummer
           }
         })
       )

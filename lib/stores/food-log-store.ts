@@ -26,26 +26,41 @@ export interface FoodLog {
   items: FoodLogItem[]
 }
 
+export interface NutritionValues {
+  kcal: number
+  protein: number
+  carbs: number
+  fat: number
+}
+
+export interface AIAnalysisItem {
+  name: string
+  category?: string
+  portion_g: number
+  confidence?: 'high' | 'medium' | 'low'
+  // Active values (from selected source)
+  kcal: number
+  protein: number
+  carbs: number
+  fat: number
+  // AI's own estimate
+  ai_estimate: NutritionValues
+  // SLV official values (null if not found)
+  slv_values: (NutritionValues & {
+    slv_name: string
+    slv_nummer: number
+  }) | null
+  // Which source is currently selected
+  selected_source: 'ai' | 'slv'
+  // Legacy fields for backwards compatibility
+  source?: 'slv' | 'estimate' | 'ai'
+  slv_name?: string
+  slv_nummer?: number
+}
+
 export interface AIAnalysisResult {
-  items: {
-    name: string
-    category?: string
-    portion_g: number
-    confidence?: 'high' | 'medium' | 'low'
-    kcal: number
-    protein: number
-    carbs: number
-    fat: number
-    source?: 'slv' | 'estimate'
-    slv_name?: string
-    slv_nummer?: number
-  }[]
-  total: {
-    kcal: number
-    protein: number
-    carbs: number
-    fat: number
-  }
+  items: AIAnalysisItem[]
+  total: NutritionValues
   notes?: string
 }
 
@@ -123,6 +138,7 @@ interface FoodLogState {
   analyzePhoto: (base64Image: string) => Promise<AIAnalysisResult | null>
   setPendingAnalysis: (result: AIAnalysisResult | null, image?: string | null) => void
   clearPendingAnalysis: () => void
+  setItemSource: (idx: number, source: 'ai' | 'slv') => void
 
   // Product cache
   lookupProduct: (ean: string) => Promise<Product | null>
@@ -310,6 +326,56 @@ export const useFoodLogStore = create<FoodLogState>((set, get) => ({
     pendingAnalysis: null,
     pendingImage: null
   }),
+
+  // Switch between AI and SLV source for an item
+  setItemSource: (idx, source) => {
+    const { pendingAnalysis, pendingImage } = get()
+    if (!pendingAnalysis) return
+
+    const items = [...pendingAnalysis.items]
+    const item = items[idx]
+
+    // Get values from selected source
+    const values = source === 'slv' && item.slv_values
+      ? item.slv_values
+      : item.ai_estimate
+
+    // Update item with new source and values
+    items[idx] = {
+      ...item,
+      selected_source: source,
+      source: source,
+      kcal: values.kcal,
+      protein: values.protein,
+      carbs: values.carbs,
+      fat: values.fat
+    }
+
+    // Recalculate totals
+    const total = items.reduce(
+      (acc, i) => ({
+        kcal: acc.kcal + i.kcal,
+        protein: acc.protein + i.protein,
+        carbs: acc.carbs + i.carbs,
+        fat: acc.fat + i.fat
+      }),
+      { kcal: 0, protein: 0, carbs: 0, fat: 0 }
+    )
+
+    // Round totals
+    total.protein = Math.round(total.protein * 10) / 10
+    total.carbs = Math.round(total.carbs * 10) / 10
+    total.fat = Math.round(total.fat * 10) / 10
+
+    set({
+      pendingAnalysis: {
+        ...pendingAnalysis,
+        items,
+        total
+      },
+      pendingImage
+    })
+  },
 
   // Lookup product by EAN
   lookupProduct: async (ean) => {

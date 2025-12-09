@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback } from 'react'
-import { Camera, Upload, Loader2, Check, X, Edit2, Database, Sparkles, Search, ChevronRight } from 'lucide-react'
+import { Camera, Upload, Loader2, Check, X, Edit2, Database, Sparkles, Search, ChevronRight, Bot } from 'lucide-react'
 import { useFoodLogStore } from '@/lib/stores/food-log-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -36,7 +36,8 @@ export function PhotoCaptureTab() {
     analyzePhoto,
     setPendingAnalysis,
     clearPendingAnalysis,
-    createLog
+    createLog,
+    setItemSource
   } = useFoodLogStore()
 
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -213,70 +214,19 @@ export function PhotoCaptureTab() {
         )}
 
         {/* Items list */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           <h3 className="font-medium text-sm text-gray-600">Identifierade livsmedel</h3>
           {pendingAnalysis.items.map((item, idx) => (
-            <div key={idx} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-              {/* Clickable header to change food item */}
-              <button
-                onClick={() => openSlvSearch(idx)}
-                className="w-full flex items-center justify-between p-2 -m-2 mb-1 rounded-lg active:bg-gray-200 hover:bg-gray-100 transition-colors touch-manipulation"
-              >
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-medium text-gray-900">{item.name}</span>
-                    {item.source === 'slv' ? (
-                      <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
-                        <Database className="w-3 h-3" />
-                        SLV
-                      </span>
-                    ) : item.source === 'estimate' ? (
-                      <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
-                        <Sparkles className="w-3 h-3" />
-                        Uppskattat
-                      </span>
-                    ) : item.confidence && (
-                      <span className={`text-xs px-1.5 py-0.5 rounded ${
-                        item.confidence === 'high' ? 'bg-green-100 text-green-700' :
-                        item.confidence === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-red-100 text-red-700'
-                      }`}>
-                        {item.confidence === 'high' ? 'Säker' :
-                         item.confidence === 'medium' ? 'Osäker' : 'Gissning'}
-                      </span>
-                    )}
-                  </div>
-                  {item.source === 'slv' && item.slv_name && item.slv_name !== item.name && (
-                    <div className="text-xs text-emerald-600 mt-0.5 flex items-center gap-1">
-                      <span className="text-gray-400">→</span>
-                      <span className="truncate">{item.slv_name}</span>
-                      {item.slv_nummer && (
-                        <span className="text-gray-400 text-[10px]">#{item.slv_nummer}</span>
-                      )}
-                    </div>
-                  )}
-                  {item.source === 'slv' && item.slv_nummer && !item.slv_name && (
-                    <div className="text-xs text-gray-400 mt-0.5">
-                      SLV #{item.slv_nummer}
-                    </div>
-                  )}
-                  {item.source === 'estimate' && (
-                    <div className="text-xs text-amber-600 mt-0.5">
-                      Tryck för att byta livsmedel
-                    </div>
-                  )}
-                  {item.source === 'slv' && (
-                    <div className="text-xs text-gray-400 mt-0.5">
-                      Tryck för att ändra
-                    </div>
-                  )}
-                </div>
-                <div className="flex items-center gap-2 ml-2">
-                  <span className="font-semibold text-gold-primary">{Math.round(item.kcal)} kcal</span>
-                  <Search className="w-4 h-4 text-gray-400" />
-                </div>
-              </button>
-              <div className="flex items-center justify-between mt-2">
+            <div key={idx} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              {/* Header with name and portion */}
+              <div className="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-100">
+                <button
+                  onClick={() => openSlvSearch(idx)}
+                  className="flex items-center gap-2 text-left hover:text-gold-primary transition-colors"
+                >
+                  <span className="font-semibold text-gray-900">{item.name}</span>
+                  <Search className="w-3.5 h-3.5 text-gray-400" />
+                </button>
                 <div className="flex items-center gap-2">
                   {editingIdx === idx ? (
                     <div className="flex items-center gap-1">
@@ -284,7 +234,7 @@ export function PhotoCaptureTab() {
                         type="number"
                         value={editValue}
                         onChange={(e) => setEditValue(e.target.value)}
-                        className="w-20 h-8 text-sm"
+                        className="w-16 h-7 text-sm"
                         autoFocus
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') handlePortionSave()
@@ -292,23 +242,97 @@ export function PhotoCaptureTab() {
                         }}
                       />
                       <span className="text-xs text-gray-500">g</span>
-                      <Button size="sm" variant="ghost" onClick={handlePortionSave} className="h-8 w-8 p-0">
-                        <Check className="w-4 h-4 text-green-600" />
+                      <Button size="sm" variant="ghost" onClick={handlePortionSave} className="h-7 w-7 p-0">
+                        <Check className="w-3.5 h-3.5 text-green-600" />
                       </Button>
                     </div>
                   ) : (
                     <button
                       onClick={() => handlePortionEdit(idx)}
-                      className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                      className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 bg-white px-2 py-1 rounded border border-gray-200"
                     >
                       <span>{Math.round(item.portion_g)}g</span>
                       <Edit2 className="w-3 h-3" />
                     </button>
                   )}
                 </div>
-                <div className="text-xs text-gray-500">
-                  P: {Math.round(item.protein)}g · K: {Math.round(item.carbs)}g · F: {Math.round(item.fat)}g
-                </div>
+              </div>
+
+              {/* Dual source comparison */}
+              <div className="grid grid-cols-2 divide-x divide-gray-100">
+                {/* AI Estimate */}
+                <button
+                  onClick={() => item.ai_estimate && setItemSource(idx, 'ai')}
+                  className={`p-3 text-left transition-all ${
+                    item.selected_source === 'ai'
+                      ? 'bg-purple-50 ring-2 ring-inset ring-purple-200'
+                      : 'hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Bot className="w-4 h-4 text-purple-600" />
+                    <span className="text-xs font-medium text-purple-700">AI uppskattning</span>
+                    {item.selected_source === 'ai' && (
+                      <Check className="w-3.5 h-3.5 text-purple-600 ml-auto" />
+                    )}
+                  </div>
+                  {item.ai_estimate ? (
+                    <>
+                      <div className="text-lg font-bold text-purple-700">
+                        {Math.round(item.ai_estimate.kcal)} kcal
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        P: {Math.round(item.ai_estimate.protein)}g · K: {Math.round(item.ai_estimate.carbs)}g · F: {Math.round(item.ai_estimate.fat)}g
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-xs text-gray-400">Ej tillgänglig</div>
+                  )}
+                </button>
+
+                {/* SLV Values */}
+                <button
+                  onClick={() => item.slv_values && setItemSource(idx, 'slv')}
+                  disabled={!item.slv_values}
+                  className={`p-3 text-left transition-all ${
+                    item.selected_source === 'slv'
+                      ? 'bg-emerald-50 ring-2 ring-inset ring-emerald-200'
+                      : item.slv_values ? 'hover:bg-gray-50' : 'opacity-50 cursor-not-allowed'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Database className="w-4 h-4 text-emerald-600" />
+                    <span className="text-xs font-medium text-emerald-700">Livsmedelsverket</span>
+                    {item.selected_source === 'slv' && (
+                      <Check className="w-3.5 h-3.5 text-emerald-600 ml-auto" />
+                    )}
+                  </div>
+                  {item.slv_values ? (
+                    <>
+                      <div className="text-lg font-bold text-emerald-700">
+                        {Math.round(item.slv_values.kcal)} kcal
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        P: {Math.round(item.slv_values.protein)}g · K: {Math.round(item.slv_values.carbs)}g · F: {Math.round(item.slv_values.fat)}g
+                      </div>
+                      {item.slv_values.slv_name && (
+                        <div className="text-[10px] text-emerald-600 mt-1 truncate">
+                          {item.slv_values.slv_name}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-xs text-gray-400">
+                      Ingen träff i SLV
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openSlvSearch(idx); }}
+                        className="block text-amber-600 hover:underline mt-1"
+                      >
+                        Sök manuellt
+                      </button>
+                    </div>
+                  )}
+                </button>
               </div>
             </div>
           ))}
