@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Barcode, Camera, Loader2, Check, X, Plus, Search, AlertCircle, Database, Globe } from 'lucide-react'
+import { BarcodeDetector } from 'barcode-detector'
 import { useFoodLogStore, Product } from '@/lib/stores/food-log-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -47,7 +48,14 @@ export function BarcodeScannerTab() {
 
   // Check BarcodeDetector support on mount
   useEffect(() => {
-    setBarcodeSupported('BarcodeDetector' in window)
+    // With the polyfill, BarcodeDetector is always available
+    BarcodeDetector.getSupportedFormats()
+      .then(formats => {
+        setBarcodeSupported(formats.length > 0)
+      })
+      .catch(() => {
+        setBarcodeSupported(false)
+      })
   }, [])
 
   const stopScanner = useCallback(() => {
@@ -127,43 +135,35 @@ export function BarcodeScannerTab() {
         scanningRef.current = true
         setIsScanning(true)
 
-        if ('BarcodeDetector' in window) {
-          const barcodeDetector = new (window as any).BarcodeDetector({
-            formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e']
-          })
+        // Use the polyfilled BarcodeDetector
+        const barcodeDetector = new BarcodeDetector({
+          formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e']
+        })
 
-          const detectBarcode = async () => {
-            if (!videoRef.current || !scanningRef.current) return
+        const detectBarcode = async () => {
+          if (!videoRef.current || !scanningRef.current) return
 
-            try {
-              const barcodes = await barcodeDetector.detect(videoRef.current)
-              if (barcodes.length > 0) {
-                const ean = barcodes[0].rawValue
-                stopScanner()
-                handleEanLookup(ean)
-                return
-              }
-            } catch (e) {
-              // Detection failed, continue
-            }
-
-            if (scanningRef.current) {
-              requestAnimationFrame(detectBarcode)
-            }
-          }
-
-          videoRef.current.onloadedmetadata = () => {
-            if (scanningRef.current) {
-              detectBarcode()
-            }
-          }
-        } else {
-          // BarcodeDetector not supported, show message after 2 seconds
-          setTimeout(() => {
-            if (scanningRef.current) {
+          try {
+            const barcodes = await barcodeDetector.detect(videoRef.current)
+            if (barcodes.length > 0) {
+              const ean = barcodes[0].rawValue
               stopScanner()
+              handleEanLookup(ean)
+              return
             }
-          }, 2000)
+          } catch (e) {
+            // Detection failed, continue
+          }
+
+          if (scanningRef.current) {
+            requestAnimationFrame(detectBarcode)
+          }
+        }
+
+        videoRef.current.onloadedmetadata = () => {
+          if (scanningRef.current) {
+            detectBarcode()
+          }
         }
       }
     } catch (error) {
@@ -600,13 +600,13 @@ export function BarcodeScannerTab() {
   // Show scanner/search UI
   return (
     <div className="space-y-4">
-      {/* BarcodeDetector warning */}
+      {/* BarcodeDetector status */}
       {barcodeSupported === false && (
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-2">
           <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-amber-700">
-            <p className="font-medium">Streckkodsskanning stöds inte i din webbläsare</p>
-            <p className="text-xs mt-1">Använd manuell inmatning nedan eller prova Chrome på Android</p>
+            <p className="font-medium">Streckkodsskanning kan vara långsam</p>
+            <p className="text-xs mt-1">Din webbläsare saknar hårdvaruacceleration - använd manuell inmatning för snabbare resultat</p>
           </div>
         </div>
       )}
@@ -633,14 +633,13 @@ export function BarcodeScannerTab() {
             <X className="w-4 h-4" />
           </Button>
           <div className="absolute bottom-2 left-0 right-0 text-center text-sm text-white bg-black/50 py-1">
-            {barcodeSupported ? 'Rikta kameran mot streckkoden' : 'Streckkodsskanning stöds inte...'}
+            Rikta kameran mot streckkoden
           </div>
         </div>
       ) : (
         <button
           onClick={startScanner}
-          disabled={barcodeSupported === false}
-          className="w-full py-10 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-10 rounded-xl border-2 border-dashed border-gray-300 hover:border-gold-primary hover:bg-gold-primary/5 transition-all flex flex-col items-center justify-center gap-3 group"
         >
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-primary/20 to-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
             <Camera className="w-6 h-6 text-gold-primary" />

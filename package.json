@@ -40,6 +40,7 @@
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.78.0",
+    "barcode-detector": "^3.0.8",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.8.0",
