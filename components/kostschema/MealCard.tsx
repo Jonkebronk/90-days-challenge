@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { ChevronDown, ChevronUp, Plus, RefreshCw, Trash2, Check, X } from 'lucide-react'
-import { ScaledMeal, ScaledIngredient } from '@/lib/kostschema/types'
+import { ChevronDown, ChevronUp, Plus, RefreshCw, Trash2, Check, X, Dumbbell, Clock } from 'lucide-react'
+import { ScaledMeal, ScaledIngredient, MealTiming } from '@/lib/kostschema/types'
 
 interface MealCardProps {
-  meal: ScaledMeal
+  meal: ScaledMeal & { mealTiming?: MealTiming }
   onChangeIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
   onAddIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett') => void
   onDeleteIngredient?: (mealType: string, category: 'protein' | 'kolhydrat' | 'fett', index: number) => void
@@ -289,25 +289,69 @@ export function MealCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="font-semibold text-zinc-800 text-lg">{meal.name}</div>
-            <span className="text-xs text-zinc-500 bg-zinc-200 px-2 py-0.5 rounded-full">
-              {meal.kcalPercent}%
-            </span>
+            {/* Time and workout indicator */}
+            {meal.mealTiming && (
+              <div className="flex items-center gap-2">
+                <span className="flex items-center gap-1 text-xs text-zinc-500 bg-zinc-200 px-2 py-0.5 rounded-full">
+                  <Clock className="w-3 h-3" />
+                  {meal.mealTiming.time}
+                </span>
+                {meal.mealTiming.isPreWorkout && (
+                  <span className="flex items-center gap-1 text-xs text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
+                    <Dumbbell className="w-3 h-3" />
+                    Pre-workout
+                  </span>
+                )}
+                {meal.mealTiming.isPostWorkout && (
+                  <span className="flex items-center gap-1 text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full border border-blue-200">
+                    <Dumbbell className="w-3 h-3" />
+                    Post-workout
+                  </span>
+                )}
+              </div>
+            )}
+            {!meal.mealTiming && (
+              <span className="text-xs text-zinc-500 bg-zinc-200 px-2 py-0.5 rounded-full">
+                {meal.kcalPercent}%
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-5">
-            {/* Macro pills */}
+            {/* Macro pills with targets */}
             <div className="flex gap-2">
               <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-orange-100 text-orange-600 border border-orange-200">
                 {meal.kcal} kcal
               </span>
-              <span className="px-2.5 py-1.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-600">
-                P {meal.protein}g
-              </span>
-              <span className="px-2.5 py-1.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-600">
-                K {meal.carbs}g
-              </span>
-              <span className="px-2.5 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-600">
-                F {meal.fat}g
-              </span>
+              <div className="flex flex-col items-center">
+                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-600">
+                  P {meal.protein}g
+                </span>
+                {meal.mealTiming && (
+                  <span className="text-[10px] text-rose-400 mt-0.5">
+                    mål: {meal.mealTiming.proteinGrams}g
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-600">
+                  K {meal.carbs}g
+                </span>
+                {meal.mealTiming && (
+                  <span className="text-[10px] text-blue-400 mt-0.5">
+                    mål: {meal.mealTiming.carbsGrams}g
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-600">
+                  F {meal.fat}g
+                </span>
+                {meal.mealTiming && (
+                  <span className="text-[10px] text-amber-400 mt-0.5">
+                    mål: {meal.mealTiming.fatGrams}g
+                  </span>
+                )}
+              </div>
             </div>
             {isExpanded ? (
               <ChevronUp className="w-5 h-5 text-zinc-400" />
