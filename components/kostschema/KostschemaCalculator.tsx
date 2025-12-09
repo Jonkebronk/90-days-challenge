@@ -58,6 +58,29 @@ export function KostschemaCalculator() {
   const [macroSourceMode, setMacroSourceMode] = useState<MacroSourceMode>('manual')
   const [weekMacroMode, setWeekMacroMode] = useState<WeekMacroMode>('same')
 
+  // Handle week macro mode change - sync all days when switching to 'same'
+  const handleWeekMacroModeChange = (mode: WeekMacroMode) => {
+    setWeekMacroMode(mode)
+
+    if (mode === 'same') {
+      // Sync all days to have the same macros as the currently selected day
+      const currentConfig = weekConfig[selectedDay]
+      setWeekConfig(prev => {
+        const updated: Record<DayOfWeek, DayConfig> = {} as Record<DayOfWeek, DayConfig>
+        DAYS_OF_WEEK.forEach(day => {
+          updated[day.key] = {
+            ...prev[day.key],
+            totalCalories: currentConfig.totalCalories,
+            totalProtein: currentConfig.totalProtein,
+            totalCarbs: currentConfig.totalCarbs,
+            totalFat: currentConfig.totalFat
+          }
+        })
+        return updated
+      })
+    }
+  }
+
   // Calculator inputs (for calculate mode)
   const [bodyWeight, setBodyWeight] = useState<number>(85)
   const [activityLevel, setActivityLevel] = useState<ActivityLevel>('moderate')
@@ -498,7 +521,7 @@ export function KostschemaCalculator() {
         weekConfig={weekConfig}
         onToggleTraining={handleToggleTraining}
         weekMacroMode={weekMacroMode}
-        onWeekMacroModeChange={setWeekMacroMode}
+        onWeekMacroModeChange={handleWeekMacroModeChange}
       />
 
       {/* Macro Input Panel */}
