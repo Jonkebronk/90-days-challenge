@@ -297,7 +297,7 @@ export function WeeklyConfigPanel({
       {!useDifferentDailyTargets && (
         <div className="bg-zinc-800/50 rounded-xl p-5 border border-zinc-700/50">
           <p className="text-sm text-zinc-400 mb-4">
-            Alla dagar använder samma makromål. Ställ in globala mål i "Plandetaljer" ovan.
+            Alla dagar använder samma makromål. Ställ in globala mål i &quot;Plandetaljer&quot; ovan.
           </p>
           <div className="grid grid-cols-4 gap-4 text-center">
             <div>
