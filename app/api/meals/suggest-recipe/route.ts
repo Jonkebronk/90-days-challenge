@@ -86,20 +86,23 @@ TILLÄGG: ${tillaggList}
 MÅLTIDSTYP: ${mealContext}
 
 UPPGIFT:
-Skapa 3 OLIKA receptvarianter som använder dessa exakta ingredienser på smarta sätt.
+Skapa 3 OLIKA receptvarianter som använder EXAKT de listade ingredienserna.
 Varje recept ska vara praktiskt, hälsosamt och optimerat för träning/återhämtning.
 
-KRITISKA REGLER:
-1. ANVÄND ENDAST ingredienserna ovan - lägg INTE till nya huvudingredienser
-2. Kryddor och smaksättning som passar: salt, peppar, vitlök, citron, örter, kryddor - INTE udda kombinationer
-3. Recepten ska vara REALISTISKA och GODA - tänk som en erfaren hemkock
-4. Anpassa tillagningen efter ingredienserna:
-   - Havregryn/gröt: vanilj, kanel, honung, bär, nötter - ALDRIG paprika/dill
-   - Kyckling/kött: örter, vitlök, paprika, citron, soja
-   - Fisk: citron, dill, vitpeppar, kapris
-   - Ägg: salt, peppar, gräslök, tomat
-5. Beräkna makros baserat på ingrediensmängderna
-6. Tillagningstiden ska vara realistisk
+KRITISKA REGLER - MYCKET VIKTIGT:
+1. ANVÄND ENDAST de ingredienser som är listade ovan (protein, kolhydrat, fett)
+2. LÄGG ALDRIG TILL nya ingredienser som bidrar med kalorier
+   - FÖRBJUDET: olja, smör, ost, grädde, nötter, bröd, ris, pasta, kött, fisk etc. (om det inte redan finns i listan)
+   - TILLÅTET: salt, peppar, kryddor, örter, citron, vitlök, vinäger, senap, soja (kalorifattiga smaksättare)
+3. Recepten ska bygga på DE EXAKTA råvarorna i ingredienslistan - inte föreslå alternativ
+4. Beräkna makros ENDAST baserat på de listade ingredienserna
+5. Recepten ska vara REALISTISKA och GODA
+6. Anpassa kryddor/smaksättning efter ingredienstyp:
+   - Havregryn/gröt: kanel, vanilj, kardemumma
+   - Kyckling/kött: paprika, vitlök, timjan, rosmarin
+   - Fisk: citron, dill, vitpeppar
+   - Ägg: salt, peppar, gräslök
+7. I "tips" - föreslå ALDRIG att lägga till ingredienser med kalorier
 
 ${isPreWorkout ? `
 PRE-WORKOUT FOKUS:
