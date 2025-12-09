@@ -115,12 +115,8 @@ interface FoodLogState {
   // Product cache for barcode lookups
   productCache: Map<string, Product>
 
-  // Input method
-  activeTab: 'photo' | 'barcode' | 'import'
-
   // Actions
   setSelectedDate: (date: Date) => void
-  setActiveTab: (tab: 'photo' | 'barcode' | 'import') => void
 
   // API actions
   fetchLogs: (date?: Date) => Promise<void>
@@ -158,11 +154,9 @@ export const useFoodLogStore = create<FoodLogState>((set, get) => ({
   pendingAnalysis: null,
   pendingImage: null,
   productCache: new Map(),
-  activeTab: 'photo',
 
   // Simple setters
   setSelectedDate: (date) => set({ selectedDate: date }),
-  setActiveTab: (tab) => set({ activeTab: tab }),
 
   // Fetch logs for a date
   fetchLogs: async (date) => {
