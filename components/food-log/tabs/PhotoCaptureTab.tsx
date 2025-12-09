@@ -217,13 +217,14 @@ export function PhotoCaptureTab() {
           <h3 className="font-medium text-sm text-gray-600">Identifierade livsmedel</h3>
           {pendingAnalysis.items.map((item, idx) => (
             <div key={idx} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-              <div className="flex items-center justify-between">
-                <div className="flex-1 min-w-0">
-                  <button
-                    onClick={() => openSlvSearch(idx)}
-                    className="flex items-center gap-2 text-left hover:bg-gray-100 -m-1 p-1 rounded transition-colors group"
-                  >
-                    <span className="font-medium text-gray-900 group-hover:text-gold-primary">{item.name}</span>
+              {/* Clickable header to change food item */}
+              <button
+                onClick={() => openSlvSearch(idx)}
+                className="w-full flex items-center justify-between p-2 -m-2 mb-1 rounded-lg active:bg-gray-200 hover:bg-gray-100 transition-colors touch-manipulation"
+              >
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-medium text-gray-900">{item.name}</span>
                     {item.source === 'slv' ? (
                       <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
                         <Database className="w-3 h-3" />
@@ -244,8 +245,7 @@ export function PhotoCaptureTab() {
                          item.confidence === 'medium' ? 'Osäker' : 'Gissning'}
                       </span>
                     )}
-                    <Search className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </button>
+                  </div>
                   {item.source === 'slv' && item.slv_name && item.slv_name !== item.name && (
                     <div className="text-xs text-emerald-600 mt-0.5 flex items-center gap-1">
                       <span className="text-gray-400">→</span>
@@ -255,22 +255,27 @@ export function PhotoCaptureTab() {
                       )}
                     </div>
                   )}
-                  {item.source === 'slv' && item.slv_nummer && (
+                  {item.source === 'slv' && item.slv_nummer && !item.slv_name && (
                     <div className="text-xs text-gray-400 mt-0.5">
                       SLV #{item.slv_nummer}
                     </div>
                   )}
                   {item.source === 'estimate' && (
-                    <button
-                      onClick={() => openSlvSearch(idx)}
-                      className="text-xs text-amber-600 mt-0.5 hover:underline"
-                    >
-                      Tryck för att söka i SLV
-                    </button>
+                    <div className="text-xs text-amber-600 mt-0.5">
+                      Tryck för att byta livsmedel
+                    </div>
+                  )}
+                  {item.source === 'slv' && (
+                    <div className="text-xs text-gray-400 mt-0.5">
+                      Tryck för att ändra
+                    </div>
                   )}
                 </div>
-                <div className="font-semibold text-gold-primary ml-2">{Math.round(item.kcal)} kcal</div>
-              </div>
+                <div className="flex items-center gap-2 ml-2">
+                  <span className="font-semibold text-gold-primary">{Math.round(item.kcal)} kcal</span>
+                  <Search className="w-4 h-4 text-gray-400" />
+                </div>
+              </button>
               <div className="flex items-center justify-between mt-2">
                 <div className="flex items-center gap-2">
                   {editingIdx === idx ? (
