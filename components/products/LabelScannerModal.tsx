@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { X, Camera, Loader2, Check, SkipForward, AlertCircle, RefreshCw } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { X, Camera, Loader2, Check, SkipForward } from 'lucide-react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -43,16 +43,14 @@ const CATEGORIES = [
 type Step = 'label' | 'product' | 'review'
 
 export function LabelScannerModal({ isOpen, onClose, onProductAdded }: LabelScannerModalProps) {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const streamRef = useRef<MediaStream | null>(null)
+  const labelInputRef = useRef<HTMLInputElement>(null)
+  const productInputRef = useRef<HTMLInputElement>(null)
 
   const [step, setStep] = useState<Step>('label')
   const [labelImage, setLabelImage] = useState<string | null>(null)
   const [productImage, setProductImage] = useState<string | null>(null)
-  const [isScanning, setIsScanning] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const [cameraError, setCameraError] = useState<string | null>(null)
   const [confidence, setConfidence] = useState<'high' | 'medium' | 'low'>('medium')
   const [notes, setNotes] = useState('')
 
@@ -70,90 +68,50 @@ export function LabelScannerModal({ isOpen, onClose, onProductAdded }: LabelScan
     sugar: '',
     salt: ''
   })
-  const [showFlash, setShowFlash] = useState(false)
 
-  // Start camera
-  const startCamera = useCallback(async () => {
-    setCameraError(null)
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
-      })
-      streamRef.current = stream
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        await videoRef.current.play()
-      }
-      setIsScanning(true)
-    } catch (error: any) {
-      console.error('Camera error:', error)
-      setCameraError(error.name === 'NotAllowedError'
-        ? 'Kameratillstånd nekades. Tillåt kameraåtkomst i webbläsaren.'
-        : 'Kunde inte starta kameran. Kontrollera att enheten har en kamera.')
-    }
-  }, [])
-
-  // Stop camera
-  const stopCamera = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop())
-      streamRef.current = null
-    }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null
-    }
-    setIsScanning(false)
-  }, [])
-
-  // Capture image from video
-  const captureImage = useCallback((): string | null => {
-    const video = videoRef.current
-    if (!video) return null
-
-    const canvas = document.createElement('canvas')
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return null
-
-    ctx.drawImage(video, 0, 0)
-    return canvas.toDataURL('image/jpeg', 0.9)
-  }, [])
-
-  // Handle label capture
-  const handleCaptureLabelImage = async () => {
-    // Flash effect
-    setShowFlash(true)
-    setTimeout(() => setShowFlash(false), 200)
-
-    const image = captureImage()
-    if (!image) return
-
-    setLabelImage(image)
-    stopCamera()
-    setStep('product')
-
-    // Pre-start camera for next step
-    setTimeout(() => startCamera(), 100)
+  // Convert file to base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
   }
 
-  // Handle product image capture
-  const handleCaptureProductImage = () => {
-    // Flash effect
-    setShowFlash(true)
-    setTimeout(() => setShowFlash(false), 200)
+  // Handle label image selection
+  const handleLabelImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
 
-    const image = captureImage()
-    if (image) {
-      setProductImage(image)
+    try {
+      const base64 = await fileToBase64(file)
+      setLabelImage(base64)
+      setStep('product')
+    } catch (error) {
+      console.error('Error reading file:', error)
+      toast.error('Kunde inte läsa bilden')
     }
-    stopCamera()
-    analyzeLabel()
+  }
+
+  // Handle product image selection
+  const handleProductImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      const base64 = await fileToBase64(file)
+      setProductImage(base64)
+      analyzeLabel()
+    } catch (error) {
+      console.error('Error reading file:', error)
+      toast.error('Kunde inte läsa bilden')
+      analyzeLabel() // Continue anyway
+    }
   }
 
   // Skip product image
   const handleSkipProductImage = () => {
-    stopCamera()
     analyzeLabel()
   }
 
@@ -265,7 +223,6 @@ export function LabelScannerModal({ isOpen, onClose, onProductAdded }: LabelScan
 
   // Reset and close
   const handleClose = () => {
-    stopCamera()
     setStep('label')
     setLabelImage(null)
     setProductImage(null)
@@ -276,19 +233,11 @@ export function LabelScannerModal({ isOpen, onClose, onProductAdded }: LabelScan
     })
     setConfidence('medium')
     setNotes('')
-    setCameraError(null)
+    // Reset file inputs
+    if (labelInputRef.current) labelInputRef.current.value = ''
+    if (productInputRef.current) productInputRef.current.value = ''
     onClose()
   }
-
-  // Start camera when modal opens and we're on camera steps
-  useEffect(() => {
-    if (isOpen && (step === 'label' || step === 'product')) {
-      startCamera()
-    }
-    return () => {
-      if (!isOpen) stopCamera()
-    }
-  }, [isOpen, step, startCamera, stopCamera])
 
   const confidenceColors = {
     high: 'text-emerald-500',
@@ -325,53 +274,32 @@ export function LabelScannerModal({ isOpen, onClose, onProductAdded }: LabelScan
               Fotografera näringsetiketten (per 100g)
             </p>
 
-            {cameraError ? (
-              <div className="flex flex-col items-center justify-center py-12 text-zinc-400">
-                <AlertCircle className="w-12 h-12 mb-3 text-red-400" />
-                <p className="text-center text-sm">{cameraError}</p>
-                <Button onClick={startCamera} variant="outline" className="mt-4">
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Försök igen
-                </Button>
-              </div>
-            ) : (
-              <>
-                <div className="relative aspect-[4/3] bg-black rounded-xl overflow-hidden">
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="w-full h-full object-cover"
-                  />
-                  {!isScanning && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Loader2 className="w-8 h-8 animate-spin text-white" />
-                    </div>
-                  )}
-                  {/* Scanning overlay with corners */}
-                  <div className="absolute inset-4 border-2 border-dashed border-white/50 rounded-lg pointer-events-none" />
-                  {/* Photo mode indicator */}
-                  <div className="absolute top-2 left-2 bg-black/60 px-2 py-1 rounded text-xs text-white flex items-center gap-1">
-                    <Camera className="w-3 h-3" />
-                    FOTO
-                  </div>
-                  {/* Flash effect */}
-                  {showFlash && (
-                    <div className="absolute inset-0 bg-white animate-pulse pointer-events-none" />
-                  )}
-                </div>
+            {/* Hidden file input */}
+            <input
+              ref={labelInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleLabelImageChange}
+              className="hidden"
+            />
 
-                <Button
-                  onClick={handleCaptureLabelImage}
-                  disabled={!isScanning}
-                  className="w-full bg-gold-600 hover:bg-gold-700 text-white"
-                >
-                  <Camera className="w-4 h-4 mr-2" />
-                  Ta bild
-                </Button>
-              </>
-            )}
+            {/* Camera button area */}
+            <div
+              onClick={() => labelInputRef.current?.click()}
+              className="relative aspect-[4/3] bg-zinc-800 rounded-xl overflow-hidden cursor-pointer hover:bg-zinc-700 transition-colors flex flex-col items-center justify-center gap-4 border-2 border-dashed border-zinc-600"
+            >
+              <Camera className="w-16 h-16 text-zinc-400" />
+              <p className="text-zinc-400 text-sm">Tryck för att ta foto</p>
+            </div>
+
+            <Button
+              onClick={() => labelInputRef.current?.click()}
+              className="w-full bg-gold-600 hover:bg-gold-700 text-white"
+            >
+              <Camera className="w-4 h-4 mr-2" />
+              Öppna kamera
+            </Button>
           </div>
         )}
 
@@ -382,34 +310,37 @@ export function LabelScannerModal({ isOpen, onClose, onProductAdded }: LabelScan
               Fotografera produkten (valfritt)
             </p>
 
-            <div className="relative aspect-[4/3] bg-black rounded-xl overflow-hidden">
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className="w-full h-full object-cover"
-              />
-              {!isScanning && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-white" />
+            {/* Hidden file input */}
+            <input
+              ref={productInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleProductImageChange}
+              className="hidden"
+            />
+
+            {/* Preview of label image */}
+            {labelImage && (
+              <div className="flex items-center justify-center">
+                <div className="w-24 h-24 rounded-lg overflow-hidden bg-zinc-800 border border-zinc-600">
+                  <img src={labelImage} alt="Etikett" className="w-full h-full object-cover" />
                 </div>
-              )}
-              {/* Photo mode indicator */}
-              <div className="absolute top-2 left-2 bg-black/60 px-2 py-1 rounded text-xs text-white flex items-center gap-1">
-                <Camera className="w-3 h-3" />
-                FOTO
               </div>
-              {/* Flash effect */}
-              {showFlash && (
-                <div className="absolute inset-0 bg-white animate-pulse pointer-events-none" />
-              )}
+            )}
+
+            {/* Camera button area */}
+            <div
+              onClick={() => productInputRef.current?.click()}
+              className="relative aspect-[4/3] bg-zinc-800 rounded-xl overflow-hidden cursor-pointer hover:bg-zinc-700 transition-colors flex flex-col items-center justify-center gap-4 border-2 border-dashed border-zinc-600"
+            >
+              <Camera className="w-16 h-16 text-zinc-400" />
+              <p className="text-zinc-400 text-sm">Tryck för att ta foto av produkten</p>
             </div>
 
             <div className="flex gap-3">
               <Button
-                onClick={handleCaptureProductImage}
-                disabled={!isScanning}
+                onClick={() => productInputRef.current?.click()}
                 className="flex-1 bg-gold-600 hover:bg-gold-700 text-white"
               >
                 <Camera className="w-4 h-4 mr-2" />
