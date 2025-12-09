@@ -12,7 +12,9 @@ import {
   DayOfWeek,
   DayConfig,
   MacroSourceMode,
-  MealTiming
+  MealTiming,
+  WeekMacroMode,
+  DAYS_OF_WEEK
 } from '@/lib/kostschema/types'
 import { useScaledMeals } from '@/lib/kostschema/hooks/useScaledMeals'
 import { useIngredientLibraryStore } from '@/lib/stores/ingredient-library-store'
@@ -54,6 +56,7 @@ export function KostschemaCalculator() {
   const [weekConfig, setWeekConfig] = useState<Record<DayOfWeek, DayConfig>>(() => createDefaultWeekConfig())
   const [selectedDay, setSelectedDay] = useState<DayOfWeek>(getTodayDayOfWeek())
   const [macroSourceMode, setMacroSourceMode] = useState<MacroSourceMode>('manual')
+  const [weekMacroMode, setWeekMacroMode] = useState<WeekMacroMode>('same')
 
   // Calculator inputs (for calculate mode)
   const [bodyWeight, setBodyWeight] = useState<number>(85)
@@ -143,11 +146,32 @@ export function KostschemaCalculator() {
   }, [changeTarget, meals])
 
   // Handle day config change
+  // If in 'same' mode, propagate macro changes to all days (but keep training status per day)
   const handleDayConfigChange = (newConfig: DayConfig) => {
-    setWeekConfig(prev => ({
-      ...prev,
-      [selectedDay]: newConfig
-    }))
+    if (weekMacroMode === 'same') {
+      // Apply macros to all days, but keep each day's training status
+      setWeekConfig(prev => {
+        const updated: Record<DayOfWeek, DayConfig> = {} as Record<DayOfWeek, DayConfig>
+        DAYS_OF_WEEK.forEach(day => {
+          updated[day.key] = {
+            ...prev[day.key],
+            totalCalories: newConfig.totalCalories,
+            totalProtein: newConfig.totalProtein,
+            totalCarbs: newConfig.totalCarbs,
+            totalFat: newConfig.totalFat
+          }
+        })
+        // Also update the selected day's training status
+        updated[selectedDay] = newConfig
+        return updated
+      })
+    } else {
+      // Only update selected day
+      setWeekConfig(prev => ({
+        ...prev,
+        [selectedDay]: newConfig
+      }))
+    }
   }
 
   // Handle toggle training for a day
@@ -473,6 +497,8 @@ export function KostschemaCalculator() {
         onSelectDay={setSelectedDay}
         weekConfig={weekConfig}
         onToggleTraining={handleToggleTraining}
+        weekMacroMode={weekMacroMode}
+        onWeekMacroModeChange={setWeekMacroMode}
       />
 
       {/* Macro Input Panel */}

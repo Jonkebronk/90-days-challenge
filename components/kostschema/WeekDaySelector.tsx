@@ -1,7 +1,7 @@
 'use client'
 
-import { Dumbbell, Moon } from 'lucide-react'
-import { DayOfWeek, DayConfig, DAYS_OF_WEEK } from '@/lib/kostschema/types'
+import { Dumbbell, Moon, Copy, Layers } from 'lucide-react'
+import { DayOfWeek, DayConfig, DAYS_OF_WEEK, WeekMacroMode } from '@/lib/kostschema/types'
 import { calculateWeeklyCalories } from '@/lib/kostschema/macro-distribution'
 
 interface WeekDaySelectorProps {
@@ -9,13 +9,17 @@ interface WeekDaySelectorProps {
   onSelectDay: (day: DayOfWeek) => void
   weekConfig: Record<DayOfWeek, DayConfig>
   onToggleTraining: (day: DayOfWeek) => void
+  weekMacroMode: WeekMacroMode
+  onWeekMacroModeChange: (mode: WeekMacroMode) => void
 }
 
 export function WeekDaySelector({
   selectedDay,
   onSelectDay,
   weekConfig,
-  onToggleTraining
+  onToggleTraining,
+  weekMacroMode,
+  onWeekMacroModeChange
 }: WeekDaySelectorProps) {
   const weeklyCalories = calculateWeeklyCalories(weekConfig)
   const trainingDays = Object.values(weekConfig).filter(d => d.isTrainingDay).length
@@ -27,13 +31,42 @@ export function WeekDaySelector({
         <div>
           <h3 className="text-lg font-semibold text-white">Veckokonfiguration</h3>
           <p className="text-sm text-zinc-400">
-            Klicka på en dag för att redigera, dubbelklicka för att växla träning/vila
+            {weekMacroMode === 'same'
+              ? 'Samma kalorier och makros alla dagar'
+              : 'Klicka på en dag för att redigera, dubbelklicka för att växla träning/vila'}
           </p>
         </div>
-        <div className="text-right">
-          <div className="text-sm text-zinc-400">Veckobudget</div>
-          <div className="text-xl font-bold text-gold-500">{weeklyCalories.toLocaleString()} kcal</div>
-          <div className="text-xs text-zinc-500">{trainingDays} träningsdagar</div>
+        <div className="flex items-center gap-4">
+          {/* Week macro mode toggle */}
+          <div className="flex gap-1 bg-zinc-900/50 rounded-lg p-1">
+            <button
+              onClick={() => onWeekMacroModeChange('same')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                weekMacroMode === 'same'
+                  ? 'bg-gold-600 text-white'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <Copy className="w-3 h-3" />
+              Samma
+            </button>
+            <button
+              onClick={() => onWeekMacroModeChange('different')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                weekMacroMode === 'different'
+                  ? 'bg-gold-600 text-white'
+                  : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <Layers className="w-3 h-3" />
+              Olika per dag
+            </button>
+          </div>
+          <div className="text-right">
+            <div className="text-sm text-zinc-400">Veckobudget</div>
+            <div className="text-xl font-bold text-gold-500">{weeklyCalories.toLocaleString()} kcal</div>
+            <div className="text-xs text-zinc-500">{trainingDays} träningsdagar</div>
+          </div>
         </div>
       </div>
 

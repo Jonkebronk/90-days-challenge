@@ -159,6 +159,9 @@ export interface WeekConfig {
 // Macro source mode - calculate from weight or enter manually
 export type MacroSourceMode = 'calculate' | 'manual'
 
+// Week macro mode - same macros for all days or different per day
+export type WeekMacroMode = 'same' | 'different'
+
 // Default meal times for 4, 5, 6 meals per day
 export const DEFAULT_MEAL_TIMES: Record<number, string[]> = {
   4: ['07:30', '12:00', '17:00', '21:00'],
