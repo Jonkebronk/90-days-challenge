@@ -157,6 +157,12 @@ export function KostschemaCalculator() {
   // Track if meal plan is cleared (empty mode)
   const [isMealPlanCleared, setIsMealPlanCleared] = useState(false)
 
+  // Meal instructions per meal type
+  const [mealInstructions, setMealInstructions] = useState<Record<string, string>>({})
+
+  // Custom meal names per meal type
+  const [customMealNames, setCustomMealNames] = useState<Record<string, string>>({})
+
   // Current day's configuration
   const currentDayConfig = weekConfig[selectedDay]
 
@@ -490,6 +496,22 @@ export function KostschemaCalculator() {
     }))
   }
 
+  // Handle update meal name
+  const handleUpdateMealName = (mealType: string, name: string) => {
+    setCustomMealNames(prev => ({
+      ...prev,
+      [mealType]: name
+    }))
+  }
+
+  // Handle update instructions
+  const handleUpdateInstructions = (mealType: string, instructions: string) => {
+    setMealInstructions(prev => ({
+      ...prev,
+      [mealType]: instructions
+    }))
+  }
+
   // Handle clear meal plan - completely empty the plan
   const handleClearMealPlan = () => {
     setIngredientOverrides({})
@@ -608,6 +630,7 @@ export function KostschemaCalculator() {
       // Return meal structure but with empty ingredients
       return meals.map((meal, index) => ({
         ...meal,
+        name: customMealNames[meal.type] || meal.name,
         template: {
           protein: [],
           kolhydrat: [],
@@ -626,11 +649,12 @@ export function KostschemaCalculator() {
     }
     return meals.map((meal, index) => ({
       ...meal,
+      name: customMealNames[meal.type] || meal.name,
       tillaggItems: tillaggOverrides[meal.type] || [],
       supplementItems: supplementOverrides[meal.type] || [],
       mealTiming: mealTimings[index] // Add per-meal timing/targets
     }))
-  }, [meals, tillaggOverrides, supplementOverrides, mealTimings, isMealPlanCleared])
+  }, [meals, tillaggOverrides, supplementOverrides, mealTimings, isMealPlanCleared, customMealNames])
 
   const selectedCount = ingredientStore.getTotalCount()
 
@@ -709,9 +733,12 @@ export function KostschemaCalculator() {
         onAddSupplement={handleAddSupplement}
         onRemoveSupplement={handleRemoveSupplement}
         onClearMealPlan={handleClearMealPlan}
+        onUpdateMealName={handleUpdateMealName}
+        onUpdateInstructions={handleUpdateInstructions}
         mealTimings={mealTimings}
         isTrainingDay={currentDayConfig.isTrainingDay}
         trainingTime={currentDayConfig.trainingTime}
+        mealInstructions={mealInstructions}
       />
 
       {/* Micronutrient Summary Panel */}

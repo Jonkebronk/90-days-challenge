@@ -1,6 +1,6 @@
 'use client'
 
-import { Trash2, Dumbbell, Clock } from 'lucide-react'
+import { Trash2, Dumbbell } from 'lucide-react'
 import { ScaledMeal, MealTiming } from '@/lib/kostschema/types'
 import { MealCard } from './MealCard'
 import { calculateDailyTotals } from '@/lib/kostschema/hooks/useScaledMeals'
@@ -20,9 +20,12 @@ interface MealPlanDisplayProps {
   onAddSupplement?: (mealType: string, text: string) => void
   onRemoveSupplement?: (mealType: string, index: number) => void
   onClearMealPlan?: () => void
+  onUpdateMealName?: (mealType: string, name: string) => void
+  onUpdateInstructions?: (mealType: string, instructions: string) => void
   mealTimings?: MealTiming[]
   isTrainingDay?: boolean
   trainingTime?: string
+  mealInstructions?: Record<string, string>
 }
 
 // Workout separator component - minimal design
@@ -31,18 +34,18 @@ function WorkoutSeparator({ time }: { time?: string }) {
     <div className="relative py-3">
       {/* Simple line */}
       <div className="absolute inset-0 flex items-center">
-        <div className="w-full h-px bg-emerald-200" />
+        <div className="w-full h-px bg-emerald-500/30" />
       </div>
 
       {/* Center badge */}
       <div className="relative flex justify-center">
-        <div className="flex items-center gap-2 px-4 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full">
-          <Dumbbell className="w-4 h-4 text-emerald-600" />
-          <span className="text-sm font-medium text-emerald-700">
+        <div className="flex items-center gap-2 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
+          <Dumbbell className="w-4 h-4 text-emerald-400" />
+          <span className="text-sm font-medium text-emerald-400">
             Träning
           </span>
           {time && (
-            <span className="text-xs text-emerald-500">{time}</span>
+            <span className="text-xs text-emerald-500/70">{time}</span>
           )}
         </div>
       </div>
@@ -71,9 +74,11 @@ export function MealPlanDisplay({
   onAddSupplement,
   onRemoveSupplement,
   onClearMealPlan,
-  mealTimings,
+  onUpdateMealName,
+  onUpdateInstructions,
   isTrainingDay,
-  trainingTime
+  trainingTime,
+  mealInstructions = {}
 }: MealPlanDisplayProps) {
   const totals = calculateDailyTotals(meals)
 
@@ -140,6 +145,9 @@ export function MealPlanDisplay({
               onRemoveTillagg={onRemoveTillagg}
               onAddSupplement={onAddSupplement}
               onRemoveSupplement={onRemoveSupplement}
+              onUpdateMealName={onUpdateMealName}
+              onUpdateInstructions={onUpdateInstructions}
+              instructions={mealInstructions[meal.type] || ''}
             />
           </div>
         ))}
@@ -147,14 +155,15 @@ export function MealPlanDisplay({
 
       {/* Daily totals */}
       {meals.length > 0 && (
-        <div className="flex items-center justify-between py-3 px-4 bg-zinc-800/50 rounded-lg">
-          <span className="text-sm text-zinc-400">Totalt</span>
-          <div className="flex items-center gap-4 text-sm">
-            <span className="font-semibold text-zinc-200">{totals.kcal} kcal</span>
-            <span className="text-zinc-500">|</span>
-            <span className="text-rose-400">P {totals.protein}g</span>
-            <span className="text-blue-400">K {totals.carbs}g</span>
-            <span className="text-amber-400">F {totals.fat}g</span>
+        <div className="flex items-center justify-between py-4 px-5 bg-zinc-800/50 rounded-xl border border-zinc-700/50">
+          <span className="text-sm text-zinc-400 font-medium">Dagstotalt</span>
+          <div className="flex items-center gap-4">
+            <span className="text-lg font-bold text-white">{totals.kcal} kcal</span>
+            <div className="flex items-center gap-3 text-sm">
+              <span className="text-rose-400">P {totals.protein}g</span>
+              <span className="text-blue-400">K {totals.carbs}g</span>
+              <span className="text-amber-400">F {totals.fat}g</span>
+            </div>
           </div>
         </div>
       )}
