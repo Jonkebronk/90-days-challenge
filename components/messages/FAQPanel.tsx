@@ -5,12 +5,20 @@ import { ChevronDown, ChevronRight, HelpCircle, MessageSquare, X } from 'lucide-
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 
-interface FAQ {
+interface FaqQuestion {
   id: string
   question: string
   answer: string
-  category: string
-  forRole: string
+  orderIndex: number
+}
+
+interface FaqCategory {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  orderIndex: number
+  questions: FaqQuestion[]
 }
 
 interface FAQPanelProps {
@@ -22,22 +30,17 @@ const categoryIcons: Record<string, string> = {
   kost: '🍎',
   traning: '🏋️',
   'check-in': '📊',
-  allmant: '💬'
-}
-
-const categoryNames: Record<string, string> = {
-  kost: 'Kost & Näring',
-  traning: 'Träning',
-  'check-in': 'Check-in',
-  allmant: 'Allmänt'
+  allmant: '💬',
+  general: '📋',
+  nutrition: '🥗',
+  training: '💪'
 }
 
 export function FAQPanel({ onSelectAnswer, isCoach = false }: FAQPanelProps) {
-  const [faqs, setFaqs] = useState<FAQ[]>([])
-  const [grouped, setGrouped] = useState<Record<string, FAQ[]>>({})
+  const [categories, setCategories] = useState<FaqCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedCategories, setExpandedCategories] = useState<string[]>([])
-  const [selectedFAQ, setSelectedFAQ] = useState<FAQ | null>(null)
+  const [selectedFAQ, setSelectedFAQ] = useState<FaqQuestion | null>(null)
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
@@ -46,11 +49,22 @@ export function FAQPanel({ onSelectAnswer, isCoach = false }: FAQPanelProps) {
 
   const fetchFAQs = async () => {
     try {
-      const response = await fetch('/api/messenger-faqs')
+      // Fetch from the existing FAQ system
+      const response = await fetch('/api/faq-categories')
       if (response.ok) {
         const data = await response.json()
-        setFaqs(data.faqs)
-        setGrouped(data.grouped)
+        // Fetch questions for each category
+        const categoriesWithQuestions = await Promise.all(
+          data.categories.map(async (cat: FaqCategory) => {
+            const qResponse = await fetch(`/api/faq-categories/${cat.id}`)
+            if (qResponse.ok) {
+              const qData = await qResponse.json()
+              return qData.category
+            }
+            return cat
+          })
+        )
+        setCategories(categoriesWithQuestions.filter(cat => cat.questions && cat.questions.length > 0))
       }
     } catch (error) {
       console.error('Error fetching FAQs:', error)
@@ -67,7 +81,7 @@ export function FAQPanel({ onSelectAnswer, isCoach = false }: FAQPanelProps) {
     )
   }
 
-  const handleSelectFAQ = (faq: FAQ) => {
+  const handleSelectFAQ = (faq: FaqQuestion) => {
     setSelectedFAQ(faq)
   }
 
@@ -83,11 +97,9 @@ export function FAQPanel({ onSelectAnswer, isCoach = false }: FAQPanelProps) {
     return null
   }
 
-  if (faqs.length === 0) {
+  if (categories.length === 0) {
     return null
   }
-
-  const categories = Object.keys(grouped)
 
   return (
     <div className="relative">
@@ -152,31 +164,35 @@ export function FAQPanel({ onSelectAnswer, isCoach = false }: FAQPanelProps) {
             ) : (
               // Show FAQ categories
               <div className="p-2">
-                {categories.map(category => (
-                  <div key={category} className="mb-1">
+                {categories
+                  .sort((a, b) => a.orderIndex - b.orderIndex)
+                  .map(category => (
+                  <div key={category.id} className="mb-1">
                     <button
-                      onClick={() => toggleCategory(category)}
+                      onClick={() => toggleCategory(category.id)}
                       className="w-full flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg transition-colors"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">{categoryIcons[category] || '📋'}</span>
+                        <span className="text-lg">{categoryIcons[category.slug] || '📋'}</span>
                         <span className="font-medium text-gray-900 text-sm">
-                          {categoryNames[category] || category}
+                          {category.name}
                         </span>
                         <span className="text-xs text-gray-500">
-                          ({grouped[category].length})
+                          ({category.questions.length})
                         </span>
                       </div>
-                      {expandedCategories.includes(category) ? (
+                      {expandedCategories.includes(category.id) ? (
                         <ChevronDown className="w-4 h-4 text-gray-400" />
                       ) : (
                         <ChevronRight className="w-4 h-4 text-gray-400" />
                       )}
                     </button>
 
-                    {expandedCategories.includes(category) && (
+                    {expandedCategories.includes(category.id) && (
                       <div className="ml-4 mt-1 space-y-1">
-                        {grouped[category].map(faq => (
+                        {category.questions
+                          .sort((a, b) => a.orderIndex - b.orderIndex)
+                          .map(faq => (
                           <button
                             key={faq.id}
                             onClick={() => handleSelectFAQ(faq)}
