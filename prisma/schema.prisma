@@ -178,6 +178,9 @@ model User {
   smartMealPlans       SmartMealPlan[] @relation("UserSmartMealPlans")
   coachSmartMealPlans  SmartMealPlan[] @relation("CoachSmartMealPlans")
 
+  // Food Logging
+  foodLogs             FoodLog[]
+
   @@map("users")
 }
 
@@ -2375,4 +2378,96 @@ model SmartMealPlanMeal {
   @@index([smartMealPlanDayId])
   @@index([recipeId])
   @@map("smart_meal_plan_meals")
+}
+
+// ========================================
+// FOOD LOGGING SYSTEM (Kostloggning)
+// ========================================
+
+// Product - Products with EAN barcodes for barcode scanning
+model Product {
+  id        String   @id @default(cuid())
+  ean       String   @unique // EAN-13 barcode
+  name      String
+  brand     String?
+
+  // Nutrition per 100g
+  kcal      Decimal  @db.Decimal(7, 2)
+  protein   Decimal  @db.Decimal(6, 2)
+  carbs     Decimal  @db.Decimal(6, 2)
+  fat       Decimal  @db.Decimal(6, 2)
+  fiber     Decimal? @db.Decimal(6, 2)
+
+  // Source tracking
+  source    String   @default("manual") // "manual" | "ica" | "coop" | "ai" | "import"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  foodLogItems FoodLogItem[]
+
+  @@index([ean])
+  @@index([name])
+  @@map("products")
+}
+
+// FoodLog - Daily food log entry
+model FoodLog {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @db.Date
+  time      DateTime @default(now())
+
+  // Entry type
+  type      String   // "ai" | "barcode" | "manual"
+
+  // For AI entries - store the image
+  image     String?  @db.Text // Base64 encoded image
+
+  // Totals (calculated from items)
+  totalKcal     Decimal? @db.Decimal(7, 2)
+  totalProtein  Decimal? @db.Decimal(6, 2)
+  totalCarbs    Decimal? @db.Decimal(6, 2)
+  totalFat      Decimal? @db.Decimal(6, 2)
+
+  notes     String?  @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items FoodLogItem[]
+
+  @@index([userId, date])
+  @@index([userId, createdAt])
+  @@map("food_logs")
+}
+
+// FoodLogItem - Individual items within a food log entry
+model FoodLogItem {
+  id         String @id @default(cuid())
+  foodLogId  String
+
+  // Can link to Product (for barcode entries) or be standalone
+  productId  String?
+
+  // Item details
+  name       String
+  portionG   Decimal @db.Decimal(7, 2)
+
+  // Macros for this portion
+  kcal       Decimal @db.Decimal(7, 2)
+  protein    Decimal @db.Decimal(6, 2)
+  carbs      Decimal @db.Decimal(6, 2)
+  fat        Decimal @db.Decimal(6, 2)
+
+  orderIndex Int     @default(0)
+
+  createdAt DateTime @default(now())
+
+  foodLog FoodLog  @relation(fields: [foodLogId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id])
+
+  @@index([foodLogId])
+  @@map("food_log_items")
 }
