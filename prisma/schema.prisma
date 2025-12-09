@@ -2390,6 +2390,8 @@ model Product {
   ean       String   @unique // EAN-13 barcode
   name      String
   brand     String?
+  category  String?  // "mejeri" | "kött" | "fisk" | "bröd" | "frukt" | "grönsaker" | "dryck" | "snacks" | "fryst" | "torrvaror" | "övrigt"
+  image     String?  // URL to product image
 
   // Nutrition per 100g
   kcal      Decimal  @db.Decimal(7, 2)
@@ -2399,7 +2401,7 @@ model Product {
   fiber     Decimal? @db.Decimal(6, 2)
 
   // Source tracking
-  source    String   @default("manual") // "manual" | "ica" | "coop" | "ai" | "import"
+  source    String   @default("manual") // "manual" | "openfoodfacts" | "ai" | "import"
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2408,6 +2410,7 @@ model Product {
 
   @@index([ean])
   @@index([name])
+  @@index([category])
   @@map("products")
 }
 

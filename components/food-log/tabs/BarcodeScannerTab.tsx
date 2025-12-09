@@ -224,6 +224,7 @@ export function BarcodeScannerTab() {
           ean: offProduct.code,
           name: offProduct.product_name,
           brand: offProduct.brands || null,
+          image: offProduct.image_url || null,
           kcal,
           protein,
           carbs,

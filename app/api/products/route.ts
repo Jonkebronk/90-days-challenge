@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const q = searchParams.get('q')
     const ean = searchParams.get('ean')
+    const category = searchParams.get('category')
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
 
@@ -29,21 +30,43 @@ export async function GET(req: NextRequest) {
       ]
     }
 
-    const [products, total] = await Promise.all([
+    // Filter by category
+    if (category) {
+      if (category === 'uncategorized') {
+        where.category = null
+      } else {
+        where.category = category
+      }
+    }
+
+    const [products, total, categories] = await Promise.all([
       prisma.product.findMany({
         where,
         take: limit,
         skip: offset,
         orderBy: { name: 'asc' }
       }),
-      prisma.product.count({ where })
+      prisma.product.count({ where }),
+      // Get category counts
+      prisma.product.groupBy({
+        by: ['category'],
+        _count: { category: true }
+      })
     ])
+
+    // Transform category counts
+    const categoryCounts = categories.reduce((acc: Record<string, number>, cat) => {
+      const key = cat.category || 'uncategorized'
+      acc[key] = cat._count.category
+      return acc
+    }, {})
 
     return NextResponse.json({
       products,
       total,
       limit,
-      offset
+      offset,
+      categoryCounts
     })
   } catch (error) {
     console.error('Error fetching products:', error)
@@ -60,7 +83,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { ean, name, brand, kcal, protein, carbs, fat, fiber, source } = body
+    const { ean, name, brand, category, image, kcal, protein, carbs, fat, fiber, source } = body
 
     if (!ean || !name) {
       return NextResponse.json({ error: 'EAN and name are required' }, { status: 400 })
@@ -77,6 +100,8 @@ export async function POST(req: NextRequest) {
         ean,
         name,
         brand: brand || null,
+        category: category || null,
+        image: image || null,
         kcal: kcal || 0,
         protein: protein || 0,
         carbs: carbs || 0,

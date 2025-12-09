@@ -7,6 +7,8 @@ interface ImportProduct {
   ean?: string
   name: string
   brand?: string
+  category?: string
+  image?: string
   kcal: number
   protein: number
   carbs: number
@@ -54,11 +56,13 @@ export async function POST(req: NextRequest) {
         const existing = await prisma.product.findUnique({ where: { ean } })
 
         if (existing) {
-          await prisma.product.update({
+          const product = await prisma.product.update({
             where: { ean },
             data: {
               name: p.name,
               brand: p.brand || null,
+              category: p.category || existing.category || null,
+              image: p.image || existing.image || null,
               kcal: p.kcal || 0,
               protein: p.protein || 0,
               carbs: p.carbs || 0,
@@ -68,12 +72,18 @@ export async function POST(req: NextRequest) {
             }
           })
           results.updated++
+          // Return single product if only one was imported
+          if (products.length === 1) {
+            return NextResponse.json({ success: true, product, results })
+          }
         } else {
-          await prisma.product.create({
+          const product = await prisma.product.create({
             data: {
               ean,
               name: p.name,
               brand: p.brand || null,
+              category: p.category || null,
+              image: p.image || null,
               kcal: p.kcal || 0,
               protein: p.protein || 0,
               carbs: p.carbs || 0,
@@ -83,6 +93,10 @@ export async function POST(req: NextRequest) {
             }
           })
           results.created++
+          // Return single product if only one was imported
+          if (products.length === 1) {
+            return NextResponse.json({ success: true, product, results })
+          }
         }
       } catch (error) {
         results.failed++

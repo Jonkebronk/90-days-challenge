@@ -84,6 +84,7 @@ const navigation = [
   { name: 'Livsmedelbanken', href: '/dashboard/content/food-items', icon: Apple },
   { name: 'Kostschema', href: '/dashboard/meal-plan', icon: Utensils, clientOnly: true },
   { name: 'Matlogg', href: '/dashboard/food-log', icon: ClipboardList, clientOnly: true },
+  { name: 'Produktbibliotek', href: '/dashboard/products', icon: ShoppingCart, clientOnly: true },
   { name: 'Träningsprogram', href: '/dashboard/workout', icon: Dumbbell, clientOnly: true },
   { name: 'Check-in', href: '/dashboard/check-in', icon: Calendar, clientOnly: true },
   { name: 'Framsteg', href: '/dashboard/progress', icon: TrendingUp, clientOnly: true },
