@@ -53,19 +53,37 @@ function getTodayDayOfWeek(): DayOfWeek {
 
 export function KostschemaCalculator() {
   // Week configuration state
-  const [weekConfig, setWeekConfig] = useState<Record<DayOfWeek, DayConfig>>(() => createDefaultWeekConfig())
+  // Start with all days having the same values since we default to 'same' mode
+  const [weekConfig, setWeekConfig] = useState<Record<DayOfWeek, DayConfig>>(() => {
+    const defaultConfig = createDefaultWeekConfig()
+    // Since we start in 'same' mode, sync all days to have same macros (use Monday's values)
+    const baseConfig = defaultConfig.monday
+    const synced: Record<DayOfWeek, DayConfig> = {} as Record<DayOfWeek, DayConfig>
+    DAYS_OF_WEEK.forEach(day => {
+      synced[day.key] = {
+        ...defaultConfig[day.key],
+        totalCalories: baseConfig.totalCalories,
+        totalProtein: baseConfig.totalProtein,
+        totalCarbs: baseConfig.totalCarbs,
+        totalFat: baseConfig.totalFat
+      }
+    })
+    return synced
+  })
   const [selectedDay, setSelectedDay] = useState<DayOfWeek>(getTodayDayOfWeek())
   const [macroSourceMode, setMacroSourceMode] = useState<MacroSourceMode>('manual')
   const [weekMacroMode, setWeekMacroMode] = useState<WeekMacroMode>('same')
 
   // Handle week macro mode change - sync all days when switching to 'same'
+  // Apply training-specific defaults when switching to 'different'
   const handleWeekMacroModeChange = (mode: WeekMacroMode) => {
     setWeekMacroMode(mode)
 
     if (mode === 'same') {
       // Sync all days to have the same macros as the currently selected day
-      const currentConfig = weekConfig[selectedDay]
+      // Use functional update to get latest state
       setWeekConfig(prev => {
+        const currentConfig = prev[selectedDay]
         const updated: Record<DayOfWeek, DayConfig> = {} as Record<DayOfWeek, DayConfig>
         DAYS_OF_WEEK.forEach(day => {
           updated[day.key] = {
@@ -74,6 +92,28 @@ export function KostschemaCalculator() {
             totalProtein: currentConfig.totalProtein,
             totalCarbs: currentConfig.totalCarbs,
             totalFat: currentConfig.totalFat
+          }
+        })
+        return updated
+      })
+    } else {
+      // When switching to 'different', apply training-day specific defaults
+      // Training days get higher calories/carbs, rest days get lower
+      setWeekConfig(prev => {
+        const baseCalories = prev[selectedDay].totalCalories
+        const baseProtein = prev[selectedDay].totalProtein
+        const updated: Record<DayOfWeek, DayConfig> = {} as Record<DayOfWeek, DayConfig>
+
+        DAYS_OF_WEEK.forEach(day => {
+          const isTraining = prev[day.key].isTrainingDay
+          // Training days: +400 kcal, more carbs
+          // Rest days: base calories, less carbs, more fat
+          updated[day.key] = {
+            ...prev[day.key],
+            totalCalories: isTraining ? baseCalories + 400 : baseCalories,
+            totalProtein: baseProtein,
+            totalCarbs: isTraining ? Math.round(baseCalories * 0.45 / 4) : Math.round(baseCalories * 0.20 / 4),
+            totalFat: isTraining ? Math.round(baseCalories * 0.20 / 9) : Math.round(baseCalories * 0.40 / 9)
           }
         })
         return updated
