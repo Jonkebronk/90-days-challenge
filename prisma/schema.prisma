@@ -1858,6 +1858,18 @@ model Message {
   // Images attached to message
   images String[] // Array of image URLs
 
+  // Read receipts
+  readAt DateTime? // When the receiver read the message
+
+  // Reply to another message
+  replyToId String?
+  replyTo   Message?  @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies   Message[] @relation("MessageReplies")
+
+  // Soft delete and edit tracking
+  isDeleted Boolean   @default(false)
+  editedAt  DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1867,6 +1879,7 @@ model Message {
 
   @@index([senderId, receiverId])
   @@index([createdAt])
+  @@index([replyToId])
   @@map("messages")
 }
 

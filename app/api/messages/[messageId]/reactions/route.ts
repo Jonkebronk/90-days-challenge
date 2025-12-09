@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 // Available reaction emojis
-export const REACTION_EMOJIS = ['❤️', '👍', '😂', '😮', '😢', '😡'] as const
+const REACTION_EMOJIS = ['❤️', '👍', '😂', '😮', '😢', '😡'] as const
 
 // POST /api/messages/[messageId]/reactions - Add a reaction
 export async function POST(

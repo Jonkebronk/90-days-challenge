@@ -16,18 +16,31 @@ export async function GET(request: Request) {
     const userId = (session.user as any).id
     const { searchParams } = new URL(request.url)
     const otherUserId = searchParams.get('otherUserId')
+    const search = searchParams.get('search')
 
     let messages
 
     if (otherUserId) {
+      // Build where clause
+      const whereClause: any = {
+        isDeleted: false,
+        OR: [
+          { senderId: userId, receiverId: otherUserId },
+          { senderId: otherUserId, receiverId: userId }
+        ]
+      }
+
+      // Add search filter if provided
+      if (search) {
+        whereClause.content = {
+          contains: search,
+          mode: 'insensitive'
+        }
+      }
+
       // Get conversation with specific user
       messages = await prisma.message.findMany({
-        where: {
-          OR: [
-            { senderId: userId, receiverId: otherUserId },
-            { senderId: otherUserId, receiverId: userId }
-          ]
-        },
+        where: whereClause,
         include: {
           sender: {
             select: {
@@ -54,16 +67,41 @@ export async function GET(request: Request) {
                 }
               }
             }
+          },
+          replyTo: {
+            select: {
+              id: true,
+              content: true,
+              senderId: true,
+              sender: {
+                select: {
+                  name: true
+                }
+              }
+            }
           }
         },
         orderBy: {
           createdAt: 'asc'
         }
       })
+
+      // Mark unread messages from the other user as read
+      await prisma.message.updateMany({
+        where: {
+          senderId: otherUserId,
+          receiverId: userId,
+          readAt: null
+        },
+        data: {
+          readAt: new Date()
+        }
+      })
     } else {
       // Get all messages involving this user
       messages = await prisma.message.findMany({
         where: {
+          isDeleted: false,
           OR: [
             { senderId: userId },
             { receiverId: userId }
@@ -114,7 +152,7 @@ export async function POST(request: Request) {
 
     const userId = (session.user as any).id
     const body = await request.json()
-    const { content, receiverId, images = [] } = body
+    const { content, receiverId, images = [], replyToId } = body
 
     if (!content || !receiverId) {
       return NextResponse.json({ error: 'Content and receiverId required' }, { status: 400 })
@@ -126,6 +164,7 @@ export async function POST(request: Request) {
         senderId: userId,
         receiverId,
         images,
+        replyToId: replyToId || null,
         isCheckInSummary: false
       },
       include: {
@@ -144,7 +183,20 @@ export async function POST(request: Request) {
             email: true,
             role: true
           }
-        }
+        },
+        replyTo: {
+          select: {
+            id: true,
+            content: true,
+            senderId: true,
+            sender: {
+              select: {
+                name: true
+              }
+            }
+          }
+        },
+        reactions: true
       }
     })
 
