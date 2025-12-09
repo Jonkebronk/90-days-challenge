@@ -121,17 +121,24 @@ export function BarcodeScannerTab() {
 
     try {
       // Create scanner instance
-      const html5Qrcode = new Html5Qrcode(scannerContainerId)
+      const html5Qrcode = new Html5Qrcode(scannerContainerId, {
+        verbose: false,
+        formatsToSupport: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] // EAN, UPC, Code128, etc.
+      })
       scannerRef.current = html5Qrcode
       setIsScanning(true)
 
-      // Start scanning
+      // Detect iOS
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+
+      // Start scanning with iOS-optimized settings
       await html5Qrcode.start(
         { facingMode: 'environment' },
         {
-          fps: 10,
+          fps: isIOS ? 5 : 10, // Lower FPS on iOS for stability
           qrbox: { width: 250, height: 150 },
-          aspectRatio: 1.777778
+          aspectRatio: isIOS ? 1.333333 : 1.777778, // 4:3 on iOS, 16:9 otherwise
+          disableFlip: false
         },
         async (decodedText) => {
           // Success - barcode detected
@@ -288,6 +295,22 @@ export function BarcodeScannerTab() {
       console.error('Failed to create product:', error)
     }
   }
+
+  // Ensure video element has iOS-compatible attributes
+  useEffect(() => {
+    if (isScanning) {
+      const container = document.getElementById(scannerContainerId)
+      if (container) {
+        const video = container.querySelector('video')
+        if (video) {
+          video.setAttribute('playsinline', 'true')
+          video.setAttribute('webkit-playsinline', 'true')
+          video.setAttribute('muted', 'true')
+          video.muted = true
+        }
+      }
+    }
+  }, [isScanning])
 
   useEffect(() => {
     return () => {
@@ -597,7 +620,11 @@ export function BarcodeScannerTab() {
       {/* Live barcode scanner */}
       {isScanning ? (
         <div className="relative rounded-xl overflow-hidden bg-gray-900">
-          <div id={scannerContainerId} className="w-full" />
+          <div
+            id={scannerContainerId}
+            className="w-full"
+            style={{ minHeight: '300px' }}
+          />
           <Button
             variant="ghost"
             size="sm"
