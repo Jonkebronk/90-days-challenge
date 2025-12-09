@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import {
   X,
   Plus,
@@ -8,7 +8,8 @@ import {
   Package,
   Info,
   Upload,
-  ImageIcon
+  ImageIcon,
+  Database
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,6 +19,19 @@ interface ManualProductModalProps {
   isOpen: boolean
   onClose: () => void
   onProductAdded: () => void
+}
+
+interface SLVFood {
+  slvNummer: number
+  name: string
+  type: string
+  protein: number
+  carbs: number
+  fat: number
+  kcal: number
+  fiber: number | null
+  sugar: number | null
+  salt: number | null
 }
 
 const CATEGORIES = [
@@ -47,6 +61,11 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+
+  // SLV search state
+  const [slvResults, setSlvResults] = useState<SLVFood[]>([])
+  const [slvLoading, setSlvLoading] = useState(false)
+  const [showSlvDropdown, setShowSlvDropdown] = useState(false)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -88,6 +107,52 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
     }
   }
 
+  // Fetch nutrition from SLV based on product name
+  const fetchFromSLV = useCallback(async () => {
+    const query = formData.name.trim()
+    if (!query || query.length < 2) {
+      setError('Ange ett produktnamn först')
+      return
+    }
+
+    setSlvLoading(true)
+    setShowSlvDropdown(true)
+    setSlvResults([])
+
+    try {
+      const res = await fetch(`/api/slv-proxy?q=${encodeURIComponent(query)}&limit=8`)
+      if (res.ok) {
+        const data = await res.json()
+        setSlvResults(data.foods || [])
+        if (!data.foods || data.foods.length === 0) {
+          setError('Inga resultat hittades i SLV')
+        }
+      }
+    } catch (err) {
+      console.error('SLV search error:', err)
+      setError('Kunde inte hämta data från SLV')
+    } finally {
+      setSlvLoading(false)
+    }
+  }, [formData.name])
+
+  // Select an SLV food and populate nutrition fields
+  const selectSlvFood = (food: SLVFood) => {
+    setFormData(prev => ({
+      ...prev,
+      kcal: food.kcal.toString(),
+      protein: food.protein.toString(),
+      carbs: food.carbs.toString(),
+      fat: food.fat.toString(),
+      fiber: food.fiber?.toString() || '',
+      sugar: food.sugar?.toString() || '',
+      salt: food.salt?.toString() || '',
+    }))
+    setSlvResults([])
+    setShowSlvDropdown(false)
+    setError(null)
+  }
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -106,6 +171,8 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
     setImagePreview(null)
     setError(null)
     setSuccess(false)
+    setSlvResults([])
+    setShowSlvDropdown(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
@@ -281,8 +348,56 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
           </div>
 
           {/* Macros - the important ones */}
-          <div className="border-t pt-4">
-            <h3 className="font-medium text-gray-900 mb-3">Näringsvärden (per 100g)</h3>
+          <div className="border-t pt-4 relative">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-medium text-gray-900">Näringsvärden (per 100g)</h3>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={fetchFromSLV}
+                disabled={slvLoading || !formData.name.trim()}
+                className="border-amber-300 text-amber-700 hover:bg-amber-50"
+              >
+                {slvLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Database className="w-4 h-4 mr-2" />
+                )}
+                Hämta från SLV
+              </Button>
+            </div>
+
+            {/* SLV Results Dropdown */}
+            {showSlvDropdown && slvResults.length > 0 && (
+              <div className="absolute left-0 right-0 z-10 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto mb-3">
+                <div className="p-2 border-b border-gray-100 bg-gray-50">
+                  <p className="text-xs text-gray-500">Välj ett livsmedel för att fylla i näringsvärden:</p>
+                </div>
+                {slvResults.map((food) => (
+                  <button
+                    key={food.slvNummer}
+                    onClick={() => selectSlvFood(food)}
+                    className="w-full px-3 py-2 text-left hover:bg-amber-50 border-b last:border-0 transition-colors"
+                  >
+                    <p className="font-medium text-gray-900 text-sm">{food.name}</p>
+                    <p className="text-xs text-gray-500">
+                      {food.kcal} kcal | P: {food.protein}g | K: {food.carbs}g | F: {food.fat}g
+                    </p>
+                  </button>
+                ))}
+                <button
+                  onClick={() => {
+                    setShowSlvDropdown(false)
+                    setSlvResults([])
+                  }}
+                  className="w-full px-3 py-2 text-center text-sm text-gray-500 hover:bg-gray-100 border-t"
+                >
+                  Stäng
+                </button>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div>
                 <Label htmlFor="kcal" className="text-sm">Kcal</Label>
