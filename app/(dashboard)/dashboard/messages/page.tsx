@@ -7,8 +7,10 @@ import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { Send, Image as ImageIcon, X, ZoomIn, MessageCircle } from 'lucide-react'
 import { toast } from 'sonner'
+import { FAQPanel } from '@/components/messages/FAQPanel'
 import { format } from 'date-fns'
 import { sv } from 'date-fns/locale'
+import { useNotificationSound } from '@/lib/hooks/useNotificationSound'
 
 interface Message {
   id: string
@@ -32,6 +34,11 @@ interface Message {
   }
 }
 
+// Track unread counts per contact
+interface UnreadCounts {
+  [contactId: string]: number
+}
+
 export default function MessagesPage() {
   const { data: session } = useSession()
   const [messages, setMessages] = useState<Message[]>([])
@@ -39,7 +46,10 @@ export default function MessagesPage() {
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [unreadCounts, setUnreadCounts] = useState<UnreadCounts>({})
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const lastMessageCountRef = useRef<number>(0)
+  const { playSound } = useNotificationSound()
 
   const userId = (session?.user as any)?.id
   const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
@@ -56,6 +66,45 @@ export default function MessagesPage() {
       fetchCoach()
     }
   }, [isCoach])
+
+  // Real-time polling for new messages
+  useEffect(() => {
+    if (!otherUserId) return
+
+    const pollMessages = async () => {
+      try {
+        const response = await fetch(`/api/messages?otherUserId=${otherUserId}`)
+        if (response.ok) {
+          const data = await response.json()
+          const newMessages = data.messages as Message[]
+
+          // Check if there are new messages from the other person
+          if (newMessages.length > lastMessageCountRef.current) {
+            const newOnesCount = newMessages.length - lastMessageCountRef.current
+            const latestMessages = newMessages.slice(-newOnesCount)
+
+            // Check if any new message is from the other person (not us)
+            const hasNewFromOther = latestMessages.some(msg => msg.senderId !== userId)
+
+            if (hasNewFromOther && lastMessageCountRef.current > 0) {
+              playSound()
+            }
+
+            setMessages(newMessages)
+          }
+
+          lastMessageCountRef.current = newMessages.length
+        }
+      } catch (error) {
+        console.error('Polling error:', error)
+      }
+    }
+
+    // Poll every 5 seconds
+    const interval = setInterval(pollMessages, 5000)
+
+    return () => clearInterval(interval)
+  }, [otherUserId, userId, playSound])
 
   useEffect(() => {
     if (otherUserId) {
@@ -108,6 +157,10 @@ export default function MessagesPage() {
       if (response.ok) {
         const data = await response.json()
         setMessages(data.messages)
+        // Track message count for polling comparison
+        lastMessageCountRef.current = data.messages.length
+        // Clear unread for this contact
+        setUnreadCounts(prev => ({ ...prev, [otherUserId]: 0 }))
       }
     } catch (error) {
       console.error('Error fetching messages:', error)
@@ -201,22 +254,35 @@ export default function MessagesPage() {
             <Card className="bg-white border-2 border-gray-300 rounded-lg p-3 h-full overflow-y-auto">
               <h3 className="text-sm font-bold text-gray-900 mb-3">Klienter</h3>
               <div className="space-y-2">
-                {clients.map(client => (
-                  <button
-                    key={client.id}
-                    onClick={() => setOtherUserId(client.id)}
-                    className={`w-full text-left p-3 rounded-lg transition-all ${
-                      otherUserId === client.id
-                        ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-semibold'
-                        : 'bg-gray-50 hover:bg-gray-100 text-gray-900 border border-gray-200'
-                    }`}
-                  >
-                    <p className="font-medium text-sm">{client.name}</p>
-                    <p className={`text-xs ${otherUserId === client.id ? 'text-white/80' : 'text-gray-500'}`}>
-                      {client.email}
-                    </p>
-                  </button>
-                ))}
+                {clients.map(client => {
+                  const unread = unreadCounts[client.id] || 0
+                  return (
+                    <button
+                      key={client.id}
+                      onClick={() => setOtherUserId(client.id)}
+                      className={`w-full text-left p-3 rounded-lg transition-all relative ${
+                        otherUserId === client.id
+                          ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-semibold'
+                          : 'bg-gray-50 hover:bg-gray-100 text-gray-900 border border-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-sm">{client.name}</p>
+                          <p className={`text-xs ${otherUserId === client.id ? 'text-white/80' : 'text-gray-500'}`}>
+                            {client.email}
+                          </p>
+                        </div>
+                        {/* Unread badge */}
+                        {unread > 0 && otherUserId !== client.id && (
+                          <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-red-500 text-white text-xs font-bold rounded-full">
+                            {unread > 99 ? '99+' : unread}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  )
+                })}
               </div>
             </Card>
           </div>
@@ -327,6 +393,12 @@ export default function MessagesPage() {
 
             {/* Input Area */}
             <div className="flex-shrink-0 p-3 sm:p-4 border-t-2 border-gray-200 bg-gray-50">
+              <div className="flex items-center gap-2 mb-2">
+                <FAQPanel
+                  onSelectAnswer={(answer) => setNewMessage(answer)}
+                  isCoach={isCoach}
+                />
+              </div>
               <div className="flex gap-2">
                 <Input
                   value={newMessage}

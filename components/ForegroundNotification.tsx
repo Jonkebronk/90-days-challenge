@@ -5,13 +5,18 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { onForegroundMessage } from '@/lib/firebase'
 import { Bell } from 'lucide-react'
+import { useNotificationSound } from '@/lib/hooks/useNotificationSound'
 
 export function ForegroundNotification() {
   const router = useRouter()
+  const { playSound } = useNotificationSound()
 
   useEffect(() => {
     const unsubscribe = onForegroundMessage((payload) => {
       console.log('Foreground notification received:', payload)
+
+      // Play notification sound
+      playSound()
 
       // Handle both notification payload and data-only payload
       const title = payload.notification?.title || payload.data?.title || 'Ny notifikation'
@@ -33,7 +38,7 @@ export function ForegroundNotification() {
     })
 
     return unsubscribe
-  }, [router])
+  }, [router, playSound])
 
   return null
 }

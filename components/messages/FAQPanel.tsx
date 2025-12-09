@@ -1,0 +1,201 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { ChevronDown, ChevronRight, HelpCircle, MessageSquare, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+
+interface FAQ {
+  id: string
+  question: string
+  answer: string
+  category: string
+  forRole: string
+}
+
+interface FAQPanelProps {
+  onSelectAnswer?: (answer: string) => void
+  isCoach?: boolean
+}
+
+const categoryIcons: Record<string, string> = {
+  kost: '🍎',
+  traning: '🏋️',
+  'check-in': '📊',
+  allmant: '💬'
+}
+
+const categoryNames: Record<string, string> = {
+  kost: 'Kost & Näring',
+  traning: 'Träning',
+  'check-in': 'Check-in',
+  allmant: 'Allmänt'
+}
+
+export function FAQPanel({ onSelectAnswer, isCoach = false }: FAQPanelProps) {
+  const [faqs, setFaqs] = useState<FAQ[]>([])
+  const [grouped, setGrouped] = useState<Record<string, FAQ[]>>({})
+  const [loading, setLoading] = useState(true)
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([])
+  const [selectedFAQ, setSelectedFAQ] = useState<FAQ | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    fetchFAQs()
+  }, [])
+
+  const fetchFAQs = async () => {
+    try {
+      const response = await fetch('/api/messenger-faqs')
+      if (response.ok) {
+        const data = await response.json()
+        setFaqs(data.faqs)
+        setGrouped(data.grouped)
+      }
+    } catch (error) {
+      console.error('Error fetching FAQs:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev =>
+      prev.includes(category)
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    )
+  }
+
+  const handleSelectFAQ = (faq: FAQ) => {
+    setSelectedFAQ(faq)
+  }
+
+  const handleUseAnswer = () => {
+    if (selectedFAQ && onSelectAnswer) {
+      onSelectAnswer(selectedFAQ.answer)
+      setSelectedFAQ(null)
+      setIsOpen(false)
+    }
+  }
+
+  if (loading) {
+    return null
+  }
+
+  if (faqs.length === 0) {
+    return null
+  }
+
+  const categories = Object.keys(grouped)
+
+  return (
+    <div className="relative">
+      {/* Toggle Button */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setIsOpen(!isOpen)}
+        className={`flex items-center gap-2 border-2 ${
+          isOpen
+            ? 'border-gold-primary bg-gold-primary/10 text-gold-primary'
+            : 'border-gray-300 text-gray-600 hover:border-gold-primary hover:text-gold-primary'
+        }`}
+      >
+        <HelpCircle className="w-4 h-4" />
+        <span className="hidden sm:inline">Vanliga frågor</span>
+      </Button>
+
+      {/* FAQ Panel Dropdown */}
+      {isOpen && (
+        <Card className="absolute bottom-full left-0 mb-2 w-80 sm:w-96 max-h-[400px] overflow-hidden bg-white border-2 border-gray-200 shadow-xl z-50">
+          {/* Header */}
+          <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-gray-50">
+            <div className="flex items-center gap-2">
+              <HelpCircle className="w-5 h-5 text-gold-primary" />
+              <span className="font-semibold text-gray-900">Vanliga frågor</span>
+            </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1 hover:bg-gray-200 rounded-full transition-colors"
+            >
+              <X className="w-4 h-4 text-gray-500" />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="overflow-y-auto max-h-[320px]">
+            {selectedFAQ ? (
+              // Show selected FAQ answer
+              <div className="p-4">
+                <button
+                  onClick={() => setSelectedFAQ(null)}
+                  className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-3"
+                >
+                  <ChevronRight className="w-4 h-4 rotate-180" />
+                  Tillbaka
+                </button>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                  <p className="font-medium text-blue-900 text-sm">{selectedFAQ.question}</p>
+                </div>
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-3">
+                  <p className="text-gray-700 text-sm whitespace-pre-wrap">{selectedFAQ.answer}</p>
+                </div>
+                <Button
+                  onClick={handleUseAnswer}
+                  className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white"
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Använd som svar
+                </Button>
+              </div>
+            ) : (
+              // Show FAQ categories
+              <div className="p-2">
+                {categories.map(category => (
+                  <div key={category} className="mb-1">
+                    <button
+                      onClick={() => toggleCategory(category)}
+                      className="w-full flex items-center justify-between p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{categoryIcons[category] || '📋'}</span>
+                        <span className="font-medium text-gray-900 text-sm">
+                          {categoryNames[category] || category}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          ({grouped[category].length})
+                        </span>
+                      </div>
+                      {expandedCategories.includes(category) ? (
+                        <ChevronDown className="w-4 h-4 text-gray-400" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                      )}
+                    </button>
+
+                    {expandedCategories.includes(category) && (
+                      <div className="ml-4 mt-1 space-y-1">
+                        {grouped[category].map(faq => (
+                          <button
+                            key={faq.id}
+                            onClick={() => handleSelectFAQ(faq)}
+                            className="w-full text-left p-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors"
+                          >
+                            {faq.question}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+    </div>
+  )
+}
+
+export default FAQPanel

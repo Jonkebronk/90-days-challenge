@@ -2483,3 +2483,23 @@ model FoodLogItem {
   @@index([foodLogId])
   @@map("food_log_items")
 }
+
+// ========================================
+// MESSENGER FAQ
+// ========================================
+
+model MessengerFAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String   @db.Text
+  category  String   // "kost", "traning", "check-in", "allmant"
+  forRole   String   @default("both") // "client", "coach", "both"
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([forRole])
+  @@map("messenger_faqs")
+}
