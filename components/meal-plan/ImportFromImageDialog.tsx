@@ -422,15 +422,24 @@ export function ImportFromImageDialog({
                               <span className="font-medium text-gray-900 truncate">
                                 {item.name}
                               </span>
-                              {item.alternatives && item.alternatives.length > 0 && (
-                                <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
-                                  +{item.alternatives.length} alt
-                                </span>
-                              )}
                             </div>
                             <div className="text-xs text-gray-500 mt-0.5">
                               {item.amount}{item.unit} · P: {item.protein}g · K: {item.carbs}g · F: {item.fat}g · {Math.round(item.kcal)} kcal
                             </div>
+                            {/* Show alternatives */}
+                            {item.alternatives && item.alternatives.length > 0 && (
+                              <div className="mt-1.5 pl-3 border-l-2 border-amber-300">
+                                <div className="text-xs text-amber-700 font-medium mb-1">
+                                  Alternativ:
+                                </div>
+                                {item.alternatives.map((alt, altIndex) => (
+                                  <div key={altIndex} className="text-xs text-gray-600 flex items-center gap-1">
+                                    <span className="text-amber-500">•</span>
+                                    {alt}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                             <div className="flex items-center gap-2 mt-1">
                               {item.slv_match ? (
                                 <button
