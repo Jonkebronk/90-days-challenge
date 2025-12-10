@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import {
   Send, Image as ImageIcon, X, ZoomIn, MessageCircle, Loader2,
-  Search, Reply, Pencil, Trash2, Check, CheckCheck, MoreVertical
+  Search, Reply, Pencil, Trash2, Check, CheckCheck, MoreVertical, User
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { FAQPanel } from '@/components/messages/FAQPanel'
@@ -470,7 +470,27 @@ export default function MessagesPage() {
                         : 'bg-gray-50 hover:bg-gray-100 text-gray-900 border border-gray-200'
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start gap-3">
+                      {/* Contact Avatar */}
+                      <div className="flex-shrink-0">
+                        {contact.image ? (
+                          <img
+                            src={contact.image}
+                            alt={contact.name || 'Profilbild'}
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            otherUserId === contact.id
+                              ? 'bg-white/20'
+                              : 'bg-gradient-to-br from-amber-400 to-orange-500'
+                          }`}>
+                            <span className="text-white font-bold text-sm">
+                              {(contact.name || contact.email).charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="font-semibold text-sm truncate">{contact.name || contact.email}</p>
@@ -508,9 +528,20 @@ export default function MessagesPage() {
               <div className="flex-shrink-0 p-3 sm:p-4 border-b-2 border-gray-200 bg-gray-50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-primary to-gold-secondary flex items-center justify-center">
-                      <MessageCircle className="w-5 h-5 text-white" />
-                    </div>
+                    {/* Chat Header Avatar */}
+                    {selectedContact.image ? (
+                      <img
+                        src={selectedContact.image}
+                        alt={selectedContact.name || 'Profilbild'}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                        <span className="text-white font-bold text-lg">
+                          {(selectedContact.name || selectedContact.email).charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )}
                     <div>
                       <h3 className="text-base font-bold text-gray-900">{selectedContact.name}</h3>
                       {typingUser && <p className="text-xs text-green-600 animate-pulse">{typingUser} skriver...</p>}

@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Eye, EyeOff, Bell, BellOff, CheckCircle2, XCircle, RefreshCw, Scale, Rocket } from 'lucide-react'
+import { Eye, EyeOff, Bell, BellOff, CheckCircle2, XCircle, RefreshCw, Scale, Rocket, Camera, User, Loader2 } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { requestNotificationPermission, isPushSupported, getNotificationPermission } from '@/lib/firebase'
 
@@ -45,10 +45,30 @@ export default function ProfilePage() {
   // Get Started section visibility state
   const [hideGetStarted, setHideGetStarted] = useState(false)
 
+  // Profile image state
+  const [profileImage, setProfileImage] = useState<string | null>(null)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+
   // Load Get Started visibility from localStorage
   useEffect(() => {
     const hidden = localStorage.getItem('hideGetStarted') === 'true'
     setHideGetStarted(hidden)
+  }, [])
+
+  // Load profile image on mount
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const res = await fetch('/api/user/profile')
+        if (res.ok) {
+          const data = await res.json()
+          setProfileImage(data.image)
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error)
+      }
+    }
+    fetchProfile()
   }, [])
 
   const handleToggleGetStarted = () => {
@@ -56,6 +76,56 @@ export default function ProfilePage() {
     setHideGetStarted(newValue)
     localStorage.setItem('hideGetStarted', newValue.toString())
     toast.success(newValue ? '"Kom igång" är nu dold' : '"Kom igång" visas nu på dashboard')
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Check file size (max 2MB for base64 storage)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Bilden är för stor (max 2MB)')
+      return
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Endast bilder är tillåtna')
+      return
+    }
+
+    setIsUploadingImage(true)
+    try {
+      // Convert to base64
+      const reader = new FileReader()
+      reader.onloadend = async () => {
+        const base64 = reader.result as string
+
+        // Save to profile
+        const res = await fetch('/api/user/profile', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64 })
+        })
+
+        if (res.ok) {
+          setProfileImage(base64)
+          toast.success('Profilbild uppdaterad!')
+        } else {
+          toast.error('Kunde inte spara bilden')
+        }
+        setIsUploadingImage(false)
+      }
+      reader.onerror = () => {
+        toast.error('Kunde inte läsa bilden')
+        setIsUploadingImage(false)
+      }
+      reader.readAsDataURL(file)
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      toast.error('Ett fel uppstod')
+      setIsUploadingImage(false)
+    }
   }
 
   // Check push notification status on mount
@@ -261,6 +331,57 @@ export default function ProfilePage() {
       </div>
 
       <div className="space-y-6 max-w-4xl mx-auto">
+        {/* Profile Image Card */}
+        <div className="bg-white border-2 border-gray-300 rounded-xl shadow-lg p-6">
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            {/* Profile Image */}
+            <div className="relative group">
+              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-gold-primary shadow-lg">
+                {profileImage ? (
+                  <img
+                    src={profileImage}
+                    alt="Profilbild"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                    <User className="w-12 h-12 sm:w-16 sm:h-16 text-white" />
+                  </div>
+                )}
+              </div>
+              {/* Upload overlay */}
+              <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                {isUploadingImage ? (
+                  <Loader2 className="w-8 h-8 text-white animate-spin" />
+                ) : (
+                  <Camera className="w-8 h-8 text-white" />
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  disabled={isUploadingImage}
+                />
+              </label>
+            </div>
+
+            {/* User Info */}
+            <div className="text-center sm:text-left">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {session?.user?.name || 'Användare'}
+              </h2>
+              <p className="text-gray-500 mt-1">{session?.user?.email}</p>
+              <p className="text-sm text-amber-600 font-medium mt-2">
+                {(session?.user as any)?.role === 'COACH' ? 'Coach' : 'Klient'}
+              </p>
+              <p className="text-xs text-gray-400 mt-3">
+                Håll muspekaren över bilden för att ändra
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* User Info Card */}
         <div className="bg-white border-2 border-gray-300 rounded-xl shadow-lg">
           <div className="p-6 border-b-2 border-gray-200 bg-gray-50 rounded-t-xl">
