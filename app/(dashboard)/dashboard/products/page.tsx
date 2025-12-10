@@ -22,13 +22,15 @@ import {
   Plus,
   Camera,
   Database,
-  Store
+  Store,
+  FolderCog
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { LabelScannerModal } from '@/components/products/LabelScannerModal'
 import { ManualProductModal } from '@/components/products/ManualProductModal'
 import { EditProductModal } from '@/components/products/EditProductModal'
+import { ManageCategoriesModal } from '@/components/products/ManageCategoriesModal'
 import { SUBCATEGORIES_BY_CATEGORY } from '@/lib/products/subcategories'
 
 interface Product {
@@ -97,6 +99,7 @@ export default function ProductsPage() {
   const [editCategory, setEditCategory] = useState<string>('')
   const [isLabelScannerOpen, setIsLabelScannerOpen] = useState(false)
   const [isManualAddOpen, setIsManualAddOpen] = useState(false)
+  const [isManageCategoriesOpen, setIsManageCategoriesOpen] = useState(false)
 
   const fetchProducts = useCallback(async () => {
     setIsLoading(true)
@@ -167,6 +170,16 @@ export default function ProductsPage() {
               <p className="text-xs sm:text-sm text-gray-500">{totalProducts} produkter</p>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2">
+              {/* Desktop: Manage Categories button */}
+              <Button
+                onClick={() => setIsManageCategoriesOpen(true)}
+                variant="outline"
+                size="sm"
+                className="hidden sm:flex"
+              >
+                <FolderCog className="w-4 h-4 mr-2" />
+                Kategorier
+              </Button>
               {/* Desktop: Manual Add button */}
               <Button
                 onClick={() => setIsManualAddOpen(true)}
@@ -398,6 +411,13 @@ export default function ProductsPage() {
         isOpen={isManualAddOpen}
         onClose={() => setIsManualAddOpen(false)}
         onProductAdded={fetchProducts}
+      />
+
+      {/* Manage Categories Modal */}
+      <ManageCategoriesModal
+        isOpen={isManageCategoriesOpen}
+        onClose={() => setIsManageCategoriesOpen(false)}
+        onCategoriesChanged={fetchProducts}
       />
     </div>
   )
