@@ -20,6 +20,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { SUBCATEGORIES_BY_CATEGORY } from '@/lib/products/subcategories'
 
 interface SLVFood {
   slvNummer: number
@@ -66,6 +67,7 @@ interface Product {
   name: string
   brand: string | null
   category: string | null
+  subCategory?: string | null
   image: string | null
   kcal: number
   protein: number
@@ -172,6 +174,8 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
     zinc: '',
     iodine: '',
     slvNummer: null as number | null,
+    subCategory: '',
+    source: '',
   })
 
   // Initialize form when product changes
@@ -202,6 +206,8 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
         zinc: product.zinc?.toString() || '',
         iodine: product.iodine?.toString() || '',
         slvNummer: product.slvNummer || null,
+        subCategory: product.subCategory || '',
+        source: product.source || '',
       })
       setImagePreview(product.image || null)
       setNewImageBase64(null)
@@ -362,6 +368,8 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
           sugar: formData.sugar ? parseFloat(formData.sugar) : null,
           salt: formData.salt ? parseFloat(formData.salt) : null,
           category: formData.category || null,
+          subCategory: formData.subCategory || null,
+          source: formData.source || undefined,
           image: newImageBase64 || undefined,
           // Micronutrients
           saturatedFat: formData.saturatedFat ? parseFloat(formData.saturatedFat) : null,
@@ -875,7 +883,8 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
                   key={cat.id}
                   onClick={() => setFormData(prev => ({
                     ...prev,
-                    category: prev.category === cat.id ? '' : cat.id
+                    category: prev.category === cat.id ? '' : cat.id,
+                    subCategory: prev.category === cat.id ? prev.subCategory : '' // Clear subcategory when changing category
                   }))}
                   className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
                     formData.category === cat.id
@@ -884,6 +893,51 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
                   }`}
                 >
                   {cat.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Subcategory - show when category has subcategories */}
+            {formData.category && SUBCATEGORIES_BY_CATEGORY[formData.category.toLowerCase()] && (
+              <div className="mt-3">
+                <Label className="text-sm text-gray-600">Subkategori</Label>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {SUBCATEGORIES_BY_CATEGORY[formData.category.toLowerCase()]?.map(subcat => (
+                    <button
+                      key={subcat.key}
+                      onClick={() => setFormData(prev => ({
+                        ...prev,
+                        subCategory: prev.subCategory === subcat.key ? '' : subcat.key
+                      }))}
+                      className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
+                        formData.subCategory === subcat.key
+                          ? 'bg-gray-800 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {subcat.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Source/Källa */}
+          <div className="border-t pt-4">
+            <Label className="text-sm">Källa</Label>
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {['ica', 'manual', 'import'].map(src => (
+                <button
+                  key={src}
+                  onClick={() => setFormData(prev => ({ ...prev, source: src }))}
+                  className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
+                    formData.source === src
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {src === 'ica' ? 'ICA' : src === 'manual' ? 'Manuell' : 'Import'}
                 </button>
               ))}
             </div>
