@@ -261,7 +261,12 @@ export default function ProductsPage() {
                 <button
                   key={cat.id}
                   onClick={() => {
-                    setSelectedCategory(cat.id)
+                    // Toggle: if already selected (except 'all'), go back to 'all'
+                    if (isActive && cat.id !== 'all') {
+                      setSelectedCategory('all')
+                    } else {
+                      setSelectedCategory(cat.id)
+                    }
                     setSelectedSubcategory(null)
                   }}
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm transition-colors ${
@@ -304,7 +309,7 @@ export default function ProductsPage() {
                 return (
                   <button
                     key={subcat.key}
-                    onClick={() => setSelectedSubcategory(subcat.key)}
+                    onClick={() => setSelectedSubcategory(isActive ? null : subcat.key)}
                     className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-sm transition-colors ${
                       isActive
                         ? 'bg-gray-800 text-white font-medium'
