@@ -57,7 +57,8 @@
       "WebFetch(domain:dataportal.livsmedelsverket.se)",
       "Bash(git rm:*)",
       "Bash(node scripts/count-products.js:*)",
-      "Bash(npx next build:*)"
+      "Bash(npx next build:*)",
+      "WebFetch(domain:handlaprivatkund.ica.se)"
     ],
     "deny": [],
     "ask": []
