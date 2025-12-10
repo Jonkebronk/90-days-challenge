@@ -214,7 +214,7 @@ export default function WeightTrackerPage() {
         )}
       </div>
 
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Client Selector for Coaches */}
         {isCoach && (
           <Card className="bg-white border border-gray-200">
