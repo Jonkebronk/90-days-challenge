@@ -619,60 +619,85 @@ export function MealCard({
             onFindProducts={onFindProducts}
           />
 
-          {/* Tillägg & Kosttillskott */}
-          <div className="pt-3 border-t border-zinc-200 space-y-3">
-            {/* Tillägg */}
-            <div className="flex items-start gap-2">
-              <span className="text-xs text-emerald-600 font-medium shrink-0 pt-1">Tillägg:</span>
-              <div className="flex flex-wrap gap-1.5 flex-1">
-                {meal.tillaggItems && meal.tillaggItems.length > 0 ? (
-                  meal.tillaggItems.map((item, index) => (
-                    <span
-                      key={item.id}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-xs"
-                    >
-                      {item.text}
-                      {onRemoveTillagg && (
-                        <button onClick={() => onRemoveTillagg(meal.type, index)} className="hover:text-red-500">
-                          <X className="h-2.5 w-2.5" />
-                        </button>
-                      )}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-xs text-zinc-400 italic">Inga tillägg</span>
-                )}
-                {onAddTillagg && (
-                  <FreeTextInput placeholder="Lägg till..." onAdd={(text) => onAddTillagg(meal.type, text)} color="emerald" />
-                )}
-              </div>
+          {/* Tillägg card */}
+          <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
+            <div className="bg-zinc-100 px-4 py-2.5 border-b border-zinc-200">
+              <h4 className="text-sm font-bold text-zinc-800 uppercase tracking-wide">TILLÄGG</h4>
             </div>
-
-            {/* Kosttillskott */}
-            <div className="flex items-start gap-2">
-              <span className="text-xs text-purple-600 font-medium shrink-0 pt-1">Tillskott:</span>
-              <div className="flex flex-wrap gap-1.5 flex-1">
-                {meal.supplementItems && meal.supplementItems.length > 0 ? (
-                  meal.supplementItems.map((item, index) => (
-                    <span
-                      key={item.id}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-50 text-purple-700 rounded text-xs"
-                    >
-                      {item.text}
-                      {onRemoveSupplement && (
-                        <button onClick={() => onRemoveSupplement(meal.type, index)} className="hover:text-red-500">
-                          <X className="h-2.5 w-2.5" />
+            <div className="px-4 py-3">
+              {meal.tillaggItems && meal.tillaggItems.length > 0 ? (
+                <div className="space-y-1">
+                  {meal.tillaggItems.map((item, index) => (
+                    <div key={item.id} className="flex items-center gap-2 py-1 group">
+                      <span className="text-zinc-400 text-lg leading-none">•</span>
+                      <span className="flex-1 text-sm text-zinc-700">{item.text}</span>
+                      {onRemoveTillagg && (
+                        <button
+                          onClick={() => onRemoveTillagg(meal.type, index)}
+                          className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-zinc-100"
+                        >
+                          <X className="h-3.5 w-3.5 text-zinc-400 hover:text-red-500" />
                         </button>
                       )}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-xs text-zinc-400 italic">Inga tillskott</span>
-                )}
-                {onAddSupplement && (
-                  <FreeTextInput placeholder="Lägg till..." onAdd={(text) => onAddSupplement(meal.type, text)} color="purple" />
-                )}
-              </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-zinc-400 italic">Inga tillägg</p>
+              )}
+              {onAddTillagg && (
+                <button
+                  onClick={() => {
+                    const text = prompt('Lägg till tillägg:')
+                    if (text?.trim()) onAddTillagg(meal.type, text.trim())
+                  }}
+                  className="flex items-center gap-1 mt-2 pt-2 border-t border-zinc-100 text-emerald-600 hover:text-emerald-700 text-xs transition-colors"
+                >
+                  <Plus className="h-3 w-3" />
+                  <span>Lägg till</span>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Kosttillskott card */}
+          <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
+            <div className="bg-zinc-100 px-4 py-2.5 border-b border-zinc-200">
+              <h4 className="text-sm font-bold text-zinc-800 uppercase tracking-wide">KOSTTILLSKOTT</h4>
+            </div>
+            <div className="px-4 py-3">
+              {meal.supplementItems && meal.supplementItems.length > 0 ? (
+                <div className="space-y-1">
+                  {meal.supplementItems.map((item, index) => (
+                    <div key={item.id} className="flex items-center gap-2 py-1 group">
+                      <span className="text-zinc-400 text-lg leading-none">•</span>
+                      <span className="flex-1 text-sm text-zinc-700">{item.text}</span>
+                      {onRemoveSupplement && (
+                        <button
+                          onClick={() => onRemoveSupplement(meal.type, index)}
+                          className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-zinc-100"
+                        >
+                          <X className="h-3.5 w-3.5 text-zinc-400 hover:text-red-500" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-zinc-400 italic">Inga tillskott</p>
+              )}
+              {onAddSupplement && (
+                <button
+                  onClick={() => {
+                    const text = prompt('Lägg till kosttillskott:')
+                    if (text?.trim()) onAddSupplement(meal.type, text.trim())
+                  }}
+                  className="flex items-center gap-1 mt-2 pt-2 border-t border-zinc-100 text-purple-600 hover:text-purple-700 text-xs transition-colors"
+                >
+                  <Plus className="h-3 w-3" />
+                  <span>Lägg till</span>
+                </button>
+              )}
             </div>
           </div>
 
