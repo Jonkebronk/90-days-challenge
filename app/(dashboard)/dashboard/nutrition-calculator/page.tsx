@@ -54,7 +54,7 @@ export default async function NutritionCalculatorPage() {
         </p>
       </div>
 
-      <div className="px-4 lg:px-0">
+      <div>
         {/* Main Calculator */}
         {clients.length > 0 ? (
           <NutritionCalculatorClient clients={clients} />

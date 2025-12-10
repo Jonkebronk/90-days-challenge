@@ -292,7 +292,7 @@ export default function ClientRoadmapPage() {
         </p>
       </div>
 
-      <div className="px-4 lg:px-0 space-y-6">
+      <div className="space-y-6">
 
       {/* Progress Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

@@ -308,7 +308,7 @@ export default function NutritionAdminPage() {
   }
 
   return (
-    <div className="px-4 lg:px-0 py-6 space-y-6">
+    <div className="py-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

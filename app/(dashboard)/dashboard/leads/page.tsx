@@ -209,7 +209,7 @@ export default function LeadsPage() {
   }
 
   return (
-    <div className="px-4 lg:px-0 py-6 space-y-8">
+    <div className="py-6 space-y-8">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />

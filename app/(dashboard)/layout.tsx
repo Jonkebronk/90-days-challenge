@@ -166,7 +166,7 @@ export default function DashboardLayout({
 
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-gray-200 shadow-sm">
-        <div className="container mx-auto px-4 max-w-[100vw]">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 overflow-x-hidden">
             {/* Logo */}
             <Link href="/dashboard" className="flex items-center mr-6 group flex-shrink-0">
@@ -440,7 +440,7 @@ export default function DashboardLayout({
       </header>
 
       {/* Main Content */}
-      <main className="w-full px-4 lg:px-0 py-8">
+      <main className="w-full px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
     </div>

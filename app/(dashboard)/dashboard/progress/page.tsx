@@ -139,7 +139,7 @@ export default function ProgressPage() {
   // Coach view
   if (isCoach) {
     return (
-      <div className="px-4 lg:px-0 py-6 space-y-6">
+      <div className="py-6 space-y-6">
         <div>
           <Link href="/dashboard">
             <Button variant="ghost" size="sm" className="mb-4">

@@ -71,7 +71,7 @@ export default function ArticleFeedbackPage() {
   const withCommentsCount = feedbackData.filter((f) => f.comment).length
 
   return (
-    <div className="px-4 lg:px-0 py-6 space-y-8">
+    <div className="py-6 space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Artikel Feedback</h1>

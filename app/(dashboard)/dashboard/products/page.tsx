@@ -160,10 +160,10 @@ export default function ProductsPage() {
   const totalProducts = Object.values(sourceCounts).reduce((a, b) => a + b, 0)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="px-4 lg:px-0 py-3 sm:py-4">
+        <div className="px-0 py-3 sm:py-4">
           {/* Title row */}
           <div className="flex items-center justify-between mb-3">
             <div>
@@ -254,7 +254,7 @@ export default function ProductsPage() {
         </div>
 
         {/* Category tabs - horizontal scroll on mobile */}
-        <div className="px-4 lg:px-0 overflow-x-auto scrollbar-hide">
+        <div className="px-0 overflow-x-auto scrollbar-hide">
           <div className="flex gap-1 pb-2 min-w-max">
             {CATEGORIES.map(cat => {
               const count = cat.id === 'all' ? totalProducts : (categoryCounts[cat.id] || 0)
@@ -291,7 +291,7 @@ export default function ProductsPage() {
       </div>
 
       {/* Content */}
-      <div className="px-4 lg:px-0 py-4 sm:py-6">
+      <div className="px-0 py-4 sm:py-6">
         <div className="flex gap-4">
           {/* Subcategory sidebar - only show when category has subcategories */}
           {selectedCategory !== 'all' && SUBCATEGORIES_BY_CATEGORY[selectedCategory.toLowerCase()] && (
