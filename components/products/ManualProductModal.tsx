@@ -6,7 +6,6 @@ import {
   Plus,
   Loader2,
   Package,
-  Info,
   Upload,
   ImageIcon,
   Database,
@@ -363,17 +362,6 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {/* Tips */}
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex items-start gap-2">
-            <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
-            <div className="text-sm text-blue-700">
-              <p className="font-medium">Tips för ICA-produkter:</p>
-              <p className="text-blue-600 mt-1">
-                Gå till produktsidan på ica.se, kopiera namn och näringsvärden (per 100g) och klistra in här.
-              </p>
-            </div>
-          </div>
-
           {/* Image upload */}
           <div>
             <Label className="text-sm">Produktbild</Label>
