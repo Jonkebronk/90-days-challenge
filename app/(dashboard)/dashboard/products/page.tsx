@@ -658,8 +658,8 @@ function ClientRequestModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-white w-full sm:max-w-lg sm:rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black/50 flex items-start sm:items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white w-full max-w-lg rounded-2xl overflow-hidden flex flex-col my-4 sm:my-0">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center gap-2 text-amber-600">
