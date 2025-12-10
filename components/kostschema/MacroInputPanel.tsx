@@ -277,35 +277,35 @@ export function MacroInputPanel({
 
       {/* Current day totals */}
       <div className="flex items-center justify-between pt-4 border-t-2 border-zinc-200">
-        <span className="text-sm font-semibold text-zinc-600">Dagens makros:</span>
-        <div className="flex items-center gap-3">
+        <span className="text-sm font-semibold text-zinc-600 flex-shrink-0">Dagens makros:</span>
+        <div className="flex items-center gap-4 flex-shrink-0">
           {/* Kcal badge */}
-          <div className="flex items-center gap-1.5">
-            <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <div className="w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0">
               <span className="text-xs font-bold text-white">K</span>
             </div>
-            <span className="text-sm font-bold text-zinc-700">{dayConfig.totalCalories}</span>
+            <span className="text-sm font-bold text-zinc-700 whitespace-nowrap">{dayConfig.totalCalories}</span>
           </div>
           {/* Protein badge */}
-          <div className="flex items-center gap-1.5">
-            <div className="w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <div className="w-7 h-7 rounded-full bg-rose-500 flex items-center justify-center flex-shrink-0">
               <span className="text-xs font-bold text-white">P</span>
             </div>
-            <span className="text-sm font-bold text-zinc-700">{dayConfig.totalProtein}g</span>
+            <span className="text-sm font-bold text-zinc-700 whitespace-nowrap">{dayConfig.totalProtein}g</span>
           </div>
           {/* Fat badge */}
-          <div className="flex items-center gap-1.5">
-            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
               <span className="text-xs font-bold text-white">F</span>
             </div>
-            <span className="text-sm font-bold text-zinc-700">{dayConfig.totalFat}g</span>
+            <span className="text-sm font-bold text-zinc-700 whitespace-nowrap">{dayConfig.totalFat}g</span>
           </div>
           {/* Carbs badge */}
-          <div className="flex items-center gap-1.5">
-            <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <div className="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
               <span className="text-xs font-bold text-white">C</span>
             </div>
-            <span className="text-sm font-bold text-zinc-700">{dayConfig.totalCarbs}g</span>
+            <span className="text-sm font-bold text-zinc-700 whitespace-nowrap">{dayConfig.totalCarbs}g</span>
           </div>
         </div>
       </div>
