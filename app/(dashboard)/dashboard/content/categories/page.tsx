@@ -406,7 +406,7 @@ export default function CategoriesPage() {
 
   return (
     <div className="min-h-screen bg-gray-900">
-      <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+      <div className="px-4 lg:px-0 py-6 space-y-8">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
           <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
