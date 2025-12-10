@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useSession } from 'next-auth/react'
 import {
   Search,
   Package,
@@ -23,7 +24,13 @@ import {
   Camera,
   Database,
   Store,
-  FolderCog
+  FolderCog,
+  Inbox,
+  Send,
+  ImagePlus,
+  X,
+  Check,
+  ChevronDown
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -85,6 +92,9 @@ const CATEGORIES = [
 ]
 
 export default function ProductsPage() {
+  const { data: session } = useSession()
+  const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
+
   const [products, setProducts] = useState<Product[]>([])
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({})
   const [sourceCounts, setSourceCounts] = useState<Record<string, number>>({})
@@ -100,6 +110,7 @@ export default function ProductsPage() {
   const [isLabelScannerOpen, setIsLabelScannerOpen] = useState(false)
   const [isManualAddOpen, setIsManualAddOpen] = useState(false)
   const [isManageCategoriesOpen, setIsManageCategoriesOpen] = useState(false)
+  const [isRequestsInboxOpen, setIsRequestsInboxOpen] = useState(false)
 
   const fetchProducts = useCallback(async () => {
     setIsLoading(true)
@@ -170,35 +181,50 @@ export default function ProductsPage() {
               <p className="text-xs sm:text-sm text-gray-500">{totalProducts} produkter</p>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2">
-              {/* Desktop: Manage Categories button */}
-              <Button
-                onClick={() => setIsManageCategoriesOpen(true)}
-                variant="outline"
-                size="sm"
-                className="hidden sm:flex"
-              >
-                <FolderCog className="w-4 h-4 mr-2" />
-                Kategorier
-              </Button>
-              {/* Desktop: Manual Add button */}
-              <Button
-                onClick={() => setIsManualAddOpen(true)}
-                variant="outline"
-                size="sm"
-                className="hidden sm:flex"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Lägg till manuellt
-              </Button>
-              {/* Camera/Scan button */}
-              <Button
-                onClick={() => setIsLabelScannerOpen(true)}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                size="sm"
-              >
-                <Camera className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Skanna</span>
-              </Button>
+              {/* Coach only buttons */}
+              {isCoach && (
+                <>
+                  {/* Inbox for product requests */}
+                  <Button
+                    onClick={() => setIsRequestsInboxOpen(true)}
+                    variant="outline"
+                    size="sm"
+                    className="hidden sm:flex"
+                  >
+                    <Inbox className="w-4 h-4 mr-2" />
+                    Förfrågningar
+                  </Button>
+                  {/* Desktop: Manage Categories button */}
+                  <Button
+                    onClick={() => setIsManageCategoriesOpen(true)}
+                    variant="outline"
+                    size="sm"
+                    className="hidden sm:flex"
+                  >
+                    <FolderCog className="w-4 h-4 mr-2" />
+                    Kategorier
+                  </Button>
+                  {/* Desktop: Manual Add button */}
+                  <Button
+                    onClick={() => setIsManualAddOpen(true)}
+                    variant="outline"
+                    size="sm"
+                    className="hidden sm:flex"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Lägg till manuellt
+                  </Button>
+                  {/* Camera/Scan button */}
+                  <Button
+                    onClick={() => setIsLabelScannerOpen(true)}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                    size="sm"
+                  >
+                    <Camera className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Skanna</span>
+                  </Button>
+                </>
+              )}
               <div className="hidden sm:block h-6 w-px bg-gray-200" />
               <Button
                 variant={viewMode === 'grid' ? 'default' : 'outline'}
@@ -366,6 +392,7 @@ export default function ProductsPage() {
                   <ProductCard
                     key={product.id}
                     product={product}
+                    isCoach={isCoach}
                     onEdit={() => {
                       setEditingProduct(product)
                       setEditCategory(product.category || '')
@@ -379,6 +406,7 @@ export default function ProductsPage() {
                   <ProductRow
                     key={product.id}
                     product={product}
+                    isCoach={isCoach}
                     onEdit={() => {
                       setEditingProduct(product)
                       setEditCategory(product.category || '')
@@ -390,6 +418,11 @@ export default function ProductsPage() {
           </div>
         </div>
       </div>
+
+      {/* Client Request Form - Only for clients */}
+      {!isCoach && (
+        <ClientRequestForm categories={CATEGORIES} />
+      )}
 
       {/* Edit Product Modal */}
       <EditProductModal
@@ -419,11 +452,20 @@ export default function ProductsPage() {
         onClose={() => setIsManageCategoriesOpen(false)}
         onCategoriesChanged={fetchProducts}
       />
+
+      {/* Product Requests Inbox Modal - Coach only */}
+      {isCoach && (
+        <ProductRequestsInbox
+          isOpen={isRequestsInboxOpen}
+          onClose={() => setIsRequestsInboxOpen(false)}
+          onProductAdded={fetchProducts}
+        />
+      )}
     </div>
   )
 }
 
-function ProductCard({ product, onEdit }: { product: Product; onEdit: () => void }) {
+function ProductCard({ product, isCoach, onEdit }: { product: Product; isCoach: boolean; onEdit: () => void }) {
   return (
     <div className="bg-white rounded border border-gray-100 overflow-hidden hover:shadow-sm transition-shadow">
       {/* Bild */}
@@ -439,12 +481,14 @@ function ProductCard({ product, onEdit }: { product: Product; onEdit: () => void
             <Package className="w-8 h-8 text-gray-200" />
           </div>
         )}
-        <button
-          onClick={onEdit}
-          className="absolute top-1 right-1 p-1 bg-white/90 rounded shadow-sm hover:bg-white"
-        >
-          <Edit2 className="w-3 h-3 text-gray-500" />
-        </button>
+        {isCoach && (
+          <button
+            onClick={onEdit}
+            className="absolute top-1 right-1 p-1 bg-white/90 rounded shadow-sm hover:bg-white"
+          >
+            <Edit2 className="w-3 h-3 text-gray-500" />
+          </button>
+        )}
       </div>
 
       {/* Info */}
@@ -462,7 +506,7 @@ function ProductCard({ product, onEdit }: { product: Product; onEdit: () => void
   )
 }
 
-function ProductRow({ product, onEdit }: { product: Product; onEdit: () => void }) {
+function ProductRow({ product, isCoach, onEdit }: { product: Product; isCoach: boolean; onEdit: () => void }) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-2.5 sm:p-3 flex items-center gap-2 sm:gap-3 hover:shadow-sm transition-shadow">
       <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
@@ -500,12 +544,387 @@ function ProductRow({ product, onEdit }: { product: Product; onEdit: () => void 
           {Math.round(product.protein)}P {Math.round(product.carbs)}K {Math.round(product.fat)}F
         </div>
       </div>
-      <button
-        onClick={onEdit}
-        className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+      {isCoach && (
+        <button
+          onClick={onEdit}
+          className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+        >
+          <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
+        </button>
+      )}
+    </div>
+  )
+}
+
+// Client Request Form Component
+function ClientRequestForm({ categories }: { categories: typeof CATEGORIES }) {
+  const [name, setName] = useState('')
+  const [brand, setBrand] = useState('')
+  const [category, setCategory] = useState('')
+  const [frontImage, setFrontImage] = useState<string | null>(null)
+  const [nutritionImage, setNutritionImage] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+
+  const handleImageUpload = (file: File, type: 'front' | 'nutrition') => {
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      if (type === 'front') {
+        setFrontImage(reader.result as string)
+      } else {
+        setNutritionImage(reader.result as string)
+      }
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleSubmit = async () => {
+    if (!name.trim()) return
+
+    setIsSubmitting(true)
+    try {
+      const res = await fetch('/api/product-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          brand: brand.trim() || null,
+          category: category || null,
+          frontImage,
+          nutritionImage
+        })
+      })
+
+      if (res.ok) {
+        setSubmitted(true)
+        setName('')
+        setBrand('')
+        setCategory('')
+        setFrontImage(null)
+        setNutritionImage(null)
+        setTimeout(() => setSubmitted(false), 3000)
+      }
+    } catch (error) {
+      console.error('Failed to submit request:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 mt-6 p-4 sm:p-6">
+      <h2 className="text-amber-600 font-medium text-center mb-4">
+        Hittar du inte det du söker? Ange livsmedlet du söker nedan och skicka en förfrågan till oss.
+      </h2>
+
+      {/* Image uploads */}
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <p className="text-sm text-gray-600 text-center mb-2">Bild på framsidan</p>
+          <label className="block aspect-square bg-gray-800 rounded-lg cursor-pointer overflow-hidden relative">
+            {frontImage ? (
+              <img src={frontImage} alt="Framsida" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                <ImagePlus className="w-8 h-8 mb-2" />
+                <span className="text-sm">Lägg till bild</span>
+              </div>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'front')}
+            />
+            {frontImage && (
+              <button
+                onClick={(e) => { e.preventDefault(); setFrontImage(null) }}
+                className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </label>
+        </div>
+        <div>
+          <p className="text-sm text-gray-600 text-center mb-2">Bild på Innehållsförteckningen</p>
+          <label className="block aspect-square bg-gray-800 rounded-lg cursor-pointer overflow-hidden relative">
+            {nutritionImage ? (
+              <img src={nutritionImage} alt="Innehållsförteckning" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                <ImagePlus className="w-8 h-8 mb-2" />
+                <span className="text-sm">Lägg till bild</span>
+              </div>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'nutrition')}
+            />
+            {nutritionImage && (
+              <button
+                onClick={(e) => { e.preventDefault(); setNutritionImage(null) }}
+                className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </label>
+        </div>
+      </div>
+
+      {/* Category dropdown */}
+      <div className="mb-4">
+        <h3 className="font-medium text-gray-900 mb-2">Välj kategori</h3>
+        <div className="relative">
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-white pr-10"
+          >
+            <option value="">Välj kategori</option>
+            {categories.filter(c => c.id !== 'all').map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.label}</option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+        </div>
+      </div>
+
+      {/* Name and Brand inputs */}
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <h3 className="font-medium text-gray-900 mb-2">Livsmedelsnamn</h3>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="t.ex. Kvarg vanilj"
+            className="w-full"
+          />
+        </div>
+        <div>
+          <h3 className="font-medium text-gray-900 mb-2">Märke</h3>
+          <Input
+            value={brand}
+            onChange={(e) => setBrand(e.target.value)}
+            placeholder="t.ex. Lindahls"
+            className="w-full"
+          />
+        </div>
+      </div>
+
+      {/* Submit button */}
+      <Button
+        onClick={handleSubmit}
+        disabled={isSubmitting || !name.trim()}
+        className="w-full bg-gray-800 hover:bg-gray-700 text-white"
       >
-        <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" />
-      </button>
+        {isSubmitting ? (
+          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+        ) : submitted ? (
+          <Check className="w-4 h-4 mr-2" />
+        ) : (
+          <Send className="w-4 h-4 mr-2" />
+        )}
+        {submitted ? 'Förfrågan skickad!' : 'Skicka förfrågan'}
+      </Button>
+    </div>
+  )
+}
+
+// Product Requests Inbox Modal for Coaches
+interface ProductRequestItem {
+  id: string
+  name: string
+  brand: string | null
+  category: string | null
+  frontImage: string | null
+  nutritionImage: string | null
+  status: string
+  createdAt: string
+  user: {
+    name: string | null
+    email: string
+  }
+}
+
+function ProductRequestsInbox({
+  isOpen,
+  onClose,
+  onProductAdded
+}: {
+  isOpen: boolean
+  onClose: () => void
+  onProductAdded: () => void
+}) {
+  const [requests, setRequests] = useState<ProductRequestItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [selectedRequest, setSelectedRequest] = useState<ProductRequestItem | null>(null)
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchRequests()
+    }
+  }, [isOpen])
+
+  const fetchRequests = async () => {
+    setIsLoading(true)
+    try {
+      const res = await fetch('/api/product-requests')
+      if (res.ok) {
+        const data = await res.json()
+        setRequests(data.requests || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch requests:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleApprove = async (requestId: string) => {
+    try {
+      const res = await fetch(`/api/product-requests/${requestId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'approved' })
+      })
+      if (res.ok) {
+        fetchRequests()
+        setSelectedRequest(null)
+      }
+    } catch (error) {
+      console.error('Failed to approve:', error)
+    }
+  }
+
+  const handleReject = async (requestId: string) => {
+    try {
+      const res = await fetch(`/api/product-requests/${requestId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'rejected' })
+      })
+      if (res.ok) {
+        fetchRequests()
+        setSelectedRequest(null)
+      }
+    } catch (error) {
+      console.error('Failed to reject:', error)
+    }
+  }
+
+  if (!isOpen) return null
+
+  const pendingRequests = requests.filter(r => r.status === 'pending')
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center gap-2">
+            <Inbox className="w-5 h-5 text-gold-primary" />
+            <h2 className="text-lg font-semibold">Produktförfrågningar</h2>
+            {pendingRequests.length > 0 && (
+              <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">
+                {pendingRequests.length} nya
+              </span>
+            )}
+          </div>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+            </div>
+          ) : pendingRequests.length === 0 ? (
+            <div className="text-center py-12">
+              <Inbox className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">Inga väntande förfrågningar</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {pendingRequests.map(request => (
+                <div
+                  key={request.id}
+                  className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-medium text-gray-900">{request.name}</h3>
+                        {request.brand && (
+                          <span className="text-sm text-gray-500">({request.brand})</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 mb-2">
+                        Från: {request.user.name || request.user.email} · {new Date(request.createdAt).toLocaleDateString('sv-SE')}
+                      </p>
+                      {request.category && (
+                        <span className="text-xs bg-gray-200 px-2 py-0.5 rounded">
+                          {CATEGORIES.find(c => c.id === request.category)?.label || request.category}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      {(request.frontImage || request.nutritionImage) && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedRequest(request)}
+                        >
+                          Visa bilder
+                        </Button>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleReject(request.id)}
+                        className="text-red-600 hover:bg-red-50"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleApprove(request.id)}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                      >
+                        <Check className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Images preview inline */}
+                  {(request.frontImage || request.nutritionImage) && selectedRequest?.id === request.id && (
+                    <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t">
+                      {request.frontImage && (
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">Framsida</p>
+                          <img src={request.frontImage} alt="Framsida" className="w-full rounded-lg" />
+                        </div>
+                      )}
+                      {request.nutritionImage && (
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">Innehållsförteckning</p>
+                          <img src={request.nutritionImage} alt="Innehåll" className="w-full rounded-lg" />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
