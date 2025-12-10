@@ -577,17 +577,14 @@ export default function SkillTreePage() {
                       <div className="max-w-[200px] w-full space-y-3">
                         <button
                           onClick={() => toggleBranch(branch.id)}
-                          className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20"
+                          className="w-full rounded-2xl p-5 hover:scale-[1.02] transition-all group bg-white border border-gray-200 hover:border-[#FFD700]/50 hover:shadow-lg"
                         >
                           <div className="flex flex-col items-center text-center">
-                            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: branch.color }}>
+                            <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3 bg-[#FFD700]">
                               <Icon className="w-6 h-6 text-white" />
                             </div>
-                            <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">{branch.name}</h3>
-                            <p className="text-gray-400 text-xs">{progress.completed}/{progress.total} artiklar</p>
-                            <div className="w-16 h-1.5 bg-zinc-700 rounded-full mt-2">
-                              <div className="h-1.5 rounded-full transition-all" style={{ width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`, backgroundColor: branch.color }} />
-                            </div>
+                            <h3 className="font-semibold text-gray-900 text-sm mb-1">{branch.name}</h3>
+                            <p className="text-[#FFD700] text-xs font-medium">{progress.completed}/{progress.total} artiklar</p>
                           </div>
                         </button>
                         {isExpanded && <div className="space-y-2 pl-2">{renderBranchContent(branch)}</div>}
@@ -605,16 +602,13 @@ export default function SkillTreePage() {
 
                       return (
                         <div key={branch.id} className="space-y-3">
-                          <button onClick={() => toggleBranch(branch.id)} className="w-full rounded-xl p-4 backdrop-blur-sm hover:scale-[1.02] transition-all group bg-[#1a1a2e] border border-white/10 hover:border-white/20">
+                          <button onClick={() => toggleBranch(branch.id)} className="w-full rounded-2xl p-5 hover:scale-[1.02] transition-all group bg-white border border-gray-200 hover:border-[#FFD700]/50 hover:shadow-lg">
                             <div className="flex flex-col items-center text-center">
                               <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: branch.color }}>
                                 <Icon className="w-6 h-6 text-white" />
                               </div>
-                              <h3 className="font-bold text-white text-sm uppercase tracking-wide mb-1">{branch.name}</h3>
-                              <p className="text-gray-400 text-xs">{progress.completed}/{progress.total} artiklar</p>
-                              <div className="w-16 h-1.5 bg-zinc-700 rounded-full mt-2">
-                                <div className="h-1.5 rounded-full transition-all" style={{ width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%`, backgroundColor: branch.color }} />
-                              </div>
+                              <h3 className="font-semibold text-gray-900 text-sm mb-1">{branch.name}</h3>
+                              <p className="text-[#FFD700] text-xs font-medium">{progress.completed}/{progress.total} artiklar</p>
                             </div>
                           </button>
                           {isExpanded && <div className="space-y-2 pl-2">{renderBranchContent(branch)}</div>}
@@ -703,7 +697,7 @@ export default function SkillTreePage() {
                       {/* Branch card */}
                       <button
                         onClick={() => toggleBranch(branch.id)}
-                        className="w-full rounded-xl p-4 bg-[#1a1a2e] border border-white/10 active:scale-[0.98] transition-all"
+                        className="w-full rounded-2xl p-5 bg-white border border-gray-200 active:scale-[0.98] transition-all hover:shadow-lg"
                       >
                         <div className="flex flex-col items-center text-center">
                           <div
@@ -712,10 +706,10 @@ export default function SkillTreePage() {
                           >
                             <Icon className="w-6 h-6 text-white" />
                           </div>
-                          <h3 className="font-bold text-white text-xs uppercase tracking-wide mb-1">
+                          <h3 className="font-semibold text-gray-900 text-xs mb-1">
                             {branch.name}
                           </h3>
-                          <p className="text-gray-400 text-xs">
+                          <p className="text-[#FFD700] text-xs font-medium">
                             {progress.completed}/{progress.total} artiklar
                           </p>
                         </div>
