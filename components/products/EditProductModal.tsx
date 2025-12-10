@@ -13,7 +13,9 @@ import {
   ChevronDown,
   ChevronUp,
   Pill,
-  Atom
+  Atom,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -140,6 +142,10 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
   const [showVitamins, setShowVitamins] = useState(false)
   const [showMinerals, setShowMinerals] = useState(false)
 
+  // Delete state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+
   // Form state
   const [formData, setFormData] = useState({
     name: '',
@@ -236,8 +242,35 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
     setShowSLVSearch(false)
     setSlvSearchTerm('')
     setSlvResults([])
+    setShowDeleteConfirm(false)
+    setIsDeleting(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
     onClose()
+  }
+
+  // Delete product handler
+  const handleDelete = async () => {
+    if (!product) return
+
+    setIsDeleting(true)
+    setError(null)
+
+    try {
+      const res = await fetch(`/api/products/${product.id}`, {
+        method: 'DELETE',
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Kunde inte ta bort produkten')
+      }
+
+      onProductUpdated()
+      handleClose()
+    } catch (err: any) {
+      setError(err.message || 'Något gick fel vid borttagning')
+      setIsDeleting(false)
+    }
   }
 
   // SLV search function
@@ -864,29 +897,75 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t bg-gray-50 flex gap-3">
-          <Button variant="outline" onClick={handleClose} className="flex-1">
-            Avbryt
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={isLoading || success}
-            className="flex-1 bg-gold-primary hover:bg-gold-primary/90 text-black"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Sparar...
-              </>
-            ) : success ? (
-              'Uppdaterad!'
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Spara ändringar
-              </>
-            )}
-          </Button>
+        <div className="p-4 border-t bg-gray-50">
+          {/* Delete confirmation */}
+          {showDeleteConfirm ? (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+                <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+                <p className="text-sm">Är du säker på att du vill ta bort denna produkt? Detta kan inte ångras.</p>
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1"
+                  disabled={isDeleting}
+                >
+                  Avbryt
+                </Button>
+                <Button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Tar bort...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Ja, ta bort
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteConfirm(true)}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+              <Button variant="outline" onClick={handleClose} className="flex-1">
+                Avbryt
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                disabled={isLoading || success}
+                className="flex-1 bg-gold-primary hover:bg-gold-primary/90 text-black"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Sparar...
+                  </>
+                ) : success ? (
+                  'Uppdaterad!'
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Spara ändringar
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
