@@ -84,6 +84,51 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// PATCH /api/product-categories - Update a category label
+export async function PATCH(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await req.json()
+    const { key, label } = body
+
+    if (!key || !label || typeof label !== 'string' || label.trim().length === 0) {
+      return NextResponse.json({ error: 'Key and label are required' }, { status: 400 })
+    }
+
+    // Check if category exists in DB
+    const existingCategory = await prisma.productCategory.findUnique({ where: { key } })
+
+    if (existingCategory) {
+      // Update existing
+      const updated = await prisma.productCategory.update({
+        where: { key },
+        data: { label: label.trim() }
+      })
+      return NextResponse.json({ category: updated })
+    } else {
+      // Create new entry for built-in category override
+      const category = await prisma.productCategory.create({
+        data: {
+          key,
+          label: label.trim(),
+          icon: 'Package',
+          isCustom: false, // It's an override for built-in
+          parentKey: null,
+          sortOrder: 0
+        }
+      })
+      return NextResponse.json({ category })
+    }
+  } catch (error) {
+    console.error('Error updating category:', error)
+    return NextResponse.json({ error: 'Failed to update category' }, { status: 500 })
+  }
+}
+
 // DELETE /api/product-categories - Delete a category
 export async function DELETE(req: NextRequest) {
   try {
