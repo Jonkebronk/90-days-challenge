@@ -927,19 +927,16 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
           <div className="border-t pt-4">
             <Label className="text-sm">Källa</Label>
             <div className="flex flex-wrap gap-1.5 mt-2">
-              {['ica', 'manual', 'import'].map(src => (
-                <button
-                  key={src}
-                  onClick={() => setFormData(prev => ({ ...prev, source: src }))}
-                  className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
-                    formData.source === src
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  {src === 'ica' ? 'ICA' : src === 'manual' ? 'Manuell' : 'Import'}
-                </button>
-              ))}
+              <button
+                onClick={() => setFormData(prev => ({ ...prev, source: 'ica' }))}
+                className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
+                  formData.source === 'ica'
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                ICA
+              </button>
             </div>
           </div>
 
