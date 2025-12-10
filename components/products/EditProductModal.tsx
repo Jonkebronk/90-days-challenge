@@ -678,9 +678,13 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
               <div className="flex items-center gap-2">
                 <Pill className="w-4 h-4 text-orange-500" />
                 <span className="font-medium text-gray-900">Vitaminer</span>
-                {(formData.vitaminA || formData.vitaminC || formData.vitaminD || formData.vitaminB12) && (
+                {(formData.vitaminA || formData.vitaminC || formData.vitaminD || formData.vitaminB12 || formData.folate) ? (
                   <span className="text-xs px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded-full">
                     Har data
+                  </span>
+                ) : (
+                  <span className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded-full">
+                    Har inte data
                   </span>
                 )}
               </div>
@@ -767,9 +771,13 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
               <div className="flex items-center gap-2">
                 <Atom className="w-4 h-4 text-blue-500" />
                 <span className="font-medium text-gray-900">Mineraler</span>
-                {(formData.calcium || formData.iron || formData.magnesium || formData.zinc) && (
+                {(formData.calcium || formData.iron || formData.magnesium || formData.zinc || formData.potassium || formData.iodine) ? (
                   <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full">
                     Har data
+                  </span>
+                ) : (
+                  <span className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded-full">
+                    Har inte data
                   </span>
                 )}
               </div>
