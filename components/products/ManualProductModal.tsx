@@ -9,11 +9,16 @@ import {
   Info,
   Upload,
   ImageIcon,
-  Database
+  Database,
+  ChevronDown,
+  ChevronUp,
+  Pill,
+  Atom
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { SUBCATEGORIES_BY_CATEGORY } from '@/lib/products/subcategories'
 
 interface ManualProductModalProps {
   isOpen: boolean
@@ -32,6 +37,19 @@ interface SLVFood {
   fiber: number | null
   sugar: number | null
   salt: number | null
+  // Vitamins
+  vitaminA: number | null
+  vitaminD: number | null
+  vitaminC: number | null
+  vitaminB12: number | null
+  folate: number | null
+  // Minerals
+  calcium: number | null
+  iron: number | null
+  magnesium: number | null
+  potassium: number | null
+  zinc: number | null
+  iodine: number | null
 }
 
 const CATEGORIES = [
@@ -49,10 +67,7 @@ const CATEGORIES = [
 
 const SOURCES = [
   { id: 'ica', label: 'ICA' },
-  { id: 'coop', label: 'COOP' },
-  { id: 'willys', label: 'Willys' },
-  { id: 'hemkop', label: 'Hemköp' },
-  { id: 'manual', label: 'Manuell' },
+  { id: 'slv', label: 'SLV' },
 ]
 
 export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualProductModalProps) {
@@ -67,6 +82,18 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
   const [slvLoading, setSlvLoading] = useState(false)
   const [showSlvDropdown, setShowSlvDropdown] = useState(false)
 
+  // Micronutrient sections state
+  const [showVitamins, setShowVitamins] = useState(false)
+  const [showMinerals, setShowMinerals] = useState(false)
+
+  // Custom category/subcategory state
+  const [showNewCategory, setShowNewCategory] = useState(false)
+  const [newCategoryInput, setNewCategoryInput] = useState('')
+  const [showNewSubCategory, setShowNewSubCategory] = useState(false)
+  const [newSubCategoryInput, setNewSubCategoryInput] = useState('')
+  const [customCategories, setCustomCategories] = useState<string[]>([])
+  const [customSubCategories, setCustomSubCategories] = useState<string[]>([])
+
   // Form state
   const [formData, setFormData] = useState({
     name: '',
@@ -80,7 +107,22 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
     sugar: '',
     salt: '',
     category: '',
+    subCategory: '',
     source: 'ica',
+    // Micronutrients - Vitamins
+    vitaminA: '',
+    vitaminD: '',
+    vitaminC: '',
+    vitaminB12: '',
+    folate: '',
+    // Micronutrients - Minerals
+    calcium: '',
+    iron: '',
+    magnesium: '',
+    potassium: '',
+    zinc: '',
+    iodine: '',
+    slvNummer: null as number | null,
   })
 
   // Convert file to base64
@@ -147,6 +189,20 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
       fiber: food.fiber?.toString() || '',
       sugar: food.sugar?.toString() || '',
       salt: food.salt?.toString() || '',
+      // Vitamins
+      vitaminA: food.vitaminA?.toString() || '',
+      vitaminD: food.vitaminD?.toString() || '',
+      vitaminC: food.vitaminC?.toString() || '',
+      vitaminB12: food.vitaminB12?.toString() || '',
+      folate: food.folate?.toString() || '',
+      // Minerals
+      calcium: food.calcium?.toString() || '',
+      iron: food.iron?.toString() || '',
+      magnesium: food.magnesium?.toString() || '',
+      potassium: food.potassium?.toString() || '',
+      zinc: food.zinc?.toString() || '',
+      iodine: food.iodine?.toString() || '',
+      slvNummer: food.slvNummer,
     }))
     setSlvResults([])
     setShowSlvDropdown(false)
@@ -166,14 +222,57 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
       sugar: '',
       salt: '',
       category: '',
+      subCategory: '',
       source: 'ica',
+      vitaminA: '',
+      vitaminD: '',
+      vitaminC: '',
+      vitaminB12: '',
+      folate: '',
+      calcium: '',
+      iron: '',
+      magnesium: '',
+      potassium: '',
+      zinc: '',
+      iodine: '',
+      slvNummer: null,
     })
     setImagePreview(null)
     setError(null)
     setSuccess(false)
     setSlvResults([])
     setShowSlvDropdown(false)
+    setShowVitamins(false)
+    setShowMinerals(false)
+    setShowNewCategory(false)
+    setNewCategoryInput('')
+    setShowNewSubCategory(false)
+    setNewSubCategoryInput('')
+    setCustomCategories([])
+    setCustomSubCategories([])
     if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  // Add custom category
+  const addCustomCategory = () => {
+    const trimmed = newCategoryInput.trim().toLowerCase()
+    if (trimmed && !customCategories.includes(trimmed) && !CATEGORIES.find(c => c.id === trimmed)) {
+      setCustomCategories(prev => [...prev, trimmed])
+      setFormData(prev => ({ ...prev, category: trimmed, subCategory: '' }))
+    }
+    setNewCategoryInput('')
+    setShowNewCategory(false)
+  }
+
+  // Add custom subcategory
+  const addCustomSubCategory = () => {
+    const trimmed = newSubCategoryInput.trim().toLowerCase()
+    if (trimmed && !customSubCategories.includes(trimmed)) {
+      setCustomSubCategories(prev => [...prev, trimmed])
+      setFormData(prev => ({ ...prev, subCategory: trimmed }))
+    }
+    setNewSubCategoryInput('')
+    setShowNewSubCategory(false)
   }
 
   const handleClose = () => {
@@ -208,8 +307,22 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
           sugar: formData.sugar ? parseFloat(formData.sugar) : null,
           salt: formData.salt ? parseFloat(formData.salt) : null,
           category: formData.category || null,
+          subCategory: formData.subCategory || null,
           source: formData.source,
-          image: imagePreview || null // base64 image - will be uploaded to Cloudinary
+          image: imagePreview || null, // base64 image - will be uploaded to Cloudinary
+          // Micronutrients
+          vitaminA: formData.vitaminA ? parseFloat(formData.vitaminA) : null,
+          vitaminD: formData.vitaminD ? parseFloat(formData.vitaminD) : null,
+          vitaminC: formData.vitaminC ? parseFloat(formData.vitaminC) : null,
+          vitaminB12: formData.vitaminB12 ? parseFloat(formData.vitaminB12) : null,
+          folate: formData.folate ? parseFloat(formData.folate) : null,
+          calcium: formData.calcium ? parseFloat(formData.calcium) : null,
+          iron: formData.iron ? parseFloat(formData.iron) : null,
+          magnesium: formData.magnesium ? parseFloat(formData.magnesium) : null,
+          potassium: formData.potassium ? parseFloat(formData.potassium) : null,
+          zinc: formData.zinc ? parseFloat(formData.zinc) : null,
+          iodine: formData.iodine ? parseFloat(formData.iodine) : null,
+          slvNummer: formData.slvNummer || null,
         })
       })
 
@@ -490,6 +603,196 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
             </div>
           </div>
 
+          {/* Vitamins Section */}
+          <div className="border-t pt-4">
+            <button
+              type="button"
+              onClick={() => setShowVitamins(!showVitamins)}
+              className="w-full flex items-center justify-between py-2 text-left"
+            >
+              <div className="flex items-center gap-2">
+                <Pill className="w-4 h-4 text-orange-500" />
+                <span className="font-medium text-gray-900">Vitaminer</span>
+                {(formData.vitaminA || formData.vitaminC || formData.vitaminD || formData.vitaminB12) && (
+                  <span className="text-xs px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded-full">
+                    Har data
+                  </span>
+                )}
+              </div>
+              {showVitamins ? (
+                <ChevronUp className="w-4 h-4 text-gray-500" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-gray-500" />
+              )}
+            </button>
+
+            {showVitamins && (
+              <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div>
+                  <Label htmlFor="vitaminA" className="text-xs text-gray-600">Vitamin A (µg)</Label>
+                  <Input
+                    id="vitaminA"
+                    type="number"
+                    step="0.1"
+                    value={formData.vitaminA}
+                    onChange={(e) => setFormData(prev => ({ ...prev, vitaminA: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="vitaminD" className="text-xs text-gray-600">Vitamin D (µg)</Label>
+                  <Input
+                    id="vitaminD"
+                    type="number"
+                    step="0.01"
+                    value={formData.vitaminD}
+                    onChange={(e) => setFormData(prev => ({ ...prev, vitaminD: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="vitaminC" className="text-xs text-gray-600">Vitamin C (mg)</Label>
+                  <Input
+                    id="vitaminC"
+                    type="number"
+                    step="0.1"
+                    value={formData.vitaminC}
+                    onChange={(e) => setFormData(prev => ({ ...prev, vitaminC: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="vitaminB12" className="text-xs text-gray-600">Vitamin B12 (µg)</Label>
+                  <Input
+                    id="vitaminB12"
+                    type="number"
+                    step="0.01"
+                    value={formData.vitaminB12}
+                    onChange={(e) => setFormData(prev => ({ ...prev, vitaminB12: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="folate" className="text-xs text-gray-600">Folat (µg)</Label>
+                  <Input
+                    id="folate"
+                    type="number"
+                    step="0.1"
+                    value={formData.folate}
+                    onChange={(e) => setFormData(prev => ({ ...prev, folate: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Minerals Section */}
+          <div className="border-t pt-4">
+            <button
+              type="button"
+              onClick={() => setShowMinerals(!showMinerals)}
+              className="w-full flex items-center justify-between py-2 text-left"
+            >
+              <div className="flex items-center gap-2">
+                <Atom className="w-4 h-4 text-blue-500" />
+                <span className="font-medium text-gray-900">Mineraler</span>
+                {(formData.calcium || formData.iron || formData.magnesium || formData.zinc) && (
+                  <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full">
+                    Har data
+                  </span>
+                )}
+              </div>
+              {showMinerals ? (
+                <ChevronUp className="w-4 h-4 text-gray-500" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-gray-500" />
+              )}
+            </button>
+
+            {showMinerals && (
+              <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div>
+                  <Label htmlFor="calcium" className="text-xs text-gray-600">Kalcium (mg)</Label>
+                  <Input
+                    id="calcium"
+                    type="number"
+                    step="0.1"
+                    value={formData.calcium}
+                    onChange={(e) => setFormData(prev => ({ ...prev, calcium: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="iron" className="text-xs text-gray-600">Järn (mg)</Label>
+                  <Input
+                    id="iron"
+                    type="number"
+                    step="0.01"
+                    value={formData.iron}
+                    onChange={(e) => setFormData(prev => ({ ...prev, iron: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="magnesium" className="text-xs text-gray-600">Magnesium (mg)</Label>
+                  <Input
+                    id="magnesium"
+                    type="number"
+                    step="0.1"
+                    value={formData.magnesium}
+                    onChange={(e) => setFormData(prev => ({ ...prev, magnesium: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="potassium" className="text-xs text-gray-600">Kalium (mg)</Label>
+                  <Input
+                    id="potassium"
+                    type="number"
+                    step="0.1"
+                    value={formData.potassium}
+                    onChange={(e) => setFormData(prev => ({ ...prev, potassium: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="zinc" className="text-xs text-gray-600">Zink (mg)</Label>
+                  <Input
+                    id="zinc"
+                    type="number"
+                    step="0.01"
+                    value={formData.zinc}
+                    onChange={(e) => setFormData(prev => ({ ...prev, zinc: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="iodine" className="text-xs text-gray-600">Jod (µg)</Label>
+                  <Input
+                    id="iodine"
+                    type="number"
+                    step="0.1"
+                    value={formData.iodine}
+                    onChange={(e) => setFormData(prev => ({ ...prev, iodine: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Category and Source */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
             <div>
@@ -500,7 +803,8 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
                     key={cat.id}
                     onClick={() => setFormData(prev => ({
                       ...prev,
-                      category: prev.category === cat.id ? '' : cat.id
+                      category: prev.category === cat.id ? '' : cat.id,
+                      subCategory: '' // Reset subcategory when category changes
                     }))}
                     className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
                       formData.category === cat.id
@@ -511,6 +815,61 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
                     {cat.label}
                   </button>
                 ))}
+                {/* Custom categories */}
+                {customCategories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setFormData(prev => ({
+                      ...prev,
+                      category: prev.category === cat ? '' : cat,
+                      subCategory: ''
+                    }))}
+                    className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
+                      formData.category === cat
+                        ? 'bg-purple-500 text-white'
+                        : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+                {/* Add new category button/input */}
+                {showNewCategory ? (
+                  <div className="flex items-center gap-1">
+                    <Input
+                      value={newCategoryInput}
+                      onChange={(e) => setNewCategoryInput(e.target.value)}
+                      placeholder="Ny kategori"
+                      className="h-7 w-28 text-xs"
+                      onKeyDown={(e) => e.key === 'Enter' && addCustomCategory()}
+                      autoFocus
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={addCustomCategory}
+                      className="h-7 px-2 bg-purple-500 hover:bg-purple-600 text-white"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => { setShowNewCategory(false); setNewCategoryInput(''); }}
+                      className="h-7 px-2"
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowNewCategory(true)}
+                    className="px-2.5 py-1 text-xs rounded-full border-2 border-dashed border-gray-300 text-gray-500 hover:border-purple-400 hover:text-purple-600 transition-colors"
+                  >
+                    + Ny
+                  </button>
+                )}
               </div>
             </div>
             <div>
@@ -532,6 +891,86 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
               </div>
             </div>
           </div>
+
+          {/* Subcategory - show if category has subcategories OR if a category is selected */}
+          {formData.category && (
+            <div>
+              <Label className="text-sm">Underkategori</Label>
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {/* Predefined subcategories if they exist */}
+                {SUBCATEGORIES_BY_CATEGORY[formData.category]?.map(subcat => (
+                  <button
+                    key={subcat.key}
+                    onClick={() => setFormData(prev => ({
+                      ...prev,
+                      subCategory: prev.subCategory === subcat.key ? '' : subcat.key
+                    }))}
+                    className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
+                      formData.subCategory === subcat.key
+                        ? 'bg-orange-500 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {subcat.label}
+                  </button>
+                ))}
+                {/* Custom subcategories */}
+                {customSubCategories.map(subcat => (
+                  <button
+                    key={subcat}
+                    onClick={() => setFormData(prev => ({
+                      ...prev,
+                      subCategory: prev.subCategory === subcat ? '' : subcat
+                    }))}
+                    className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
+                      formData.subCategory === subcat
+                        ? 'bg-teal-500 text-white'
+                        : 'bg-teal-100 text-teal-700 hover:bg-teal-200'
+                    }`}
+                  >
+                    {subcat}
+                  </button>
+                ))}
+                {/* Add new subcategory button/input */}
+                {showNewSubCategory ? (
+                  <div className="flex items-center gap-1">
+                    <Input
+                      value={newSubCategoryInput}
+                      onChange={(e) => setNewSubCategoryInput(e.target.value)}
+                      placeholder="Ny underkategori"
+                      className="h-7 w-32 text-xs"
+                      onKeyDown={(e) => e.key === 'Enter' && addCustomSubCategory()}
+                      autoFocus
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={addCustomSubCategory}
+                      className="h-7 px-2 bg-teal-500 hover:bg-teal-600 text-white"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => { setShowNewSubCategory(false); setNewSubCategoryInput(''); }}
+                      className="h-7 px-2"
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowNewSubCategory(true)}
+                    className="px-2.5 py-1 text-xs rounded-full border-2 border-dashed border-gray-300 text-gray-500 hover:border-teal-400 hover:text-teal-600 transition-colors"
+                  >
+                    + Ny
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Error/Success messages */}
           {error && (

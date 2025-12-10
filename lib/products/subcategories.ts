@@ -110,3 +110,11 @@ export function getSubcategoryKeys(categoryId: string): string[] {
   const subcategories = SUBCATEGORIES_BY_CATEGORY[categoryId.toLowerCase()]
   return subcategories?.map(s => s.key) || []
 }
+
+// Get subcategory label by key
+export function getSubcategoryLabel(categoryId: string, subcategoryKey: string): string | null {
+  const subcategories = SUBCATEGORIES_BY_CATEGORY[categoryId.toLowerCase()]
+  if (!subcategories) return null
+  const subcat = subcategories.find(s => s.key === subcategoryKey)
+  return subcat?.label || null
+}
