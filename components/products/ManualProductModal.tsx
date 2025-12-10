@@ -447,18 +447,6 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="ean">EAN/Streckkod</Label>
-            <Input
-              id="ean"
-              value={formData.ean}
-              onChange={(e) => setFormData(prev => ({ ...prev, ean: e.target.value }))}
-              placeholder="t.ex. 7310865001234"
-              className="mt-1"
-            />
-            <p className="text-xs text-gray-500 mt-1">Lämna tomt för att generera automatiskt</p>
-          </div>
-
           {/* Macros - the important ones */}
           <div className="border-t pt-4 relative">
             <div className="flex items-center justify-between mb-3">

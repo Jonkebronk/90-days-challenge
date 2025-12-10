@@ -500,12 +500,6 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
             </div>
           </div>
 
-          {/* EAN (read-only) */}
-          <div>
-            <Label className="text-sm text-gray-500">EAN/Streckkod</Label>
-            <p className="text-sm font-mono bg-gray-50 px-3 py-2 rounded mt-1">{product.ean}</p>
-          </div>
-
           {/* Macros */}
           <div className="border-t pt-4">
             <div className="flex items-center justify-between mb-3">
