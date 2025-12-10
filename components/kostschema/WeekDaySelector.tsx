@@ -25,12 +25,12 @@ export function WeekDaySelector({
   const trainingDays = Object.values(weekConfig).filter(d => d.isTrainingDay).length
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-sm">
+    <div className="bg-white rounded-2xl p-5 border-2 border-zinc-300 shadow-md">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-zinc-900">Veckokonfiguration</h3>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-zinc-600">
             {weekMacroMode === 'same'
               ? 'Samma kalorier och makros alla dagar'
               : 'Klicka på en dag för att redigera, dubbelklicka för att växla träning/vila'}
@@ -38,13 +38,13 @@ export function WeekDaySelector({
         </div>
         <div className="flex items-center gap-4">
           {/* Week macro mode toggle */}
-          <div className="flex gap-1 bg-zinc-100 rounded-lg p-1">
+          <div className="flex gap-1 bg-zinc-200 rounded-lg p-1">
             <button
               onClick={() => onWeekMacroModeChange('same')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                 weekMacroMode === 'same'
-                  ? 'bg-amber-500 text-white'
-                  : 'text-zinc-500 hover:text-zinc-700'
+                  ? 'bg-amber-500 text-white shadow-sm'
+                  : 'text-zinc-600 hover:text-zinc-800 hover:bg-zinc-100'
               }`}
             >
               <Copy className="w-3 h-3" />
@@ -52,10 +52,10 @@ export function WeekDaySelector({
             </button>
             <button
               onClick={() => onWeekMacroModeChange('different')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                 weekMacroMode === 'different'
-                  ? 'bg-amber-500 text-white'
-                  : 'text-zinc-500 hover:text-zinc-700'
+                  ? 'bg-amber-500 text-white shadow-sm'
+                  : 'text-zinc-600 hover:text-zinc-800 hover:bg-zinc-100'
               }`}
             >
               <Layers className="w-3 h-3" />
@@ -84,10 +84,10 @@ export function WeekDaySelector({
               onDoubleClick={() => onToggleTraining(day.key)}
               className={`flex-1 flex flex-col items-center py-3 px-2 rounded-xl transition-all ${
                 isSelected
-                  ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
+                  ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30 border-2 border-amber-600'
                   : isTraining
-                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
-                    : 'bg-zinc-50 text-zinc-600 border border-zinc-200 hover:bg-zinc-100'
+                    ? 'bg-emerald-50 text-emerald-700 border-2 border-emerald-300 hover:bg-emerald-100'
+                    : 'bg-zinc-100 text-zinc-700 border-2 border-zinc-300 hover:bg-zinc-200'
               }`}
             >
               <span className="text-sm font-medium">{day.shortLabel}</span>
@@ -107,15 +107,15 @@ export function WeekDaySelector({
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-center gap-6 mt-4 text-xs text-zinc-500">
+      <div className="flex items-center justify-center gap-6 mt-4 text-xs text-zinc-600 font-medium">
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded bg-emerald-50 border border-emerald-200" />
+          <div className="w-3 h-3 rounded bg-emerald-100 border-2 border-emerald-300" />
           <Dumbbell className="w-3 h-3 text-emerald-600" />
           <span>Träningsdag</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded bg-zinc-50 border border-zinc-200" />
-          <Moon className="w-3 h-3 text-zinc-400" />
+          <div className="w-3 h-3 rounded bg-zinc-100 border-2 border-zinc-300" />
+          <Moon className="w-3 h-3 text-zinc-500" />
           <span>Vilodag</span>
         </div>
       </div>
