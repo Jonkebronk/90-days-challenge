@@ -77,19 +77,19 @@ export function MacroInputPanel({
   }
 
   return (
-    <div className="bg-gradient-to-r from-zinc-800/80 to-zinc-900/80 rounded-2xl p-5 border border-zinc-700/50 space-y-5">
+    <div className="bg-white rounded-2xl p-5 border border-zinc-200 shadow-sm space-y-5">
       {/* Header with day info */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h3 className="text-lg font-semibold text-white">
+          <h3 className="text-lg font-semibold text-zinc-900">
             Makros för {dayLabel}
           </h3>
           <button
             onClick={handleToggleTraining}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               dayConfig.isTrainingDay
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'bg-zinc-700 text-zinc-300 border border-zinc-600'
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
             }`}
           >
             {dayConfig.isTrainingDay ? (
@@ -109,13 +109,13 @@ export function MacroInputPanel({
         {/* Training time (only for training days) */}
         {dayConfig.isTrainingDay && (
           <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-zinc-400" />
-            <span className="text-sm text-zinc-400">Träningstid:</span>
+            <Clock className="w-4 h-4 text-zinc-500" />
+            <span className="text-sm text-zinc-500">Träningstid:</span>
             <input
               type="time"
               value={dayConfig.trainingTime || '15:00'}
               onChange={(e) => handleTrainingTimeChange(e.target.value)}
-              className="bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:border-gold-500"
+              className="bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-1.5 text-zinc-900 text-sm focus:outline-none focus:border-amber-500"
             />
           </div>
         )}
@@ -127,8 +127,8 @@ export function MacroInputPanel({
           onClick={() => onMacroSourceModeChange('calculate')}
           className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
             macroSourceMode === 'calculate'
-              ? 'bg-gold-600 text-white'
-              : 'bg-zinc-800 text-zinc-400 border border-zinc-700 hover:bg-zinc-700'
+              ? 'bg-amber-500 text-white'
+              : 'bg-zinc-100 text-zinc-500 border border-zinc-200 hover:bg-zinc-200'
           }`}
         >
           <Calculator className="w-4 h-4" />
@@ -138,8 +138,8 @@ export function MacroInputPanel({
           onClick={() => onMacroSourceModeChange('manual')}
           className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
             macroSourceMode === 'manual'
-              ? 'bg-gold-600 text-white'
-              : 'bg-zinc-800 text-zinc-400 border border-zinc-700 hover:bg-zinc-700'
+              ? 'bg-amber-500 text-white'
+              : 'bg-zinc-100 text-zinc-500 border border-zinc-200 hover:bg-zinc-200'
           }`}
         >
           <Edit3 className="w-4 h-4" />
@@ -151,21 +151,21 @@ export function MacroInputPanel({
       {macroSourceMode === 'calculate' && (
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm text-zinc-400 mb-1.5">Kroppsvikt (kg)</label>
+            <label className="block text-sm text-zinc-500 mb-1.5">Kroppsvikt (kg)</label>
             <input
               type="number"
               value={bodyWeight || ''}
               onChange={(e) => onBodyWeightChange(Number(e.target.value) || 0)}
               placeholder="0"
-              className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
           </div>
           <div>
-            <label className="block text-sm text-zinc-400 mb-1.5">Aktivitetsnivå</label>
+            <label className="block text-sm text-zinc-500 mb-1.5">Aktivitetsnivå</label>
             <select
               value={activityLevel}
               onChange={(e) => onActivityLevelChange(e.target.value as ActivityLevel)}
-              className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-amber-500"
             >
               <option value="sedentary">Stillasittande</option>
               <option value="moderate">Måttligt aktiv</option>
@@ -173,14 +173,14 @@ export function MacroInputPanel({
             </select>
           </div>
           <div>
-            <label className="block text-sm text-zinc-400 mb-1.5">Protein (g/kg)</label>
+            <label className="block text-sm text-zinc-500 mb-1.5">Protein (g/kg)</label>
             <input
               type="number"
               step="0.1"
               value={proteinFactor || ''}
               onChange={(e) => onProteinFactorChange(Number(e.target.value) || 0)}
               placeholder="0"
-              className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
           </div>
         </div>
@@ -188,31 +188,31 @@ export function MacroInputPanel({
 
       {/* Calculated preview (calculate mode) */}
       {macroSourceMode === 'calculate' && (
-        <div className="bg-zinc-900/50 rounded-xl p-4 border border-zinc-700/50">
+        <div className="bg-zinc-50 rounded-xl p-4 border border-zinc-200">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-zinc-400">Beräknade makros:</span>
+            <span className="text-sm text-zinc-500">Beräknade makros:</span>
             <button
               onClick={applyCalculatedMacros}
-              className="text-sm text-gold-500 hover:text-gold-400 font-medium"
+              className="text-sm text-amber-600 hover:text-amber-500 font-medium"
             >
               Applicera
             </button>
           </div>
           <div className="grid grid-cols-4 gap-3 text-center">
-            <div className="bg-orange-500/10 rounded-lg p-2">
-              <div className="text-lg font-bold text-orange-400">{Math.round(calculatedMacros.kcal)}</div>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-2">
+              <div className="text-lg font-bold text-amber-600">{Math.round(calculatedMacros.kcal)}</div>
               <div className="text-xs text-zinc-500">kcal</div>
             </div>
-            <div className="bg-rose-500/10 rounded-lg p-2">
-              <div className="text-lg font-bold text-rose-400">{Math.round(calculatedMacros.protein)}g</div>
+            <div className="bg-rose-50 border border-rose-200 rounded-lg p-2">
+              <div className="text-lg font-bold text-rose-600">{Math.round(calculatedMacros.protein)}g</div>
               <div className="text-xs text-zinc-500">Protein</div>
             </div>
-            <div className="bg-blue-500/10 rounded-lg p-2">
-              <div className="text-lg font-bold text-blue-400">{Math.round(calculatedMacros.carbs)}g</div>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
+              <div className="text-lg font-bold text-blue-600">{Math.round(calculatedMacros.carbs)}g</div>
               <div className="text-xs text-zinc-500">Kolhydrater</div>
             </div>
-            <div className="bg-amber-500/10 rounded-lg p-2">
-              <div className="text-lg font-bold text-amber-400">{Math.round(calculatedMacros.fat)}g</div>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-2">
+              <div className="text-lg font-bold text-amber-600">{Math.round(calculatedMacros.fat)}g</div>
               <div className="text-xs text-zinc-500">Fett</div>
             </div>
           </div>
@@ -222,61 +222,61 @@ export function MacroInputPanel({
       {/* Manual input fields */}
       <div className="grid grid-cols-4 gap-4">
         <div>
-          <label className="block text-sm text-zinc-400 mb-1.5">Kalorier</label>
+          <label className="block text-sm text-zinc-500 mb-1.5">Kalorier</label>
           <input
             type="number"
             value={dayConfig.totalCalories || ''}
             onChange={(e) => handleMacroChange('totalCalories', Number(e.target.value) || 0)}
             placeholder="0"
-            className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </div>
         <div>
-          <label className="block text-sm text-zinc-400 mb-1.5">Protein (g)</label>
+          <label className="block text-sm text-zinc-500 mb-1.5">Protein (g)</label>
           <input
             type="number"
             value={dayConfig.totalProtein || ''}
             onChange={(e) => handleMacroChange('totalProtein', Number(e.target.value) || 0)}
             placeholder="0"
-            className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </div>
         <div>
-          <label className="block text-sm text-zinc-400 mb-1.5">Kolhydrater (g)</label>
+          <label className="block text-sm text-zinc-500 mb-1.5">Kolhydrater (g)</label>
           <input
             type="number"
             value={dayConfig.totalCarbs || ''}
             onChange={(e) => handleMacroChange('totalCarbs', Number(e.target.value) || 0)}
             placeholder="0"
-            className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </div>
         <div>
-          <label className="block text-sm text-zinc-400 mb-1.5">Fett (g)</label>
+          <label className="block text-sm text-zinc-500 mb-1.5">Fett (g)</label>
           <input
             type="number"
             value={dayConfig.totalFat || ''}
             onChange={(e) => handleMacroChange('totalFat', Number(e.target.value) || 0)}
             placeholder="0"
-            className="w-full bg-zinc-800 border border-zinc-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-gold-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-full bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-2 text-zinc-900 focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </div>
       </div>
 
       {/* Current day totals */}
-      <div className="flex items-center justify-between pt-4 border-t border-zinc-700/50">
-        <span className="text-sm text-zinc-400">Dagens makros:</span>
+      <div className="flex items-center justify-between pt-4 border-t border-zinc-200">
+        <span className="text-sm text-zinc-500">Dagens makros:</span>
         <div className="flex gap-3">
-          <span className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-orange-500/20 text-orange-400">
+          <span className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-amber-50 text-amber-600 border border-amber-200">
             {dayConfig.totalCalories} kcal
           </span>
-          <span className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-rose-500/15 text-rose-400">
+          <span className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-rose-50 text-rose-600 border border-rose-200">
             P: {dayConfig.totalProtein}g
           </span>
-          <span className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-500/15 text-blue-400">
+          <span className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-50 text-blue-600 border border-blue-200">
             K: {dayConfig.totalCarbs}g
           </span>
-          <span className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-amber-500/15 text-amber-400">
+          <span className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-amber-50 text-amber-600 border border-amber-200">
             F: {dayConfig.totalFat}g
           </span>
         </div>

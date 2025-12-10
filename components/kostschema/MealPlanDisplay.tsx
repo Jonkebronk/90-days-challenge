@@ -93,27 +93,27 @@ export function MealPlanDisplay({
       {/* Header with meal count selector */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-white">Måltidsplan</h2>
+          <h2 className="text-lg font-semibold text-zinc-900">Måltidsplan</h2>
         </div>
         <div className="flex items-center gap-3">
           {onClearMealPlan && (
             <button
               onClick={onClearMealPlan}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-500 hover:text-red-500 hover:bg-red-50 transition-all"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Töm
             </button>
           )}
-          <div className="flex gap-1 bg-zinc-800 rounded-lg p-1">
+          <div className="flex gap-1 bg-zinc-100 rounded-lg p-1">
             {mealCountOptions.map((option) => (
               <button
                 key={option.value}
                 onClick={() => setMealCount(option.value)}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                   mealCount === option.value
-                    ? 'bg-zinc-700 text-white'
-                    : 'text-zinc-400 hover:text-white'
+                    ? 'bg-white text-zinc-900 shadow-sm'
+                    : 'text-zinc-500 hover:text-zinc-900'
                 }`}
               >
                 {option.value}
@@ -155,14 +155,14 @@ export function MealPlanDisplay({
 
       {/* Daily totals */}
       {meals.length > 0 && (
-        <div className="flex items-center justify-between py-4 px-5 bg-zinc-800/50 rounded-xl border border-zinc-700/50">
-          <span className="text-sm text-zinc-400 font-medium">Dagstotalt</span>
+        <div className="flex items-center justify-between py-4 px-5 bg-white rounded-xl border border-zinc-200 shadow-sm">
+          <span className="text-sm text-zinc-500 font-medium">Dagstotalt</span>
           <div className="flex items-center gap-4">
-            <span className="text-lg font-bold text-white">{totals.kcal} kcal</span>
+            <span className="text-lg font-bold text-zinc-900">{totals.kcal} kcal</span>
             <div className="flex items-center gap-3 text-sm">
-              <span className="text-rose-400">P {totals.protein}g</span>
-              <span className="text-blue-400">K {totals.carbs}g</span>
-              <span className="text-amber-400">F {totals.fat}g</span>
+              <span className="text-rose-600">P {totals.protein}g</span>
+              <span className="text-blue-600">K {totals.carbs}g</span>
+              <span className="text-amber-600">F {totals.fat}g</span>
             </div>
           </div>
         </div>

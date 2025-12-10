@@ -430,7 +430,7 @@ export function MealCard({
   onUpdateInstructions,
   instructions = ''
 }: MealCardProps) {
-  const [isExpanded, setIsExpanded] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(false)
   const [isEditingMealName, setIsEditingMealName] = useState(false)
   const [mealNameValue, setMealNameValue] = useState(meal.name)
   const [recipes, setRecipes] = useState<RecipeSuggestion[]>([])
