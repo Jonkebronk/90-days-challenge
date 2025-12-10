@@ -67,7 +67,6 @@ const CATEGORIES = [
 
 const SOURCES = [
   { id: 'ica', label: 'ICA' },
-  { id: 'slv', label: 'SLV' },
 ]
 
 export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualProductModalProps) {

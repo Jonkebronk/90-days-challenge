@@ -69,7 +69,6 @@ interface Product {
 const SOURCES = [
   { id: 'all', label: 'Alla', icon: Database },
   { id: 'ica', label: 'ICA', icon: Store },
-  { id: 'slv', label: 'SLV', icon: Database },
 ]
 
 const CATEGORIES = [
