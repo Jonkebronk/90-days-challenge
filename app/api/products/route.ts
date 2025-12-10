@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { SUBCATEGORIES_BY_CATEGORY, classifyProductSubcategory } from '@/lib/products/subcategories'
 
 // GET /api/products - List/search products
 export async function GET(req: NextRequest) {
@@ -15,6 +16,7 @@ export async function GET(req: NextRequest) {
     const q = searchParams.get('q')
     const ean = searchParams.get('ean')
     const category = searchParams.get('category')
+    const subCategory = searchParams.get('subCategory')
     const source = searchParams.get('source')
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
@@ -43,6 +45,11 @@ export async function GET(req: NextRequest) {
       } else {
         where.category = { equals: category, mode: 'insensitive' }
       }
+    }
+
+    // Filter by subCategory
+    if (subCategory) {
+      where.subCategory = { equals: subCategory, mode: 'insensitive' }
     }
 
     const [products, total, categories, sources] = await Promise.all([
@@ -79,13 +86,34 @@ export async function GET(req: NextRequest) {
       return acc
     }, {})
 
+    // Calculate subCategory counts if a category with subcategories is selected
+    let subCategoryCounts: Record<string, number> = {}
+    if (category && SUBCATEGORIES_BY_CATEGORY[category.toLowerCase()]) {
+      // Get subcategory counts for this category
+      const subCats = await prisma.product.groupBy({
+        by: ['subCategory'],
+        where: {
+          category: { equals: category, mode: 'insensitive' },
+          ...(source && source !== 'all' ? { source } : {})
+        },
+        _count: { subCategory: true }
+      })
+
+      subCategoryCounts = subCats.reduce((acc: Record<string, number>, sub) => {
+        const key = sub.subCategory || 'uncategorized'
+        acc[key] = sub._count.subCategory
+        return acc
+      }, {})
+    }
+
     return NextResponse.json({
       products,
       total,
       limit,
       offset,
       categoryCounts,
-      sourceCounts
+      sourceCounts,
+      subCategoryCounts
     })
   } catch (error) {
     console.error('Error fetching products:', error)

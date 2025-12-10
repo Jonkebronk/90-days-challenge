@@ -33,6 +33,8 @@ import { Label } from '@/components/ui/label'
 import { LabelScannerModal } from '@/components/products/LabelScannerModal'
 import { ManualProductModal } from '@/components/products/ManualProductModal'
 import { EditProductModal } from '@/components/products/EditProductModal'
+import { SubcategoryPanel } from '@/components/products/SubcategoryPanel'
+import { SUBCATEGORIES_BY_CATEGORY } from '@/lib/products/subcategories'
 
 interface Product {
   id: string
@@ -74,9 +76,11 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({})
   const [sourceCounts, setSourceCounts] = useState<Record<string, number>>({})
+  const [subCategoryCounts, setSubCategoryCounts] = useState<Record<string, number>>({})
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
   const [selectedSource, setSelectedSource] = useState('all')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
@@ -92,6 +96,9 @@ export default function ProductsPage() {
       if (selectedCategory && selectedCategory !== 'all') {
         url += `&category=${encodeURIComponent(selectedCategory)}`
       }
+      if (selectedSubcategory) {
+        url += `&subCategory=${encodeURIComponent(selectedSubcategory)}`
+      }
       if (selectedSource && selectedSource !== 'all') {
         url += `&source=${encodeURIComponent(selectedSource)}`
       }
@@ -103,12 +110,13 @@ export default function ProductsPage() {
       setProducts(data.products || [])
       setCategoryCounts(data.categoryCounts || {})
       setSourceCounts(data.sourceCounts || {})
+      setSubCategoryCounts(data.subCategoryCounts || {})
     } catch (error) {
       console.error('Failed to fetch products:', error)
     } finally {
       setIsLoading(false)
     }
-  }, [searchQuery, selectedCategory, selectedSource])
+  }, [searchQuery, selectedCategory, selectedSubcategory, selectedSource])
 
   useEffect(() => {
     fetchProducts()
@@ -242,7 +250,10 @@ export default function ProductsPage() {
               return (
                 <button
                   key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
+                  onClick={() => {
+                    setSelectedCategory(cat.id)
+                    setSelectedSubcategory(null) // Reset subcategory when category changes
+                  }}
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg whitespace-nowrap transition-all ${
                     isActive
                       ? 'bg-gold-primary text-black font-medium'
@@ -267,45 +278,62 @@ export default function ProductsPage() {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-gold-primary" />
-          </div>
-        ) : products.length === 0 ? (
-          <div className="text-center py-12 px-4">
-            <Package className="w-10 h-10 sm:w-12 sm:h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500 text-sm sm:text-base">Inga produkter hittades</p>
-            <p className="text-xs sm:text-sm text-gray-400 mt-1">
-              Scanna streckkoder för att bygga ditt bibliotek
-            </p>
-          </div>
-        ) : viewMode === 'grid' ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4">
-            {products.map(product => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onEdit={() => {
-                  setEditingProduct(product)
-                  setEditCategory(product.category || '')
-                }}
+        <div className="flex gap-4">
+          {/* Subcategory sidebar - only show when category has subcategories */}
+          {selectedCategory !== 'all' && SUBCATEGORIES_BY_CATEGORY[selectedCategory.toLowerCase()] && (
+            <div className="hidden md:block">
+              <SubcategoryPanel
+                categoryId={selectedCategory}
+                selectedSubcategory={selectedSubcategory}
+                onSubcategoryChange={setSelectedSubcategory}
+                subCategoryCounts={subCategoryCounts}
               />
-            ))}
+            </div>
+          )}
+
+          {/* Products area */}
+          <div className="flex-1 min-w-0">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-gold-primary" />
+              </div>
+            ) : products.length === 0 ? (
+              <div className="text-center py-12 px-4">
+                <Package className="w-10 h-10 sm:w-12 sm:h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500 text-sm sm:text-base">Inga produkter hittades</p>
+                <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                  Scanna streckkoder för att bygga ditt bibliotek
+                </p>
+              </div>
+            ) : viewMode === 'grid' ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
+                {products.map(product => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onEdit={() => {
+                      setEditingProduct(product)
+                      setEditCategory(product.category || '')
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {products.map(product => (
+                  <ProductRow
+                    key={product.id}
+                    product={product}
+                    onEdit={() => {
+                      setEditingProduct(product)
+                      setEditCategory(product.category || '')
+                    }}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="space-y-2">
-            {products.map(product => (
-              <ProductRow
-                key={product.id}
-                product={product}
-                onEdit={() => {
-                  setEditingProduct(product)
-                  setEditCategory(product.category || '')
-                }}
-              />
-            ))}
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Edit Product Modal */}
