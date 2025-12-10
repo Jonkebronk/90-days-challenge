@@ -149,39 +149,50 @@ export function MacroInputPanel({
 
       {/* Calculate mode inputs */}
       {macroSourceMode === 'calculate' && (
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-semibold text-zinc-700 mb-1.5">Kroppsvikt (kg)</label>
-            <input
-              type="number"
-              value={bodyWeight || ''}
-              onChange={(e) => onBodyWeightChange(Number(e.target.value) || 0)}
-              placeholder="0"
-              className="w-full bg-zinc-50 border-2 border-zinc-300 rounded-lg px-3 py-2 text-zinc-900 font-medium focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            />
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-zinc-700 mb-1.5">Kroppsvikt (kg)</label>
+              <input
+                type="number"
+                value={bodyWeight || ''}
+                onChange={(e) => onBodyWeightChange(Number(e.target.value) || 0)}
+                placeholder="0"
+                className="w-full bg-zinc-50 border-2 border-zinc-300 rounded-lg px-3 py-2 text-zinc-900 font-medium focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-zinc-700 mb-1.5">Aktivitetsnivå</label>
+              <select
+                value={activityLevel}
+                onChange={(e) => onActivityLevelChange(e.target.value as ActivityLevel)}
+                className="w-full bg-zinc-50 border-2 border-zinc-300 rounded-lg px-3 py-2 text-zinc-900 font-medium focus:outline-none focus:border-amber-500"
+              >
+                <option value="sedentary">Stillasittande</option>
+                <option value="moderate">Måttligt aktiv</option>
+                <option value="active">Mycket aktiv</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-zinc-700 mb-1.5">Protein (g/kg)</label>
+              <input
+                type="number"
+                step="0.1"
+                value={proteinFactor || ''}
+                onChange={(e) => onProteinFactorChange(Number(e.target.value) || 0)}
+                placeholder="0"
+                className="w-full bg-zinc-50 border-2 border-zinc-300 rounded-lg px-3 py-2 text-zinc-900 font-medium focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-zinc-700 mb-1.5">Aktivitetsnivå</label>
-            <select
-              value={activityLevel}
-              onChange={(e) => onActivityLevelChange(e.target.value as ActivityLevel)}
-              className="w-full bg-zinc-50 border-2 border-zinc-300 rounded-lg px-3 py-2 text-zinc-900 font-medium focus:outline-none focus:border-amber-500"
-            >
-              <option value="sedentary">Stillasittande</option>
-              <option value="moderate">Måttligt aktiv</option>
-              <option value="active">Mycket aktiv</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-zinc-700 mb-1.5">Protein (g/kg)</label>
-            <input
-              type="number"
-              step="0.1"
-              value={proteinFactor || ''}
-              onChange={(e) => onProteinFactorChange(Number(e.target.value) || 0)}
-              placeholder="0"
-              className="w-full bg-zinc-50 border-2 border-zinc-300 rounded-lg px-3 py-2 text-zinc-900 font-medium focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            />
+          {/* Calculation explanation */}
+          <div className="text-sm text-zinc-600 bg-zinc-100 rounded-lg px-4 py-3 border border-zinc-200">
+            <span className="font-semibold">Beräkning:</span>{' '}
+            <span className="text-rose-600 font-medium">{proteinFactor}g protein/kg</span>
+            {' • '}
+            <span className="text-blue-600 font-medium">0,7g fett/kg</span>
+            {' • '}
+            <span className="text-emerald-600 font-medium">resten kolhydrater</span>
           </div>
         </div>
       )}
