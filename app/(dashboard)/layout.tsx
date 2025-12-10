@@ -440,8 +440,8 @@ export default function DashboardLayout({
       </header>
 
       {/* Main Content */}
-      <main className="w-full bg-white py-8">
-        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="w-full bg-gray-100 min-h-[calc(100vh-64px)]">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {children}
         </div>
       </main>
