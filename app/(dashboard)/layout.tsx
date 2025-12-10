@@ -440,7 +440,7 @@ export default function DashboardLayout({
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="w-full px-4 lg:px-0 py-8">
         {children}
       </main>
     </div>
