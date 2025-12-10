@@ -198,22 +198,34 @@ export function MacroInputPanel({
               Applicera
             </button>
           </div>
-          <div className="grid grid-cols-4 gap-3 text-center">
-            <div className="bg-amber-100 border-2 border-amber-300 rounded-lg p-2">
-              <div className="text-lg font-bold text-amber-700">{Math.round(calculatedMacros.kcal)}</div>
-              <div className="text-xs font-medium text-zinc-600">kcal</div>
+          <div className="flex items-center justify-center gap-6">
+            {/* Kcal */}
+            <div className="flex flex-col items-center gap-1">
+              <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center">
+                <span className="text-sm font-bold text-white">K</span>
+              </div>
+              <span className="text-sm font-bold text-zinc-700">{Math.round(calculatedMacros.kcal)}</span>
             </div>
-            <div className="bg-rose-100 border-2 border-rose-300 rounded-lg p-2">
-              <div className="text-lg font-bold text-rose-700">{Math.round(calculatedMacros.protein)}g</div>
-              <div className="text-xs font-medium text-zinc-600">Protein</div>
+            {/* Protein */}
+            <div className="flex flex-col items-center gap-1">
+              <div className="w-10 h-10 rounded-full bg-rose-500 flex items-center justify-center">
+                <span className="text-sm font-bold text-white">P</span>
+              </div>
+              <span className="text-sm font-bold text-zinc-700">{Math.round(calculatedMacros.protein)}g</span>
             </div>
-            <div className="bg-blue-100 border-2 border-blue-300 rounded-lg p-2">
-              <div className="text-lg font-bold text-blue-700">{Math.round(calculatedMacros.carbs)}g</div>
-              <div className="text-xs font-medium text-zinc-600">Kolhydrater</div>
+            {/* Carbs */}
+            <div className="flex flex-col items-center gap-1">
+              <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                <span className="text-sm font-bold text-white">K</span>
+              </div>
+              <span className="text-sm font-bold text-zinc-700">{Math.round(calculatedMacros.carbs)}g</span>
             </div>
-            <div className="bg-amber-100 border-2 border-amber-300 rounded-lg p-2">
-              <div className="text-lg font-bold text-amber-700">{Math.round(calculatedMacros.fat)}g</div>
-              <div className="text-xs font-medium text-zinc-600">Fett</div>
+            {/* Fat */}
+            <div className="flex flex-col items-center gap-1">
+              <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center">
+                <span className="text-sm font-bold text-white">F</span>
+              </div>
+              <span className="text-sm font-bold text-zinc-700">{Math.round(calculatedMacros.fat)}g</span>
             </div>
           </div>
         </div>
@@ -266,19 +278,35 @@ export function MacroInputPanel({
       {/* Current day totals */}
       <div className="flex items-center justify-between pt-4 border-t-2 border-zinc-200">
         <span className="text-sm font-semibold text-zinc-600">Dagens makros:</span>
-        <div className="flex gap-3">
-          <span className="px-3 py-1.5 rounded-lg text-sm font-bold bg-amber-100 text-amber-700 border-2 border-amber-300">
-            {dayConfig.totalCalories} kcal
-          </span>
-          <span className="px-3 py-1.5 rounded-lg text-sm font-bold bg-rose-100 text-rose-700 border-2 border-rose-300">
-            P: {dayConfig.totalProtein}g
-          </span>
-          <span className="px-3 py-1.5 rounded-lg text-sm font-bold bg-blue-100 text-blue-700 border-2 border-blue-300">
-            K: {dayConfig.totalCarbs}g
-          </span>
-          <span className="px-3 py-1.5 rounded-lg text-sm font-bold bg-amber-100 text-amber-700 border-2 border-amber-300">
-            F: {dayConfig.totalFat}g
-          </span>
+        <div className="flex items-center gap-3">
+          {/* Kcal badge */}
+          <div className="flex items-center gap-1.5">
+            <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center">
+              <span className="text-xs font-bold text-white">K</span>
+            </div>
+            <span className="text-sm font-bold text-zinc-700">{dayConfig.totalCalories}</span>
+          </div>
+          {/* Protein badge */}
+          <div className="flex items-center gap-1.5">
+            <div className="w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center">
+              <span className="text-xs font-bold text-white">P</span>
+            </div>
+            <span className="text-sm font-bold text-zinc-700">{dayConfig.totalProtein}g</span>
+          </div>
+          {/* Carbs badge */}
+          <div className="flex items-center gap-1.5">
+            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+              <span className="text-xs font-bold text-white">K</span>
+            </div>
+            <span className="text-sm font-bold text-zinc-700">{dayConfig.totalCarbs}g</span>
+          </div>
+          {/* Fat badge */}
+          <div className="flex items-center gap-1.5">
+            <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
+              <span className="text-xs font-bold text-white">F</span>
+            </div>
+            <span className="text-sm font-bold text-zinc-700">{dayConfig.totalFat}g</span>
+          </div>
         </div>
       </div>
     </div>
