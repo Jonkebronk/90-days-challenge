@@ -163,7 +163,7 @@ export default function ProductsPage() {
           {/* Title row */}
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Produktbibliotek</h1>
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Livsmedelsbibliotek</h1>
               <p className="text-xs sm:text-sm text-gray-500">{totalProducts} produkter</p>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2">
