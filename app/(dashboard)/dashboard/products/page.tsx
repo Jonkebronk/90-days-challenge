@@ -47,6 +47,23 @@ interface Product {
   protein: number
   carbs: number
   fat: number
+  fiber?: number | null
+  sugar?: number | null
+  salt?: number | null
+  // Micronutrients
+  saturatedFat?: number | null
+  vitaminA?: number | null
+  vitaminD?: number | null
+  vitaminC?: number | null
+  vitaminB12?: number | null
+  folate?: number | null
+  calcium?: number | null
+  iron?: number | null
+  magnesium?: number | null
+  potassium?: number | null
+  zinc?: number | null
+  iodine?: number | null
+  slvNummer?: number | null
   source: string
 }
 

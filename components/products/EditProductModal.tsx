@@ -9,7 +9,11 @@ import {
   ImageIcon,
   Save,
   Search,
-  Database
+  Database,
+  ChevronDown,
+  ChevronUp,
+  Pill,
+  Atom
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -131,6 +135,10 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
   const [slvSearchTerm, setSlvSearchTerm] = useState('')
   const [slvResults, setSlvResults] = useState<SLVFood[]>([])
   const [slvLoading, setSlvLoading] = useState(false)
+
+  // Micronutrient sections state
+  const [showVitamins, setShowVitamins] = useState(false)
+  const [showMinerals, setShowMinerals] = useState(false)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -625,6 +633,196 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
                 className="mt-1"
               />
             </div>
+          </div>
+
+          {/* Vitamins Section */}
+          <div className="border-t pt-4">
+            <button
+              type="button"
+              onClick={() => setShowVitamins(!showVitamins)}
+              className="w-full flex items-center justify-between py-2 text-left"
+            >
+              <div className="flex items-center gap-2">
+                <Pill className="w-4 h-4 text-orange-500" />
+                <span className="font-medium text-gray-900">Vitaminer</span>
+                {(formData.vitaminA || formData.vitaminC || formData.vitaminD || formData.vitaminB12) && (
+                  <span className="text-xs px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded-full">
+                    Har data
+                  </span>
+                )}
+              </div>
+              {showVitamins ? (
+                <ChevronUp className="w-4 h-4 text-gray-500" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-gray-500" />
+              )}
+            </button>
+
+            {showVitamins && (
+              <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div>
+                  <Label htmlFor="vitaminA" className="text-xs text-gray-600">Vitamin A (µg)</Label>
+                  <Input
+                    id="vitaminA"
+                    type="number"
+                    step="0.1"
+                    value={formData.vitaminA}
+                    onChange={(e) => setFormData(prev => ({ ...prev, vitaminA: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="vitaminD" className="text-xs text-gray-600">Vitamin D (µg)</Label>
+                  <Input
+                    id="vitaminD"
+                    type="number"
+                    step="0.01"
+                    value={formData.vitaminD}
+                    onChange={(e) => setFormData(prev => ({ ...prev, vitaminD: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="vitaminC" className="text-xs text-gray-600">Vitamin C (mg)</Label>
+                  <Input
+                    id="vitaminC"
+                    type="number"
+                    step="0.1"
+                    value={formData.vitaminC}
+                    onChange={(e) => setFormData(prev => ({ ...prev, vitaminC: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="vitaminB12" className="text-xs text-gray-600">Vitamin B12 (µg)</Label>
+                  <Input
+                    id="vitaminB12"
+                    type="number"
+                    step="0.01"
+                    value={formData.vitaminB12}
+                    onChange={(e) => setFormData(prev => ({ ...prev, vitaminB12: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="folate" className="text-xs text-gray-600">Folat (µg)</Label>
+                  <Input
+                    id="folate"
+                    type="number"
+                    step="0.1"
+                    value={formData.folate}
+                    onChange={(e) => setFormData(prev => ({ ...prev, folate: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Minerals Section */}
+          <div className="border-t pt-4">
+            <button
+              type="button"
+              onClick={() => setShowMinerals(!showMinerals)}
+              className="w-full flex items-center justify-between py-2 text-left"
+            >
+              <div className="flex items-center gap-2">
+                <Atom className="w-4 h-4 text-blue-500" />
+                <span className="font-medium text-gray-900">Mineraler</span>
+                {(formData.calcium || formData.iron || formData.magnesium || formData.zinc) && (
+                  <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full">
+                    Har data
+                  </span>
+                )}
+              </div>
+              {showMinerals ? (
+                <ChevronUp className="w-4 h-4 text-gray-500" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-gray-500" />
+              )}
+            </button>
+
+            {showMinerals && (
+              <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div>
+                  <Label htmlFor="calcium" className="text-xs text-gray-600">Kalcium (mg)</Label>
+                  <Input
+                    id="calcium"
+                    type="number"
+                    step="0.1"
+                    value={formData.calcium}
+                    onChange={(e) => setFormData(prev => ({ ...prev, calcium: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="iron" className="text-xs text-gray-600">Järn (mg)</Label>
+                  <Input
+                    id="iron"
+                    type="number"
+                    step="0.01"
+                    value={formData.iron}
+                    onChange={(e) => setFormData(prev => ({ ...prev, iron: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="magnesium" className="text-xs text-gray-600">Magnesium (mg)</Label>
+                  <Input
+                    id="magnesium"
+                    type="number"
+                    step="0.1"
+                    value={formData.magnesium}
+                    onChange={(e) => setFormData(prev => ({ ...prev, magnesium: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="potassium" className="text-xs text-gray-600">Kalium (mg)</Label>
+                  <Input
+                    id="potassium"
+                    type="number"
+                    step="0.1"
+                    value={formData.potassium}
+                    onChange={(e) => setFormData(prev => ({ ...prev, potassium: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="zinc" className="text-xs text-gray-600">Zink (mg)</Label>
+                  <Input
+                    id="zinc"
+                    type="number"
+                    step="0.01"
+                    value={formData.zinc}
+                    onChange={(e) => setFormData(prev => ({ ...prev, zinc: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="iodine" className="text-xs text-gray-600">Jod (µg)</Label>
+                  <Input
+                    id="iodine"
+                    type="number"
+                    step="0.1"
+                    value={formData.iodine}
+                    onChange={(e) => setFormData(prev => ({ ...prev, iodine: e.target.value }))}
+                    placeholder="0"
+                    className="mt-1 text-sm"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Category */}
