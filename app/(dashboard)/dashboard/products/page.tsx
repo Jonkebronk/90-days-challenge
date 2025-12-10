@@ -320,7 +320,7 @@ export default function ProductsPage() {
                 </p>
               </div>
             ) : viewMode === 'grid' ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 sm:gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-1.5 sm:gap-2">
                 {products.map(product => (
                   <ProductCard
                     key={product.id}
@@ -377,7 +377,7 @@ export default function ProductsPage() {
 
 function ProductCard({ product, onEdit }: { product: Product; onEdit: () => void }) {
   return (
-    <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
       <div className="aspect-square bg-gray-100 relative">
         {product.image ? (
           <img
@@ -387,35 +387,27 @@ function ProductCard({ product, onEdit }: { product: Product; onEdit: () => void
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <Package className="w-8 h-8 sm:w-12 sm:h-12 text-gray-300" />
+            <Package className="w-6 h-6 sm:w-8 sm:h-8 text-gray-300" />
           </div>
         )}
         <button
           onClick={onEdit}
-          className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 p-1 sm:p-1.5 bg-white/90 rounded-md sm:rounded-lg hover:bg-white shadow-sm"
+          className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 p-0.5 sm:p-1 bg-white/90 rounded-md hover:bg-white shadow-sm"
         >
-          <Edit2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-600" />
+          <Edit2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-gray-600" />
         </button>
       </div>
-      <div className="p-2 sm:p-3">
-        <h3 className="font-medium text-gray-900 text-xs sm:text-sm line-clamp-2">{product.name}</h3>
-        {product.brand && (
-          <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5 truncate">{product.brand}</p>
-        )}
-        <div className="flex items-center justify-between mt-1.5 sm:mt-2">
-          <span className="text-xs sm:text-sm font-semibold text-gold-primary">{Math.round(product.kcal)} kcal</span>
-          <span className="text-[10px] sm:text-xs text-gray-400">/100g</span>
+      <div className="p-1.5 sm:p-2">
+        <h3 className="font-medium text-gray-900 text-[11px] sm:text-xs line-clamp-2">{product.name}</h3>
+        <div className="flex items-center justify-between mt-1">
+          <span className="text-[10px] sm:text-xs font-semibold text-gold-primary">{Math.round(product.kcal)} kcal</span>
+          <span className="text-[9px] sm:text-[10px] text-gray-400">/100g</span>
         </div>
-        <div className="flex gap-1.5 sm:gap-2 mt-1 text-[10px] sm:text-xs text-gray-500">
-          <span>P: {Math.round(product.protein)}g</span>
-          <span>K: {Math.round(product.carbs)}g</span>
-          <span>F: {Math.round(product.fat)}g</span>
+        <div className="flex gap-1 mt-0.5 text-[9px] sm:text-[10px] text-gray-500">
+          <span>P:{Math.round(product.protein)}</span>
+          <span>K:{Math.round(product.carbs)}</span>
+          <span>F:{Math.round(product.fat)}</span>
         </div>
-        {product.category && (
-          <span className="inline-block mt-1.5 sm:mt-2 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
-            {CATEGORIES.find(c => c.id === product.category)?.label || product.category}
-          </span>
-        )}
       </div>
     </div>
   )
