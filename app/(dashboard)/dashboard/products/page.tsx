@@ -24,8 +24,7 @@ import {
   Plus,
   Camera,
   Database,
-  Store,
-  Globe
+  Store
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -69,9 +68,8 @@ interface Product {
 
 const SOURCES = [
   { id: 'all', label: 'Alla', icon: Database },
-  { id: 'openfoodfacts', label: 'Open Food Facts', icon: Globe },
   { id: 'ica', label: 'ICA', icon: Store },
-  { id: 'coop', label: 'COOP', icon: Store },
+  { id: 'slv', label: 'SLV', icon: Database },
 ]
 
 const CATEGORIES = [
