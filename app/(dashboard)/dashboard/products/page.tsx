@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Search,
   Package,
@@ -22,9 +22,7 @@ import {
   Plus,
   Camera,
   Database,
-  Store,
-  ChevronRight,
-  ChevronDown
+  Store
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -99,19 +97,6 @@ export default function ProductsPage() {
   const [editCategory, setEditCategory] = useState<string>('')
   const [isLabelScannerOpen, setIsLabelScannerOpen] = useState(false)
   const [isManualAddOpen, setIsManualAddOpen] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState<'category' | 'subcategory' | null>(null)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setOpenDropdown(null)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
 
   const fetchProducts = useCallback(async () => {
     setIsLoading(true)
@@ -264,111 +249,79 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Breadcrumb navigation - ICA style */}
-        <div className="px-4 pb-3" ref={dropdownRef}>
-          <nav className="flex items-center gap-1 text-sm">
-            {/* Level 1: Category */}
-            <div className="relative">
+        {/* Category chips */}
+        <div className="px-4 pb-3">
+          <div className="flex flex-wrap gap-1.5">
+            {CATEGORIES.map(cat => {
+              const count = cat.id === 'all' ? totalProducts : (categoryCounts[cat.id] || 0)
+              const Icon = cat.icon
+              const isActive = selectedCategory === cat.id
+
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    setSelectedCategory(cat.id)
+                    setSelectedSubcategory(null)
+                  }}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm transition-colors ${
+                    isActive
+                      ? 'bg-gold-primary text-black font-medium'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{cat.label}</span>
+                  {count > 0 && (
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                      isActive ? 'bg-black/20' : 'bg-gray-200'
+                    }`}>
+                      {count}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Subcategory chips - show when category has subcategories */}
+          {selectedCategory !== 'all' && SUBCATEGORIES_BY_CATEGORY[selectedCategory.toLowerCase()] && (
+            <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-gray-200">
               <button
-                onClick={() => setOpenDropdown(openDropdown === 'category' ? null : 'category')}
-                className={`flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 transition-colors ${
-                  selectedCategory === 'all' ? 'font-medium text-gray-900' : 'text-gray-600'
+                onClick={() => setSelectedSubcategory(null)}
+                className={`px-2.5 py-1 rounded-full text-sm transition-colors ${
+                  !selectedSubcategory
+                    ? 'bg-gray-800 text-white font-medium'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                <span>{selectedCategory === 'all' ? 'Alla produkter' : CATEGORIES.find(c => c.id === selectedCategory)?.label}</span>
-                <ChevronDown className="w-4 h-4" />
+                Alla
               </button>
+              {SUBCATEGORIES_BY_CATEGORY[selectedCategory.toLowerCase()]?.map(subcat => {
+                const count = subCategoryCounts[subcat.key] || 0
+                const isActive = selectedSubcategory === subcat.key
 
-              {/* Category dropdown */}
-              {openDropdown === 'category' && (
-                <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[180px] z-20">
-                  {CATEGORIES.map(cat => {
-                    const count = cat.id === 'all' ? totalProducts : (categoryCounts[cat.id] || 0)
-                    const Icon = cat.icon
-                    const isActive = selectedCategory === cat.id
-
-                    return (
-                      <button
-                        key={cat.id}
-                        onClick={() => {
-                          setSelectedCategory(cat.id)
-                          setSelectedSubcategory(null)
-                          setOpenDropdown(null)
-                        }}
-                        className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors ${
-                          isActive ? 'bg-gold-primary/10 text-gray-900 font-medium' : 'text-gray-700'
-                        }`}
-                      >
-                        <Icon className="w-4 h-4 text-gray-400" />
-                        <span className="flex-1">{cat.label}</span>
-                        <span className="text-xs text-gray-400">{count}</span>
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* Level 2: Subcategory (only if category has subcategories) */}
-            {selectedCategory !== 'all' && SUBCATEGORIES_BY_CATEGORY[selectedCategory.toLowerCase()] && (
-              <>
-                <ChevronRight className="w-4 h-4 text-gray-400" />
-                <div className="relative">
+                return (
                   <button
-                    onClick={() => setOpenDropdown(openDropdown === 'subcategory' ? null : 'subcategory')}
-                    className={`flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-100 transition-colors ${
-                      selectedSubcategory ? 'text-gray-600' : 'font-medium text-gray-900'
+                    key={subcat.key}
+                    onClick={() => setSelectedSubcategory(subcat.key)}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-sm transition-colors ${
+                      isActive
+                        ? 'bg-gray-800 text-white font-medium'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
-                    <span>
-                      {selectedSubcategory
-                        ? SUBCATEGORIES_BY_CATEGORY[selectedCategory.toLowerCase()]?.find(s => s.key === selectedSubcategory)?.label
-                        : 'Alla'}
-                    </span>
-                    <ChevronDown className="w-4 h-4" />
+                    <span>{subcat.label}</span>
+                    {count > 0 && (
+                      <span className={`text-xs ${isActive ? 'text-gray-300' : 'text-gray-400'}`}>
+                        {count}
+                      </span>
+                    )}
                   </button>
-
-                  {/* Subcategory dropdown */}
-                  {openDropdown === 'subcategory' && (
-                    <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[160px] z-20">
-                      <button
-                        onClick={() => {
-                          setSelectedSubcategory(null)
-                          setOpenDropdown(null)
-                        }}
-                        className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors ${
-                          !selectedSubcategory ? 'bg-gold-primary/10 text-gray-900 font-medium' : 'text-gray-700'
-                        }`}
-                      >
-                        <span className="flex-1">Alla</span>
-                        <span className="text-xs text-gray-400">{categoryCounts[selectedCategory] || 0}</span>
-                      </button>
-                      {SUBCATEGORIES_BY_CATEGORY[selectedCategory.toLowerCase()]?.map(subcat => {
-                        const count = subCategoryCounts[subcat.key] || 0
-                        const isActive = selectedSubcategory === subcat.key
-
-                        return (
-                          <button
-                            key={subcat.key}
-                            onClick={() => {
-                              setSelectedSubcategory(subcat.key)
-                              setOpenDropdown(null)
-                            }}
-                            className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-50 transition-colors ${
-                              isActive ? 'bg-gold-primary/10 text-gray-900 font-medium' : 'text-gray-700'
-                            }`}
-                          >
-                            <span className="flex-1">{subcat.label}</span>
-                            <span className="text-xs text-gray-400">{count}</span>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </nav>
+                )
+              })}
+            </div>
+          )}
         </div>
       </div>
 
