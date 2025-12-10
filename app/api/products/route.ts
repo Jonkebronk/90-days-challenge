@@ -36,12 +36,12 @@ export async function GET(req: NextRequest) {
       ]
     }
 
-    // Filter by category
+    // Filter by category (case-insensitive)
     if (category) {
       if (category === 'uncategorized') {
         where.category = null
       } else {
-        where.category = category
+        where.category = { equals: category, mode: 'insensitive' }
       }
     }
 
