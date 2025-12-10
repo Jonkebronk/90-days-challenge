@@ -740,7 +740,7 @@ export default function MessagesPage() {
               )}
 
               <div className="flex items-center gap-2 mb-2">
-                <FAQPanel onSelectAnswer={(answer) => setNewMessage(answer)} isCoach={isCoach} />
+                <FAQPanel />
               </div>
               <div className="flex gap-2">
                 <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" multiple className="hidden" />
