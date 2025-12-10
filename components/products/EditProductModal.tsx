@@ -541,12 +541,12 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
                 )}
 
                 {!slvLoading && slvResults.length > 0 && (
-                  <div className="max-h-48 overflow-y-auto space-y-1">
+                  <div className="max-h-48 overflow-y-auto divide-y divide-gray-200 border border-gray-200 rounded-lg bg-white">
                     {slvResults.map((food) => (
                       <button
                         key={food.slvNummer}
                         onClick={() => handleSLVSelect(food)}
-                        className="w-full text-left p-2 rounded-lg hover:bg-blue-100 transition-colors"
+                        className="w-full text-left px-3 py-2.5 hover:bg-blue-50 transition-colors first:rounded-t-lg last:rounded-b-lg"
                       >
                         <div className="font-medium text-sm text-gray-900 truncate">
                           {food.name}
