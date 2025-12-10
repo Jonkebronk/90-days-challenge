@@ -9,12 +9,28 @@ interface ImportProduct {
   name: string
   brand?: string
   category?: string
+  subCategory?: string
   image?: string
   kcal: number
   protein: number
   carbs: number
   fat: number
   fiber?: number
+  sugar?: number
+  salt?: number
+  // Micronutrients
+  vitaminA?: number
+  vitaminD?: number
+  vitaminC?: number
+  vitaminB12?: number
+  folate?: number
+  calcium?: number
+  iron?: number
+  magnesium?: number
+  potassium?: number
+  zinc?: number
+  iodine?: number
+  slvNummer?: number
   source?: string
 }
 
@@ -75,12 +91,28 @@ export async function POST(req: NextRequest) {
               name: p.name,
               brand: p.brand || null,
               category: p.category || existing.category || null,
+              subCategory: p.subCategory || existing.subCategory || null,
               image: imageUrl || existing.image || null,
               kcal: p.kcal || 0,
               protein: p.protein || 0,
               carbs: p.carbs || 0,
               fat: p.fat || 0,
-              fiber: p.fiber || null,
+              fiber: p.fiber ?? null,
+              sugar: p.sugar ?? null,
+              salt: p.salt ?? null,
+              // Micronutrients
+              vitaminA: p.vitaminA ?? null,
+              vitaminD: p.vitaminD ?? null,
+              vitaminC: p.vitaminC ?? null,
+              vitaminB12: p.vitaminB12 ?? null,
+              folate: p.folate ?? null,
+              calcium: p.calcium ?? null,
+              iron: p.iron ?? null,
+              magnesium: p.magnesium ?? null,
+              potassium: p.potassium ?? null,
+              zinc: p.zinc ?? null,
+              iodine: p.iodine ?? null,
+              slvNummer: p.slvNummer ?? null,
               source: p.source || 'import'
             }
           })
@@ -96,12 +128,28 @@ export async function POST(req: NextRequest) {
               name: p.name,
               brand: p.brand || null,
               category: p.category || null,
+              subCategory: p.subCategory || null,
               image: imageUrl,
               kcal: p.kcal || 0,
               protein: p.protein || 0,
               carbs: p.carbs || 0,
               fat: p.fat || 0,
-              fiber: p.fiber || null,
+              fiber: p.fiber ?? null,
+              sugar: p.sugar ?? null,
+              salt: p.salt ?? null,
+              // Micronutrients
+              vitaminA: p.vitaminA ?? null,
+              vitaminD: p.vitaminD ?? null,
+              vitaminC: p.vitaminC ?? null,
+              vitaminB12: p.vitaminB12 ?? null,
+              folate: p.folate ?? null,
+              calcium: p.calcium ?? null,
+              iron: p.iron ?? null,
+              magnesium: p.magnesium ?? null,
+              potassium: p.potassium ?? null,
+              zinc: p.zinc ?? null,
+              iodine: p.iodine ?? null,
+              slvNummer: p.slvNummer ?? null,
               source: p.source || 'import'
             }
           })
