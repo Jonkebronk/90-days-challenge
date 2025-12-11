@@ -114,8 +114,10 @@ export default function ProductsPage() {
   const [subCategoryCounts, setSubCategoryCounts] = useState<Record<string, number>>({})
   const [isLoading, setIsLoading] = useState(true)
 
-  // Dynamic categories from API + built-in
-  const [categories, setCategories] = useState<Array<{ id: string; label: string; icon: any }>>([])
+  // Dynamic categories from API + built-in (initialize with built-in to avoid empty state)
+  const [categories, setCategories] = useState<Array<{ id: string; label: string; icon: any }>>(
+    BUILT_IN_CATEGORIES.map(c => ({ id: c.id, label: c.label, icon: c.icon }))
+  )
   const [dbSubcategories, setDbSubcategories] = useState<Array<{ key: string; label: string; parentKey: string }>>([])
   const [hiddenCategories, setHiddenCategories] = useState<Set<string>>(new Set())
   const [searchQuery, setSearchQuery] = useState('')
@@ -173,9 +175,12 @@ export default function ProductsPage() {
   // Fetch categories from API and merge with built-in
   const fetchCategories = useCallback(async () => {
     try {
-      // Load hidden categories from localStorage
-      const stored = localStorage.getItem('hiddenProductCategories')
-      const hidden = stored ? new Set<string>(JSON.parse(stored)) : new Set<string>()
+      // Load hidden categories from localStorage (SSR-safe)
+      let hidden = new Set<string>()
+      if (typeof window !== 'undefined') {
+        const stored = localStorage.getItem('hiddenProductCategories')
+        hidden = stored ? new Set<string>(JSON.parse(stored)) : new Set<string>()
+      }
       setHiddenCategories(hidden)
 
       const res = await fetch('/api/product-categories')
@@ -412,7 +417,7 @@ export default function ProductsPage() {
             {/* Dynamic categories from state */}
             {categories.map(cat => {
               const count = categoryCounts[cat.id] || 0
-              const Icon = cat.icon
+              const Icon = cat.icon || Package
               const isActive = selectedCategory === cat.id
 
               return (
