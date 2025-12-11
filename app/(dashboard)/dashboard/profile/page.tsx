@@ -546,7 +546,7 @@ export default function ProfilePage() {
               </h2>
               <p className="text-gray-500 mt-1">{formData.email || session?.user?.email}</p>
               <p className="text-sm text-amber-600 font-medium mt-2">
-                {(session?.user as any)?.role === 'COACH' ? 'Coach' : 'Klient'}
+                {(session?.user as any)?.role?.toUpperCase() === 'COACH' ? 'Coach' : 'Klient'}
               </p>
               <p className="text-xs text-gray-400 mt-3">
                 Tryck på bilden för att ändra
@@ -708,7 +708,7 @@ export default function ProfilePage() {
               <div>
                 <Label className="text-gray-600 text-sm">Roll</Label>
                 <p className="text-lg font-semibold text-gray-900 capitalize mt-1">
-                  {(session?.user as any)?.role === 'COACH' ? 'Coach' : 'Klient'}
+                  {(session?.user as any)?.role?.toUpperCase() === 'COACH' ? 'Coach' : 'Klient'}
                 </p>
               </div>
               <div>
