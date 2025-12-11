@@ -76,8 +76,8 @@ const SOURCES = [
   { id: 'ica', label: 'ICA', icon: Store },
 ]
 
-const CATEGORIES = [
-  { id: 'all', label: 'Alla', icon: Package },
+// Built-in categories with icons - can be overridden by DB
+const BUILT_IN_CATEGORIES = [
   { id: 'mejeri', label: 'Mejeri', icon: Milk },
   { id: 'kött', label: 'Kött', icon: Drumstick },
   { id: 'fisk', label: 'Fisk', icon: Fish },
@@ -90,6 +90,20 @@ const CATEGORIES = [
   { id: 'torrvaror', label: 'Torrvaror', icon: Wheat },
 ]
 
+// Icon mapping for dynamic categories
+const CATEGORY_ICONS: Record<string, any> = {
+  mejeri: Milk,
+  kött: Drumstick,
+  fisk: Fish,
+  bröd: Croissant,
+  frukt: Apple,
+  grönsaker: Carrot,
+  dryck: Wine,
+  snacks: Cookie,
+  fryst: Snowflake,
+  torrvaror: Wheat,
+}
+
 export default function ProductsPage() {
   const { data: session } = useSession()
   const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
@@ -99,6 +113,11 @@ export default function ProductsPage() {
   const [sourceCounts, setSourceCounts] = useState<Record<string, number>>({})
   const [subCategoryCounts, setSubCategoryCounts] = useState<Record<string, number>>({})
   const [isLoading, setIsLoading] = useState(true)
+
+  // Dynamic categories from API + built-in
+  const [categories, setCategories] = useState<Array<{ id: string; label: string; icon: any }>>([])
+  const [dbSubcategories, setDbSubcategories] = useState<Array<{ key: string; label: string; parentKey: string }>>([])
+  const [hiddenCategories, setHiddenCategories] = useState<Set<string>>(new Set())
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
@@ -150,6 +169,63 @@ export default function ProductsPage() {
       setIsLoading(false)
     }
   }, [searchQuery, selectedCategory, selectedSubcategory, selectedSource])
+
+  // Fetch categories from API and merge with built-in
+  const fetchCategories = useCallback(async () => {
+    try {
+      // Load hidden categories from localStorage
+      const stored = localStorage.getItem('hiddenProductCategories')
+      const hidden = stored ? new Set<string>(JSON.parse(stored)) : new Set<string>()
+      setHiddenCategories(hidden)
+
+      const res = await fetch('/api/product-categories')
+      if (res.ok) {
+        const data = await res.json()
+        const dbCats = data.categories || []
+        const dbSubs = data.subcategories || []
+
+        // Merge built-in with DB overrides
+        const mergedCategories: Array<{ id: string; label: string; icon: any }> = []
+
+        // Add built-in categories (with possible DB label overrides)
+        for (const builtIn of BUILT_IN_CATEGORIES) {
+          if (hidden.has(builtIn.id)) continue // Skip hidden
+          const dbOverride = dbCats.find((c: any) => c.key === builtIn.id)
+          mergedCategories.push({
+            id: builtIn.id,
+            label: dbOverride?.label || builtIn.label,
+            icon: builtIn.icon
+          })
+        }
+
+        // Add custom categories from DB
+        for (const dbCat of dbCats) {
+          if (dbCat.isCustom && !dbCat.parentKey && !hidden.has(dbCat.key)) {
+            mergedCategories.push({
+              id: dbCat.key,
+              label: dbCat.label,
+              icon: CATEGORY_ICONS[dbCat.key] || Package
+            })
+          }
+        }
+
+        setCategories(mergedCategories)
+        setDbSubcategories(dbSubs.map((s: any) => ({
+          key: s.key,
+          label: s.label,
+          parentKey: s.parentKey
+        })))
+      }
+    } catch (error) {
+      console.error('Failed to fetch categories:', error)
+      // Fallback to built-in categories
+      setCategories(BUILT_IN_CATEGORIES.map(c => ({ id: c.id, label: c.label, icon: c.icon })))
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchCategories()
+  }, [fetchCategories])
 
   useEffect(() => {
     fetchProducts()
@@ -311,8 +387,31 @@ export default function ProductsPage() {
         {/* Category chips */}
         <div className="px-4 pb-3">
           <div className="flex flex-wrap gap-1.5">
-            {CATEGORIES.map(cat => {
-              const count = cat.id === 'all' ? totalProducts : (categoryCounts[cat.id] || 0)
+            {/* "Alla" button */}
+            <button
+              onClick={() => {
+                setSelectedCategory('all')
+                setSelectedSubcategory(null)
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm transition-colors ${
+                selectedCategory === 'all'
+                  ? 'bg-gold-primary text-black font-medium'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <Package className="w-3.5 h-3.5" />
+              <span>Alla</span>
+              {totalProducts > 0 && (
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                  selectedCategory === 'all' ? 'bg-black/20' : 'bg-gray-200'
+                }`}>
+                  {totalProducts}
+                </span>
+              )}
+            </button>
+            {/* Dynamic categories from state */}
+            {categories.map(cat => {
+              const count = categoryCounts[cat.id] || 0
               const Icon = cat.icon
               const isActive = selectedCategory === cat.id
 
@@ -320,8 +419,8 @@ export default function ProductsPage() {
                 <button
                   key={cat.id}
                   onClick={() => {
-                    // Toggle: if already selected (except 'all'), go back to 'all'
-                    if (isActive && cat.id !== 'all') {
+                    // Toggle: if already selected, go back to 'all'
+                    if (isActive) {
                       setSelectedCategory('all')
                     } else {
                       setSelectedCategory(cat.id)
@@ -349,43 +448,65 @@ export default function ProductsPage() {
           </div>
 
           {/* Subcategory chips - show when category has subcategories */}
-          {selectedCategory !== 'all' && SUBCATEGORIES_BY_CATEGORY[selectedCategory.toLowerCase()] && (
-            <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-gray-200">
-              <button
-                onClick={() => setSelectedSubcategory(null)}
-                className={`px-2.5 py-1 rounded-full text-sm transition-colors ${
-                  !selectedSubcategory
-                    ? 'bg-gray-800 text-white font-medium'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                Alla
-              </button>
-              {SUBCATEGORIES_BY_CATEGORY[selectedCategory.toLowerCase()]?.map(subcat => {
-                const count = subCategoryCounts[subcat.key] || 0
-                const isActive = selectedSubcategory === subcat.key
+          {selectedCategory !== 'all' && (() => {
+            // Merge hardcoded and DB subcategories
+            const hardcodedSubs = SUBCATEGORIES_BY_CATEGORY[selectedCategory.toLowerCase()] || []
+            const dbSubs = dbSubcategories.filter(s => s.parentKey === selectedCategory.toLowerCase())
 
-                return (
-                  <button
-                    key={subcat.key}
-                    onClick={() => setSelectedSubcategory(isActive ? null : subcat.key)}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-sm transition-colors ${
-                      isActive
-                        ? 'bg-gray-800 text-white font-medium'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    <span>{subcat.label}</span>
-                    {count > 0 && (
-                      <span className={`text-xs ${isActive ? 'text-gray-300' : 'text-gray-400'}`}>
-                        {count}
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-          )}
+            // Create merged map - DB overrides hardcoded labels
+            const merged = new Map<string, { key: string; label: string }>()
+            for (const sub of hardcodedSubs) {
+              if (!hiddenCategories.has(sub.key)) {
+                merged.set(sub.key, { key: sub.key, label: sub.label })
+              }
+            }
+            for (const sub of dbSubs) {
+              if (!hiddenCategories.has(sub.key)) {
+                merged.set(sub.key, { key: sub.key, label: sub.label })
+              }
+            }
+
+            const allSubcats = Array.from(merged.values())
+            if (allSubcats.length === 0) return null
+
+            return (
+              <div className="flex flex-wrap gap-1.5 mt-2 pt-2 border-t border-gray-200">
+                <button
+                  onClick={() => setSelectedSubcategory(null)}
+                  className={`px-2.5 py-1 rounded-full text-sm transition-colors ${
+                    !selectedSubcategory
+                      ? 'bg-gray-800 text-white font-medium'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  Alla
+                </button>
+                {allSubcats.map(subcat => {
+                  const count = subCategoryCounts[subcat.key] || 0
+                  const isActive = selectedSubcategory === subcat.key
+
+                  return (
+                    <button
+                      key={subcat.key}
+                      onClick={() => setSelectedSubcategory(isActive ? null : subcat.key)}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-sm transition-colors ${
+                        isActive
+                          ? 'bg-gray-800 text-white font-medium'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      <span>{subcat.label}</span>
+                      {count > 0 && (
+                        <span className={`text-xs ${isActive ? 'text-gray-300' : 'text-gray-400'}`}>
+                          {count}
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            )
+          })()}
         </div>
       </div>
 
@@ -446,7 +567,7 @@ export default function ProductsPage() {
         <ClientRequestModal
           isOpen={isClientRequestModalOpen}
           onClose={() => setIsClientRequestModalOpen(false)}
-          categories={CATEGORIES}
+          categories={BUILT_IN_CATEGORIES}
         />
       )}
 
@@ -483,7 +604,10 @@ export default function ProductsPage() {
       <ManageCategoriesModal
         isOpen={isManageCategoriesOpen}
         onClose={() => setIsManageCategoriesOpen(false)}
-        onCategoriesChanged={fetchProducts}
+        onCategoriesChanged={() => {
+          fetchCategories()
+          fetchProducts()
+        }}
       />
 
       {/* Product Requests Inbox Modal - Coach only */}
@@ -587,7 +711,7 @@ function ProductRow({ product, isCoach, onClick, onEdit }: { product: Product; i
           )}
           {product.category && (
             <span className="text-[10px] sm:text-xs px-1 sm:px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">
-              {CATEGORIES.find(c => c.id === product.category)?.label || product.category}
+              {BUILT_IN_CATEGORIES.find(c => c.id === product.category)?.label || product.category}
             </span>
           )}
         </div>
@@ -621,7 +745,7 @@ function ClientRequestModal({
 }: {
   isOpen: boolean
   onClose: () => void
-  categories: typeof CATEGORIES
+  categories: typeof BUILT_IN_CATEGORIES
 }) {
   const [name, setName] = useState('')
   const [brand, setBrand] = useState('')
@@ -953,7 +1077,7 @@ function ProductRequestsInbox({
                       </p>
                       {request.category && (
                         <span className="text-xs bg-gray-200 px-2 py-0.5 rounded">
-                          {CATEGORIES.find(c => c.id === request.category)?.label || request.category}
+                          {BUILT_IN_CATEGORIES.find(c => c.id === request.category)?.label || request.category}
                         </span>
                       )}
                     </div>
