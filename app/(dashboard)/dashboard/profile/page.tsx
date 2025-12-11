@@ -4,57 +4,76 @@ import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Eye, EyeOff, Bell, BellOff, CheckCircle2, XCircle, RefreshCw, Scale, Rocket, Camera, User, Loader2, ZoomIn, ZoomOut, X, Check, Move } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { requestNotificationPermission, isPushSupported, getNotificationPermission } from '@/lib/firebase'
 
-// Component to preview the crop with the same calculation as the save function
-function CropPreviewImage({ src, cropPosition, cropZoom }: { src: string; cropPosition: { x: number; y: number }; cropZoom: number }) {
-  const [imgSize, setImgSize] = useState({ width: 0, height: 0 })
+// Canvas-based crop preview component - uses same rendering as save function
+function CropPreviewCanvas({
+  src,
+  cropPosition,
+  cropZoom,
+  canvasRef
+}: {
+  src: string
+  cropPosition: { x: number; y: number }
+  cropZoom: number
+  canvasRef: React.RefObject<HTMLCanvasElement>
+}) {
+  const [image, setImage] = useState<HTMLImageElement | null>(null)
   const previewSize = 256
 
   useEffect(() => {
     const img = new Image()
-    img.onload = () => {
-      setImgSize({ width: img.width, height: img.height })
-    }
+    img.onload = () => setImage(img)
     img.src = src
   }, [src])
 
-  if (imgSize.width === 0) return null
+  useEffect(() => {
+    if (!image || !canvasRef.current) return
 
-  const imgAspect = imgSize.width / imgSize.height
-  let baseWidth: number, baseHeight: number
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
 
-  if (imgAspect > 1) {
-    baseHeight = previewSize
-    baseWidth = previewSize * imgAspect
-  } else {
-    baseWidth = previewSize
-    baseHeight = previewSize / imgAspect
-  }
+    // Clear canvas
+    ctx.clearRect(0, 0, previewSize, previewSize)
 
-  const scaledWidth = baseWidth * cropZoom
-  const scaledHeight = baseHeight * cropZoom
+    // Calculate scale to fit image in preview (cover behavior)
+    const imgAspect = image.width / image.height
+    let drawWidth: number, drawHeight: number
 
-  const offsetX = (previewSize - scaledWidth) / 2 + cropPosition.x
-  const offsetY = (previewSize - scaledHeight) / 2 + cropPosition.y
+    if (imgAspect > 1) {
+      // Landscape: fit height, width extends
+      drawHeight = previewSize
+      drawWidth = previewSize * imgAspect
+    } else {
+      // Portrait: fit width, height extends
+      drawWidth = previewSize
+      drawHeight = previewSize / imgAspect
+    }
+
+    // Apply zoom
+    drawWidth *= cropZoom
+    drawHeight *= cropZoom
+
+    // Calculate position (centered + user offset)
+    const x = (previewSize - drawWidth) / 2 + cropPosition.x
+    const y = (previewSize - drawHeight) / 2 + cropPosition.y
+
+    // Draw the image
+    ctx.drawImage(image, x, y, drawWidth, drawHeight)
+  }, [image, cropPosition, cropZoom, canvasRef])
 
   return (
-    <img
-      src={src}
-      alt="Beskär"
-      className="absolute select-none pointer-events-none"
-      style={{
-        width: scaledWidth,
-        height: scaledHeight,
-        left: offsetX,
-        top: offsetY,
-      }}
-      draggable={false}
+    <canvas
+      ref={canvasRef}
+      width={previewSize}
+      height={previewSize}
+      className="absolute inset-0 w-full h-full"
     />
   )
 }
@@ -104,6 +123,7 @@ export default function ProfilePage() {
   const [cropZoom, setCropZoom] = useState(1)
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null)
 
   // Load Get Started visibility from localStorage
   useEffect(() => {
@@ -183,63 +203,35 @@ export default function ProfilePage() {
   }
 
   const handleCropSave = async () => {
-    if (!cropperImage) return
+    if (!cropperImage || !previewCanvasRef.current) return
 
     setIsUploadingImage(true)
     try {
-      // Create canvas and crop the image
-      const img = new Image()
-      img.src = cropperImage
+      // Get the preview canvas
+      const previewCanvas = previewCanvasRef.current
 
-      await new Promise((resolve) => {
-        img.onload = resolve
-      })
+      // Create output canvas (larger for better quality)
+      const outputSize = 300
+      const outputCanvas = document.createElement('canvas')
+      outputCanvas.width = outputSize
+      outputCanvas.height = outputSize
 
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
+      const ctx = outputCanvas.getContext('2d')
       if (!ctx) {
         toast.error('Kunde inte bearbeta bilden')
         setIsUploadingImage(false)
         return
       }
 
-      // Output size (square for profile)
-      const outputSize = 300
-      canvas.width = outputSize
-      canvas.height = outputSize
+      // Enable smooth scaling
+      ctx.imageSmoothingEnabled = true
+      ctx.imageSmoothingQuality = 'high'
 
-      // Preview area size is 256x256
-      const previewSize = 256
-      const scaleRatio = outputSize / previewSize
-
-      // Calculate image dimensions in preview
-      // The image is scaled by cropZoom and positioned by cropPosition
-      const imgAspect = img.width / img.height
-      let baseWidth: number, baseHeight: number
-
-      // Fit image to preview initially (like object-fit: contain, but we use cover-like behavior)
-      if (imgAspect > 1) {
-        // Landscape: height fits, width extends
-        baseHeight = previewSize
-        baseWidth = previewSize * imgAspect
-      } else {
-        // Portrait: width fits, height extends
-        baseWidth = previewSize
-        baseHeight = previewSize / imgAspect
-      }
-
-      const scaledWidth = baseWidth * cropZoom * scaleRatio
-      const scaledHeight = baseHeight * cropZoom * scaleRatio
-
-      // Center position plus user offset, scaled to output
-      const offsetX = (outputSize - scaledWidth) / 2 + cropPosition.x * scaleRatio
-      const offsetY = (outputSize - scaledHeight) / 2 + cropPosition.y * scaleRatio
-
-      // Draw the image
-      ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight)
+      // Scale up the preview canvas to output size
+      ctx.drawImage(previewCanvas, 0, 0, outputSize, outputSize)
 
       // Convert to base64
-      const croppedBase64 = canvas.toDataURL('image/jpeg', 0.85)
+      const croppedBase64 = outputCanvas.toDataURL('image/jpeg', 0.9)
 
       // Save to profile
       const res = await fetch('/api/user/profile', {
@@ -581,10 +573,11 @@ export default function ProfilePage() {
                   onTouchMove={handleCropTouchMove}
                   onTouchEnd={handleCropTouchEnd}
                 >
-                  <CropPreviewImage
+                  <CropPreviewCanvas
                     src={cropperImage}
                     cropPosition={cropPosition}
                     cropZoom={cropZoom}
+                    canvasRef={previewCanvasRef}
                   />
                 </div>
 
