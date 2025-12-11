@@ -328,21 +328,6 @@ export default function ProfilePage() {
     checkPushStatus()
   }, [])
 
-  // Lock body scroll when cropper modal is open
-  useEffect(() => {
-    if (cropperImage) {
-      const scrollY = window.scrollY
-      document.body.style.position = 'fixed'
-      document.body.style.top = `-${scrollY}px`
-      document.body.style.width = '100%'
-      return () => {
-        document.body.style.position = ''
-        document.body.style.top = ''
-        document.body.style.width = ''
-        window.scrollTo(0, scrollY)
-      }
-    }
-  }, [cropperImage])
 
   const handleToggleWeightReminder = async () => {
     setIsTogglingWeightReminder(true)
@@ -564,95 +549,79 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Image Cropper Modal */}
-        {cropperImage && (
-          <>
-            {/* Overlay with flexbox centering - more reliable on mobile */}
-            <div
-              className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto"
-              onClick={() => setCropperImage(null)}
-            >
-              {/* Modal */}
-              <div
-                className="relative w-full max-w-md bg-white rounded-xl max-h-[90vh] flex flex-col overflow-hidden my-auto"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="p-4 border-b flex items-center justify-between flex-shrink-0">
-                <h3 className="font-semibold text-gray-900">Justera profilbild</h3>
-                <button
-                  onClick={() => setCropperImage(null)}
-                  className="p-1 hover:bg-gray-100 rounded-full"
-                >
-                  <X className="w-5 h-5 text-gray-500" />
-                </button>
-              </div>
+        {/* Image Cropper Modal - using shadcn Dialog for proper mobile positioning */}
+        <Dialog open={!!cropperImage} onOpenChange={(open) => !open && setCropperImage(null)}>
+          <DialogContent className="bg-white border-2 border-gray-300 max-w-md p-0">
+            <DialogHeader className="p-4 border-b">
+              <DialogTitle className="text-gray-900">Justera profilbild</DialogTitle>
+            </DialogHeader>
 
-              <div className="p-4">
-                {/* Crop area - 256x256px */}
-                <div
-                  className="relative w-64 h-64 mx-auto rounded-full overflow-hidden border-4 border-gold-primary bg-gray-100 cursor-move"
-                  onMouseDown={handleCropMouseDown}
-                  onMouseMove={handleCropMouseMove}
-                  onMouseUp={handleCropMouseUp}
-                  onMouseLeave={handleCropMouseUp}
-                  onTouchStart={handleCropTouchStart}
-                  onTouchMove={handleCropTouchMove}
-                  onTouchEnd={handleCropTouchEnd}
-                >
+            <div className="p-4">
+              {/* Crop area - 256x256px */}
+              <div
+                className="relative w-64 h-64 mx-auto rounded-full overflow-hidden border-4 border-gold-primary bg-gray-100 cursor-move"
+                onMouseDown={handleCropMouseDown}
+                onMouseMove={handleCropMouseMove}
+                onMouseUp={handleCropMouseUp}
+                onMouseLeave={handleCropMouseUp}
+                onTouchStart={handleCropTouchStart}
+                onTouchMove={handleCropTouchMove}
+                onTouchEnd={handleCropTouchEnd}
+              >
+                {cropperImage && (
                   <CropPreviewCanvas
                     src={cropperImage}
                     cropPosition={cropPosition}
                     cropZoom={cropZoom}
                     canvasRef={previewCanvasRef}
                   />
-                </div>
-
-                <p className="text-center text-sm text-gray-500 mt-3 flex items-center justify-center gap-2">
-                  <Move className="w-4 h-4" />
-                  Dra för att flytta bilden
-                </p>
-
-                {/* Zoom slider */}
-                <div className="mt-4 flex items-center gap-3">
-                  <ZoomOut className="w-5 h-5 text-gray-400" />
-                  <input
-                    type="range"
-                    min="0.5"
-                    max="3"
-                    step="0.1"
-                    value={cropZoom}
-                    onChange={(e) => setCropZoom(parseFloat(e.target.value))}
-                    className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gold-primary"
-                  />
-                  <ZoomIn className="w-5 h-5 text-gray-400" />
-                </div>
+                )}
               </div>
 
-              <div className="p-4 border-t flex gap-2 flex-shrink-0">
-                <Button
-                  variant="outline"
-                  onClick={() => setCropperImage(null)}
-                  className="flex-1"
-                >
-                  Avbryt
-                </Button>
-                <Button
-                  onClick={handleCropSave}
-                  disabled={isUploadingImage}
-                  className="flex-1 bg-gold-primary hover:bg-gold-primary/90 text-black"
-                >
-                  {isUploadingImage ? (
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  ) : (
-                    <Check className="w-4 h-4 mr-2" />
-                  )}
-                  Spara
-                </Button>
-              </div>
+              <p className="text-center text-sm text-gray-500 mt-3 flex items-center justify-center gap-2">
+                <Move className="w-4 h-4" />
+                Dra för att flytta bilden
+              </p>
+
+              {/* Zoom slider */}
+              <div className="mt-4 flex items-center gap-3">
+                <ZoomOut className="w-5 h-5 text-gray-400" />
+                <input
+                  type="range"
+                  min="0.5"
+                  max="3"
+                  step="0.1"
+                  value={cropZoom}
+                  onChange={(e) => setCropZoom(parseFloat(e.target.value))}
+                  className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gold-primary"
+                />
+                <ZoomIn className="w-5 h-5 text-gray-400" />
               </div>
             </div>
-          </>
-        )}
+
+            <div className="p-4 border-t flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setCropperImage(null)}
+                className="flex-1"
+              >
+                Avbryt
+              </Button>
+              <Button
+                onClick={handleCropSave}
+                disabled={isUploadingImage}
+                className="flex-1 bg-gold-primary hover:bg-gold-primary/90 text-black"
+              >
+                {isUploadingImage ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : (
+                  <Check className="w-4 h-4 mr-2" />
+                )}
+                Spara
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* User Info Card */}
         <div className="bg-white border-2 border-gray-300 rounded-xl shadow-lg">
