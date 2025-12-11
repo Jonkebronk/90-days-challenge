@@ -566,8 +566,8 @@ export default function ProfilePage() {
 
         {/* Image Cropper Modal */}
         {cropperImage && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-y-auto">
-            <div className="bg-white rounded-xl max-w-md w-full overflow-hidden">
+          <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
               <div className="p-4 border-b flex items-center justify-between">
                 <h3 className="font-semibold text-gray-900">Justera profilbild</h3>
                 <button
