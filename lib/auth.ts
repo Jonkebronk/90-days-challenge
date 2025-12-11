@@ -59,28 +59,50 @@ export const authOptions: NextAuthOptions = {
   jwt: {
     maxAge: 90 * 24 * 60 * 60, // 90 dagar
   },
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production'
+        ? '__Secure-next-auth.session-token'
+        : 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 90 * 24 * 60 * 60, // 90 dagar
+      },
+    },
+  },
   pages: {
     signIn: '/login',
     error: '/login',
   },
   callbacks: {
     async jwt({ token, user, trigger }) {
+      // Initial sign in - set user data
       if (user) {
         token.id = user.id
         token.role = (user as any).role
         token.image = (user as any).image
+        token.name = user.name
       }
 
-      // Refresh user data from database on session update
-      if (trigger === 'update' || !token.role) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          select: { role: true, image: true, name: true }
-        })
-        if (dbUser) {
-          token.role = dbUser.role
-          token.image = dbUser.image
-          token.name = dbUser.name
+      // Only refresh from database on explicit update trigger
+      // Avoid unnecessary database queries that could cause session issues
+      if (trigger === 'update' && token.id) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { role: true, image: true, name: true }
+          })
+          if (dbUser) {
+            token.role = dbUser.role
+            token.image = dbUser.image
+            token.name = dbUser.name
+          }
+        } catch (error) {
+          // Log error but don't invalidate the session
+          console.error('Error refreshing user data:', error)
         }
       }
 
