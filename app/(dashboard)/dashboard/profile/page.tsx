@@ -21,7 +21,7 @@ function CropPreviewCanvas({
   src: string
   cropPosition: { x: number; y: number }
   cropZoom: number
-  canvasRef: React.RefObject<HTMLCanvasElement>
+  canvasRef: React.RefObject<HTMLCanvasElement | null>
 }) {
   const [image, setImage] = useState<HTMLImageElement | null>(null)
   const previewSize = 256
