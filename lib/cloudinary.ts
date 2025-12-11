@@ -105,4 +105,27 @@ export async function uploadProductImage(file: string): Promise<string> {
   }
 }
 
+/**
+ * Upload a message image to Cloudinary
+ * @param file - Base64 data URI
+ * @returns Secure URL of the uploaded image
+ */
+export async function uploadMessageImage(file: string): Promise<string> {
+  try {
+    const result = await cloudinary.uploader.upload(file, {
+      folder: 'messages',
+      transformation: [
+        { width: 1200, height: 1200, crop: 'limit' },
+        { quality: 'auto:good' },
+        { fetch_format: 'auto' },
+      ],
+    })
+
+    return result.secure_url
+  } catch (error) {
+    console.error('Cloudinary message upload error:', error)
+    throw new Error('Failed to upload message image')
+  }
+}
+
 export default cloudinary

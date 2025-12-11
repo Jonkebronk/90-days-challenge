@@ -11,6 +11,54 @@ import { Eye, EyeOff, Bell, BellOff, CheckCircle2, XCircle, RefreshCw, Scale, Ro
 import { Switch } from '@/components/ui/switch'
 import { requestNotificationPermission, isPushSupported, getNotificationPermission } from '@/lib/firebase'
 
+// Component to preview the crop with the same calculation as the save function
+function CropPreviewImage({ src, cropPosition, cropZoom }: { src: string; cropPosition: { x: number; y: number }; cropZoom: number }) {
+  const [imgSize, setImgSize] = useState({ width: 0, height: 0 })
+  const previewSize = 256
+
+  useEffect(() => {
+    const img = new Image()
+    img.onload = () => {
+      setImgSize({ width: img.width, height: img.height })
+    }
+    img.src = src
+  }, [src])
+
+  if (imgSize.width === 0) return null
+
+  const imgAspect = imgSize.width / imgSize.height
+  let baseWidth: number, baseHeight: number
+
+  if (imgAspect > 1) {
+    baseHeight = previewSize
+    baseWidth = previewSize * imgAspect
+  } else {
+    baseWidth = previewSize
+    baseHeight = previewSize / imgAspect
+  }
+
+  const scaledWidth = baseWidth * cropZoom
+  const scaledHeight = baseHeight * cropZoom
+
+  const offsetX = (previewSize - scaledWidth) / 2 + cropPosition.x
+  const offsetY = (previewSize - scaledHeight) / 2 + cropPosition.y
+
+  return (
+    <img
+      src={src}
+      alt="Beskär"
+      className="absolute select-none pointer-events-none"
+      style={{
+        width: scaledWidth,
+        height: scaledHeight,
+        left: offsetX,
+        top: offsetY,
+      }}
+      draggable={false}
+    />
+  )
+}
+
 export default function ProfilePage() {
   const { data: session, update } = useSession()
   const [isEditing, setIsEditing] = useState(false)
@@ -160,17 +208,35 @@ export default function ProfilePage() {
       canvas.width = outputSize
       canvas.height = outputSize
 
-      // Calculate the crop area
-      const scale = cropZoom
-      const imgWidth = img.width * scale
-      const imgHeight = img.height * scale
+      // Preview area size is 256x256
+      const previewSize = 256
+      const scaleRatio = outputSize / previewSize
 
-      // Center the image with offset
-      const offsetX = (outputSize - imgWidth) / 2 + cropPosition.x * scale
-      const offsetY = (outputSize - imgHeight) / 2 + cropPosition.y * scale
+      // Calculate image dimensions in preview
+      // The image is scaled by cropZoom and positioned by cropPosition
+      const imgAspect = img.width / img.height
+      let baseWidth: number, baseHeight: number
+
+      // Fit image to preview initially (like object-fit: contain, but we use cover-like behavior)
+      if (imgAspect > 1) {
+        // Landscape: height fits, width extends
+        baseHeight = previewSize
+        baseWidth = previewSize * imgAspect
+      } else {
+        // Portrait: width fits, height extends
+        baseWidth = previewSize
+        baseHeight = previewSize / imgAspect
+      }
+
+      const scaledWidth = baseWidth * cropZoom * scaleRatio
+      const scaledHeight = baseHeight * cropZoom * scaleRatio
+
+      // Center position plus user offset, scaled to output
+      const offsetX = (outputSize - scaledWidth) / 2 + cropPosition.x * scaleRatio
+      const offsetY = (outputSize - scaledHeight) / 2 + cropPosition.y * scaleRatio
 
       // Draw the image
-      ctx.drawImage(img, offsetX, offsetY, imgWidth, imgHeight)
+      ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight)
 
       // Convert to base64
       const croppedBase64 = canvas.toDataURL('image/jpeg', 0.85)
@@ -491,8 +557,8 @@ export default function ProfilePage() {
 
         {/* Image Cropper Modal */}
         {cropperImage && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl max-w-md w-full overflow-hidden">
+          <div className="fixed inset-0 bg-black/80 flex items-start justify-center z-50 p-4 pt-8 sm:pt-16 overflow-y-auto">
+            <div className="bg-white rounded-xl max-w-md w-full overflow-hidden my-auto">
               <div className="p-4 border-b flex items-center justify-between">
                 <h3 className="font-semibold text-gray-900">Justera profilbild</h3>
                 <button
@@ -504,7 +570,7 @@ export default function ProfilePage() {
               </div>
 
               <div className="p-4">
-                {/* Crop area */}
+                {/* Crop area - 256x256px */}
                 <div
                   className="relative w-64 h-64 mx-auto rounded-full overflow-hidden border-4 border-gold-primary bg-gray-100 cursor-move"
                   onMouseDown={handleCropMouseDown}
@@ -515,19 +581,10 @@ export default function ProfilePage() {
                   onTouchMove={handleCropTouchMove}
                   onTouchEnd={handleCropTouchEnd}
                 >
-                  <img
+                  <CropPreviewImage
                     src={cropperImage}
-                    alt="Beskär"
-                    className="absolute select-none pointer-events-none"
-                    style={{
-                      transform: `translate(${cropPosition.x}px, ${cropPosition.y}px) scale(${cropZoom})`,
-                      transformOrigin: 'center',
-                      left: '50%',
-                      top: '50%',
-                      marginLeft: '-50%',
-                      marginTop: '-50%',
-                    }}
-                    draggable={false}
+                    cropPosition={cropPosition}
+                    cropZoom={cropZoom}
                   />
                 </div>
 
