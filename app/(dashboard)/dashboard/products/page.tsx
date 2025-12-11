@@ -18,7 +18,6 @@ import {
   Cookie,
   Snowflake,
   Wheat,
-  MoreHorizontal,
   Edit2,
   Plus,
   Camera,
@@ -89,7 +88,6 @@ const CATEGORIES = [
   { id: 'snacks', label: 'Snacks', icon: Cookie },
   { id: 'fryst', label: 'Fryst', icon: Snowflake },
   { id: 'torrvaror', label: 'Torrvaror', icon: Wheat },
-  { id: 'uncategorized', label: 'Okategoriserat', icon: MoreHorizontal },
 ]
 
 export default function ProductsPage() {

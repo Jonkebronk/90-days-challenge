@@ -309,9 +309,14 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
   }
 
   const handleSubmit = async () => {
-    // Validation - only name is required
+    // Validation - name and category are required
     if (!formData.name.trim()) {
       setError('Produktnamn krävs')
+      return
+    }
+
+    if (!formData.category) {
+      setError('Du måste välja en kategori')
       return
     }
 
@@ -828,7 +833,7 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
           {/* Category and Source */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
             <div>
-              <Label className="text-sm">Kategori</Label>
+              <Label className="text-sm">Kategori *</Label>
               <div className="flex flex-wrap gap-1.5 mt-2">
                 {CATEGORIES.map(cat => (
                   <button
