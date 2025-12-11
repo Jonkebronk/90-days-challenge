@@ -567,11 +567,16 @@ export default function ProfilePage() {
         {/* Image Cropper Modal */}
         {cropperImage && (
           <>
-            {/* Overlay */}
-            <div className="fixed inset-0 z-50 bg-black/80" onClick={() => setCropperImage(null)} />
-            {/* Modal - centered using transform */}
-            <div className="fixed left-[50%] top-[50%] z-50 w-full max-w-md translate-x-[-50%] translate-y-[-50%] px-4">
-              <div className="bg-white rounded-xl max-h-[90vh] flex flex-col overflow-hidden">
+            {/* Overlay with flexbox centering - more reliable on mobile */}
+            <div
+              className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto"
+              onClick={() => setCropperImage(null)}
+            >
+              {/* Modal */}
+              <div
+                className="relative w-full max-w-md bg-white rounded-xl max-h-[90vh] flex flex-col overflow-hidden my-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="p-4 border-b flex items-center justify-between flex-shrink-0">
                 <h3 className="font-semibold text-gray-900">Justera profilbild</h3>
                 <button

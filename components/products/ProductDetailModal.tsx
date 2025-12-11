@@ -1,8 +1,13 @@
 'use client'
 
-import { useEffect } from 'react'
 import { X, Package, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 interface Product {
   id: string
@@ -40,23 +45,7 @@ interface ProductDetailModalProps {
 }
 
 export function ProductDetailModal({ isOpen, product, onClose }: ProductDetailModalProps) {
-  // Lock body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      const scrollY = window.scrollY
-      document.body.style.position = 'fixed'
-      document.body.style.top = `-${scrollY}px`
-      document.body.style.width = '100%'
-      return () => {
-        document.body.style.position = ''
-        document.body.style.top = ''
-        document.body.style.width = ''
-        window.scrollTo(0, scrollY)
-      }
-    }
-  }, [isOpen])
-
-  if (!isOpen || !product) return null
+  if (!product) return null
 
   // Check if product has any micronutrients
   const hasMicronutrients = product.vitaminA || product.vitaminD || product.vitaminC ||
@@ -64,128 +53,113 @@ export function ProductDetailModal({ isOpen, product, onClose }: ProductDetailMo
     product.magnesium || product.potassium || product.zinc || product.iodine
 
   return (
-    <>
-      {/* Overlay */}
-      <div
-        className="fixed inset-0 z-50 bg-black/80"
-        onClick={onClose}
-      />
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="bg-gray-900 border-gray-800 text-white max-w-lg max-h-[85vh] overflow-hidden flex flex-col p-0">
+        {/* Header */}
+        <DialogHeader className="p-4 border-b border-gray-800 flex-shrink-0">
+          <DialogTitle className="flex items-center gap-2 text-gray-400 text-sm font-normal">
+            <Info className="w-5 h-5" />
+            Näringsinformation
+          </DialogTitle>
+        </DialogHeader>
 
-      {/* Modal - centered using transform */}
-      <div className="fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] px-4">
-        <div className="bg-gray-900 rounded-2xl max-h-[85vh] flex flex-col overflow-hidden">
-          {/* Header - fixed */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-800 flex-shrink-0">
-            <div className="flex items-center gap-2 text-gray-400">
-              <Info className="w-5 h-5" />
-              <span className="text-sm">Näringsinformation</span>
-            </div>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 transition-colors"
-            >
-              <X className="w-5 h-5 text-gray-400" />
-            </button>
+        {/* Content - scrollable */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+          {/* Product image and name */}
+          <div className="text-center">
+            {product.image ? (
+              <div className="w-32 h-32 mx-auto mb-4 bg-white rounded-xl overflow-hidden">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-contain p-2"
+                />
+              </div>
+            ) : (
+              <div className="w-32 h-32 mx-auto mb-4 bg-gray-800 rounded-xl flex items-center justify-center">
+                <Package className="w-12 h-12 text-gray-600" />
+              </div>
+            )}
+
+            <h1 className="text-2xl font-bold text-amber-500 mb-1">
+              {product.name}
+            </h1>
+            {product.brand && (
+              <p className="text-gray-400 text-sm">{product.brand}</p>
+            )}
           </div>
 
-          {/* Content - scrollable */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-6">
-            {/* Product image and name */}
-            <div className="text-center">
-              {product.image ? (
-                <div className="w-32 h-32 mx-auto mb-4 bg-white rounded-xl overflow-hidden">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-contain p-2"
-                  />
-                </div>
-              ) : (
-                <div className="w-32 h-32 mx-auto mb-4 bg-gray-800 rounded-xl flex items-center justify-center">
-                  <Package className="w-12 h-12 text-gray-600" />
-                </div>
-              )}
+          {/* Main macros */}
+          <div>
+            <h2 className="text-amber-500 font-semibold mb-3">Makronäringsämnen</h2>
+            <p className="text-gray-400 text-sm mb-4">Per 100g</p>
 
-              <h1 className="text-2xl font-bold text-amber-500 mb-1">
-                {product.name}
-              </h1>
-              {product.brand && (
-                <p className="text-gray-400 text-sm">{product.brand}</p>
-              )}
+            <div className="grid grid-cols-2 gap-3">
+              <MacroCard label="Energi" value={Math.round(product.kcal)} unit="kcal" color="amber" />
+              <MacroCard label="Protein" value={Math.round(product.protein * 10) / 10} unit="g" color="blue" />
+              <MacroCard label="Kolhydrater" value={Math.round(product.carbs * 10) / 10} unit="g" color="green" />
+              <MacroCard label="Fett" value={Math.round(product.fat * 10) / 10} unit="g" color="red" />
             </div>
+          </div>
 
-            {/* Main macros */}
+          {/* Additional info */}
+          {(product.fiber || product.sugar || product.salt || product.saturatedFat) && (
             <div>
-              <h2 className="text-amber-500 font-semibold mb-3">Makronäringsämnen</h2>
-              <p className="text-gray-400 text-sm mb-4">Per 100g</p>
-
-              <div className="grid grid-cols-2 gap-3">
-                <MacroCard label="Energi" value={Math.round(product.kcal)} unit="kcal" color="amber" />
-                <MacroCard label="Protein" value={Math.round(product.protein * 10) / 10} unit="g" color="blue" />
-                <MacroCard label="Kolhydrater" value={Math.round(product.carbs * 10) / 10} unit="g" color="green" />
-                <MacroCard label="Fett" value={Math.round(product.fat * 10) / 10} unit="g" color="red" />
+              <h2 className="text-amber-500 font-semibold mb-3">Övrig information</h2>
+              <div className="bg-gray-800/50 rounded-xl p-4 space-y-2">
+                {product.fiber !== null && product.fiber !== undefined && (
+                  <InfoRow label="Fiber" value={`${Math.round(product.fiber * 10) / 10} g`} />
+                )}
+                {product.sugar !== null && product.sugar !== undefined && (
+                  <InfoRow label="Socker" value={`${Math.round(product.sugar * 10) / 10} g`} />
+                )}
+                {product.saturatedFat !== null && product.saturatedFat !== undefined && (
+                  <InfoRow label="Mättat fett" value={`${Math.round(product.saturatedFat * 10) / 10} g`} />
+                )}
+                {product.salt !== null && product.salt !== undefined && (
+                  <InfoRow label="Salt" value={`${Math.round(product.salt * 100) / 100} g`} />
+                )}
               </div>
             </div>
+          )}
 
-            {/* Additional info */}
-            {(product.fiber || product.sugar || product.salt || product.saturatedFat) && (
-              <div>
-                <h2 className="text-amber-500 font-semibold mb-3">Övrig information</h2>
-                <div className="bg-gray-800/50 rounded-xl p-4 space-y-2">
-                  {product.fiber !== null && product.fiber !== undefined && (
-                    <InfoRow label="Fiber" value={`${Math.round(product.fiber * 10) / 10} g`} />
-                  )}
-                  {product.sugar !== null && product.sugar !== undefined && (
-                    <InfoRow label="Socker" value={`${Math.round(product.sugar * 10) / 10} g`} />
-                  )}
-                  {product.saturatedFat !== null && product.saturatedFat !== undefined && (
-                    <InfoRow label="Mättat fett" value={`${Math.round(product.saturatedFat * 10) / 10} g`} />
-                  )}
-                  {product.salt !== null && product.salt !== undefined && (
-                    <InfoRow label="Salt" value={`${Math.round(product.salt * 100) / 100} g`} />
-                  )}
-                </div>
+          {/* Micronutrients */}
+          {hasMicronutrients && (
+            <div>
+              <h2 className="text-amber-500 font-semibold mb-3">Vitaminer & Mineraler</h2>
+              <div className="bg-gray-800/50 rounded-xl p-4 space-y-2">
+                {product.vitaminA && <InfoRow label="Vitamin A" value={`${Math.round(product.vitaminA)} µg`} />}
+                {product.vitaminD && <InfoRow label="Vitamin D" value={`${Math.round(product.vitaminD * 10) / 10} µg`} />}
+                {product.vitaminC && <InfoRow label="Vitamin C" value={`${Math.round(product.vitaminC)} mg`} />}
+                {product.vitaminB12 && <InfoRow label="Vitamin B12" value={`${Math.round(product.vitaminB12 * 10) / 10} µg`} />}
+                {product.folate && <InfoRow label="Folat" value={`${Math.round(product.folate)} µg`} />}
+                {product.calcium && <InfoRow label="Kalcium" value={`${Math.round(product.calcium)} mg`} />}
+                {product.iron && <InfoRow label="Järn" value={`${Math.round(product.iron * 10) / 10} mg`} />}
+                {product.magnesium && <InfoRow label="Magnesium" value={`${Math.round(product.magnesium)} mg`} />}
+                {product.potassium && <InfoRow label="Kalium" value={`${Math.round(product.potassium)} mg`} />}
+                {product.zinc && <InfoRow label="Zink" value={`${Math.round(product.zinc * 10) / 10} mg`} />}
+                {product.iodine && <InfoRow label="Jod" value={`${Math.round(product.iodine)} µg`} />}
               </div>
-            )}
-
-            {/* Micronutrients */}
-            {hasMicronutrients && (
-              <div>
-                <h2 className="text-amber-500 font-semibold mb-3">Vitaminer & Mineraler</h2>
-                <div className="bg-gray-800/50 rounded-xl p-4 space-y-2">
-                  {product.vitaminA && <InfoRow label="Vitamin A" value={`${Math.round(product.vitaminA)} µg`} />}
-                  {product.vitaminD && <InfoRow label="Vitamin D" value={`${Math.round(product.vitaminD * 10) / 10} µg`} />}
-                  {product.vitaminC && <InfoRow label="Vitamin C" value={`${Math.round(product.vitaminC)} mg`} />}
-                  {product.vitaminB12 && <InfoRow label="Vitamin B12" value={`${Math.round(product.vitaminB12 * 10) / 10} µg`} />}
-                  {product.folate && <InfoRow label="Folat" value={`${Math.round(product.folate)} µg`} />}
-                  {product.calcium && <InfoRow label="Kalcium" value={`${Math.round(product.calcium)} mg`} />}
-                  {product.iron && <InfoRow label="Järn" value={`${Math.round(product.iron * 10) / 10} mg`} />}
-                  {product.magnesium && <InfoRow label="Magnesium" value={`${Math.round(product.magnesium)} mg`} />}
-                  {product.potassium && <InfoRow label="Kalium" value={`${Math.round(product.potassium)} mg`} />}
-                  {product.zinc && <InfoRow label="Zink" value={`${Math.round(product.zinc * 10) / 10} mg`} />}
-                  {product.iodine && <InfoRow label="Jod" value={`${Math.round(product.iodine)} µg`} />}
-                </div>
-              </div>
-            )}
-
-            {/* Source info */}
-            <div className="text-center text-xs text-gray-500 pt-2">
-              Källa: {product.source === 'ica' ? 'ICA' : product.source === 'slv' ? 'Livsmedelsverket' : product.source}
             </div>
-          </div>
+          )}
 
-          {/* Footer - fixed */}
-          <div className="p-4 border-t border-gray-800 flex-shrink-0">
-            <Button
-              onClick={onClose}
-              className="w-full bg-amber-500 hover:bg-amber-600 text-black font-medium"
-            >
-              Stäng
-            </Button>
+          {/* Source info */}
+          <div className="text-center text-xs text-gray-500 pt-2">
+            Källa: {product.source === 'ica' ? 'ICA' : product.source === 'slv' ? 'Livsmedelsverket' : product.source}
           </div>
         </div>
-      </div>
-    </>
+
+        {/* Footer - fixed */}
+        <div className="p-4 border-t border-gray-800 flex-shrink-0">
+          <Button
+            onClick={onClose}
+            className="w-full bg-amber-500 hover:bg-amber-600 text-black font-medium"
+          >
+            Stäng
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 
