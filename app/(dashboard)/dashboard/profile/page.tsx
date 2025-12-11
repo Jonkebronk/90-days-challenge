@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Eye, EyeOff, Bell, BellOff, CheckCircle2, XCircle, RefreshCw, Scale, Rocket, Camera, User, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Bell, BellOff, CheckCircle2, XCircle, RefreshCw, Scale, Rocket, Camera, User, Loader2, ZoomIn, ZoomOut, X, Check, Move } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 import { requestNotificationPermission, isPushSupported, getNotificationPermission } from '@/lib/firebase'
 
@@ -48,6 +48,14 @@ export default function ProfilePage() {
   // Profile image state
   const [profileImage, setProfileImage] = useState<string | null>(null)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const [userName, setUserName] = useState<string>('')
+
+  // Image cropper state
+  const [cropperImage, setCropperImage] = useState<string | null>(null)
+  const [cropPosition, setCropPosition] = useState({ x: 0, y: 0 })
+  const [cropZoom, setCropZoom] = useState(1)
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
 
   // Load Get Started visibility from localStorage
   useEffect(() => {
@@ -55,7 +63,7 @@ export default function ProfilePage() {
     setHideGetStarted(hidden)
   }, [])
 
-  // Load profile image on mount
+  // Load profile data on mount
   useEffect(() => {
     async function fetchProfile() {
       try {
@@ -63,6 +71,13 @@ export default function ProfilePage() {
         if (res.ok) {
           const data = await res.json()
           setProfileImage(data.image)
+          if (data.name) {
+            setUserName(data.name)
+            setFormData(prev => ({ ...prev, name: data.name }))
+          }
+          if (data.email) {
+            setFormData(prev => ({ ...prev, email: data.email }))
+          }
         }
       } catch (error) {
         console.error('Error fetching profile:', error)
@@ -71,6 +86,17 @@ export default function ProfilePage() {
     fetchProfile()
   }, [])
 
+  // Update formData when session loads
+  useEffect(() => {
+    if (session?.user?.name) {
+      setUserName(session.user.name)
+      setFormData(prev => ({ ...prev, name: session.user.name || '' }))
+    }
+    if (session?.user?.email) {
+      setFormData(prev => ({ ...prev, email: session.user.email || '' }))
+    }
+  }, [session])
+
   const handleToggleGetStarted = () => {
     const newValue = !hideGetStarted
     setHideGetStarted(newValue)
@@ -78,13 +104,13 @@ export default function ProfilePage() {
     toast.success(newValue ? '"Kom igång" är nu dold' : '"Kom igång" visas nu på dashboard')
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Check file size (max 2MB for base64 storage)
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error('Bilden är för stor (max 2MB)')
+    // Check file size (max 5MB for initial load)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Bilden är för stor (max 5MB)')
       return
     }
 
@@ -94,38 +120,117 @@ export default function ProfilePage() {
       return
     }
 
+    // Load image for cropping
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      const base64 = reader.result as string
+      setCropperImage(base64)
+      setCropPosition({ x: 0, y: 0 })
+      setCropZoom(1)
+    }
+    reader.onerror = () => {
+      toast.error('Kunde inte läsa bilden')
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleCropSave = async () => {
+    if (!cropperImage) return
+
     setIsUploadingImage(true)
     try {
+      // Create canvas and crop the image
+      const img = new Image()
+      img.src = cropperImage
+
+      await new Promise((resolve) => {
+        img.onload = resolve
+      })
+
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        toast.error('Kunde inte bearbeta bilden')
+        setIsUploadingImage(false)
+        return
+      }
+
+      // Output size (square for profile)
+      const outputSize = 300
+      canvas.width = outputSize
+      canvas.height = outputSize
+
+      // Calculate the crop area
+      const scale = cropZoom
+      const imgWidth = img.width * scale
+      const imgHeight = img.height * scale
+
+      // Center the image with offset
+      const offsetX = (outputSize - imgWidth) / 2 + cropPosition.x * scale
+      const offsetY = (outputSize - imgHeight) / 2 + cropPosition.y * scale
+
+      // Draw the image
+      ctx.drawImage(img, offsetX, offsetY, imgWidth, imgHeight)
+
       // Convert to base64
-      const reader = new FileReader()
-      reader.onloadend = async () => {
-        const base64 = reader.result as string
+      const croppedBase64 = canvas.toDataURL('image/jpeg', 0.85)
 
-        // Save to profile
-        const res = await fetch('/api/user/profile', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: base64 })
-        })
+      // Save to profile
+      const res = await fetch('/api/user/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: croppedBase64 })
+      })
 
-        if (res.ok) {
-          setProfileImage(base64)
-          toast.success('Profilbild uppdaterad!')
-        } else {
-          toast.error('Kunde inte spara bilden')
-        }
-        setIsUploadingImage(false)
+      if (res.ok) {
+        setProfileImage(croppedBase64)
+        setCropperImage(null)
+        toast.success('Profilbild uppdaterad!')
+      } else {
+        toast.error('Kunde inte spara bilden')
       }
-      reader.onerror = () => {
-        toast.error('Kunde inte läsa bilden')
-        setIsUploadingImage(false)
-      }
-      reader.readAsDataURL(file)
     } catch (error) {
-      console.error('Error uploading image:', error)
+      console.error('Error saving image:', error)
       toast.error('Ett fel uppstod')
+    } finally {
       setIsUploadingImage(false)
     }
+  }
+
+  const handleCropMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true)
+    setDragStart({ x: e.clientX - cropPosition.x, y: e.clientY - cropPosition.y })
+  }
+
+  const handleCropMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return
+    setCropPosition({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    })
+  }
+
+  const handleCropMouseUp = () => {
+    setIsDragging(false)
+  }
+
+  const handleCropTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0]
+    setIsDragging(true)
+    setDragStart({ x: touch.clientX - cropPosition.x, y: touch.clientY - cropPosition.y })
+  }
+
+  const handleCropTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return
+    const touch = e.touches[0]
+    setCropPosition({
+      x: touch.clientX - dragStart.x,
+      y: touch.clientY - dragStart.y
+    })
+  }
+
+  const handleCropTouchEnd = () => {
+    setIsDragging(false)
   }
 
   // Check push notification status on mount
@@ -335,52 +440,142 @@ export default function ProfilePage() {
         <div className="bg-white border-2 border-gray-300 rounded-xl shadow-lg p-6">
           <div className="flex flex-col sm:flex-row items-center gap-6">
             {/* Profile Image */}
-            <div className="relative group">
-              <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-gold-primary shadow-lg">
-                {profileImage ? (
-                  <img
-                    src={profileImage}
-                    alt="Profilbild"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                    <User className="w-12 h-12 sm:w-16 sm:h-16 text-white" />
-                  </div>
-                )}
-              </div>
-              {/* Upload overlay */}
-              <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                {isUploadingImage ? (
-                  <Loader2 className="w-8 h-8 text-white animate-spin" />
-                ) : (
-                  <Camera className="w-8 h-8 text-white" />
-                )}
+            <div className="relative">
+              <label
+                className="block cursor-pointer"
+                title="Dubbelklicka för att ändra profilbild"
+              >
+                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-gold-primary shadow-lg hover:border-amber-400 transition-colors">
+                  {profileImage ? (
+                    <img
+                      src={profileImage}
+                      alt="Profilbild"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                      <User className="w-12 h-12 sm:w-16 sm:h-16 text-white" />
+                    </div>
+                  )}
+                </div>
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={handleImageUpload}
+                  onChange={handleImageSelect}
                   className="hidden"
                   disabled={isUploadingImage}
                 />
               </label>
+              {isUploadingImage && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+                  <Loader2 className="w-8 h-8 text-white animate-spin" />
+                </div>
+              )}
             </div>
 
             {/* User Info */}
             <div className="text-center sm:text-left">
               <h2 className="text-2xl font-bold text-gray-900">
-                {session?.user?.name || 'Användare'}
+                {userName || formData.name || session?.user?.name || 'Laddar...'}
               </h2>
-              <p className="text-gray-500 mt-1">{session?.user?.email}</p>
+              <p className="text-gray-500 mt-1">{formData.email || session?.user?.email}</p>
               <p className="text-sm text-amber-600 font-medium mt-2">
                 {(session?.user as any)?.role === 'COACH' ? 'Coach' : 'Klient'}
               </p>
               <p className="text-xs text-gray-400 mt-3">
-                Håll muspekaren över bilden för att ändra
+                Tryck på bilden för att ändra
               </p>
             </div>
           </div>
         </div>
+
+        {/* Image Cropper Modal */}
+        {cropperImage && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl max-w-md w-full overflow-hidden">
+              <div className="p-4 border-b flex items-center justify-between">
+                <h3 className="font-semibold text-gray-900">Justera profilbild</h3>
+                <button
+                  onClick={() => setCropperImage(null)}
+                  className="p-1 hover:bg-gray-100 rounded-full"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+
+              <div className="p-4">
+                {/* Crop area */}
+                <div
+                  className="relative w-64 h-64 mx-auto rounded-full overflow-hidden border-4 border-gold-primary bg-gray-100 cursor-move"
+                  onMouseDown={handleCropMouseDown}
+                  onMouseMove={handleCropMouseMove}
+                  onMouseUp={handleCropMouseUp}
+                  onMouseLeave={handleCropMouseUp}
+                  onTouchStart={handleCropTouchStart}
+                  onTouchMove={handleCropTouchMove}
+                  onTouchEnd={handleCropTouchEnd}
+                >
+                  <img
+                    src={cropperImage}
+                    alt="Beskär"
+                    className="absolute select-none pointer-events-none"
+                    style={{
+                      transform: `translate(${cropPosition.x}px, ${cropPosition.y}px) scale(${cropZoom})`,
+                      transformOrigin: 'center',
+                      left: '50%',
+                      top: '50%',
+                      marginLeft: '-50%',
+                      marginTop: '-50%',
+                    }}
+                    draggable={false}
+                  />
+                </div>
+
+                <p className="text-center text-sm text-gray-500 mt-3 flex items-center justify-center gap-2">
+                  <Move className="w-4 h-4" />
+                  Dra för att flytta bilden
+                </p>
+
+                {/* Zoom slider */}
+                <div className="mt-4 flex items-center gap-3">
+                  <ZoomOut className="w-5 h-5 text-gray-400" />
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="3"
+                    step="0.1"
+                    value={cropZoom}
+                    onChange={(e) => setCropZoom(parseFloat(e.target.value))}
+                    className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gold-primary"
+                  />
+                  <ZoomIn className="w-5 h-5 text-gray-400" />
+                </div>
+              </div>
+
+              <div className="p-4 border-t flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setCropperImage(null)}
+                  className="flex-1"
+                >
+                  Avbryt
+                </Button>
+                <Button
+                  onClick={handleCropSave}
+                  disabled={isUploadingImage}
+                  className="flex-1 bg-gold-primary hover:bg-gold-primary/90 text-black"
+                >
+                  {isUploadingImage ? (
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  ) : (
+                    <Check className="w-4 h-4 mr-2" />
+                  )}
+                  Spara
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* User Info Card */}
         <div className="bg-white border-2 border-gray-300 rounded-xl shadow-lg">
