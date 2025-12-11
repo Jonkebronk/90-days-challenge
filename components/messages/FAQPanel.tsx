@@ -101,89 +101,93 @@ export function FAQPanel() {
         <span className="hidden sm:inline">FAQ</span>
       </Button>
 
-      {/* FAQ Panel Dropdown */}
+      {/* FAQ Panel - Full screen modal on mobile, dropdown on desktop */}
       {isOpen && (
-        <Card className="absolute bottom-full left-0 mb-2 w-80 sm:w-96 max-h-[70vh] overflow-hidden bg-white border-2 border-gray-200 shadow-xl z-50 rounded-xl">
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-orange-50">
-            <div className="flex items-center gap-2">
-              <HelpCircle className="w-5 h-5 text-amber-600" />
-              <span className="font-semibold text-gray-900">Vanliga frågor</span>
+        <>
+          {/* Mobile: Full screen overlay */}
+          <div className="sm:hidden fixed inset-0 bg-black/50 z-50" onClick={() => setIsOpen(false)} />
+          <Card className="fixed inset-x-0 bottom-0 top-16 sm:absolute sm:bottom-full sm:top-auto sm:left-0 sm:inset-x-auto sm:mb-2 sm:w-96 sm:max-h-[70vh] overflow-hidden bg-white border-2 border-gray-200 shadow-xl z-50 rounded-t-xl sm:rounded-xl">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-orange-50">
+              <div className="flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-amber-600" />
+                <span className="font-semibold text-gray-900">Vanliga frågor</span>
+              </div>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-1.5 hover:bg-white/50 rounded-full transition-colors"
+              >
+                <X className="w-4 h-4 text-gray-500" />
+              </button>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="p-1.5 hover:bg-white/50 rounded-full transition-colors"
-            >
-              <X className="w-4 h-4 text-gray-500" />
-            </button>
-          </div>
 
-          {/* Content */}
-          <div className="overflow-y-auto max-h-[60vh]">
-            {categories
-              .sort((a, b) => a.orderIndex - b.orderIndex)
-              .map(category => (
-                <div key={category.id} className="border-b border-gray-100 last:border-b-0">
-                  {/* Category Header */}
-                  <button
-                    onClick={() => toggleCategory(category.id)}
-                    className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">{categoryIcons[category.slug] || '📋'}</span>
-                      <span className="font-medium text-gray-900">
-                        {category.name}
-                      </span>
-                    </div>
-                    <ChevronDown
-                      className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
-                        expandedCategory === category.id ? 'rotate-180' : ''
-                      }`}
-                    />
-                  </button>
+            {/* Content */}
+            <div className="overflow-y-auto h-[calc(100%-56px)] sm:max-h-[60vh]">
+              {categories
+                .sort((a, b) => a.orderIndex - b.orderIndex)
+                .map(category => (
+                  <div key={category.id} className="border-b border-gray-100 last:border-b-0">
+                    {/* Category Header */}
+                    <button
+                      onClick={() => toggleCategory(category.id)}
+                      className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl">{categoryIcons[category.slug] || '📋'}</span>
+                        <span className="font-medium text-gray-900">
+                          {category.name}
+                        </span>
+                      </div>
+                      <ChevronDown
+                        className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
+                          expandedCategory === category.id ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </button>
 
-                  {/* Questions */}
-                  {expandedCategory === category.id && (
-                    <div className="bg-gray-50 px-4 pb-3">
-                      {category.questions
-                        .sort((a, b) => a.orderIndex - b.orderIndex)
-                        .map(faq => (
-                          <div key={faq.id} className="mt-2">
-                            {/* Question */}
-                            <button
-                              onClick={() => toggleQuestion(faq.id)}
-                              className={`w-full text-left p-3 rounded-lg transition-all ${
-                                expandedQuestion === faq.id
-                                  ? 'bg-amber-100 text-amber-900'
-                                  : 'bg-white text-gray-700 hover:bg-amber-50'
-                              }`}
-                            >
-                              <div className="flex items-start justify-between gap-2">
-                                <span className="text-sm font-medium">{faq.question}</span>
-                                <ChevronDown
-                                  className={`w-4 h-4 flex-shrink-0 mt-0.5 transition-transform duration-200 ${
-                                    expandedQuestion === faq.id ? 'rotate-180 text-amber-600' : 'text-gray-400'
-                                  }`}
-                                />
-                              </div>
-                            </button>
+                    {/* Questions */}
+                    {expandedCategory === category.id && (
+                      <div className="bg-gray-50 px-4 pb-3">
+                        {category.questions
+                          .sort((a, b) => a.orderIndex - b.orderIndex)
+                          .map(faq => (
+                            <div key={faq.id} className="mt-2">
+                              {/* Question */}
+                              <button
+                                onClick={() => toggleQuestion(faq.id)}
+                                className={`w-full text-left p-3 rounded-lg transition-all ${
+                                  expandedQuestion === faq.id
+                                    ? 'bg-amber-100 text-amber-900'
+                                    : 'bg-white text-gray-700 hover:bg-amber-50'
+                                }`}
+                              >
+                                <div className="flex items-start justify-between gap-2">
+                                  <span className="text-sm font-medium">{faq.question}</span>
+                                  <ChevronDown
+                                    className={`w-4 h-4 flex-shrink-0 mt-0.5 transition-transform duration-200 ${
+                                      expandedQuestion === faq.id ? 'rotate-180 text-amber-600' : 'text-gray-400'
+                                    }`}
+                                  />
+                                </div>
+                              </button>
 
-                            {/* Answer */}
-                            {expandedQuestion === faq.id && (
-                              <div className="mt-2 p-3 bg-white rounded-lg border border-amber-200">
-                                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-                                  {faq.answer}
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-          </div>
-        </Card>
+                              {/* Answer */}
+                              {expandedQuestion === faq.id && (
+                                <div className="mt-2 p-3 bg-white rounded-lg border border-amber-200">
+                                  <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                    {faq.answer}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+          </Card>
+        </>
       )}
     </div>
   )
