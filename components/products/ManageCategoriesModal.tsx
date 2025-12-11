@@ -74,21 +74,25 @@ export function ManageCategoriesModal({ isOpen, onClose, onCategoriesChanged }: 
   // Hidden items (stored in localStorage for standard items)
   const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set())
 
-  // Load hidden items from localStorage
+  // Load hidden items from localStorage (SSR-safe)
   useEffect(() => {
-    const stored = localStorage.getItem('hiddenProductCategories')
-    if (stored) {
-      try {
-        setHiddenItems(new Set(JSON.parse(stored)))
-      } catch {
-        // Ignore parse errors
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('hiddenProductCategories')
+      if (stored) {
+        try {
+          setHiddenItems(new Set(JSON.parse(stored)))
+        } catch {
+          // Ignore parse errors
+        }
       }
     }
   }, [])
 
-  // Save hidden items to localStorage
+  // Save hidden items to localStorage (SSR-safe)
   const saveHiddenItems = (items: Set<string>) => {
-    localStorage.setItem('hiddenProductCategories', JSON.stringify([...items]))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hiddenProductCategories', JSON.stringify([...items]))
+    }
     setHiddenItems(items)
   }
 

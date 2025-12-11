@@ -58,7 +58,8 @@
       "Bash(git rm:*)",
       "Bash(node scripts/count-products.js:*)",
       "Bash(npx next build:*)",
-      "WebFetch(domain:handlaprivatkund.ica.se)"
+      "WebFetch(domain:handlaprivatkund.ica.se)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []
