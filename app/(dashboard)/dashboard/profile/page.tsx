@@ -328,6 +328,22 @@ export default function ProfilePage() {
     checkPushStatus()
   }, [])
 
+  // Lock body scroll when cropper modal is open
+  useEffect(() => {
+    if (cropperImage) {
+      const scrollY = window.scrollY
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${scrollY}px`
+      document.body.style.width = '100%'
+      return () => {
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.width = ''
+        window.scrollTo(0, scrollY)
+      }
+    }
+  }, [cropperImage])
+
   const handleToggleWeightReminder = async () => {
     setIsTogglingWeightReminder(true)
     try {

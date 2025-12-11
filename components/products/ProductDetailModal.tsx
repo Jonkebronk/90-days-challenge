@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { X, Package, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -39,6 +40,22 @@ interface ProductDetailModalProps {
 }
 
 export function ProductDetailModal({ isOpen, product, onClose }: ProductDetailModalProps) {
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const scrollY = window.scrollY
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${scrollY}px`
+      document.body.style.width = '100%'
+      return () => {
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.width = ''
+        window.scrollTo(0, scrollY)
+      }
+    }
+  }, [isOpen])
+
   if (!isOpen || !product) return null
 
   // Check if product has any micronutrients
