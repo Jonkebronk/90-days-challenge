@@ -47,8 +47,8 @@ export function ProductDetailModal({ isOpen, product, onClose }: ProductDetailMo
     product.magnesium || product.potassium || product.zinc || product.iodine
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-gray-900 w-full sm:max-w-lg sm:rounded-2xl max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 pt-8 sm:pt-16 overflow-y-auto">
+      <div className="bg-gray-900 w-full sm:max-w-lg rounded-2xl max-h-[85vh] overflow-hidden flex flex-col my-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-800">
           <div className="flex items-center gap-2 text-gray-400">
