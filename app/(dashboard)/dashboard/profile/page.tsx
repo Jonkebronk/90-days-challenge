@@ -566,9 +566,13 @@ export default function ProfilePage() {
 
         {/* Image Cropper Modal */}
         {cropperImage && (
-          <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-4 border-b flex items-center justify-between">
+          <>
+            {/* Overlay */}
+            <div className="fixed inset-0 z-50 bg-black/80" onClick={() => setCropperImage(null)} />
+            {/* Modal - centered using transform */}
+            <div className="fixed left-[50%] top-[50%] z-50 w-full max-w-md translate-x-[-50%] translate-y-[-50%] px-4">
+              <div className="bg-white rounded-xl max-h-[90vh] flex flex-col overflow-hidden">
+                <div className="p-4 border-b flex items-center justify-between flex-shrink-0">
                 <h3 className="font-semibold text-gray-900">Justera profilbild</h3>
                 <button
                   onClick={() => setCropperImage(null)}
@@ -619,7 +623,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="p-4 border-t flex gap-2">
+              <div className="p-4 border-t flex gap-2 flex-shrink-0">
                 <Button
                   variant="outline"
                   onClick={() => setCropperImage(null)}
@@ -640,8 +644,9 @@ export default function ProfilePage() {
                   Spara
                 </Button>
               </div>
+              </div>
             </div>
-          </div>
+          </>
         )}
 
         {/* User Info Card */}
