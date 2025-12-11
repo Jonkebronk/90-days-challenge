@@ -114,6 +114,14 @@ export default function ProductsPage() {
   const [isRequestsInboxOpen, setIsRequestsInboxOpen] = useState(false)
   const [isClientRequestModalOpen, setIsClientRequestModalOpen] = useState(false)
   const [viewingProduct, setViewingProduct] = useState<Product | null>(null)
+  const [pendingRequestData, setPendingRequestData] = useState<{
+    name?: string
+    brand?: string
+    category?: string
+    frontImage?: string | null
+    nutritionImage?: string | null
+    requestId?: string
+  } | null>(null)
 
   const fetchProducts = useCallback(async () => {
     setIsLoading(true)
@@ -462,8 +470,15 @@ export default function ProductsPage() {
       {/* Manual Product Add Modal */}
       <ManualProductModal
         isOpen={isManualAddOpen}
-        onClose={() => setIsManualAddOpen(false)}
-        onProductAdded={fetchProducts}
+        onClose={() => {
+          setIsManualAddOpen(false)
+          setPendingRequestData(null)
+        }}
+        onProductAdded={() => {
+          fetchProducts()
+          setPendingRequestData(null)
+        }}
+        initialData={pendingRequestData || undefined}
       />
 
       {/* Manage Categories Modal */}
@@ -479,6 +494,17 @@ export default function ProductsPage() {
           isOpen={isRequestsInboxOpen}
           onClose={() => setIsRequestsInboxOpen(false)}
           onProductAdded={fetchProducts}
+          onApproveRequest={(request) => {
+            setPendingRequestData({
+              name: request.name,
+              brand: request.brand || undefined,
+              category: request.category || undefined,
+              frontImage: request.frontImage,
+              nutritionImage: request.nutritionImage,
+              requestId: request.id
+            })
+            setIsManualAddOpen(true)
+          }}
         />
       )}
 
@@ -820,11 +846,13 @@ interface ProductRequestItem {
 function ProductRequestsInbox({
   isOpen,
   onClose,
-  onProductAdded
+  onProductAdded,
+  onApproveRequest
 }: {
   isOpen: boolean
   onClose: () => void
   onProductAdded: () => void
+  onApproveRequest: (request: ProductRequestItem) => void
 }) {
   const [requests, setRequests] = useState<ProductRequestItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -851,20 +879,10 @@ function ProductRequestsInbox({
     }
   }
 
-  const handleApprove = async (requestId: string) => {
-    try {
-      const res = await fetch(`/api/product-requests/${requestId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'approved' })
-      })
-      if (res.ok) {
-        fetchRequests()
-        setSelectedRequest(null)
-      }
-    } catch (error) {
-      console.error('Failed to approve:', error)
-    }
+  const handleApprove = (request: ProductRequestItem) => {
+    // Close inbox and open ManualProductModal with request data
+    onClose()
+    onApproveRequest(request)
   }
 
   const handleReject = async (requestId: string) => {
@@ -961,10 +979,11 @@ function ProductRequestsInbox({
                       </Button>
                       <Button
                         size="sm"
-                        onClick={() => handleApprove(request.id)}
+                        onClick={() => handleApprove(request)}
                         className="bg-emerald-600 hover:bg-emerald-700 text-white"
                       >
-                        <Check className="w-4 h-4" />
+                        <Plus className="w-4 h-4 mr-1" />
+                        Lägg till
                       </Button>
                     </div>
                   </div>

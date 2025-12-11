@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import {
   X,
   Plus,
@@ -19,10 +19,20 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { SUBCATEGORIES_BY_CATEGORY } from '@/lib/products/subcategories'
 
+interface InitialProductData {
+  name?: string
+  brand?: string
+  category?: string
+  frontImage?: string | null
+  nutritionImage?: string | null
+  requestId?: string // To mark as approved after saving
+}
+
 interface ManualProductModalProps {
   isOpen: boolean
   onClose: () => void
   onProductAdded: () => void
+  initialData?: InitialProductData
 }
 
 interface SLVFood {
@@ -68,12 +78,13 @@ const SOURCES = [
   { id: 'ica', label: 'ICA' },
 ]
 
-export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualProductModalProps) {
+export function ManualProductModal({ isOpen, onClose, onProductAdded, initialData }: ManualProductModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [requestNutritionImage, setRequestNutritionImage] = useState<string | null>(null)
 
   // SLV search state
   const [slvResults, setSlvResults] = useState<SLVFood[]>([])
@@ -122,6 +133,24 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
     iodine: '',
     slvNummer: null as number | null,
   })
+
+  // Initialize form with initialData when modal opens
+  useEffect(() => {
+    if (isOpen && initialData) {
+      setFormData(prev => ({
+        ...prev,
+        name: initialData.name || '',
+        brand: initialData.brand || '',
+        category: initialData.category || '',
+      }))
+      if (initialData.frontImage) {
+        setImagePreview(initialData.frontImage)
+      }
+      if (initialData.nutritionImage) {
+        setRequestNutritionImage(initialData.nutritionImage)
+      }
+    }
+  }, [isOpen, initialData])
 
   // Convert file to base64
   const fileToBase64 = (file: File): Promise<string> => {
@@ -236,6 +265,7 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
       slvNummer: null,
     })
     setImagePreview(null)
+    setRequestNutritionImage(null)
     setError(null)
     setSuccess(false)
     setSlvResults([])
@@ -329,12 +359,22 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
         throw new Error(data.error || 'Kunde inte spara produkten')
       }
 
+      // If this was from a request, mark it as approved
+      if (initialData?.requestId) {
+        await fetch(`/api/product-requests/${initialData.requestId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'approved' })
+        })
+      }
+
       setSuccess(true)
       onProductAdded()
 
       // Reset form after short delay
       setTimeout(() => {
         resetForm()
+        onClose()
       }, 1500)
 
     } catch (err: any) {
@@ -362,6 +402,23 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded }: ManualPr
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* Request nutrition image - show if from a request */}
+          {requestNutritionImage && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <Label className="text-sm font-medium text-amber-800 mb-2 block">
+                Innehållsförteckning från klienten
+              </Label>
+              <img
+                src={requestNutritionImage}
+                alt="Innehållsförteckning"
+                className="max-w-full max-h-64 object-contain rounded-lg border border-amber-300"
+              />
+              <p className="text-xs text-amber-700 mt-2">
+                Använd denna bild för att fylla i näringsvärden nedan.
+              </p>
+            </div>
+          )}
+
           {/* Image upload */}
           <div>
             <Label className="text-sm">Produktbild</Label>
