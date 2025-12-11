@@ -910,7 +910,7 @@ function ProductRequestsInbox({
         <div className="flex items-center justify-between p-4 border-b">
           <div className="flex items-center gap-2">
             <Inbox className="w-5 h-5 text-gold-primary" />
-            <h2 className="text-lg font-semibold">Produktförfrågningar</h2>
+            <h2 className="text-lg font-semibold">Livsmedelsförfrågningar</h2>
             {pendingRequests.length > 0 && (
               <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">
                 {pendingRequests.length} nya
