@@ -71,6 +71,27 @@ export function ManageCategoriesModal({ isOpen, onClose, onCategoriesChanged }: 
   const [editingLabel, setEditingLabel] = useState('')
   const [isSavingEdit, setIsSavingEdit] = useState(false)
 
+  // Hidden items (stored in localStorage for standard items)
+  const [hiddenItems, setHiddenItems] = useState<Set<string>>(new Set())
+
+  // Load hidden items from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem('hiddenProductCategories')
+    if (stored) {
+      try {
+        setHiddenItems(new Set(JSON.parse(stored)))
+      } catch {
+        // Ignore parse errors
+      }
+    }
+  }, [])
+
+  // Save hidden items to localStorage
+  const saveHiddenItems = (items: Set<string>) => {
+    localStorage.setItem('hiddenProductCategories', JSON.stringify([...items]))
+    setHiddenItems(items)
+  }
+
   // Load categories
   useEffect(() => {
     if (isOpen) {
@@ -166,8 +187,17 @@ export function ManageCategoriesModal({ isOpen, onClose, onCategoriesChanged }: 
     }
   }
 
-  const handleDeleteCategory = async (key: string) => {
+  const handleDeleteCategory = async (key: string, isStandard: boolean = false) => {
     if (!confirm('Är du säker på att du vill ta bort denna?')) return
+
+    if (isStandard) {
+      // For standard/built-in items, hide them via localStorage
+      const newHidden = new Set(hiddenItems)
+      newHidden.add(key)
+      saveHiddenItems(newHidden)
+      onCategoriesChanged()
+      return
+    }
 
     try {
       const res = await fetch(`/api/product-categories?key=${encodeURIComponent(key)}`, {
@@ -248,7 +278,8 @@ export function ManageCategoriesModal({ isOpen, onClose, onCategoriesChanged }: 
       mergedMap.set(sub.key, { key: sub.key, label: sub.label, isHardcoded: false })
     }
 
-    return Array.from(mergedMap.values())
+    // Filter out hidden items
+    return Array.from(mergedMap.values()).filter(sub => !hiddenItems.has(sub.key))
   }
 
   // Combine built-in and custom categories for display
@@ -269,7 +300,7 @@ export function ManageCategoriesModal({ isOpen, onClose, onCategoriesChanged }: 
       isBuiltIn: false,
       hasDbOverride: true
     }))
-  ]
+  ].filter(cat => !hiddenItems.has(cat.key)) // Filter out hidden categories
 
   if (!isOpen) return null
 
@@ -415,19 +446,17 @@ export function ManageCategoriesModal({ isOpen, onClose, onCategoriesChanged }: 
                               >
                                 <Pencil className="w-3 h-3" />
                               </Button>
-                              {!cat.isBuiltIn && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    handleDeleteCategory(cat.key)
-                                  }}
-                                  className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </Button>
-                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleDeleteCategory(cat.key, cat.isBuiltIn)
+                                }}
+                                className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
                             </>
                           )}
                         </div>
@@ -503,16 +532,14 @@ export function ManageCategoriesModal({ isOpen, onClose, onCategoriesChanged }: 
                                         >
                                           <Pencil className="w-3 h-3" />
                                         </Button>
-                                        {!sub.isHardcoded && (
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => handleDeleteCategory(sub.key)}
-                                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                                          >
-                                            <Trash2 className="w-3 h-3" />
-                                          </Button>
-                                        )}
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => handleDeleteCategory(sub.key, sub.isHardcoded)}
+                                          className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                                        >
+                                          <Trash2 className="w-3 h-3" />
+                                        </Button>
                                       </>
                                     )}
                                   </div>
