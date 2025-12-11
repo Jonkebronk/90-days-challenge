@@ -68,27 +68,30 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.role = (user as any).role
+        token.image = (user as any).image
       }
 
-      // Refresh role from database on session update
+      // Refresh user data from database on session update
       if (trigger === 'update' || !token.role) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { role: true }
+          select: { role: true, image: true, name: true }
         })
         if (dbUser) {
           token.role = dbUser.role
+          token.image = dbUser.image
+          token.name = dbUser.name
         }
       }
 
       return token
     },
     async session({ session, token }) {
-      console.log('[SESSION CALLBACK] Token:', { id: token.id, role: token.role })
       if (session.user) {
         session.user.id = token.id as string
         ;(session.user as any).role = token.role
-        console.log('[SESSION CALLBACK] Session user:', { id: session.user.id, role: (session.user as any).role, email: session.user.email })
+        session.user.image = token.image as string | null | undefined
+        session.user.name = token.name as string | null | undefined
       }
       return session
     },

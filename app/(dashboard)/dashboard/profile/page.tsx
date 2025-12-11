@@ -243,6 +243,7 @@ export default function ProfilePage() {
       if (res.ok) {
         setProfileImage(croppedBase64)
         setCropperImage(null)
+        await update() // Refresh session with new image
         toast.success('Profilbild uppdaterad!')
       } else {
         toast.error('Kunde inte spara bilden')
