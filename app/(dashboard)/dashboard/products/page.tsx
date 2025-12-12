@@ -77,31 +77,41 @@ const SOURCES = [
 ]
 
 // Built-in categories with icons - can be overridden by DB
+// Use ASCII keys for consistency with database storage
 const BUILT_IN_CATEGORIES = [
   { id: 'mejeri', label: 'Mejeri', icon: Milk },
-  { id: 'kött', label: 'Kött', icon: Drumstick },
+  { id: 'kott', label: 'Kött', icon: Drumstick },
   { id: 'fisk', label: 'Fisk', icon: Fish },
-  { id: 'bröd', label: 'Bröd', icon: Croissant },
+  { id: 'brod', label: 'Bröd', icon: Croissant },
   { id: 'frukt', label: 'Frukt', icon: Apple },
-  { id: 'grönsaker', label: 'Grönsaker', icon: Carrot },
+  { id: 'gronsaker', label: 'Grönsaker', icon: Carrot },
   { id: 'dryck', label: 'Dryck', icon: Wine },
   { id: 'snacks', label: 'Snacks', icon: Cookie },
   { id: 'fryst', label: 'Fryst', icon: Snowflake },
   { id: 'torrvaror', label: 'Torrvaror', icon: Wheat },
 ]
 
-// Icon mapping for dynamic categories
+// Icon mapping for dynamic categories (ASCII keys)
 const CATEGORY_ICONS: Record<string, any> = {
   mejeri: Milk,
-  kött: Drumstick,
+  kott: Drumstick,
   fisk: Fish,
-  bröd: Croissant,
+  brod: Croissant,
   frukt: Apple,
-  grönsaker: Carrot,
+  gronsaker: Carrot,
   dryck: Wine,
   snacks: Cookie,
   fryst: Snowflake,
   torrvaror: Wheat,
+}
+
+// Normalize category key from Swedish to ASCII for consistency
+const normalizeCategoryKey = (key: string | null): string => {
+  if (!key) return ''
+  return key
+    .toLowerCase()
+    .replace(/[åä]/g, 'a')
+    .replace(/ö/g, 'o')
 }
 
 export default function ProductsPage() {
@@ -209,7 +219,7 @@ export default function ProductsPage() {
             mergedCategories.push({
               id: dbCat.key,
               label: dbCat.label,
-              icon: CATEGORY_ICONS[dbCat.key] || Package
+              icon: CATEGORY_ICONS[normalizeCategoryKey(dbCat.key)] || Package
             })
           }
         }
