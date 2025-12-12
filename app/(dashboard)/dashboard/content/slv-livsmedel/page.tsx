@@ -694,29 +694,24 @@ export default function SLVLivsmedelPage() {
                         {isSubExpanded && (
                           <div className="px-4 pb-4 pl-14">
                             {viewMode === 'grid' ? (
-                              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                 {foods.map((food) => (
                                   <button
                                     key={food.nummer}
                                     onClick={() => setSelectedFood(food)}
-                                    className="bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700/50 hover:border-amber-500/30 rounded-lg p-3 text-left transition-all group"
+                                    className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/30 rounded-xl p-3 text-left transition-all group"
                                   >
-                                    <span className="text-sm font-medium text-gray-200 group-hover:text-white line-clamp-2 block mb-2">
+                                    <span className="text-sm font-medium text-white line-clamp-2 block mb-2">
                                       {food.namn}
                                     </span>
-                                    <div className="flex flex-wrap gap-1">
-                                      <span className="text-xs px-1.5 py-0.5 rounded bg-gray-700/50 text-gray-400">
+                                    <div className="space-y-0.5">
+                                      <span className="text-amber-500 font-semibold text-sm">
                                         {food.kcal} kcal
                                       </span>
-                                      <span className="text-xs px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400">
-                                        {food.protein}g P
-                                      </span>
+                                      <div className="text-xs text-gray-500">
+                                        {food.protein}g P • {food.carbs}g K • {food.fat}g F
+                                      </div>
                                     </div>
-                                    {food.protein >= 20 && (
-                                      <span className="inline-flex items-center gap-1 text-xs text-green-400 mt-2">
-                                        <Dumbbell className="w-3 h-3" /> Proteinrik
-                                      </span>
-                                    )}
                                   </button>
                                 ))}
                               </div>
@@ -726,16 +721,16 @@ export default function SLVLivsmedelPage() {
                                   <button
                                     key={food.nummer}
                                     onClick={() => setSelectedFood(food)}
-                                    className="w-full flex items-center justify-between bg-gray-800/30 hover:bg-gray-700/30 border border-gray-700/30 hover:border-amber-500/30 rounded-lg px-3 py-2 text-left transition-all group"
+                                    className="w-full flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/30 rounded-lg px-3 py-2 text-left transition-all group"
                                   >
-                                    <span className="text-sm text-gray-200 group-hover:text-white truncate flex-1 mr-4">
+                                    <span className="text-sm text-white truncate flex-1 mr-4">
                                       {food.namn}
                                     </span>
-                                    <div className="flex items-center gap-3 text-xs text-gray-500 flex-shrink-0">
-                                      <span className="w-16 text-right">{food.kcal} kcal</span>
-                                      <span className="w-12 text-right text-blue-400">{food.protein}g P</span>
-                                      <span className="w-12 text-right text-green-400">{food.carbs}g K</span>
-                                      <span className="w-12 text-right text-red-400">{food.fat}g F</span>
+                                    <div className="flex items-center gap-3 text-xs flex-shrink-0">
+                                      <span className="w-16 text-right text-amber-500 font-medium">{food.kcal} kcal</span>
+                                      <span className="w-10 text-right text-gray-500">{food.protein}g P</span>
+                                      <span className="w-10 text-right text-gray-500">{food.carbs}g K</span>
+                                      <span className="w-10 text-right text-gray-500">{food.fat}g F</span>
                                     </div>
                                   </button>
                                 ))}
