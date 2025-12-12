@@ -126,6 +126,12 @@ const CATEGORIES = [
   { id: 'torrvaror', label: 'Torrvaror' },
 ]
 
+interface DbSubcategory {
+  key: string
+  label: string
+  parentKey: string | null
+}
+
 export function EditProductModal({ isOpen, product, onClose, onProductUpdated }: EditProductModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -147,6 +153,9 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
   // Delete state
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+
+  // Database subcategories
+  const [dbSubcategories, setDbSubcategories] = useState<DbSubcategory[]>([])
 
   // Form state
   const [formData, setFormData] = useState({
@@ -177,6 +186,34 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
     subCategory: '',
     source: '',
   })
+
+  // Fetch subcategories from database when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      fetch('/api/product-categories')
+        .then(res => res.ok ? res.json() : { subcategories: [] })
+        .then(data => setDbSubcategories(data.subcategories || []))
+        .catch(() => setDbSubcategories([]))
+    }
+  }, [isOpen])
+
+  // Get all subcategories for a category (merge hardcoded + database)
+  const getSubcategoriesForCategory = (categoryKey: string): { key: string; label: string }[] => {
+    const hardcoded = SUBCATEGORIES_BY_CATEGORY[categoryKey.toLowerCase()] || []
+    const fromDb = dbSubcategories.filter(s => s.parentKey === categoryKey.toLowerCase())
+
+    // Merge: start with hardcoded, add db ones that don't exist
+    const mergedMap = new Map<string, { key: string; label: string }>()
+    for (const sub of hardcoded) {
+      mergedMap.set(sub.key, { key: sub.key, label: sub.label })
+    }
+    for (const sub of fromDb) {
+      if (!mergedMap.has(sub.key)) {
+        mergedMap.set(sub.key, { key: sub.key, label: sub.label })
+      }
+    }
+    return Array.from(mergedMap.values())
+  }
 
   // Initialize form when product changes
   useEffect(() => {
@@ -892,11 +929,11 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
             </div>
 
             {/* Subcategory - show when category has subcategories */}
-            {formData.category && SUBCATEGORIES_BY_CATEGORY[formData.category.toLowerCase()] && (
+            {formData.category && getSubcategoriesForCategory(formData.category).length > 0 && (
               <div className="mt-3">
                 <Label className="text-sm text-gray-600">Subkategori</Label>
                 <div className="flex flex-wrap gap-1.5 mt-2">
-                  {SUBCATEGORIES_BY_CATEGORY[formData.category.toLowerCase()]?.map(subcat => (
+                  {getSubcategoriesForCategory(formData.category).map(subcat => (
                     <button
                       key={subcat.key}
                       onClick={() => setFormData(prev => ({

@@ -103,6 +103,9 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
   const [customCategories, setCustomCategories] = useState<string[]>([])
   const [customSubCategories, setCustomSubCategories] = useState<string[]>([])
 
+  // Database subcategories
+  const [dbSubcategories, setDbSubcategories] = useState<{ key: string; label: string; parentKey: string | null }[]>([])
+
   // Form state
   const [formData, setFormData] = useState({
     name: '',
@@ -151,6 +154,34 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
       }
     }
   }, [isOpen, initialData])
+
+  // Fetch subcategories from database when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      fetch('/api/product-categories')
+        .then(res => res.ok ? res.json() : { subcategories: [] })
+        .then(data => setDbSubcategories(data.subcategories || []))
+        .catch(() => setDbSubcategories([]))
+    }
+  }, [isOpen])
+
+  // Get all subcategories for a category (merge hardcoded + database)
+  const getSubcategoriesForCategory = (categoryKey: string): { key: string; label: string }[] => {
+    const hardcoded = SUBCATEGORIES_BY_CATEGORY[categoryKey.toLowerCase()] || []
+    const fromDb = dbSubcategories.filter(s => s.parentKey === categoryKey.toLowerCase())
+
+    // Merge: start with hardcoded, add db ones that don't exist
+    const mergedMap = new Map<string, { key: string; label: string }>()
+    for (const sub of hardcoded) {
+      mergedMap.set(sub.key, { key: sub.key, label: sub.label })
+    }
+    for (const sub of fromDb) {
+      if (!mergedMap.has(sub.key)) {
+        mergedMap.set(sub.key, { key: sub.key, label: sub.label })
+      }
+    }
+    return Array.from(mergedMap.values())
+  }
 
   // Convert file to base64
   const fileToBase64 = (file: File): Promise<string> => {
@@ -934,8 +965,8 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
             <div>
               <Label className="text-sm">Underkategori</Label>
               <div className="flex flex-wrap gap-1.5 mt-2">
-                {/* Predefined subcategories if they exist */}
-                {SUBCATEGORIES_BY_CATEGORY[formData.category]?.map(subcat => (
+                {/* Predefined + database subcategories */}
+                {getSubcategoriesForCategory(formData.category).map(subcat => (
                   <button
                     key={subcat.key}
                     onClick={() => setFormData(prev => ({
