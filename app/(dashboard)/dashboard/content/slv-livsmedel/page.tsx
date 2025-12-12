@@ -477,47 +477,48 @@ export default function SLVLivsmedelPage() {
   })
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-4 sm:p-6">
+    <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="max-w-6xl mx-auto mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-              Livsmedelsverkets databas
-            </h1>
-            <div className="flex items-center gap-4 text-gray-400 text-sm mt-1">
-              <span>{data.totalCount} livsmedel</span>
-              <span>•</span>
-              <span>{Object.keys(META_CATEGORIES).length} kategorier</span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5" />
-                {lastUpdated}
-              </span>
-            </div>
-          </div>
-
-          {isCoach && (
-            <Button
-              onClick={handleRebuild}
-              disabled={isRebuilding}
-              variant="outline"
-              className="border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
-            >
-              {isRebuilding ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Uppdaterar...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Uppdatera data
-                </>
-              )}
-            </Button>
-          )}
+      <div className="text-center mb-4 sm:mb-6">
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-3 sm:mb-4 opacity-30" />
+        <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl md:text-3xl font-black tracking-[1px] sm:tracking-[2px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-2">
+          Livsmedelsverkets databas
+        </h1>
+        <div className="flex items-center justify-center gap-2 sm:gap-4 text-gray-400 text-xs sm:text-sm">
+          <span>{data.totalCount} livsmedel</span>
+          <span>•</span>
+          <span>{Object.keys(META_CATEGORIES).length} kategorier</span>
+          <span>•</span>
+          <span className="flex items-center gap-1">
+            <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            {lastUpdated}
+          </span>
         </div>
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-3 sm:mt-4 opacity-30" />
+
+        {isCoach && (
+          <Button
+            onClick={handleRebuild}
+            disabled={isRebuilding}
+            variant="outline"
+            className="mt-4 border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
+          >
+            {isRebuilding ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Uppdaterar...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Uppdatera data
+              </>
+            )}
+          </Button>
+        )}
+      </div>
+
+      <div className="max-w-6xl mx-auto">
 
         {/* Search */}
         <div className="relative mb-4">
