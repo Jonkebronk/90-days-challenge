@@ -501,7 +501,7 @@ export default function SLVLivsmedelPage() {
             onClick={handleRebuild}
             disabled={isRebuilding}
             variant="outline"
-            className="mt-4 border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
+            className="mt-4 bg-transparent border-amber-500/50 text-amber-500 hover:bg-amber-500/10 hover:border-amber-500"
           >
             {isRebuilding ? (
               <>
