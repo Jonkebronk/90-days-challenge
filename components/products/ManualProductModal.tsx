@@ -63,11 +63,11 @@ interface SLVFood {
 
 const CATEGORIES = [
   { id: 'mejeri', label: 'Mejeri' },
-  { id: 'kött', label: 'Kött' },
+  { id: 'kott', label: 'Kött' },
   { id: 'fisk', label: 'Fisk' },
-  { id: 'bröd', label: 'Bröd' },
+  { id: 'brod', label: 'Bröd' },
   { id: 'frukt', label: 'Frukt' },
-  { id: 'grönsaker', label: 'Grönsaker' },
+  { id: 'gronsaker', label: 'Grönsaker' },
   { id: 'dryck', label: 'Dryck' },
   { id: 'snacks', label: 'Snacks' },
   { id: 'fryst', label: 'Fryst' },
