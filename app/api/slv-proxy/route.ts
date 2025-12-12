@@ -319,10 +319,15 @@ async function searchFoods(
     return !recipePatterns.some(pattern => pattern.test(name))
   })
 
-  // Filter by search query
+  // Filter by search query - match all words in any order
   let filtered = foods
   if (query) {
-    filtered = foods.filter(f => f.namn.toLowerCase().includes(query.toLowerCase()))
+    const queryWords = query.toLowerCase().split(/\s+/).filter(w => w.length > 0)
+    filtered = foods.filter(f => {
+      const name = f.namn.toLowerCase()
+      // All query words must appear in the name (in any order)
+      return queryWords.every(word => name.includes(word))
+    })
   }
 
   // If category specified but no query, use category keywords to pre-filter

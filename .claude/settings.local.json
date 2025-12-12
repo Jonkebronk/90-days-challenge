@@ -59,7 +59,8 @@
       "Bash(node scripts/count-products.js:*)",
       "Bash(npx next build:*)",
       "WebFetch(domain:handlaprivatkund.ica.se)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []
