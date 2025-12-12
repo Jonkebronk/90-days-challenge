@@ -63,6 +63,7 @@ const navigation = [
       { name: 'Skapa Recept Kategorier', href: '/dashboard/content/recipe-categories', icon: FolderOpen },
       { name: 'Skapa Recept', href: '/dashboard/content/recipes', icon: ChefHat },
       { name: 'Livsmedelbanken', href: '/dashboard/content/food-items', icon: Apple },
+      { name: 'SLV Livsmedel', href: '/dashboard/content/slv-livsmedel', icon: Library },
       { name: 'Näringstabeller', href: '/dashboard/content/nutrition-admin', icon: Calculator },
       { name: 'Måltidsplaner', href: '/dashboard/content/meal-plans', icon: UtensilsCrossed },
       { name: 'Måltidsplanerare', href: '/dashboard/tools/meal-planner', icon: Calculator },
