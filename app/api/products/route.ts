@@ -4,6 +4,32 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { SUBCATEGORIES_BY_CATEGORY, classifyProductSubcategory } from '@/lib/products/subcategories'
 
+// Normalize category key from Swedish to ASCII for consistency
+const normalizeCategoryKey = (key: string): string => {
+  return key
+    .toLowerCase()
+    .replace(/[åä]/g, 'a')
+    .replace(/ö/g, 'o')
+}
+
+// Get both Swedish and ASCII variants of a category for matching
+const getCategoryVariants = (key: string): string[] => {
+  const normalized = normalizeCategoryKey(key)
+  const variants = [key, normalized]
+
+  // Add Swedish variants if the key is ASCII
+  const swedishMap: Record<string, string> = {
+    'gronsaker': 'grönsaker',
+    'kott': 'kött',
+    'brod': 'bröd',
+  }
+  if (swedishMap[normalized]) {
+    variants.push(swedishMap[normalized])
+  }
+
+  return [...new Set(variants)] // Unique values
+}
+
 // GET /api/products - List/search products
 export async function GET(req: NextRequest) {
   try {
@@ -38,12 +64,13 @@ export async function GET(req: NextRequest) {
       ]
     }
 
-    // Filter by category (case-insensitive)
+    // Filter by category (case-insensitive, handles Swedish/ASCII variants)
     if (category) {
       if (category === 'uncategorized') {
         where.category = null
       } else {
-        where.category = { equals: category, mode: 'insensitive' }
+        const variants = getCategoryVariants(category)
+        where.category = { in: variants, mode: 'insensitive' }
       }
     }
 
@@ -73,10 +100,12 @@ export async function GET(req: NextRequest) {
       })
     ])
 
-    // Transform category counts
+    // Transform category counts (normalize keys to ASCII)
     const categoryCounts = categories.reduce((acc: Record<string, number>, cat) => {
-      const key = cat.category || 'uncategorized'
-      acc[key] = cat._count.category
+      const rawKey = cat.category || 'uncategorized'
+      const key = rawKey === 'uncategorized' ? rawKey : normalizeCategoryKey(rawKey)
+      // Merge counts for Swedish/ASCII variants
+      acc[key] = (acc[key] || 0) + cat._count.category
       return acc
     }, {})
 
@@ -88,12 +117,14 @@ export async function GET(req: NextRequest) {
 
     // Calculate subCategory counts if a category with subcategories is selected
     let subCategoryCounts: Record<string, number> = {}
-    if (category && SUBCATEGORIES_BY_CATEGORY[category.toLowerCase()]) {
-      // Get subcategory counts for this category
+    const normalizedCategory = category ? normalizeCategoryKey(category) : ''
+    if (category && (SUBCATEGORIES_BY_CATEGORY[normalizedCategory] || true)) {
+      // Get subcategory counts for this category (search both Swedish and ASCII variants)
+      const variants = getCategoryVariants(category)
       const subCats = await prisma.product.groupBy({
         by: ['subCategory'],
         where: {
-          category: { equals: category, mode: 'insensitive' },
+          category: { in: variants, mode: 'insensitive' },
           ...(source && source !== 'all' ? { source } : {})
         },
         _count: { subCategory: true }
