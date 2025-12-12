@@ -126,6 +126,15 @@ const CATEGORIES = [
   { id: 'torrvaror', label: 'Torrvaror' },
 ]
 
+// Normalize category key from Swedish to ASCII for consistency
+const normalizeCategoryKey = (key: string | null): string => {
+  if (!key) return ''
+  return key
+    .toLowerCase()
+    .replace(/[åä]/g, 'a')
+    .replace(/ö/g, 'o')
+}
+
 interface DbSubcategory {
   key: string
   label: string
@@ -228,7 +237,7 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
         fiber: product.fiber?.toString() || '',
         sugar: product.sugar?.toString() || '',
         salt: product.salt?.toString() || '',
-        category: product.category || '',
+        category: normalizeCategoryKey(product.category),
         // Micronutrients
         saturatedFat: product.saturatedFat?.toString() || '',
         vitaminA: product.vitaminA?.toString() || '',

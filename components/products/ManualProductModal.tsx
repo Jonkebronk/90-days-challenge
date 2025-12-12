@@ -74,6 +74,15 @@ const CATEGORIES = [
   { id: 'torrvaror', label: 'Torrvaror' },
 ]
 
+// Normalize category key from Swedish to ASCII for consistency
+const normalizeCategoryKey = (key: string | undefined): string => {
+  if (!key) return ''
+  return key
+    .toLowerCase()
+    .replace(/[åä]/g, 'a')
+    .replace(/ö/g, 'o')
+}
+
 const SOURCES = [
   { id: 'ica', label: 'ICA' },
 ]
@@ -144,7 +153,7 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
         ...prev,
         name: initialData.name || '',
         brand: initialData.brand || '',
-        category: initialData.category || '',
+        category: normalizeCategoryKey(initialData.category),
       }))
       if (initialData.frontImage) {
         setImagePreview(initialData.frontImage)
