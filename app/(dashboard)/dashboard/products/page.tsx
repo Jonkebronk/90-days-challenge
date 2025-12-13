@@ -818,9 +818,11 @@ function ProductCard({ product, isCoach, onClick, onEdit }: { product: Product; 
           <span className="text-sm font-bold text-amber-600">{Math.round(product.kcal)} kcal</span>
           <span className="text-[9px] text-gray-400">/100g</span>
         </div>
-        <p className="text-[10px] text-gray-400 mt-0.5">
-          P:{Math.round(product.protein)}g K:{Math.round(product.carbs)}g F:{Math.round(product.fat)}g
-        </p>
+        <div className="flex items-center gap-1.5 mt-1 text-[10px]">
+          <span className="text-blue-600 font-medium">P:{Math.round(product.protein)}g</span>
+          <span className="text-green-600 font-medium">K:{Math.round(product.carbs)}g</span>
+          <span className="text-red-500 font-medium">F:{Math.round(product.fat)}g</span>
+        </div>
       </div>
     </div>
   )
@@ -860,11 +862,10 @@ function ProductRow({ product, isCoach, onClick, onEdit }: { product: Product; i
       </div>
       <div className="text-right flex-shrink-0">
         <div className="font-semibold text-gold-primary text-xs sm:text-base">{Math.round(product.kcal)} kcal</div>
-        <div className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">
-          P: {Math.round(product.protein)}g · K: {Math.round(product.carbs)}g · F: {Math.round(product.fat)}g
-        </div>
-        <div className="text-[10px] text-gray-500 sm:hidden">
-          {Math.round(product.protein)}P {Math.round(product.carbs)}K {Math.round(product.fat)}F
+        <div className="flex items-center justify-end gap-1.5 text-[10px] sm:text-xs mt-0.5">
+          <span className="text-blue-600 font-medium">P:{Math.round(product.protein)}g</span>
+          <span className="text-green-600 font-medium">K:{Math.round(product.carbs)}g</span>
+          <span className="text-red-500 font-medium">F:{Math.round(product.fat)}g</span>
         </div>
       </div>
       {isCoach && (
