@@ -819,10 +819,10 @@ function ProductCard({ product, isCoach, onClick, onEdit }: { product: Product; 
           <span className="text-base font-bold text-amber-600">{Math.round(product.kcal)} kcal</span>
           <span className="text-[10px] text-gray-400">/100{product.servingUnit || 'g'}</span>
         </div>
-        <div className="flex items-center gap-2 mt-1.5 text-xs">
-          <span className="text-blue-600 font-semibold">P:{Math.round(product.protein)}g</span>
-          <span className="text-green-600 font-semibold">K:{Math.round(product.carbs)}g</span>
-          <span className="text-red-500 font-semibold">F:{Math.round(product.fat)}g</span>
+        <div className="flex flex-col gap-0.5 mt-1.5 text-[11px]">
+          <span className="text-blue-600 font-semibold">Protein: {Math.round(product.protein)} g</span>
+          <span className="text-green-600 font-semibold">Kolhydrater: {Math.round(product.carbs)} g</span>
+          <span className="text-red-500 font-semibold">Fett: {Math.round(product.fat)} g</span>
         </div>
       </div>
     </div>
@@ -863,10 +863,10 @@ function ProductRow({ product, isCoach, onClick, onEdit }: { product: Product; i
       </div>
       <div className="text-right flex-shrink-0">
         <div className="font-semibold text-gold-primary text-xs sm:text-base">{Math.round(product.kcal)} kcal</div>
-        <div className="flex items-center justify-end gap-1.5 text-[10px] sm:text-xs mt-0.5">
-          <span className="text-blue-600 font-medium">P:{Math.round(product.protein)}g</span>
-          <span className="text-green-600 font-medium">K:{Math.round(product.carbs)}g</span>
-          <span className="text-red-500 font-medium">F:{Math.round(product.fat)}g</span>
+        <div className="flex flex-col items-end gap-0 text-[10px] sm:text-xs mt-0.5">
+          <span className="text-blue-600 font-medium">Protein: {Math.round(product.protein)} g</span>
+          <span className="text-green-600 font-medium">Kolhydrater: {Math.round(product.carbs)} g</span>
+          <span className="text-red-500 font-medium">Fett: {Math.round(product.fat)} g</span>
         </div>
       </div>
       {isCoach && (
