@@ -931,7 +931,7 @@ export default function DashboardPage() {
               <Input
                 type="number"
                 step="0.1"
-                placeholder="75.5"
+                placeholder=""
                 value={dailyWeightInput}
                 onChange={(e) => setDailyWeightInput(e.target.value)}
                 autoFocus={false}
