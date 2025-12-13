@@ -35,7 +35,8 @@ import {
   Beef,
   Droplets,
   UtensilsCrossed,
-  Flame
+  Flame,
+  Leaf
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -93,6 +94,7 @@ const BUILT_IN_CATEGORIES = [
   { id: 'fettkallor', label: 'Fettkällor', icon: Droplets, isMainCategory: true },
   // Secondary categories
   { id: 'sasar', label: 'Såser', icon: UtensilsCrossed, isSecondaryCategory: true },
+  { id: 'kryddor', label: 'Kryddor', icon: Leaf, isSecondaryCategory: true },
   { id: 'matlagningsfett', label: 'Matlagningsfett', icon: Flame, isSecondaryCategory: true },
   // Other categories
   { id: 'mejeri', label: 'Mejeri', icon: Milk },
@@ -113,6 +115,7 @@ const CATEGORY_ICONS: Record<string, any> = {
   kolhydratkallor: Wheat,
   fettkallor: Droplets,
   sasar: UtensilsCrossed,
+  kryddor: Leaf,
   matlagningsfett: Flame,
   mejeri: Milk,
   kott: Drumstick,
@@ -445,9 +448,10 @@ export default function ProductsPage() {
           </div>
 
           {/* Secondary categories - smaller */}
-          <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="grid grid-cols-4 gap-2 mb-4">
             {[
               { id: 'sasar', label: 'Såser', icon: UtensilsCrossed, color: 'from-purple-500 to-violet-600' },
+              { id: 'kryddor', label: 'Kryddor', icon: Leaf, color: 'from-lime-500 to-green-600' },
               { id: 'matlagningsfett', label: 'Matlagningsfett', icon: Flame, color: 'from-orange-500 to-amber-600' },
               { id: 'gronsaker', label: 'Grönsaker', icon: Carrot, color: 'from-green-500 to-emerald-600' },
             ].map(cat => {
@@ -556,7 +560,7 @@ export default function ProductsPage() {
             </button>
             {/* Dynamic categories from state (exclude main and secondary categories) */}
             {categories
-              .filter(cat => !['proteinkallor', 'kolhydratkallor', 'fettkallor', 'sasar', 'matlagningsfett', 'gronsaker'].includes(cat.id))
+              .filter(cat => !['proteinkallor', 'kolhydratkallor', 'fettkallor', 'sasar', 'kryddor', 'matlagningsfett', 'gronsaker'].includes(cat.id))
               .map(cat => {
               const count = categoryCounts[cat.id] || 0
               const Icon = cat.icon || Package
