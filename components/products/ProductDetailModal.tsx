@@ -1,6 +1,6 @@
 'use client'
 
-import { X, Package, Info } from 'lucide-react'
+import { X, Package, Info, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -14,6 +14,8 @@ interface Product {
   ean: string
   name: string
   brand: string | null
+  description?: string | null
+  url?: string | null
   category: string | null
   image: string | null
   kcal: number
@@ -89,6 +91,26 @@ export function ProductDetailModal({ isOpen, product, onClose }: ProductDetailMo
               <p className="text-gray-400 text-sm">{product.brand}</p>
             )}
           </div>
+
+          {/* Description */}
+          {product.description && (
+            <div className="bg-gray-800/50 rounded-xl p-4">
+              <p className="text-sm text-gray-300 leading-relaxed">{product.description}</p>
+            </div>
+          )}
+
+          {/* Product link */}
+          {product.url && (
+            <a
+              href={product.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-500 rounded-xl p-3 transition-colors"
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span className="text-sm font-medium">Visa produkt hos {product.source === 'ica' ? 'ICA' : product.source}</span>
+            </a>
+          )}
 
           {/* Main macros */}
           <div>
