@@ -61,7 +61,6 @@ export default function DashboardPage() {
 
   // Habits state
   const [isHabitsOpen, setIsHabitsOpen] = useState(false)
-  const [isMealPrepTipsOpen, setIsMealPrepTipsOpen] = useState(false)
   const [selectedMealPrepStep, setSelectedMealPrepStep] = useState<number | null>(null)
 
   // Calendar state
@@ -761,85 +760,79 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <p className="text-xs text-gray-600 mb-2">
-                Läs mer om <Link href="/dashboard/articles/cmhv5hzfo0002mj0qzja6ns04" className="text-amber-500 hover:text-amber-700 underline">meal prep</Link> i kunskapsbanken
-              </p>
-
-              {/* Expandable Meal Prep Guide */}
-              <button
-                onClick={() => setIsMealPrepTipsOpen(!isMealPrepTipsOpen)}
-                className="w-full flex items-center justify-between text-sm text-amber-700 hover:text-amber-900 font-medium mt-2 pt-2 border-t border-amber-200"
-              >
-                <span>Tips för meal prep</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${isMealPrepTipsOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {isMealPrepTipsOpen && (
-                <div className="mt-3 space-y-3">
-                  {/* Motivational Quote */}
-                  <div className="bg-white/70 rounded-lg p-3">
-                    <p className="text-sm font-medium text-amber-800 italic text-center mb-2">
-                      &ldquo;Att misslyckas med sin planering är att planera för att misslyckas&rdquo;
-                    </p>
-                    <p className="text-xs text-gray-700 leading-relaxed">
-                      Planering, det är nyckeln till en lyckad vecka med kost och träning. Jag brukar citera Ernst Kirchsteiger <span className="italic">&ldquo;I det enkla bor det vackra&rdquo;</span>. Smaken? Den löser du i köket. Med kryddor, örter, smaksättningar och lite kreativitet kommer du att kunna laga mat som både gör gott och smakar gott - det kräver bara att du anstränger dig lite. Men kom ihåg, det är inte maten som ska vara underhållningen. Belöningen är resultatet.
-                    </p>
-                  </div>
-
-                  {/* 3 Step Images */}
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { step: 1, title: 'Kolhydrat', image: '/images/mealprep/step1-kolhydrat.png' },
-                      { step: 2, title: 'Protein', image: '/images/mealprep/step2-protein.png' },
-                      { step: 3, title: 'Grönsaker', image: '/images/mealprep/step3-gronsaker.png' },
-                    ].map((item) => (
-                      <button
-                        key={item.step}
-                        onClick={() => setSelectedMealPrepStep(selectedMealPrepStep === item.step ? null : item.step)}
-                        className={`text-center transition-all ${selectedMealPrepStep === item.step ? 'ring-2 ring-amber-500 rounded-lg' : ''}`}
-                      >
-                        <div className="aspect-square rounded-lg overflow-hidden bg-amber-100 mb-1">
-                          <img
-                            src={item.image}
-                            alt={`Steg ${item.step}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <p className="text-xs font-semibold text-gray-800">Steg {item.step}</p>
-                        <p className="text-[10px] text-gray-600">{item.title}</p>
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Step Details */}
-                  {selectedMealPrepStep === 1 && (
-                    <div className="bg-white/70 rounded-lg p-3 text-xs text-gray-700">
-                      <h4 className="font-semibold text-gray-900 mb-1">Steg 1: Tillaga Kolhydratskälla</h4>
-                      <p>Beräkna totalmängden baserat på antal matlådor och önskad portionsstorlek i råvikt. Exempel: 10 matlådor × 70g ris = 700g. Koka hela mängden och fördela sedan jämnt i matlådorna.</p>
-                    </div>
-                  )}
-
-                  {selectedMealPrepStep === 2 && (
-                    <div className="bg-white/70 rounded-lg p-3 text-xs text-gray-700">
-                      <h4 className="font-semibold text-gray-900 mb-1">Steg 2: Tillaga Proteinkälla</h4>
-                      <p className="mb-2">Skär eller klipp upp proteinkällan (kyckling, köttfärs eller fisk) och väg upp i portioner baserat på råvikt. Placera varje portion i en liten hög på plåt med bakplåtspapper – så slipper du väga igen efter tillagning. Krydda efter smak.</p>
-                      <p className="font-medium">Tillagning i ugn på 200°C:</p>
-                      <ul className="list-disc list-inside ml-1">
-                        <li>Kyckling/köttfärs: ca 20 minuter</li>
-                        <li>Fisk: ca 15 minuter</li>
-                      </ul>
-                      <p className="mt-2">Lägg direkt i matlådorna när det är klart.</p>
-                    </div>
-                  )}
-
-                  {selectedMealPrepStep === 3 && (
-                    <div className="bg-white/70 rounded-lg p-3 text-xs text-gray-700">
-                      <h4 className="font-semibold text-gray-900 mb-1">Steg 3: Tillaga önskade grönsaker</h4>
-                      <p>Välj grönsaker du gillar och tillaga dem på valfritt sätt – ångkoka, ugnsrosta eller steka. Fördela jämnt i matlådorna.</p>
-                    </div>
-                  )}
+              {/* Meal Prep Guide */}
+              <div className="mt-2 pt-2 border-t border-amber-200 space-y-3">
+                {/* Motivational Quote */}
+                <div className="bg-white/70 rounded-lg p-3">
+                  <p className="text-sm font-medium text-amber-800 italic text-center mb-2">
+                    &ldquo;Att misslyckas med sin planering är att planera för att misslyckas&rdquo;
+                  </p>
+                  <p className="text-xs text-gray-700 leading-relaxed">
+                    Planering, det är nyckeln till en lyckad vecka med kost och träning. Jag brukar citera Ernst Kirchsteiger <span className="italic">&ldquo;I det enkla bor det vackra&rdquo;</span>. Smaken? Den löser du i köket. Med kryddor, örter, smaksättningar och lite kreativitet kommer du att kunna laga mat som både gör gott och smakar gott - det kräver bara att du anstränger dig lite.
+                  </p>
+                  <p className="text-xs text-gray-700 leading-relaxed mt-3 font-medium">
+                    Men kom ihåg, det är inte maten som ska vara underhållningen. Belöningen är resultatet.
+                  </p>
                 </div>
-              )}
+
+                {/* 3 Step Images */}
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { step: 1, title: 'Kolhydrat', image: '/images/mealprep/step1-kolhydrat.png' },
+                    { step: 2, title: 'Protein', image: '/images/mealprep/step2-protein.png' },
+                    { step: 3, title: 'Grönsaker', image: '/images/mealprep/step3-gronsaker.png' },
+                  ].map((item) => (
+                    <button
+                      key={item.step}
+                      onClick={() => setSelectedMealPrepStep(selectedMealPrepStep === item.step ? null : item.step)}
+                      className={`text-center transition-all ${selectedMealPrepStep === item.step ? 'ring-2 ring-amber-500 rounded-lg' : ''}`}
+                    >
+                      <div className="aspect-square rounded-lg overflow-hidden bg-amber-100 mb-1">
+                        <img
+                          src={item.image}
+                          alt={`Steg ${item.step}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <p className="text-xs font-semibold text-gray-800">Steg {item.step}</p>
+                      <p className="text-[10px] text-gray-600">{item.title}</p>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Step Details */}
+                {selectedMealPrepStep === 1 && (
+                  <div className="bg-white/70 rounded-lg p-3 text-xs text-gray-700">
+                    <h4 className="font-semibold text-gray-900 mb-1">Steg 1: Tillaga Kolhydratskälla</h4>
+                    <p>Beräkna totalmängden baserat på antal matlådor och önskad portionsstorlek i råvikt. Exempel: 10 matlådor × 70g ris = 700g. Koka hela mängden och fördela sedan jämnt i matlådorna.</p>
+                  </div>
+                )}
+
+                {selectedMealPrepStep === 2 && (
+                  <div className="bg-white/70 rounded-lg p-3 text-xs text-gray-700">
+                    <h4 className="font-semibold text-gray-900 mb-1">Steg 2: Tillaga Proteinkälla</h4>
+                    <p className="mb-2">Skär eller klipp upp proteinkällan (kyckling, köttfärs eller fisk) och väg upp i portioner baserat på råvikt. Placera varje portion i en liten hög på plåt med bakplåtspapper – så slipper du väga igen efter tillagning. Krydda efter smak.</p>
+                    <p className="font-medium">Tillagning i ugn på 200°C:</p>
+                    <ul className="list-disc list-inside ml-1">
+                      <li>Kyckling/köttfärs: ca 20 minuter</li>
+                      <li>Fisk: ca 15 minuter</li>
+                    </ul>
+                    <p className="mt-2">Lägg direkt i matlådorna när det är klart.</p>
+                  </div>
+                )}
+
+                {selectedMealPrepStep === 3 && (
+                  <div className="bg-white/70 rounded-lg p-3 text-xs text-gray-700">
+                    <h4 className="font-semibold text-gray-900 mb-1">Steg 3: Tillaga önskade grönsaker</h4>
+                    <p>Välj grönsaker du gillar och tillaga dem på valfritt sätt – ångkoka, ugnsrosta eller steka. Fördela jämnt i matlådorna.</p>
+                  </div>
+                )}
+
+                {/* Link to knowledge bank - moved to bottom */}
+                <p className="text-xs text-gray-600 pt-2 border-t border-amber-200">
+                  Läs mer om <Link href="/dashboard/articles/cmhv5hzfo0002mj0qzja6ns04" className="text-amber-500 hover:text-amber-700 underline">meal prep</Link> i kunskapsbanken
+                </p>
+              </div>
             </div>
 
             {/* Sleep Section */}
