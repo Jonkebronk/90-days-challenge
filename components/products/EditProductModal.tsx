@@ -171,6 +171,8 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
   const [formData, setFormData] = useState({
     name: '',
     brand: '',
+    description: '',
+    url: '',
     kcal: '',
     protein: '',
     carbs: '',
@@ -252,6 +254,8 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
       setFormData({
         name: product.name || '',
         brand: product.brand || '',
+        description: (product as any).description || '',
+        url: (product as any).url || '',
         kcal: product.kcal?.toString() || '',
         protein: product.protein?.toString() || '',
         carbs: product.carbs?.toString() || '',
@@ -428,6 +432,8 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
         body: JSON.stringify({
           name: formData.name.trim(),
           brand: formData.brand.trim() || null,
+          description: formData.description.trim() || null,
+          url: formData.url.trim() || null,
           kcal: parseFloat(formData.kcal) || 0,
           protein: parseFloat(formData.protein) || 0,
           carbs: parseFloat(formData.carbs) || 0,
@@ -563,6 +569,31 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
                 value={formData.brand}
                 onChange={(e) => setFormData(prev => ({ ...prev, brand: e.target.value }))}
                 placeholder="t.ex. ICA Basic"
+                className="mt-1"
+              />
+            </div>
+          </div>
+
+          {/* Description and URL */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="description">Beskrivning</Label>
+              <Input
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="t.ex. Perfekt till sallader och grytor"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="url">Länk</Label>
+              <Input
+                id="url"
+                type="url"
+                value={formData.url}
+                onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
+                placeholder="https://..."
                 className="mt-1"
               />
             </div>

@@ -8,6 +8,8 @@ interface ImportProduct {
   ean?: string
   name: string
   brand?: string
+  description?: string
+  url?: string
   category?: string
   subCategory?: string
   image?: string
@@ -90,6 +92,8 @@ export async function POST(req: NextRequest) {
             data: {
               name: p.name,
               brand: p.brand || null,
+              description: p.description || existing.description || null,
+              url: p.url || existing.url || null,
               category: p.category || existing.category || null,
               subCategory: p.subCategory || existing.subCategory || null,
               image: imageUrl || existing.image || null,
@@ -127,6 +131,8 @@ export async function POST(req: NextRequest) {
               ean,
               name: p.name,
               brand: p.brand || null,
+              description: p.description || null,
+              url: p.url || null,
               category: p.category || null,
               subCategory: p.subCategory || null,
               image: imageUrl,

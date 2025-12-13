@@ -2420,10 +2420,12 @@ model SmartMealPlanMeal {
 
 // Product - Products with EAN barcodes for barcode scanning
 model Product {
-  id        String   @id @default(cuid())
-  ean       String   @unique // EAN-13 barcode
-  name      String
-  brand     String?
+  id          String   @id @default(cuid())
+  ean         String   @unique // EAN-13 barcode
+  name        String
+  brand       String?
+  description String?  // Product description
+  url         String?  // Link to product page
 
   // ICA-style categorization
   mainCategory String?  // "Frukt & Grönt" | "Kött, Chark & Fågel" | "Fisk & Skaldjur" | "Mejeri & Ost" | "Bröd & Kakor" | "Vegetariskt" | "Färdigmat" | "Glass, Godis & Snacks" | "Dryck" | "Skafferi" | "Fryst" | "Övrigt"

@@ -89,7 +89,7 @@ export async function PUT(
     const { id } = await params
     const body = await req.json()
     const {
-      name, brand, category, subCategory, image, kcal, protein, carbs, fat, fiber, sugar, salt, source,
+      name, brand, description, url, category, subCategory, image, kcal, protein, carbs, fat, fiber, sugar, salt, source,
       // Micronutrients
       saturatedFat, monounsatFat, polyunsatFat, cholesterol,
       vitaminA, vitaminD, vitaminE, vitaminC, vitaminB6, vitaminB12,
@@ -126,6 +126,8 @@ export async function PUT(
       data: {
         name,
         brand: brand || null,
+        description: description || null,
+        url: url || null,
         category: category || null,
         subCategory: subCategory || null,
         image: imageUrl,
