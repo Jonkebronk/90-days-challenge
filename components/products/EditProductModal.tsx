@@ -163,7 +163,8 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
-  // Database subcategories
+  // Database categories and subcategories
+  const [dbCategories, setDbCategories] = useState<{ key: string; label: string }[]>([])
   const [dbSubcategories, setDbSubcategories] = useState<DbSubcategory[]>([])
 
   // Form state
@@ -200,9 +201,15 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
   useEffect(() => {
     if (isOpen) {
       fetch('/api/product-categories')
-        .then(res => res.ok ? res.json() : { subcategories: [] })
-        .then(data => setDbSubcategories(data.subcategories || []))
-        .catch(() => setDbSubcategories([]))
+        .then(res => res.ok ? res.json() : { categories: [], subcategories: [] })
+        .then(data => {
+          setDbCategories(data.categories || [])
+          setDbSubcategories(data.subcategories || [])
+        })
+        .catch(() => {
+          setDbCategories([])
+          setDbSubcategories([])
+        })
     }
   }, [isOpen])
 
@@ -222,6 +229,21 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
       }
     }
     return Array.from(mergedMap.values())
+  }
+
+  // Get all categories (merge hardcoded + database)
+  const getAllCategories = (): { id: string; label: string }[] => {
+    const hardcodedKeys = new Set(CATEGORIES.map(c => c.id))
+    const merged = [...CATEGORIES]
+
+    // Add database categories that aren't in hardcoded
+    for (const dbCat of dbCategories) {
+      if (!hardcodedKeys.has(dbCat.key)) {
+        merged.push({ id: dbCat.key, label: dbCat.label })
+      }
+    }
+
+    return merged
   }
 
   // Initialize form when product changes
@@ -918,7 +940,7 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
           <div className="border-t pt-4">
             <Label className="text-sm">Kategori</Label>
             <div className="flex flex-wrap gap-1.5 mt-2">
-              {CATEGORIES.map(cat => (
+              {getAllCategories().map(cat => (
                 <button
                   key={cat.id}
                   onClick={() => setFormData(prev => ({
