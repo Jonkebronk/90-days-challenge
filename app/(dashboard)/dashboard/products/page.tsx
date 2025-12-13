@@ -812,16 +812,16 @@ function ProductCard({ product, isCoach, onClick, onEdit }: { product: Product; 
       </div>
 
       {/* Info */}
-      <div className="px-1.5 py-1.5">
-        <p className="text-[11px] text-gray-700 line-clamp-2 leading-tight">{product.name}</p>
-        <div className="flex items-baseline gap-1 mt-1">
-          <span className="text-sm font-bold text-amber-600">{Math.round(product.kcal)} kcal</span>
-          <span className="text-[9px] text-gray-400">/100g</span>
+      <div className="px-2 py-2">
+        <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug mb-2">{product.name}</h3>
+        <div className="flex items-baseline gap-1">
+          <span className="text-base font-bold text-amber-600">{Math.round(product.kcal)} kcal</span>
+          <span className="text-[10px] text-gray-400">/100{product.servingUnit || 'g'}</span>
         </div>
-        <div className="flex items-center gap-1.5 mt-1 text-[10px]">
-          <span className="text-blue-600 font-medium">P:{Math.round(product.protein)}g</span>
-          <span className="text-green-600 font-medium">K:{Math.round(product.carbs)}g</span>
-          <span className="text-red-500 font-medium">F:{Math.round(product.fat)}g</span>
+        <div className="flex items-center gap-2 mt-1.5 text-xs">
+          <span className="text-blue-600 font-semibold">P:{Math.round(product.protein)}g</span>
+          <span className="text-green-600 font-semibold">K:{Math.round(product.carbs)}g</span>
+          <span className="text-red-500 font-semibold">F:{Math.round(product.fat)}g</span>
         </div>
       </div>
     </div>
