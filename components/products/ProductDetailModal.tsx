@@ -108,7 +108,7 @@ export function ProductDetailModal({ isOpen, product, onClose }: ProductDetailMo
               className="flex items-center justify-center gap-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-500 rounded-xl p-3 transition-colors"
             >
               <ExternalLink className="w-4 h-4" />
-              <span className="text-sm font-medium">Visa produkt hos {product.source === 'ica' ? 'ICA' : product.source}</span>
+              <span className="text-sm font-medium">Länk till produkt</span>
             </a>
           )}
 
