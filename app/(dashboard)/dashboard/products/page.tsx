@@ -33,7 +33,9 @@ import {
   Pencil,
   Save,
   Beef,
-  Droplets
+  Droplets,
+  UtensilsCrossed,
+  Flame
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -89,6 +91,9 @@ const BUILT_IN_CATEGORIES = [
   { id: 'proteinkallor', label: 'Proteinkällor', icon: Beef, isMainCategory: true },
   { id: 'kolhydratkallor', label: 'Kolhydratskällor', icon: Wheat, isMainCategory: true },
   { id: 'fettkallor', label: 'Fettkällor', icon: Droplets, isMainCategory: true },
+  // Secondary categories
+  { id: 'sasar', label: 'Såser', icon: UtensilsCrossed, isSecondaryCategory: true },
+  { id: 'matlagningsfett', label: 'Matlagningsfett', icon: Flame, isSecondaryCategory: true },
   // Other categories
   { id: 'mejeri', label: 'Mejeri', icon: Milk },
   { id: 'kott', label: 'Kött', icon: Drumstick },
@@ -107,6 +112,8 @@ const CATEGORY_ICONS: Record<string, any> = {
   proteinkallor: Beef,
   kolhydratkallor: Wheat,
   fettkallor: Droplets,
+  sasar: UtensilsCrossed,
+  matlagningsfett: Flame,
   mejeri: Milk,
   kott: Drumstick,
   fisk: Fish,
@@ -124,6 +131,7 @@ const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   proteinkallor: 'Proteinkällor är livsmedel rika på protein som hjälper till att bygga och reparera muskler. Inkluderar kött, fisk, fågel, ägg, baljväxter och mejeriprodukter.',
   kolhydratkallor: 'Kolhydratskällor ger kroppen energi. Inkluderar bröd, pasta, ris, potatis, frukt och andra stärkelserika livsmedel.',
   fettkallor: 'Fettkällor innehåller hälsosamma fetter som är viktiga för hormonproduktion och näringsupptag. Inkluderar oljor, nötter, avokado och feta fiskar.',
+  matlagningsfett: 'Matlagningsfett som smör, olja och kokosfett för stekning och tillagning. Välj rätt fett beroende på tillagningsmetod.',
   mejeri: 'Mejeriprodukter inkluderar mjölk, ost, yoghurt, kvarg och andra mjölkbaserade livsmedel. Bra källor till protein, kalcium och B-vitaminer.',
   kott: 'Kött från nöt, fläsk, lamm och vilt. Utmärkta proteinkällor med hög biologisk kvalitet samt järn och B12.',
   fisk: 'Fisk och skaldjur ger högkvalitativt protein, omega-3-fettsyror och vitamin D. Rekommenderas 2-3 gånger per vecka.',
@@ -395,7 +403,7 @@ export default function ProductsPage() {
           </div>
 
           {/* Main macro categories - prominent section */}
-          <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="grid grid-cols-3 gap-2 mb-2">
             {[
               { id: 'proteinkallor', label: 'Proteinkällor', icon: Beef, color: 'from-red-500 to-rose-600' },
               { id: 'kolhydratkallor', label: 'Kolhydratskällor', icon: Wheat, color: 'from-amber-500 to-yellow-600' },
@@ -426,6 +434,48 @@ export default function ProductsPage() {
                   <span className="text-xs font-semibold text-center leading-tight">{cat.label}</span>
                   {count > 0 && (
                     <span className={`absolute top-1 right-1 text-[10px] px-1.5 py-0.5 rounded-full ${
+                      isActive ? 'bg-white/30 text-white' : 'bg-gray-300 text-gray-600'
+                    }`}>
+                      {count}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Secondary categories - smaller */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {[
+              { id: 'sasar', label: 'Såser', icon: UtensilsCrossed, color: 'from-purple-500 to-violet-600' },
+              { id: 'matlagningsfett', label: 'Matlagningsfett', icon: Flame, color: 'from-orange-500 to-amber-600' },
+              { id: 'gronsaker', label: 'Grönsaker', icon: Carrot, color: 'from-green-500 to-emerald-600' },
+            ].map(cat => {
+              const count = categoryCounts[cat.id] || 0
+              const Icon = cat.icon
+              const isActive = selectedCategory === cat.id
+
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    if (isActive) {
+                      setSelectedCategory('all')
+                    } else {
+                      setSelectedCategory(cat.id)
+                    }
+                    setSelectedSubcategory(null)
+                  }}
+                  className={`relative flex items-center justify-center gap-2 p-2.5 rounded-xl transition-all ${
+                    isActive
+                      ? `bg-gradient-to-br ${cat.color} text-white shadow-lg scale-[1.02]`
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                  <span className="text-xs font-semibold">{cat.label}</span>
+                  {count > 0 && (
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
                       isActive ? 'bg-white/30 text-white' : 'bg-gray-300 text-gray-600'
                     }`}>
                       {count}
@@ -504,9 +554,9 @@ export default function ProductsPage() {
                 </span>
               )}
             </button>
-            {/* Dynamic categories from state (exclude main macro categories) */}
+            {/* Dynamic categories from state (exclude main and secondary categories) */}
             {categories
-              .filter(cat => !['proteinkallor', 'kolhydratkallor', 'fettkallor'].includes(cat.id))
+              .filter(cat => !['proteinkallor', 'kolhydratkallor', 'fettkallor', 'sasar', 'matlagningsfett', 'gronsaker'].includes(cat.id))
               .map(cat => {
               const count = categoryCounts[cat.id] || 0
               const Icon = cat.icon || Package
