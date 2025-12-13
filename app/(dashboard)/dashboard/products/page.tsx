@@ -72,6 +72,7 @@ interface Product {
   iodine?: number | null
   slvNummer?: number | null
   source: string
+  servingUnit?: string
 }
 
 const SOURCES = [
