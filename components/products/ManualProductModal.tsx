@@ -351,24 +351,64 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
-  // Add custom category
-  const addCustomCategory = () => {
-    const trimmed = newCategoryInput.trim().toLowerCase()
-    if (trimmed && !customCategories.includes(trimmed) && !CATEGORIES.find(c => c.id === trimmed)) {
-      setCustomCategories(prev => [...prev, trimmed])
-      setFormData(prev => ({ ...prev, category: trimmed, subCategory: '' }))
+  // Add custom category (saves to database)
+  const addCustomCategory = async () => {
+    const label = newCategoryInput.trim()
+    if (!label) return
+
+    const key = label.toLowerCase().replace(/[åä]/g, 'a').replace(/ö/g, 'o').replace(/\s+/g, '-')
+
+    // Check if already exists
+    if (CATEGORIES.find(c => c.id === key) || dbCategories.find(c => c.key === key)) {
+      setFormData(prev => ({ ...prev, category: key, subCategory: '' }))
+      setNewCategoryInput('')
+      setShowNewCategory(false)
+      return
     }
+
+    try {
+      const response = await fetch('/api/product-categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ label, icon: 'Package' })
+      })
+
+      if (response.ok) {
+        const { category } = await response.json()
+        setDbCategories(prev => [...prev, { key: category.key, label: category.label }])
+        setFormData(prev => ({ ...prev, category: category.key, subCategory: '' }))
+      }
+    } catch (error) {
+      console.error('Error creating category:', error)
+    }
+
     setNewCategoryInput('')
     setShowNewCategory(false)
   }
 
-  // Add custom subcategory
-  const addCustomSubCategory = () => {
-    const trimmed = newSubCategoryInput.trim().toLowerCase()
-    if (trimmed && !customSubCategories.includes(trimmed)) {
-      setCustomSubCategories(prev => [...prev, trimmed])
-      setFormData(prev => ({ ...prev, subCategory: trimmed }))
+  // Add custom subcategory (saves to database)
+  const addCustomSubCategory = async () => {
+    const label = newSubCategoryInput.trim()
+    if (!label || !formData.category) return
+
+    const key = label.toLowerCase().replace(/[åä]/g, 'a').replace(/ö/g, 'o').replace(/\s+/g, '-')
+
+    try {
+      const response = await fetch('/api/product-categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ label, icon: 'Package', parentKey: formData.category })
+      })
+
+      if (response.ok) {
+        const { category } = await response.json()
+        setDbSubcategories(prev => [...prev, { key: category.key, label: category.label, parentKey: category.parentKey }])
+        setFormData(prev => ({ ...prev, subCategory: category.key }))
+      }
+    } catch (error) {
+      console.error('Error creating subcategory:', error)
     }
+
     setNewSubCategoryInput('')
     setShowNewSubCategory(false)
   }
