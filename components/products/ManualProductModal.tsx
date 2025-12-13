@@ -112,7 +112,8 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
   const [customCategories, setCustomCategories] = useState<string[]>([])
   const [customSubCategories, setCustomSubCategories] = useState<string[]>([])
 
-  // Database subcategories
+  // Database categories and subcategories
+  const [dbCategories, setDbCategories] = useState<{ key: string; label: string }[]>([])
   const [dbSubcategories, setDbSubcategories] = useState<{ key: string; label: string; parentKey: string | null }[]>([])
 
   // Form state
@@ -164,15 +165,44 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
     }
   }, [isOpen, initialData])
 
-  // Fetch subcategories from database when modal opens
+  // Fetch categories and subcategories from database when modal opens
   useEffect(() => {
     if (isOpen) {
       fetch('/api/product-categories')
-        .then(res => res.ok ? res.json() : { subcategories: [] })
-        .then(data => setDbSubcategories(data.subcategories || []))
-        .catch(() => setDbSubcategories([]))
+        .then(res => res.ok ? res.json() : { categories: [], subcategories: [] })
+        .then(data => {
+          setDbCategories(data.categories || [])
+          setDbSubcategories(data.subcategories || [])
+        })
+        .catch(() => {
+          setDbCategories([])
+          setDbSubcategories([])
+        })
     }
   }, [isOpen])
+
+  // Get all categories (merge hardcoded + database)
+  const getAllCategories = (): { id: string; label: string }[] => {
+    const hardcodedKeys = new Set(CATEGORIES.map(c => c.id))
+    const merged = [...CATEGORIES]
+
+    // Add database categories that aren't in hardcoded
+    for (const dbCat of dbCategories) {
+      if (!hardcodedKeys.has(dbCat.key)) {
+        merged.push({ id: dbCat.key, label: dbCat.label })
+      }
+    }
+
+    // Add custom categories from this session
+    for (const cat of customCategories) {
+      const key = cat.toLowerCase().replace(/[åä]/g, 'a').replace(/ö/g, 'o').replace(/\s+/g, '-')
+      if (!merged.some(c => c.id === key)) {
+        merged.push({ id: key, label: cat })
+      }
+    }
+
+    return merged
+  }
 
   // Get all subcategories for a category (merge hardcoded + database)
   const getSubcategoriesForCategory = (categoryKey: string): { key: string; label: string }[] => {
@@ -875,7 +905,7 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
             <div>
               <Label className="text-sm">Kategori *</Label>
               <div className="flex flex-wrap gap-1.5 mt-2">
-                {CATEGORIES.map(cat => (
+                {getAllCategories().map(cat => (
                   <button
                     key={cat.id}
                     onClick={() => setFormData(prev => ({
