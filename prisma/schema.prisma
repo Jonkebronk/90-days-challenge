@@ -2432,9 +2432,10 @@ model Product {
   subCategory  String?  // More specific: "Yoghurt" | "Ost" | "Kyckling" | etc.
   category     String?  // Legacy field - kept for backwards compatibility
 
-  image     String?  // URL to product image
+  image       String?  // URL to product image
+  servingUnit String   @default("g") // "g" for grams, "ml" for milliliters
 
-  // Nutrition per 100g - Macros
+  // Nutrition per 100g or 100ml - Macros
   kcal      Decimal  @db.Decimal(7, 2)
   protein   Decimal  @db.Decimal(6, 2)
   carbs     Decimal  @db.Decimal(6, 2)

@@ -147,6 +147,7 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
     zinc: '',
     iodine: '',
     slvNummer: null as number | null,
+    servingUnit: 'g' as 'g' | 'ml',
   })
 
   // Initialize form with initialData when modal opens
@@ -472,6 +473,7 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
           zinc: formData.zinc ? parseFloat(formData.zinc) : null,
           iodine: formData.iodine ? parseFloat(formData.iodine) : null,
           slvNummer: formData.slvNummer || null,
+          servingUnit: formData.servingUnit,
         })
       })
 
@@ -641,7 +643,33 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
           {/* Macros - the important ones */}
           <div className="border-t pt-4 relative">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-medium text-gray-900">Näringsvärden (per 100g)</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-medium text-gray-900">Näringsvärden (per 100{formData.servingUnit})</h3>
+                <div className="flex rounded-md border border-gray-300 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, servingUnit: 'g' }))}
+                    className={`px-2 py-0.5 text-xs font-medium transition-colors ${
+                      formData.servingUnit === 'g'
+                        ? 'bg-amber-500 text-white'
+                        : 'bg-white text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    g
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, servingUnit: 'ml' }))}
+                    className={`px-2 py-0.5 text-xs font-medium transition-colors ${
+                      formData.servingUnit === 'ml'
+                        ? 'bg-amber-500 text-white'
+                        : 'bg-white text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    ml
+                  </button>
+                </div>
+              </div>
               <Button
                 type="button"
                 variant="outline"

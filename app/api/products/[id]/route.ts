@@ -95,7 +95,7 @@ export async function PUT(
       vitaminA, vitaminD, vitaminE, vitaminC, vitaminB6, vitaminB12,
       thiamin, riboflavin, niacin, folate,
       calcium, iron, magnesium, phosphorus, potassium, zinc, selenium, iodine,
-      slvNummer
+      slvNummer, servingUnit
     } = body
 
     // Get existing product to preserve image if not updating
@@ -165,7 +165,8 @@ export async function PUT(
         iodine: iodine ?? null,
         // SLV reference
         slvNummer: slvNummer ?? null,
-        source: source || existing.source || 'manual'
+        source: source || existing.source || 'manual',
+        servingUnit: servingUnit || existing.servingUnit || 'g'
       }
     })
 

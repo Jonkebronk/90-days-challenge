@@ -69,6 +69,7 @@ interface Product {
   category: string | null
   subCategory?: string | null
   image: string | null
+  servingUnit?: string
   kcal: number
   protein: number
   carbs: number
@@ -197,6 +198,7 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
     slvNummer: null as number | null,
     subCategory: '',
     source: '',
+    servingUnit: 'g' as 'g' | 'ml',
   })
 
   // Fetch subcategories from database when modal opens
@@ -280,6 +282,7 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
         slvNummer: product.slvNummer || null,
         subCategory: product.subCategory || '',
         source: product.source || '',
+        servingUnit: (product.servingUnit as 'g' | 'ml') || 'g',
       })
       setImagePreview(product.image || null)
       setNewImageBase64(null)
@@ -459,6 +462,7 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
           zinc: formData.zinc ? parseFloat(formData.zinc) : null,
           iodine: formData.iodine ? parseFloat(formData.iodine) : null,
           slvNummer: formData.slvNummer || null,
+          servingUnit: formData.servingUnit,
         })
       })
 
@@ -602,7 +606,33 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
           {/* Macros */}
           <div className="border-t pt-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-medium text-gray-900">Näringsvärden (per 100g)</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-medium text-gray-900">Näringsvärden (per 100{formData.servingUnit})</h3>
+                <div className="flex rounded-md border border-gray-300 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, servingUnit: 'g' }))}
+                    className={`px-2 py-0.5 text-xs font-medium transition-colors ${
+                      formData.servingUnit === 'g'
+                        ? 'bg-amber-500 text-white'
+                        : 'bg-white text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    g
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, servingUnit: 'ml' }))}
+                    className={`px-2 py-0.5 text-xs font-medium transition-colors ${
+                      formData.servingUnit === 'ml'
+                        ? 'bg-amber-500 text-white'
+                        : 'bg-white text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    ml
+                  </button>
+                </div>
+              </div>
               <Button
                 type="button"
                 variant="outline"

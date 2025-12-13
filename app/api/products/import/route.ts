@@ -34,6 +34,7 @@ interface ImportProduct {
   iodine?: number
   slvNummer?: number
   source?: string
+  servingUnit?: string
 }
 
 // POST /api/products/import - Bulk import products from JSON
@@ -117,7 +118,8 @@ export async function POST(req: NextRequest) {
               zinc: p.zinc ?? null,
               iodine: p.iodine ?? null,
               slvNummer: p.slvNummer ?? null,
-              source: p.source || 'import'
+              source: p.source || 'import',
+              servingUnit: p.servingUnit || existing.servingUnit || 'g'
             }
           })
           results.updated++
@@ -156,7 +158,8 @@ export async function POST(req: NextRequest) {
               zinc: p.zinc ?? null,
               iodine: p.iodine ?? null,
               slvNummer: p.slvNummer ?? null,
-              source: p.source || 'import'
+              source: p.source || 'import',
+              servingUnit: p.servingUnit || 'g'
             }
           })
           results.created++
