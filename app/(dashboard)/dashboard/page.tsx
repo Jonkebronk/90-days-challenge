@@ -652,6 +652,9 @@ export default function DashboardPage() {
                         <strong>Resultat:</strong> Du kommer upp i ca 1.5 liter bara genom detta!
                         Lägg till vatten före/under/efter träning så är du i mål.
                       </p>
+                      <p className="text-blue-700 mt-2 text-sm">
+                        <strong>Tips:</strong> Blanda vattnet med Fun Light eller Zeroh för att göra det enklare att dricka tillräckligt. Du kan även blanda ner kreatin i det!
+                      </p>
                     </div>
                   </div>
                 </div>
