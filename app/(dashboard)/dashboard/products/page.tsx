@@ -29,9 +29,12 @@ import {
   ImagePlus,
   X,
   Check,
-  ChevronDown
+  ChevronDown,
+  Pencil,
+  Save
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { LabelScannerModal } from '@/components/products/LabelScannerModal'
 import { ManualProductModal } from '@/components/products/ManualProductModal'
@@ -141,7 +144,7 @@ export default function ProductsPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   // Dynamic categories from API + built-in (initialize with built-in to avoid empty state)
-  const [categories, setCategories] = useState<Array<{ id: string; label: string; icon: any }>>(
+  const [categories, setCategories] = useState<Array<{ id: string; label: string; icon: any; description?: string | null }>>(
     BUILT_IN_CATEGORIES.map(c => ({ id: c.id, label: c.label, icon: c.icon }))
   )
   const [dbSubcategories, setDbSubcategories] = useState<Array<{ key: string; label: string; parentKey: string }>>([])
@@ -159,6 +162,9 @@ export default function ProductsPage() {
   const [isRequestsInboxOpen, setIsRequestsInboxOpen] = useState(false)
   const [isClientRequestModalOpen, setIsClientRequestModalOpen] = useState(false)
   const [viewingProduct, setViewingProduct] = useState<Product | null>(null)
+  const [isEditingDescription, setIsEditingDescription] = useState(false)
+  const [editingDescriptionText, setEditingDescriptionText] = useState('')
+  const [isSavingDescription, setIsSavingDescription] = useState(false)
   const [pendingRequestData, setPendingRequestData] = useState<{
     name?: string
     brand?: string
@@ -216,16 +222,17 @@ export default function ProductsPage() {
         const dbSubs = data.subcategories || []
 
         // Merge built-in with DB overrides
-        const mergedCategories: Array<{ id: string; label: string; icon: any }> = []
+        const mergedCategories: Array<{ id: string; label: string; icon: any; description?: string | null }> = []
 
-        // Add built-in categories (with possible DB label overrides)
+        // Add built-in categories (with possible DB label/description overrides)
         for (const builtIn of BUILT_IN_CATEGORIES) {
           if (hidden.has(builtIn.id)) continue // Skip hidden
           const dbOverride = dbCats.find((c: any) => c.key === builtIn.id)
           mergedCategories.push({
             id: builtIn.id,
             label: dbOverride?.label || builtIn.label,
-            icon: builtIn.icon
+            icon: builtIn.icon,
+            description: dbOverride?.description || null
           })
         }
 
@@ -235,7 +242,8 @@ export default function ProductsPage() {
             mergedCategories.push({
               id: dbCat.key,
               label: dbCat.label,
-              icon: CATEGORY_ICONS[normalizeCategoryKey(dbCat.key)] || Package
+              icon: CATEGORY_ICONS[normalizeCategoryKey(dbCat.key)] || Package,
+              description: dbCat.description || null
             })
           }
         }
@@ -543,9 +551,43 @@ export default function ProductsPage() {
 
       {/* Category Description Section */}
       {selectedCategory !== 'all' && (() => {
-        const categoryLabel = categories.find(c => c.id === selectedCategory)?.label || selectedCategory
-        const description = CATEGORY_DESCRIPTIONS[selectedCategory]
-        const CategoryIcon = categories.find(c => c.id === selectedCategory)?.icon || Package
+        const currentCategory = categories.find(c => c.id === selectedCategory)
+        const categoryLabel = currentCategory?.label || selectedCategory
+        // Use database description first, then fall back to hardcoded, then default text
+        const description = currentCategory?.description || CATEGORY_DESCRIPTIONS[selectedCategory] || `Utforska vårt utbud av ${categoryLabel.toLowerCase()}-produkter.`
+        const CategoryIcon = currentCategory?.icon || Package
+
+        const handleStartEdit = () => {
+          setEditingDescriptionText(currentCategory?.description || CATEGORY_DESCRIPTIONS[selectedCategory] || '')
+          setIsEditingDescription(true)
+        }
+
+        const handleSaveDescription = async () => {
+          setIsSavingDescription(true)
+          try {
+            const res = await fetch('/api/product-categories', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                key: selectedCategory,
+                description: editingDescriptionText
+              })
+            })
+            if (res.ok) {
+              // Update local state
+              setCategories(prev => prev.map(c =>
+                c.id === selectedCategory
+                  ? { ...c, description: editingDescriptionText || null }
+                  : c
+              ))
+              setIsEditingDescription(false)
+            }
+          } catch (error) {
+            console.error('Failed to save description:', error)
+          } finally {
+            setIsSavingDescription(false)
+          }
+        }
 
         return (
           <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 mb-4">
@@ -553,11 +595,57 @@ export default function ProductsPage() {
               <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
                 <CategoryIcon className="w-5 h-5 text-amber-600" />
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-1">{categoryLabel}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  {description || `Utforska vårt utbud av ${categoryLabel.toLowerCase()}-produkter.`}
-                </p>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="font-semibold text-gray-900">{categoryLabel}</h3>
+                  {isCoach && !isEditingDescription && (
+                    <button
+                      onClick={handleStartEdit}
+                      className="p-1.5 rounded-lg hover:bg-amber-200/50 transition-colors"
+                      title="Redigera beskrivning"
+                    >
+                      <Pencil className="w-4 h-4 text-amber-700" />
+                    </button>
+                  )}
+                </div>
+                {isEditingDescription ? (
+                  <div className="mt-2 space-y-2">
+                    <Textarea
+                      value={editingDescriptionText}
+                      onChange={(e) => setEditingDescriptionText(e.target.value)}
+                      placeholder="Skriv en beskrivning för denna kategori..."
+                      className="text-sm min-h-[80px] bg-white"
+                      autoFocus
+                    />
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        onClick={handleSaveDescription}
+                        disabled={isSavingDescription}
+                        className="bg-amber-600 hover:bg-amber-700 text-white"
+                      >
+                        {isSavingDescription ? (
+                          <Loader2 className="w-4 h-4 animate-spin mr-1" />
+                        ) : (
+                          <Save className="w-4 h-4 mr-1" />
+                        )}
+                        Spara
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setIsEditingDescription(false)}
+                        disabled={isSavingDescription}
+                      >
+                        Avbryt
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-600 leading-relaxed mt-1">
+                    {description}
+                  </p>
+                )}
               </div>
             </div>
           </div>

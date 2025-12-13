@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PATCH /api/product-categories - Update a category label
+// PATCH /api/product-categories - Update a category label and/or description
 export async function PATCH(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -93,10 +93,22 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { key, label } = body
+    const { key, label, description } = body
 
-    if (!key || !label || typeof label !== 'string' || label.trim().length === 0) {
-      return NextResponse.json({ error: 'Key and label are required' }, { status: 400 })
+    if (!key) {
+      return NextResponse.json({ error: 'Key is required' }, { status: 400 })
+    }
+
+    // Build update data
+    const updateData: { label?: string; description?: string | null } = {}
+    if (label !== undefined) {
+      if (typeof label !== 'string' || label.trim().length === 0) {
+        return NextResponse.json({ error: 'Label cannot be empty' }, { status: 400 })
+      }
+      updateData.label = label.trim()
+    }
+    if (description !== undefined) {
+      updateData.description = description?.trim() || null
     }
 
     // Check if category exists in DB
@@ -106,7 +118,7 @@ export async function PATCH(req: NextRequest) {
       // Update existing
       const updated = await prisma.productCategory.update({
         where: { key },
-        data: { label: label.trim() }
+        data: updateData
       })
       return NextResponse.json({ category: updated })
     } else {
@@ -114,7 +126,8 @@ export async function PATCH(req: NextRequest) {
       const category = await prisma.productCategory.create({
         data: {
           key,
-          label: label.trim(),
+          label: label?.trim() || key,
+          description: description?.trim() || null,
           icon: 'Package',
           isCustom: false, // It's an override for built-in
           parentKey: null,

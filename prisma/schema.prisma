@@ -2579,6 +2579,7 @@ model ProductCategory {
   id            String   @id @default(cuid())
   key           String   @unique // URL-safe key like "frukt", "mejeri", "custom-xyz"
   label         String // Display name like "Frukt", "Mejeri"
+  description   String?  // Category description shown when selected
   icon          String   @default("Package") // Lucide icon name
   isCustom      Boolean  @default(true) // false for built-in categories
   parentKey     String?  // For subcategories - the parent category key
