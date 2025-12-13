@@ -92,33 +92,55 @@ export function ProductDetailModal({ isOpen, product, onClose }: ProductDetailMo
 
           {/* Main macros */}
           <div>
-            <h2 className="text-amber-500 font-semibold mb-3">Makronäringsämnen</h2>
-            <p className="text-gray-400 text-sm mb-4">Per 100{product.servingUnit || 'g'}</p>
-
-            <div className="grid grid-cols-2 gap-3">
-              <MacroCard label="Energi" value={Math.round(product.kcal)} unit="kcal" color="amber" />
-              <MacroCard label="Protein" value={Math.round(product.protein * 10) / 10} unit="g" color="blue" />
-              <MacroCard label="Kolhydrater" value={Math.round(product.carbs * 10) / 10} unit="g" color="green" />
-              <MacroCard label="Fett" value={Math.round(product.fat * 10) / 10} unit="g" color="red" />
+            <h2 className="text-amber-500 font-semibold mb-2">Per 100{product.servingUnit || 'g'}:</h2>
+            <div className="bg-gray-800/50 rounded-xl p-4 space-y-2 text-sm">
+              <p className="flex justify-between">
+                <span className="text-gray-300">• Energi</span>
+                <span className="font-semibold text-amber-500">{Math.round(product.kcal)} kcal</span>
+              </p>
+              <p className="flex justify-between">
+                <span className="text-gray-300">• Protein</span>
+                <span className="font-semibold text-white">{Math.round(product.protein * 10) / 10} g</span>
+              </p>
+              <p className="flex justify-between">
+                <span className="text-gray-300">• Kolhydrater</span>
+                <span className="font-semibold text-white">{Math.round(product.carbs * 10) / 10} g</span>
+              </p>
+              <p className="flex justify-between">
+                <span className="text-gray-300">• Fett</span>
+                <span className="font-semibold text-white">{Math.round(product.fat * 10) / 10} g</span>
+              </p>
             </div>
           </div>
 
           {/* Additional info */}
           {(product.fiber || product.sugar || product.salt || product.saturatedFat) && (
             <div>
-              <h2 className="text-amber-500 font-semibold mb-3">Övrig information</h2>
-              <div className="bg-gray-800/50 rounded-xl p-4 space-y-2">
+              <h2 className="text-amber-500 font-semibold mb-2">Övrig information:</h2>
+              <div className="bg-gray-800/50 rounded-xl p-4 space-y-2 text-sm">
                 {product.fiber !== null && product.fiber !== undefined && (
-                  <InfoRow label="Fiber" value={`${Math.round(product.fiber * 10) / 10} g`} />
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Fiber</span>
+                    <span className="font-semibold text-white">{Math.round(product.fiber * 10) / 10} g</span>
+                  </p>
                 )}
                 {product.sugar !== null && product.sugar !== undefined && (
-                  <InfoRow label="Socker" value={`${Math.round(product.sugar * 10) / 10} g`} />
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Socker</span>
+                    <span className="font-semibold text-white">{Math.round(product.sugar * 10) / 10} g</span>
+                  </p>
                 )}
                 {product.saturatedFat !== null && product.saturatedFat !== undefined && (
-                  <InfoRow label="Mättat fett" value={`${Math.round(product.saturatedFat * 10) / 10} g`} />
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Mättat fett</span>
+                    <span className="font-semibold text-white">{Math.round(product.saturatedFat * 10) / 10} g</span>
+                  </p>
                 )}
                 {product.salt !== null && product.salt !== undefined && (
-                  <InfoRow label="Salt" value={`${Math.round(product.salt * 100) / 100} g`} />
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Salt</span>
+                    <span className="font-semibold text-white">{Math.round(product.salt * 100) / 100} g</span>
+                  </p>
                 )}
               </div>
             </div>
@@ -127,19 +149,74 @@ export function ProductDetailModal({ isOpen, product, onClose }: ProductDetailMo
           {/* Micronutrients */}
           {hasMicronutrients && (
             <div>
-              <h2 className="text-amber-500 font-semibold mb-3">Vitaminer & Mineraler</h2>
-              <div className="bg-gray-800/50 rounded-xl p-4 space-y-2">
-                {product.vitaminA && <InfoRow label="Vitamin A" value={`${Math.round(product.vitaminA)} µg`} />}
-                {product.vitaminD && <InfoRow label="Vitamin D" value={`${Math.round(product.vitaminD * 10) / 10} µg`} />}
-                {product.vitaminC && <InfoRow label="Vitamin C" value={`${Math.round(product.vitaminC)} mg`} />}
-                {product.vitaminB12 && <InfoRow label="Vitamin B12" value={`${Math.round(product.vitaminB12 * 10) / 10} µg`} />}
-                {product.folate && <InfoRow label="Folat" value={`${Math.round(product.folate)} µg`} />}
-                {product.calcium && <InfoRow label="Kalcium" value={`${Math.round(product.calcium)} mg`} />}
-                {product.iron && <InfoRow label="Järn" value={`${Math.round(product.iron * 10) / 10} mg`} />}
-                {product.magnesium && <InfoRow label="Magnesium" value={`${Math.round(product.magnesium)} mg`} />}
-                {product.potassium && <InfoRow label="Kalium" value={`${Math.round(product.potassium)} mg`} />}
-                {product.zinc && <InfoRow label="Zink" value={`${Math.round(product.zinc * 10) / 10} mg`} />}
-                {product.iodine && <InfoRow label="Jod" value={`${Math.round(product.iodine)} µg`} />}
+              <h2 className="text-amber-500 font-semibold mb-2">Vitaminer & Mineraler:</h2>
+              <div className="bg-gray-800/50 rounded-xl p-4 space-y-2 text-sm">
+                {product.vitaminA && (
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Vitamin A</span>
+                    <span className="font-semibold text-white">{Math.round(product.vitaminA)} µg</span>
+                  </p>
+                )}
+                {product.vitaminD && (
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Vitamin D</span>
+                    <span className="font-semibold text-white">{Math.round(product.vitaminD * 10) / 10} µg</span>
+                  </p>
+                )}
+                {product.vitaminC && (
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Vitamin C</span>
+                    <span className="font-semibold text-white">{Math.round(product.vitaminC)} mg</span>
+                  </p>
+                )}
+                {product.vitaminB12 && (
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Vitamin B12</span>
+                    <span className="font-semibold text-white">{Math.round(product.vitaminB12 * 10) / 10} µg</span>
+                  </p>
+                )}
+                {product.folate && (
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Folat</span>
+                    <span className="font-semibold text-white">{Math.round(product.folate)} µg</span>
+                  </p>
+                )}
+                {product.calcium && (
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Kalcium</span>
+                    <span className="font-semibold text-white">{Math.round(product.calcium)} mg</span>
+                  </p>
+                )}
+                {product.iron && (
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Järn</span>
+                    <span className="font-semibold text-white">{Math.round(product.iron * 10) / 10} mg</span>
+                  </p>
+                )}
+                {product.magnesium && (
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Magnesium</span>
+                    <span className="font-semibold text-white">{Math.round(product.magnesium)} mg</span>
+                  </p>
+                )}
+                {product.potassium && (
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Kalium</span>
+                    <span className="font-semibold text-white">{Math.round(product.potassium)} mg</span>
+                  </p>
+                )}
+                {product.zinc && (
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Zink</span>
+                    <span className="font-semibold text-white">{Math.round(product.zinc * 10) / 10} mg</span>
+                  </p>
+                )}
+                {product.iodine && (
+                  <p className="flex justify-between">
+                    <span className="text-gray-300">• Jod</span>
+                    <span className="font-semibold text-white">{Math.round(product.iodine)} µg</span>
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -164,29 +241,3 @@ export function ProductDetailModal({ isOpen, product, onClose }: ProductDetailMo
   )
 }
 
-function MacroCard({ label, value, unit, color }: { label: string; value: number; unit: string; color: string }) {
-  const colorClasses = {
-    amber: 'bg-amber-500/10 border-amber-500/30 text-amber-500',
-    blue: 'bg-blue-500/10 border-blue-500/30 text-blue-500',
-    green: 'bg-green-500/10 border-green-500/30 text-green-500',
-    red: 'bg-red-500/10 border-red-500/30 text-red-500',
-  }
-
-  return (
-    <div className={`rounded-xl border p-3 ${colorClasses[color as keyof typeof colorClasses]}`}>
-      <p className="text-xs text-gray-400 mb-1">{label}</p>
-      <p className="text-xl font-bold">
-        {value} <span className="text-sm font-normal">{unit}</span>
-      </p>
-    </div>
-  )
-}
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between items-center">
-      <span className="text-gray-400 text-sm">{label}</span>
-      <span className="text-white text-sm font-medium">{value}</span>
-    </div>
-  )
-}
