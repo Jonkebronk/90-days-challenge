@@ -338,6 +338,7 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
       zinc: '',
       iodine: '',
       slvNummer: null,
+      servingUnit: 'g',
     })
     setImagePreview(null)
     setRequestNutritionImage(null)
