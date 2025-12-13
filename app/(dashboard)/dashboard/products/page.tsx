@@ -815,14 +815,12 @@ function ProductCard({ product, isCoach, onClick, onEdit }: { product: Product; 
       {/* Info */}
       <div className="px-2 py-2">
         <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug mb-2">{product.name}</h3>
-        <div className="flex items-baseline gap-1">
-          <span className="text-base font-bold text-amber-600">{Math.round(product.kcal)} kcal</span>
-          <span className="text-[10px] text-gray-400">/100{product.servingUnit || 'g'}</span>
-        </div>
-        <div className="flex flex-col gap-0.5 mt-1.5 text-[11px]">
-          <span className="text-blue-600 font-semibold">Protein: {Math.round(product.protein)} g</span>
-          <span className="text-green-600 font-semibold">Kolhydrater: {Math.round(product.carbs)} g</span>
-          <span className="text-red-500 font-semibold">Fett: {Math.round(product.fat)} g</span>
+        <p className="text-[10px] text-gray-500 font-medium mt-1">Per 100{product.servingUnit || 'g'}:</p>
+        <div className="text-[11px] text-gray-700 mt-0.5 space-y-px">
+          <p>• Energi: <span className="font-semibold text-amber-600">{Math.round(product.kcal)} kcal</span></p>
+          <p>• Protein: <span className="font-semibold">{Math.round(product.protein)} g</span></p>
+          <p>• Kolhydrater: <span className="font-semibold">{Math.round(product.carbs)} g</span></p>
+          <p>• Fett: <span className="font-semibold">{Math.round(product.fat)} g</span></p>
         </div>
       </div>
     </div>
@@ -862,11 +860,10 @@ function ProductRow({ product, isCoach, onClick, onEdit }: { product: Product; i
         </div>
       </div>
       <div className="text-right flex-shrink-0">
-        <div className="font-semibold text-gold-primary text-xs sm:text-base">{Math.round(product.kcal)} kcal</div>
-        <div className="flex flex-col items-end gap-0 text-[10px] sm:text-xs mt-0.5">
-          <span className="text-blue-600 font-medium">Protein: {Math.round(product.protein)} g</span>
-          <span className="text-green-600 font-medium">Kolhydrater: {Math.round(product.carbs)} g</span>
-          <span className="text-red-500 font-medium">Fett: {Math.round(product.fat)} g</span>
+        <p className="text-[9px] sm:text-[10px] text-gray-500 font-medium">Per 100{product.servingUnit || 'g'}:</p>
+        <div className="font-semibold text-amber-600 text-xs sm:text-base">{Math.round(product.kcal)} kcal</div>
+        <div className="text-[9px] sm:text-[10px] text-gray-600 mt-0.5">
+          P: {Math.round(product.protein)}g • K: {Math.round(product.carbs)}g • F: {Math.round(product.fat)}g
         </div>
       </div>
       {isCoach && (
