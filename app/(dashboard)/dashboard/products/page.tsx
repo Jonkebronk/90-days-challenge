@@ -31,7 +31,9 @@ import {
   Check,
   ChevronDown,
   Pencil,
-  Save
+  Save,
+  Beef,
+  Droplets
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -83,6 +85,11 @@ const SOURCES = [
 // Built-in categories with icons - can be overridden by DB
 // Use ASCII keys for consistency with database storage
 const BUILT_IN_CATEGORIES = [
+  // Main macro categories
+  { id: 'proteinkallor', label: 'Proteinkällor', icon: Beef, isMainCategory: true },
+  { id: 'kolhydratkallor', label: 'Kolhydratskällor', icon: Wheat, isMainCategory: true },
+  { id: 'fettkallor', label: 'Fettkällor', icon: Droplets, isMainCategory: true },
+  // Other categories
   { id: 'mejeri', label: 'Mejeri', icon: Milk },
   { id: 'kott', label: 'Kött', icon: Drumstick },
   { id: 'fisk', label: 'Fisk', icon: Fish },
@@ -97,6 +104,9 @@ const BUILT_IN_CATEGORIES = [
 
 // Icon mapping for dynamic categories (ASCII keys)
 const CATEGORY_ICONS: Record<string, any> = {
+  proteinkallor: Beef,
+  kolhydratkallor: Wheat,
+  fettkallor: Droplets,
   mejeri: Milk,
   kott: Drumstick,
   fisk: Fish,
@@ -111,6 +121,9 @@ const CATEGORY_ICONS: Record<string, any> = {
 
 // Category descriptions for display when category is selected
 const CATEGORY_DESCRIPTIONS: Record<string, string> = {
+  proteinkallor: 'Proteinkällor är livsmedel rika på protein som hjälper till att bygga och reparera muskler. Inkluderar kött, fisk, fågel, ägg, baljväxter och mejeriprodukter.',
+  kolhydratkallor: 'Kolhydratskällor ger kroppen energi. Inkluderar bröd, pasta, ris, potatis, frukt och andra stärkelserika livsmedel.',
+  fettkallor: 'Fettkällor innehåller hälsosamma fetter som är viktiga för hormonproduktion och näringsupptag. Inkluderar oljor, nötter, avokado och feta fiskar.',
   mejeri: 'Mejeriprodukter inkluderar mjölk, ost, yoghurt, kvarg och andra mjölkbaserade livsmedel. Bra källor till protein, kalcium och B-vitaminer.',
   kott: 'Kött från nöt, fläsk, lamm och vilt. Utmärkta proteinkällor med hög biologisk kvalitet samt järn och B12.',
   fisk: 'Fisk och skaldjur ger högkvalitativt protein, omega-3-fettsyror och vitamin D. Rekommenderas 2-3 gånger per vecka.',
