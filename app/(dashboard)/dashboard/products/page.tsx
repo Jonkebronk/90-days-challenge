@@ -394,6 +394,48 @@ export default function ProductsPage() {
             </div>
           </div>
 
+          {/* Main macro categories - prominent section */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {[
+              { id: 'proteinkallor', label: 'Proteinkällor', icon: Beef, color: 'from-red-500 to-rose-600' },
+              { id: 'kolhydratkallor', label: 'Kolhydratskällor', icon: Wheat, color: 'from-amber-500 to-yellow-600' },
+              { id: 'fettkallor', label: 'Fettkällor', icon: Droplets, color: 'from-blue-500 to-cyan-600' },
+            ].map(cat => {
+              const count = categoryCounts[cat.id] || 0
+              const Icon = cat.icon
+              const isActive = selectedCategory === cat.id
+
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    if (isActive) {
+                      setSelectedCategory('all')
+                    } else {
+                      setSelectedCategory(cat.id)
+                    }
+                    setSelectedSubcategory(null)
+                  }}
+                  className={`relative flex flex-col items-center justify-center p-3 rounded-xl transition-all ${
+                    isActive
+                      ? `bg-gradient-to-br ${cat.color} text-white shadow-lg scale-[1.02]`
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Icon className={`w-6 h-6 mb-1 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                  <span className="text-xs font-semibold text-center leading-tight">{cat.label}</span>
+                  {count > 0 && (
+                    <span className={`absolute top-1 right-1 text-[10px] px-1.5 py-0.5 rounded-full ${
+                      isActive ? 'bg-white/30 text-white' : 'bg-gray-300 text-gray-600'
+                    }`}>
+                      {count}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+
           {/* Source tabs (database filter) */}
           <div className="flex gap-1.5 mb-3 overflow-x-auto scrollbar-hide">
             {SOURCES.map(src => {
@@ -462,8 +504,10 @@ export default function ProductsPage() {
                 </span>
               )}
             </button>
-            {/* Dynamic categories from state */}
-            {categories.map(cat => {
+            {/* Dynamic categories from state (exclude main macro categories) */}
+            {categories
+              .filter(cat => !['proteinkallor', 'kolhydratkallor', 'fettkallor'].includes(cat.id))
+              .map(cat => {
               const count = categoryCounts[cat.id] || 0
               const Icon = cat.icon || Package
               const isActive = selectedCategory === cat.id
