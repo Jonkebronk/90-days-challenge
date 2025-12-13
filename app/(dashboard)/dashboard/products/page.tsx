@@ -105,6 +105,22 @@ const CATEGORY_ICONS: Record<string, any> = {
   torrvaror: Wheat,
 }
 
+// Category descriptions for display when category is selected
+const CATEGORY_DESCRIPTIONS: Record<string, string> = {
+  mejeri: 'Mejeriprodukter inkluderar mjölk, ost, yoghurt, kvarg och andra mjölkbaserade livsmedel. Bra källor till protein, kalcium och B-vitaminer.',
+  kott: 'Kött från nöt, fläsk, lamm och vilt. Utmärkta proteinkällor med hög biologisk kvalitet samt järn och B12.',
+  fisk: 'Fisk och skaldjur ger högkvalitativt protein, omega-3-fettsyror och vitamin D. Rekommenderas 2-3 gånger per vecka.',
+  brod: 'Bröd och bakade produkter. Välj gärna fullkornsvarianter för mer fiber, vitaminer och mineraler.',
+  frukt: 'Färsk och torkad frukt ger naturliga sockerarter, fiber, vitaminer och antioxidanter. Sträva efter variation!',
+  gronsaker: 'Grönsaker är fulla av fiber, vitaminer och mineraler med lågt kaloriinnehåll. Ät regnbågens alla färger!',
+  dryck: 'Drycker inkluderar allt från vatten och juice till sportdrycker. Tänk på sockret i söta drycker.',
+  snacks: 'Snacks och godis för tillfälligt njutande. Njut med måtta och balansera med näringsrik kost.',
+  fryst: 'Frysta livsmedel behåller ofta sitt näringsvärde bra. Praktiskt för planering och mindre matsvinn.',
+  torrvaror: 'Torrvaror som pasta, ris, gryn och müsli. Basvaror med lång hållbarhet för kolhydrater och fiber.',
+  kryddor: 'Kryddor och smaksättare ger smak utan kalorier. Många har även hälsofördelar som antioxidanter.',
+  sasar: 'Såser för matlagning och smaksättning. Kontrollera näringsinnehållet - varierar mycket mellan produkter.',
+}
+
 // Normalize category key from Swedish to ASCII for consistency
 const normalizeCategoryKey = (key: string | null): string => {
   if (!key) return ''
@@ -524,6 +540,29 @@ export default function ProductsPage() {
           })()}
         </div>
       </div>
+
+      {/* Category Description Section */}
+      {selectedCategory !== 'all' && (() => {
+        const categoryLabel = categories.find(c => c.id === selectedCategory)?.label || selectedCategory
+        const description = CATEGORY_DESCRIPTIONS[selectedCategory]
+        const CategoryIcon = categories.find(c => c.id === selectedCategory)?.icon || Package
+
+        return (
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg p-4 mb-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                <CategoryIcon className="w-5 h-5 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">{categoryLabel}</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  {description || `Utforska vårt utbud av ${categoryLabel.toLowerCase()}-produkter.`}
+                </p>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Content */}
       <div>
