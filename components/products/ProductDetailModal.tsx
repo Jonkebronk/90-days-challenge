@@ -36,6 +36,7 @@ interface Product {
   zinc?: number | null
   iodine?: number | null
   source: string
+  servingUnit?: string
 }
 
 interface ProductDetailModalProps {
@@ -92,7 +93,7 @@ export function ProductDetailModal({ isOpen, product, onClose }: ProductDetailMo
           {/* Main macros */}
           <div>
             <h2 className="text-amber-500 font-semibold mb-3">Makronäringsämnen</h2>
-            <p className="text-gray-400 text-sm mb-4">Per 100g</p>
+            <p className="text-gray-400 text-sm mb-4">Per 100{product.servingUnit || 'g'}</p>
 
             <div className="grid grid-cols-2 gap-3">
               <MacroCard label="Energi" value={Math.round(product.kcal)} unit="kcal" color="amber" />
