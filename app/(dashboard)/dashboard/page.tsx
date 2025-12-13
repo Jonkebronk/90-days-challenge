@@ -776,6 +776,16 @@ export default function DashboardPage() {
 
               {isMealPrepTipsOpen && (
                 <div className="mt-3 space-y-3">
+                  {/* Motivational Quote */}
+                  <div className="bg-white/70 rounded-lg p-3">
+                    <p className="text-sm font-medium text-amber-800 italic text-center mb-2">
+                      "Att misslyckas med sin planering är att planera för att misslyckas"
+                    </p>
+                    <p className="text-xs text-gray-700 leading-relaxed">
+                      Planering, det är nyckeln till en lyckad vecka med kost och träning. Jag brukar citera Ernst Kirchsteiger <span className="italic">"I det enkla bor det vackra"</span>. Smaken? Den löser du i köket. Med kryddor, örter, smaksättningar och lite kreativitet kommer du att kunna laga mat som både gör gott och smakar gott - det kräver bara att du anstränger dig lite. Men kom ihåg, det är inte maten som ska vara underhållningen. Belöningen är resultatet.
+                    </p>
+                  </div>
+
                   {/* 3 Step Images */}
                   <div className="grid grid-cols-3 gap-2">
                     {[
