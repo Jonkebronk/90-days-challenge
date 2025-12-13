@@ -62,12 +62,21 @@ interface SLVFood {
 }
 
 const CATEGORIES = [
+  // Main macro categories
+  { id: 'proteinkallor', label: 'Proteinkällor' },
+  { id: 'kolhydratkallor', label: 'Kolhydratskällor' },
+  { id: 'fettkallor', label: 'Fettkällor' },
+  // Secondary categories
+  { id: 'sasar', label: 'Såser' },
+  { id: 'kryddor', label: 'Kryddor' },
+  { id: 'matlagningsfett', label: 'Matlagningsfett' },
+  { id: 'gronsaker', label: 'Grönsaker' },
+  // Other categories
   { id: 'mejeri', label: 'Mejeri' },
   { id: 'kott', label: 'Kött' },
   { id: 'fisk', label: 'Fisk' },
   { id: 'brod', label: 'Bröd' },
   { id: 'frukt', label: 'Frukt' },
-  { id: 'gronsaker', label: 'Grönsaker' },
   { id: 'dryck', label: 'Dryck' },
   { id: 'snacks', label: 'Snacks' },
   { id: 'fryst', label: 'Fryst' },
