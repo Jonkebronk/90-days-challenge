@@ -636,24 +636,26 @@ export default function DashboardPage() {
                 <div className="mt-3 p-3 bg-white/70 rounded-lg border border-blue-100">
                   <p className="font-semibold text-gray-800 mb-2 text-sm">Ett smart knep - Drick på detta sätt så når du enkelt ditt mål:</p>
 
-                  <div className="space-y-2 text-xs text-gray-700">
+                  <div className="space-y-3 text-sm text-gray-700">
                     <div>
-                      <p className="font-medium text-blue-700">På morgonen:</p>
-                      <p className="ml-3">• Direkt när du vaknar: 1 stort glas vatten (2-3 dl)</p>
+                      <p className="font-semibold text-gray-800">På morgonen:</p>
+                      <p className="ml-3 text-gray-600">• Direkt när du vaknar: 1 stort glas vatten (2-3 dl)</p>
                     </div>
 
                     <div>
-                      <p className="font-medium text-blue-700">I samband med måltider:</p>
-                      <p className="ml-3">• Vid varje måltid (4-5 st/dag): 2-3 dl vatten</p>
+                      <p className="font-semibold text-gray-800">I samband med måltider:</p>
+                      <p className="ml-3 text-gray-600">• Vid varje måltid (4-5 st/dag): 2-3 dl vatten</p>
                     </div>
 
-                    <div className="pt-2 border-t border-blue-100">
-                      <p className="text-blue-800">
-                        <strong>Resultat:</strong> Du kommer upp i ca 1.5 liter bara genom detta!
-                        Lägg till vatten före/under/efter träning så är du i mål.
+                    <div className="pt-3 border-t border-blue-100">
+                      <p className="text-gray-600">
+                        <span className="font-semibold text-gray-800">Resultat:</span> Du kommer upp i ca 1.5 liter bara genom detta! Lägg till vatten före/under/efter träning så är du i mål.
                       </p>
-                      <p className="text-blue-700 mt-2 text-sm">
-                        <strong>Tips:</strong> Blanda vattnet med Fun Light eller Zeroh för att göra det enklare att dricka tillräckligt. Du kan även blanda ner kreatin i det!
+                    </div>
+
+                    <div className="bg-blue-50 rounded-lg p-3">
+                      <p className="text-blue-700">
+                        <span className="font-semibold">Tips:</span> Blanda vattnet med Fun Light eller Zeroh för att göra det enklare att dricka tillräckligt. Du kan även blanda ner kreatin i det!
                       </p>
                     </div>
                   </div>
