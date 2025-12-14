@@ -16,7 +16,7 @@ import { Step1ClientSelect } from './steps/Step1ClientSelect';
 import { Step2MacroMethod } from './steps/Step2MacroMethod';
 import { Step3FatLossRate } from './steps/Step3FatLossRate';
 import { Step4DailyCalories } from './steps/Step4DailyCalories';
-import { Step5ActivityFactors } from './steps/Step5ActivityFactors';
+import { Step5Macros } from './steps/Step5Macros';
 import { Step6EnergyTarget } from './steps/Step6EnergyTarget';
 import { Step7MacroTargets } from './steps/Step7MacroTargets';
 import { Step8TrainingDays } from './steps/Step8TrainingDays';
@@ -83,7 +83,7 @@ export function NutritionPlanWizard({
       case 4:
         return <Step4DailyCalories />;
       case 5:
-        return <Step5ActivityFactors />;
+        return <Step5Macros />;
       case 6:
         return <Step6EnergyTarget />;
       case 7:
