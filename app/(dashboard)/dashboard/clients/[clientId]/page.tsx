@@ -599,6 +599,21 @@ export default function ClientDetailPage({ params }: PageProps) {
             <Button onClick={() => setShowCardioForm(true)} variant="outline" className="w-full border-red-300 text-red-700 hover:bg-red-50">Lägg till cardio</Button>
           )}
         </div>
+
+        {/* Nutrition Plan */}
+        <div className="bg-white border border-gray-200 rounded-xl p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-green-500 flex items-center justify-center">
+              <Utensils className="w-4 h-4 text-white" />
+            </div>
+            <h3 className="font-semibold text-gray-900">Kostplan</h3>
+          </div>
+          <Link href={`/dashboard/nutrition-plans/create?clientId=${clientId}`}>
+            <Button variant="outline" className="w-full border-green-300 text-green-700 hover:bg-green-50">
+              Skapa kostplan
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Application Information */}

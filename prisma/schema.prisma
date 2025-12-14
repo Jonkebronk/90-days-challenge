@@ -186,6 +186,10 @@ model User {
   // Product requests
   productRequests      ProductRequest[]
 
+  // Client Nutrition Plan Wizard
+  clientNutritionPlans      ClientNutritionPlan[] @relation("ClientNutritionPlans")
+  coachClientNutritionPlans ClientNutritionPlan[] @relation("CoachClientNutritionPlans")
+
   @@map("users")
 }
 
@@ -2630,4 +2634,80 @@ model ProductRequest {
   @@index([userId])
   @@index([status])
   @@map("product_requests")
+}
+
+// ========================================
+// CLIENT NUTRITION PLAN WIZARD
+// ========================================
+
+// ClientNutritionPlan - Wizard-based nutrition planning for coaches
+model ClientNutritionPlan {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  clientId String
+  client   User   @relation("ClientNutritionPlans", fields: [clientId], references: [id], onDelete: Cascade)
+  coachId  String
+  coach    User   @relation("CoachClientNutritionPlans", fields: [coachId], references: [id], onDelete: Cascade)
+
+  // Metadata
+  name   String?
+  status String  @default("DRAFT") // DRAFT, ACTIVE, ARCHIVED
+
+  // Calculation Method
+  calculationMethod String  // "automatic" | "manual"
+  calculationType   String? // "weight_height_age"
+
+  // Client Body Data (snapshot at plan creation)
+  weight Decimal @db.Decimal(5, 2) // kg
+  height Int // cm
+  age    Int
+  gender String // "male" | "female"
+
+  // Activity Factors
+  lifestyleActivity String          // "sedentary" | "lightly_active" | "moderately_active" | "very_active" | "extremely_active"
+  exerciseActivity  String          // "none" | "light" | "moderate" | "heavy" | "athlete"
+  lifestyleFactor   Decimal         @db.Decimal(3, 2) // e.g., 1.2
+  exerciseFactor    Decimal         @db.Decimal(3, 2) // e.g., 0.2
+
+  // Calculated Values
+  lbm  Decimal? @db.Decimal(5, 2) // Lean Body Mass (estimated)
+  bmr  Decimal  @db.Decimal(7, 2) // Basal Metabolic Rate
+  tdee Decimal  @db.Decimal(7, 2) // Total Daily Energy Expenditure
+
+  // Energy Target
+  caloricAdjustmentPercent Int     @default(0) // -30 to +30
+  dailyCalorieTarget       Decimal @db.Decimal(7, 2)
+
+  // Macro Targets (in grams)
+  proteinPerKg Decimal @db.Decimal(3, 2) // 1.6 - 2.6
+  proteinGrams Decimal @db.Decimal(6, 2)
+  fatPerKg     Decimal @db.Decimal(3, 2) // min 0.7
+  fatGrams     Decimal @db.Decimal(6, 2)
+  carbGrams    Decimal @db.Decimal(6, 2) // calculated from remaining calories
+
+  // Training Configuration
+  hasTrainingDays    Boolean @default(true)
+  hasNonTrainingDays Boolean @default(true)
+
+  // Meal Configuration
+  mealsPerDay Int // 2-7
+  workoutTime String? // "pre_breakfast" | "morning" | "lunch_time" | "afternoon" | "evening" | "night_time"
+
+  // Nutrition System / Carb Distribution
+  nutritionSystem String // "low_carb" | "balanced" | "high_carb" | "carb_cycling" | etc.
+
+  // Day-specific configurations stored as JSON
+  trainingDayMacros    Json? // { protein, fat, carbs, calories }
+  nonTrainingDayMacros Json? // { protein, fat, carbs, calories }
+
+  // Meal distribution configuration
+  mealDistribution Json? // Array of meal slots with macro percentages
+
+  @@index([clientId])
+  @@index([coachId])
+  @@index([clientId, status])
+  @@map("client_nutrition_plans")
 }
