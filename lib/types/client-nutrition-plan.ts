@@ -22,6 +22,39 @@ export const METABOLISM_MULTIPLIERS: Record<MetabolismActivityLevel, number> = {
   very_active: 35,
 };
 
+// Fat loss rate options
+export type FatLossRate = 'conservative' | 'moderate' | 'aggressive';
+
+export const FAT_LOSS_RATE_CONFIG: Record<FatLossRate, {
+  label: string;
+  gramsPerWeek: number;
+  deficitPerWeek: number;
+  deficitPerDay: number;
+  description: string;
+}> = {
+  conservative: {
+    label: '500g/vecka',
+    gramsPerWeek: 500,
+    deficitPerWeek: 3850,
+    deficitPerDay: 550,
+    description: 'Konservativt, bra för nybörjare eller de med lite att förlora',
+  },
+  moderate: {
+    label: '700g/vecka',
+    gramsPerWeek: 700,
+    deficitPerWeek: 5390,
+    deficitPerDay: 770,
+    description: 'Optimal balans för de flesta',
+  },
+  aggressive: {
+    label: '1000g/vecka',
+    gramsPerWeek: 1000,
+    deficitPerWeek: 7700,
+    deficitPerDay: 1100,
+    description: 'Aggressivt, endast för de med mycket att förlora och hög motivation',
+  },
+};
+
 export type Gender = 'male' | 'female';
 
 export type LifestyleActivity =

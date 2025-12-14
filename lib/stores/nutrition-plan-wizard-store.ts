@@ -14,6 +14,7 @@ import type {
   WorkoutTime,
   NutritionSystem,
   MetabolismActivityLevel,
+  FatLossRate,
 } from '@/lib/types/client-nutrition-plan';
 import { METABOLISM_MULTIPLIERS } from '@/lib/types/client-nutrition-plan';
 import { calculateAllNutrition } from '@/lib/calculations/nutrition-plan-formulas';
@@ -37,7 +38,10 @@ interface NutritionPlanWizardState {
   // Step 2b: Metabolism Activity Level (for metabolism method)
   metabolismActivityLevel: MetabolismActivityLevel | null;
 
-  // Step 3: Calculation Type
+  // Step 3: Fat Loss Rate
+  fatLossRate: FatLossRate | null;
+
+  // Step 3 (old): Calculation Type
   calculationType: CalculationType;
 
   // Step 4: Body Details
@@ -111,7 +115,10 @@ interface NutritionPlanWizardState {
   // Actions - Step 2b: Metabolism Activity Level
   setMetabolismActivityLevel: (level: MetabolismActivityLevel) => void;
 
-  // Actions - Step 3: Calculation Type
+  // Actions - Step 3: Fat Loss Rate
+  setFatLossRate: (rate: FatLossRate) => void;
+
+  // Actions - Step 3 (old): Calculation Type
   setCalculationType: (type: CalculationType) => void;
 
   // Actions - Step 4: Body Details
@@ -180,7 +187,10 @@ const initialState = {
   // Step 2b: Metabolism Activity Level
   metabolismActivityLevel: null as MetabolismActivityLevel | null,
 
-  // Step 3: Calculation Type
+  // Step 3: Fat Loss Rate
+  fatLossRate: null as FatLossRate | null,
+
+  // Step 3 (old): Calculation Type
   calculationType: 'weight_height_age' as CalculationType,
 
   // Step 4: Body Details
@@ -305,7 +315,10 @@ export const useNutritionPlanWizardStore = create<NutritionPlanWizardState>()(
         get().recalculateMetabolism();
       },
 
-      // Step 3: Calculation Type
+      // Step 3: Fat Loss Rate
+      setFatLossRate: (rate) => set({ fatLossRate: rate }),
+
+      // Step 3 (old): Calculation Type
       setCalculationType: (type) => set({ calculationType: type }),
 
       // Step 4: Body Details
@@ -434,6 +447,7 @@ export const useNutritionPlanWizardStore = create<NutritionPlanWizardState>()(
         clientEmail: state.clientEmail,
         calculationMethod: state.calculationMethod,
         metabolismActivityLevel: state.metabolismActivityLevel,
+        fatLossRate: state.fatLossRate,
         calculationType: state.calculationType,
         weight: state.weight,
         height: state.height,
