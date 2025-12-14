@@ -16,7 +16,7 @@ import type {
   MetabolismActivityLevel,
   FatLossRate,
 } from '@/lib/types/client-nutrition-plan';
-import { METABOLISM_MULTIPLIERS } from '@/lib/types/client-nutrition-plan';
+import { METABOLISM_MULTIPLIERS, FAT_LOSS_RATE_CONFIG } from '@/lib/types/client-nutrition-plan';
 import { calculateAllNutrition } from '@/lib/calculations/nutrition-plan-formulas';
 
 // Total wizard steps
@@ -316,7 +316,11 @@ export const useNutritionPlanWizardStore = create<NutritionPlanWizardState>()(
       },
 
       // Step 3: Fat Loss Rate
-      setFatLossRate: (rate) => set({ fatLossRate: rate }),
+      setFatLossRate: (rate) => {
+        set({ fatLossRate: rate });
+        // Recalculate to apply deficit
+        get().recalculateMetabolism();
+      },
 
       // Step 3 (old): Calculation Type
       setCalculationType: (type) => set({ calculationType: type }),
@@ -355,7 +359,13 @@ export const useNutritionPlanWizardStore = create<NutritionPlanWizardState>()(
       // Step 7: Macro Targets
       setMacroTargets: (proteinPerKg, fatPerKg) => {
         set({ proteinPerKg, fatPerKg });
-        get().recalculateAll();
+        // Use metabolism calculation when in metabolism method
+        const { calculationMethod, recalculateMetabolism, recalculateAll } = get();
+        if (calculationMethod === 'metabolism') {
+          recalculateMetabolism();
+        } else {
+          recalculateAll();
+        }
       },
 
       // Step 8: Training Days
@@ -407,14 +417,19 @@ export const useNutritionPlanWizardStore = create<NutritionPlanWizardState>()(
       },
 
       // Simple metabolism calculation (weight × activity multiplier)
+      // Applies fat loss deficit to dailyCalorieTarget
       recalculateMetabolism: () => {
         const state = get();
         if (!state.metabolismActivityLevel || state.weight <= 0) return;
 
         const multiplier = METABOLISM_MULTIPLIERS[state.metabolismActivityLevel];
-        const dailyCalories = state.weight * multiplier;
+        const metabolism = state.weight * multiplier;
 
-        // Calculate macros using default values
+        // Apply fat loss deficit if set
+        const deficit = state.fatLossRate ? FAT_LOSS_RATE_CONFIG[state.fatLossRate].deficitPerDay : 0;
+        const dailyCalories = Math.max(1200, metabolism - deficit);
+
+        // Calculate macros using the deficit-adjusted calories
         const proteinGrams = state.weight * state.proteinPerKg;
         const fatGrams = state.weight * state.fatPerKg;
         const remainingCals = dailyCalories - (proteinGrams * 4) - (fatGrams * 9);
@@ -422,7 +437,7 @@ export const useNutritionPlanWizardStore = create<NutritionPlanWizardState>()(
 
         set({
           dailyCalorieTarget: Math.round(dailyCalories),
-          tdee: Math.round(dailyCalories),
+          tdee: Math.round(metabolism), // Keep metabolism before deficit
           proteinGrams: Math.round(proteinGrams),
           fatGrams: Math.round(fatGrams),
           carbGrams: Math.round(carbGrams),

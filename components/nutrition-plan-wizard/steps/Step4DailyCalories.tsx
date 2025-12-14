@@ -8,7 +8,8 @@ import { Calculator } from 'lucide-react';
 
 export function Step4DailyCalories() {
   const {
-    dailyCalorieTarget,
+    tdee, // Metabolism before deficit
+    dailyCalorieTarget, // Already has deficit applied
     fatLossRate,
     recalculateMetabolism,
     nextStep,
@@ -21,9 +22,9 @@ export function Step4DailyCalories() {
   }, [recalculateMetabolism]);
 
   const deficit = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].deficitPerDay : 0;
-  // dailyCalorieTarget from store is the metabolism (weight × activity multiplier)
-  const metabolism = dailyCalorieTarget;
-  const finalCalories = Math.max(1200, metabolism - deficit);
+  // tdee = metabolism before deficit, dailyCalorieTarget = with deficit applied
+  const metabolism = tdee;
+  const finalCalories = dailyCalorieTarget;
 
   return (
     <div className="space-y-6">

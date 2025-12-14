@@ -5,24 +5,22 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { useNutritionPlanWizardStore } from '@/lib/stores/nutrition-plan-wizard-store';
 import { WizardNavigation } from '../WizardNavigation';
-import { FAT_LOSS_RATE_CONFIG } from '@/lib/types/client-nutrition-plan';
 import { Info } from 'lucide-react';
 
 export function Step5Macros() {
   const {
     weight,
-    dailyCalorieTarget,
-    fatLossRate,
+    dailyCalorieTarget, // Already has deficit applied from store
     proteinPerKg,
     fatPerKg,
     setMacroTargets,
+    recalculateMetabolism,
     nextStep,
     previousStep,
   } = useNutritionPlanWizardStore();
 
-  // Calculate actual calorie target (metabolism - deficit)
-  const deficit = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].deficitPerDay : 0;
-  const actualCalorieTarget = Math.max(1200, dailyCalorieTarget - deficit);
+  // dailyCalorieTarget already includes deficit from store
+  const actualCalorieTarget = dailyCalorieTarget;
 
   // Calculate macros based on actual calorie target
   const proteinGrams = Math.round(weight * proteinPerKg);
@@ -35,7 +33,8 @@ export function Step5Macros() {
   // Recalculate when protein changes
   useEffect(() => {
     setMacroTargets(proteinPerKg, fatPerKg);
-  }, [proteinPerKg, fatPerKg, setMacroTargets]);
+    recalculateMetabolism();
+  }, [proteinPerKg, fatPerKg, setMacroTargets, recalculateMetabolism]);
 
   const handleProteinChange = (value: number[]) => {
     setMacroTargets(value[0], fatPerKg);

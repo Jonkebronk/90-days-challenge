@@ -16,29 +16,34 @@ export function Step6Summary() {
     fatLossRate,
     proteinPerKg,
     fatPerKg,
-    dailyCalorieTarget,
+    tdee, // Metabolism before deficit
+    dailyCalorieTarget, // Already has deficit applied
+    proteinGrams: storeProteinGrams,
+    fatGrams: storeFatGrams,
+    carbGrams: storeCarbGrams,
     nextStep,
     previousStep,
   } = useNutritionPlanWizardStore();
 
-  // Calculations
+  // Use store values for consistency
   const multiplier = metabolismActivityLevel ? METABOLISM_MULTIPLIERS[metabolismActivityLevel] : 30;
-  const metabolism = Math.round(weight * multiplier);
+  const metabolism = tdee; // Use tdee from store
   const deficit = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].deficitPerDay : 0;
   const fatLossLabel = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].label : '';
   const activityLabel = metabolismActivityLevel ? METABOLISM_ACTIVITY_LABELS[metabolismActivityLevel] : '';
 
-  // Actual daily calorie target (after deficit)
-  const actualCalorieTarget = Math.max(1200, metabolism - deficit);
+  // Use dailyCalorieTarget from store (already has deficit applied)
+  const actualCalorieTarget = dailyCalorieTarget;
 
-  const proteinGrams = Math.round(weight * proteinPerKg);
+  // Use macro values from store for consistency
+  const proteinGrams = storeProteinGrams;
   const proteinCalories = proteinGrams * 4;
-  const fatGrams = Math.round(weight * fatPerKg);
+  const fatGrams = storeFatGrams;
   const fatCalories = fatGrams * 9;
-  const remainingCalories = actualCalorieTarget - proteinCalories - fatCalories;
-  const carbGrams = Math.max(0, Math.round(remainingCalories / 4));
+  const carbGrams = storeCarbGrams;
   const carbCalories = carbGrams * 4;
   const totalCalories = proteinCalories + fatCalories + carbCalories;
+  const remainingCalories = actualCalorieTarget - proteinCalories - fatCalories;
 
   return (
     <div className="space-y-5">
