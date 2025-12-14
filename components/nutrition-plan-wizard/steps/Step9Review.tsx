@@ -11,6 +11,8 @@ import {
   EXERCISE_ACTIVITY_LABELS,
   WORKOUT_TIME_LABELS,
   NUTRITION_SYSTEM_LABELS,
+  METABOLISM_MULTIPLIERS,
+  FAT_LOSS_RATE_CONFIG,
 } from '@/lib/types/client-nutrition-plan';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -23,6 +25,8 @@ export function Step9Review() {
     clientId,
     clientName,
     calculationMethod,
+    metabolismActivityLevel,
+    fatLossRate,
     weight,
     height,
     age,
@@ -30,13 +34,13 @@ export function Step9Review() {
     lifestyleActivity,
     exerciseActivity,
     caloricAdjustmentPercent,
-    tdee,
-    dailyCalorieTarget,
+    tdee: storeTdee,
+    dailyCalorieTarget: storeDailyCalorieTarget,
     proteinPerKg,
     fatPerKg,
-    proteinGrams,
-    fatGrams,
-    carbGrams,
+    proteinGrams: storeProteinGrams,
+    fatGrams: storeFatGrams,
+    carbGrams: storeCarbGrams,
     hasTrainingDays,
     hasNonTrainingDays,
     mealsPerDay,
@@ -48,6 +52,38 @@ export function Step9Review() {
     nextStep,
     setCreatedPlanId,
   } = useNutritionPlanWizardStore();
+
+  // Calculate values directly for metabolism method to ensure consistency
+  const isMetabolismMethod = calculationMethod === 'metabolism';
+
+  let tdee: number;
+  let dailyCalorieTarget: number;
+  let proteinGrams: number;
+  let fatGrams: number;
+  let carbGrams: number;
+  let deficitDisplay: string;
+
+  if (isMetabolismMethod && metabolismActivityLevel) {
+    const multiplier = METABOLISM_MULTIPLIERS[metabolismActivityLevel];
+    tdee = Math.round(weight * multiplier);
+    const deficit = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].deficitPerDay : 0;
+    dailyCalorieTarget = Math.round(Math.max(1200, tdee - deficit));
+    deficitDisplay = deficit > 0 ? `-${deficit} kcal` : '0 kcal';
+
+    // Calculate macros
+    proteinGrams = Math.round(weight * proteinPerKg);
+    fatGrams = Math.round(weight * fatPerKg);
+    const remainingCals = dailyCalorieTarget - (proteinGrams * 4) - (fatGrams * 9);
+    carbGrams = Math.round(Math.max(0, remainingCals / 4));
+  } else {
+    // Use store values for other methods
+    tdee = storeTdee;
+    dailyCalorieTarget = storeDailyCalorieTarget;
+    proteinGrams = storeProteinGrams;
+    fatGrams = storeFatGrams;
+    carbGrams = storeCarbGrams;
+    deficitDisplay = `${caloricAdjustmentPercent >= 0 ? '+' : ''}${caloricAdjustmentPercent}%`;
+  }
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -75,6 +111,11 @@ export function Step9Review() {
           mealsPerDay,
           workoutTime,
           nutritionSystem,
+          // Send calculated values to ensure consistency
+          dailyCalorieTarget,
+          proteinGrams,
+          fatGrams,
+          carbGrams,
         }),
       });
 
@@ -126,15 +167,16 @@ export function Step9Review() {
           </h3>
           <div className="grid grid-cols-2 gap-3">
             <div className="flex justify-between">
-              <span className="text-gray-600">TDEE</span>
+              <span className="text-gray-600">
+                {isMetabolismMethod ? 'Ämnesomsättning' : 'TDEE'}
+              </span>
               <span className="font-medium">{tdee} kcal</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Kalorimål</span>
-              <span className="font-medium">
-                {caloricAdjustmentPercent >= 0 ? '+' : ''}
-                {caloricAdjustmentPercent}%
+              <span className="text-gray-600">
+                {isMetabolismMethod ? 'Underskott' : 'Kalorimål'}
               </span>
+              <span className="font-medium">{deficitDisplay}</span>
             </div>
             <div className="flex justify-between col-span-2">
               <span className="text-gray-600">Dagligt energimål</span>

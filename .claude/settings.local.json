@@ -62,7 +62,10 @@
       "Bash(npm run dev:*)",
       "Bash(python3:*)",
       "WebFetch(domain:fdc.nal.usda.gov)",
-      "Bash(node scripts/upload-mealprep-images.js:*)"
+      "Bash(node scripts/upload-mealprep-images.js:*)",
+      "WebFetch(domain:nutriadmin.com)",
+      "WebFetch(domain:www.tautvidas.com)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": []
