@@ -74,8 +74,8 @@ export default function NutritionPlansPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Kostplaner</h1>
-          <p className="text-gray-600">
+          <h1 className="text-2xl font-bold text-white">Kostplaner</h1>
+          <p className="text-gray-400">
             Hantera kostplaner för dina klienter
           </p>
         </div>
