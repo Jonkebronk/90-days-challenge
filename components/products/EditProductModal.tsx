@@ -16,7 +16,8 @@ import {
   Atom,
   Trash2,
   AlertTriangle,
-  Target
+  Target,
+  Plus
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -176,6 +177,12 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  // Custom category/subcategory state
+  const [showNewCategory, setShowNewCategory] = useState(false)
+  const [newCategoryInput, setNewCategoryInput] = useState('')
+  const [showNewSubCategory, setShowNewSubCategory] = useState(false)
+  const [newSubCategoryInput, setNewSubCategoryInput] = useState('')
+
   // Database categories and subcategories
   const [dbCategories, setDbCategories] = useState<{ key: string; label: string }[]>([])
   const [dbSubcategories, setDbSubcategories] = useState<DbSubcategory[]>([])
@@ -263,6 +270,66 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
     return merged
   }
 
+  // Add custom category (saves to database)
+  const addCustomCategory = async () => {
+    const label = newCategoryInput.trim()
+    if (!label) return
+
+    const key = label.toLowerCase().replace(/[åä]/g, 'a').replace(/ö/g, 'o').replace(/\s+/g, '-')
+
+    // Check if already exists
+    if (CATEGORIES.find(c => c.id === key) || dbCategories.find(c => c.key === key)) {
+      setFormData(prev => ({ ...prev, category: key, subCategory: '' }))
+      setNewCategoryInput('')
+      setShowNewCategory(false)
+      return
+    }
+
+    try {
+      const response = await fetch('/api/product-categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ label, icon: 'Package' })
+      })
+
+      if (response.ok) {
+        const { category } = await response.json()
+        setDbCategories(prev => [...prev, { key: category.key, label: category.label }])
+        setFormData(prev => ({ ...prev, category: category.key, subCategory: '' }))
+      }
+    } catch (error) {
+      console.error('Error creating category:', error)
+    }
+
+    setNewCategoryInput('')
+    setShowNewCategory(false)
+  }
+
+  // Add custom subcategory (saves to database)
+  const addCustomSubCategory = async () => {
+    const label = newSubCategoryInput.trim()
+    if (!label || !formData.category) return
+
+    try {
+      const response = await fetch('/api/product-categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ label, icon: 'Package', parentKey: formData.category })
+      })
+
+      if (response.ok) {
+        const { category } = await response.json()
+        setDbSubcategories(prev => [...prev, { key: category.key, label: category.label, parentKey: category.parentKey }])
+        setFormData(prev => ({ ...prev, subCategory: category.key }))
+      }
+    } catch (error) {
+      console.error('Error creating subcategory:', error)
+    }
+
+    setNewSubCategoryInput('')
+    setShowNewSubCategory(false)
+  }
+
   // Initialize form when product changes
   useEffect(() => {
     if (product) {
@@ -339,6 +406,10 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
     setSlvResults([])
     setShowDeleteConfirm(false)
     setIsDeleting(false)
+    setShowNewCategory(false)
+    setNewCategoryInput('')
+    setShowNewSubCategory(false)
+    setNewSubCategoryInput('')
     if (fileInputRef.current) fileInputRef.current.value = ''
     onClose()
   }
@@ -1033,10 +1104,47 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
                   {cat.label}
                 </button>
               ))}
+              {/* Add new category button */}
+              {showNewCategory ? (
+                <div className="flex items-center gap-1">
+                  <Input
+                    value={newCategoryInput}
+                    onChange={(e) => setNewCategoryInput(e.target.value)}
+                    placeholder="Ny kategori"
+                    className="h-7 w-28 text-xs"
+                    onKeyDown={(e) => e.key === 'Enter' && addCustomCategory()}
+                    autoFocus
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={addCustomCategory}
+                    className="h-7 px-2 bg-purple-500 hover:bg-purple-600 text-white"
+                  >
+                    <Plus className="w-3 h-3" />
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => { setShowNewCategory(false); setNewCategoryInput(''); }}
+                    className="h-7 px-2"
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowNewCategory(true)}
+                  className="px-2.5 py-1 text-xs rounded-full border-2 border-dashed border-gray-300 text-gray-500 hover:border-purple-400 hover:text-purple-600 transition-colors"
+                >
+                  + Ny
+                </button>
+              )}
             </div>
 
-            {/* Subcategory - show when category has subcategories */}
-            {formData.category && getSubcategoriesForCategory(formData.category).length > 0 && (
+            {/* Subcategory - show when category is selected */}
+            {formData.category && (
               <div className="mt-3">
                 <Label className="text-sm text-gray-600">Subkategori</Label>
                 <div className="flex flex-wrap gap-1.5 mt-2">
@@ -1056,6 +1164,43 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
                       {subcat.label}
                     </button>
                   ))}
+                  {/* Add new subcategory button */}
+                  {showNewSubCategory ? (
+                    <div className="flex items-center gap-1">
+                      <Input
+                        value={newSubCategoryInput}
+                        onChange={(e) => setNewSubCategoryInput(e.target.value)}
+                        placeholder="Ny underkategori"
+                        className="h-7 w-32 text-xs"
+                        onKeyDown={(e) => e.key === 'Enter' && addCustomSubCategory()}
+                        autoFocus
+                      />
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={addCustomSubCategory}
+                        className="h-7 px-2 bg-teal-500 hover:bg-teal-600 text-white"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => { setShowNewSubCategory(false); setNewSubCategoryInput(''); }}
+                        className="h-7 px-2"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowNewSubCategory(true)}
+                      className="px-2.5 py-1 text-xs rounded-full border-2 border-dashed border-gray-300 text-gray-500 hover:border-teal-400 hover:text-teal-600 transition-colors"
+                    >
+                      + Ny
+                    </button>
+                  )}
                 </div>
               </div>
             )}
