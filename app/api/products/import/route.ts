@@ -35,6 +35,8 @@ interface ImportProduct {
   slvNummer?: number
   source?: string
   servingUnit?: string
+  // Meal plan generator
+  macroCategory?: 'protein' | 'carb' | 'fat' | 'vegetable' | 'sauce'
 }
 
 // POST /api/products/import - Bulk import products from JSON
@@ -119,7 +121,8 @@ export async function POST(req: NextRequest) {
               iodine: p.iodine ?? null,
               slvNummer: p.slvNummer ?? null,
               source: p.source || 'import',
-              servingUnit: p.servingUnit || existing.servingUnit || 'g'
+              servingUnit: p.servingUnit || existing.servingUnit || 'g',
+              macroCategory: p.macroCategory ?? existing.macroCategory ?? null,
             }
           })
           results.updated++
@@ -159,7 +162,8 @@ export async function POST(req: NextRequest) {
               iodine: p.iodine ?? null,
               slvNummer: p.slvNummer ?? null,
               source: p.source || 'import',
-              servingUnit: p.servingUnit || 'g'
+              servingUnit: p.servingUnit || 'g',
+              macroCategory: p.macroCategory ?? null,
             }
           })
           results.created++

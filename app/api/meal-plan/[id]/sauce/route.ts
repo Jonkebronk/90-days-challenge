@@ -75,16 +75,16 @@ export async function POST(
       );
     }
 
-    // Fetch the sauce
-    const sauce = await prisma.foodItem.findUnique({
+    // Fetch the sauce from Product model
+    const sauce = await prisma.product.findUnique({
       where: { id: sauceId },
       select: {
         id: true,
         name: true,
-        calories: true,
-        proteinG: true,
-        carbsG: true,
-        fatG: true,
+        kcal: true,
+        protein: true,
+        carbs: true,
+        fat: true,
         macroCategory: true,
       },
     });
@@ -136,10 +136,10 @@ export async function POST(
       {
         id: sauce.id,
         name: sauce.name,
-        calories: sauce.calories ? Number(sauce.calories) : 0,
-        proteinG: sauce.proteinG ? Number(sauce.proteinG) : 0,
-        carbsG: sauce.carbsG ? Number(sauce.carbsG) : 0,
-        fatG: sauce.fatG ? Number(sauce.fatG) : 0,
+        calories: sauce.kcal ? Number(sauce.kcal) : 0,
+        proteinG: sauce.protein ? Number(sauce.protein) : 0,
+        carbsG: sauce.carbs ? Number(sauce.carbs) : 0,
+        fatG: sauce.fat ? Number(sauce.fat) : 0,
         macroCategory: 'sauce',
         mealTypes: [],
         isRecommended: false,

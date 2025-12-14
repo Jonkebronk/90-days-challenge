@@ -194,41 +194,39 @@ export async function POST(request: NextRequest) {
 
 /**
  * Fetch foods for a specific macro category
+ * Uses Product model instead of FoodItem
  */
 async function fetchFoodsForCategory(
   category: MacroCategory
 ): Promise<FoodItemForGenerator[]> {
-  const foods = await prisma.foodItem.findMany({
+  const products = await prisma.product.findMany({
     where: {
       macroCategory: category,
     },
     select: {
       id: true,
       name: true,
-      calories: true,
-      proteinG: true,
-      carbsG: true,
-      fatG: true,
+      kcal: true,
+      protein: true,
+      carbs: true,
+      fat: true,
       macroCategory: true,
-      mealTypes: true,
-      isRecommended: true,
     },
-    orderBy: [
-      { isRecommended: 'desc' },
-      { name: 'asc' },
-    ],
+    orderBy: {
+      name: 'asc',
+    },
   });
 
-  return foods.map((food) => ({
-    id: food.id,
-    name: food.name,
-    calories: food.calories ? Number(food.calories) : 0,
-    proteinG: food.proteinG ? Number(food.proteinG) : 0,
-    carbsG: food.carbsG ? Number(food.carbsG) : 0,
-    fatG: food.fatG ? Number(food.fatG) : 0,
-    macroCategory: food.macroCategory as MacroCategory,
-    mealTypes: (food.mealTypes || []) as MealType[],
-    isRecommended: food.isRecommended,
+  return products.map((product) => ({
+    id: product.id,
+    name: product.name,
+    calories: product.kcal ? Number(product.kcal) : 0,
+    proteinG: product.protein ? Number(product.protein) : 0,
+    carbsG: product.carbs ? Number(product.carbs) : 0,
+    fatG: product.fat ? Number(product.fat) : 0,
+    macroCategory: product.macroCategory as MacroCategory,
+    mealTypes: [] as MealType[], // Product doesn't have mealTypes, allow all meals
+    isRecommended: false, // Product doesn't have isRecommended
   }));
 }
 

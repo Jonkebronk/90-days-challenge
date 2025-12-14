@@ -2504,6 +2504,9 @@ model Product {
   // SLV reference
   slvNummer       Int?     // Livsmedelsverkets nummer
 
+  // Meal plan generator fields
+  macroCategory   String?  // "protein" | "carb" | "fat" | "vegetable" | "sauce"
+
   // Source tracking
   source    String   @default("manual") // "manual" | "openfoodfacts" | "ai" | "import"
 
@@ -2517,6 +2520,7 @@ model Product {
   @@index([mainCategory])
   @@index([subCategory])
   @@index([category])
+  @@index([macroCategory])
   @@map("products")
 }
 

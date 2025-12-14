@@ -67,19 +67,17 @@ export async function PUT(
       );
     }
 
-    // Fetch the new food
-    const newFood = await prisma.foodItem.findUnique({
+    // Fetch the new food from Product model
+    const newFood = await prisma.product.findUnique({
       where: { id: newFoodId },
       select: {
         id: true,
         name: true,
-        calories: true,
-        proteinG: true,
-        carbsG: true,
-        fatG: true,
+        kcal: true,
+        protein: true,
+        carbs: true,
+        fat: true,
         macroCategory: true,
-        mealTypes: true,
-        isRecommended: true,
       },
     });
 
@@ -107,13 +105,13 @@ export async function PUT(
     const newFoodForGenerator: FoodItemForGenerator = {
       id: newFood.id,
       name: newFood.name,
-      calories: newFood.calories ? Number(newFood.calories) : 0,
-      proteinG: newFood.proteinG ? Number(newFood.proteinG) : 0,
-      carbsG: newFood.carbsG ? Number(newFood.carbsG) : 0,
-      fatG: newFood.fatG ? Number(newFood.fatG) : 0,
+      calories: newFood.kcal ? Number(newFood.kcal) : 0,
+      proteinG: newFood.protein ? Number(newFood.protein) : 0,
+      carbsG: newFood.carbs ? Number(newFood.carbs) : 0,
+      fatG: newFood.fat ? Number(newFood.fat) : 0,
       macroCategory: newFood.macroCategory as MacroCategory,
-      mealTypes: (newFood.mealTypes || []) as MealType[],
-      isRecommended: newFood.isRecommended,
+      mealTypes: [] as MealType[], // Product doesn't have mealTypes
+      isRecommended: false, // Product doesn't have isRecommended
     };
 
     // Get current meals from plan

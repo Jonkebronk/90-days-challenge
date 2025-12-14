@@ -95,7 +95,9 @@ export async function PUT(
       vitaminA, vitaminD, vitaminE, vitaminC, vitaminB6, vitaminB12,
       thiamin, riboflavin, niacin, folate,
       calcium, iron, magnesium, phosphorus, potassium, zinc, selenium, iodine,
-      slvNummer, servingUnit
+      slvNummer, servingUnit,
+      // Meal plan generator
+      macroCategory
     } = body
 
     // Get existing product to preserve image if not updating
@@ -166,7 +168,9 @@ export async function PUT(
         // SLV reference
         slvNummer: slvNummer ?? null,
         source: source || existing.source || 'manual',
-        servingUnit: servingUnit || existing.servingUnit || 'g'
+        servingUnit: servingUnit || existing.servingUnit || 'g',
+        // Meal plan generator
+        macroCategory: macroCategory ?? existing.macroCategory ?? null
       }
     })
 
