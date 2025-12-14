@@ -3,9 +3,24 @@
 
 export type PlanStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
 
-export type CalculationMethod = 'automatic' | 'manual';
+export type CalculationMethod = 'automatic' | 'manual' | 'metabolism';
 
 export type CalculationType = 'weight_height_age';
+
+// Simple metabolism activity levels
+export type MetabolismActivityLevel = 'sedentary' | 'moderate' | 'very_active';
+
+export const METABOLISM_ACTIVITY_LABELS: Record<MetabolismActivityLevel, string> = {
+  sedentary: 'Stillasittande',
+  moderate: 'Måttligt aktiv (träning 2-4 ggr/vecka)',
+  very_active: 'Mycket aktiv (tung träning 4+ ggr/vecka)',
+};
+
+export const METABOLISM_MULTIPLIERS: Record<MetabolismActivityLevel, number> = {
+  sedentary: 25,
+  moderate: 30,
+  very_active: 35,
+};
 
 export type Gender = 'male' | 'female';
 

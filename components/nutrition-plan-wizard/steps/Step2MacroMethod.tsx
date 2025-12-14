@@ -1,7 +1,7 @@
 'use client';
 
 import { Card } from '@/components/ui/card';
-import { Calculator, Sliders, Check } from 'lucide-react';
+import { Calculator, Sliders, Check, Activity } from 'lucide-react';
 import { useNutritionPlanWizardStore } from '@/lib/stores/nutrition-plan-wizard-store';
 import { WizardNavigation } from '../WizardNavigation';
 import type { CalculationMethod } from '@/lib/types/client-nutrition-plan';
@@ -21,6 +21,12 @@ const methods: MethodOption[] = [
     description:
       'Beräkna makros baserat på klientens uppgifter och energibehov',
     icon: <Calculator className="w-6 h-6" />,
+  },
+  {
+    value: 'metabolism',
+    title: 'Beräkna ämnesomsättning',
+    description: 'Enkel beräkning baserad på kroppsvikt och aktivitetsnivå',
+    icon: <Activity className="w-6 h-6" />,
   },
   {
     value: 'manual',

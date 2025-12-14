@@ -13,7 +13,9 @@ import type {
   ExerciseActivity,
   WorkoutTime,
   NutritionSystem,
+  MetabolismActivityLevel,
 } from '@/lib/types/client-nutrition-plan';
+import { METABOLISM_MULTIPLIERS } from '@/lib/types/client-nutrition-plan';
 import { calculateAllNutrition } from '@/lib/calculations/nutrition-plan-formulas';
 
 // Total wizard steps
@@ -31,6 +33,9 @@ interface NutritionPlanWizardState {
 
   // Step 2: Macro Calculation Method
   calculationMethod: CalculationMethod;
+
+  // Step 2b: Metabolism Activity Level (for metabolism method)
+  metabolismActivityLevel: MetabolismActivityLevel | null;
 
   // Step 3: Calculation Type
   calculationType: CalculationType;
@@ -103,6 +108,9 @@ interface NutritionPlanWizardState {
   // Actions - Step 2: Calculation Method
   setCalculationMethod: (method: CalculationMethod) => void;
 
+  // Actions - Step 2b: Metabolism Activity Level
+  setMetabolismActivityLevel: (level: MetabolismActivityLevel) => void;
+
   // Actions - Step 3: Calculation Type
   setCalculationType: (type: CalculationType) => void;
 
@@ -146,6 +154,7 @@ interface NutritionPlanWizardState {
 
   // Actions - Calculations
   recalculateAll: () => void;
+  recalculateMetabolism: () => void;
 
   // Actions - Submission
   setSubmitting: (isSubmitting: boolean) => void;
@@ -167,6 +176,9 @@ const initialState = {
 
   // Step 2: Macro Calculation Method
   calculationMethod: 'automatic' as CalculationMethod,
+
+  // Step 2b: Metabolism Activity Level
+  metabolismActivityLevel: null as MetabolismActivityLevel | null,
 
   // Step 3: Calculation Type
   calculationType: 'weight_height_age' as CalculationType,
@@ -287,6 +299,12 @@ export const useNutritionPlanWizardStore = create<NutritionPlanWizardState>()(
       // Step 2: Calculation Method
       setCalculationMethod: (method) => set({ calculationMethod: method }),
 
+      // Step 2b: Metabolism Activity Level
+      setMetabolismActivityLevel: (level) => {
+        set({ metabolismActivityLevel: level });
+        get().recalculateMetabolism();
+      },
+
       // Step 3: Calculation Type
       setCalculationType: (type) => set({ calculationType: type }),
 
@@ -375,6 +393,29 @@ export const useNutritionPlanWizardStore = create<NutritionPlanWizardState>()(
         });
       },
 
+      // Simple metabolism calculation (weight × activity multiplier)
+      recalculateMetabolism: () => {
+        const state = get();
+        if (!state.metabolismActivityLevel || state.weight <= 0) return;
+
+        const multiplier = METABOLISM_MULTIPLIERS[state.metabolismActivityLevel];
+        const dailyCalories = state.weight * multiplier;
+
+        // Calculate macros using default values
+        const proteinGrams = state.weight * state.proteinPerKg;
+        const fatGrams = state.weight * state.fatPerKg;
+        const remainingCals = dailyCalories - (proteinGrams * 4) - (fatGrams * 9);
+        const carbGrams = Math.max(0, remainingCals / 4);
+
+        set({
+          dailyCalorieTarget: Math.round(dailyCalories),
+          tdee: Math.round(dailyCalories),
+          proteinGrams: Math.round(proteinGrams),
+          fatGrams: Math.round(fatGrams),
+          carbGrams: Math.round(carbGrams),
+        });
+      },
+
       // Submission
       setSubmitting: (isSubmitting) => set({ isSubmitting }),
       setCreatedPlanId: (id) => set({ createdPlanId: id }),
@@ -392,6 +433,7 @@ export const useNutritionPlanWizardStore = create<NutritionPlanWizardState>()(
         clientName: state.clientName,
         clientEmail: state.clientEmail,
         calculationMethod: state.calculationMethod,
+        metabolismActivityLevel: state.metabolismActivityLevel,
         calculationType: state.calculationType,
         weight: state.weight,
         height: state.height,
