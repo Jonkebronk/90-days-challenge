@@ -534,6 +534,17 @@ export default function ProductsPage() {
               className="pl-10 text-base"
             />
           </div>
+
+          {/* Product request button for non-coaches */}
+          {!isCoach && (
+            <button
+              onClick={() => setIsClientRequestModalOpen(true)}
+              className="w-full mt-3 flex items-center justify-center gap-2 p-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg text-amber-700 transition-colors"
+            >
+              <Send className="w-4 h-4" />
+              <span className="text-sm font-medium">Saknar du ett livsmedel? Skicka en förfrågan</span>
+            </button>
+          )}
         </div>
 
         {/* Subcategory section */}
