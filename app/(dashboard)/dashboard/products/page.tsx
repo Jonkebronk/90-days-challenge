@@ -533,70 +533,8 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Category chips */}
+        {/* Subcategory section */}
         <div className="px-4 pb-3">
-          <div className="flex flex-wrap gap-1.5">
-            {/* "Alla" button */}
-            <button
-              onClick={() => {
-                setSelectedCategory('all')
-                setSelectedSubcategory(null)
-              }}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm transition-colors ${
-                selectedCategory === 'all'
-                  ? 'bg-gold-primary text-black font-medium'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              <Package className="w-3.5 h-3.5" />
-              <span>Alla</span>
-              {totalProducts > 0 && (
-                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  selectedCategory === 'all' ? 'bg-black/20' : 'bg-gray-200'
-                }`}>
-                  {totalProducts}
-                </span>
-              )}
-            </button>
-            {/* Dynamic categories from state (exclude main and secondary categories) */}
-            {categories
-              .filter(cat => !['proteinkallor', 'kolhydratkallor', 'fettkallor', 'sasar', 'kryddor', 'matlagningsfett', 'gronsaker'].includes(cat.id))
-              .map(cat => {
-              const count = categoryCounts[cat.id] || 0
-              const Icon = cat.icon || Package
-              const isActive = selectedCategory === cat.id
-
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => {
-                    // Toggle: if already selected, go back to 'all'
-                    if (isActive) {
-                      setSelectedCategory('all')
-                    } else {
-                      setSelectedCategory(cat.id)
-                    }
-                    setSelectedSubcategory(null)
-                  }}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm transition-colors ${
-                    isActive
-                      ? 'bg-gold-primary text-black font-medium'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span>{cat.label}</span>
-                  {count > 0 && (
-                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                      isActive ? 'bg-black/20' : 'bg-gray-200'
-                    }`}>
-                      {count}
-                    </span>
-                  )}
-                </button>
-              )
-            })}
-          </div>
 
           {/* Subcategory chips - show when category has subcategories */}
           {selectedCategory !== 'all' && (() => {
