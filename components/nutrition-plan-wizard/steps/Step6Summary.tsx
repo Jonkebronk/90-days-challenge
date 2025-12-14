@@ -16,34 +16,29 @@ export function Step6Summary() {
     fatLossRate,
     proteinPerKg,
     fatPerKg,
-    tdee, // Metabolism before deficit
-    dailyCalorieTarget, // Already has deficit applied
-    proteinGrams: storeProteinGrams,
-    fatGrams: storeFatGrams,
-    carbGrams: storeCarbGrams,
     nextStep,
     previousStep,
   } = useNutritionPlanWizardStore();
 
-  // Use store values for consistency
+  // Calculate values directly to ensure consistency
   const multiplier = metabolismActivityLevel ? METABOLISM_MULTIPLIERS[metabolismActivityLevel] : 30;
-  const metabolism = tdee; // Use tdee from store
+  const metabolism = weight * multiplier; // Calculate directly, don't use tdee from store
   const deficit = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].deficitPerDay : 0;
   const fatLossLabel = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].label : '';
   const activityLabel = metabolismActivityLevel ? METABOLISM_ACTIVITY_LABELS[metabolismActivityLevel] : '';
 
-  // Use dailyCalorieTarget from store (already has deficit applied)
-  const actualCalorieTarget = dailyCalorieTarget;
+  // Calculate calorie target directly (metabolism - deficit)
+  const actualCalorieTarget = Math.round(Math.max(1200, metabolism - deficit));
 
-  // Use macro values from store for consistency
-  const proteinGrams = storeProteinGrams;
+  // Calculate macros based on the correct calorie target
+  const proteinGrams = Math.round(weight * proteinPerKg);
   const proteinCalories = proteinGrams * 4;
-  const fatGrams = storeFatGrams;
+  const fatGrams = Math.round(weight * fatPerKg);
   const fatCalories = fatGrams * 9;
-  const carbGrams = storeCarbGrams;
+  const remainingCalories = actualCalorieTarget - proteinCalories - fatCalories;
+  const carbGrams = Math.round(Math.max(0, remainingCalories / 4));
   const carbCalories = carbGrams * 4;
   const totalCalories = proteinCalories + fatCalories + carbCalories;
-  const remainingCalories = actualCalorieTarget - proteinCalories - fatCalories;
 
   return (
     <div className="space-y-5">
