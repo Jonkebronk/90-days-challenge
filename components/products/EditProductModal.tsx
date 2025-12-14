@@ -330,6 +330,62 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
     setShowNewSubCategory(false)
   }
 
+  // Delete category
+  const deleteCategory = async (key: string) => {
+    if (!confirm('Är du säker på att du vill ta bort denna kategori?')) return
+
+    try {
+      const response = await fetch(`/api/product-categories?key=${encodeURIComponent(key)}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        setDbCategories(prev => prev.filter(c => c.key !== key))
+        if (formData.category === key) {
+          setFormData(prev => ({ ...prev, category: '', subCategory: '' }))
+        }
+      } else {
+        const data = await response.json()
+        alert(data.error || 'Kunde inte ta bort kategorin')
+      }
+    } catch (error) {
+      console.error('Error deleting category:', error)
+    }
+  }
+
+  // Delete subcategory
+  const deleteSubCategory = async (key: string) => {
+    if (!confirm('Är du säker på att du vill ta bort denna underkategori?')) return
+
+    try {
+      const response = await fetch(`/api/product-categories?key=${encodeURIComponent(key)}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        setDbSubcategories(prev => prev.filter(s => s.key !== key))
+        if (formData.subCategory === key) {
+          setFormData(prev => ({ ...prev, subCategory: '' }))
+        }
+      } else {
+        const data = await response.json()
+        alert(data.error || 'Kunde inte ta bort underkategorin')
+      }
+    } catch (error) {
+      console.error('Error deleting subcategory:', error)
+    }
+  }
+
+  // Check if category is custom (deletable)
+  const isCustomCategory = (key: string): boolean => {
+    return dbCategories.some(c => c.key === key)
+  }
+
+  // Check if subcategory is custom (deletable)
+  const isCustomSubCategory = (key: string): boolean => {
+    return dbSubcategories.some(s => s.key === key)
+  }
+
   // Initialize form when product changes
   useEffect(() => {
     if (product) {
@@ -1088,21 +1144,31 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
             <Label className="text-sm">Kategori</Label>
             <div className="flex flex-wrap gap-1.5 mt-2">
               {getAllCategories().map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => setFormData(prev => ({
-                    ...prev,
-                    category: prev.category === cat.id ? '' : cat.id,
-                    subCategory: prev.category === cat.id ? prev.subCategory : '' // Clear subcategory when changing category
-                  }))}
-                  className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
-                    formData.category === cat.id
-                      ? 'bg-gold-primary text-black'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  {cat.label}
-                </button>
+                <div key={cat.id} className="relative group">
+                  <button
+                    onClick={() => setFormData(prev => ({
+                      ...prev,
+                      category: prev.category === cat.id ? '' : cat.id,
+                      subCategory: prev.category === cat.id ? prev.subCategory : '' // Clear subcategory when changing category
+                    }))}
+                    className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
+                      formData.category === cat.id
+                        ? 'bg-gold-primary text-black'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    } ${isCustomCategory(cat.id) ? 'pr-6' : ''}`}
+                  >
+                    {cat.label}
+                  </button>
+                  {isCustomCategory(cat.id) && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); deleteCategory(cat.id); }}
+                      className="absolute right-1 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                      title="Ta bort kategori"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
               ))}
               {/* Add new category button */}
               {showNewCategory ? (
@@ -1149,20 +1215,30 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
                 <Label className="text-sm text-gray-600">Subkategori</Label>
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {getSubcategoriesForCategory(formData.category).map(subcat => (
-                    <button
-                      key={subcat.key}
-                      onClick={() => setFormData(prev => ({
-                        ...prev,
-                        subCategory: prev.subCategory === subcat.key ? '' : subcat.key
-                      }))}
-                      className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
-                        formData.subCategory === subcat.key
-                          ? 'bg-gray-800 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {subcat.label}
-                    </button>
+                    <div key={subcat.key} className="relative group">
+                      <button
+                        onClick={() => setFormData(prev => ({
+                          ...prev,
+                          subCategory: prev.subCategory === subcat.key ? '' : subcat.key
+                        }))}
+                        className={`px-2.5 py-1 text-xs rounded-full transition-colors ${
+                          formData.subCategory === subcat.key
+                            ? 'bg-gray-800 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        } ${isCustomSubCategory(subcat.key) ? 'pr-6' : ''}`}
+                      >
+                        {subcat.label}
+                      </button>
+                      {isCustomSubCategory(subcat.key) && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); deleteSubCategory(subcat.key); }}
+                          className="absolute right-1 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                          title="Ta bort underkategori"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
                   ))}
                   {/* Add new subcategory button */}
                   {showNewSubCategory ? (
