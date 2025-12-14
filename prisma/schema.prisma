@@ -332,6 +332,10 @@ model FoodItem {
   approvedAt    DateTime? // When it was approved
   isApproved    Boolean   @default(false) // Approval status
 
+  // Meal plan generator fields
+  macroCategory String?   // "protein" | "carb" | "fat" | "vegetable" | "sauce"
+  mealTypes     String[]  // ["frukost", "mellanmål", "lunch", "middag", "kvällsmål"]
+
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
@@ -342,6 +346,7 @@ model FoodItem {
   shoppingListItems  ShoppingListItem[]
 
   @@index([slvNummer])
+  @@index([macroCategory])
   @@map("food_items")
 }
 
@@ -2706,8 +2711,34 @@ model ClientNutritionPlan {
   // Meal distribution configuration
   mealDistribution Json? // Array of meal slots with macro percentages
 
+  // Generated meal plan relation
+  generatedMealPlans GeneratedMealPlan[]
+
   @@index([clientId])
   @@index([coachId])
   @@index([clientId, status])
   @@map("client_nutrition_plans")
+}
+
+// Generated Meal Plan - Auto-generated meal schedules from the wizard
+model GeneratedMealPlan {
+  id              String   @id @default(cuid())
+  nutritionPlanId String
+  nutritionPlan   ClientNutritionPlan @relation(fields: [nutritionPlanId], references: [id], onDelete: Cascade)
+
+  // Configuration - which macros are active per meal
+  mealConfigs Json // MealConfig[] with P/K/F toggles per meal
+
+  // Generated meals with foods, grams, and alternatives
+  meals Json // GeneratedMeal[] array
+
+  // Macro targets and actuals
+  targetMacros Json // { protein, carbs, fat, kcal }
+  actualMacros Json // { protein, carbs, fat, kcal }
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([nutritionPlanId])
+  @@map("generated_meal_plans")
 }
