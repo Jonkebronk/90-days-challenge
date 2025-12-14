@@ -406,11 +406,11 @@ export default function ProductsPage() {
           </div>
 
           {/* Main macro categories - prominent section */}
-          <div className="grid grid-cols-3 gap-2 mb-2">
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-2">
             {[
-              { id: 'proteinkallor', label: 'Proteinkällor', icon: Beef, color: 'from-red-500 to-rose-600' },
-              { id: 'kolhydratkallor', label: 'Kolhydratskällor', icon: Wheat, color: 'from-amber-500 to-yellow-600' },
-              { id: 'fettkallor', label: 'Fettkällor', icon: Droplets, color: 'from-blue-500 to-cyan-600' },
+              { id: 'proteinkallor', label: 'Protein', labelFull: 'Proteinkällor', icon: Beef, color: 'from-red-500 to-rose-600' },
+              { id: 'kolhydratkallor', label: 'Kolhydrat', labelFull: 'Kolhydratskällor', icon: Wheat, color: 'from-amber-500 to-yellow-600' },
+              { id: 'fettkallor', label: 'Fett', labelFull: 'Fettkällor', icon: Droplets, color: 'from-blue-500 to-cyan-600' },
             ].map(cat => {
               const count = categoryCounts[cat.id] || 0
               const Icon = cat.icon
@@ -427,16 +427,17 @@ export default function ProductsPage() {
                     }
                     setSelectedSubcategory(null)
                   }}
-                  className={`relative flex flex-col items-center justify-center p-3 rounded-xl transition-all ${
+                  className={`relative flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl transition-all ${
                     isActive
                       ? `bg-gradient-to-br ${cat.color} text-white shadow-lg scale-[1.02]`
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  <Icon className={`w-6 h-6 mb-1 ${isActive ? 'text-white' : 'text-gray-500'}`} />
-                  <span className="text-xs font-semibold text-center leading-tight">{cat.label}</span>
+                  <Icon className={`w-5 h-5 sm:w-6 sm:h-6 mb-0.5 sm:mb-1 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                  <span className="text-[10px] sm:text-xs font-semibold text-center leading-tight sm:hidden">{cat.label}</span>
+                  <span className="text-xs font-semibold text-center leading-tight hidden sm:block">{cat.labelFull}</span>
                   {count > 0 && (
-                    <span className={`absolute top-1 right-1 text-[10px] px-1.5 py-0.5 rounded-full ${
+                    <span className={`absolute top-0.5 right-0.5 sm:top-1 sm:right-1 text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 rounded-full ${
                       isActive ? 'bg-white/30 text-white' : 'bg-gray-300 text-gray-600'
                     }`}>
                       {count}
@@ -448,16 +449,17 @@ export default function ProductsPage() {
           </div>
 
           {/* Secondary categories - smaller */}
-          <div className="grid grid-cols-4 gap-2 mb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2 mb-3 sm:mb-4">
             {[
               { id: 'sasar', label: 'Såser', icon: UtensilsCrossed, color: 'from-purple-500 to-violet-600' },
               { id: 'kryddor', label: 'Kryddor', icon: Leaf, color: 'from-lime-500 to-green-600' },
-              { id: 'matlagningsfett', label: 'Matlagningsfett', icon: Flame, color: 'from-orange-500 to-amber-600' },
+              { id: 'matlagningsfett', label: 'Matlagning', labelFull: 'Matlagningsfett', icon: Flame, color: 'from-orange-500 to-amber-600' },
               { id: 'gronsaker', label: 'Grönsaker', icon: Carrot, color: 'from-green-500 to-emerald-600' },
             ].map(cat => {
               const count = categoryCounts[cat.id] || 0
               const Icon = cat.icon
               const isActive = selectedCategory === cat.id
+              const displayLabel = cat.labelFull || cat.label
 
               return (
                 <button
@@ -470,16 +472,17 @@ export default function ProductsPage() {
                     }
                     setSelectedSubcategory(null)
                   }}
-                  className={`relative flex items-center justify-center gap-2 p-2.5 rounded-xl transition-all ${
+                  className={`relative flex items-center justify-center gap-1 sm:gap-2 p-2 sm:p-2.5 rounded-xl transition-all ${
                     isActive
                       ? `bg-gradient-to-br ${cat.color} text-white shadow-lg scale-[1.02]`
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-500'}`} />
-                  <span className="text-xs font-semibold">{cat.label}</span>
+                  <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                  <span className="text-[10px] sm:text-xs font-semibold sm:hidden">{cat.label}</span>
+                  <span className="text-xs font-semibold hidden sm:block">{displayLabel}</span>
                   {count > 0 && (
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                    <span className={`text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 rounded-full ${
                       isActive ? 'bg-white/30 text-white' : 'bg-gray-300 text-gray-600'
                     }`}>
                       {count}
