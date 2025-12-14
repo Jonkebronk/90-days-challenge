@@ -208,7 +208,7 @@ const initialState = {
 
   // Step 7: Macro Targets
   proteinPerKg: 2.0,
-  fatPerKg: 0.8,
+  fatPerKg: 0.7,
 
   // Step 8: Training Days
   hasTrainingDays: true,
