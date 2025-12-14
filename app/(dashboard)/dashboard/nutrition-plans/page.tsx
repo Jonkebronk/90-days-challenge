@@ -4,9 +4,38 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, ChevronRight, Calendar, User, Utensils } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Plus,
+  ChevronRight,
+  Calendar,
+  User,
+  Utensils,
+  MoreVertical,
+  Pencil,
+  Trash2,
+  Archive,
+  CheckCircle,
+} from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { sv } from 'date-fns/locale';
+import { toast } from 'sonner';
 import type { ClientNutritionPlan } from '@/lib/types/client-nutrition-plan';
 
 interface PlanWithClient extends ClientNutritionPlan {
@@ -21,26 +50,93 @@ export default function NutritionPlansPage() {
   const router = useRouter();
   const [plans, setPlans] = useState<PlanWithClient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [planToDelete, setPlanToDelete] = useState<PlanWithClient | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const fetchPlans = async () => {
+    try {
+      const response = await fetch('/api/nutrition-plans');
+      if (response.ok) {
+        const data = await response.json();
+        setPlans(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch plans:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchPlans() {
-      try {
-        const response = await fetch('/api/nutrition-plans');
-        if (response.ok) {
-          const data = await response.json();
-          setPlans(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch plans:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
     fetchPlans();
   }, []);
 
   const handleCreatePlan = () => {
     router.push('/dashboard/nutrition-plans/create');
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, plan: PlanWithClient) => {
+    e.stopPropagation();
+    setPlanToDelete(plan);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!planToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/nutrition-plans/${planToDelete.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        toast.success('Kostplanen har tagits bort');
+        setPlans(plans.filter((p) => p.id !== planToDelete.id));
+      } else {
+        const error = await response.json();
+        toast.error(error.error || 'Kunde inte ta bort kostplanen');
+      }
+    } catch (error) {
+      console.error('Error deleting plan:', error);
+      toast.error('Något gick fel');
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setPlanToDelete(null);
+    }
+  };
+
+  const handleStatusChange = async (
+    e: React.MouseEvent,
+    plan: PlanWithClient,
+    newStatus: string
+  ) => {
+    e.stopPropagation();
+    try {
+      const response = await fetch(`/api/nutrition-plans/${plan.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (response.ok) {
+        toast.success(
+          newStatus === 'ACTIVE'
+            ? 'Kostplanen är nu aktiv'
+            : newStatus === 'ARCHIVED'
+            ? 'Kostplanen har arkiverats'
+            : 'Status uppdaterad'
+        );
+        fetchPlans();
+      } else {
+        toast.error('Kunde inte uppdatera status');
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast.error('Något gick fel');
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -152,7 +248,7 @@ export default function NutritionPlansPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
                         plan.status
@@ -160,6 +256,66 @@ export default function NutritionPlansPage() {
                     >
                       {getStatusLabel(plan.status)}
                     </span>
+
+                    {/* Actions dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/dashboard/nutrition-plans/${plan.id}`);
+                          }}
+                        >
+                          <Pencil className="w-4 h-4 mr-2" />
+                          Visa/Redigera
+                        </DropdownMenuItem>
+
+                        <DropdownMenuSeparator />
+
+                        {plan.status !== 'ACTIVE' && (
+                          <DropdownMenuItem
+                            onClick={(e) =>
+                              handleStatusChange(e, plan, 'ACTIVE')
+                            }
+                          >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Gör aktiv
+                          </DropdownMenuItem>
+                        )}
+
+                        {plan.status !== 'ARCHIVED' && (
+                          <DropdownMenuItem
+                            onClick={(e) =>
+                              handleStatusChange(e, plan, 'ARCHIVED')
+                            }
+                          >
+                            <Archive className="w-4 h-4 mr-2" />
+                            Arkivera
+                          </DropdownMenuItem>
+                        )}
+
+                        <DropdownMenuSeparator />
+
+                        <DropdownMenuItem
+                          className="text-red-600 focus:text-red-600"
+                          onClick={(e) => handleDeleteClick(e, plan)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Ta bort
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </div>
                 </div>
@@ -168,6 +324,30 @@ export default function NutritionPlansPage() {
           ))}
         </div>
       )}
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Ta bort kostplan?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Är du säker på att du vill ta bort kostplanen för{' '}
+              <strong>{planToDelete?.client.name || planToDelete?.client.email}</strong>?
+              Detta går inte att ångra.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Avbryt</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isDeleting ? 'Tar bort...' : 'Ta bort'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
