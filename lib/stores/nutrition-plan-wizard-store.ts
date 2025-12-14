@@ -20,7 +20,7 @@ import { METABOLISM_MULTIPLIERS } from '@/lib/types/client-nutrition-plan';
 import { calculateAllNutrition } from '@/lib/calculations/nutrition-plan-formulas';
 
 // Total wizard steps
-export const TOTAL_STEPS = 13;
+export const TOTAL_STEPS = 10;
 
 interface NutritionPlanWizardState {
   // Navigation

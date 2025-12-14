@@ -17,14 +17,11 @@ import { Step2MacroMethod } from './steps/Step2MacroMethod';
 import { Step3FatLossRate } from './steps/Step3FatLossRate';
 import { Step4DailyCalories } from './steps/Step4DailyCalories';
 import { Step5Macros } from './steps/Step5Macros';
-import { Step6EnergyTarget } from './steps/Step6EnergyTarget';
-import { Step7MacroTargets } from './steps/Step7MacroTargets';
-import { Step8TrainingDays } from './steps/Step8TrainingDays';
-import { Step9MealsPerDay } from './steps/Step9MealsPerDay';
-import { Step10WorkoutTime } from './steps/Step10WorkoutTime';
-import { Step11NutritionSystem } from './steps/Step11NutritionSystem';
-import { Step12Review } from './steps/Step12Review';
-import { Step13PlanDetails } from './steps/Step13PlanDetails';
+import { Step6Summary } from './steps/Step6Summary';
+import { Step7TrainingDays } from './steps/Step7TrainingDays';
+import { Step8MealsPerDay } from './steps/Step8MealsPerDay';
+import { Step9Review } from './steps/Step9Review';
+import { Step10PlanDetails } from './steps/Step10PlanDetails';
 
 interface NutritionPlanWizardProps {
   preselectedClientId?: string;
@@ -85,21 +82,15 @@ export function NutritionPlanWizard({
       case 5:
         return <Step5Macros />;
       case 6:
-        return <Step6EnergyTarget />;
+        return <Step6Summary />;
       case 7:
-        return <Step7MacroTargets />;
+        return <Step7TrainingDays />;
       case 8:
-        return <Step8TrainingDays />;
+        return <Step8MealsPerDay />;
       case 9:
-        return <Step9MealsPerDay />;
+        return <Step9Review />;
       case 10:
-        return <Step10WorkoutTime />;
-      case 11:
-        return <Step11NutritionSystem />;
-      case 12:
-        return <Step12Review />;
-      case 13:
-        return <Step13PlanDetails />;
+        return <Step10PlanDetails />;
       default:
         return <Step1ClientSelect />;
     }

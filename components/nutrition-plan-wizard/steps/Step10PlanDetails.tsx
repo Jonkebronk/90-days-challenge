@@ -10,7 +10,7 @@ import {
   NUTRITION_SYSTEM_LABELS,
 } from '@/lib/types/client-nutrition-plan';
 
-export function Step13PlanDetails() {
+export function Step10PlanDetails() {
   const router = useRouter();
 
   const {

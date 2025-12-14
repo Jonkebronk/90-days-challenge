@@ -15,7 +15,7 @@ import {
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
-export function Step12Review() {
+export function Step9Review() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
