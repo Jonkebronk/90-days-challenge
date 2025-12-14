@@ -36,12 +36,21 @@ interface ManageCategoriesModalProps {
 
 // Built-in categories that always exist
 const BUILT_IN_CATEGORIES = [
+  // Main macro categories
+  { key: 'proteinkallor', label: 'Proteinkällor' },
+  { key: 'kolhydratkallor', label: 'Kolhydratskällor' },
+  { key: 'fettkallor', label: 'Fettkällor' },
+  // Secondary categories
+  { key: 'sasar', label: 'Såser' },
+  { key: 'kryddor', label: 'Kryddor' },
+  { key: 'matlagningsfett', label: 'Matlagningsfett' },
+  { key: 'gronsaker', label: 'Grönsaker' },
+  // Other categories
   { key: 'mejeri', label: 'Mejeri' },
   { key: 'kott', label: 'Kött' },
   { key: 'fisk', label: 'Fisk' },
   { key: 'brod', label: 'Bröd' },
   { key: 'frukt', label: 'Frukt' },
-  { key: 'gronsaker', label: 'Grönsaker' },
   { key: 'dryck', label: 'Dryck' },
   { key: 'snacks', label: 'Snacks' },
   { key: 'fryst', label: 'Fryst' },
