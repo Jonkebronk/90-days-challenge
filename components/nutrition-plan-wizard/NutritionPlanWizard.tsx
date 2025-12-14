@@ -15,7 +15,7 @@ import { WizardProgress } from './WizardProgress';
 import { Step1ClientSelect } from './steps/Step1ClientSelect';
 import { Step2MacroMethod } from './steps/Step2MacroMethod';
 import { Step3FatLossRate } from './steps/Step3FatLossRate';
-import { Step4BodyDetails } from './steps/Step4BodyDetails';
+import { Step4DailyCalories } from './steps/Step4DailyCalories';
 import { Step5ActivityFactors } from './steps/Step5ActivityFactors';
 import { Step6EnergyTarget } from './steps/Step6EnergyTarget';
 import { Step7MacroTargets } from './steps/Step7MacroTargets';
@@ -81,7 +81,7 @@ export function NutritionPlanWizard({
       case 3:
         return <Step3FatLossRate />;
       case 4:
-        return <Step4BodyDetails />;
+        return <Step4DailyCalories />;
       case 5:
         return <Step5ActivityFactors />;
       case 6:
