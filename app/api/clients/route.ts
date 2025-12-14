@@ -49,6 +49,11 @@ export async function GET() {
         status: true,
         invitationSentAt: true,
         createdAt: true,
+        // Additional fields for nutrition plan wizard
+        age: true,
+        height: true,
+        currentWeight: true,
+        gender: true,
       },
       orderBy: {
         createdAt: 'desc',

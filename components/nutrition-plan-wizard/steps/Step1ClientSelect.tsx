@@ -22,7 +22,8 @@ export function Step1ClientSelect() {
         const response = await fetch('/api/clients');
         if (response.ok) {
           const data = await response.json();
-          setClients(data);
+          // API returns { clients: [...], coach: null }
+          setClients(data.clients || []);
         }
       } catch (error) {
         console.error('Failed to fetch clients:', error);
