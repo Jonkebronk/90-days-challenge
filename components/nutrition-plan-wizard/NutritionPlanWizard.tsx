@@ -15,7 +15,6 @@ import { WizardProgress } from './WizardProgress';
 import { Step1ClientSelect } from './steps/Step1ClientSelect';
 import { Step2MacroMethod } from './steps/Step2MacroMethod';
 import { Step3CalculationType } from './steps/Step3CalculationType';
-import { Step3Metabolism } from './steps/Step3Metabolism';
 import { Step4BodyDetails } from './steps/Step4BodyDetails';
 import { Step5ActivityFactors } from './steps/Step5ActivityFactors';
 import { Step6EnergyTarget } from './steps/Step6EnergyTarget';
@@ -35,7 +34,7 @@ export function NutritionPlanWizard({
   preselectedClientId,
 }: NutritionPlanWizardProps) {
   const router = useRouter();
-  const { currentStep, clientName, calculationMethod, reset, recalculateAll } =
+  const { currentStep, clientName, reset, recalculateAll } =
     useNutritionPlanWizardStore();
 
   // Initialize calculations on mount
@@ -80,10 +79,6 @@ export function NutritionPlanWizard({
       case 2:
         return <Step2MacroMethod />;
       case 3:
-        // Show metabolism step or calculation type based on method
-        if (calculationMethod === 'metabolism') {
-          return <Step3Metabolism />;
-        }
         return <Step3CalculationType />;
       case 4:
         return <Step4BodyDetails />;

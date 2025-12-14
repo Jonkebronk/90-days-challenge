@@ -175,7 +175,7 @@ const initialState = {
   clientEmail: '',
 
   // Step 2: Macro Calculation Method
-  calculationMethod: 'automatic' as CalculationMethod,
+  calculationMethod: 'metabolism' as CalculationMethod,
 
   // Step 2b: Metabolism Activity Level
   metabolismActivityLevel: null as MetabolismActivityLevel | null,

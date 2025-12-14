@@ -1,99 +1,154 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { Calculator, Sliders, Check, Activity } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Check } from 'lucide-react';
 import { useNutritionPlanWizardStore } from '@/lib/stores/nutrition-plan-wizard-store';
 import { WizardNavigation } from '../WizardNavigation';
-import type { CalculationMethod } from '@/lib/types/client-nutrition-plan';
+import {
+  MetabolismActivityLevel,
+  METABOLISM_ACTIVITY_LABELS,
+  METABOLISM_MULTIPLIERS,
+} from '@/lib/types/client-nutrition-plan';
 import { cn } from '@/lib/utils';
 
-interface MethodOption {
-  value: CalculationMethod;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-}
-
-const methods: MethodOption[] = [
+const activityOptions: {
+  value: MetabolismActivityLevel;
+  formula: string;
+}[] = [
   {
-    value: 'automatic',
-    title: 'Automatisk',
-    description:
-      'Beräkna makros baserat på klientens uppgifter och energibehov',
-    icon: <Calculator className="w-6 h-6" />,
+    value: 'sedentary',
+    formula: 'Kroppsvikt × 25 = kcal/dag',
   },
   {
-    value: 'metabolism',
-    title: 'Beräkna ämnesomsättning',
-    description: 'Enkel beräkning baserad på kroppsvikt och aktivitetsnivå',
-    icon: <Activity className="w-6 h-6" />,
+    value: 'moderate',
+    formula: 'Kroppsvikt × 30 = kcal/dag',
   },
   {
-    value: 'manual',
-    title: 'Manuell',
-    description: 'Ställ in egna mål för protein, kolhydrater och fett manuellt',
-    icon: <Sliders className="w-6 h-6" />,
+    value: 'very_active',
+    formula: 'Kroppsvikt × 35 = kcal/dag',
   },
 ];
 
 export function Step2MacroMethod() {
   const {
-    calculationMethod,
-    setCalculationMethod,
+    weight,
+    metabolismActivityLevel,
+    setBodyDetails,
+    setMetabolismActivityLevel,
+    recalculateMetabolism,
+    dailyCalorieTarget,
     nextStep,
     previousStep,
   } = useNutritionPlanWizardStore();
+
+  // Recalculate when values change
+  useEffect(() => {
+    if (weight > 0 && metabolismActivityLevel) {
+      recalculateMetabolism();
+    }
+  }, [weight, metabolismActivityLevel, recalculateMetabolism]);
+
+  const handleWeightChange = (value: string) => {
+    if (value === '') {
+      setBodyDetails({ weight: 0 });
+      return;
+    }
+    const num = parseFloat(value);
+    if (!isNaN(num) && num >= 0) {
+      setBodyDetails({ weight: num });
+    }
+  };
+
+  const isValid = weight >= 30 && metabolismActivityLevel;
 
   return (
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-xl font-bold text-gray-900">
-          Makroberäkningsmetod
+          Beräkna ämnesomsättning
         </h2>
         <p className="text-sm text-gray-600 mt-1">
-          Ange om du vill att vi ska beräkna makros automatiskt eller om du vill
-          ställa in dem manuellt
+          Använd formeln baserat på klientens aktivitetsnivå
         </p>
       </div>
 
-      <div className="space-y-3">
-        {methods.map((method) => (
-          <Card
-            key={method.value}
-            onClick={() => setCalculationMethod(method.value)}
-            className={cn(
-              'p-4 cursor-pointer transition-all hover:shadow-md',
-              calculationMethod === method.value
-                ? 'border-2 border-amber-500 bg-amber-50'
-                : 'border border-gray-200 hover:border-amber-300'
-            )}
-          >
-            <div className="flex items-start gap-4">
-              <div
-                className={cn(
-                  'w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0',
-                  calculationMethod === method.value
-                    ? 'bg-amber-500 text-white'
-                    : 'bg-gray-100 text-gray-500'
-                )}
-              >
-                {method.icon}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-gray-900">{method.title}</div>
-                <div className="text-sm text-gray-600 mt-1">
-                  {method.description}
-                </div>
-              </div>
-              {calculationMethod === method.value && (
-                <Check className="w-5 h-5 text-amber-500 flex-shrink-0 mt-1" />
-              )}
-            </div>
-          </Card>
-        ))}
+      {/* Weight input */}
+      <div className="space-y-2">
+        <Label htmlFor="weight">Kroppsvikt</Label>
+        <div className="relative">
+          <Input
+            id="weight"
+            type="text"
+            inputMode="decimal"
+            value={weight > 0 ? weight : ''}
+            onChange={(e) => handleWeightChange(e.target.value)}
+            placeholder="Ange vikt..."
+            className="pr-10"
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+            kg
+          </span>
+        </div>
       </div>
 
-      <WizardNavigation onBack={previousStep} onNext={nextStep} />
+      {/* Activity level selection */}
+      <div className="space-y-2">
+        <Label>Aktivitetsnivå</Label>
+        <div className="space-y-3">
+          {activityOptions.map((option) => (
+            <Card
+              key={option.value}
+              onClick={() => setMetabolismActivityLevel(option.value)}
+              className={cn(
+                'p-4 cursor-pointer transition-all hover:shadow-md',
+                metabolismActivityLevel === option.value
+                  ? 'border-2 border-amber-500 bg-amber-50'
+                  : 'border border-gray-200 hover:border-amber-300'
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-semibold text-gray-900">
+                    {METABOLISM_ACTIVITY_LABELS[option.value]}
+                  </div>
+                  <div className="text-sm text-gray-500 mt-1">
+                    {option.formula}
+                  </div>
+                </div>
+                {metabolismActivityLevel === option.value && (
+                  <Check className="w-5 h-5 text-amber-500 flex-shrink-0" />
+                )}
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Calculated result */}
+      {isValid && dailyCalorieTarget > 0 && (
+        <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+          <div className="text-center">
+            <div className="text-xs text-amber-600 uppercase tracking-wide font-medium">
+              Beräknat dagligt energibehov
+            </div>
+            <div className="text-3xl font-bold text-amber-700 mt-1">
+              {Math.round(dailyCalorieTarget)} kcal/dag
+            </div>
+            <div className="text-sm text-amber-600 mt-1">
+              {weight} kg × {METABOLISM_MULTIPLIERS[metabolismActivityLevel!]} = {Math.round(dailyCalorieTarget)} kcal
+            </div>
+          </div>
+        </div>
+      )}
+
+      <WizardNavigation
+        onBack={previousStep}
+        onNext={nextStep}
+        isNextDisabled={!isValid}
+      />
     </div>
   );
 }
