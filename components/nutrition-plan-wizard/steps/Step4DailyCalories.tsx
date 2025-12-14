@@ -21,8 +21,9 @@ export function Step4DailyCalories() {
   }, [recalculateMetabolism]);
 
   const deficit = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].deficitPerDay : 0;
-  const metabolism = dailyCalorieTarget + deficit;
-  const finalCalories = Math.max(1200, dailyCalorieTarget);
+  // dailyCalorieTarget from store is the metabolism (weight × activity multiplier)
+  const metabolism = dailyCalorieTarget;
+  const finalCalories = Math.max(1200, metabolism - deficit);
 
   return (
     <div className="space-y-6">

@@ -23,16 +23,19 @@ export function Step6Summary() {
 
   // Calculations
   const multiplier = metabolismActivityLevel ? METABOLISM_MULTIPLIERS[metabolismActivityLevel] : 30;
-  const metabolism = weight * multiplier;
+  const metabolism = Math.round(weight * multiplier);
   const deficit = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].deficitPerDay : 0;
   const fatLossLabel = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].label : '';
   const activityLabel = metabolismActivityLevel ? METABOLISM_ACTIVITY_LABELS[metabolismActivityLevel] : '';
+
+  // Actual daily calorie target (after deficit)
+  const actualCalorieTarget = Math.max(1200, metabolism - deficit);
 
   const proteinGrams = Math.round(weight * proteinPerKg);
   const proteinCalories = proteinGrams * 4;
   const fatGrams = Math.round(weight * fatPerKg);
   const fatCalories = fatGrams * 9;
-  const remainingCalories = dailyCalorieTarget - proteinCalories - fatCalories;
+  const remainingCalories = actualCalorieTarget - proteinCalories - fatCalories;
   const carbGrams = Math.max(0, Math.round(remainingCalories / 4));
   const carbCalories = carbGrams * 4;
   const totalCalories = proteinCalories + fatCalories + carbCalories;
@@ -65,7 +68,7 @@ export function Step6Summary() {
       <div className="space-y-1">
         <h3 className="font-semibold text-gray-900">Steg 2 – Kaloriintag</h3>
         <div className="p-3 bg-gray-50 rounded-lg font-mono text-sm text-gray-700">
-          {metabolism.toLocaleString('sv-SE')} kcal - {deficit} kcal = {dailyCalorieTarget.toLocaleString('sv-SE')} kcal/dag
+          {metabolism.toLocaleString('sv-SE')} kcal - {deficit} kcal = {actualCalorieTarget.toLocaleString('sv-SE')} kcal/dag
         </div>
       </div>
 
@@ -91,7 +94,7 @@ export function Step6Summary() {
       <div className="space-y-1">
         <h3 className="font-semibold text-gray-900">Steg 5 – Kolhydrater</h3>
         <div className="p-3 bg-gray-50 rounded-lg font-mono text-sm text-gray-700 space-y-1">
-          <div>{dailyCalorieTarget.toLocaleString('sv-SE')} kcal - {proteinCalories} kcal - {fatCalories} kcal = {remainingCalories} kcal kvar</div>
+          <div>{actualCalorieTarget.toLocaleString('sv-SE')} kcal - {proteinCalories} kcal - {fatCalories} kcal = {remainingCalories} kcal kvar</div>
           <div>{remainingCalories} kcal ÷ 4 = {carbGrams}g kolhydrater/dag</div>
         </div>
       </div>

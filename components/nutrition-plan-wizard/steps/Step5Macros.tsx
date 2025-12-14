@@ -5,12 +5,14 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { useNutritionPlanWizardStore } from '@/lib/stores/nutrition-plan-wizard-store';
 import { WizardNavigation } from '../WizardNavigation';
+import { FAT_LOSS_RATE_CONFIG } from '@/lib/types/client-nutrition-plan';
 import { Info } from 'lucide-react';
 
 export function Step5Macros() {
   const {
     weight,
     dailyCalorieTarget,
+    fatLossRate,
     proteinPerKg,
     fatPerKg,
     setMacroTargets,
@@ -18,12 +20,16 @@ export function Step5Macros() {
     previousStep,
   } = useNutritionPlanWizardStore();
 
-  // Calculate macros
+  // Calculate actual calorie target (metabolism - deficit)
+  const deficit = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].deficitPerDay : 0;
+  const actualCalorieTarget = Math.max(1200, dailyCalorieTarget - deficit);
+
+  // Calculate macros based on actual calorie target
   const proteinGrams = Math.round(weight * proteinPerKg);
   const fatGrams = Math.round(weight * fatPerKg);
   const proteinCalories = proteinGrams * 4;
   const fatCalories = fatGrams * 9;
-  const remainingCalories = dailyCalorieTarget - proteinCalories - fatCalories;
+  const remainingCalories = actualCalorieTarget - proteinCalories - fatCalories;
   const carbGrams = Math.max(0, Math.round(remainingCalories / 4));
 
   // Recalculate when protein changes
@@ -133,7 +139,7 @@ export function Step5Macros() {
       {/* Total calories check */}
       <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 text-center">
         <span className="text-sm text-amber-700">
-          <strong>Totalt:</strong> {proteinCalories + fatCalories + (carbGrams * 4)} kcal / {dailyCalorieTarget} kcal mål
+          <strong>Totalt:</strong> {proteinCalories + fatCalories + (carbGrams * 4)} kcal / {actualCalorieTarget} kcal mål
         </span>
       </div>
 
