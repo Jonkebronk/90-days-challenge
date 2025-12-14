@@ -34,22 +34,37 @@ export function Step4BodyDetails() {
   }, [recalculateAll]);
 
   const handleWeightChange = (value: string) => {
+    // Allow empty or valid decimal numbers
+    if (value === '') {
+      setBodyDetails({ weight: 0 });
+      return;
+    }
     const num = parseFloat(value);
-    if (!isNaN(num) && num > 0) {
+    if (!isNaN(num) && num >= 0) {
       setBodyDetails({ weight: num });
     }
   };
 
   const handleHeightChange = (value: string) => {
+    // Allow empty or valid integers
+    if (value === '') {
+      setBodyDetails({ height: 0 });
+      return;
+    }
     const num = parseInt(value);
-    if (!isNaN(num) && num > 0) {
+    if (!isNaN(num) && num >= 0) {
       setBodyDetails({ height: num });
     }
   };
 
   const handleAgeChange = (value: string) => {
+    // Allow empty or valid integers
+    if (value === '') {
+      setBodyDetails({ age: 0 });
+      return;
+    }
     const num = parseInt(value);
-    if (!isNaN(num) && num > 0) {
+    if (!isNaN(num) && num >= 0) {
       setBodyDetails({ age: num });
     }
   };
@@ -99,13 +114,11 @@ export function Step4BodyDetails() {
             <div className="relative">
               <Input
                 id="weight"
-                type="number"
-                value={weight || ''}
+                type="text"
+                inputMode="decimal"
+                value={weight > 0 ? weight : ''}
                 onChange={(e) => handleWeightChange(e.target.value)}
-                placeholder="0"
-                min={30}
-                max={300}
-                step={0.1}
+                placeholder=""
                 className="pr-10"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
@@ -118,12 +131,11 @@ export function Step4BodyDetails() {
             <div className="relative">
               <Input
                 id="height"
-                type="number"
-                value={height || ''}
+                type="text"
+                inputMode="numeric"
+                value={height > 0 ? height : ''}
                 onChange={(e) => handleHeightChange(e.target.value)}
-                placeholder="0"
-                min={100}
-                max={250}
+                placeholder=""
                 className="pr-10"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
@@ -151,12 +163,11 @@ export function Step4BodyDetails() {
           <div className="relative">
             <Input
               id="age"
-              type="number"
-              value={age || ''}
+              type="text"
+              inputMode="numeric"
+              value={age > 0 ? age : ''}
               onChange={(e) => handleAgeChange(e.target.value)}
-              placeholder="0"
-              min={13}
-              max={100}
+              placeholder=""
               className="pr-10"
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
