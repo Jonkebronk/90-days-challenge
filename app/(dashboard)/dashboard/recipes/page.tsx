@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import {
@@ -17,10 +17,20 @@ import {
   Lightbulb,
   Droplets,
   Clock,
-  Users
+  Users,
+  Plus,
+  FolderCog,
+  Inbox,
+  Send,
+  X,
+  Check,
+  ImagePlus,
+  ChevronDown
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { ManageRecipeCategoriesModal } from '@/components/recipes/ManageRecipeCategoriesModal'
+import { ManualRecipeModal } from '@/components/recipes/ManualRecipeModal'
 
 interface Recipe {
   id: string
@@ -55,6 +65,7 @@ interface RecipeCategory {
   name: string
   slug: string
   _count: { recipes: number }
+  subcategories: { id: string; name: string; slug: string; categoryId: string }[]
 }
 
 interface RecipeSubcategory {
@@ -62,6 +73,25 @@ interface RecipeSubcategory {
   name: string
   slug: string
   categoryId: string
+}
+
+interface RecipeRequest {
+  id: string
+  title: string
+  description: string | null
+  categoryId: string | null
+  image: string | null
+  status: string
+  createdAt: string
+  user: {
+    id: string
+    name: string | null
+    email: string
+  }
+  category: {
+    id: string
+    name: string
+  } | null
 }
 
 // Main meal categories (4 prominent buttons)
@@ -81,6 +111,7 @@ const SECONDARY_CATEGORIES = [
 export default function RecipesPage() {
   const { data: session } = useSession()
   const router = useRouter()
+  const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
 
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [categories, setCategories] = useState<RecipeCategory[]>([])
@@ -91,6 +122,19 @@ export default function RecipesPage() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+
+  // Modal states
+  const [isManageCategoriesOpen, setIsManageCategoriesOpen] = useState(false)
+  const [isManualAddOpen, setIsManualAddOpen] = useState(false)
+  const [isRequestsInboxOpen, setIsRequestsInboxOpen] = useState(false)
+  const [isClientRequestOpen, setIsClientRequestOpen] = useState(false)
+  const [pendingRequestData, setPendingRequestData] = useState<{
+    title?: string
+    description?: string
+    categoryId?: string
+    image?: string | null
+    requestId?: string
+  } | null>(null)
 
   // Fetch all data on mount
   useEffect(() => {
@@ -208,6 +252,52 @@ export default function RecipesPage() {
               <p className="text-xs sm:text-sm text-gray-500">{totalRecipes} recept</p>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2">
+              {/* Coach only buttons */}
+              {isCoach && (
+                <>
+                  {/* Inbox for recipe requests */}
+                  <Button
+                    onClick={() => setIsRequestsInboxOpen(true)}
+                    variant="outline"
+                    size="sm"
+                    className="hidden sm:flex"
+                  >
+                    <Inbox className="w-4 h-4 mr-2" />
+                    Förfrågningar
+                  </Button>
+                  {/* Manage Categories button */}
+                  <Button
+                    onClick={() => setIsManageCategoriesOpen(true)}
+                    variant="outline"
+                    size="sm"
+                    className="hidden sm:flex"
+                  >
+                    <FolderCog className="w-4 h-4 mr-2" />
+                    Kategorier
+                  </Button>
+                  {/* Manual Add button */}
+                  <Button
+                    onClick={() => setIsManualAddOpen(true)}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                    size="sm"
+                  >
+                    <Plus className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Lägg till</span>
+                  </Button>
+                </>
+              )}
+              {/* Client only: Request recipe button */}
+              {!isCoach && (
+                <Button
+                  onClick={() => setIsClientRequestOpen(true)}
+                  className="bg-amber-500 hover:bg-amber-600 text-black"
+                  size="sm"
+                >
+                  <Send className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Föreslå recept</span>
+                </Button>
+              )}
+              <div className="hidden sm:block h-6 w-px bg-gray-200" />
               {/* Favorites toggle */}
               <Button
                 variant={showFavoritesOnly ? 'default' : 'outline'}
@@ -328,6 +418,17 @@ export default function RecipesPage() {
               className="pl-10 text-base"
             />
           </div>
+
+          {/* Client recipe request button */}
+          {!isCoach && (
+            <button
+              onClick={() => setIsClientRequestOpen(true)}
+              className="w-full mt-3 flex items-center justify-center gap-2 p-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg text-amber-700 transition-colors"
+            >
+              <Send className="w-4 h-4" />
+              <span className="text-sm font-medium">Saknar du ett recept? Skicka ett förslag</span>
+            </button>
+          )}
         </div>
 
         {/* Subcategory chips - show when category is selected and has subcategories */}
@@ -410,6 +511,56 @@ export default function RecipesPage() {
           </div>
         )}
       </div>
+
+      {/* Manage Categories Modal */}
+      <ManageRecipeCategoriesModal
+        isOpen={isManageCategoriesOpen}
+        onClose={() => setIsManageCategoriesOpen(false)}
+        onCategoriesChanged={fetchData}
+      />
+
+      {/* Manual Recipe Add Modal */}
+      <ManualRecipeModal
+        isOpen={isManualAddOpen}
+        onClose={() => {
+          setIsManualAddOpen(false)
+          setPendingRequestData(null)
+        }}
+        onRecipeAdded={() => {
+          fetchData()
+          setPendingRequestData(null)
+        }}
+        initialData={pendingRequestData || undefined}
+      />
+
+      {/* Recipe Requests Inbox - Coach only */}
+      {isCoach && (
+        <RecipeRequestsInbox
+          isOpen={isRequestsInboxOpen}
+          onClose={() => setIsRequestsInboxOpen(false)}
+          categories={categories}
+          onApproveRequest={(request) => {
+            setPendingRequestData({
+              title: request.title,
+              description: request.description || undefined,
+              categoryId: request.categoryId || undefined,
+              image: request.image,
+              requestId: request.id
+            })
+            setIsRequestsInboxOpen(false)
+            setIsManualAddOpen(true)
+          }}
+        />
+      )}
+
+      {/* Client Request Modal */}
+      {!isCoach && (
+        <ClientRecipeRequestModal
+          isOpen={isClientRequestOpen}
+          onClose={() => setIsClientRequestOpen(false)}
+          categories={categories}
+        />
+      )}
     </div>
   )
 }
@@ -543,6 +694,339 @@ function RecipeRow({ recipe, onClick }: { recipe: Recipe; onClick: () => void })
             )}
           </>
         )}
+      </div>
+    </div>
+  )
+}
+
+// Client Recipe Request Modal
+function ClientRecipeRequestModal({
+  isOpen,
+  onClose,
+  categories
+}: {
+  isOpen: boolean
+  onClose: () => void
+  categories: RecipeCategory[]
+}) {
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [categoryId, setCategoryId] = useState('')
+  const [image, setImage] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+
+  const handleImageUpload = (file: File) => {
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setImage(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleSubmit = async () => {
+    if (!title.trim()) return
+
+    setIsSubmitting(true)
+    try {
+      const res = await fetch('/api/recipe-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title.trim(),
+          description: description.trim() || null,
+          categoryId: categoryId || null,
+          image
+        })
+      })
+
+      if (res.ok) {
+        setSubmitted(true)
+        setTitle('')
+        setDescription('')
+        setCategoryId('')
+        setImage(null)
+        setTimeout(() => {
+          setSubmitted(false)
+          onClose()
+        }, 1500)
+      }
+    } catch (error) {
+      console.error('Failed to submit request:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-start sm:items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white w-full max-w-lg rounded-2xl overflow-hidden flex flex-col my-4 sm:my-0">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <div className="flex items-center gap-2 text-amber-600">
+            <Send className="w-5 h-5" />
+            <span className="font-medium">Föreslå recept</span>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+          >
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          <p className="text-sm text-gray-600 text-center mb-4">
+            Har du ett receptförslag? Beskriv det nedan så tar vi en titt!
+          </p>
+
+          {/* Image upload */}
+          <div className="mb-4">
+            <p className="text-xs text-gray-500 mb-2">Bild (valfritt)</p>
+            <label className="block aspect-video bg-gray-100 rounded-lg cursor-pointer overflow-hidden relative border-2 border-dashed border-gray-300 hover:border-amber-400 transition-colors">
+              {image ? (
+                <img src={image} alt="Förhandsvisning" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                  <ImagePlus className="w-8 h-8 mb-2" />
+                  <span className="text-xs">Lägg till bild</span>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0])}
+              />
+              {image && (
+                <button
+                  onClick={(e) => { e.preventDefault(); setImage(null) }}
+                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </label>
+          </div>
+
+          {/* Title input */}
+          <div className="mb-3">
+            <label className="text-sm font-medium text-gray-700 mb-1 block">Receptnamn *</label>
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="t.ex. Proteinrik chokladmousse"
+              className="w-full"
+            />
+          </div>
+
+          {/* Description */}
+          <div className="mb-3">
+            <label className="text-sm font-medium text-gray-700 mb-1 block">Beskrivning (valfritt)</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Beskriv receptet eller vilka ingredienser du tänker dig..."
+              className="w-full p-2.5 border border-gray-200 rounded-lg text-sm resize-none"
+              rows={3}
+            />
+          </div>
+
+          {/* Category dropdown */}
+          <div className="mb-4">
+            <label className="text-sm font-medium text-gray-700 mb-1 block">Kategori (valfritt)</label>
+            <div className="relative">
+              <select
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className="w-full p-2.5 border border-gray-200 rounded-lg appearance-none bg-white pr-10 text-sm"
+              >
+                <option value="">Välj kategori</option>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-gray-200">
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting || !title.trim()}
+            className="w-full bg-amber-500 hover:bg-amber-600 text-black font-medium"
+          >
+            {isSubmitting ? (
+              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+            ) : submitted ? (
+              <Check className="w-4 h-4 mr-2" />
+            ) : (
+              <Send className="w-4 h-4 mr-2" />
+            )}
+            {submitted ? 'Förslag skickat!' : 'Skicka förslag'}
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Recipe Requests Inbox for Coaches
+function RecipeRequestsInbox({
+  isOpen,
+  onClose,
+  categories,
+  onApproveRequest
+}: {
+  isOpen: boolean
+  onClose: () => void
+  categories: RecipeCategory[]
+  onApproveRequest: (request: any) => void
+}) {
+  const [requests, setRequests] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [selectedRequest, setSelectedRequest] = useState<any | null>(null)
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchRequests()
+    }
+  }, [isOpen])
+
+  const fetchRequests = async () => {
+    setIsLoading(true)
+    try {
+      const res = await fetch('/api/recipe-requests')
+      if (res.ok) {
+        const data = await res.json()
+        setRequests(data.requests || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch requests:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleReject = async (requestId: string) => {
+    try {
+      const res = await fetch(`/api/recipe-requests/${requestId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'rejected' })
+      })
+      if (res.ok) {
+        fetchRequests()
+        setSelectedRequest(null)
+      }
+    } catch (error) {
+      console.error('Failed to reject:', error)
+    }
+  }
+
+  if (!isOpen) return null
+
+  const pendingRequests = requests.filter(r => r.status === 'pending')
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b">
+          <div className="flex items-center gap-2">
+            <Inbox className="w-5 h-5 text-gold-primary" />
+            <h2 className="text-lg font-semibold">Receptförfrågningar</h2>
+            {pendingRequests.length > 0 && (
+              <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">
+                {pendingRequests.length} nya
+              </span>
+            )}
+          </div>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+            </div>
+          ) : pendingRequests.length === 0 ? (
+            <div className="text-center py-12">
+              <Inbox className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">Inga väntande förfrågningar</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {pendingRequests.map(request => (
+                <div
+                  key={request.id}
+                  className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-medium text-gray-900">{request.title}</h3>
+                      </div>
+                      {request.description && (
+                        <p className="text-sm text-gray-600 mb-2">{request.description}</p>
+                      )}
+                      <p className="text-xs text-gray-500 mb-2">
+                        Från: {request.user?.name || request.user?.email} · {new Date(request.createdAt).toLocaleDateString('sv-SE')}
+                      </p>
+                      {request.category && (
+                        <span className="text-xs bg-gray-200 px-2 py-0.5 rounded">
+                          {request.category.name}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      {request.image && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedRequest(selectedRequest?.id === request.id ? null : request)}
+                        >
+                          Visa bild
+                        </Button>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleReject(request.id)}
+                        className="text-red-600 hover:bg-red-50"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => onApproveRequest(request)}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Skapa
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Image preview */}
+                  {request.image && selectedRequest?.id === request.id && (
+                    <div className="mt-3 pt-3 border-t">
+                      <img src={request.image} alt="Förhandsvisning" className="w-full max-h-64 object-contain rounded-lg" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
