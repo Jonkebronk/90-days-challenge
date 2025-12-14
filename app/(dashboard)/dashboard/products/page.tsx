@@ -96,17 +96,7 @@ const BUILT_IN_CATEGORIES = [
   { id: 'sasar', label: 'Såser', icon: UtensilsCrossed, isSecondaryCategory: true },
   { id: 'kryddor', label: 'Kryddor', icon: Leaf, isSecondaryCategory: true },
   { id: 'matlagningsfett', label: 'Matlagningsfett', icon: Flame, isSecondaryCategory: true },
-  // Other categories
-  { id: 'mejeri', label: 'Mejeri', icon: Milk },
-  { id: 'kott', label: 'Kött', icon: Drumstick },
-  { id: 'fisk', label: 'Fisk', icon: Fish },
-  { id: 'brod', label: 'Bröd', icon: Croissant },
-  { id: 'frukt', label: 'Frukt', icon: Apple },
-  { id: 'gronsaker', label: 'Grönsaker', icon: Carrot },
-  { id: 'dryck', label: 'Dryck', icon: Wine },
-  { id: 'snacks', label: 'Snacks', icon: Cookie },
-  { id: 'fryst', label: 'Fryst', icon: Snowflake },
-  { id: 'torrvaror', label: 'Torrvaror', icon: Wheat },
+  { id: 'gronsaker', label: 'Grönsaker', icon: Carrot, isSecondaryCategory: true },
 ]
 
 // Icon mapping for dynamic categories (ASCII keys)

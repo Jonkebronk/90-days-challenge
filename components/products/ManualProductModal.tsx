@@ -72,16 +72,6 @@ const CATEGORIES = [
   { id: 'kryddor', label: 'Kryddor' },
   { id: 'matlagningsfett', label: 'Matlagningsfett' },
   { id: 'gronsaker', label: 'Grönsaker' },
-  // Other categories
-  { id: 'mejeri', label: 'Mejeri' },
-  { id: 'kott', label: 'Kött' },
-  { id: 'fisk', label: 'Fisk' },
-  { id: 'brod', label: 'Bröd' },
-  { id: 'frukt', label: 'Frukt' },
-  { id: 'dryck', label: 'Dryck' },
-  { id: 'snacks', label: 'Snacks' },
-  { id: 'fryst', label: 'Fryst' },
-  { id: 'torrvaror', label: 'Torrvaror' },
 ]
 
 // Normalize category key from Swedish to ASCII for consistency
