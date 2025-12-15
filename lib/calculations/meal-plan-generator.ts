@@ -80,6 +80,7 @@ export function createFoodWithGrams(
     name: food.name,
     grams: Math.round(grams),
     macros,
+    image: food.image,
   };
 }
 

@@ -53,6 +53,7 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
       name: item.selected.name,
       grams: item.selected.grams,
       macros: item.selected.macros,
+      image: item.selected.image,
       isSelected: true
     },
     ...item.alternatives.map(alt => ({
@@ -60,6 +61,7 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
       name: alt.name,
       grams: alt.grams,
       macros: alt.macros,
+      image: alt.image,
       isSelected: false
     }))
   ];
@@ -99,9 +101,19 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
               </div>
             )}
 
-            <div className="flex items-center gap-2 py-1.5">
-              {/* Bullet point */}
-              <span className="text-zinc-400 text-lg leading-none">•</span>
+            <div className="flex items-center gap-3 py-1.5">
+              {/* Product image thumbnail */}
+              {option.image ? (
+                <img
+                  src={option.image}
+                  alt={option.name}
+                  className="w-10 h-10 rounded-lg object-cover bg-zinc-100 shrink-0"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center shrink-0">
+                  <span className="text-zinc-300 text-xs">Bild</span>
+                </div>
+              )}
 
               {/* Grams + Name */}
               <span className={`flex-1 text-sm ${option.isSelected ? 'text-zinc-800 font-medium' : 'text-zinc-600'}`}>
@@ -138,7 +150,7 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
 
             {/* Swap impact info - shown for alternatives */}
             {!option.isSelected && (
-              <div className="ml-6 mt-1 mb-2">
+              <div className="ml-[52px] mt-1 mb-2">
                 <div className="inline-flex items-center gap-2 px-2 py-1 bg-zinc-50 rounded text-xs">
                   <span className="text-zinc-500">Vid byte:</span>
                   {(() => {

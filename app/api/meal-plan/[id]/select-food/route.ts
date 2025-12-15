@@ -84,6 +84,7 @@ export async function PUT(
         carbs: true,
         fat: true,
         macroCategory: true,
+        image: true,
       },
     });
 
@@ -127,6 +128,7 @@ export async function PUT(
               name: product.name,
               grams: grams,
               macros: macros,
+              image: product.image,
             },
             // Keep existing alternatives
           };

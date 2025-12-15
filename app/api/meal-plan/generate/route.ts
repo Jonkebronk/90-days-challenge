@@ -249,6 +249,7 @@ async function fetchFoodsForCategory(
       fat: true,
       macroCategory: true,
       mealTypes: true,
+      image: true,
     },
     orderBy: {
       name: 'asc',
@@ -265,6 +266,7 @@ async function fetchFoodsForCategory(
     macroCategory: product.macroCategory as MacroCategory,
     mealTypes: (product.mealTypes || []) as MealType[],
     isRecommended: false,
+    image: product.image,
   }));
 }
 

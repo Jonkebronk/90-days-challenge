@@ -93,6 +93,7 @@ export interface FoodWithGrams {
   name: string;
   grams: number;
   macros: CalculatedMacros;
+  image?: string | null;
 }
 
 export interface FoodAlternative {
@@ -100,6 +101,7 @@ export interface FoodAlternative {
   name: string;
   grams: number;
   macros: CalculatedMacros;
+  image?: string | null;
 }
 
 // ===================
@@ -239,4 +241,5 @@ export interface FoodItemForGenerator {
   macroCategory: MacroCategory | null;
   mealTypes: MealType[];
   isRecommended: boolean;
+  image?: string | null;
 }
