@@ -99,8 +99,10 @@ export default function MessagesPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
   const lastMessageCountRef = useRef<number>(0)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const shouldScrollRef = useRef<boolean>(true)
   const { playSound } = useNotificationSound()
 
   const userId = (session?.user as any)?.id
@@ -171,9 +173,22 @@ export default function MessagesPage() {
     }
   }, [otherUserId])
 
+  // Only scroll to bottom when appropriate (new message sent/received, not during manual scroll)
   useEffect(() => {
-    scrollToBottom()
+    if (shouldScrollRef.current) {
+      scrollToBottom()
+    }
   }, [messages])
+
+  // Check if user is scrolled near bottom
+  const handleScroll = useCallback(() => {
+    const container = messagesContainerRef.current
+    if (!container) return
+
+    const { scrollTop, scrollHeight, clientHeight } = container
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < 100
+    shouldScrollRef.current = isNearBottom
+  }, [])
 
   const fetchContacts = async () => {
     try {
@@ -198,6 +213,7 @@ export default function MessagesPage() {
       const response = await fetch(`/api/messages?otherUserId=${otherUserId}`)
       if (response.ok) {
         const data = await response.json()
+        shouldScrollRef.current = true // Scroll to bottom on initial load
         setMessages(data.messages)
         lastMessageCountRef.current = data.messages.length
       }
@@ -254,6 +270,7 @@ export default function MessagesPage() {
 
       if (response.ok) {
         const data = await response.json()
+        shouldScrollRef.current = true // Always scroll to bottom when sending
         setMessages([...messages, data.message])
         setNewMessage('')
         setPendingImages([])
@@ -571,7 +588,9 @@ export default function MessagesPage() {
 
             {/* Messages List */}
             <div
+              ref={messagesContainerRef}
               className="flex-1 overflow-y-auto overscroll-none p-3 sm:p-4 space-y-3"
+              onScroll={handleScroll}
               onTouchStart={handleTouchStart}
               style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'none' }}
             >
