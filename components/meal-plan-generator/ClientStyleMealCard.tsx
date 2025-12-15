@@ -101,9 +101,9 @@ export function ClientStyleMealCard({
           </div>
 
           {/* Right side: Macro badges + Chevron */}
-          <div className="flex items-center gap-4">
-            {/* Circular macro badges */}
-            <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Circular macro badges - tighter on mobile */}
+            <div className="flex items-center gap-1.5 sm:gap-3">
               <MacroBadge label="K" value={meal.totalMacros.kcal} color="green" />
               <MacroBadge label="P" value={meal.totalMacros.protein} color="red" />
               <MacroBadge label="F" value={meal.totalMacros.fat} color="blue" />

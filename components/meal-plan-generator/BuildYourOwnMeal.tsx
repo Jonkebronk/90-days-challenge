@@ -131,13 +131,16 @@ export function BuildYourOwnMeal({ targetMacros, mealType, onApply, disabled = f
 
       {/* Target macros info */}
       <div className="text-xs text-zinc-500 mb-4">
-        Måltidsmål: <span className="font-medium text-zinc-700">{Math.round(targetMacros.protein)}g protein</span> |{' '}
-        <span className="font-medium text-zinc-700">{Math.round(targetMacros.carbs)}g kolhydrater</span> |{' '}
-        <span className="font-medium text-zinc-700">{Math.round(targetMacros.fat)}g fett</span>
+        <span className="block sm:inline">Måltidsmål:</span>{' '}
+        <span className="font-medium text-zinc-700">{Math.round(targetMacros.protein)}g P</span>{' '}
+        <span className="hidden sm:inline">|</span>{' '}
+        <span className="font-medium text-zinc-700">{Math.round(targetMacros.carbs)}g K</span>{' '}
+        <span className="hidden sm:inline">|</span>{' '}
+        <span className="font-medium text-zinc-700">{Math.round(targetMacros.fat)}g F</span>
       </div>
 
-      {/* Category slots */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
+      {/* Category slots - responsive grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
         {categoryConfig.map(({ category, label, color, bgColor, borderColor }) => {
           const selected = selectedItems[category];
 
@@ -192,7 +195,7 @@ export function BuildYourOwnMeal({ targetMacros, mealType, onApply, disabled = f
       {/* Totals and apply button */}
       {hasAnySelection && (
         <div className="pt-3 border-t border-zinc-200">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="text-xs text-zinc-600">
               Totalt:{' '}
               <span className="font-medium">{Math.round(totals.protein)}g P</span> |{' '}
@@ -204,7 +207,7 @@ export function BuildYourOwnMeal({ targetMacros, mealType, onApply, disabled = f
               onClick={handleApply}
               disabled={disabled}
               size="sm"
-              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs"
+              className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs"
             >
               Använd denna kombination
             </Button>

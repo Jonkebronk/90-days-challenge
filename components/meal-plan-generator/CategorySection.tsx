@@ -137,8 +137,8 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
             <div className="flex-1 h-px bg-zinc-200" />
           </div>
 
-          {/* Alternative food cards - 2 column grid */}
-          <div className="grid grid-cols-2 gap-2">
+          {/* Alternative food cards - responsive grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {item.alternatives.map((alt) => (
               <div key={alt.foodId} className={`rounded-lg p-2 ${colors.bg} ${colors.border} border`}>
                 <div className="flex items-center gap-2">
