@@ -60,15 +60,43 @@ export function MealPlanGenerator({
   } | null>(null);
   const [addingSauce, setAddingSauce] = useState(false);
 
-  // Create empty meal plan on mount
+  // Load existing meal plan or create new one on mount
   useEffect(() => {
-    createEmptyPlan();
+    loadOrCreatePlan();
   }, [nutritionPlanId]);
 
-  const createEmptyPlan = async () => {
+  const loadOrCreatePlan = async () => {
     setIsLoading(true);
     setError(null);
 
+    try {
+      // First, try to fetch existing meal plan
+      const existingResponse = await fetch(`/api/meal-plan/by-nutrition-plan/${nutritionPlanId}`);
+
+      if (existingResponse.ok) {
+        const existingData = await existingResponse.json();
+        if (existingData) {
+          setGeneratedPlan({
+            id: existingData.id,
+            meals: existingData.meals,
+            targetMacros: existingData.targetMacros,
+            actualMacros: existingData.actualMacros,
+          });
+          return;
+        }
+      }
+
+      // No existing plan, create a new one
+      await createEmptyPlan();
+    } catch (err) {
+      setError('Ett fel uppstod vid laddning av kostschema');
+      console.error('Load error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const createEmptyPlan = async () => {
     try {
       const response = await fetch('/api/meal-plan/create-empty', {
         method: 'POST',
@@ -95,8 +123,6 @@ export function MealPlanGenerator({
     } catch (err) {
       setError('Ett fel uppstod vid skapande av kostschema');
       console.error('Create error:', err);
-    } finally {
-      setIsLoading(false);
     }
   };
 

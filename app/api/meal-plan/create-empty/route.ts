@@ -54,6 +54,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if a meal plan already exists for this nutrition plan
+    const existingPlan = await prisma.generatedMealPlan.findFirst({
+      where: { nutritionPlanId },
+    });
+
+    if (existingPlan) {
+      // Return existing plan instead of creating duplicate
+      return NextResponse.json({
+        id: existingPlan.id,
+        meals: existingPlan.meals,
+        targetMacros: existingPlan.targetMacros,
+        actualMacros: existingPlan.actualMacros,
+      });
+    }
+
     // Use provided configs or defaults
     const configs = mealConfigs || DEFAULT_MEAL_CONFIGS;
 

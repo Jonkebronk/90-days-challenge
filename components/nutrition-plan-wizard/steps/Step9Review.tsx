@@ -140,6 +140,21 @@ export function Step9Review() {
 
       const plan = await response.json();
       setCreatedPlanId(plan.id);
+
+      // Automatically create the meal plan (kostschema)
+      try {
+        await fetch('/api/meal-plan/create-empty', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nutritionPlanId: plan.id,
+          }),
+        });
+      } catch (mealPlanError) {
+        console.error('Error creating meal plan:', mealPlanError);
+        // Continue anyway - user can create it manually
+      }
+
       toast.success('Kostplan skapad!');
       nextStep();
     } catch (error) {
