@@ -121,6 +121,7 @@ export interface GeneratedMeal {
   sauce?: FoodWithGrams;
   vegetableGrams: number; // Usually 200g for lunch/middag
   totalMacros: CalculatedMacros;
+  targetMacros?: CalculatedMacros; // Per-meal target for manual editing
 }
 
 export interface GeneratedMealPlan {

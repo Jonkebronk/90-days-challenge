@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Wand2, Save, AlertTriangle } from 'lucide-react';
-import { MealConfigMatrix } from './MealConfigMatrix';
+import { Loader2, Save, AlertTriangle } from 'lucide-react';
 import { ClientStyleMealCard } from './ClientStyleMealCard';
 import { MacroSummary } from './MacroSummary';
 import { SauceSelector } from './SauceSelector';
@@ -41,17 +40,13 @@ export function MealPlanGenerator({
   onSave,
   onCancel,
 }: MealPlanGeneratorProps) {
-  // Configuration state
-  const [mealConfigs, setMealConfigs] = useState<MealConfig[]>(DEFAULT_MEAL_CONFIGS);
-
   // Generated plan state
   const [generatedPlan, setGeneratedPlan] = useState<GeneratedPlanState | null>(null);
 
   // UI state
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [warnings, setWarnings] = useState<string[]>([]);
 
   // Modal state
   const [sauceModalOpen, setSauceModalOpen] = useState(false);
@@ -65,29 +60,29 @@ export function MealPlanGenerator({
   } | null>(null);
   const [addingSauce, setAddingSauce] = useState(false);
 
-  // Generate meal plan
-  const handleGenerate = async () => {
-    setIsGenerating(true);
+  // Create empty meal plan on mount
+  useEffect(() => {
+    createEmptyPlan();
+  }, [nutritionPlanId]);
+
+  const createEmptyPlan = async () => {
+    setIsLoading(true);
     setError(null);
-    setWarnings([]);
 
     try {
-      const response = await fetch('/api/meal-plan/generate', {
+      const response = await fetch('/api/meal-plan/create-empty', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           nutritionPlanId,
-          mealConfigs,
+          mealConfigs: DEFAULT_MEAL_CONFIGS,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Kunde inte generera kostschema');
-        if (data.warnings) {
-          setWarnings(data.warnings);
-        }
+        setError(data.error || 'Kunde inte skapa kostschema');
         return;
       }
 
@@ -97,15 +92,11 @@ export function MealPlanGenerator({
         targetMacros: data.targetMacros,
         actualMacros: data.actualMacros,
       });
-
-      if (data.warnings) {
-        setWarnings(data.warnings);
-      }
     } catch (err) {
-      setError('Ett fel uppstod vid generering av kostschema');
-      console.error('Generate error:', err);
+      setError('Ett fel uppstod vid skapande av kostschema');
+      console.error('Create error:', err);
     } finally {
-      setIsGenerating(false);
+      setIsLoading(false);
     }
   };
 
@@ -303,6 +294,78 @@ export function MealPlanGenerator({
     }
   };
 
+  // Update grams handler
+  const handleUpdateGrams = async (
+    mealIndex: number,
+    category: MacroCategory,
+    grams: number
+  ) => {
+    if (!generatedPlan) return;
+
+    try {
+      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/update-grams`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mealIndex, category, grams }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Kunde inte uppdatera gram');
+        return;
+      }
+
+      // Update local state
+      const newMeals = [...generatedPlan.meals];
+      newMeals[mealIndex] = data.updatedMeal;
+
+      setGeneratedPlan({
+        ...generatedPlan,
+        meals: newMeals,
+        actualMacros: data.actualMacros,
+      });
+    } catch (err) {
+      setError('Ett fel uppstod vid uppdatering av gram');
+      console.error('Update grams error:', err);
+    }
+  };
+
+  // Update meal target macros handler
+  const handleUpdateMealMacros = async (
+    mealIndex: number,
+    targetMacros: CalculatedMacros
+  ) => {
+    if (!generatedPlan) return;
+
+    try {
+      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/update-meal-macros`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mealIndex, targetMacros }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Kunde inte uppdatera måltidsmakron');
+        return;
+      }
+
+      // Update local state
+      const newMeals = [...generatedPlan.meals];
+      newMeals[mealIndex] = data.updatedMeal;
+
+      setGeneratedPlan({
+        ...generatedPlan,
+        meals: newMeals,
+      });
+    } catch (err) {
+      setError('Ett fel uppstod vid uppdatering av måltidsmakron');
+      console.error('Update meal macros error:', err);
+    }
+  };
+
   // Save handler
   const handleSave = () => {
     if (generatedPlan && onSave) {
@@ -318,93 +381,17 @@ export function MealPlanGenerator({
     return totalOfType > 1 ? sameTypeBefore + 1 : undefined;
   };
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Configuration */}
-      {!generatedPlan && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Konfigurera måltider</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <p className="text-sm text-gray-600">
-              Välj vilka makronäringsämnen varje måltid ska innehålla. Protein,
-              kolhydrater och fett fördelas automatiskt baserat på dina val.
-            </p>
-
-            <MealConfigMatrix
-              configs={mealConfigs}
-              onChange={setMealConfigs}
-              disabled={isGenerating}
-            />
-
-            {/* Target macros summary */}
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-700 mb-2">Dagliga mål</h4>
-              <div className="grid grid-cols-4 gap-4 text-sm">
-                <div>
-                  <span className="text-pink-600 font-medium">Protein:</span>{' '}
-                  {targetMacros.protein}g
-                </div>
-                <div>
-                  <span className="text-teal-600 font-medium">Kolhydrater:</span>{' '}
-                  {targetMacros.carbs}g
-                </div>
-                <div>
-                  <span className="text-amber-600 font-medium">Fett:</span>{' '}
-                  {targetMacros.fat}g
-                </div>
-                <div>
-                  <span className="text-blue-600 font-medium">Kalorier:</span>{' '}
-                  {targetMacros.kcal}
-                </div>
-              </div>
-            </div>
-
-            {error && (
-              <Alert variant="destructive">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            {warnings.length > 0 && (
-              <Alert>
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  <ul className="list-disc list-inside">
-                    {warnings.map((w, i) => (
-                      <li key={i}>{w}</li>
-                    ))}
-                  </ul>
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <div className="flex justify-end gap-3">
-              {onCancel && (
-                <Button variant="outline" onClick={onCancel}>
-                  Avbryt
-                </Button>
-              )}
-              <Button onClick={handleGenerate} disabled={isGenerating}>
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Genererar...
-                  </>
-                ) : (
-                  <>
-                    <Wand2 className="h-4 w-4 mr-2" />
-                    Generera kostschema
-                  </>
-                )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Generated plan */}
       {generatedPlan && (
         <>
@@ -426,6 +413,8 @@ export function MealPlanGenerator({
                 onSelectFood={handleSelectFood}
                 onAddSauce={handleAddSauce}
                 onRemoveSauce={handleRemoveSauce}
+                onUpdateGrams={handleUpdateGrams}
+                onUpdateMealMacros={handleUpdateMealMacros}
               />
             ))}
           </div>
@@ -441,7 +430,7 @@ export function MealPlanGenerator({
           <div className="flex justify-between">
             <Button
               variant="outline"
-              onClick={() => setGeneratedPlan(null)}
+              onClick={createEmptyPlan}
             >
               Börja om
             </Button>

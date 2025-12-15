@@ -35,6 +35,8 @@ interface ClientStyleMealCardProps {
   onSelectFood?: (mealIndex: number, category: MacroCategory, product: ProductForSelect, grams: number, macros: CalculatedMacros) => void;
   onAddSauce: (mealIndex: number) => void;
   onRemoveSauce: (mealIndex: number) => void;
+  onUpdateGrams?: (mealIndex: number, category: MacroCategory, grams: number) => void;
+  onUpdateMealMacros?: (mealIndex: number, targetMacros: CalculatedMacros) => void;
   disabled?: boolean;
 }
 
@@ -46,9 +48,11 @@ export function ClientStyleMealCard({
   onSelectFood,
   onAddSauce,
   onRemoveSauce,
+  onUpdateGrams,
+  onUpdateMealMacros,
   disabled = false,
 }: ClientStyleMealCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true); // Start expanded for editing
 
   // Modal state for product selection
   const [selectModalOpen, setSelectModalOpen] = useState(false);
@@ -69,6 +73,12 @@ export function ClientStyleMealCard({
 
   const handleSwapFood = (category: MacroCategory, foodId: string) => {
     onSwapFood(mealIndex, category, foodId);
+  };
+
+  const handleUpdateGrams = (category: MacroCategory, grams: number) => {
+    if (onUpdateGrams) {
+      onUpdateGrams(mealIndex, category, grams);
+    }
   };
 
   // Open product select modal
@@ -129,31 +139,88 @@ export function ClientStyleMealCard({
 
           {/* Category sections - grid layout: PROTEIN, KOLHYDRATER, FETT */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {proteinItem && (
+            {/* Protein */}
+            {proteinItem ? (
               <CategorySection
                 item={proteinItem}
                 onSwapFood={!disabled ? handleSwapFood : undefined}
                 onSelectFood={!disabled && onSelectFood ? handleOpenSelectModal : undefined}
+                onUpdateGrams={!disabled && onUpdateGrams ? handleUpdateGrams : undefined}
                 disabled={disabled}
               />
+            ) : (
+              <div className="space-y-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-rose-700">
+                  Protein
+                </span>
+                <button
+                  onClick={() => !disabled && onSelectFood && handleOpenSelectModal('protein', meal.targetMacros?.protein || 30)}
+                  disabled={disabled || !onSelectFood}
+                  className="w-full rounded-xl p-4 border-2 border-dashed border-rose-200 bg-rose-50/50 hover:bg-rose-50 hover:border-rose-300 transition-colors text-rose-600 flex flex-col items-center justify-center gap-2 min-h-[100px]"
+                >
+                  <Plus className="h-6 w-6" />
+                  <span className="text-sm font-medium">Lägg till protein</span>
+                  {meal.targetMacros?.protein && (
+                    <span className="text-xs text-rose-400">Mål: {Math.round(meal.targetMacros.protein)}g</span>
+                  )}
+                </button>
+              </div>
             )}
 
-            {carbItem && (
+            {/* Kolhydrater */}
+            {carbItem ? (
               <CategorySection
                 item={carbItem}
                 onSwapFood={!disabled ? handleSwapFood : undefined}
                 onSelectFood={!disabled && onSelectFood ? handleOpenSelectModal : undefined}
+                onUpdateGrams={!disabled && onUpdateGrams ? handleUpdateGrams : undefined}
                 disabled={disabled}
               />
+            ) : (
+              <div className="space-y-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-700">
+                  Kolhydrater
+                </span>
+                <button
+                  onClick={() => !disabled && onSelectFood && handleOpenSelectModal('carb', meal.targetMacros?.carbs || 30)}
+                  disabled={disabled || !onSelectFood}
+                  className="w-full rounded-xl p-4 border-2 border-dashed border-amber-200 bg-amber-50/50 hover:bg-amber-50 hover:border-amber-300 transition-colors text-amber-600 flex flex-col items-center justify-center gap-2 min-h-[100px]"
+                >
+                  <Plus className="h-6 w-6" />
+                  <span className="text-sm font-medium">Lägg till kolhydrater</span>
+                  {meal.targetMacros?.carbs && (
+                    <span className="text-xs text-amber-400">Mål: {Math.round(meal.targetMacros.carbs)}g</span>
+                  )}
+                </button>
+              </div>
             )}
 
-            {fatItem && (
+            {/* Fett */}
+            {fatItem ? (
               <CategorySection
                 item={fatItem}
                 onSwapFood={!disabled ? handleSwapFood : undefined}
                 onSelectFood={!disabled && onSelectFood ? handleOpenSelectModal : undefined}
+                onUpdateGrams={!disabled && onUpdateGrams ? handleUpdateGrams : undefined}
                 disabled={disabled}
               />
+            ) : (
+              <div className="space-y-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-blue-700">
+                  Fett
+                </span>
+                <button
+                  onClick={() => !disabled && onSelectFood && handleOpenSelectModal('fat', meal.targetMacros?.fat || 15)}
+                  disabled={disabled || !onSelectFood}
+                  className="w-full rounded-xl p-4 border-2 border-dashed border-blue-200 bg-blue-50/50 hover:bg-blue-50 hover:border-blue-300 transition-colors text-blue-600 flex flex-col items-center justify-center gap-2 min-h-[100px]"
+                >
+                  <Plus className="h-6 w-6" />
+                  <span className="text-sm font-medium">Lägg till fett</span>
+                  {meal.targetMacros?.fat && (
+                    <span className="text-xs text-blue-400">Mål: {Math.round(meal.targetMacros.fat)}g</span>
+                  )}
+                </button>
+              </div>
             )}
           </div>
 

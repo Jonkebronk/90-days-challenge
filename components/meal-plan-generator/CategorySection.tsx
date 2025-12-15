@@ -1,12 +1,15 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { RefreshCw, Search, Check } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import type { GeneratedMealItem, MacroCategory, CalculatedMacros } from '@/lib/types/meal-plan-generator';
 
 interface CategorySectionProps {
   item: GeneratedMealItem;
   onSwapFood?: (category: MacroCategory, foodId: string) => void;
   onSelectFood?: (category: MacroCategory, targetMacro: number) => void;
+  onUpdateGrams?: (category: MacroCategory, grams: number) => void;
   disabled?: boolean;
 }
 
@@ -60,10 +63,38 @@ function getDiffColor(diff: number): string {
   return 'text-green-600';
 }
 
-export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: CategorySectionProps) {
+export function CategorySection({ item, onSwapFood, onSelectFood, onUpdateGrams, disabled }: CategorySectionProps) {
   const colors = categoryColors[item.category];
   const targetMacro = getTargetMacro(item);
   const selectedMacros = item.selected.macros;
+
+  // Local state for editable grams
+  const [editingGrams, setEditingGrams] = useState(false);
+  const [gramsValue, setGramsValue] = useState(item.selected.grams.toString());
+
+  // Update local state when item changes
+  useEffect(() => {
+    setGramsValue(item.selected.grams.toString());
+  }, [item.selected.grams]);
+
+  const handleGramsBlur = () => {
+    setEditingGrams(false);
+    const newGrams = parseInt(gramsValue) || 0;
+    if (newGrams > 0 && newGrams !== item.selected.grams && onUpdateGrams) {
+      onUpdateGrams(item.category, newGrams);
+    } else {
+      setGramsValue(item.selected.grams.toString());
+    }
+  };
+
+  const handleGramsKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleGramsBlur();
+    } else if (e.key === 'Escape') {
+      setGramsValue(item.selected.grams.toString());
+      setEditingGrams(false);
+    }
+  };
 
   // Calculate macro differences for alternatives
   const getSwapImpact = (altMacros: CalculatedMacros) => {
@@ -112,9 +143,26 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
           {/* Food info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-xl font-bold text-zinc-900">
-                {Math.round(item.selected.grams)}g
-              </span>
+              {editingGrams && onUpdateGrams ? (
+                <Input
+                  type="number"
+                  value={gramsValue}
+                  onChange={(e) => setGramsValue(e.target.value)}
+                  onBlur={handleGramsBlur}
+                  onKeyDown={handleGramsKeyDown}
+                  className="w-20 h-8 text-lg font-bold"
+                  autoFocus
+                  min={1}
+                />
+              ) : (
+                <button
+                  onClick={() => !disabled && onUpdateGrams && setEditingGrams(true)}
+                  className={`text-xl font-bold text-zinc-900 ${!disabled && onUpdateGrams ? 'hover:bg-white/50 px-2 py-0.5 rounded cursor-pointer' : ''}`}
+                  disabled={disabled || !onUpdateGrams}
+                >
+                  {Math.round(item.selected.grams)}g
+                </button>
+              )}
               <span className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${colors.badge}`}>
                 <Check className="h-3 w-3" />
                 VALD
