@@ -2506,6 +2506,7 @@ model Product {
 
   // Meal plan generator fields
   macroCategory   String?  // "protein" | "carb" | "fat" | "vegetable" | "sauce"
+  mealTypes       String[] // ["frukost", "mellanmål", "lunch", "middag", "kvällsmål"]
 
   // Source tracking
   source    String   @default("manual") // "manual" | "openfoodfacts" | "ai" | "import"

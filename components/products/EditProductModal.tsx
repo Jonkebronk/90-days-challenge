@@ -109,6 +109,7 @@ interface Product {
   source: string
   // Meal plan generator
   macroCategory?: string | null
+  mealTypes?: string[]
 }
 
 interface EditProductModalProps {
@@ -209,6 +210,7 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
     source: '',
     servingUnit: 'g' as 'g' | 'ml',
     macroCategory: '' as '' | 'protein' | 'carb' | 'fat' | 'vegetable' | 'sauce',
+    mealTypes: [] as string[],
   })
 
   // Fetch subcategories from database when modal opens
@@ -410,6 +412,7 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
         source: product.source || '',
         servingUnit: (product.servingUnit as 'g' | 'ml') || 'g',
         macroCategory: (product.macroCategory as '' | 'protein' | 'carb' | 'fat' | 'vegetable' | 'sauce') || '',
+        mealTypes: product.mealTypes || [],
       })
       setImagePreview(product.image || null)
       setNewImageBase64(null)
@@ -595,6 +598,7 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
           slvNummer: formData.slvNummer || null,
           servingUnit: formData.servingUnit,
           macroCategory: formData.macroCategory || null,
+          mealTypes: formData.mealTypes,
         })
       })
 
@@ -1323,6 +1327,47 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
                   }`}
                 >
                   {cat.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Meal Types for meal plan generator */}
+          <div className="border-t pt-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Package className="w-4 h-4 text-blue-500" />
+              <Label className="text-sm font-medium">Måltidstyper (för kostschema)</Label>
+            </div>
+            <p className="text-xs text-gray-500 mb-3">
+              Välj vilka måltider livsmedlet passar för (kan välja flera)
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { id: 'frukost', label: 'Frukost', color: 'yellow' },
+                { id: 'mellanmål', label: 'Mellanmål', color: 'purple' },
+                { id: 'lunch', label: 'Lunch', color: 'blue' },
+                { id: 'middag', label: 'Middag', color: 'indigo' },
+                { id: 'kvällsmål', label: 'Kvällsmål', color: 'slate' },
+              ].map(meal => (
+                <button
+                  key={meal.id}
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    mealTypes: prev.mealTypes.includes(meal.id)
+                      ? prev.mealTypes.filter(m => m !== meal.id)
+                      : [...prev.mealTypes, meal.id]
+                  }))}
+                  className={`px-3 py-1.5 text-xs rounded-full transition-colors ${
+                    formData.mealTypes.includes(meal.id)
+                      ? meal.color === 'yellow' ? 'bg-yellow-500 text-white'
+                      : meal.color === 'purple' ? 'bg-purple-500 text-white'
+                      : meal.color === 'blue' ? 'bg-blue-500 text-white'
+                      : meal.color === 'indigo' ? 'bg-indigo-500 text-white'
+                      : 'bg-slate-500 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {meal.label}
                 </button>
               ))}
             </div>

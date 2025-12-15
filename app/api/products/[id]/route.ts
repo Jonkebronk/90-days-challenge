@@ -97,7 +97,7 @@ export async function PUT(
       calcium, iron, magnesium, phosphorus, potassium, zinc, selenium, iodine,
       slvNummer, servingUnit,
       // Meal plan generator
-      macroCategory
+      macroCategory, mealTypes
     } = body
 
     // Get existing product to preserve image if not updating
@@ -170,7 +170,8 @@ export async function PUT(
         source: source || existing.source || 'manual',
         servingUnit: servingUnit || existing.servingUnit || 'g',
         // Meal plan generator
-        macroCategory: macroCategory ?? existing.macroCategory ?? null
+        macroCategory: macroCategory ?? existing.macroCategory ?? null,
+        mealTypes: mealTypes ?? existing.mealTypes ?? []
       }
     })
 
