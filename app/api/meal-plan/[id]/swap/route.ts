@@ -137,6 +137,12 @@ export async function PUT(
 
     const currentItem = meal.items[itemIndex];
 
+    // Check if the new food is one of the alternatives
+    const alternativeIndex = currentItem.alternatives.findIndex(
+      (alt) => alt.foodId === newFoodId
+    );
+    const isSwappingWithAlternative = alternativeIndex !== -1;
+
     // Calculate swap result
     const swapResult = calculateSwap(
       currentItem.selected,
@@ -149,10 +155,30 @@ export async function PUT(
       ...meal,
       items: meal.items.map((item, idx) => {
         if (idx === itemIndex) {
+          const newSelected = swapResult.updatedMeal.items[0].selected;
+
+          // Build new alternatives list
+          let newAlternatives = [...item.alternatives];
+
+          if (isSwappingWithAlternative) {
+            // Remove the new selection from alternatives
+            newAlternatives = newAlternatives.filter(
+              (alt) => alt.foodId !== newFoodId
+            );
+            // Add the old selected to alternatives
+            newAlternatives.unshift({
+              foodId: item.selected.foodId,
+              name: item.selected.name,
+              grams: item.selected.grams,
+              macros: item.selected.macros,
+              image: item.selected.image,
+            });
+          }
+
           return {
             ...item,
-            selected: swapResult.updatedMeal.items[0].selected,
-            // Keep original alternatives
+            selected: newSelected,
+            alternatives: newAlternatives,
           };
         }
         return item;
