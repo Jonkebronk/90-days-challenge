@@ -70,13 +70,15 @@ export async function GET(request: NextRequest) {
     // Map Swedish meal type to recipe mealType values
     const recipeMealTypes = MEAL_TYPE_TO_RECIPE_TYPE[mealType];
 
-    // Fetch published recipes matching the meal type
+    // Fetch published recipes matching the meal type OR with no meal type set
+    // (since many recipes don't have mealType categorized yet)
     const recipes = await prisma.recipe.findMany({
       where: {
         published: true,
-        mealType: {
-          in: recipeMealTypes,
-        },
+        OR: [
+          { mealType: { in: recipeMealTypes } },
+          { mealType: null },
+        ],
         // Only include recipes with nutrition data
         caloriesPerServing: {
           not: null,
