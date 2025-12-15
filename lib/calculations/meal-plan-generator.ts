@@ -366,89 +366,106 @@ function findFatSnackMeals(
 }
 
 /**
- * Adjust snack meal fat sources when sauce is added
- * The sauce's fat is "borrowed" from snack meals
+ * Adjust meal plan foods when sauce is added
+ * Subtracts sauce macros (protein, carbs, fat) proportionally from all meals
  */
 export function adjustForSauce(
   plan: GeneratedMealPlan,
   sauceFat: number,
-  sauceMealIndex: number
+  sauceMealIndex: number,
+  sauceMacros?: { protein: number; carbs: number; fat: number; kcal: number }
 ): SauceResult {
   const updatedMeals = [...plan.meals];
   const adjustments: SauceAdjustment[] = [];
-  let remainingFatToReduce = sauceFat;
 
-  // Find snack meals with fat
-  const fatSnackMeals = findFatSnackMeals(updatedMeals, plan.mealConfigs);
+  // Use full macros if provided, otherwise just fat (backwards compatibility)
+  const macrosToSubtract = sauceMacros || { protein: 0, carbs: 0, fat: sauceFat, kcal: 0 };
 
-  if (fatSnackMeals.length === 0) {
-    return {
-      updatedPlan: plan,
-      adjustments: [],
-      warning: 'Inga mellanmål med fett att justera. Såsen läggs till utan kompensation.',
-    };
-  }
+  // For each macro type, find meals with that category and reduce proportionally
+  const macroCategories: { macro: 'protein' | 'carbs' | 'fat'; category: MacroCategory }[] = [
+    { macro: 'protein', category: 'protein' },
+    { macro: 'carbs', category: 'carb' },
+    { macro: 'fat', category: 'fat' },
+  ];
 
-  // Distribute fat reduction across snack meals
-  const fatReductionPerMeal = sauceFat / fatSnackMeals.length;
+  for (const { macro, category } of macroCategories) {
+    const toSubtract = macrosToSubtract[macro];
+    if (toSubtract <= 0) continue;
 
-  for (const { mealIndex, meal } of fatSnackMeals) {
-    if (remainingFatToReduce <= 0) break;
+    // Find all meals with this category (excluding the sauce meal itself)
+    const mealsWithCategory = updatedMeals
+      .map((meal, index) => ({ mealIndex: index, meal }))
+      .filter(({ mealIndex, meal }) => {
+        if (mealIndex === sauceMealIndex) return false;
+        return meal.items.some((item) => item.category === category);
+      });
 
-    // Find fat source in meal
-    const fatItem = meal.items.find((item) => item.category === 'fat');
-    if (!fatItem) continue;
+    if (mealsWithCategory.length === 0) continue;
 
-    const currentFat = fatItem.selected.macros.fat;
-    const reductionAmount = Math.min(fatReductionPerMeal, currentFat * 0.8); // Max 80% reduction
+    // Calculate total macro amount available in these meals
+    const totalAvailable = mealsWithCategory.reduce((sum, { meal }) => {
+      const item = meal.items.find((i) => i.category === category);
+      return sum + (item?.selected.macros[macro] || 0);
+    }, 0);
 
-    // Calculate new grams
-    const fatPer100g = (fatItem.selected.macros.fat / fatItem.selected.grams) * 100;
-    const newGrams = Math.max(
-      0,
-      calculateGramsForMacro(currentFat - reductionAmount, fatPer100g)
-    );
+    if (totalAvailable <= 0) continue;
 
-    // Record adjustment
-    adjustments.push({
-      mealIndex,
-      foodId: fatItem.selected.foodId,
-      name: fatItem.selected.name,
-      oldGrams: fatItem.selected.grams,
-      newGrams: Math.round(newGrams),
-    });
+    // Distribute reduction proportionally
+    for (const { mealIndex, meal } of mealsWithCategory) {
+      const item = meal.items.find((i) => i.category === category);
+      if (!item) continue;
 
-    // Update meal (create new object to maintain immutability)
-    const updatedMeal = { ...meal };
-    const updatedItems = meal.items.map((item) => {
-      if (item.category === 'fat') {
-        const newMacros = {
-          protein: (item.selected.macros.protein / item.selected.grams) * newGrams,
-          carbs: (item.selected.macros.carbs / item.selected.grams) * newGrams,
-          fat: (item.selected.macros.fat / item.selected.grams) * newGrams,
-          kcal: (item.selected.macros.kcal / item.selected.grams) * newGrams,
-        };
-        return {
-          ...item,
-          selected: {
-            ...item.selected,
-            grams: Math.round(newGrams),
-            macros: {
-              protein: Math.round(newMacros.protein * 10) / 10,
-              carbs: Math.round(newMacros.carbs * 10) / 10,
-              fat: Math.round(newMacros.fat * 10) / 10,
-              kcal: Math.round(newMacros.kcal),
+      const currentMacro = item.selected.macros[macro];
+      const proportion = currentMacro / totalAvailable;
+      const reductionAmount = Math.min(toSubtract * proportion, currentMacro * 0.5); // Max 50% reduction per item
+
+      if (reductionAmount <= 0) continue;
+
+      // Calculate new grams based on the macro reduction
+      const macroPer100g = (item.selected.macros[macro] / item.selected.grams) * 100;
+      const targetMacro = currentMacro - reductionAmount;
+      const newGrams = Math.max(10, calculateGramsForMacro(targetMacro, macroPer100g));
+
+      // Record adjustment
+      adjustments.push({
+        mealIndex,
+        foodId: item.selected.foodId,
+        name: item.selected.name,
+        oldGrams: item.selected.grams,
+        newGrams: Math.round(newGrams),
+      });
+
+      // Update meal items
+      const updatedMeal = { ...meal };
+      const updatedItems = meal.items.map((mealItem) => {
+        if (mealItem.category === category) {
+          const gramsFactor = newGrams / mealItem.selected.grams;
+          const newMacros = {
+            protein: mealItem.selected.macros.protein * gramsFactor,
+            carbs: mealItem.selected.macros.carbs * gramsFactor,
+            fat: mealItem.selected.macros.fat * gramsFactor,
+            kcal: mealItem.selected.macros.kcal * gramsFactor,
+          };
+          return {
+            ...mealItem,
+            selected: {
+              ...mealItem.selected,
+              grams: Math.round(newGrams),
+              macros: {
+                protein: Math.round(newMacros.protein * 10) / 10,
+                carbs: Math.round(newMacros.carbs * 10) / 10,
+                fat: Math.round(newMacros.fat * 10) / 10,
+                kcal: Math.round(newMacros.kcal),
+              },
             },
-          },
-        };
-      }
-      return item;
-    });
-    updatedMeal.items = updatedItems;
-    updatedMeal.totalMacros = calculateMealTotalMacros(updatedItems, updatedMeal.sauce);
-    updatedMeals[mealIndex] = updatedMeal;
-
-    remainingFatToReduce -= reductionAmount;
+          };
+        }
+        return mealItem;
+      });
+      updatedMeal.items = updatedItems;
+      updatedMeal.totalMacros = calculateMealTotalMacros(updatedItems, updatedMeal.sauce);
+      updatedMeals[mealIndex] = updatedMeal;
+    }
   }
 
   const updatedPlan: GeneratedMealPlan = {
@@ -457,15 +474,10 @@ export function adjustForSauce(
     actualMacros: calculatePlanTotalMacros(updatedMeals),
   };
 
-  let warning: string | undefined;
-  if (remainingFatToReduce > 2) {
-    warning = `Såsen kräver mer fett (${Math.round(remainingFatToReduce)}g) än mellanmålen kan kompensera.`;
-  }
-
   return {
     updatedPlan,
     adjustments,
-    warning,
+    warning: adjustments.length === 0 ? 'Inga livsmedel kunde justeras för såsen.' : undefined,
   };
 }
 

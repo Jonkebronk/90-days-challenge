@@ -22,6 +22,7 @@ interface Sauce {
   proteinG: number;
   carbsG: number;
   fatG: number;
+  image?: string | null;
 }
 
 interface SauceSelectorProps {
@@ -53,7 +54,7 @@ export function SauceSelector({
   const fetchSauces = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/foods/by-category?category=sauce');
+      const response = await fetch('/api/foods/by-category?category=sauce&limit=100');
       if (response.ok) {
         const data = await response.json();
         setSauces(data);
@@ -126,15 +127,28 @@ export function SauceSelector({
                     key={sauce.id}
                     onClick={() => setSelectedSauce(sauce)}
                     className={cn(
-                      'p-3 rounded-md cursor-pointer transition-colors',
+                      'p-3 rounded-md cursor-pointer transition-colors flex items-center gap-3',
                       selectedSauce?.id === sauce.id
                         ? 'bg-orange-100 border-2 border-orange-500'
                         : 'hover:bg-gray-100 border-2 border-transparent'
                     )}
                   >
-                    <div className="font-medium">{sauce.name}</div>
-                    <div className="text-xs text-gray-500">
-                      Per 100g: {sauce.calories} kcal, F: {sauce.fatG}g
+                    {sauce.image ? (
+                      <img
+                        src={sauce.image}
+                        alt={sauce.name}
+                        className="w-10 h-10 rounded-lg object-cover bg-white shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                        <span className="text-lg">🥫</span>
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium truncate">{sauce.name}</div>
+                      <div className="text-xs text-gray-500">
+                        Per 100g: {sauce.calories} kcal | P: {sauce.proteinG}g | K: {sauce.carbsG}g | F: {sauce.fatG}g
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -177,12 +191,11 @@ export function SauceSelector({
                 </div>
               )}
 
-              {/* Warning about fat adjustment */}
+              {/* Info about macro adjustment */}
               <div className="flex items-start gap-2 text-xs text-amber-700 bg-amber-50 p-2 rounded">
                 <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
                 <span>
-                  Fettet från såsen kommer automatiskt dras av från mellanmålen
-                  för att bibehålla dina makromål.
+                  Makron från såsen dras av från övriga måltider för att bibehålla dina dagliga mål.
                 </span>
               </div>
             </div>

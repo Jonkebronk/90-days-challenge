@@ -182,11 +182,12 @@ export async function POST(
       },
     };
 
-    // Adjust snack fat sources to compensate for sauce fat
+    // Adjust meal plan to compensate for sauce macros
     const sauceResult = adjustForSauce(
       planForAdjustment,
       sauceMacros.fat,
-      mealIndex
+      mealIndex,
+      sauceMacros // Pass full macros for subtraction
     );
 
     // Save to database
