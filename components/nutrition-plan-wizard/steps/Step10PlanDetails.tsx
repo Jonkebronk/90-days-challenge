@@ -1,36 +1,94 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, ArrowRight, Home, Wand2 } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Home, Wand2, Loader2 } from 'lucide-react';
 import { useNutritionPlanWizardStore } from '@/lib/stores/nutrition-plan-wizard-store';
 import { useRouter } from 'next/navigation';
 import { MealPlanGenerator } from '@/components/meal-plan-generator';
 import {
   WORKOUT_TIME_LABELS,
   NUTRITION_SYSTEM_LABELS,
+  WorkoutTime,
+  NutritionSystem,
 } from '@/lib/types/client-nutrition-plan';
 
 type ViewMode = 'summary' | 'generator';
+
+interface PlanData {
+  clientName: string;
+  dailyCalorieTarget: number;
+  proteinGrams: number;
+  fatGrams: number;
+  carbGrams: number;
+  mealsPerDay: number;
+  workoutTime: WorkoutTime;
+  nutritionSystem: NutritionSystem;
+}
 
 export function Step10PlanDetails() {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<ViewMode>('summary');
   const [generatedMealPlanId, setGeneratedMealPlanId] = useState<string | null>(null);
+  const [planData, setPlanData] = useState<PlanData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const {
-    clientName,
-    dailyCalorieTarget,
-    proteinGrams,
-    fatGrams,
-    carbGrams,
-    mealsPerDay,
-    workoutTime,
-    nutritionSystem,
+    clientName: storeClientName,
+    dailyCalorieTarget: storeDailyCalorieTarget,
+    proteinGrams: storeProteinGrams,
+    fatGrams: storeFatGrams,
+    carbGrams: storeCarbGrams,
+    mealsPerDay: storeMealsPerDay,
+    workoutTime: storeWorkoutTime,
+    nutritionSystem: storeNutritionSystem,
     createdPlanId,
     reset,
   } = useNutritionPlanWizardStore();
+
+  // Fetch the actual saved plan data from the API
+  useEffect(() => {
+    async function fetchPlan() {
+      if (!createdPlanId) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/nutrition-plans/${createdPlanId}`);
+        if (response.ok) {
+          const plan = await response.json();
+          setPlanData({
+            clientName: plan.client?.name || storeClientName,
+            dailyCalorieTarget: plan.dailyCalorieTarget,
+            proteinGrams: plan.proteinGrams,
+            fatGrams: plan.fatGrams,
+            carbGrams: plan.carbGrams,
+            mealsPerDay: plan.mealsPerDay,
+            workoutTime: plan.workoutTime || storeWorkoutTime,
+            nutritionSystem: plan.nutritionSystem,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching plan:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchPlan();
+  }, [createdPlanId, storeClientName, storeWorkoutTime]);
+
+  // Use fetched data or fall back to store values
+  const clientName = planData?.clientName || storeClientName;
+  const dailyCalorieTarget = planData?.dailyCalorieTarget || storeDailyCalorieTarget;
+  const proteinGrams = planData?.proteinGrams || storeProteinGrams;
+  const fatGrams = planData?.fatGrams || storeFatGrams;
+  const carbGrams = planData?.carbGrams || storeCarbGrams;
+  const mealsPerDay = planData?.mealsPerDay || storeMealsPerDay;
+  const workoutTime = planData?.workoutTime || storeWorkoutTime;
+  const nutritionSystem = planData?.nutritionSystem || storeNutritionSystem;
 
   const handleCreateAnother = () => {
     reset();
@@ -66,6 +124,16 @@ export function Step10PlanDetails() {
     fat: fatGrams,
     kcal: dailyCalorieTarget,
   };
+
+  // Show loading state while fetching plan data
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-amber-500 mb-4" />
+        <p className="text-sm text-gray-500">Laddar plandata...</p>
+      </div>
+    );
+  }
 
   // If in generator mode, show the meal plan generator
   if (viewMode === 'generator' && createdPlanId) {
