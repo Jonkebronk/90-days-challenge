@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Wand2, Save, AlertTriangle } from 'lucide-react';
 import { MealConfigMatrix } from './MealConfigMatrix';
-import { MealCard } from './MealCard';
+import { ClientStyleMealCard } from './ClientStyleMealCard';
 import { MacroSummary } from './MacroSummary';
 import { SauceSelector } from './SauceSelector';
 import { FoodSwapModal } from './FoodSwapModal';
@@ -368,10 +368,10 @@ export function MealPlanGenerator({
             actualMacros={generatedPlan.actualMacros}
           />
 
-          {/* Meals grid */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* Meals - vertical list */}
+          <div className="space-y-4">
             {generatedPlan.meals.map((meal, index) => (
-              <MealCard
+              <ClientStyleMealCard
                 key={index}
                 meal={meal}
                 mealIndex={index}
