@@ -17,6 +17,7 @@ import type {
   MacroTargets,
   GeneratedMeal,
   SwapFeedback,
+  CalculatedMacros,
 } from '@/lib/types/meal-plan-generator';
 import { DEFAULT_MEAL_CONFIGS } from '@/lib/types/meal-plan-generator';
 
@@ -257,6 +258,51 @@ export function MealPlanGenerator({
     }
   };
 
+  // Select food from product library handler
+  const handleSelectFood = async (
+    mealIndex: number,
+    category: MacroCategory,
+    product: { id: string; name: string },
+    grams: number,
+    macros: CalculatedMacros
+  ) => {
+    if (!generatedPlan) return;
+
+    try {
+      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/select-food`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mealIndex,
+          category,
+          productId: product.id,
+          grams,
+          macros,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Kunde inte välja livsmedel');
+        return;
+      }
+
+      // Update local state
+      const newMeals = [...generatedPlan.meals];
+      newMeals[mealIndex] = data.updatedMeal;
+
+      setGeneratedPlan({
+        ...generatedPlan,
+        meals: newMeals,
+        actualMacros: data.actualMacros,
+      });
+    } catch (err) {
+      setError('Ett fel uppstod vid val av livsmedel');
+      console.error('Select food error:', err);
+    }
+  };
+
   // Save handler
   const handleSave = () => {
     if (generatedPlan && onSave) {
@@ -377,6 +423,7 @@ export function MealPlanGenerator({
                 mealIndex={index}
                 mealNumber={getMealNumber(generatedPlan.meals, index)}
                 onSwapFood={handleSwapFood}
+                onSelectFood={handleSelectFood}
                 onAddSauce={handleAddSauce}
                 onRemoveSauce={handleRemoveSauce}
               />

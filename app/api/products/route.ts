@@ -43,6 +43,7 @@ export async function GET(req: NextRequest) {
     const ean = searchParams.get('ean')
     const category = searchParams.get('category')
     const subCategory = searchParams.get('subCategory')
+    const macroCategory = searchParams.get('macroCategory')
     const source = searchParams.get('source')
     const limit = parseInt(searchParams.get('limit') || '50')
     const offset = parseInt(searchParams.get('offset') || '0')
@@ -52,6 +53,11 @@ export async function GET(req: NextRequest) {
     // Filter by source (database)
     if (source && source !== 'all') {
       where.source = source
+    }
+
+    // Filter by macroCategory (for meal plan generator)
+    if (macroCategory) {
+      where.macroCategory = macroCategory
     }
 
     if (ean) {

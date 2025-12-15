@@ -6,17 +6,31 @@ import { Button } from '@/components/ui/button';
 import { MacroBadge } from './MacroBadge';
 import { CategorySection } from './CategorySection';
 import { FoodItemDisplay } from './FoodItemDisplay';
+import { ProductSelectModal } from './ProductSelectModal';
 import type {
   GeneratedMeal,
   MacroCategory,
+  CalculatedMacros,
 } from '@/lib/types/meal-plan-generator';
 import { MEAL_TYPE_LABELS, VEGETABLE_GRAMS } from '@/lib/types/meal-plan-generator';
+
+interface ProductForSelect {
+  id: string;
+  name: string;
+  brand?: string | null;
+  image?: string | null;
+  kcal: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
 
 interface ClientStyleMealCardProps {
   meal: GeneratedMeal;
   mealIndex: number;
   mealNumber?: number;
   onSwapFood: (mealIndex: number, category: MacroCategory, foodId: string) => void;
+  onSelectFood?: (mealIndex: number, category: MacroCategory, product: ProductForSelect, grams: number, macros: CalculatedMacros) => void;
   onAddSauce: (mealIndex: number) => void;
   onRemoveSauce: (mealIndex: number) => void;
   disabled?: boolean;
@@ -27,11 +41,17 @@ export function ClientStyleMealCard({
   mealIndex,
   mealNumber,
   onSwapFood,
+  onSelectFood,
   onAddSauce,
   onRemoveSauce,
   disabled = false,
 }: ClientStyleMealCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // Modal state for product selection
+  const [selectModalOpen, setSelectModalOpen] = useState(false);
+  const [selectCategory, setSelectCategory] = useState<MacroCategory | null>(null);
+  const [selectTargetMacro, setSelectTargetMacro] = useState(0);
 
   const canHaveSauce = meal.type === 'lunch' || meal.type === 'middag';
   const hasVegetables = meal.vegetableGrams > 0;
@@ -47,6 +67,21 @@ export function ClientStyleMealCard({
 
   const handleSwapFood = (category: MacroCategory, foodId: string) => {
     onSwapFood(mealIndex, category, foodId);
+  };
+
+  // Open product select modal
+  const handleOpenSelectModal = (category: MacroCategory, targetMacro: number) => {
+    setSelectCategory(category);
+    setSelectTargetMacro(targetMacro);
+    setSelectModalOpen(true);
+  };
+
+  // Handle product selection from modal
+  const handleProductSelect = (product: ProductForSelect, grams: number, macros: CalculatedMacros) => {
+    if (selectCategory && onSelectFood) {
+      onSelectFood(mealIndex, selectCategory, product, grams, macros);
+    }
+    setSelectModalOpen(false);
   };
 
   return (
@@ -103,6 +138,7 @@ export function ClientStyleMealCard({
               <CategorySection
                 item={proteinItem}
                 onSwapFood={!disabled ? handleSwapFood : undefined}
+                onSelectFood={!disabled && onSelectFood ? handleOpenSelectModal : undefined}
                 disabled={disabled}
               />
             )}
@@ -111,6 +147,7 @@ export function ClientStyleMealCard({
               <CategorySection
                 item={carbItem}
                 onSwapFood={!disabled ? handleSwapFood : undefined}
+                onSelectFood={!disabled && onSelectFood ? handleOpenSelectModal : undefined}
                 disabled={disabled}
               />
             )}
@@ -119,6 +156,7 @@ export function ClientStyleMealCard({
               <CategorySection
                 item={fatItem}
                 onSwapFood={!disabled ? handleSwapFood : undefined}
+                onSelectFood={!disabled && onSelectFood ? handleOpenSelectModal : undefined}
                 disabled={disabled}
               />
             )}
@@ -180,6 +218,18 @@ export function ClientStyleMealCard({
             </div>
           )}
         </div>
+      )}
+
+      {/* Product Select Modal */}
+      {selectCategory && (
+        <ProductSelectModal
+          isOpen={selectModalOpen}
+          onClose={() => setSelectModalOpen(false)}
+          category={selectCategory}
+          targetMacro={selectTargetMacro}
+          mealType={meal.type}
+          onSelect={handleProductSelect}
+        />
       )}
     </div>
   );

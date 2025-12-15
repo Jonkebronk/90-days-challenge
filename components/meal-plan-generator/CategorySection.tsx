@@ -1,11 +1,12 @@
 'use client';
 
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Search } from 'lucide-react';
 import type { GeneratedMealItem, MacroCategory } from '@/lib/types/meal-plan-generator';
 
 interface CategorySectionProps {
   item: GeneratedMealItem;
   onSwapFood?: (category: MacroCategory, foodId: string) => void;
+  onSelectFood?: (category: MacroCategory, targetMacro: number) => void;
   disabled?: boolean;
 }
 
@@ -17,12 +18,28 @@ const categoryTitles: Record<MacroCategory, string> = {
   sauce: 'SÅS',
 };
 
-export function CategorySection({ item, onSwapFood, disabled }: CategorySectionProps) {
+// Get target macro based on category
+function getTargetMacro(item: GeneratedMealItem): number {
+  switch (item.category) {
+    case 'protein':
+      return item.selected.macros.protein;
+    case 'carb':
+      return item.selected.macros.carbs;
+    case 'fat':
+      return item.selected.macros.fat;
+    default:
+      return 0;
+  }
+}
+
+export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: CategorySectionProps) {
   // Combine selected + alternatives for display with ELLER dividers
   const allOptions = [
     { foodId: item.selected.foodId, name: item.selected.name, grams: item.selected.grams, isSelected: true },
     ...item.alternatives.map(alt => ({ foodId: alt.foodId, name: alt.name, grams: alt.grams, isSelected: false }))
   ];
+
+  const targetMacro = getTargetMacro(item);
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
@@ -54,6 +71,17 @@ export function CategorySection({ item, onSwapFood, disabled }: CategorySectionP
               <span className={`flex-1 text-sm ${option.isSelected ? 'text-zinc-800 font-medium' : 'text-zinc-600'}`}>
                 {Math.round(option.grams)}g {option.name}
               </span>
+
+              {/* Search button - opens product select modal */}
+              {!disabled && onSelectFood && (
+                <button
+                  onClick={() => onSelectFood(item.category, targetMacro)}
+                  className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-amber-50 transition-opacity"
+                  title="Sök i produktbiblioteket"
+                >
+                  <Search className="h-3.5 w-3.5 text-zinc-400 hover:text-amber-600" />
+                </button>
+              )}
 
               {/* Swap button - visible on hover */}
               {!disabled && onSwapFood && (
