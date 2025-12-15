@@ -1,6 +1,6 @@
 'use client';
 
-import { RefreshCw, Search } from 'lucide-react';
+import { RefreshCw, Search, Info } from 'lucide-react';
 import type { GeneratedMealItem, MacroCategory } from '@/lib/types/meal-plan-generator';
 
 interface CategorySectionProps {
@@ -18,6 +18,14 @@ const categoryTitles: Record<MacroCategory, string> = {
   sauce: 'SÅS',
 };
 
+const categoryInfo: Record<MacroCategory, string> = {
+  protein: 'Proteinkällor kan innehålla fett. Välj mager källa för lägre kalorier.',
+  carb: 'Kolhydratkällor ger energi. Fullkorn ger längre mättnad.',
+  fat: 'Fettkällor är kaloritäta. Små portioner ger stort bidrag.',
+  vegetable: 'Grönsaker är fria och räknas inte i makros.',
+  sauce: 'Såser bidrar med extra kalorier och fett.',
+};
+
 // Get target macro based on category
 function getTargetMacro(item: GeneratedMealItem): number {
   switch (item.category) {
@@ -32,6 +40,20 @@ function getTargetMacro(item: GeneratedMealItem): number {
   }
 }
 
+// Get macro label based on category
+function getMacroLabel(category: MacroCategory): string {
+  switch (category) {
+    case 'protein':
+      return 'protein';
+    case 'carb':
+      return 'kolhydrater';
+    case 'fat':
+      return 'fett';
+    default:
+      return '';
+  }
+}
+
 export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: CategorySectionProps) {
   // Combine selected + alternatives for display with ELLER dividers
   const allOptions = [
@@ -40,14 +62,26 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
   ];
 
   const targetMacro = getTargetMacro(item);
+  const macroLabel = getMacroLabel(item.category);
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-      {/* Gray header */}
-      <div className="bg-zinc-100 px-4 py-2.5 border-b border-zinc-200">
+      {/* Gray header with search button */}
+      <div className="bg-zinc-100 px-4 py-2.5 border-b border-zinc-200 flex items-center justify-between">
         <h4 className="text-sm font-bold text-zinc-800 uppercase tracking-wide">
           {categoryTitles[item.category]}
         </h4>
+        {/* Search button in header - always visible */}
+        {!disabled && onSelectFood && (
+          <button
+            onClick={() => onSelectFood(item.category, targetMacro)}
+            className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-zinc-300 hover:border-amber-400 hover:bg-amber-50 transition-colors text-xs text-zinc-600 hover:text-amber-700"
+            title="Sök i produktbiblioteket"
+          >
+            <Search className="h-3.5 w-3.5" />
+            <span>Sök</span>
+          </button>
+        )}
       </div>
 
       {/* Ingredients with ELLER dividers */}
@@ -72,30 +106,31 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
                 {Math.round(option.grams)}g {option.name}
               </span>
 
-              {/* Search button - opens product select modal */}
-              {!disabled && onSelectFood && (
-                <button
-                  onClick={() => onSelectFood(item.category, targetMacro)}
-                  className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-amber-50 transition-opacity"
-                  title="Sök i produktbiblioteket"
-                >
-                  <Search className="h-3.5 w-3.5 text-zinc-400 hover:text-amber-600" />
-                </button>
-              )}
-
-              {/* Swap button - visible on hover */}
-              {!disabled && onSwapFood && (
+              {/* Swap button - always visible for alternatives */}
+              {!disabled && onSwapFood && !option.isSelected && (
                 <button
                   onClick={() => onSwapFood(item.category, option.foodId)}
-                  className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-zinc-100 transition-opacity"
-                  title={option.isSelected ? 'Byt till annat livsmedel' : 'Välj detta alternativ'}
+                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-100 hover:bg-amber-100 border border-zinc-200 hover:border-amber-300 transition-colors text-xs text-zinc-600 hover:text-amber-700"
+                  title="Välj detta alternativ"
                 >
-                  <RefreshCw className="h-3.5 w-3.5 text-zinc-400 hover:text-amber-600" />
+                  <RefreshCw className="h-3 w-3" />
+                  <span>Välj</span>
                 </button>
               )}
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Info box about macro impact */}
+      <div className="px-4 pb-3">
+        <div className="flex items-start gap-2 p-2.5 bg-blue-50 rounded-lg border border-blue-100">
+          <Info className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
+          <div className="text-xs text-blue-700">
+            <span className="font-medium">Mål: {Math.round(targetMacro)}g {macroLabel}</span>
+            <p className="mt-0.5 text-blue-600">{categoryInfo[item.category]}</p>
+          </div>
+        </div>
       </div>
     </div>
   );
