@@ -1,7 +1,7 @@
 'use client';
 
-import { RefreshCw, Search, Info } from 'lucide-react';
-import type { GeneratedMealItem, MacroCategory } from '@/lib/types/meal-plan-generator';
+import { RefreshCw, Search, Info, ArrowRight } from 'lucide-react';
+import type { GeneratedMealItem, MacroCategory, CalculatedMacros } from '@/lib/types/meal-plan-generator';
 
 interface CategorySectionProps {
   item: GeneratedMealItem;
@@ -18,14 +18,6 @@ const categoryTitles: Record<MacroCategory, string> = {
   sauce: 'SÅS',
 };
 
-const categoryInfo: Record<MacroCategory, string> = {
-  protein: 'Proteinkällor kan innehålla fett. Välj mager källa för lägre kalorier.',
-  carb: 'Kolhydratkällor ger energi. Fullkorn ger längre mättnad.',
-  fat: 'Fettkällor är kaloritäta. Små portioner ger stort bidrag.',
-  vegetable: 'Grönsaker är fria och räknas inte i makros.',
-  sauce: 'Såser bidrar med extra kalorier och fett.',
-};
-
 // Get target macro based on category
 function getTargetMacro(item: GeneratedMealItem): number {
   switch (item.category) {
@@ -40,48 +32,58 @@ function getTargetMacro(item: GeneratedMealItem): number {
   }
 }
 
-// Get macro label based on category
-function getMacroLabel(category: MacroCategory): string {
-  switch (category) {
-    case 'protein':
-      return 'protein';
-    case 'carb':
-      return 'kolhydrater';
-    case 'fat':
-      return 'fett';
-    default:
-      return '';
-  }
+// Format macro difference with + or - sign
+function formatDiff(diff: number): string {
+  if (diff === 0) return '±0';
+  return diff > 0 ? `+${Math.round(diff)}` : `${Math.round(diff)}`;
+}
+
+// Get color class for difference
+function getDiffColor(diff: number): string {
+  if (diff === 0) return 'text-zinc-500';
+  if (diff > 0) return 'text-red-600';
+  return 'text-green-600';
 }
 
 export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: CategorySectionProps) {
   // Combine selected + alternatives for display with ELLER dividers
   const allOptions = [
-    { foodId: item.selected.foodId, name: item.selected.name, grams: item.selected.grams, isSelected: true },
-    ...item.alternatives.map(alt => ({ foodId: alt.foodId, name: alt.name, grams: alt.grams, isSelected: false }))
+    {
+      foodId: item.selected.foodId,
+      name: item.selected.name,
+      grams: item.selected.grams,
+      macros: item.selected.macros,
+      isSelected: true
+    },
+    ...item.alternatives.map(alt => ({
+      foodId: alt.foodId,
+      name: alt.name,
+      grams: alt.grams,
+      macros: alt.macros,
+      isSelected: false
+    }))
   ];
 
   const targetMacro = getTargetMacro(item);
-  const macroLabel = getMacroLabel(item.category);
+  const selectedMacros = item.selected.macros;
+
+  // Calculate macro differences for alternatives
+  const getSwapImpact = (altMacros: CalculatedMacros) => {
+    return {
+      protein: altMacros.protein - selectedMacros.protein,
+      carbs: altMacros.carbs - selectedMacros.carbs,
+      fat: altMacros.fat - selectedMacros.fat,
+      kcal: altMacros.kcal - selectedMacros.kcal,
+    };
+  };
 
   return (
     <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-      {/* Gray header with search button */}
-      <div className="bg-zinc-100 px-4 py-2.5 border-b border-zinc-200 flex items-center justify-between">
+      {/* Gray header */}
+      <div className="bg-zinc-100 px-4 py-2.5 border-b border-zinc-200">
         <h4 className="text-sm font-bold text-zinc-800 uppercase tracking-wide">
           {categoryTitles[item.category]}
         </h4>
-        {/* Search button in header - always visible */}
-        {!disabled && onSelectFood && (
-          <button
-            onClick={() => onSelectFood(item.category, targetMacro)}
-            className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-zinc-300 hover:border-amber-400 hover:bg-amber-50 transition-colors text-xs text-zinc-600 hover:text-amber-700"
-            title="Sök i produktbiblioteket"
-          >
-            <Search className="h-3.5 w-3.5" />
-            <span>Sök</span>
-          </button>
-        )}
       </div>
 
       {/* Ingredients with ELLER dividers */}
@@ -97,7 +99,7 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
               </div>
             )}
 
-            <div className="flex items-center gap-2 py-1.5 group">
+            <div className="flex items-center gap-2 py-1.5">
               {/* Bullet point */}
               <span className="text-zinc-400 text-lg leading-none">•</span>
 
@@ -106,31 +108,55 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
                 {Math.round(option.grams)}g {option.name}
               </span>
 
-              {/* Swap button - always visible for alternatives */}
-              {!disabled && onSwapFood && !option.isSelected && (
-                <button
-                  onClick={() => onSwapFood(item.category, option.foodId)}
-                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-zinc-100 hover:bg-amber-100 border border-zinc-200 hover:border-amber-300 transition-colors text-xs text-zinc-600 hover:text-amber-700"
-                  title="Välj detta alternativ"
-                >
-                  <RefreshCw className="h-3 w-3" />
-                  <span>Välj</span>
-                </button>
-              )}
+              {/* Buttons container */}
+              <div className="flex items-center gap-1.5">
+                {/* Search button - on every row */}
+                {!disabled && onSelectFood && (
+                  <button
+                    onClick={() => onSelectFood(item.category, targetMacro)}
+                    className="flex items-center gap-1 px-2 py-1 rounded-md bg-white border border-zinc-300 hover:border-amber-400 hover:bg-amber-50 transition-colors text-xs text-zinc-600 hover:text-amber-700"
+                    title="Sök i produktbiblioteket"
+                  >
+                    <Search className="h-3 w-3" />
+                    <span>Sök</span>
+                  </button>
+                )}
+
+                {/* Swap button - for alternatives */}
+                {!disabled && onSwapFood && !option.isSelected && (
+                  <button
+                    onClick={() => onSwapFood(item.category, option.foodId)}
+                    className="flex items-center gap-1 px-2 py-1 rounded-md bg-amber-100 hover:bg-amber-200 border border-amber-300 hover:border-amber-400 transition-colors text-xs text-amber-700 hover:text-amber-800 font-medium"
+                    title="Välj detta alternativ"
+                  >
+                    <RefreshCw className="h-3 w-3" />
+                    <span>Välj</span>
+                  </button>
+                )}
+              </div>
             </div>
+
+            {/* Swap impact info - shown for alternatives */}
+            {!option.isSelected && (
+              <div className="ml-6 mt-1 mb-2">
+                <div className="inline-flex items-center gap-2 px-2 py-1 bg-zinc-50 rounded text-xs">
+                  <span className="text-zinc-500">Vid byte:</span>
+                  {(() => {
+                    const impact = getSwapImpact(option.macros);
+                    return (
+                      <>
+                        <span className={getDiffColor(impact.protein)}>P {formatDiff(impact.protein)}g</span>
+                        <span className={getDiffColor(impact.carbs)}>K {formatDiff(impact.carbs)}g</span>
+                        <span className={getDiffColor(impact.fat)}>F {formatDiff(impact.fat)}g</span>
+                        <span className={getDiffColor(impact.kcal)}>{formatDiff(impact.kcal)} kcal</span>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+            )}
           </div>
         ))}
-      </div>
-
-      {/* Info box about macro impact */}
-      <div className="px-4 pb-3">
-        <div className="flex items-start gap-2 p-2.5 bg-blue-50 rounded-lg border border-blue-100">
-          <Info className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
-          <div className="text-xs text-blue-700">
-            <span className="font-medium">Mål: {Math.round(targetMacro)}g {macroLabel}</span>
-            <p className="mt-0.5 text-blue-600">{categoryInfo[item.category]}</p>
-          </div>
-        </div>
       </div>
     </div>
   );
