@@ -165,14 +165,29 @@ export function ClientStyleMealCard({
           {/* Vegetables section (if applicable) */}
           {hasVegetables && (
             <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-              <div className="bg-zinc-100 px-4 py-2.5 border-b border-zinc-200">
+              <div className="bg-zinc-100 px-4 py-2.5 border-b border-zinc-200 flex items-center justify-between">
                 <h4 className="text-sm font-bold text-zinc-800 uppercase tracking-wide">GRÖNSAKER</h4>
+                {!disabled && onSelectFood && (
+                  <button
+                    onClick={() => handleOpenSelectModal('vegetable', 0)}
+                    className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-zinc-300 hover:border-green-400 hover:bg-green-50 transition-colors text-xs text-zinc-600 hover:text-green-700"
+                    title="Bläddra i grönsaker"
+                  >
+                    <Plus className="h-3 w-3" />
+                    <span>Bläddra</span>
+                  </button>
+                )}
               </div>
               <div className="px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <Leaf className="h-4 w-4 text-green-600" />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
+                    <Leaf className="h-5 w-5 text-green-600" />
+                  </div>
                   <span className="text-sm text-zinc-700">{VEGETABLE_GRAMS}g valfria grönsaker</span>
                 </div>
+                <p className="text-xs text-zinc-500 mt-2 ml-[52px]">
+                  Grönsaker räknas inte i makros - ät fritt!
+                </p>
               </div>
             </div>
           )}

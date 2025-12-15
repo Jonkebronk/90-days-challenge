@@ -43,48 +43,41 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    // Fetch foods with nutrition data
-    const foods = await prisma.foodItem.findMany({
+    // Fetch products with nutrition data
+    const products = await prisma.product.findMany({
       where,
       select: {
         id: true,
         name: true,
-        calories: true,
-        proteinG: true,
-        carbsG: true,
-        fatG: true,
+        kcal: true,
+        protein: true,
+        carbs: true,
+        fat: true,
         macroCategory: true,
         mealTypes: true,
-        isRecommended: true,
-        imageUrl: true,
-        subcategory: true,
+        image: true,
       },
-      orderBy: [
-        { isRecommended: 'desc' },
-        { name: 'asc' },
-      ],
+      orderBy: {
+        name: 'asc',
+      },
       take: limit,
     });
 
     // Transform to generator format
-    const transformedFoods = foods.map((food) => ({
-      id: food.id,
-      name: food.name,
-      calories: food.calories ? Number(food.calories) : 0,
-      proteinG: food.proteinG ? Number(food.proteinG) : 0,
-      carbsG: food.carbsG ? Number(food.carbsG) : 0,
-      fatG: food.fatG ? Number(food.fatG) : 0,
-      macroCategory: food.macroCategory as MacroCategory,
-      mealTypes: food.mealTypes as MealType[],
-      isRecommended: food.isRecommended,
-      imageUrl: food.imageUrl,
-      subcategory: food.subcategory,
+    const transformedFoods = products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      calories: product.kcal ? Number(product.kcal) : 0,
+      proteinG: product.protein ? Number(product.protein) : 0,
+      carbsG: product.carbs ? Number(product.carbs) : 0,
+      fatG: product.fat ? Number(product.fat) : 0,
+      macroCategory: product.macroCategory as MacroCategory,
+      mealTypes: (product.mealTypes || []) as MealType[],
+      isRecommended: false,
+      image: product.image,
     }));
 
-    return NextResponse.json({
-      foods: transformedFoods,
-      total: transformedFoods.length,
-    });
+    return NextResponse.json(transformedFoods);
   } catch (error) {
     console.error('Error fetching foods by category:', error);
     return NextResponse.json(

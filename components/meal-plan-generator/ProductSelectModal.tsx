@@ -104,11 +104,18 @@ export function ProductSelectModal({
     fetchProducts();
   }, [isOpen, category]);
 
+  // Check if this is vegetable category (free, no macro calculation)
+  const isVegetable = category === 'vegetable';
+  const defaultVegetableGrams = 100;
+
   // Calculate products with grams and filter
   const productsWithCalculations: ProductWithCalculation[] = useMemo(() => {
     return products
       .map((product) => {
-        const calculatedGrams = calculateGramsForTarget(product, targetMacro, category);
+        // For vegetables, use default grams instead of calculating
+        const calculatedGrams = isVegetable
+          ? defaultVegetableGrams
+          : calculateGramsForTarget(product, targetMacro, category);
         const calculatedMacros = calculateMacrosForGrams(product, calculatedGrams);
         return {
           ...product,
@@ -117,8 +124,8 @@ export function ProductSelectModal({
         };
       })
       .filter((p) => {
-        // Filter out products with 0 grams (would mean division by zero or no macro content)
-        if (p.calculatedGrams <= 0) return false;
+        // For vegetables, don't filter out based on grams
+        if (!isVegetable && p.calculatedGrams <= 0) return false;
 
         // Filter by mealType if product has mealTypes set
         if (p.mealTypes && p.mealTypes.length > 0) {
@@ -136,7 +143,7 @@ export function ProductSelectModal({
         );
       })
       .sort((a, b) => a.name.localeCompare(b.name, 'sv'));
-  }, [products, targetMacro, category, mealType, searchQuery]);
+  }, [products, targetMacro, category, mealType, searchQuery, isVegetable]);
 
   const handleSelect = (product: ProductWithCalculation) => {
     onSelect(product, product.calculatedGrams, product.calculatedMacros);
@@ -174,9 +181,15 @@ export function ProductSelectModal({
         </div>
 
         {/* Target info */}
-        <div className="text-sm text-zinc-500 bg-zinc-50 px-3 py-2 rounded-lg">
-          Mål: <span className="font-medium text-zinc-700">{targetMacro}g {macroLabel}</span>
-        </div>
+        {isVegetable ? (
+          <div className="text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg">
+            Grönsaker räknas inte i makros - ät fritt!
+          </div>
+        ) : (
+          <div className="text-sm text-zinc-500 bg-zinc-50 px-3 py-2 rounded-lg">
+            Mål: <span className="font-medium text-zinc-700">{targetMacro}g {macroLabel}</span>
+          </div>
+        )}
 
         {/* Products list */}
         <div className="flex-1 overflow-y-auto space-y-2 pr-1">
@@ -215,14 +228,16 @@ export function ProductSelectModal({
                     {product.brand && (
                       <div className="text-xs text-zinc-500 truncate">{product.brand}</div>
                     )}
-                    <div className="text-xs text-zinc-400 mt-1">
-                      {product[getMacroKey(category)]}g {macroLabel}/100g
-                    </div>
+                    {!isVegetable && (
+                      <div className="text-xs text-zinc-400 mt-1">
+                        {product[getMacroKey(category)]}g {macroLabel}/100g
+                      </div>
+                    )}
                   </div>
 
                   {/* Calculated amount */}
                   <div className="text-right shrink-0">
-                    <div className="text-lg font-semibold text-amber-600">
+                    <div className={`text-lg font-semibold ${isVegetable ? 'text-green-600' : 'text-amber-600'}`}>
                       {product.calculatedGrams}g
                     </div>
                     <div className="text-xs text-zinc-500">
