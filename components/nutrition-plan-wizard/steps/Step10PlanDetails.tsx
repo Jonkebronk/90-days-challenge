@@ -27,7 +27,7 @@ interface PlanData {
 
 export function Step10PlanDetails() {
   const router = useRouter();
-  const [viewMode, setViewMode] = useState<ViewMode>('summary');
+  const [viewMode, setViewMode] = useState<ViewMode>('generator');
   const [generatedMealPlanId, setGeneratedMealPlanId] = useState<string | null>(null);
   const [planData, setPlanData] = useState<PlanData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
