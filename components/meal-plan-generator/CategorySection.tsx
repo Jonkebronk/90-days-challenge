@@ -1,6 +1,6 @@
 'use client';
 
-import { RefreshCw, Search } from 'lucide-react';
+import { RefreshCw, Search, Check } from 'lucide-react';
 import type { GeneratedMealItem, MacroCategory, CalculatedMacros } from '@/lib/types/meal-plan-generator';
 
 interface CategorySectionProps {
@@ -10,12 +10,19 @@ interface CategorySectionProps {
   disabled?: boolean;
 }
 
-const categoryColors: Record<MacroCategory, { bg: string; border: string; text: string; badge: string }> = {
-  protein: { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-700', badge: 'bg-rose-100 text-rose-700' },
-  carb: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', badge: 'bg-amber-100 text-amber-700' },
-  fat: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badge: 'bg-blue-100 text-blue-700' },
-  vegetable: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', badge: 'bg-green-100 text-green-700' },
-  sauce: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', badge: 'bg-orange-100 text-orange-700' },
+const categoryColors: Record<MacroCategory, {
+  bg: string;
+  border: string;
+  text: string;
+  badge: string;
+  selectedBg: string;
+  selectedBorder: string;
+}> = {
+  protein: { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-700', badge: 'bg-rose-100 text-rose-700', selectedBg: 'bg-rose-100', selectedBorder: 'border-rose-400' },
+  carb: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', badge: 'bg-amber-100 text-amber-700', selectedBg: 'bg-amber-100', selectedBorder: 'border-amber-400' },
+  fat: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badge: 'bg-blue-100 text-blue-700', selectedBg: 'bg-blue-100', selectedBorder: 'border-blue-400' },
+  vegetable: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', badge: 'bg-green-100 text-green-700', selectedBg: 'bg-green-100', selectedBorder: 'border-green-400' },
+  sauce: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', badge: 'bg-orange-100 text-orange-700', selectedBg: 'bg-orange-100', selectedBorder: 'border-orange-400' },
 };
 
 const categoryTitles: Record<MacroCategory, string> = {
@@ -55,27 +62,6 @@ function getDiffColor(diff: number): string {
 
 export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: CategorySectionProps) {
   const colors = categoryColors[item.category];
-
-  // Combine selected + alternatives for display
-  const allOptions = [
-    {
-      foodId: item.selected.foodId,
-      name: item.selected.name,
-      grams: item.selected.grams,
-      macros: item.selected.macros,
-      image: item.selected.image,
-      isSelected: true
-    },
-    ...item.alternatives.map(alt => ({
-      foodId: alt.foodId,
-      name: alt.name,
-      grams: alt.grams,
-      macros: alt.macros,
-      image: alt.image,
-      isSelected: false
-    }))
-  ];
-
   const targetMacro = getTargetMacro(item);
   const selectedMacros = item.selected.macros;
 
@@ -107,67 +93,96 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
         )}
       </div>
 
-      {/* Food cards */}
-      <div className="space-y-2">
-        {allOptions.map((option, index) => (
-          <div key={option.foodId}>
-            {/* ELLER label */}
-            {index > 0 && (
-              <div className="flex justify-center py-1">
-                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">eller</span>
-              </div>
-            )}
+      {/* Selected food card - distinct styling */}
+      <div className={`rounded-xl p-3 ${colors.selectedBg} border-2 ${colors.selectedBorder} shadow-sm`}>
+        <div className="flex items-center gap-3">
+          {/* Product image */}
+          {item.selected.image ? (
+            <img
+              src={item.selected.image}
+              alt={item.selected.name}
+              className="w-14 h-14 rounded-lg object-cover bg-white shadow-sm shrink-0"
+            />
+          ) : (
+            <div className="w-14 h-14 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
+              <span className="text-zinc-300 text-[10px]">Bild</span>
+            </div>
+          )}
 
-            {/* Food card */}
-            <div className={`rounded-xl p-3 ${colors.bg} ${colors.border} border ${option.isSelected ? 'ring-2 ring-offset-1 ring-zinc-400' : ''}`}>
-              <div className="flex items-center gap-3">
-                {/* Product image */}
-                {option.image ? (
-                  <img
-                    src={option.image}
-                    alt={option.name}
-                    className="w-12 h-12 rounded-lg object-cover bg-white shadow-sm shrink-0"
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
-                    <span className="text-zinc-300 text-[10px]">Bild</span>
-                  </div>
-                )}
+          {/* Food info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-bold text-zinc-900">
+                {Math.round(item.selected.grams)}g
+              </span>
+              <span className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${colors.badge}`}>
+                <Check className="h-3 w-3" />
+                VALD
+              </span>
+            </div>
+            <p className="text-sm text-zinc-800 font-semibold truncate">
+              {item.selected.name}
+            </p>
+          </div>
+        </div>
+      </div>
 
-                {/* Food info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline gap-2">
+      {/* Alternatives section */}
+      {item.alternatives.length > 0 && (
+        <>
+          {/* Separator */}
+          <div className="flex items-center gap-2 py-1">
+            <div className="flex-1 h-px bg-zinc-200" />
+            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">eller välj</span>
+            <div className="flex-1 h-px bg-zinc-200" />
+          </div>
+
+          {/* Alternative food cards */}
+          <div className="space-y-2">
+            {item.alternatives.map((alt) => (
+              <div key={alt.foodId} className={`rounded-xl p-3 ${colors.bg} ${colors.border} border`}>
+                <div className="flex items-center gap-3">
+                  {/* Product image */}
+                  {alt.image ? (
+                    <img
+                      src={alt.image}
+                      alt={alt.name}
+                      className="w-12 h-12 rounded-lg object-cover bg-white shadow-sm shrink-0"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
+                      <span className="text-zinc-300 text-[10px]">Bild</span>
+                    </div>
+                  )}
+
+                  {/* Food info */}
+                  <div className="flex-1 min-w-0">
                     <span className="text-lg font-bold text-zinc-900">
-                      {Math.round(option.grams)}g
+                      {Math.round(alt.grams)}g
                     </span>
-                    {option.isSelected && (
-                      <span className="text-[10px] font-medium text-zinc-500 uppercase">Vald</span>
-                    )}
+                    <p className="text-sm text-zinc-700 font-medium truncate">
+                      {alt.name}
+                    </p>
                   </div>
-                  <p className="text-sm text-zinc-700 font-medium truncate">
-                    {option.name}
-                  </p>
+
+                  {/* Action button */}
+                  {!disabled && onSwapFood && (
+                    <button
+                      onClick={() => onSwapFood(item.category, alt.foodId)}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white shadow-sm border border-zinc-200 hover:border-zinc-300 hover:shadow transition-all text-xs font-medium text-zinc-700"
+                    >
+                      <RefreshCw className="h-3 w-3" />
+                      Välj
+                    </button>
+                  )}
                 </div>
 
-                {/* Action button */}
-                {!disabled && onSwapFood && !option.isSelected && (
-                  <button
-                    onClick={() => onSwapFood(item.category, option.foodId)}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white shadow-sm border border-zinc-200 hover:border-zinc-300 hover:shadow transition-all text-xs font-medium text-zinc-700"
-                  >
-                    <RefreshCw className="h-3 w-3" />
-                    Välj
-                  </button>
-                )}
-              </div>
-
-              {/* Swap impact - shown for alternatives */}
-              {!option.isSelected && (
+                {/* Swap impact */}
                 <div className="mt-2 pt-2 border-t border-zinc-200/50">
                   <div className="flex items-center gap-3 text-[11px]">
                     <span className="text-zinc-500">Vid byte:</span>
                     {(() => {
-                      const impact = getSwapImpact(option.macros);
+                      const impact = getSwapImpact(alt.macros);
                       return (
                         <div className="flex gap-2">
                           <span className={getDiffColor(impact.protein)}>P {formatDiff(impact.protein)}</span>
@@ -179,11 +194,11 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
                     })()}
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   );
 }

@@ -183,6 +183,7 @@ export function generateMealItem(
       name: foodWithGrams.name,
       grams: foodWithGrams.grams,
       macros: foodWithGrams.macros,
+      image: foodWithGrams.image,
     };
   });
 
