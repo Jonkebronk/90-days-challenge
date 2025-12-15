@@ -12,7 +12,7 @@ import {
   WORKOUT_TIME_LABELS,
   NUTRITION_SYSTEM_LABELS,
   METABOLISM_MULTIPLIERS,
-  FAT_LOSS_RATE_CONFIG,
+  CALORIE_GOAL_CONFIG,
 } from '@/lib/types/client-nutrition-plan';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -61,14 +61,28 @@ export function Step9Review() {
   let proteinGrams: number;
   let fatGrams: number;
   let carbGrams: number;
-  let deficitDisplay: string;
+  let adjustmentDisplay: string;
+  let adjustmentLabel: string;
 
   if (isMetabolismMethod && metabolismActivityLevel) {
     const multiplier = METABOLISM_MULTIPLIERS[metabolismActivityLevel];
     tdee = Math.round(weight * multiplier);
-    const deficit = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].deficitPerDay : 0;
-    dailyCalorieTarget = Math.round(Math.max(1200, tdee - deficit));
-    deficitDisplay = deficit > 0 ? `-${deficit} kcal` : '0 kcal';
+    const config = fatLossRate ? CALORIE_GOAL_CONFIG[fatLossRate] : null;
+    const adjustment = config?.adjustmentPerDay || 0;
+    const goalType = config?.goalType || 'maintenance';
+    dailyCalorieTarget = Math.round(Math.max(1200, tdee + adjustment));
+
+    // Display text based on goal type
+    if (goalType === 'deficit') {
+      adjustmentDisplay = `-${Math.abs(adjustment)} kcal`;
+      adjustmentLabel = 'Underskott';
+    } else if (goalType === 'surplus') {
+      adjustmentDisplay = `+${adjustment} kcal`;
+      adjustmentLabel = 'Överskott';
+    } else {
+      adjustmentDisplay = '0 kcal';
+      adjustmentLabel = 'Balans';
+    }
 
     // Calculate macros
     proteinGrams = Math.round(weight * proteinPerKg);
@@ -82,7 +96,8 @@ export function Step9Review() {
     proteinGrams = storeProteinGrams;
     fatGrams = storeFatGrams;
     carbGrams = storeCarbGrams;
-    deficitDisplay = `${caloricAdjustmentPercent >= 0 ? '+' : ''}${caloricAdjustmentPercent}%`;
+    adjustmentDisplay = `${caloricAdjustmentPercent >= 0 ? '+' : ''}${caloricAdjustmentPercent}%`;
+    adjustmentLabel = 'Kalorimål';
   }
 
   const handleSubmit = async () => {
@@ -174,9 +189,9 @@ export function Step9Review() {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">
-                {isMetabolismMethod ? 'Underskott' : 'Kalorimål'}
+                {adjustmentLabel}
               </span>
-              <span className="font-medium">{deficitDisplay}</span>
+              <span className="font-medium">{adjustmentDisplay}</span>
             </div>
             <div className="flex justify-between col-span-2">
               <span className="text-gray-600">Dagligt energimål</span>

@@ -5,7 +5,7 @@ import { WizardNavigation } from '../WizardNavigation';
 import {
   METABOLISM_ACTIVITY_LABELS,
   METABOLISM_MULTIPLIERS,
-  FAT_LOSS_RATE_CONFIG,
+  CALORIE_GOAL_CONFIG,
 } from '@/lib/types/client-nutrition-plan';
 
 export function Step6Summary() {
@@ -23,12 +23,14 @@ export function Step6Summary() {
   // Calculate values directly to ensure consistency
   const multiplier = metabolismActivityLevel ? METABOLISM_MULTIPLIERS[metabolismActivityLevel] : 30;
   const metabolism = weight * multiplier; // Calculate directly, don't use tdee from store
-  const deficit = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].deficitPerDay : 0;
-  const fatLossLabel = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].label : '';
+  const config = fatLossRate ? CALORIE_GOAL_CONFIG[fatLossRate] : null;
+  const adjustment = config?.adjustmentPerDay || 0;
+  const goalType = config?.goalType || 'deficit';
+  const goalLabel = config?.label || '';
   const activityLabel = metabolismActivityLevel ? METABOLISM_ACTIVITY_LABELS[metabolismActivityLevel] : '';
 
-  // Calculate calorie target directly (metabolism - deficit)
-  const actualCalorieTarget = Math.round(Math.max(1200, metabolism - deficit));
+  // Calculate calorie target directly (metabolism + adjustment, where adjustment is negative for deficit)
+  const actualCalorieTarget = Math.round(Math.max(1200, metabolism + adjustment));
 
   // Calculate macros based on the correct calorie target
   const proteinGrams = Math.round(weight * proteinPerKg);
@@ -39,6 +41,42 @@ export function Step6Summary() {
   const carbGrams = Math.round(Math.max(0, remainingCalories / 4));
   const carbCalories = carbGrams * 4;
   const totalCalories = proteinCalories + fatCalories + carbCalories;
+
+  // Dynamic goal description
+  const getGoalDescription = () => {
+    switch (goalType) {
+      case 'deficit':
+        return `vill tappa ${goalLabel}`;
+      case 'maintenance':
+        return 'vill behålla vikten';
+      case 'surplus':
+        return 'vill gå upp i vikt';
+    }
+  };
+
+  // Dynamic calorie calculation text
+  const getCalorieCalculation = () => {
+    switch (goalType) {
+      case 'deficit':
+        return `${metabolism.toLocaleString('sv-SE')} kcal - ${Math.abs(adjustment)} kcal = ${actualCalorieTarget.toLocaleString('sv-SE')} kcal/dag`;
+      case 'maintenance':
+        return `${metabolism.toLocaleString('sv-SE')} kcal = ${actualCalorieTarget.toLocaleString('sv-SE')} kcal/dag`;
+      case 'surplus':
+        return `${metabolism.toLocaleString('sv-SE')} kcal + ${adjustment} kcal = ${actualCalorieTarget.toLocaleString('sv-SE')} kcal/dag`;
+    }
+  };
+
+  // Dynamic step 2 title
+  const getStep2Title = () => {
+    switch (goalType) {
+      case 'deficit':
+        return 'Steg 2 – Kaloriintag (underskott)';
+      case 'maintenance':
+        return 'Steg 2 – Kaloriintag (balans)';
+      case 'surplus':
+        return 'Steg 2 – Kaloriintag (överskott)';
+    }
+  };
 
   return (
     <div className="space-y-5">
@@ -53,7 +91,7 @@ export function Step6Summary() {
 
       {/* Client info */}
       <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-        <strong>Klient:</strong> {clientName || 'Ej vald'}, {weight} kg, {activityLabel.toLowerCase()}, vill tappa {fatLossLabel}
+        <strong>Klient:</strong> {clientName || 'Ej vald'}, {weight} kg, {activityLabel.toLowerCase()}, {getGoalDescription()}
       </div>
 
       {/* Step 1 - Metabolism */}
@@ -66,9 +104,9 @@ export function Step6Summary() {
 
       {/* Step 2 - Calorie intake */}
       <div className="space-y-1">
-        <h3 className="font-semibold text-gray-900">Steg 2 – Kaloriintag</h3>
+        <h3 className="font-semibold text-gray-900">{getStep2Title()}</h3>
         <div className="p-3 bg-gray-50 rounded-lg font-mono text-sm text-gray-700">
-          {metabolism.toLocaleString('sv-SE')} kcal - {deficit} kcal = {actualCalorieTarget.toLocaleString('sv-SE')} kcal/dag
+          {getCalorieCalculation()}
         </div>
       </div>
 

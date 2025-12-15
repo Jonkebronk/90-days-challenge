@@ -3,13 +3,13 @@
 import { useEffect } from 'react';
 import { useNutritionPlanWizardStore } from '@/lib/stores/nutrition-plan-wizard-store';
 import { WizardNavigation } from '../WizardNavigation';
-import { FAT_LOSS_RATE_CONFIG } from '@/lib/types/client-nutrition-plan';
+import { CALORIE_GOAL_CONFIG } from '@/lib/types/client-nutrition-plan';
 import { Calculator } from 'lucide-react';
 
 export function Step4DailyCalories() {
   const {
-    tdee, // Metabolism before deficit
-    dailyCalorieTarget, // Already has deficit applied
+    tdee, // Metabolism before adjustment
+    dailyCalorieTarget, // Already has adjustment applied
     fatLossRate,
     recalculateMetabolism,
     nextStep,
@@ -21,10 +21,45 @@ export function Step4DailyCalories() {
     recalculateMetabolism();
   }, [recalculateMetabolism]);
 
-  const deficit = fatLossRate ? FAT_LOSS_RATE_CONFIG[fatLossRate].deficitPerDay : 0;
-  // tdee = metabolism before deficit, dailyCalorieTarget = with deficit applied
+  const config = fatLossRate ? CALORIE_GOAL_CONFIG[fatLossRate] : null;
+  const adjustment = config?.adjustmentPerDay || 0;
+  const goalType = config?.goalType || 'deficit';
   const metabolism = tdee;
   const finalCalories = dailyCalorieTarget;
+
+  // Dynamic text based on goal type
+  const getFormulaText = () => {
+    switch (goalType) {
+      case 'deficit':
+        return 'Ämnesomsättning - Dagligt underskott = Dagligt kaloriintag';
+      case 'maintenance':
+        return 'Ämnesomsättning = Dagligt kaloriintag';
+      case 'surplus':
+        return 'Ämnesomsättning + Dagligt överskott = Dagligt kaloriintag';
+    }
+  };
+
+  const getCalculationText = () => {
+    switch (goalType) {
+      case 'deficit':
+        return `${metabolism.toLocaleString('sv-SE')} kcal - ${Math.abs(adjustment)} kcal = `;
+      case 'maintenance':
+        return `${metabolism.toLocaleString('sv-SE')} kcal = `;
+      case 'surplus':
+        return `${metabolism.toLocaleString('sv-SE')} kcal + ${adjustment} kcal = `;
+    }
+  };
+
+  const getSubtitle = () => {
+    switch (goalType) {
+      case 'deficit':
+        return 'Baserat på ämnesomsättning och valt underskott';
+      case 'maintenance':
+        return 'Baserat på din ämnesomsättning';
+      case 'surplus':
+        return 'Baserat på ämnesomsättning och valt överskott';
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -33,7 +68,7 @@ export function Step4DailyCalories() {
           Beräkna dagligt kaloriintag
         </h2>
         <p className="text-sm text-gray-600 mt-1">
-          Baserat på ämnesomsättning och valt underskott
+          {getSubtitle()}
         </p>
       </div>
 
@@ -42,7 +77,7 @@ export function Step4DailyCalories() {
         <div className="text-sm font-medium text-gray-700">Formel:</div>
         <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
           <div className="text-gray-600 font-mono text-sm">
-            Ämnesomsättning - Dagligt underskott = Dagligt kaloriintag
+            {getFormulaText()}
           </div>
         </div>
       </div>
@@ -52,7 +87,7 @@ export function Step4DailyCalories() {
         <div className="text-sm font-medium text-gray-700">Din beräkning:</div>
         <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
           <div className="text-amber-800 font-mono text-lg text-center">
-            {metabolism.toLocaleString('sv-SE')} kcal - {deficit} kcal = <strong>{finalCalories.toLocaleString('sv-SE')} kcal per dag</strong>
+            {getCalculationText()}<strong>{finalCalories.toLocaleString('sv-SE')} kcal per dag</strong>
           </div>
         </div>
       </div>

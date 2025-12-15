@@ -22,38 +22,66 @@ export const METABOLISM_MULTIPLIERS: Record<MetabolismActivityLevel, number> = {
   very_active: 35,
 };
 
-// Fat loss rate options
-export type FatLossRate = 'conservative' | 'moderate' | 'aggressive';
+// Calorie goal options (weight loss, maintenance, weight gain)
+export type CalorieGoal = 'aggressive' | 'moderate' | 'conservative' | 'maintenance' | 'surplus';
 
-export const FAT_LOSS_RATE_CONFIG: Record<FatLossRate, {
+// Keep FatLossRate as alias for backwards compatibility
+export type FatLossRate = CalorieGoal;
+
+export type GoalType = 'deficit' | 'maintenance' | 'surplus';
+
+export const CALORIE_GOAL_CONFIG: Record<CalorieGoal, {
   label: string;
+  goalType: GoalType;
   gramsPerWeek: number;
-  deficitPerWeek: number;
-  deficitPerDay: number;
+  adjustmentPerWeek: number;  // negative = deficit, positive = surplus
+  adjustmentPerDay: number;
   description: string;
 }> = {
-  conservative: {
-    label: '500g/vecka',
-    gramsPerWeek: 500,
-    deficitPerWeek: 3850,
-    deficitPerDay: 550,
-    description: 'Konservativt, bra för nybörjare eller de med lite att förlora',
+  aggressive: {
+    label: '1000g/vecka',
+    goalType: 'deficit',
+    gramsPerWeek: 1000,
+    adjustmentPerWeek: -7700,
+    adjustmentPerDay: -1100,
+    description: 'Aggressivt, endast för de med mycket att förlora och hög motivation',
   },
   moderate: {
     label: '700g/vecka',
+    goalType: 'deficit',
     gramsPerWeek: 700,
-    deficitPerWeek: 5390,
-    deficitPerDay: 770,
+    adjustmentPerWeek: -5390,
+    adjustmentPerDay: -770,
     description: 'Optimal balans för de flesta',
   },
-  aggressive: {
-    label: '1000g/vecka',
-    gramsPerWeek: 1000,
-    deficitPerWeek: 7700,
-    deficitPerDay: 1100,
-    description: 'Aggressivt, endast för de med mycket att förlora och hög motivation',
+  conservative: {
+    label: '500g/vecka',
+    goalType: 'deficit',
+    gramsPerWeek: 500,
+    adjustmentPerWeek: -3850,
+    adjustmentPerDay: -550,
+    description: 'Konservativt, bra för nybörjare eller de med lite att förlora',
+  },
+  maintenance: {
+    label: 'Behåll vikt',
+    goalType: 'maintenance',
+    gramsPerWeek: 0,
+    adjustmentPerWeek: 0,
+    adjustmentPerDay: 0,
+    description: 'Behåll nuvarande vikt och kroppssammansättning',
+  },
+  surplus: {
+    label: 'Viktuppgång',
+    goalType: 'surplus',
+    gramsPerWeek: 0,
+    adjustmentPerWeek: 2450,
+    adjustmentPerDay: 350,
+    description: 'Bygg muskelmassa med ett överskott på 350 kcal/dag',
   },
 };
+
+// Backwards compatibility alias
+export const FAT_LOSS_RATE_CONFIG = CALORIE_GOAL_CONFIG;
 
 export type Gender = 'male' | 'female';
 

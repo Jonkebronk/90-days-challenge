@@ -16,7 +16,7 @@ import type {
   MetabolismActivityLevel,
   FatLossRate,
 } from '@/lib/types/client-nutrition-plan';
-import { METABOLISM_MULTIPLIERS, FAT_LOSS_RATE_CONFIG } from '@/lib/types/client-nutrition-plan';
+import { METABOLISM_MULTIPLIERS, CALORIE_GOAL_CONFIG } from '@/lib/types/client-nutrition-plan';
 import { calculateAllNutrition } from '@/lib/calculations/nutrition-plan-formulas';
 
 // Total wizard steps
@@ -417,7 +417,7 @@ export const useNutritionPlanWizardStore = create<NutritionPlanWizardState>()(
       },
 
       // Simple metabolism calculation (weight × activity multiplier)
-      // Applies fat loss deficit to dailyCalorieTarget
+      // Applies calorie adjustment (deficit or surplus) to dailyCalorieTarget
       recalculateMetabolism: () => {
         const state = get();
         if (!state.metabolismActivityLevel || state.weight <= 0) return;
@@ -425,11 +425,11 @@ export const useNutritionPlanWizardStore = create<NutritionPlanWizardState>()(
         const multiplier = METABOLISM_MULTIPLIERS[state.metabolismActivityLevel];
         const metabolism = state.weight * multiplier;
 
-        // Apply fat loss deficit if set
-        const deficit = state.fatLossRate ? FAT_LOSS_RATE_CONFIG[state.fatLossRate].deficitPerDay : 0;
-        const dailyCalories = Math.max(1200, metabolism - deficit);
+        // Apply calorie adjustment if set (negative = deficit, positive = surplus)
+        const adjustment = state.fatLossRate ? CALORIE_GOAL_CONFIG[state.fatLossRate].adjustmentPerDay : 0;
+        const dailyCalories = Math.max(1200, metabolism + adjustment);
 
-        // Calculate macros using the deficit-adjusted calories
+        // Calculate macros using the adjusted calories
         const proteinGrams = state.weight * state.proteinPerKg;
         const fatGrams = state.weight * state.fatPerKg;
         const remainingCals = dailyCalories - (proteinGrams * 4) - (fatGrams * 9);
@@ -437,7 +437,7 @@ export const useNutritionPlanWizardStore = create<NutritionPlanWizardState>()(
 
         set({
           dailyCalorieTarget: Math.round(dailyCalories),
-          tdee: Math.round(metabolism), // Keep metabolism before deficit
+          tdee: Math.round(metabolism), // Keep metabolism before adjustment
           proteinGrams: Math.round(proteinGrams),
           fatGrams: Math.round(fatGrams),
           carbGrams: Math.round(carbGrams),
