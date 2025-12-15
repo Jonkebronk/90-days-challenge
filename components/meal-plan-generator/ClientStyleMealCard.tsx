@@ -122,7 +122,7 @@ export function ClientStyleMealCard({
         <div className="px-5 pb-5 space-y-4">
           {/* Minimalist instruction */}
           <p className="text-xs text-zinc-500 italic">
-            Välj en råvara från varje kategori
+            Välj en råvara från varje kategori för att sätta ihop din måltid
           </p>
 
           {/* Category sections - grid layout: PROTEIN, KOLHYDRATER, FETT */}
