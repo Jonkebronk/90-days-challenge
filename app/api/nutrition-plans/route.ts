@@ -104,18 +104,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate all nutrition values
-    const calculations = calculateAllNutrition({
-      weight: body.weight,
-      height: body.height,
-      age: body.age,
-      gender: body.gender,
-      lifestyleActivity: body.lifestyleActivity,
-      exerciseActivity: body.exerciseActivity,
-      caloricAdjustmentPercent: body.caloricAdjustmentPercent,
-      proteinPerKg: body.proteinPerKg,
-      fatPerKg: body.fatPerKg,
-    });
+    // For metabolism method, use the pre-calculated values from the wizard
+    // For other methods, calculate using the standard formulas
+    let dailyCalorieTarget: number;
+    let proteinGrams: number;
+    let fatGrams: number;
+    let carbGrams: number;
+    let tdee: number;
+    let lbm: number | null = null;
+    let bmr: number = 0;
+    let lifestyleFactor: number = 0;
+    let exerciseFactor: number = 0;
+
+    if (body.calculationMethod === 'metabolism' && body.dailyCalorieTarget) {
+      // Use pre-calculated values from wizard (includes calorie goal adjustment)
+      dailyCalorieTarget = body.dailyCalorieTarget;
+      proteinGrams = body.proteinGrams || Math.round(body.weight * body.proteinPerKg);
+      fatGrams = body.fatGrams || Math.round(body.weight * body.fatPerKg);
+      carbGrams = body.carbGrams || Math.round(Math.max(0, (dailyCalorieTarget - proteinGrams * 4 - fatGrams * 9) / 4));
+      tdee = dailyCalorieTarget; // For metabolism method, tdee is the target
+    } else {
+      // Calculate using standard formulas
+      const calculations = calculateAllNutrition({
+        weight: body.weight,
+        height: body.height,
+        age: body.age,
+        gender: body.gender,
+        lifestyleActivity: body.lifestyleActivity,
+        exerciseActivity: body.exerciseActivity,
+        caloricAdjustmentPercent: body.caloricAdjustmentPercent,
+        proteinPerKg: body.proteinPerKg,
+        fatPerKg: body.fatPerKg,
+      });
+      dailyCalorieTarget = calculations.dailyCalorieTarget;
+      proteinGrams = calculations.proteinGrams;
+      fatGrams = calculations.fatGrams;
+      carbGrams = calculations.carbGrams;
+      tdee = calculations.tdee;
+      lbm = calculations.lbm;
+      bmr = calculations.bmr;
+      lifestyleFactor = calculations.lifestyleFactor;
+      exerciseFactor = calculations.exerciseFactor;
+    }
 
     // Create the nutrition plan
     const plan = await prisma.clientNutritionPlan.create({
@@ -132,18 +162,18 @@ export async function POST(request: NextRequest) {
         gender: body.gender,
         lifestyleActivity: body.lifestyleActivity,
         exerciseActivity: body.exerciseActivity,
-        lifestyleFactor: calculations.lifestyleFactor,
-        exerciseFactor: calculations.exerciseFactor,
-        lbm: calculations.lbm,
-        bmr: calculations.bmr,
-        tdee: calculations.tdee,
+        lifestyleFactor: lifestyleFactor,
+        exerciseFactor: exerciseFactor,
+        lbm: lbm,
+        bmr: bmr,
+        tdee: tdee,
         caloricAdjustmentPercent: body.caloricAdjustmentPercent,
-        dailyCalorieTarget: calculations.dailyCalorieTarget,
+        dailyCalorieTarget: dailyCalorieTarget,
         proteinPerKg: body.proteinPerKg,
-        proteinGrams: calculations.proteinGrams,
+        proteinGrams: proteinGrams,
         fatPerKg: body.fatPerKg,
-        fatGrams: calculations.fatGrams,
-        carbGrams: calculations.carbGrams,
+        fatGrams: fatGrams,
+        carbGrams: carbGrams,
         hasTrainingDays: body.hasTrainingDays,
         hasNonTrainingDays: body.hasNonTrainingDays,
         mealsPerDay: body.mealsPerDay,
