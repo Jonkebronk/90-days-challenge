@@ -163,7 +163,44 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate actual totals
-    const actualMacros = calculatePlanTotalMacros(meals);
+    let actualMacros = calculatePlanTotalMacros(meals);
+
+    // Scale down portions if over target (to account for macro overlap)
+    if (actualMacros.kcal > dailyMacros.kcal * 1.05) {
+      const scaleFactor = dailyMacros.kcal / actualMacros.kcal;
+
+      // Scale down all portions
+      for (const meal of meals) {
+        for (const item of meal.items) {
+          // Scale selected food
+          const newGrams = Math.round(item.selected.grams * scaleFactor);
+          const factor = newGrams / 100;
+          item.selected.grams = newGrams;
+          item.selected.macros = {
+            protein: Math.round(item.selected.macros.protein * scaleFactor * 10) / 10,
+            carbs: Math.round(item.selected.macros.carbs * scaleFactor * 10) / 10,
+            fat: Math.round(item.selected.macros.fat * scaleFactor * 10) / 10,
+            kcal: Math.round(item.selected.macros.kcal * scaleFactor),
+          };
+
+          // Scale alternatives too
+          for (const alt of item.alternatives) {
+            alt.grams = Math.round(alt.grams * scaleFactor);
+            alt.macros = {
+              protein: Math.round(alt.macros.protein * scaleFactor * 10) / 10,
+              carbs: Math.round(alt.macros.carbs * scaleFactor * 10) / 10,
+              fat: Math.round(alt.macros.fat * scaleFactor * 10) / 10,
+              kcal: Math.round(alt.macros.kcal * scaleFactor),
+            };
+          }
+        }
+        // Recalculate meal totals
+        meal.totalMacros = calculateMealTotalMacros(meal.items);
+      }
+
+      // Recalculate plan totals
+      actualMacros = calculatePlanTotalMacros(meals);
+    }
 
     // Save to database
     const generatedPlan = await prisma.generatedMealPlan.create({
