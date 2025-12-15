@@ -97,30 +97,32 @@ export function ClientStyleMealCard({
             </div>
           </div>
 
-          {/* Category sections - in order: PROTEIN, KOLHYDRATER, FETT */}
-          {proteinItem && (
-            <CategorySection
-              item={proteinItem}
-              onSwapFood={!disabled ? handleSwapFood : undefined}
-              disabled={disabled}
-            />
-          )}
+          {/* Category sections - grid layout: PROTEIN, KOLHYDRATER, FETT */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {proteinItem && (
+              <CategorySection
+                item={proteinItem}
+                onSwapFood={!disabled ? handleSwapFood : undefined}
+                disabled={disabled}
+              />
+            )}
 
-          {carbItem && (
-            <CategorySection
-              item={carbItem}
-              onSwapFood={!disabled ? handleSwapFood : undefined}
-              disabled={disabled}
-            />
-          )}
+            {carbItem && (
+              <CategorySection
+                item={carbItem}
+                onSwapFood={!disabled ? handleSwapFood : undefined}
+                disabled={disabled}
+              />
+            )}
 
-          {fatItem && (
-            <CategorySection
-              item={fatItem}
-              onSwapFood={!disabled ? handleSwapFood : undefined}
-              disabled={disabled}
-            />
-          )}
+            {fatItem && (
+              <CategorySection
+                item={fatItem}
+                onSwapFood={!disabled ? handleSwapFood : undefined}
+                disabled={disabled}
+              />
+            )}
+          </div>
 
           {/* Vegetables section (if applicable) */}
           {hasVegetables && (

@@ -126,6 +126,9 @@ export function Step9Review() {
           mealsPerDay,
           workoutTime,
           nutritionSystem,
+          // Metabolism method fields
+          metabolismActivityLevel,
+          calorieGoal: fatLossRate,
           // Send calculated values to ensure consistency
           dailyCalorieTarget,
           proteinGrams,

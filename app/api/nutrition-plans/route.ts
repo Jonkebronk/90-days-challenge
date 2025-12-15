@@ -167,6 +167,9 @@ export async function POST(request: NextRequest) {
         lbm: lbm,
         bmr: bmr,
         tdee: tdee,
+        // Metabolism method fields
+        metabolismActivityLevel: body.metabolismActivityLevel || null,
+        calorieGoal: body.calorieGoal || null,
         caloricAdjustmentPercent: body.caloricAdjustmentPercent,
         dailyCalorieTarget: dailyCalorieTarget,
         proteinPerKg: body.proteinPerKg,

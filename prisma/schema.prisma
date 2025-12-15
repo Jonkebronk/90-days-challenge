@@ -2686,6 +2686,10 @@ model ClientNutritionPlan {
   bmr  Decimal  @db.Decimal(7, 2) // Basal Metabolic Rate
   tdee Decimal  @db.Decimal(7, 2) // Total Daily Energy Expenditure
 
+  // Metabolism method fields
+  metabolismActivityLevel String? // "sedentary" | "moderate" | "very_active" for metabolism method
+  calorieGoal             String? // "conservative" | "moderate" | "aggressive" | "maintenance" | "surplus"
+
   // Energy Target
   caloricAdjustmentPercent Int     @default(0) // -30 to +30
   dailyCalorieTarget       Decimal @db.Decimal(7, 2)

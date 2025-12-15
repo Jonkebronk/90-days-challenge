@@ -291,6 +291,9 @@ export interface CreateNutritionPlanRequest {
   mealsPerDay: number;
   workoutTime?: WorkoutTime;
   nutritionSystem: NutritionSystem;
+  // Metabolism method fields
+  metabolismActivityLevel?: MetabolismActivityLevel;
+  calorieGoal?: CalorieGoal;
   // Pre-calculated values (used for metabolism method with calorie goals)
   dailyCalorieTarget?: number;
   proteinGrams?: number;
