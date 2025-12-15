@@ -122,6 +122,8 @@ export interface GeneratedMeal {
   vegetableGrams: number; // Usually 200g for lunch/middag
   totalMacros: CalculatedMacros;
   targetMacros?: CalculatedMacros; // Per-meal target for manual editing
+  selectedRecipe?: RecipeForMealPlan; // Selected recipe for this meal
+  isRecipeMode?: boolean; // Whether using recipe mode instead of food items
 }
 
 export interface GeneratedMealPlan {
@@ -243,4 +245,44 @@ export interface FoodItemForGenerator {
   mealTypes: MealType[];
   isRecommended: boolean;
   image?: string | null;
+}
+
+// ===================
+// RECIPE FOR MEAL PLAN
+// ===================
+
+// Mapping from Swedish meal type to recipe mealType
+export const MEAL_TYPE_TO_RECIPE_TYPE: Record<MealType, string[]> = {
+  frukost: ['breakfast'],
+  mellanmål: ['snack'],
+  lunch: ['lunch', 'dinner'],
+  middag: ['lunch', 'dinner'],
+  kvällsmål: ['snack'],
+};
+
+// Recipe for meal plan with scaling
+export interface RecipeForMealPlan {
+  recipeId: string;
+  title: string;
+  coverImage?: string | null;
+  servings: number;
+  baseServingMacros: CalculatedMacros;
+  scaledServings: number;
+  scaledMacros: CalculatedMacros;
+}
+
+// Recipe swap option with comparison info
+export interface RecipeSwapOption {
+  recipeId: string;
+  title: string;
+  coverImage?: string | null;
+  scaledServings: number;
+  scaledMacros: CalculatedMacros;
+  macroDifference: {
+    kcal: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+  matchScore: number;
 }

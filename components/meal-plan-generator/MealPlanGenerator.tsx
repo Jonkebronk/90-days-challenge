@@ -366,6 +366,81 @@ export function MealPlanGenerator({
     }
   };
 
+  // Select recipe handler
+  const handleSelectRecipe = async (
+    mealIndex: number,
+    recipeId: string,
+    scaledServings: number,
+    scaledMacros: CalculatedMacros
+  ) => {
+    if (!generatedPlan) return;
+
+    try {
+      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/select-recipe`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mealIndex,
+          recipeId,
+          scaledServings,
+          scaledMacros,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Kunde inte välja recept');
+        return;
+      }
+
+      // Update local state
+      const newMeals = [...generatedPlan.meals];
+      newMeals[mealIndex] = data.updatedMeal;
+
+      setGeneratedPlan({
+        ...generatedPlan,
+        meals: newMeals,
+        actualMacros: data.actualMacros,
+      });
+    } catch (err) {
+      setError('Ett fel uppstod vid val av recept');
+      console.error('Select recipe error:', err);
+    }
+  };
+
+  // Clear recipe handler
+  const handleClearRecipe = async (mealIndex: number) => {
+    if (!generatedPlan) return;
+
+    try {
+      const response = await fetch(
+        `/api/meal-plan/${generatedPlan.id}/clear-recipe?mealIndex=${mealIndex}`,
+        { method: 'DELETE' }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Kunde inte ta bort recept');
+        return;
+      }
+
+      // Update local state
+      const newMeals = [...generatedPlan.meals];
+      newMeals[mealIndex] = data.updatedMeal;
+
+      setGeneratedPlan({
+        ...generatedPlan,
+        meals: newMeals,
+        actualMacros: data.actualMacros,
+      });
+    } catch (err) {
+      setError('Ett fel uppstod vid borttagning av recept');
+      console.error('Clear recipe error:', err);
+    }
+  };
+
   // Save handler
   const handleSave = () => {
     if (generatedPlan && onSave) {
@@ -415,6 +490,8 @@ export function MealPlanGenerator({
                 onRemoveSauce={handleRemoveSauce}
                 onUpdateGrams={handleUpdateGrams}
                 onUpdateMealMacros={handleUpdateMealMacros}
+                onSelectRecipe={handleSelectRecipe}
+                onClearRecipe={handleClearRecipe}
               />
             ))}
           </div>

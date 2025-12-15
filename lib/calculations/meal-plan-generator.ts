@@ -18,6 +18,8 @@ import type {
   SauceResult,
   FoodItemForGenerator,
   FoodPer100g,
+  RecipeForMealPlan,
+  RecipeSwapOption,
 } from '@/lib/types/meal-plan-generator';
 import {
   KCAL_PER_GRAM,
@@ -525,5 +527,123 @@ export function calculateAccuracy(
     carbs: target.carbs > 0 ? (actual.carbs / target.carbs) * 100 : 100,
     fat: target.fat > 0 ? (actual.fat / target.fat) * 100 : 100,
     kcal: target.kcal > 0 ? (actual.kcal / target.kcal) * 100 : 100,
+  };
+}
+
+// ===================
+// RECIPE SCALING
+// ===================
+
+interface RecipeNutritionInput {
+  caloriesPerServing: number;
+  proteinPerServing: number;
+  carbsPerServing: number;
+  fatPerServing: number;
+  servings: number;
+}
+
+/**
+ * Calculate scaled portions for a recipe to match target macros
+ * Uses kcal as the primary scaling factor
+ */
+export function calculateRecipeScaling(
+  recipe: RecipeNutritionInput,
+  targetMacros: CalculatedMacros
+): { scaledServings: number; scaledMacros: CalculatedMacros } {
+  // Scale based on target kcal
+  const scaleFactor = recipe.caloriesPerServing > 0
+    ? targetMacros.kcal / recipe.caloriesPerServing
+    : 1;
+
+  // Clamp to reasonable range (0.5 to 5 servings)
+  const scaledServings = Math.max(0.5, Math.min(5, Math.round(scaleFactor * 10) / 10));
+
+  return {
+    scaledServings,
+    scaledMacros: {
+      kcal: Math.round(recipe.caloriesPerServing * scaledServings),
+      protein: Math.round(recipe.proteinPerServing * scaledServings * 10) / 10,
+      carbs: Math.round(recipe.carbsPerServing * scaledServings * 10) / 10,
+      fat: Math.round(recipe.fatPerServing * scaledServings * 10) / 10,
+    },
+  };
+}
+
+/**
+ * Calculate match score (0-100) for how well a recipe matches target macros
+ * Uses weighted deviations: kcal 40%, protein 30%, carbs 15%, fat 15%
+ */
+export function calculateRecipeMatchScore(
+  scaledMacros: CalculatedMacros,
+  targetMacros: CalculatedMacros
+): number {
+  // Calculate percentage deviation for each macro
+  const kcalDev = targetMacros.kcal > 0
+    ? Math.abs(scaledMacros.kcal - targetMacros.kcal) / targetMacros.kcal
+    : 0;
+  const proteinDev = targetMacros.protein > 0
+    ? Math.abs(scaledMacros.protein - targetMacros.protein) / targetMacros.protein
+    : 0;
+  const carbsDev = targetMacros.carbs > 0
+    ? Math.abs(scaledMacros.carbs - targetMacros.carbs) / targetMacros.carbs
+    : 0;
+  const fatDev = targetMacros.fat > 0
+    ? Math.abs(scaledMacros.fat - targetMacros.fat) / targetMacros.fat
+    : 0;
+
+  // Weighted average deviation
+  const weightedDev = (kcalDev * 0.4) + (proteinDev * 0.3) + (carbsDev * 0.15) + (fatDev * 0.15);
+
+  // Convert to 0-100 score (0% deviation = 100 score, 100% deviation = 0 score)
+  return Math.max(0, Math.round((1 - weightedDev) * 100));
+}
+
+/**
+ * Calculate macro difference between scaled recipe and target/current
+ */
+export function calculateMacroDifference(
+  scaledMacros: CalculatedMacros,
+  compareMacros: CalculatedMacros
+): { kcal: number; protein: number; carbs: number; fat: number } {
+  return {
+    kcal: Math.round(scaledMacros.kcal - compareMacros.kcal),
+    protein: Math.round((scaledMacros.protein - compareMacros.protein) * 10) / 10,
+    carbs: Math.round((scaledMacros.carbs - compareMacros.carbs) * 10) / 10,
+    fat: Math.round((scaledMacros.fat - compareMacros.fat) * 10) / 10,
+  };
+}
+
+/**
+ * Create a RecipeSwapOption from recipe data
+ */
+export function createRecipeSwapOption(
+  recipe: {
+    id: string;
+    title: string;
+    coverImage?: string | null;
+    caloriesPerServing: number;
+    proteinPerServing: number;
+    carbsPerServing: number;
+    fatPerServing: number;
+    servings: number;
+  },
+  targetMacros: CalculatedMacros,
+  currentMacros?: CalculatedMacros
+): RecipeSwapOption {
+  const { scaledServings, scaledMacros } = calculateRecipeScaling(recipe, targetMacros);
+  const matchScore = calculateRecipeMatchScore(scaledMacros, targetMacros);
+  const macroDifference = calculateMacroDifference(
+    scaledMacros,
+    currentMacros || targetMacros
+  );
+
+  return {
+    recipeId: recipe.id,
+    title: recipe.title,
+    coverImage: recipe.coverImage,
+    scaledServings,
+    scaledMacros,
+    macroDifference,
+    matchScore,
   };
 }

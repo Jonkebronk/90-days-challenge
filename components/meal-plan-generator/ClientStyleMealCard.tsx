@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, Lightbulb } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, Lightbulb, ChefHat, Apple } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MacroBadge } from './MacroBadge';
 import { CategorySection } from './CategorySection';
 import { FoodItemDisplay } from './FoodItemDisplay';
 import { ProductSelectModal } from './ProductSelectModal';
 import { BuildYourOwnMeal } from './BuildYourOwnMeal';
+import { RecipeTab } from './RecipeTab';
+import { cn } from '@/lib/utils';
 import type {
   GeneratedMeal,
   MacroCategory,
@@ -37,8 +39,12 @@ interface ClientStyleMealCardProps {
   onRemoveSauce: (mealIndex: number) => void;
   onUpdateGrams?: (mealIndex: number, category: MacroCategory, grams: number) => void;
   onUpdateMealMacros?: (mealIndex: number, targetMacros: CalculatedMacros) => void;
+  onSelectRecipe?: (mealIndex: number, recipeId: string, scaledServings: number, scaledMacros: CalculatedMacros) => void;
+  onClearRecipe?: (mealIndex: number) => void;
   disabled?: boolean;
 }
+
+type TabType = 'foods' | 'recipes';
 
 export function ClientStyleMealCard({
   meal,
@@ -50,9 +56,14 @@ export function ClientStyleMealCard({
   onRemoveSauce,
   onUpdateGrams,
   onUpdateMealMacros,
+  onSelectRecipe,
+  onClearRecipe,
   disabled = false,
 }: ClientStyleMealCardProps) {
   const [isExpanded, setIsExpanded] = useState(true); // Start expanded for editing
+
+  // Tab state - default to recipes if recipe mode is active
+  const [activeTab, setActiveTab] = useState<TabType>(meal.isRecipeMode ? 'recipes' : 'foods');
 
   // Modal state for product selection
   const [selectModalOpen, setSelectModalOpen] = useState(false);
@@ -96,6 +107,20 @@ export function ClientStyleMealCard({
     setSelectModalOpen(false);
   };
 
+  // Handle recipe selection
+  const handleSelectRecipe = (recipeId: string, scaledServings: number, scaledMacros: CalculatedMacros) => {
+    if (onSelectRecipe) {
+      onSelectRecipe(mealIndex, recipeId, scaledServings, scaledMacros);
+    }
+  };
+
+  // Handle recipe clear
+  const handleClearRecipe = () => {
+    if (onClearRecipe) {
+      onClearRecipe(mealIndex);
+    }
+  };
+
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-zinc-200 shadow-sm">
       {/* Header */}
@@ -132,13 +157,43 @@ export function ClientStyleMealCard({
       {/* Expanded content */}
       {isExpanded && (
         <div className="px-5 pb-5 space-y-4">
-          {/* Minimalist instruction */}
-          <p className="text-xs text-zinc-500 italic">
-            Välj en råvara från varje kategori för att sätta ihop din måltid
-          </p>
+          {/* Tabs */}
+          <div className="flex border-b border-zinc-200">
+            <button
+              onClick={() => setActiveTab('foods')}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
+                activeTab === 'foods'
+                  ? 'border-b-2 border-amber-500 text-amber-700'
+                  : 'text-zinc-500 hover:text-zinc-700'
+              )}
+            >
+              <Apple className="h-4 w-4" />
+              Livsmedel
+            </button>
+            <button
+              onClick={() => setActiveTab('recipes')}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
+                activeTab === 'recipes'
+                  ? 'border-b-2 border-amber-500 text-amber-700'
+                  : 'text-zinc-500 hover:text-zinc-700'
+              )}
+            >
+              <ChefHat className="h-4 w-4" />
+              Recept
+            </button>
+          </div>
 
-          {/* Category sections - grid layout: PROTEIN, KOLHYDRATER, FETT */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {activeTab === 'foods' ? (
+            <>
+              {/* Minimalist instruction */}
+              <p className="text-xs text-zinc-500 italic">
+                Välj en råvara från varje kategori för att sätta ihop din måltid
+              </p>
+
+              {/* Category sections - grid layout: PROTEIN, KOLHYDRATER, FETT */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Protein */}
             {proteinItem ? (
               <CategorySection
@@ -334,6 +389,17 @@ export function ClientStyleMealCard({
                 });
               }}
               disabled={disabled}
+            />
+          )}
+            </>
+          ) : (
+            /* Recipes Tab */
+            <RecipeTab
+              meal={meal}
+              mealIndex={mealIndex}
+              onSelectRecipe={handleSelectRecipe}
+              onClearRecipe={handleClearRecipe}
+              disabled={disabled || !onSelectRecipe}
             />
           )}
         </div>
