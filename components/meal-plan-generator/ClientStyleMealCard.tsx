@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Plus, Utensils, Leaf } from 'lucide-react';
+import Link from 'next/link';
+import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MacroBadge } from './MacroBadge';
 import { CategorySection } from './CategorySection';
 import { FoodItemDisplay } from './FoodItemDisplay';
 import { ProductSelectModal } from './ProductSelectModal';
+import { BuildYourOwnMeal } from './BuildYourOwnMeal';
 import type {
   GeneratedMeal,
   MacroCategory,
@@ -155,6 +157,18 @@ export function ClientStyleMealCard({
             )}
           </div>
 
+          {/* Encouraging message */}
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+            <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <p className="text-sm text-amber-800">
+              Utforska fler alternativ via livsmedelsökningen och{' '}
+              <Link href="/dashboard/recipes" className="underline hover:text-amber-900 font-medium">
+                receptbanken
+              </Link>.
+              Eller prova att bygga ihop en måltid nedan baserat på dina makron.
+            </p>
+          </div>
+
           {/* Vegetables section (if applicable) */}
           {hasVegetables && (
             <div className="space-y-2">
@@ -227,6 +241,33 @@ export function ClientStyleMealCard({
                 </button>
               )}
             </div>
+          )}
+
+          {/* Build Your Own Meal section */}
+          {!disabled && onSelectFood && (
+            <BuildYourOwnMeal
+              targetMacros={{
+                protein: proteinItem?.selected.macros.protein || 0,
+                carbs: carbItem?.selected.macros.carbs || 0,
+                fat: fatItem?.selected.macros.fat || 0,
+              }}
+              mealType={meal.type}
+              onApply={(items) => {
+                // Apply each selected item
+                items.forEach(({ category, product }) => {
+                  onSelectFood(mealIndex, category, {
+                    id: product.id,
+                    name: product.name,
+                    image: product.image,
+                    kcal: product.macros.kcal,
+                    protein: product.macros.protein,
+                    carbs: product.macros.carbs,
+                    fat: product.macros.fat,
+                  }, product.grams, product.macros);
+                });
+              }}
+              disabled={disabled}
+            />
           )}
         </div>
       )}

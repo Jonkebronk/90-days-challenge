@@ -137,62 +137,60 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
             <div className="flex-1 h-px bg-zinc-200" />
           </div>
 
-          {/* Alternative food cards */}
-          <div className="space-y-2">
+          {/* Alternative food cards - 2 column grid */}
+          <div className="grid grid-cols-2 gap-2">
             {item.alternatives.map((alt) => (
-              <div key={alt.foodId} className={`rounded-xl p-3 ${colors.bg} ${colors.border} border`}>
-                <div className="flex items-center gap-3">
-                  {/* Product image */}
+              <div key={alt.foodId} className={`rounded-lg p-2 ${colors.bg} ${colors.border} border`}>
+                <div className="flex items-center gap-2">
+                  {/* Product image - smaller */}
                   {alt.image ? (
                     <img
                       src={alt.image}
                       alt={alt.name}
-                      className="w-12 h-12 rounded-lg object-cover bg-white shadow-sm shrink-0"
+                      className="w-10 h-10 rounded-lg object-cover bg-white shadow-sm shrink-0"
                     />
                   ) : (
-                    <div className="w-12 h-12 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
-                      <span className="text-zinc-300 text-[10px]">Bild</span>
+                    <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
+                      <span className="text-zinc-300 text-[8px]">Bild</span>
                     </div>
                   )}
 
-                  {/* Food info */}
+                  {/* Food info - compact */}
                   <div className="flex-1 min-w-0">
-                    <span className="text-lg font-bold text-zinc-900">
+                    <span className="text-base font-bold text-zinc-900">
                       {Math.round(alt.grams)}g
                     </span>
-                    <p className="text-sm text-zinc-700 font-medium truncate">
+                    <p className="text-xs text-zinc-700 font-medium truncate">
                       {alt.name}
                     </p>
+                  </div>
+                </div>
+
+                {/* Swap impact - compact */}
+                <div className="mt-1.5 pt-1.5 border-t border-zinc-200/50 flex items-center justify-between">
+                  <div className="flex gap-1.5 text-[10px]">
+                    {(() => {
+                      const impact = getSwapImpact(alt.macros);
+                      return (
+                        <>
+                          <span className={getDiffColor(impact.protein)}>P{formatDiff(impact.protein)}</span>
+                          <span className={getDiffColor(impact.carbs)}>K{formatDiff(impact.carbs)}</span>
+                          <span className={getDiffColor(impact.fat)}>F{formatDiff(impact.fat)}</span>
+                        </>
+                      );
+                    })()}
                   </div>
 
                   {/* Action button */}
                   {!disabled && onSwapFood && (
                     <button
                       onClick={() => onSwapFood(item.category, alt.foodId)}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white shadow-sm border border-zinc-200 hover:border-zinc-300 hover:shadow transition-all text-xs font-medium text-zinc-700"
+                      className="flex items-center gap-1 px-2 py-1 rounded-md bg-white shadow-sm border border-zinc-200 hover:border-zinc-300 hover:shadow transition-all text-[10px] font-medium text-zinc-700"
                     >
-                      <RefreshCw className="h-3 w-3" />
+                      <RefreshCw className="h-2.5 w-2.5" />
                       Välj
                     </button>
                   )}
-                </div>
-
-                {/* Swap impact */}
-                <div className="mt-2 pt-2 border-t border-zinc-200/50">
-                  <div className="flex items-center gap-3 text-[11px]">
-                    <span className="text-zinc-500">Vid byte:</span>
-                    {(() => {
-                      const impact = getSwapImpact(alt.macros);
-                      return (
-                        <div className="flex gap-2">
-                          <span className={getDiffColor(impact.protein)}>P {formatDiff(impact.protein)}</span>
-                          <span className={getDiffColor(impact.carbs)}>K {formatDiff(impact.carbs)}</span>
-                          <span className={getDiffColor(impact.fat)}>F {formatDiff(impact.fat)}</span>
-                          <span className={getDiffColor(impact.kcal)}>{formatDiff(impact.kcal)} kcal</span>
-                        </div>
-                      );
-                    })()}
-                  </div>
                 </div>
               </div>
             ))}

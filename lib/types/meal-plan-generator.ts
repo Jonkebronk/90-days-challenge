@@ -36,7 +36,7 @@ export const KCAL_PER_GRAM = {
 export const VEGETABLE_GRAMS = 200;
 
 // Number of alternatives per food category
-export const ALTERNATIVES_COUNT = 4;
+export const ALTERNATIVES_COUNT = 3;
 
 // ===================
 // MEAL CONFIGURATION
