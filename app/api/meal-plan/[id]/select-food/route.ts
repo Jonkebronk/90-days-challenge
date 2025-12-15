@@ -107,34 +107,37 @@ export async function PUT(
 
     const meal = meals[mealIndex];
 
-    // Find the item to update
+    // Find the item to update, or create a new one if it doesn't exist
     const itemIndex = meal.items.findIndex((item) => item.category === category);
-    if (itemIndex === -1) {
-      return NextResponse.json(
-        { error: `No ${category} item found in this meal` },
-        { status: 400 }
+
+    // Create the new/updated item
+    const newItem = {
+      category,
+      selected: {
+        foodId: product.id,
+        name: product.name,
+        grams: grams,
+        macros: macros,
+        image: product.image,
+      },
+      alternatives: itemIndex >= 0 ? meal.items[itemIndex].alternatives : [],
+    };
+
+    // Update the meal - either replace existing item or add new one
+    let updatedItems;
+    if (itemIndex >= 0) {
+      // Update existing item
+      updatedItems = meal.items.map((item, idx) =>
+        idx === itemIndex ? newItem : item
       );
+    } else {
+      // Add new item
+      updatedItems = [...meal.items, newItem];
     }
 
-    // Update the meal item with the selected product
     const updatedMeal: GeneratedMeal = {
       ...meal,
-      items: meal.items.map((item, idx) => {
-        if (idx === itemIndex) {
-          return {
-            ...item,
-            selected: {
-              foodId: product.id,
-              name: product.name,
-              grams: grams,
-              macros: macros,
-              image: product.image,
-            },
-            // Keep existing alternatives
-          };
-        }
-        return item;
-      }),
+      items: updatedItems,
     };
 
     // Recalculate meal totals
