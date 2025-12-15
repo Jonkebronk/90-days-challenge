@@ -7,9 +7,7 @@ import { CheckCircle2, ArrowRight, Home, Wand2, Loader2 } from 'lucide-react';
 import { useNutritionPlanWizardStore } from '@/lib/stores/nutrition-plan-wizard-store';
 import { useRouter } from 'next/navigation';
 import { MealPlanGenerator } from '@/components/meal-plan-generator';
-import {
-  WORKOUT_TIME_LABELS,
-  NUTRITION_SYSTEM_LABELS,
+import type {
   WorkoutTime,
   NutritionSystem,
 } from '@/lib/types/client-nutrition-plan';
@@ -218,14 +216,6 @@ export function Step10PlanDetails() {
             <div className="flex justify-between">
               <span className="text-gray-600">Måltider per dag</span>
               <span>{mealsPerDay}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Träningstid</span>
-              <span>{WORKOUT_TIME_LABELS[workoutTime]}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Näringssystem</span>
-              <span>{NUTRITION_SYSTEM_LABELS[nutritionSystem]}</span>
             </div>
           </div>
         </div>

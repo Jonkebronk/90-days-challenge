@@ -7,10 +7,6 @@ import { Label } from '@/components/ui/label';
 import { useNutritionPlanWizardStore } from '@/lib/stores/nutrition-plan-wizard-store';
 import { WizardNavigation } from '../WizardNavigation';
 import {
-  LIFESTYLE_ACTIVITY_LABELS,
-  EXERCISE_ACTIVITY_LABELS,
-  WORKOUT_TIME_LABELS,
-  NUTRITION_SYSTEM_LABELS,
   METABOLISM_MULTIPLIERS,
   CALORIE_GOAL_CONFIG,
 } from '@/lib/types/client-nutrition-plan';
@@ -248,18 +244,6 @@ export function Step9Review() {
             <div className="flex justify-between">
               <span className="text-gray-600">Måltider per dag</span>
               <span className="font-medium">{mealsPerDay}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Träningstid</span>
-              <span className="font-medium">
-                {WORKOUT_TIME_LABELS[workoutTime]}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Näringssystem</span>
-              <span className="font-medium">
-                {NUTRITION_SYSTEM_LABELS[nutritionSystem]}
-              </span>
             </div>
           </div>
         </div>
