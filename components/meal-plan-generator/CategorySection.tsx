@@ -1,6 +1,6 @@
 'use client';
 
-import { RefreshCw, Search, Info, ArrowRight } from 'lucide-react';
+import { RefreshCw, Search } from 'lucide-react';
 import type { GeneratedMealItem, MacroCategory, CalculatedMacros } from '@/lib/types/meal-plan-generator';
 
 interface CategorySectionProps {
@@ -10,12 +10,20 @@ interface CategorySectionProps {
   disabled?: boolean;
 }
 
+const categoryColors: Record<MacroCategory, { bg: string; border: string; text: string; badge: string }> = {
+  protein: { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-700', badge: 'bg-rose-100 text-rose-700' },
+  carb: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', badge: 'bg-amber-100 text-amber-700' },
+  fat: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badge: 'bg-blue-100 text-blue-700' },
+  vegetable: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', badge: 'bg-green-100 text-green-700' },
+  sauce: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', badge: 'bg-orange-100 text-orange-700' },
+};
+
 const categoryTitles: Record<MacroCategory, string> = {
-  protein: 'PROTEIN',
-  carb: 'KOLHYDRATER',
-  fat: 'FETT',
-  vegetable: 'GRÖNSAKER',
-  sauce: 'SÅS',
+  protein: 'Protein',
+  carb: 'Kolhydrater',
+  fat: 'Fett',
+  vegetable: 'Grönsaker',
+  sauce: 'Sås',
 };
 
 // Get target macro based on category
@@ -46,7 +54,9 @@ function getDiffColor(diff: number): string {
 }
 
 export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: CategorySectionProps) {
-  // Combine selected + alternatives for display with ELLER dividers
+  const colors = categoryColors[item.category];
+
+  // Combine selected + alternatives for display
   const allOptions = [
     {
       foodId: item.selected.foodId,
@@ -80,93 +90,97 @@ export function CategorySection({ item, onSwapFood, onSelectFood, disabled }: Ca
   };
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-      {/* Gray header */}
-      <div className="bg-zinc-100 px-4 py-2.5 border-b border-zinc-200">
-        <h4 className="text-sm font-bold text-zinc-800 uppercase tracking-wide">
+    <div className="space-y-2">
+      {/* Category title with search button */}
+      <div className="flex items-center justify-between">
+        <span className={`text-xs font-bold uppercase tracking-wider ${colors.text}`}>
           {categoryTitles[item.category]}
-        </h4>
+        </span>
+        {!disabled && onSelectFood && (
+          <button
+            onClick={() => onSelectFood(item.category, targetMacro)}
+            className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs ${colors.badge} hover:opacity-80 transition-opacity`}
+          >
+            <Search className="h-3 w-3" />
+            <span>Sök</span>
+          </button>
+        )}
       </div>
 
-      {/* Ingredients with ELLER dividers */}
-      <div className="px-4 py-3">
+      {/* Food cards */}
+      <div className="space-y-2">
         {allOptions.map((option, index) => (
           <div key={option.foodId}>
-            {/* ELLER divider */}
+            {/* ELLER label */}
             {index > 0 && (
-              <div className="flex items-center gap-3 py-2 my-1">
-                <div className="h-px flex-1 bg-zinc-200" />
-                <span className="text-xs font-semibold text-amber-500 uppercase tracking-wider">ELLER</span>
-                <div className="h-px flex-1 bg-zinc-200" />
+              <div className="flex justify-center py-1">
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">eller</span>
               </div>
             )}
 
-            <div className="flex items-center gap-3 py-1.5">
-              {/* Product image thumbnail */}
-              {option.image ? (
-                <img
-                  src={option.image}
-                  alt={option.name}
-                  className="w-10 h-10 rounded-lg object-cover bg-zinc-100 shrink-0"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center shrink-0">
-                  <span className="text-zinc-300 text-xs">Bild</span>
-                </div>
-              )}
-
-              {/* Grams + Name */}
-              <span className={`flex-1 text-sm ${option.isSelected ? 'text-zinc-800 font-medium' : 'text-zinc-600'}`}>
-                {Math.round(option.grams)}g {option.name}
-              </span>
-
-              {/* Buttons container */}
-              <div className="flex items-center gap-1.5">
-                {/* Search button - on every row */}
-                {!disabled && onSelectFood && (
-                  <button
-                    onClick={() => onSelectFood(item.category, targetMacro)}
-                    className="flex items-center gap-1 px-2 py-1 rounded-md bg-white border border-zinc-300 hover:border-amber-400 hover:bg-amber-50 transition-colors text-xs text-zinc-600 hover:text-amber-700"
-                    title="Sök i produktbiblioteket"
-                  >
-                    <Search className="h-3 w-3" />
-                    <span>Sök</span>
-                  </button>
+            {/* Food card */}
+            <div className={`rounded-xl p-3 ${colors.bg} ${colors.border} border ${option.isSelected ? 'ring-2 ring-offset-1 ring-zinc-400' : ''}`}>
+              <div className="flex items-center gap-3">
+                {/* Product image */}
+                {option.image ? (
+                  <img
+                    src={option.image}
+                    alt={option.name}
+                    className="w-12 h-12 rounded-lg object-cover bg-white shadow-sm shrink-0"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
+                    <span className="text-zinc-300 text-[10px]">Bild</span>
+                  </div>
                 )}
 
-                {/* Swap button - for alternatives */}
+                {/* Food info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-lg font-bold text-zinc-900">
+                      {Math.round(option.grams)}g
+                    </span>
+                    {option.isSelected && (
+                      <span className="text-[10px] font-medium text-zinc-500 uppercase">Vald</span>
+                    )}
+                  </div>
+                  <p className="text-sm text-zinc-700 font-medium truncate">
+                    {option.name}
+                  </p>
+                </div>
+
+                {/* Action button */}
                 {!disabled && onSwapFood && !option.isSelected && (
                   <button
                     onClick={() => onSwapFood(item.category, option.foodId)}
-                    className="flex items-center gap-1 px-2 py-1 rounded-md bg-amber-100 hover:bg-amber-200 border border-amber-300 hover:border-amber-400 transition-colors text-xs text-amber-700 hover:text-amber-800 font-medium"
-                    title="Välj detta alternativ"
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white shadow-sm border border-zinc-200 hover:border-zinc-300 hover:shadow transition-all text-xs font-medium text-zinc-700"
                   >
                     <RefreshCw className="h-3 w-3" />
-                    <span>Välj</span>
+                    Välj
                   </button>
                 )}
               </div>
-            </div>
 
-            {/* Swap impact info - shown for alternatives */}
-            {!option.isSelected && (
-              <div className="ml-[52px] mt-1 mb-2">
-                <div className="inline-flex items-center gap-2 px-2 py-1 bg-zinc-50 rounded text-xs">
-                  <span className="text-zinc-500">Vid byte:</span>
-                  {(() => {
-                    const impact = getSwapImpact(option.macros);
-                    return (
-                      <>
-                        <span className={getDiffColor(impact.protein)}>P {formatDiff(impact.protein)}g</span>
-                        <span className={getDiffColor(impact.carbs)}>K {formatDiff(impact.carbs)}g</span>
-                        <span className={getDiffColor(impact.fat)}>F {formatDiff(impact.fat)}g</span>
-                        <span className={getDiffColor(impact.kcal)}>{formatDiff(impact.kcal)} kcal</span>
-                      </>
-                    );
-                  })()}
+              {/* Swap impact - shown for alternatives */}
+              {!option.isSelected && (
+                <div className="mt-2 pt-2 border-t border-zinc-200/50">
+                  <div className="flex items-center gap-3 text-[11px]">
+                    <span className="text-zinc-500">Vid byte:</span>
+                    {(() => {
+                      const impact = getSwapImpact(option.macros);
+                      return (
+                        <div className="flex gap-2">
+                          <span className={getDiffColor(impact.protein)}>P {formatDiff(impact.protein)}</span>
+                          <span className={getDiffColor(impact.carbs)}>K {formatDiff(impact.carbs)}</span>
+                          <span className={getDiffColor(impact.fat)}>F {formatDiff(impact.fat)}</span>
+                          <span className={getDiffColor(impact.kcal)}>{formatDiff(impact.kcal)} kcal</span>
+                        </div>
+                      );
+                    })()}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         ))}
       </div>

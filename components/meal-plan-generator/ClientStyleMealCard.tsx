@@ -119,21 +119,14 @@ export function ClientStyleMealCard({
 
       {/* Expanded content */}
       {isExpanded && (
-        <div className="px-5 pb-5 space-y-3">
-          {/* Instructions card */}
-          <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-            <div className="bg-zinc-100 px-4 py-2.5 border-b border-zinc-200">
-              <h4 className="text-sm font-bold text-zinc-800 uppercase tracking-wide">INSTRUKTIONER</h4>
-            </div>
-            <div className="px-4 py-3">
-              <p className="text-sm text-zinc-600 leading-relaxed">
-                Du tar en råvara från varje angiven källa och gör en måltid.
-              </p>
-            </div>
-          </div>
+        <div className="px-5 pb-5 space-y-4">
+          {/* Minimalist instruction */}
+          <p className="text-xs text-zinc-500 italic">
+            Välj en råvara från varje kategori
+          </p>
 
           {/* Category sections - grid layout: PROTEIN, KOLHYDRATER, FETT */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {proteinItem && (
               <CategorySection
                 item={proteinItem}
@@ -164,29 +157,33 @@ export function ClientStyleMealCard({
 
           {/* Vegetables section (if applicable) */}
           {hasVegetables && (
-            <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-              <div className="bg-zinc-100 px-4 py-2.5 border-b border-zinc-200 flex items-center justify-between">
-                <h4 className="text-sm font-bold text-zinc-800 uppercase tracking-wide">GRÖNSAKER</h4>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-green-700">
+                  Grönsaker
+                </span>
                 {!disabled && onSelectFood && (
                   <button
                     onClick={() => handleOpenSelectModal('vegetable', 0)}
-                    className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-zinc-300 hover:border-green-400 hover:bg-green-50 transition-colors text-xs text-zinc-600 hover:text-green-700"
-                    title="Bläddra i grönsaker"
+                    className="flex items-center gap-1 px-2 py-0.5 rounded text-xs bg-green-100 text-green-700 hover:opacity-80 transition-opacity"
                   >
                     <Plus className="h-3 w-3" />
                     <span>Bläddra</span>
                   </button>
                 )}
               </div>
-              <div className="px-4 py-3">
+              <div className="rounded-xl p-3 bg-green-50 border border-green-200">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
-                    <Leaf className="h-5 w-5 text-green-600" />
+                  <div className="w-12 h-12 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
+                    <Leaf className="h-6 w-6 text-green-600" />
                   </div>
-                  <span className="text-sm text-zinc-700">{VEGETABLE_GRAMS}g valfria grönsaker</span>
+                  <div>
+                    <span className="text-lg font-bold text-zinc-900">{VEGETABLE_GRAMS}g</span>
+                    <p className="text-sm text-zinc-700 font-medium">Valfria grönsaker</p>
+                  </div>
                 </div>
-                <p className="text-xs text-zinc-500 mt-2 ml-[52px]">
-                  Grönsaker räknas inte i makros - ät fritt!
+                <p className="text-[11px] text-green-600 mt-2">
+                  Räknas inte i makros - ät fritt!
                 </p>
               </div>
             </div>
@@ -194,18 +191,19 @@ export function ClientStyleMealCard({
 
           {/* Sauce section */}
           {canHaveSauce && (
-            <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-              <div className="bg-zinc-100 px-4 py-2.5 border-b border-zinc-200">
-                <h4 className="text-sm font-bold text-zinc-800 uppercase tracking-wide">SÅS</h4>
-              </div>
-              <div className="px-4 py-3">
-                {meal.sauce ? (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-zinc-400 text-lg leading-none">•</span>
-                      <span className="text-sm text-zinc-700">
-                        {Math.round(meal.sauce.grams)}g {meal.sauce.name}
-                      </span>
+            <div className="space-y-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-orange-700">
+                Sås
+              </span>
+              {meal.sauce ? (
+                <div className="rounded-xl p-3 bg-orange-50 border border-orange-200">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
+                      <span className="text-2xl">🥫</span>
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-lg font-bold text-zinc-900">{Math.round(meal.sauce.grams)}g</span>
+                      <p className="text-sm text-zinc-700 font-medium">{meal.sauce.name}</p>
                     </div>
                     <Button
                       variant="ghost"
@@ -217,19 +215,17 @@ export function ClientStyleMealCard({
                       Ta bort
                     </Button>
                   </div>
-                ) : (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onAddSauce(mealIndex)}
-                    disabled={disabled}
-                    className="w-full text-orange-600 border-orange-200 hover:bg-orange-50"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Lägg till sås
-                  </Button>
-                )}
-              </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => onAddSauce(mealIndex)}
+                  disabled={disabled}
+                  className="w-full rounded-xl p-3 border-2 border-dashed border-orange-200 bg-orange-50/50 hover:bg-orange-50 hover:border-orange-300 transition-colors text-orange-600 flex items-center justify-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span className="text-sm font-medium">Lägg till sås</span>
+                </button>
+              )}
             </div>
           )}
         </div>
