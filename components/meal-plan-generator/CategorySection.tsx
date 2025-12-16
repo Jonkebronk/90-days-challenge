@@ -11,6 +11,7 @@ interface CategorySectionProps {
   onSelectFood?: (category: MacroCategory, targetMacro: number) => void;
   onUpdateGrams?: (category: MacroCategory, grams: number) => void;
   onRemoveFood?: (category: MacroCategory) => void;
+  onRemoveAlternative?: (category: MacroCategory, foodId: string) => void;
   disabled?: boolean;
 }
 
@@ -64,7 +65,7 @@ function getDiffColor(diff: number): string {
   return 'text-green-600';
 }
 
-export function CategorySection({ item, onSwapFood, onSelectFood, onUpdateGrams, onRemoveFood, disabled }: CategorySectionProps) {
+export function CategorySection({ item, onSwapFood, onSelectFood, onUpdateGrams, onRemoveFood, onRemoveAlternative, disabled }: CategorySectionProps) {
   const colors = categoryColors[item.category];
   const targetMacro = getTargetMacro(item);
   const selectedMacros = item.selected.macros;
@@ -199,35 +200,46 @@ export function CategorySection({ item, onSwapFood, onSelectFood, onUpdateGrams,
           {/* Alternative food cards - responsive grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {item.alternatives.map((alt) => (
-              <div key={alt.foodId} className={`rounded-lg p-2 ${colors.bg} ${colors.border} border`}>
-                <div className="flex items-center gap-2">
-                  {/* Product image - smaller */}
+              <div key={alt.foodId} className={`relative rounded-lg p-2.5 ${colors.bg} ${colors.border} border overflow-hidden`}>
+                {/* Remove button */}
+                {!disabled && onRemoveAlternative && (
+                  <button
+                    onClick={() => onRemoveAlternative(item.category, alt.foodId)}
+                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-zinc-200 hover:bg-red-100 flex items-center justify-center transition-colors group z-10"
+                    title="Ta bort alternativ"
+                  >
+                    <X className="w-3 h-3 text-zinc-500 group-hover:text-red-500" />
+                  </button>
+                )}
+
+                <div className="flex items-center gap-2.5">
+                  {/* Product image */}
                   {alt.image ? (
                     <img
                       src={alt.image}
                       alt={alt.name}
-                      className="w-10 h-10 rounded-lg object-cover bg-white shadow-sm shrink-0"
+                      className="w-11 h-11 rounded-lg object-cover bg-white shadow-sm shrink-0"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
+                    <div className="w-11 h-11 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0">
                       <span className="text-zinc-300 text-[8px]">Bild</span>
                     </div>
                   )}
 
-                  {/* Food info - compact */}
-                  <div className="flex-1 min-w-0">
+                  {/* Food info */}
+                  <div className="flex-1 min-w-0 pr-4">
                     <span className="text-base font-bold text-zinc-900">
                       {Math.round(alt.grams)}g
                     </span>
-                    <p className="text-xs text-zinc-700 font-medium truncate">
+                    <p className="text-xs text-zinc-600 font-medium truncate">
                       {alt.name}
                     </p>
                   </div>
                 </div>
 
-                {/* Swap impact - compact */}
-                <div className="mt-1.5 pt-1.5 border-t border-zinc-200/50 flex items-center justify-between">
-                  <div className="flex gap-1.5 text-[10px]">
+                {/* Footer with impact and action */}
+                <div className="mt-2 pt-2 border-t border-zinc-200/60 flex items-center justify-between gap-2">
+                  <div className="flex gap-1.5 text-[10px] shrink-0">
                     {(() => {
                       const impact = getSwapImpact(alt.macros);
                       return (
@@ -244,7 +256,7 @@ export function CategorySection({ item, onSwapFood, onSelectFood, onUpdateGrams,
                   {!disabled && onSwapFood && (
                     <button
                       onClick={() => onSwapFood(item.category, alt.foodId)}
-                      className="flex items-center gap-1 px-2 py-1 rounded-md bg-white shadow-sm border border-zinc-200 hover:border-zinc-300 hover:shadow transition-all text-[10px] font-medium text-zinc-700"
+                      className="flex items-center gap-1 px-2 py-1 rounded bg-white shadow-sm border border-zinc-300 hover:border-zinc-400 hover:shadow transition-all text-[10px] font-medium text-zinc-700 shrink-0"
                     >
                       <RefreshCw className="h-2.5 w-2.5" />
                       Välj

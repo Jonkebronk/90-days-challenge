@@ -36,6 +36,7 @@ interface ClientStyleMealCardProps {
   onSwapFood: (mealIndex: number, category: MacroCategory, foodId: string) => void;
   onSelectFood?: (mealIndex: number, category: MacroCategory, product: ProductForSelect, grams: number, macros: CalculatedMacros) => void;
   onRemoveFood?: (mealIndex: number, category: MacroCategory) => void;
+  onRemoveAlternative?: (mealIndex: number, category: MacroCategory, foodId: string) => void;
   onAddSauce: (mealIndex: number) => void;
   onRemoveSauce: (mealIndex: number) => void;
   onUpdateGrams?: (mealIndex: number, category: MacroCategory, grams: number) => void;
@@ -54,6 +55,7 @@ export function ClientStyleMealCard({
   onSwapFood,
   onSelectFood,
   onRemoveFood,
+  onRemoveAlternative,
   onAddSauce,
   onRemoveSauce,
   onUpdateGrams,
@@ -97,6 +99,12 @@ export function ClientStyleMealCard({
   const handleRemoveFood = (category: MacroCategory) => {
     if (onRemoveFood) {
       onRemoveFood(mealIndex, category);
+    }
+  };
+
+  const handleRemoveAlternative = (category: MacroCategory, foodId: string) => {
+    if (onRemoveAlternative) {
+      onRemoveAlternative(mealIndex, category, foodId);
     }
   };
 
@@ -210,6 +218,7 @@ export function ClientStyleMealCard({
                 onSelectFood={!disabled && onSelectFood ? handleOpenSelectModal : undefined}
                 onUpdateGrams={!disabled && onUpdateGrams ? handleUpdateGrams : undefined}
                 onRemoveFood={!disabled && onRemoveFood ? handleRemoveFood : undefined}
+                onRemoveAlternative={!disabled && onRemoveAlternative ? handleRemoveAlternative : undefined}
                 disabled={disabled}
               />
             ) : (
@@ -239,6 +248,7 @@ export function ClientStyleMealCard({
                 onSelectFood={!disabled && onSelectFood ? handleOpenSelectModal : undefined}
                 onUpdateGrams={!disabled && onUpdateGrams ? handleUpdateGrams : undefined}
                 onRemoveFood={!disabled && onRemoveFood ? handleRemoveFood : undefined}
+                onRemoveAlternative={!disabled && onRemoveAlternative ? handleRemoveAlternative : undefined}
                 disabled={disabled}
               />
             ) : (
@@ -268,6 +278,7 @@ export function ClientStyleMealCard({
                 onSelectFood={!disabled && onSelectFood ? handleOpenSelectModal : undefined}
                 onUpdateGrams={!disabled && onUpdateGrams ? handleUpdateGrams : undefined}
                 onRemoveFood={!disabled && onRemoveFood ? handleRemoveFood : undefined}
+                onRemoveAlternative={!disabled && onRemoveAlternative ? handleRemoveAlternative : undefined}
                 disabled={disabled}
               />
             ) : (
