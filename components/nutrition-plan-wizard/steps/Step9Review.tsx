@@ -156,7 +156,9 @@ export function Step9Review() {
       }
 
       toast.success('Kostplan skapad!');
-      nextStep();
+
+      // Redirect to the nutrition plan detail page
+      router.push(`/dashboard/nutrition-plans/${plan.id}`);
     } catch (error) {
       console.error('Error creating plan:', error);
       toast.error(
