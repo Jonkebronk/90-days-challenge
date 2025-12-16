@@ -133,11 +133,11 @@ export async function PUT(
     const alternatives = alternativeProducts.map((alt) => {
       // Scale to match same primary macro as selected product
       let scaledGrams = grams;
-      if (category === 'protein' && alt.protein > 0) {
+      if (category === 'protein' && Number(alt.protein) > 0) {
         scaledGrams = Math.round((macros.protein / (Number(alt.protein) / 100)) * 100) / 100 * 100;
-      } else if (category === 'carb' && alt.carbs > 0) {
+      } else if (category === 'carb' && Number(alt.carbs) > 0) {
         scaledGrams = Math.round((macros.carbs / (Number(alt.carbs) / 100)) * 100) / 100 * 100;
-      } else if (category === 'fat' && alt.fat > 0) {
+      } else if (category === 'fat' && Number(alt.fat) > 0) {
         scaledGrams = Math.round((macros.fat / (Number(alt.fat) / 100)) * 100) / 100 * 100;
       }
 
