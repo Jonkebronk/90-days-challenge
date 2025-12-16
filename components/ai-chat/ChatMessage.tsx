@@ -35,7 +35,7 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
         if (line.startsWith('## ') || line.startsWith('### ')) {
           const text = line.replace(/^#+\s*/, '');
           return (
-            <div key={i} className="font-semibold text-primary mt-4 mb-2 text-base border-b border-border pb-1">
+            <div key={i} className="font-semibold text-[#e07a5f] mt-4 mb-2 text-base border-b border-[#4a4a4a] pb-1">
               {text}
             </div>
           );
@@ -44,7 +44,7 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
         if (line.startsWith('**') && line.endsWith('**')) {
           const text = line.replace(/\*\*/g, '');
           return (
-            <div key={i} className="font-semibold mt-3 mb-1">
+            <div key={i} className="font-semibold mt-3 mb-1 text-gray-100">
               {text}
             </div>
           );
@@ -52,7 +52,7 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
         // MÅLTID-rubriker
         if (line.startsWith('MÅLTID') || line.includes('MÅLTID')) {
           return (
-            <div key={i} className="font-semibold text-primary mt-4 mb-2 text-base bg-primary/5 px-2 py-1 rounded">
+            <div key={i} className="font-semibold text-[#e07a5f] mt-4 mb-2 text-base bg-[#e07a5f]/10 px-2 py-1 rounded-lg">
               {line}
             </div>
           );
@@ -61,7 +61,7 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
         if (line.startsWith('TOTALT:') || line.startsWith('**TOTALT')) {
           const text = line.replace(/\*\*/g, '');
           return (
-            <div key={i} className="font-medium text-sm bg-muted/50 px-2 py-1 rounded mt-2">
+            <div key={i} className="font-medium text-sm bg-[#3a3a3a] px-2 py-1 rounded-lg mt-2 text-gray-200">
               {text}
             </div>
           );
@@ -69,7 +69,7 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
         if (line.startsWith('ALTERNATIV:') || line.startsWith('**ALTERNATIV')) {
           const text = line.replace(/\*\*/g, '');
           return (
-            <div key={i} className="font-medium text-sm mt-3 mb-1 text-muted-foreground">
+            <div key={i} className="font-medium text-sm mt-3 mb-1 text-gray-400">
               {text}
             </div>
           );
@@ -78,7 +78,7 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
         if (line.startsWith('LIVSMEDEL:') || line.startsWith('**LIVSMEDEL')) {
           const text = line.replace(/\*\*/g, '');
           return (
-            <div key={i} className="font-medium text-sm mt-2 mb-1">
+            <div key={i} className="font-medium text-sm mt-2 mb-1 text-gray-200">
               {text}
             </div>
           );
@@ -86,7 +86,7 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
         // Träd-struktur (livsmedel med mängder)
         if (line.startsWith('├─') || line.startsWith('└─') || line.startsWith('├') || line.startsWith('└')) {
           return (
-            <div key={i} className="font-mono text-sm ml-1 py-0.5 text-foreground/90">
+            <div key={i} className="font-mono text-sm ml-1 py-0.5 text-gray-300">
               {line}
             </div>
           );
@@ -94,7 +94,7 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
         // Streckade linjer
         if (line.includes('───')) {
           return (
-            <div key={i} className="text-muted-foreground text-xs my-1">
+            <div key={i} className="text-gray-500 text-xs my-1">
               {line}
             </div>
           );
@@ -102,7 +102,7 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
         // Listor med •
         if (line.trim().startsWith('•') || line.trim().startsWith('- ')) {
           return (
-            <div key={i} className="text-sm ml-2 py-0.5">
+            <div key={i} className="text-sm ml-2 py-0.5 text-gray-300">
               {line}
             </div>
           );
@@ -110,14 +110,14 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
         // Warnings/tips/emojis
         if (line.includes('⚠️') || line.includes('✅') || line.includes('📊') || line.includes('📝')) {
           return (
-            <div key={i} className="font-medium mt-2">
+            <div key={i} className="font-medium mt-2 text-gray-200">
               {line}
             </div>
           );
         }
         // Separatorer
         if (line.trim() === '---') {
-          return <hr key={i} className="my-3 border-border" />;
+          return <hr key={i} className="my-3 border-[#4a4a4a]" />;
         }
         // Tom rad
         if (!line.trim()) {
@@ -125,7 +125,7 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
         }
         // Normal text
         return (
-          <div key={i} className="text-sm leading-relaxed">
+          <div key={i} className="text-sm leading-relaxed text-gray-300">
             {line}
           </div>
         );
@@ -135,15 +135,15 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
   return (
     <div
       className={cn(
-        'flex gap-3 p-3 rounded-lg',
-        isUser ? 'bg-primary/10' : 'bg-muted/50'
+        'flex gap-3 p-3 rounded-xl',
+        isUser ? 'bg-[#404040]' : 'bg-[#353535]'
       )}
     >
       {/* Avatar */}
       <div
         className={cn(
           'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center',
-          isUser ? 'bg-primary text-primary-foreground' : 'bg-purple-500 text-white'
+          isUser ? 'bg-[#e07a5f] text-white' : 'bg-[#5a5a5a] text-[#e07a5f]'
         )}
       >
         {isUser ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
@@ -152,10 +152,10 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm font-medium">
+          <span className="text-sm font-medium text-gray-200">
             {isUser ? 'Du' : 'AI Assistent'}
           </span>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-xs text-gray-500">
             {new Date(message.timestamp).toLocaleTimeString('sv-SE', {
               hour: '2-digit',
               minute: '2-digit',
@@ -169,7 +169,7 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 text-xs text-muted-foreground p-0 hover:bg-transparent"
+              className="h-6 text-xs text-gray-400 p-0 hover:bg-transparent hover:text-gray-200"
               onClick={() => setShowReasoning(!showReasoning)}
             >
               {showReasoning ? (
@@ -180,7 +180,7 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
               Visa tankegång
             </Button>
             {showReasoning && (
-              <div className="mt-2 p-2 bg-muted rounded text-xs text-muted-foreground italic">
+              <div className="mt-2 p-2 bg-[#2a2a2a] rounded-lg text-xs text-gray-400 italic border border-[#3f3f3f]">
                 {message.reasoning}
               </div>
             )}
@@ -195,28 +195,28 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
                 key={i}
                 src={img}
                 alt={`Bifogad bild ${i + 1}`}
-                className="max-h-32 max-w-[200px] object-cover rounded-md border"
+                className="max-h-32 max-w-[200px] object-cover rounded-lg border border-[#4a4a4a]"
               />
             ))}
           </div>
         )}
 
         {/* Message content */}
-        <div className="text-sm whitespace-pre-wrap break-words">
+        <div className="text-sm whitespace-pre-wrap break-words text-gray-200">
           {formatContent(message.content)}
         </div>
 
         {/* Feedback buttons (only for assistant messages) */}
         {!isUser && isLast && onFeedback && (
           <div className="mt-3 flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Var detta svar hjälpsamt?</span>
+            <span className="text-xs text-gray-500">Var detta svar hjälpsamt?</span>
             <div className="flex gap-1">
               <Button
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  'h-7 w-7 p-0',
-                  feedbackGiven === 'bra' && 'bg-green-100 text-green-600'
+                  'h-7 w-7 p-0 text-gray-400 hover:text-gray-200 hover:bg-[#4a4a4a]',
+                  feedbackGiven === 'bra' && 'bg-green-900/50 text-green-400'
                 )}
                 onClick={() => handleFeedback('bra')}
                 disabled={!!feedbackGiven}
@@ -227,8 +227,8 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  'h-7 w-7 p-0',
-                  feedbackGiven === 'kan_forbattras' && 'bg-yellow-100 text-yellow-600'
+                  'h-7 w-7 p-0 text-gray-400 hover:text-gray-200 hover:bg-[#4a4a4a]',
+                  feedbackGiven === 'kan_forbattras' && 'bg-yellow-900/50 text-yellow-400'
                 )}
                 onClick={() => handleFeedback('kan_forbattras')}
                 disabled={!!feedbackGiven}
@@ -239,8 +239,8 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  'h-7 w-7 p-0',
-                  feedbackGiven === 'fel' && 'bg-red-100 text-red-600'
+                  'h-7 w-7 p-0 text-gray-400 hover:text-gray-200 hover:bg-[#4a4a4a]',
+                  feedbackGiven === 'fel' && 'bg-red-900/50 text-red-400'
                 )}
                 onClick={() => handleFeedback('fel')}
                 disabled={!!feedbackGiven}
@@ -249,7 +249,7 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
               </Button>
             </div>
             {feedbackGiven && (
-              <span className="text-xs text-muted-foreground">Tack för din feedback!</span>
+              <span className="text-xs text-gray-500">Tack för din feedback!</span>
             )}
           </div>
         )}

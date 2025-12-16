@@ -222,59 +222,56 @@ export function AIChatPanel({
 
   if (initialLoading) {
     return (
-      <Card className="flex flex-col h-[calc(100vh-180px)] min-h-[500px] max-h-[800px]">
-        <CardHeader className="py-3 border-b">
+      <Card className="flex flex-col h-[calc(100vh-180px)] min-h-[500px] max-h-[800px] bg-[#2f2f2f] border-[#3f3f3f]">
+        <CardHeader className="py-3 border-b border-[#3f3f3f]">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-purple-500" />
-            <h3 className="font-semibold">AI Kostassistent</h3>
+            <Sparkles className="h-5 w-5 text-[#e07a5f]" />
+            <h3 className="font-semibold text-white">AI Kostassistent</h3>
           </div>
         </CardHeader>
         <CardContent className="flex-1 flex items-center justify-center">
-          <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+          <RefreshCw className="h-6 w-6 animate-spin text-[#e07a5f]" />
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="flex flex-col h-[calc(100vh-180px)] min-h-[500px] max-h-[800px]">
-      <CardHeader className="py-2 px-4 border-b flex-shrink-0">
+    <Card className="flex flex-col h-[calc(100vh-180px)] min-h-[500px] max-h-[800px] bg-[#2f2f2f] border-[#3f3f3f]">
+      <CardHeader className="py-3 px-4 border-b border-[#3f3f3f] flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-purple-500" />
-            <h3 className="font-semibold text-sm">AI Kostassistent</h3>
+            <Sparkles className="h-4 w-4 text-[#e07a5f]" />
+            <h3 className="font-medium text-sm text-white">AI Kostassistent</h3>
           </div>
           {messages.length > 0 && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleClearConversation}
-              className="text-muted-foreground hover:text-destructive h-7 w-7 p-0"
+              className="text-gray-400 hover:text-red-400 h-7 w-7 p-0"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           )}
         </div>
-        <p className="text-[11px] text-muted-foreground">
+        <p className="text-xs text-gray-400">
           {clientName} |{' '}
-          <span className="font-medium">
-            P{targetMacros.protein}g K{targetMacros.carbs}g F{targetMacros.fat}g = {targetMacros.kcal}kcal
+          <span className="text-gray-300">
+            P{targetMacros.protein}g K{targetMacros.carbs}g F{targetMacros.fat}g
           </span>
         </p>
       </CardHeader>
 
-      {/* Quick actions */}
-      <QuickActions onSelect={handleSend} disabled={loading} />
-
       {/* Messages */}
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 bg-[#2f2f2f]">
         <CardContent className="p-4 space-y-4">
           {messages.length === 0 && (
-            <div className="text-center text-muted-foreground py-8">
-              <Sparkles className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">Ställ en fråga eller klicka på en snabbknapp</p>
-              <p className="text-xs mt-2">
-                Jag har tillgång till ditt livsmedelsbibliotek, receptbanken och
+            <div className="text-center py-12">
+              <Sparkles className="h-10 w-10 mx-auto mb-3 text-[#e07a5f] opacity-70" />
+              <p className="text-gray-300 text-sm font-medium">Hur kan jag hjälpa dig idag?</p>
+              <p className="text-gray-500 text-xs mt-2 max-w-[250px] mx-auto">
+                Jag har tillgång till livsmedelsbiblioteket, receptbanken och
                 Livsmedelsverkets databas.
               </p>
             </div>
@@ -288,8 +285,8 @@ export function AIChatPanel({
             />
           ))}
           {loading && (
-            <div className="flex items-center gap-2 text-muted-foreground p-3 bg-muted/50 rounded-lg">
-              <RefreshCw className="h-4 w-4 animate-spin" />
+            <div className="flex items-center gap-2 text-gray-400 p-3 bg-[#3a3a3a] rounded-lg">
+              <RefreshCw className="h-4 w-4 animate-spin text-[#e07a5f]" />
               <span className="text-sm">Tänker...</span>
             </div>
           )}
@@ -299,18 +296,18 @@ export function AIChatPanel({
 
       {/* Attached images preview */}
       {attachedImages.length > 0 && (
-        <div className="px-4 py-2 border-t flex-shrink-0 bg-muted/30">
+        <div className="px-4 py-2 border-t border-[#3f3f3f] flex-shrink-0 bg-[#353535]">
           <div className="flex gap-2 flex-wrap">
             {attachedImages.map((img, i) => (
               <div key={i} className="relative group">
                 <img
                   src={img.preview}
                   alt={`Bifogad bild ${i + 1}`}
-                  className="h-16 w-16 object-cover rounded-md border"
+                  className="h-16 w-16 object-cover rounded-lg border border-[#4a4a4a]"
                 />
                 <button
                   onClick={() => removeImage(i)}
-                  className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -321,8 +318,8 @@ export function AIChatPanel({
       )}
 
       {/* Input */}
-      <div className="p-3 border-t flex-shrink-0">
-        <div className="flex gap-2">
+      <div className="p-4 border-t border-[#3f3f3f] flex-shrink-0 bg-[#2f2f2f]">
+        <div className="flex items-end gap-2 bg-[#404040] rounded-2xl px-3 py-2">
           {/* Hidden file input */}
           <input
             ref={fileInputRef}
@@ -334,42 +331,36 @@ export function AIChatPanel({
           />
 
           {/* Image upload button */}
-          <Button
-            variant="outline"
-            size="icon"
+          <button
             onClick={() => fileInputRef.current?.click()}
             disabled={loading || attachedImages.length >= 5}
-            className="self-end h-9 w-9 flex-shrink-0"
+            className="p-1.5 text-gray-400 hover:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             title="Bifoga bild (max 5)"
           >
-            <ImagePlus className="h-4 w-4" />
-          </Button>
+            <ImagePlus className="h-5 w-5" />
+          </button>
 
           <Textarea
             ref={textareaRef}
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="Ställ en fråga eller bifoga en bild..."
-            className="min-h-[36px] max-h-[120px] resize-none text-sm"
+            placeholder="Hur kan jag hjälpa dig idag?"
+            className="min-h-[24px] max-h-[120px] resize-none text-sm bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-gray-100 placeholder:text-gray-500 py-0"
             onKeyDown={handleKeyDown}
             disabled={loading}
           />
-          <Button
+          <button
             onClick={() => handleSend()}
             disabled={loading || (!input.trim() && attachedImages.length === 0)}
-            className="self-end h-9 w-9 flex-shrink-0"
-            size="icon"
+            className="p-2 bg-[#e07a5f] hover:bg-[#c96a52] disabled:bg-[#4a4a4a] disabled:cursor-not-allowed text-white rounded-full transition-colors"
           >
             {loading ? (
               <RefreshCw className="h-4 w-4 animate-spin" />
             ) : (
               <Send className="h-4 w-4" />
             )}
-          </Button>
+          </button>
         </div>
-        <p className="text-[10px] text-muted-foreground mt-1.5 text-center">
-          Bifoga bilder på mat för analys eller ställ frågor om kost
-        </p>
       </div>
     </Card>
   );

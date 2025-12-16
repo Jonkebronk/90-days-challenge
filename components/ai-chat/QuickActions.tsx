@@ -49,20 +49,25 @@ const quickActions = [
 
 export function QuickActions({ onSelect, disabled }: QuickActionsProps) {
   return (
-    <div className="px-3 py-2 border-b flex-shrink-0 bg-muted/30">
-      <div className="flex flex-wrap gap-1">
+    <div className="px-4 py-3 border-b border-[#3f3f3f] flex-shrink-0 bg-[#2f2f2f]">
+      <div className="flex flex-wrap gap-1.5">
         {quickActions.map((action, i) => (
-          <Button
+          <button
             key={i}
-            variant={action.primary ? 'default' : 'outline'}
-            size="sm"
-            className={`h-6 text-[11px] gap-1 px-2 ${action.primary ? 'bg-purple-500 hover:bg-purple-600' : ''}`}
+            className={`
+              h-7 text-[11px] gap-1.5 px-3 rounded-full flex items-center
+              transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+              ${action.primary
+                ? 'bg-[#e07a5f] hover:bg-[#c96a52] text-white'
+                : 'bg-[#404040] hover:bg-[#4a4a4a] text-gray-300 border border-[#505050]'
+              }
+            `}
             onClick={() => onSelect(action.prompt)}
             disabled={disabled}
           >
             <action.icon className="h-3 w-3" />
             {action.label}
-          </Button>
+          </button>
         ))}
       </div>
     </div>
