@@ -8,8 +8,9 @@ import { Card } from '@/components/ui/card'
 import {
   Send, Image as ImageIcon, X, ZoomIn, MessageCircle, Loader2,
   Search, Reply, Pencil, Trash2, Check, CheckCheck, MoreVertical, User,
-  Bold, Italic, Strikethrough
+  Bold, Italic, Strikethrough, Smile
 } from 'lucide-react'
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
 import { toast } from 'sonner'
 import { FAQPanel } from '@/components/messages/FAQPanel'
 import { MessageReactions } from '@/components/messages/MessageReactions'
@@ -142,6 +143,7 @@ export default function MessagesPage() {
   const [editingMessage, setEditingMessage] = useState<Message | null>(null)
   const [typingUser, setTypingUser] = useState<string | null>(null)
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -514,6 +516,24 @@ export default function MessagesPage() {
     }, 0)
   }
 
+  // Handle emoji selection
+  const onEmojiClick = (emojiData: EmojiClickData) => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const newText = newMessage.slice(0, start) + emojiData.emoji + newMessage.slice(end)
+    setNewMessage(newText)
+    setShowEmojiPicker(false)
+
+    // Set cursor after emoji
+    setTimeout(() => {
+      textarea.focus()
+      textarea.setSelectionRange(start + emojiData.emoji.length, start + emojiData.emoji.length)
+    }, 0)
+  }
+
   const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     const target = e.currentTarget
     if (target.scrollTop === 0) target.scrollTop = 1
@@ -880,6 +900,33 @@ export default function MessagesPage() {
                   >
                     <Strikethrough className="w-4 h-4" />
                   </button>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                      className="p-1.5 rounded hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition-colors"
+                      title="Emoji"
+                    >
+                      <Smile className="w-4 h-4" />
+                    </button>
+                    {showEmojiPicker && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-40"
+                          onClick={() => setShowEmojiPicker(false)}
+                        />
+                        <div className="absolute bottom-10 left-0 z-50">
+                          <EmojiPicker
+                            onEmojiClick={onEmojiClick}
+                            width={300}
+                            height={400}
+                            searchPlaceholder="Sök emoji..."
+                            previewConfig={{ showPreview: false }}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex gap-2">
