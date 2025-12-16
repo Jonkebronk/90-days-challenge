@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { RefreshCw, Search, Check, X } from 'lucide-react';
+import { RefreshCw, Search, Check, X, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import type { GeneratedMealItem, MacroCategory, CalculatedMacros } from '@/lib/types/meal-plan-generator';
 
@@ -12,6 +12,7 @@ interface CategorySectionProps {
   onUpdateGrams?: (category: MacroCategory, grams: number) => void;
   onRemoveFood?: (category: MacroCategory) => void;
   onRemoveAlternative?: (category: MacroCategory, foodId: string) => void;
+  onAddAlternative?: (category: MacroCategory) => void;
   disabled?: boolean;
 }
 
@@ -65,7 +66,7 @@ function getDiffColor(diff: number): string {
   return 'text-green-600';
 }
 
-export function CategorySection({ item, onSwapFood, onSelectFood, onUpdateGrams, onRemoveFood, onRemoveAlternative, disabled }: CategorySectionProps) {
+export function CategorySection({ item, onSwapFood, onSelectFood, onUpdateGrams, onRemoveFood, onRemoveAlternative, onAddAlternative, disabled }: CategorySectionProps) {
   const colors = categoryColors[item.category];
   const targetMacro = getTargetMacro(item);
   const selectedMacros = item.selected.macros;
@@ -187,8 +188,8 @@ export function CategorySection({ item, onSwapFood, onSelectFood, onUpdateGrams,
         </div>
       </div>
 
-      {/* Alternatives section */}
-      {item.alternatives.length > 0 && (
+      {/* Alternatives section - always show if onAddAlternative is available */}
+      {(item.alternatives.length > 0 || (!disabled && onAddAlternative)) && (
         <>
           {/* Separator */}
           <div className="flex items-center gap-2 py-1">
@@ -265,6 +266,17 @@ export function CategorySection({ item, onSwapFood, onSelectFood, onUpdateGrams,
                 </div>
               </div>
             ))}
+
+            {/* Add alternative button */}
+            {!disabled && onAddAlternative && (
+              <button
+                onClick={() => onAddAlternative(item.category)}
+                className={`rounded-lg p-2.5 border-2 border-dashed ${colors.border} hover:${colors.bg} transition-colors flex items-center justify-center gap-2 min-h-[70px]`}
+              >
+                <Plus className={`w-4 h-4 ${colors.text}`} />
+                <span className={`text-xs font-medium ${colors.text}`}>Lägg till alternativ</span>
+              </button>
+            )}
           </div>
         </>
       )}

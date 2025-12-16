@@ -421,6 +421,47 @@ export function MealPlanGenerator({
     }
   };
 
+  // Add alternative handler
+  const handleAddAlternative = async (
+    mealIndex: number,
+    category: MacroCategory,
+    product: { id: string; name: string },
+    grams: number,
+    macros: CalculatedMacros
+  ) => {
+    if (!generatedPlan) return;
+
+    try {
+      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/add-alternative`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mealIndex,
+          category,
+          productId: product.id,
+          grams,
+          macros,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Kunde inte lägga till alternativ');
+        return;
+      }
+
+      // Update local state
+      setGeneratedPlan({
+        ...generatedPlan,
+        meals: data.meals,
+      });
+    } catch (err) {
+      setError('Ett fel uppstod vid tillägg av alternativ');
+      console.error('Add alternative error:', err);
+    }
+  };
+
   // Remove alternative handler
   const handleRemoveAlternative = async (
     mealIndex: number,
@@ -570,6 +611,7 @@ export function MealPlanGenerator({
                 onSelectFood={handleSelectFood}
                 onRemoveFood={handleRemoveFood}
                 onRemoveAlternative={handleRemoveAlternative}
+                onAddAlternative={handleAddAlternative}
                 onAddSauce={handleAddSauce}
                 onRemoveSauce={handleRemoveSauce}
                 onUpdateGrams={handleUpdateGrams}

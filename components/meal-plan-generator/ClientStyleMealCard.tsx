@@ -37,6 +37,7 @@ interface ClientStyleMealCardProps {
   onSelectFood?: (mealIndex: number, category: MacroCategory, product: ProductForSelect, grams: number, macros: CalculatedMacros) => void;
   onRemoveFood?: (mealIndex: number, category: MacroCategory) => void;
   onRemoveAlternative?: (mealIndex: number, category: MacroCategory, foodId: string) => void;
+  onAddAlternative?: (mealIndex: number, category: MacroCategory, product: ProductForSelect, grams: number, macros: CalculatedMacros) => void;
   onAddSauce: (mealIndex: number) => void;
   onRemoveSauce: (mealIndex: number) => void;
   onUpdateGrams?: (mealIndex: number, category: MacroCategory, grams: number) => void;
@@ -56,6 +57,7 @@ export function ClientStyleMealCard({
   onSelectFood,
   onRemoveFood,
   onRemoveAlternative,
+  onAddAlternative,
   onAddSauce,
   onRemoveSauce,
   onUpdateGrams,
@@ -73,6 +75,10 @@ export function ClientStyleMealCard({
   const [selectModalOpen, setSelectModalOpen] = useState(false);
   const [selectCategory, setSelectCategory] = useState<MacroCategory | null>(null);
   const [selectTargetMacro, setSelectTargetMacro] = useState(0);
+
+  // Modal state for adding alternatives
+  const [addAltModalOpen, setAddAltModalOpen] = useState(false);
+  const [addAltCategory, setAddAltCategory] = useState<MacroCategory | null>(null);
 
   const canHaveSauce = meal.type === 'lunch' || meal.type === 'middag';
   const hasVegetables = meal.vegetableGrams > 0;
@@ -106,6 +112,20 @@ export function ClientStyleMealCard({
     if (onRemoveAlternative) {
       onRemoveAlternative(mealIndex, category, foodId);
     }
+  };
+
+  // Open add alternative modal
+  const handleOpenAddAltModal = (category: MacroCategory) => {
+    setAddAltCategory(category);
+    setAddAltModalOpen(true);
+  };
+
+  // Handle alternative product selection
+  const handleAddAltSelect = (product: ProductForSelect, grams: number, macros: CalculatedMacros) => {
+    if (addAltCategory && onAddAlternative) {
+      onAddAlternative(mealIndex, addAltCategory, product, grams, macros);
+    }
+    setAddAltModalOpen(false);
   };
 
   // Open product select modal
@@ -219,6 +239,7 @@ export function ClientStyleMealCard({
                 onUpdateGrams={!disabled && onUpdateGrams ? handleUpdateGrams : undefined}
                 onRemoveFood={!disabled && onRemoveFood ? handleRemoveFood : undefined}
                 onRemoveAlternative={!disabled && onRemoveAlternative ? handleRemoveAlternative : undefined}
+                onAddAlternative={!disabled && onAddAlternative ? handleOpenAddAltModal : undefined}
                 disabled={disabled}
               />
             ) : (
@@ -249,6 +270,7 @@ export function ClientStyleMealCard({
                 onUpdateGrams={!disabled && onUpdateGrams ? handleUpdateGrams : undefined}
                 onRemoveFood={!disabled && onRemoveFood ? handleRemoveFood : undefined}
                 onRemoveAlternative={!disabled && onRemoveAlternative ? handleRemoveAlternative : undefined}
+                onAddAlternative={!disabled && onAddAlternative ? handleOpenAddAltModal : undefined}
                 disabled={disabled}
               />
             ) : (
@@ -279,6 +301,7 @@ export function ClientStyleMealCard({
                 onUpdateGrams={!disabled && onUpdateGrams ? handleUpdateGrams : undefined}
                 onRemoveFood={!disabled && onRemoveFood ? handleRemoveFood : undefined}
                 onRemoveAlternative={!disabled && onRemoveAlternative ? handleRemoveAlternative : undefined}
+                onAddAlternative={!disabled && onAddAlternative ? handleOpenAddAltModal : undefined}
                 disabled={disabled}
               />
             ) : (
@@ -436,6 +459,18 @@ export function ClientStyleMealCard({
           targetMacro={selectTargetMacro}
           mealType={meal.type}
           onSelect={handleProductSelect}
+        />
+      )}
+
+      {/* Add Alternative Modal */}
+      {addAltCategory && (
+        <ProductSelectModal
+          isOpen={addAltModalOpen}
+          onClose={() => setAddAltModalOpen(false)}
+          category={addAltCategory}
+          targetMacro={0}
+          mealType={meal.type}
+          onSelect={handleAddAltSelect}
         />
       )}
     </div>
