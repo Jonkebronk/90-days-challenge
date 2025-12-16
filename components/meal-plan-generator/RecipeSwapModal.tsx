@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, ChefHat, Loader2 } from 'lucide-react';
+import { Search, ChefHat, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type {
   MealType,
@@ -19,6 +19,13 @@ import type {
   RecipeSwapOption,
 } from '@/lib/types/meal-plan-generator';
 import { MEAL_TYPE_LABELS } from '@/lib/types/meal-plan-generator';
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  subcategories: { id: string; name: string; slug: string }[];
+}
 
 interface RecipeSwapModalProps {
   isOpen: boolean;
@@ -46,18 +53,38 @@ export function RecipeSwapModal({
   currentRecipeId,
 }: RecipeSwapModalProps) {
   const [recipes, setRecipes] = useState<RecipeSwapOption[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeSwapOption | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string | null>(null);
 
-  // Fetch recipes on open
+  // Get subcategories for selected category
+  const selectedCategory = categories.find(c => c.id === selectedCategoryId);
+  const subcategories = selectedCategory?.subcategories || [];
+
+  // Fetch recipes on open or when category changes
   useEffect(() => {
     if (isOpen) {
       fetchRecipes();
       setSelectedRecipe(null);
       setSearchTerm('');
     }
-  }, [isOpen, mealType, targetMacros]);
+  }, [isOpen, mealType, targetMacros, selectedCategoryId, selectedSubcategoryId]);
+
+  // Reset subcategory when category changes
+  useEffect(() => {
+    setSelectedSubcategoryId(null);
+  }, [selectedCategoryId]);
+
+  // Reset filters when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedCategoryId(null);
+      setSelectedSubcategoryId(null);
+    }
+  }, [isOpen]);
 
   const fetchRecipes = async () => {
     setLoading(true);
@@ -68,19 +95,34 @@ export function RecipeSwapModal({
         targetProtein: targetMacros.protein.toString(),
         targetCarbs: targetMacros.carbs.toString(),
         targetFat: targetMacros.fat.toString(),
-        limit: '20',
+        limit: '50',
       });
+
+      if (selectedSubcategoryId) {
+        params.set('subcategoryId', selectedSubcategoryId);
+      } else if (selectedCategoryId) {
+        params.set('categoryId', selectedCategoryId);
+      }
 
       const response = await fetch(`/api/recipes/for-meal-plan?${params}`);
       if (response.ok) {
         const data = await response.json();
         setRecipes(data.recipes);
+        // Only update categories if no filter is applied (to show all available)
+        if (!selectedCategoryId && !selectedSubcategoryId) {
+          setCategories(data.categories || []);
+        }
       }
     } catch (error) {
       console.error('Error fetching recipes:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const clearFilters = () => {
+    setSelectedCategoryId(null);
+    setSelectedSubcategoryId(null);
   };
 
   const filteredRecipes = recipes.filter(
@@ -124,6 +166,62 @@ export function RecipeSwapModal({
               className="pl-9"
             />
           </div>
+
+          {/* Category filters */}
+          {categories.length > 0 && (
+            <div className="space-y-2">
+              {/* Main categories */}
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategoryId(
+                      selectedCategoryId === category.id ? null : category.id
+                    )}
+                    className={cn(
+                      'px-3 py-1.5 text-xs font-medium rounded-full transition-colors',
+                      selectedCategoryId === category.id
+                        ? 'bg-amber-500 text-white'
+                        : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200'
+                    )}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+                {(selectedCategoryId || selectedSubcategoryId) && (
+                  <button
+                    onClick={clearFilters}
+                    className="px-3 py-1.5 text-xs font-medium rounded-full bg-red-100 text-red-600 hover:bg-red-200 flex items-center gap-1"
+                  >
+                    <X className="h-3 w-3" />
+                    Rensa
+                  </button>
+                )}
+              </div>
+
+              {/* Subcategories (when a category is selected) */}
+              {selectedCategoryId && subcategories.length > 0 && (
+                <div className="flex flex-wrap gap-2 pl-2 border-l-2 border-amber-200">
+                  {subcategories.map((sub) => (
+                    <button
+                      key={sub.id}
+                      onClick={() => setSelectedSubcategoryId(
+                        selectedSubcategoryId === sub.id ? null : sub.id
+                      )}
+                      className={cn(
+                        'px-2.5 py-1 text-xs font-medium rounded-full transition-colors',
+                        selectedSubcategoryId === sub.id
+                          ? 'bg-amber-400 text-white'
+                          : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+                      )}
+                    >
+                      {sub.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Recipe list */}
           <ScrollArea className="h-80 border rounded-md">

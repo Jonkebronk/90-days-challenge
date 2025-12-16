@@ -14,6 +14,8 @@ import { createRecipeSwapOption } from '@/lib/calculations/meal-plan-generator';
  * - mealType: frukost, lunch, middag, mellanmål, kvällsmål
  * - targetKcal, targetProtein, targetCarbs, targetFat: Target macros
  * - currentKcal, currentProtein, currentCarbs, currentFat: Current meal macros (optional)
+ * - categoryId: Filter by category (optional)
+ * - subcategoryId: Filter by subcategory (optional)
  * - limit: Max number of recipes (default 10)
  */
 export async function GET(request: NextRequest) {
@@ -29,6 +31,8 @@ export async function GET(request: NextRequest) {
     const targetProtein = parseFloat(searchParams.get('targetProtein') || '0');
     const targetCarbs = parseFloat(searchParams.get('targetCarbs') || '0');
     const targetFat = parseFloat(searchParams.get('targetFat') || '0');
+    const categoryId = searchParams.get('categoryId');
+    const subcategoryId = searchParams.get('subcategoryId');
     const limit = parseInt(searchParams.get('limit') || '10');
 
     // Optional current macros for comparison
@@ -70,6 +74,14 @@ export async function GET(request: NextRequest) {
     // Map Swedish meal type to recipe mealType values
     const recipeMealTypes = MEAL_TYPE_TO_RECIPE_TYPE[mealType];
 
+    // Build category filter
+    const categoryFilter: Record<string, unknown> = {};
+    if (subcategoryId) {
+      categoryFilter.subcategoryId = subcategoryId;
+    } else if (categoryId) {
+      categoryFilter.categoryId = categoryId;
+    }
+
     // Fetch published recipes matching the meal type OR with no meal type set
     // (since many recipes don't have mealType categorized yet)
     const recipes = await prisma.recipe.findMany({
@@ -84,6 +96,8 @@ export async function GET(request: NextRequest) {
           not: null,
           gt: 0,
         },
+        // Category filter
+        ...categoryFilter,
       },
       select: {
         id: true,
@@ -94,11 +108,61 @@ export async function GET(request: NextRequest) {
         proteinPerServing: true,
         carbsPerServing: true,
         fatPerServing: true,
+        categoryId: true,
+        subcategoryId: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
       },
       orderBy: {
         title: 'asc',
       },
     });
+
+    // Get available categories and subcategories from the fetched recipes
+    const categoryMap = new Map<string, { id: string; name: string; slug: string; subcategories: Map<string, { id: string; name: string; slug: string }> }>();
+
+    for (const recipe of recipes) {
+      if (recipe.category) {
+        if (!categoryMap.has(recipe.category.id)) {
+          categoryMap.set(recipe.category.id, {
+            id: recipe.category.id,
+            name: recipe.category.name,
+            slug: recipe.category.slug,
+            subcategories: new Map(),
+          });
+        }
+        if (recipe.subcategory) {
+          const cat = categoryMap.get(recipe.category.id)!;
+          if (!cat.subcategories.has(recipe.subcategory.id)) {
+            cat.subcategories.set(recipe.subcategory.id, {
+              id: recipe.subcategory.id,
+              name: recipe.subcategory.name,
+              slug: recipe.subcategory.slug,
+            });
+          }
+        }
+      }
+    }
+
+    // Convert to arrays for response
+    const categories = Array.from(categoryMap.values()).map(cat => ({
+      id: cat.id,
+      name: cat.name,
+      slug: cat.slug,
+      subcategories: Array.from(cat.subcategories.values()),
+    }));
 
     // Calculate scaling and match scores for each recipe
     const recipeOptions: RecipeSwapOption[] = recipes
@@ -126,6 +190,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       recipes: recipeOptions,
       total: recipes.length,
+      categories,
     });
   } catch (error) {
     console.error('Error fetching recipes for meal plan:', error);
