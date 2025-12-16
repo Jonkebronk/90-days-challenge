@@ -283,15 +283,19 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     }
   }
 
-  const fetchPreviousSession = async () => {
+  const fetchPreviousSession = async (programDayId?: string, excludeId?: string) => {
+    const effectiveDayId = programDayId || dayId
+    if (!effectiveDayId) return
+
     try {
       const queryParams = new URLSearchParams({
-        dayId: dayId,
+        dayId: effectiveDayId,
         limit: '1'
       })
 
-      if (sessionId) {
-        queryParams.append('excludeSessionId', sessionId)
+      const effectiveExcludeId = excludeId || sessionId
+      if (effectiveExcludeId) {
+        queryParams.append('excludeSessionId', effectiveExcludeId)
       }
 
       const response = await fetch(`/api/workout-sessions?${queryParams}`)
@@ -349,8 +353,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             // This is handled by the existing UI logic
           }
 
-          // Fetch previous completed session for reference
-          await fetchPreviousSession()
+          // Fetch previous completed session for reference (exclude current session)
+          await fetchPreviousSession(programDayId, incompleteSession.id)
 
           return true
         }
@@ -377,8 +381,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         setStartTime(new Date())
         setIsRunning(true)
 
-        // Fetch previous session data for reference
-        await fetchPreviousSession()
+        // Fetch previous session data for reference (exclude current session)
+        await fetchPreviousSession(programDayId || dayId, data.session.id)
       }
     } catch (error) {
       console.error('Error starting session:', error)
