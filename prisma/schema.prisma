@@ -190,6 +190,10 @@ model User {
   clientNutritionPlans      ClientNutritionPlan[] @relation("ClientNutritionPlans")
   coachClientNutritionPlans ClientNutritionPlan[] @relation("CoachClientNutritionPlans")
 
+  // AI Kostplaneringsagent
+  clientAIMemory  ClientAIMemory?  @relation("ClientAIMemory")
+  coachAISettings CoachAISettings? @relation("CoachAISettings")
+
   @@map("users")
 }
 
@@ -2723,6 +2727,10 @@ model ClientNutritionPlan {
   // Generated meal plan relation
   generatedMealPlans GeneratedMealPlan[]
 
+  // AI Kostplaneringsagent
+  aiConversation AIConversation?
+  aiFeedback     AIFeedback[]
+
   @@index([clientId])
   @@index([coachId])
   @@index([clientId, status])
@@ -2750,4 +2758,92 @@ model GeneratedMealPlan {
 
   @@index([nutritionPlanId])
   @@map("generated_meal_plans")
+}
+
+// ============================================================================
+// AI KOSTPLANERINGSAGENT - Tabeller för AI-assistenten
+// ============================================================================
+
+// AI-agentens minne per klient (långtidsminne Mem0-stil)
+model ClientAIMemory {
+  id       String @id @default(cuid())
+  clientId String @unique
+  client   User   @relation("ClientAIMemory", fields: [clientId], references: [id], onDelete: Cascade)
+
+  // Semantiskt minne
+  preferenser   String[] // "gillar fisk", "hatar broccoli"
+  framgangsrika String[] // Kombinationer som fungerat
+  undvikMonster String[] // "stor måltid före träning = magproblem"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("client_ai_memories")
+}
+
+// AI-chatthistorik per kostplan
+model AIConversation {
+  id              String @id @default(cuid())
+  nutritionPlanId String @unique
+  nutritionPlan   ClientNutritionPlan @relation(fields: [nutritionPlanId], references: [id], onDelete: Cascade)
+  messages        Json // [{role, content, timestamp}]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("ai_conversations")
+}
+
+// Feedback på AI-svar (för självförbättring)
+model AIFeedback {
+  id              String @id @default(cuid())
+  nutritionPlanId String
+  nutritionPlan   ClientNutritionPlan @relation(fields: [nutritionPlanId], references: [id], onDelete: Cascade)
+  messageIndex    Int
+  rating          Int    // 1-5
+  typ             String // "bra", "kan_forbattras", "fel"
+  kommentar       String?
+
+  createdAt DateTime @default(now())
+
+  @@index([nutritionPlanId])
+  @@map("ai_feedback")
+}
+
+// Coach-inställningar för AI-agenten
+model CoachAISettings {
+  id      String @id @default(cuid())
+  coachId String @unique
+  coach   User   @relation("CoachAISettings", fields: [coachId], references: [id], onDelete: Cascade)
+
+  // Makroregler
+  proteinMinPerKg Decimal @default(1.6) @db.Decimal(3, 2)
+  proteinMaxPerKg Decimal @default(2.5) @db.Decimal(3, 2)
+  fettMinPerKg    Decimal @default(0.7) @db.Decimal(3, 2)
+
+  // Kolhydratfördelning (procent)
+  kolhydratPreWorkout  Decimal @default(0.22) @db.Decimal(3, 2)
+  kolhydratPostWorkout Decimal @default(0.32) @db.Decimal(3, 2)
+  kolhydratKvallsmal   Decimal @default(0.18) @db.Decimal(3, 2)
+
+  // Fettfördelning (procent)
+  fettPreWorkout  Decimal @default(0.10) @db.Decimal(3, 2)
+  fettPostWorkout Decimal @default(0.10) @db.Decimal(3, 2)
+  fettKvallsmal   Decimal @default(0.40) @db.Decimal(3, 2)
+
+  // Favoriter (produkt-IDs)
+  favoritProteinkallor   String[]
+  favoritKolhydratkallor String[]
+  favoritFettkallor      String[]
+  undviknaLivsmedel      String[]
+
+  // AI-stil
+  ton                String  @default("professionell") // "avslappnad", "professionell", "motiverande"
+  detaljniva         String  @default("detaljerad")    // "kortfattad", "detaljerad", "utforlig"
+  extraInstruktioner String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("coach_ai_settings")
 }

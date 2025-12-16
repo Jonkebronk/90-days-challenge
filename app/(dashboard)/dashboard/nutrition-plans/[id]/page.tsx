@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { MealPlanGenerator } from '@/components/meal-plan-generator';
 import { MealSettingsEditor } from '@/components/meal-plan-generator/MealSettingsEditor';
+import { AIChatPanel } from '@/components/ai-chat';
 import type { MealConfig, DistributionMethod } from '@/lib/types/meal-plan-generator';
 import { DEFAULT_MEAL_CONFIGS } from '@/lib/types/meal-plan-generator';
 
@@ -240,10 +241,10 @@ export default function NutritionPlanDetailPage() {
         </Badge>
       </div>
 
-      {/* Two-column layout on desktop */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Left sidebar - sticky on desktop */}
-        <div className="lg:w-80 xl:w-96 flex-shrink-0 space-y-4 lg:sticky lg:top-6 lg:self-start">
+      {/* Three-column layout on desktop */}
+      <div className="flex flex-col xl:flex-row gap-6">
+        {/* Left sidebar - Client + Settings + Macros */}
+        <div className="xl:w-72 flex-shrink-0 space-y-4 xl:sticky xl:top-6 xl:self-start">
           {/* Client info */}
           <Card>
             <CardHeader className="pb-3">
@@ -436,7 +437,7 @@ export default function NutritionPlanDetailPage() {
           </Card>
         </div>
 
-        {/* Right content - Meal Plan */}
+        {/* Middle content - Meal Plan */}
         <div className="flex-1 min-w-0">
           {existingMealPlan ? (
             /* Show existing meal plan */
@@ -468,6 +469,15 @@ export default function NutritionPlanDetailPage() {
               </CardContent>
             </Card>
           )}
+        </div>
+
+        {/* Right sidebar - AI Chat */}
+        <div className="xl:w-96 flex-shrink-0 xl:sticky xl:top-6 xl:self-start">
+          <AIChatPanel
+            nutritionPlanId={plan.id}
+            clientName={plan.client.name}
+            targetMacros={targetMacros}
+          />
         </div>
       </div>
     </div>
