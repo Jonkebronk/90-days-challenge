@@ -79,6 +79,7 @@ export function ClientStyleMealCard({
   // Modal state for adding alternatives
   const [addAltModalOpen, setAddAltModalOpen] = useState(false);
   const [addAltCategory, setAddAltCategory] = useState<MacroCategory | null>(null);
+  const [addAltTargetMacro, setAddAltTargetMacro] = useState(0);
 
   const canHaveSauce = meal.type === 'lunch' || meal.type === 'middag';
   const hasVegetables = meal.vegetableGrams > 0;
@@ -116,7 +117,25 @@ export function ClientStyleMealCard({
 
   // Open add alternative modal
   const handleOpenAddAltModal = (category: MacroCategory) => {
+    // Get the target macro from the selected item in this category
+    const item = meal.items.find(i => i.category === category);
+    let targetMacro = 0;
+    if (item) {
+      // Use the same macro target as the selected food
+      switch (category) {
+        case 'protein':
+          targetMacro = item.selected.macros.protein;
+          break;
+        case 'carb':
+          targetMacro = item.selected.macros.carbs;
+          break;
+        case 'fat':
+          targetMacro = item.selected.macros.fat;
+          break;
+      }
+    }
     setAddAltCategory(category);
+    setAddAltTargetMacro(targetMacro);
     setAddAltModalOpen(true);
   };
 
@@ -468,7 +487,7 @@ export function ClientStyleMealCard({
           isOpen={addAltModalOpen}
           onClose={() => setAddAltModalOpen(false)}
           category={addAltCategory}
-          targetMacro={0}
+          targetMacro={addAltTargetMacro}
           mealType={meal.type}
           onSelect={handleAddAltSelect}
         />
