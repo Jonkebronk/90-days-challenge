@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { User, Bot, ChevronDown, ChevronUp, ThumbsUp, ThumbsDown, Minus } from 'lucide-react';
+import { User, Bot, ChevronDown, ChevronUp, ThumbsUp, ThumbsDown, Minus, Wand2, Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { AIMessage } from '@/lib/ai/types';
@@ -9,12 +9,15 @@ import { AIMessage } from '@/lib/ai/types';
 interface ChatMessageProps {
   message: AIMessage;
   onFeedback?: (rating: number, typ: string) => void;
+  onApplyToSchema?: (content: string) => Promise<void>;
   isLast?: boolean;
 }
 
-export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
+export function ChatMessage({ message, onFeedback, onApplyToSchema, isLast }: ChatMessageProps) {
   const [showReasoning, setShowReasoning] = useState(false);
   const [feedbackGiven, setFeedbackGiven] = useState<string | null>(null);
+  const [applying, setApplying] = useState(false);
+  const [applied, setApplied] = useState(false);
 
   const isUser = message.role === 'user';
 
@@ -24,6 +27,22 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
     const rating = typ === 'bra' ? 5 : typ === 'kan_forbattras' ? 3 : 1;
     onFeedback?.(rating, typ);
     setFeedbackGiven(typ);
+  };
+
+  // Check if message contains a meal plan that can be applied
+  const hasMealPlan = !isUser && message.content.includes('MÅLTID') && message.content.includes('LIVSMEDEL');
+
+  const handleApplyToSchema = async () => {
+    if (!onApplyToSchema || applying || applied) return;
+    setApplying(true);
+    try {
+      await onApplyToSchema(message.content);
+      setApplied(true);
+    } catch (error) {
+      console.error('Error applying to schema:', error);
+    } finally {
+      setApplying(false);
+    }
   };
 
   // Formatera innehållet för bättre visning
@@ -205,6 +224,39 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
         <div className="text-sm whitespace-pre-wrap break-words text-gray-200">
           {formatContent(message.content)}
         </div>
+
+        {/* Apply to schema button (if message contains meal plan) */}
+        {hasMealPlan && onApplyToSchema && (
+          <div className="mt-3">
+            <Button
+              onClick={handleApplyToSchema}
+              disabled={applying || applied}
+              className={cn(
+                'h-8 text-xs gap-1.5',
+                applied
+                  ? 'bg-green-600 hover:bg-green-600 text-white'
+                  : 'bg-[#e07a5f] hover:bg-[#c96a52] text-white'
+              )}
+            >
+              {applying ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Applicerar...
+                </>
+              ) : applied ? (
+                <>
+                  <Check className="h-3.5 w-3.5" />
+                  Applicerat på schema
+                </>
+              ) : (
+                <>
+                  <Wand2 className="h-3.5 w-3.5" />
+                  Applicera på kostschema
+                </>
+              )}
+            </Button>
+          </div>
+        )}
 
         {/* Feedback buttons (only for assistant messages) */}
         {!isUser && isLast && onFeedback && (

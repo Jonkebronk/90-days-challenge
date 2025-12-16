@@ -475,8 +475,14 @@ export default function NutritionPlanDetailPage() {
         <div className="xl:w-[450px] flex-shrink-0 xl:sticky xl:top-6 xl:self-start">
           <AIChatPanel
             nutritionPlanId={plan.id}
+            mealPlanId={existingMealPlan?.id}
             clientName={plan.client.name}
             targetMacros={targetMacros}
+            onMealPlanUpdated={() => {
+              // Refresh the meal plan to reflect AI changes
+              setMealPlanKey((prev) => prev + 1);
+              fetchPlan();
+            }}
           />
         </div>
       </div>

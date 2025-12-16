@@ -13,6 +13,7 @@ import Image from 'next/image';
 
 interface AIChatPanelProps {
   nutritionPlanId: string;
+  mealPlanId?: string;
   clientName: string;
   targetMacros: {
     protein: number;
@@ -21,13 +22,96 @@ interface AIChatPanelProps {
     kcal: number;
   };
   onGenerateSchema?: (response: string) => void;
+  onMealPlanUpdated?: () => void;
+}
+
+interface ParsedMealItem {
+  name: string;
+  grams: number;
+  category: 'protein' | 'carb' | 'fat';
+}
+
+interface ParsedMeal {
+  mealType: string;
+  mealIndex: number;
+  items: ParsedMealItem[];
+}
+
+// Parse AI response to extract meal plan items
+function parseAIMealPlan(content: string): ParsedMeal[] {
+  const meals: ParsedMeal[] = [];
+
+  // Split by MÅLTID markers
+  const mealSections = content.split(/MÅLTID\s*(\d+)/i);
+
+  for (let i = 1; i < mealSections.length; i += 2) {
+    const mealIndex = parseInt(mealSections[i]) - 1; // Convert to 0-based index
+    const section = mealSections[i + 1] || '';
+
+    const items: ParsedMealItem[] = [];
+
+    // Look for LIVSMEDEL section
+    const livsmedelMatch = section.match(/LIVSMEDEL[:\s]*([\s\S]*?)(?=TOTALT:|ALTERNATIV:|MÅLTID|\n\n\n|$)/i);
+    if (livsmedelMatch) {
+      const livsmedelSection = livsmedelMatch[1];
+
+      // Parse lines with tree structure (├─ or └─) or simple lines
+      const lines = livsmedelSection.split('\n');
+      for (const line of lines) {
+        // Match patterns like "├─ Kycklingfilé: 150g" or "Kycklingfilé: 150g" or "Kycklingfilé 150g"
+        const match = line.match(/[├└─\s]*([^:]+?)[\s:]+(\d+)\s*g/i);
+        if (match) {
+          const name = match[1].trim().replace(/^\*\*|\*\*$/g, ''); // Remove bold markers
+          const grams = parseInt(match[2]);
+
+          if (name && grams > 0) {
+            // Determine category based on common patterns
+            const nameLower = name.toLowerCase();
+            let category: 'protein' | 'carb' | 'fat' = 'protein';
+
+            // Carb sources
+            if (nameLower.includes('ris') || nameLower.includes('pasta') ||
+                nameLower.includes('potatis') || nameLower.includes('bröd') ||
+                nameLower.includes('havre') || nameLower.includes('müsli') ||
+                nameLower.includes('quinoa') || nameLower.includes('bulgur') ||
+                nameLower.includes('couscous') || nameLower.includes('banan') ||
+                nameLower.includes('frukt') || nameLower.includes('äpple')) {
+              category = 'carb';
+            }
+            // Fat sources
+            else if (nameLower.includes('olja') || nameLower.includes('nöt') ||
+                     nameLower.includes('mandel') || nameLower.includes('avokado') ||
+                     nameLower.includes('smör') || nameLower.includes('ost') && !nameLower.includes('cottage') ||
+                     nameLower.includes('frön') || nameLower.includes('jordnöt')) {
+              category = 'fat';
+            }
+            // Default to protein (fish, chicken, eggs, cottage cheese, etc.)
+
+            items.push({ name, grams, category });
+          }
+        }
+      }
+    }
+
+    if (items.length > 0) {
+      meals.push({
+        mealType: 'meal',
+        mealIndex,
+        items,
+      });
+    }
+  }
+
+  return meals;
 }
 
 export function AIChatPanel({
   nutritionPlanId,
+  mealPlanId,
   clientName,
   targetMacros,
   onGenerateSchema,
+  onMealPlanUpdated,
 }: AIChatPanelProps) {
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [input, setInput] = useState('');
@@ -219,6 +303,46 @@ export function AIChatPanel({
     }
   };
 
+  // Handle applying AI meal plan to the schema
+  const handleApplyToSchema = async (content: string): Promise<void> => {
+    if (!mealPlanId) {
+      console.error('No meal plan ID available');
+      throw new Error('Inget kostschema finns. Skapa ett kostschema först.');
+    }
+
+    const parsedMeals = parseAIMealPlan(content);
+
+    if (parsedMeals.length === 0) {
+      throw new Error('Kunde inte tolka måltidsförslaget. Försök igen.');
+    }
+
+    const response = await fetch('/api/meal-plan/apply-ai-suggestion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mealPlanId,
+        suggestions: parsedMeals,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Kunde inte applicera förslaget');
+    }
+
+    const result = await response.json();
+
+    // Notify parent to refresh meal plan
+    if (onMealPlanUpdated) {
+      onMealPlanUpdated();
+    }
+
+    // Show success notification in chat
+    if (result.failedItems && result.failedItems.length > 0) {
+      console.warn('Some items could not be matched:', result.failedItems);
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -287,6 +411,7 @@ export function AIChatPanel({
               key={i}
               message={msg}
               onFeedback={(rating, typ) => handleFeedback(i, rating, typ)}
+              onApplyToSchema={mealPlanId ? handleApplyToSchema : undefined}
               isLast={i === messages.length - 1}
             />
           ))}
