@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Save, AlertTriangle } from 'lucide-react';
 import { ClientStyleMealCard } from './ClientStyleMealCard';
-import { MacroSummary } from './MacroSummary';
 import { SauceSelector } from './SauceSelector';
 import { FoodSwapModal } from './FoodSwapModal';
 import type {
@@ -526,12 +525,6 @@ export function MealPlanGenerator({
       {/* Generated plan */}
       {generatedPlan && (
         <>
-          {/* Macro summary */}
-          <MacroSummary
-            targetMacros={generatedPlan.targetMacros}
-            actualMacros={generatedPlan.actualMacros}
-          />
-
           {/* Meals - vertical list */}
           <div className="space-y-4">
             {generatedPlan.meals.map((meal, index) => (
