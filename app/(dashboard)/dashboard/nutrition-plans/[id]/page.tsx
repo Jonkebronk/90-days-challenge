@@ -211,7 +211,6 @@ export default function NutritionPlanDetailPage() {
           nutritionPlanId={plan.id}
           targetMacros={targetMacros}
           onSave={() => setShowGenerator(false)}
-          onCancel={() => setShowGenerator(false)}
         />
       </div>
     );
@@ -445,8 +444,10 @@ export default function NutritionPlanDetailPage() {
               key={mealPlanKey}
               nutritionPlanId={plan.id}
               targetMacros={targetMacros}
-              onSave={() => {}}
-              onCancel={() => {}}
+              onSave={() => {
+                // Refresh data after save
+                fetchPlan();
+              }}
             />
           ) : (
             /* Generate meal plan button */

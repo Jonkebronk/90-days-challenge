@@ -23,7 +23,6 @@ interface MealPlanGeneratorProps {
   nutritionPlanId: string;
   targetMacros: MacroTargets;
   onSave?: (planId: string) => void;
-  onCancel?: () => void;
 }
 
 interface GeneratedPlanState {
@@ -37,7 +36,6 @@ export function MealPlanGenerator({
   nutritionPlanId,
   targetMacros,
   onSave,
-  onCancel,
 }: MealPlanGeneratorProps) {
   // Generated plan state
   const [generatedPlan, setGeneratedPlan] = useState<GeneratedPlanState | null>(null);
@@ -570,9 +568,16 @@ export function MealPlanGenerator({
     }
   };
 
-  // Save handler
-  const handleSave = () => {
-    if (generatedPlan && onSave) {
+  // Save handler - shows confirmation since changes are already saved automatically
+  const handleSave = async () => {
+    if (!generatedPlan) return;
+
+    setIsSaving(true);
+    // Small delay to show saving state
+    await new Promise(resolve => setTimeout(resolve, 500));
+    setIsSaving(false);
+
+    if (onSave) {
       onSave(generatedPlan.id);
     }
   };
@@ -628,33 +633,31 @@ export function MealPlanGenerator({
           )}
 
           {/* Actions */}
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center pt-4 border-t border-zinc-200">
             <Button
               variant="outline"
               onClick={createEmptyPlan}
+              className="text-zinc-600"
             >
               Börja om
             </Button>
-            <div className="flex gap-3">
-              {onCancel && (
-                <Button variant="outline" onClick={onCancel}>
-                  Avbryt
-                </Button>
+            <Button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="bg-amber-500 hover:bg-amber-600"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Sparar...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Spara kostschema
+                </>
               )}
-              <Button onClick={handleSave} disabled={isSaving}>
-                {isSaving ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Sparar...
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Spara kostschema
-                  </>
-                )}
-              </Button>
-            </div>
+            </Button>
           </div>
         </>
       )}

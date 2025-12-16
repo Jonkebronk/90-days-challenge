@@ -150,7 +150,6 @@ export function Step10PlanDetails() {
           nutritionPlanId={createdPlanId}
           targetMacros={targetMacros}
           onSave={handleMealPlanSaved}
-          onCancel={handleCancelGenerator}
         />
       </div>
     );
