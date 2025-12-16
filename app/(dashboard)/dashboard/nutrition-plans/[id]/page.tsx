@@ -77,8 +77,16 @@ const LIFESTYLE_ACTIVITY_LABELS: Record<string, string> = {
 };
 
 function getGoalLabel(calorieGoal: string | null, adjustment: number): string {
-  if (calorieGoal === 'maintenance' || adjustment === 0) return 'Balans';
-  if (calorieGoal === 'surplus' || adjustment > 0) return 'Viktuppgång';
+  // Check calorieGoal first (for metabolism method)
+  if (calorieGoal) {
+    if (calorieGoal === 'maintenance') return 'Balans';
+    if (calorieGoal === 'surplus') return 'Viktuppgång';
+    // aggressive, moderate, conservative are all weight loss
+    if (['aggressive', 'moderate', 'conservative'].includes(calorieGoal)) return 'Viktnedgång';
+  }
+  // Fallback to adjustment (for other methods)
+  if (adjustment === 0) return 'Balans';
+  if (adjustment > 0) return 'Viktuppgång';
   return 'Viktnedgång';
 }
 

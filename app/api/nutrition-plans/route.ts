@@ -8,6 +8,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { calculateAllNutrition } from '@/lib/calculations/nutrition-plan-formulas';
 import type { CreateNutritionPlanRequest } from '@/lib/types/client-nutrition-plan';
+import { METABOLISM_MULTIPLIERS } from '@/lib/types/client-nutrition-plan';
 
 // GET: List nutrition plans
 export async function GET(request: NextRequest) {
@@ -122,7 +123,13 @@ export async function POST(request: NextRequest) {
       proteinGrams = body.proteinGrams || Math.round(body.weight * body.proteinPerKg);
       fatGrams = body.fatGrams || Math.round(body.weight * body.fatPerKg);
       carbGrams = body.carbGrams || Math.round(Math.max(0, (dailyCalorieTarget - proteinGrams * 4 - fatGrams * 9) / 4));
-      tdee = dailyCalorieTarget; // For metabolism method, tdee is the target
+
+      // Calculate BMR (ämnesomsättning) for metabolism method
+      // BMR = weight * activity multiplier (before calorie goal adjustment)
+      const activityLevel = body.metabolismActivityLevel as keyof typeof METABOLISM_MULTIPLIERS;
+      const multiplier = METABOLISM_MULTIPLIERS[activityLevel] || 30;
+      bmr = Math.round(body.weight * multiplier);
+      tdee = bmr; // For metabolism method, TDEE is the same as BMR
     } else {
       // Calculate using standard formulas
       const calculations = calculateAllNutrition({
