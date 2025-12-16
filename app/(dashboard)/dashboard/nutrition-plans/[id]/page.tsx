@@ -38,6 +38,13 @@ interface NutritionPlan {
   };
 }
 
+interface ExistingMealPlan {
+  id: string;
+  meals: any[];
+  targetMacros: any;
+  actualMacros: any;
+}
+
 const WORKOUT_TIME_LABELS: Record<string, string> = {
   morning: 'Morgon',
   lunch: 'Lunch',
@@ -56,6 +63,7 @@ export default function NutritionPlanDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [plan, setPlan] = useState<NutritionPlan | null>(null);
+  const [existingMealPlan, setExistingMealPlan] = useState<ExistingMealPlan | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showGenerator, setShowGenerator] = useState(false);
@@ -70,12 +78,22 @@ export default function NutritionPlanDetailPage() {
 
   const fetchPlan = async () => {
     try {
+      // Fetch nutrition plan
       const response = await fetch(`/api/nutrition-plans/${planId}`);
       if (!response.ok) {
         throw new Error('Kunde inte hämta kostplanen');
       }
       const data = await response.json();
       setPlan(data);
+
+      // Check if meal plan exists
+      const mealPlanResponse = await fetch(`/api/meal-plan/by-nutrition-plan/${planId}`);
+      if (mealPlanResponse.ok) {
+        const mealPlanData = await mealPlanResponse.json();
+        if (mealPlanData) {
+          setExistingMealPlan(mealPlanData);
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ett fel uppstod');
     } finally {
@@ -240,25 +258,36 @@ export default function NutritionPlanDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Generate meal plan */}
-      <Card className="border-2 border-dashed border-purple-200 bg-purple-50/50">
-        <CardContent className="py-8 text-center">
-          <Wand2 className="h-12 w-12 text-purple-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            Generera kostschema
-          </h3>
-          <p className="text-sm text-gray-600 mb-4">
-            Skapa ett detaljerat kostschema med exakta gramtal baserat på makromålen
-          </p>
-          <Button
-            onClick={() => setShowGenerator(true)}
-            className="bg-purple-500 hover:bg-purple-600"
-          >
-            <Wand2 className="h-4 w-4 mr-2" />
-            Generera kostschema
-          </Button>
-        </CardContent>
-      </Card>
+      {/* Meal Plan Section */}
+      {existingMealPlan ? (
+        /* Show existing meal plan */
+        <MealPlanGenerator
+          nutritionPlanId={plan.id}
+          targetMacros={targetMacros}
+          onSave={() => {}}
+          onCancel={() => {}}
+        />
+      ) : (
+        /* Generate meal plan button */
+        <Card className="border-2 border-dashed border-purple-200 bg-purple-50/50">
+          <CardContent className="py-8 text-center">
+            <Wand2 className="h-12 w-12 text-purple-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Generera kostschema
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Skapa ett detaljerat kostschema med exakta gramtal baserat på makromålen
+            </p>
+            <Button
+              onClick={() => setShowGenerator(true)}
+              className="bg-purple-500 hover:bg-purple-600"
+            >
+              <Wand2 className="h-4 w-4 mr-2" />
+              Generera kostschema
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
