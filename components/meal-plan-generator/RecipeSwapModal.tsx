@@ -139,7 +139,7 @@ export function RecipeSwapModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ChefHat className="h-5 w-5 text-amber-500" />
@@ -201,7 +201,7 @@ export function RecipeSwapModal({
 
               {/* Subcategories (when a category is selected) */}
               {selectedCategoryId && subcategories.length > 0 && (
-                <div className="flex flex-wrap gap-2 pl-2 border-l-2 border-amber-200">
+                <div className="flex flex-wrap gap-2 pl-2 border-l-2 border-amber-200 max-w-full overflow-hidden">
                   {subcategories.map((sub) => (
                     <button
                       key={sub.id}
