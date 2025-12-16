@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -35,6 +36,10 @@ interface NutritionPlan {
   workoutTime: string;
   nutritionSystem: string;
   createdAt: string;
+  bmr: number;
+  lifestyleActivity: string;
+  calorieGoal: string | null;
+  caloricAdjustmentPercent: number;
   client: {
     id: string;
     name: string;
@@ -62,6 +67,20 @@ const NUTRITION_SYSTEM_LABELS: Record<string, string> = {
   high_carb: 'Högkolhydrat',
   carb_cycling: 'Kolhydratcykling',
 };
+
+const LIFESTYLE_ACTIVITY_LABELS: Record<string, string> = {
+  sedentary: 'Stillasittande',
+  lightly_active: 'Lätt aktiv',
+  moderately_active: 'Måttligt aktiv',
+  very_active: 'Mycket aktiv',
+  extremely_active: 'Extremt aktiv',
+};
+
+function getGoalLabel(calorieGoal: string | null, adjustment: number): string {
+  if (calorieGoal === 'maintenance' || adjustment === 0) return 'Balans';
+  if (calorieGoal === 'surplus' || adjustment > 0) return 'Viktuppgång';
+  return 'Viktnedgång';
+}
 
 export default function NutritionPlanDetailPage() {
   const params = useParams();
@@ -225,7 +244,8 @@ export default function NutritionPlanDetailPage() {
                 Klient
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+              {/* Namn och email */}
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
                   <span className="text-amber-700 font-semibold text-lg">
@@ -235,6 +255,38 @@ export default function NutritionPlanDetailPage() {
                 <div>
                   <p className="font-medium">{plan.client.name}</p>
                   <p className="text-sm text-muted-foreground">{plan.client.email}</p>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Grunddata */}
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Vikt</span>
+                  <p className="font-medium">{plan.weight} kg</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Aktivitet</span>
+                  <p className="font-medium">{LIFESTYLE_ACTIVITY_LABELS[plan.lifestyleActivity] || plan.lifestyleActivity}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Mål</span>
+                  <p className="font-medium">{getGoalLabel(plan.calorieGoal, plan.caloricAdjustmentPercent)}</p>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Kaloriberäkning */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Ämnesomsättning (BMR)</span>
+                  <p className="font-medium">{Math.round(plan.bmr)} kcal</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Dagligt kaloriintag</span>
+                  <p className="font-medium">{Math.round(plan.dailyCalorieTarget)} kcal</p>
                 </div>
               </div>
             </CardContent>
