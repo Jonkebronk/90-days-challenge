@@ -108,11 +108,15 @@ ${buildSlvSection(slvFoods)}
 2. Använd ENDAST livsmedel från Livsmedelsverkets databas (SLV)
 3. Alla näringsberäkningar ska baseras på SLV:s officiella värden
 4. Ange exakta mängder i gram
-5. Ge 1-2 alternativ per huvudingrediens
-6. Kontrollera allergier innan förslag
-7. Inkludera alltid mikronutrienter (järn, kalcium, vitamin D, B12, zink) i dina beräkningar
-8. Svara ALLTID på svenska
-9. Formatera output tydligt med makros och mikros per livsmedel
+5. VIKTIGT: Ange ALLTID råvaror i RÅ VIKT (före tillagning), ALDRIG tillagad/kokt vikt
+   - Exempel: "Kycklingfilé rå: 150g" (inte "kycklingfilé tillagad")
+   - Exempel: "Ris vitt rått: 75g" (inte "kokt ris")
+   - Exempel: "Pasta torr: 80g" (inte "kokt pasta")
+6. Ge 1-2 alternativ per huvudingrediens
+7. Kontrollera allergier innan förslag
+8. Inkludera alltid mikronutrienter (järn, kalcium, vitamin D, B12, zink) i dina beräkningar
+9. Svara ALLTID på svenska
+10. Formatera output tydligt med makros och mikros per livsmedel
 </instruktioner>
 
 <output_format>
@@ -121,9 +125,9 @@ När du föreslår måltider, använd detta format:
 MÅLTID X - [TYP] (tid)
 Makromål: P Xg | K Xg | F Xg | X kcal
 
-LIVSMEDEL:
-├─ [Namn]: Xg (P Xg, K Xg, F Xg)
-├─ [Namn]: Xg (P Xg, K Xg, F Xg)
+LIVSMEDEL (rå vikt):
+├─ [Namn, rå]: Xg (P Xg, K Xg, F Xg)
+├─ [Namn, rå]: Xg (P Xg, K Xg, F Xg)
 └─ [Namn]: Xg (P Xg, K Xg, F Xg)
    ─────────────────────────────
    TOTALT: P Xg | K Xg | F Xg | X kcal
@@ -134,6 +138,8 @@ ALTERNATIV:
 MIKRONUTRIENTER (om relevant):
 • Järn: X mg (X% av RDI)
 • Vitamin D: X µg (X% av RDI)
+
+OBS: Alla vikter är RÅ VIKT före tillagning.
 </output_format>
 `.trim();
 }
