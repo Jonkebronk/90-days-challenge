@@ -30,6 +30,61 @@ const getCategoryVariants = (key: string): string[] => {
   return [...new Set(variants)] // Unique values
 }
 
+// Map category names to macroCategory for filtering
+const CATEGORY_TO_MACRO: Record<string, string> = {
+  // Protein sources
+  'kott': 'protein',
+  'kött': 'protein',
+  'fisk': 'protein',
+  'fisk & skaldjur': 'protein',
+  'fagel': 'protein',
+  'fågel': 'protein',
+  'agg': 'protein',
+  'ägg': 'protein',
+  'mejeri': 'protein',
+  'mejeriprodukter': 'protein',
+  'proteinpulver': 'protein',
+  'baljvaxter': 'protein',
+  'baljväxter': 'protein',
+  // Carb sources
+  'spannmal': 'carb',
+  'spannmål': 'carb',
+  'brod': 'carb',
+  'bröd': 'carb',
+  'pasta': 'carb',
+  'ris': 'carb',
+  'potatis': 'carb',
+  'frukt': 'carb',
+  'musli': 'carb',
+  'flingor': 'carb',
+  // Fat sources
+  'oljor': 'fat',
+  'fetter': 'fat',
+  'oljor & fetter': 'fat',
+  'notter': 'fat',
+  'nötter': 'fat',
+  'notter & fron': 'fat',
+  'nötter & frön': 'fat',
+  'fron': 'fat',
+  'frön': 'fat',
+  // Vegetables
+  'gronsaker': 'vegetable',
+  'grönsaker': 'vegetable',
+  // Sauces
+  'sasar': 'sauce',
+  'såsar': 'sauce',
+  'sas': 'sauce',
+  'sås': 'sauce',
+  'dressing': 'sauce',
+}
+
+// Get categories that map to a macroCategory
+const getCategoriesForMacro = (macroCategory: string): string[] => {
+  return Object.entries(CATEGORY_TO_MACRO)
+    .filter(([_, macro]) => macro === macroCategory)
+    .map(([cat, _]) => cat)
+}
+
 // GET /api/products - List/search products
 export async function GET(req: NextRequest) {
   try {
@@ -49,6 +104,7 @@ export async function GET(req: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0')
 
     const where: any = {}
+    const andConditions: any[] = []
 
     // Filter by source (database)
     if (source && source !== 'all') {
@@ -56,18 +112,34 @@ export async function GET(req: NextRequest) {
     }
 
     // Filter by macroCategory (for meal plan generator)
+    // Check both explicit macroCategory field AND infer from category name
     if (macroCategory) {
-      where.macroCategory = macroCategory
+      const categoriesForMacro = getCategoriesForMacro(macroCategory)
+      andConditions.push({
+        OR: [
+          { macroCategory: macroCategory },
+          ...(categoriesForMacro.length > 0
+            ? [{ category: { in: categoriesForMacro, mode: 'insensitive' as const } }]
+            : [])
+        ]
+      })
     }
 
     if (ean) {
       where.ean = ean
     } else if (q) {
-      where.OR = [
-        { name: { contains: q, mode: 'insensitive' } },
-        { brand: { contains: q, mode: 'insensitive' } },
-        { ean: { contains: q } }
-      ]
+      andConditions.push({
+        OR: [
+          { name: { contains: q, mode: 'insensitive' } },
+          { brand: { contains: q, mode: 'insensitive' } },
+          { ean: { contains: q } }
+        ]
+      })
+    }
+
+    // Add AND conditions to where if any exist
+    if (andConditions.length > 0) {
+      where.AND = andConditions
     }
 
     // Filter by category (case-insensitive, handles Swedish/ASCII variants)
