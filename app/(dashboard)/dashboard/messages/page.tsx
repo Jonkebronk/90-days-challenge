@@ -98,6 +98,7 @@ export default function MessagesPage() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const lastMessageCountRef = useRef<number>(0)
@@ -407,17 +408,29 @@ export default function MessagesPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       sendMessage()
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewMessage(e.target.value)
     sendTypingIndicator()
+    // Auto-resize textarea
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 200) + 'px'
+    }
   }
+
+  // Reset textarea height when message is sent
+  useEffect(() => {
+    if (!newMessage && textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+    }
+  }, [newMessage])
 
   const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     const target = e.currentTarget
@@ -772,13 +785,15 @@ export default function MessagesPage() {
                 >
                   {uploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4" />}
                 </Button>
-                <Input
+                <textarea
+                  ref={textareaRef}
                   value={newMessage}
                   onChange={handleInputChange}
-                  onKeyPress={handleKeyPress}
+                  onKeyDown={handleKeyPress}
                   placeholder={editingMessage ? 'Redigera meddelande...' : 'Skriv ett meddelande...'}
-                  className="flex-1 bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-gold-primary h-10 sm:h-12"
+                  className="flex-1 bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-gold-primary focus:outline-none focus:ring-2 focus:ring-gold-primary/20 rounded-md px-3 py-2 min-h-[44px] max-h-[200px] resize-none overflow-y-auto"
                   disabled={sending}
+                  rows={1}
                 />
                 <Button
                   onClick={sendMessage}
