@@ -11,38 +11,38 @@ interface QuickActionsProps {
 const quickActions = [
   {
     label: 'Generera schema',
-    prompt: 'Generera ett komplett kostschema för hela dagen baserat på mina makromål. Visa varje måltid med exakta mängder i gram.',
+    prompt: 'Generera ett komplett kostschema för hela dagen baserat på mina makromål. Använd livsmedel från Livsmedelsverkets databas och visa exakta mängder i gram med både makro- och mikronutrienter.',
     icon: Wand2,
     primary: true,
   },
   {
     label: 'Frukost',
-    prompt: 'Ge mig 3 frukostalternativ med cirka 30g protein som tar max 10 minuter att laga.',
+    prompt: 'Ge mig 3 frukostalternativ med cirka 30g protein. Använd livsmedel från Livsmedelsverkets databas och visa näringsinnehåll.',
     icon: Coffee,
   },
   {
     label: 'Lunch',
-    prompt: 'Föreslå luncher som tar under 20 minuter att laga med bra proteininnehåll.',
+    prompt: 'Föreslå 3 lunchförslag med bra proteininnehåll baserat på Livsmedelsverkets databas. Visa makros och viktiga mikronutrienter.',
     icon: Utensils,
   },
   {
     label: 'Middag',
-    prompt: 'Ge mig middagsförslag med balanserade makros och bra mikronutrienter.',
+    prompt: 'Ge mig middagsförslag med balanserade makros och bra mikronutrienter från Livsmedelsverkets databas.',
     icon: Clock,
   },
   {
     label: 'Kvällsmål',
-    prompt: 'Ge mig kvällsmål med hög mättnad och bra kaseinprotein för natten.',
+    prompt: 'Ge mig kvällsmål med hög mättnad och bra kaseinprotein för natten från Livsmedelsverkets databas.',
     icon: Moon,
   },
   {
     label: 'Mellanmål',
-    prompt: 'Ge mig 3 enkla mellanmål med 15-20g protein som inte kräver tillagning.',
+    prompt: 'Ge mig 3 enkla mellanmål med 15-20g protein från Livsmedelsverkets databas.',
     icon: Apple,
   },
   {
     label: 'Mikros',
-    prompt: 'Analysera mitt kostschema och visa hur jag ligger till med järn, kalcium, vitamin D, B12 och zink. Ge förslag på hur jag kan täcka eventuella brister.',
+    prompt: 'Analysera mina makromål och föreslå livsmedel från Livsmedelsverket som täcker järn, kalcium, vitamin D, B12 och zink. Visa procentuell täckning av RDI.',
     icon: Search,
   },
 ];

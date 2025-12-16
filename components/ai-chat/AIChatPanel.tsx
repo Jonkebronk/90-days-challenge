@@ -271,8 +271,8 @@ export function AIChatPanel({
               <Sparkles className="h-10 w-10 mx-auto mb-3 text-[#e07a5f] opacity-70" />
               <p className="text-gray-300 text-sm font-medium">Hur kan jag hjälpa dig idag?</p>
               <p className="text-gray-500 text-xs mt-2 max-w-[250px] mx-auto">
-                Jag har tillgång till livsmedelsbiblioteket, receptbanken och
-                Livsmedelsverkets databas.
+                Jag använder Livsmedelsverkets officiella databas med 2575 livsmedel
+                och kompletta näringsvärden.
               </p>
             </div>
           )}

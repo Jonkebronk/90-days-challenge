@@ -4,10 +4,9 @@
  * POST /api/ai/chat
  *
  * Hanterar konversationer med AI Kostplaneringsagenten.
+ * Använder ENDAST Livsmedelsverkets (SLV) databas med 2575 livsmedel.
  * Inkluderar:
- * - Coach-livsmedelsbank (Product)
- * - Receptbank (Recipe)
- * - Livsmedelsverket SLV (2575 livsmedel)
+ * - Livsmedelsverket SLV (2575 livsmedel + mikronutrienter)
  * - Klientminne
  * - Konversationshistorik
  */
@@ -19,15 +18,12 @@ import { buildSystemPrompt, getDefaultSettings } from '@/lib/ai/prompt-builder';
 import {
   AIChatRequest,
   AIChatResponse,
-  ProductForPrompt,
-  RecipeForPrompt,
   SlvFoodForPrompt,
   ClientDataForPrompt,
   NutritionPlanForPrompt,
   ClientMemory,
   CoachAISettingsInput,
   AIMessage,
-  ImageAttachment,
 } from '@/lib/ai/types';
 import type { ImageBlockParam, TextBlockParam } from '@anthropic-ai/sdk/resources/messages';
 import * as fs from 'fs';
@@ -82,18 +78,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Hämta all data parallellt
-    const [products, recipes, coachSettings, clientMemory] = await Promise.all([
-      // Coach-produkter
-      prisma.product.findMany({
-        take: 500,
-        orderBy: { name: 'asc' },
-      }),
-      // Recept
-      prisma.recipe.findMany({
-        take: 300,
-        orderBy: { title: 'asc' },
-      }),
+    // Hämta coach-inställningar och klientminne
+    const [coachSettings, clientMemory] = await Promise.all([
       // Coach AI-inställningar
       prisma.coachAISettings.findUnique({
         where: { coachId: plan.coachId },
@@ -104,31 +90,8 @@ export async function POST(request: Request) {
       }),
     ]);
 
-    // Ladda SLV-data
+    // Ladda SLV-data (Livsmedelsverkets officiella databas)
     const slvFoods = loadSlvData();
-
-    // Formatera produkter för prompten
-    const formattedProducts: ProductForPrompt[] = products.map(p => ({
-      id: p.id,
-      name: p.name,
-      kcal: Number(p.kcal) || 0,
-      protein: Number(p.protein) || 0,
-      carbs: Number(p.carbs) || 0,
-      fat: Number(p.fat) || 0,
-      category: p.category || 'Övrigt',
-    }));
-
-    // Formatera recept för prompten
-    const formattedRecipes: RecipeForPrompt[] = recipes.map(r => ({
-      id: r.id,
-      title: r.title,
-      prepTimeMinutes: r.prepTimeMinutes || 30,
-      proteinPerServing: Number(r.proteinPerServing) || 0,
-      carbsPerServing: Number(r.carbsPerServing) || 0,
-      fatPerServing: Number(r.fatPerServing) || 0,
-      kcalPerServing: Number(r.caloriesPerServing) || 0,
-      category: r.mealType || 'lunch_middag',
-    }));
 
     // Formatera klientdata
     const clientData: ClientDataForPrompt = {
@@ -186,12 +149,12 @@ export async function POST(request: Request) {
         }
       : null;
 
-    // Bygg systemprompt
+    // Bygg systemprompt (endast med SLV-livsmedel)
     const systemPrompt = buildSystemPrompt({
       client: clientData,
       plan: planData,
-      products: formattedProducts,
-      recipes: formattedRecipes,
+      products: [], // Ej längre använt - endast SLV
+      recipes: [], // Ej längre använt - endast SLV
       slvFoods,
       settings,
       memory,
