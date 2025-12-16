@@ -156,13 +156,18 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Convert to arrays for response
-    const categories = Array.from(categoryMap.values()).map(cat => ({
-      id: cat.id,
-      name: cat.name,
-      slug: cat.slug,
-      subcategories: Array.from(cat.subcategories.values()),
-    }));
+    // Categories to exclude from meal plan selection (not actual meals)
+    const excludedCategorySlugs = ['saser', 'tips-pa-tillagning'];
+
+    // Convert to arrays for response, excluding non-meal categories
+    const categories = Array.from(categoryMap.values())
+      .filter(cat => !excludedCategorySlugs.includes(cat.slug))
+      .map(cat => ({
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+        subcategories: Array.from(cat.subcategories.values()),
+      }));
 
     // Calculate scaling and match scores for each recipe
     const recipeOptions: RecipeSwapOption[] = recipes
