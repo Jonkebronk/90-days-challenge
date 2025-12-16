@@ -930,9 +930,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   )}
 
 
-                  {/* Logged Sets - Compact view */}
+                  {/* Logged Sets - Compact view with border boxes */}
                   {exerciseSets.length > 0 && (
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       {exerciseSets.map((set, setIdx) => {
                         const isEditing = editingSet?.id === set.id
                         return (
@@ -974,8 +974,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                 </div>
                               </div>
                             ) : (
-                              /* Display mode - compact single line */
-                              <div className="flex items-center gap-2 py-1 px-2 rounded hover:bg-white/5 group">
+                              /* Display mode - compact single line with border box */
+                              <div className="flex items-center gap-2 py-2 px-3 rounded-md border border-zinc-700 hover:border-zinc-600 group">
                                 <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
                                 <span className="text-sm text-gray-400">S{set.setNumber}</span>
                                 <span className="text-sm text-white font-medium">
