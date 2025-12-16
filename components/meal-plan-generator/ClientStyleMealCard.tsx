@@ -35,6 +35,7 @@ interface ClientStyleMealCardProps {
   mealNumber?: number;
   onSwapFood: (mealIndex: number, category: MacroCategory, foodId: string) => void;
   onSelectFood?: (mealIndex: number, category: MacroCategory, product: ProductForSelect, grams: number, macros: CalculatedMacros) => void;
+  onRemoveFood?: (mealIndex: number, category: MacroCategory) => void;
   onAddSauce: (mealIndex: number) => void;
   onRemoveSauce: (mealIndex: number) => void;
   onUpdateGrams?: (mealIndex: number, category: MacroCategory, grams: number) => void;
@@ -52,6 +53,7 @@ export function ClientStyleMealCard({
   mealNumber,
   onSwapFood,
   onSelectFood,
+  onRemoveFood,
   onAddSauce,
   onRemoveSauce,
   onUpdateGrams,
@@ -89,6 +91,12 @@ export function ClientStyleMealCard({
   const handleUpdateGrams = (category: MacroCategory, grams: number) => {
     if (onUpdateGrams) {
       onUpdateGrams(mealIndex, category, grams);
+    }
+  };
+
+  const handleRemoveFood = (category: MacroCategory) => {
+    if (onRemoveFood) {
+      onRemoveFood(mealIndex, category);
     }
   };
 
@@ -201,6 +209,7 @@ export function ClientStyleMealCard({
                 onSwapFood={!disabled ? handleSwapFood : undefined}
                 onSelectFood={!disabled && onSelectFood ? handleOpenSelectModal : undefined}
                 onUpdateGrams={!disabled && onUpdateGrams ? handleUpdateGrams : undefined}
+                onRemoveFood={!disabled && onRemoveFood ? handleRemoveFood : undefined}
                 disabled={disabled}
               />
             ) : (
@@ -229,6 +238,7 @@ export function ClientStyleMealCard({
                 onSwapFood={!disabled ? handleSwapFood : undefined}
                 onSelectFood={!disabled && onSelectFood ? handleOpenSelectModal : undefined}
                 onUpdateGrams={!disabled && onUpdateGrams ? handleUpdateGrams : undefined}
+                onRemoveFood={!disabled && onRemoveFood ? handleRemoveFood : undefined}
                 disabled={disabled}
               />
             ) : (
@@ -257,6 +267,7 @@ export function ClientStyleMealCard({
                 onSwapFood={!disabled ? handleSwapFood : undefined}
                 onSelectFood={!disabled && onSelectFood ? handleOpenSelectModal : undefined}
                 onUpdateGrams={!disabled && onUpdateGrams ? handleUpdateGrams : undefined}
+                onRemoveFood={!disabled && onRemoveFood ? handleRemoveFood : undefined}
                 disabled={disabled}
               />
             ) : (

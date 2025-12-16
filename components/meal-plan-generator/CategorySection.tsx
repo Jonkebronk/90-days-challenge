@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { RefreshCw, Search, Check } from 'lucide-react';
+import { RefreshCw, Search, Check, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import type { GeneratedMealItem, MacroCategory, CalculatedMacros } from '@/lib/types/meal-plan-generator';
 
@@ -10,6 +10,7 @@ interface CategorySectionProps {
   onSwapFood?: (category: MacroCategory, foodId: string) => void;
   onSelectFood?: (category: MacroCategory, targetMacro: number) => void;
   onUpdateGrams?: (category: MacroCategory, grams: number) => void;
+  onRemoveFood?: (category: MacroCategory) => void;
   disabled?: boolean;
 }
 
@@ -63,7 +64,7 @@ function getDiffColor(diff: number): string {
   return 'text-green-600';
 }
 
-export function CategorySection({ item, onSwapFood, onSelectFood, onUpdateGrams, disabled }: CategorySectionProps) {
+export function CategorySection({ item, onSwapFood, onSelectFood, onUpdateGrams, onRemoveFood, disabled }: CategorySectionProps) {
   const colors = categoryColors[item.category];
   const targetMacro = getTargetMacro(item);
   const selectedMacros = item.selected.macros;
@@ -167,6 +168,16 @@ export function CategorySection({ item, onSwapFood, onSelectFood, onUpdateGrams,
                 <Check className="h-3 w-3" />
                 VALD
               </span>
+              {/* Remove button */}
+              {!disabled && onRemoveFood && (
+                <button
+                  onClick={() => onRemoveFood(item.category)}
+                  className="ml-auto p-1 rounded-full hover:bg-red-100 text-zinc-400 hover:text-red-500 transition-colors"
+                  title="Ta bort"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
             <p className="text-sm text-zinc-800 font-semibold truncate">
               {item.selected.name}

@@ -320,6 +320,36 @@ export function MealPlanGenerator({
     }
   };
 
+  // Remove food handler
+  const handleRemoveFood = async (mealIndex: number, category: MacroCategory) => {
+    if (!generatedPlan) return;
+
+    try {
+      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/remove-food`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mealIndex, category }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Kunde inte ta bort livsmedel');
+        return;
+      }
+
+      // Update local state
+      setGeneratedPlan({
+        ...generatedPlan,
+        meals: data.meals,
+        actualMacros: data.actualMacros,
+      });
+    } catch (err) {
+      setError('Ett fel uppstod vid borttagning av livsmedel');
+      console.error('Remove food error:', err);
+    }
+  };
+
   // Update grams handler
   const handleUpdateGrams = async (
     mealIndex: number,
@@ -512,6 +542,7 @@ export function MealPlanGenerator({
                 mealNumber={getMealNumber(generatedPlan.meals, index)}
                 onSwapFood={handleSwapFood}
                 onSelectFood={handleSelectFood}
+                onRemoveFood={handleRemoveFood}
                 onAddSauce={handleAddSauce}
                 onRemoveSauce={handleRemoveSauce}
                 onUpdateGrams={handleUpdateGrams}
