@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import {
   Send, Image as ImageIcon, X, ZoomIn, MessageCircle, Loader2,
-  Search, Reply, Pencil, Trash2, Check, CheckCheck, MoreVertical, User
+  Search, Reply, Pencil, Trash2, Check, CheckCheck, MoreVertical, User,
+  Bold, Italic, Strikethrough
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { FAQPanel } from '@/components/messages/FAQPanel'
@@ -76,6 +77,51 @@ interface Contact {
     isRead: boolean
   } | null
   unreadCount: number
+}
+
+// Parse markdown to React elements
+function parseMarkdown(text: string): React.ReactNode {
+  if (!text) return text
+
+  // Split by markdown patterns and create elements
+  const parts: React.ReactNode[] = []
+  let remaining = text
+  let key = 0
+
+  // Pattern for bold, italic, strikethrough
+  const pattern = /(\*\*(.+?)\*\*)|(\*(.+?)\*)|(__(.+?)__)|(~~(.+?)~~)/g
+  let lastIndex = 0
+  let match
+
+  while ((match = pattern.exec(text)) !== null) {
+    // Add text before match
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index))
+    }
+
+    if (match[1]) {
+      // **bold**
+      parts.push(<strong key={key++} className="font-bold">{match[2]}</strong>)
+    } else if (match[3]) {
+      // *italic*
+      parts.push(<em key={key++} className="italic">{match[4]}</em>)
+    } else if (match[5]) {
+      // __bold__
+      parts.push(<strong key={key++} className="font-bold">{match[6]}</strong>)
+    } else if (match[7]) {
+      // ~~strikethrough~~
+      parts.push(<del key={key++} className="line-through">{match[8]}</del>)
+    }
+
+    lastIndex = match.index + match[0].length
+  }
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex))
+  }
+
+  return parts.length > 0 ? parts : text
 }
 
 export default function MessagesPage() {
@@ -413,6 +459,16 @@ export default function MessagesPage() {
       e.preventDefault()
       sendMessage()
     }
+    // Keyboard shortcuts for formatting
+    if (e.ctrlKey || e.metaKey) {
+      if (e.key === 'b') {
+        e.preventDefault()
+        insertFormatting('**', '**')
+      } else if (e.key === 'i') {
+        e.preventDefault()
+        insertFormatting('*', '*')
+      }
+    }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -431,6 +487,32 @@ export default function MessagesPage() {
       textareaRef.current.style.height = 'auto'
     }
   }, [newMessage])
+
+  // Insert formatting around selected text or at cursor
+  const insertFormatting = (prefix: string, suffix: string) => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const text = newMessage
+    const selectedText = text.slice(start, end)
+
+    const newText = text.slice(0, start) + prefix + selectedText + suffix + text.slice(end)
+    setNewMessage(newText)
+
+    // Set cursor position after formatting
+    setTimeout(() => {
+      textarea.focus()
+      if (selectedText) {
+        // If text was selected, select the formatted text
+        textarea.setSelectionRange(start + prefix.length, end + prefix.length)
+      } else {
+        // If no selection, place cursor between prefix and suffix
+        textarea.setSelectionRange(start + prefix.length, start + prefix.length)
+      }
+    }, 0)
+  }
 
   const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     const target = e.currentTarget
@@ -643,7 +725,7 @@ export default function MessagesPage() {
                             )}
 
                             <p className="whitespace-pre-wrap text-sm sm:text-base text-gray-700">
-                              {message.isDeleted ? <span className="italic text-gray-400">{message.content}</span> : message.content}
+                              {message.isDeleted ? <span className="italic text-gray-400">{message.content}</span> : parseMarkdown(message.content)}
                             </p>
 
                             {message.images && message.images.length > 0 && (
@@ -773,6 +855,32 @@ export default function MessagesPage() {
 
               <div className="flex items-center gap-2 mb-2">
                 <FAQPanel />
+                <div className="flex items-center gap-1 border-l border-gray-300 pl-2 ml-1">
+                  <button
+                    type="button"
+                    onClick={() => insertFormatting('**', '**')}
+                    className="p-1.5 rounded hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition-colors"
+                    title="Fet text (Ctrl+B)"
+                  >
+                    <Bold className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => insertFormatting('*', '*')}
+                    className="p-1.5 rounded hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition-colors"
+                    title="Kursiv text (Ctrl+I)"
+                  >
+                    <Italic className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => insertFormatting('~~', '~~')}
+                    className="p-1.5 rounded hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition-colors"
+                    title="Genomstruken text"
+                  >
+                    <Strikethrough className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
               <div className="flex gap-2">
                 <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" multiple className="hidden" />
