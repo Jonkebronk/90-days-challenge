@@ -115,7 +115,6 @@ export async function PUT(
       where: {
         macroCategory: category,
         id: { not: productId },
-        isActive: true,
       },
       select: {
         id: true,
