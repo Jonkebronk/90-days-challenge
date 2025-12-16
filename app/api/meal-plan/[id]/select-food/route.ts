@@ -110,57 +110,7 @@ export async function PUT(
     // Find the item to update, or create a new one if it doesn't exist
     const itemIndex = meal.items.findIndex((item) => item.category === category);
 
-    // Fetch alternative products (same macroCategory, different product)
-    const alternativeProducts = await prisma.product.findMany({
-      where: {
-        macroCategory: category,
-        id: { not: productId },
-      },
-      select: {
-        id: true,
-        name: true,
-        kcal: true,
-        protein: true,
-        carbs: true,
-        fat: true,
-        image: true,
-      },
-      take: 3,
-      orderBy: { name: 'asc' },
-    });
-
-    // Calculate alternatives with scaled grams to match similar macros
-    const alternatives = alternativeProducts.map((alt) => {
-      // Scale to match same primary macro as selected product
-      let scaledGrams = grams;
-      if (category === 'protein' && Number(alt.protein) > 0) {
-        scaledGrams = Math.round((macros.protein / (Number(alt.protein) / 100)) * 100) / 100 * 100;
-      } else if (category === 'carb' && Number(alt.carbs) > 0) {
-        scaledGrams = Math.round((macros.carbs / (Number(alt.carbs) / 100)) * 100) / 100 * 100;
-      } else if (category === 'fat' && Number(alt.fat) > 0) {
-        scaledGrams = Math.round((macros.fat / (Number(alt.fat) / 100)) * 100) / 100 * 100;
-      }
-
-      // Ensure reasonable grams (10-500g range)
-      scaledGrams = Math.max(10, Math.min(500, Math.round(scaledGrams)));
-
-      const altMacros = {
-        protein: Math.round((Number(alt.protein) / 100) * scaledGrams * 10) / 10,
-        carbs: Math.round((Number(alt.carbs) / 100) * scaledGrams * 10) / 10,
-        fat: Math.round((Number(alt.fat) / 100) * scaledGrams * 10) / 10,
-        kcal: Math.round((Number(alt.kcal) / 100) * scaledGrams),
-      };
-
-      return {
-        foodId: alt.id,
-        name: alt.name,
-        grams: scaledGrams,
-        macros: altMacros,
-        image: alt.image,
-      };
-    });
-
-    // Create the new/updated item
+    // Create the new/updated item (alternatives are empty - user adds them manually)
     const newItem = {
       category,
       selected: {
@@ -170,7 +120,7 @@ export async function PUT(
         macros: macros,
         image: product.image,
       },
-      alternatives,
+      alternatives: [],
     };
 
     // Update the meal - either replace existing item or add new one
