@@ -616,8 +616,6 @@ export function MealPlanGenerator({
                 onRemoveSauce={handleRemoveSauce}
                 onUpdateGrams={handleUpdateGrams}
                 onUpdateMealMacros={handleUpdateMealMacros}
-                onSelectRecipe={handleSelectRecipe}
-                onClearRecipe={handleClearRecipe}
               />
             ))}
           </div>
