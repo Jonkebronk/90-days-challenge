@@ -87,22 +87,22 @@ export function MealSettingsEditor({
   if (!isOpen) return null;
 
   return (
-    <Card className="border-amber-200 bg-amber-50/30">
-      <CardHeader className="pb-3">
+    <Card>
+      <CardHeader className="pb-4">
         <CardTitle className="text-lg flex items-center gap-2">
-          <Settings2 className="h-5 w-5 text-amber-600" />
+          <Settings2 className="h-5 w-5" />
           Måltidsinställningar
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-5">
         {/* Meal count selector */}
-        <div className="flex items-center gap-4">
-          <Label className="text-sm font-medium">Antal måltider:</Label>
+        <div className="flex items-center gap-3">
+          <Label className="text-sm text-muted-foreground">Antal måltider:</Label>
           <Select
             value={mealCount.toString()}
             onValueChange={(v) => setMealCount(parseInt(v))}
           >
-            <SelectTrigger className="w-20">
+            <SelectTrigger className="w-16 h-9">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -117,7 +117,7 @@ export function MealSettingsEditor({
 
         {/* Distribution method */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Fördelningsmetod:</Label>
+          <Label className="text-sm text-muted-foreground">Fördelningsmetod:</Label>
           <div className="flex flex-wrap gap-2">
             {[
               { value: 'auto', label: 'Automatisk' },
@@ -128,10 +128,10 @@ export function MealSettingsEditor({
                 key={opt.value}
                 onClick={() => setMethod(opt.value as DistributionMethod)}
                 className={cn(
-                  'px-3 py-1.5 text-sm font-medium rounded-full transition-colors',
+                  'px-3 py-1.5 text-sm font-medium rounded-full transition-all',
                   method === opt.value
-                    ? 'bg-amber-500 text-white'
-                    : 'bg-white text-zinc-700 border border-zinc-300 hover:border-amber-300'
+                    ? 'bg-amber-500 text-white shadow-sm'
+                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
                 )}
               >
                 {opt.label}
@@ -142,67 +142,60 @@ export function MealSettingsEditor({
 
         {/* Per-meal configuration */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Måltider:</Label>
-          <div className="space-y-2">
+          <Label className="text-sm text-muted-foreground">Måltider:</Label>
+          <div className="space-y-1.5">
             {configs.map((config, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg border border-zinc-200 overflow-hidden"
+                className="rounded-lg border bg-card overflow-hidden"
               >
                 {/* Meal header - always visible */}
                 <button
                   onClick={() => setExpandedMeal(expandedMeal === index ? null : index)}
-                  className="w-full px-3 py-2 flex items-center justify-between hover:bg-zinc-50"
+                  className="w-full px-3 py-2.5 flex items-center justify-between hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-zinc-500 w-5">
-                      {index + 1}.
+                    <span className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground">
+                      {index + 1}
                     </span>
                     <span className="text-sm font-medium">
                       {MEAL_TYPE_LABELS[config.type]}
                     </span>
                     {method === 'percentage' && (
-                      <span className="text-xs text-amber-600 font-medium">
+                      <span className="text-xs text-amber-600 font-medium bg-amber-100 px-2 py-0.5 rounded-full">
                         {config.percentOfTotal || 0}%
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-2">
-                    {/* Macro flags */}
-                    <div className="flex gap-1 text-xs">
-                      <span className={cn(
-                        'px-1.5 py-0.5 rounded',
-                        config.includeProtein ? 'bg-rose-100 text-rose-700' : 'bg-zinc-100 text-zinc-400'
-                      )}>
-                        P
-                      </span>
-                      <span className={cn(
-                        'px-1.5 py-0.5 rounded',
-                        config.includeCarbs ? 'bg-amber-100 text-amber-700' : 'bg-zinc-100 text-zinc-400'
-                      )}>
-                        K
-                      </span>
-                      <span className={cn(
-                        'px-1.5 py-0.5 rounded',
-                        config.includeFat ? 'bg-blue-100 text-blue-700' : 'bg-zinc-100 text-zinc-400'
-                      )}>
-                        F
-                      </span>
+                  <div className="flex items-center gap-3">
+                    {/* Macro indicators - small colored dots */}
+                    <div className="flex items-center gap-1">
+                      <div className={cn(
+                        'w-2 h-2 rounded-full transition-colors',
+                        config.includeProtein ? 'bg-red-500' : 'bg-muted'
+                      )} title="Protein" />
+                      <div className={cn(
+                        'w-2 h-2 rounded-full transition-colors',
+                        config.includeCarbs ? 'bg-green-500' : 'bg-muted'
+                      )} title="Kolhydrater" />
+                      <div className={cn(
+                        'w-2 h-2 rounded-full transition-colors',
+                        config.includeFat ? 'bg-amber-500' : 'bg-muted'
+                      )} title="Fett" />
                     </div>
-                    {expandedMeal === index ? (
-                      <ChevronUp className="h-4 w-4 text-zinc-400" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4 text-zinc-400" />
-                    )}
+                    <ChevronDown className={cn(
+                      'h-4 w-4 text-muted-foreground transition-transform',
+                      expandedMeal === index && 'rotate-180'
+                    )} />
                   </div>
                 </button>
 
                 {/* Expanded content */}
                 {expandedMeal === index && (
-                  <div className="px-3 pb-3 pt-1 border-t border-zinc-100 space-y-3">
+                  <div className="px-3 pb-3 pt-2 border-t space-y-3">
                     {/* Meal type */}
-                    <div className="flex items-center gap-2">
-                      <Label className="text-xs w-20">Typ:</Label>
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs text-muted-foreground w-16">Typ:</Label>
                       <Select
                         value={config.type}
                         onValueChange={(v) => updateConfig(index, { type: v as MealType })}
@@ -221,56 +214,58 @@ export function MealSettingsEditor({
                     </div>
 
                     {/* Macro checkboxes */}
-                    <div className="flex items-center gap-4">
-                      <Label className="text-xs w-20">Makros:</Label>
-                      <div className="flex gap-4">
-                        <label className="flex items-center gap-1.5 text-sm">
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs text-muted-foreground w-16">Makros:</Label>
+                      <div className="flex flex-wrap gap-3">
+                        <label className="flex items-center gap-1.5 text-sm cursor-pointer">
                           <Checkbox
                             checked={config.includeProtein}
                             onCheckedChange={(c) => updateConfig(index, { includeProtein: !!c })}
                           />
-                          <span className="text-rose-600">Protein</span>
+                          <span className="text-red-600 text-xs font-medium">Protein</span>
                         </label>
-                        <label className="flex items-center gap-1.5 text-sm">
+                        <label className="flex items-center gap-1.5 text-sm cursor-pointer">
                           <Checkbox
                             checked={config.includeCarbs}
                             onCheckedChange={(c) => updateConfig(index, { includeCarbs: !!c })}
                           />
-                          <span className="text-amber-600">Kolhydrater</span>
+                          <span className="text-green-600 text-xs font-medium">Kolhydrater</span>
                         </label>
-                        <label className="flex items-center gap-1.5 text-sm">
+                        <label className="flex items-center gap-1.5 text-sm cursor-pointer">
                           <Checkbox
                             checked={config.includeFat}
                             onCheckedChange={(c) => updateConfig(index, { includeFat: !!c })}
                           />
-                          <span className="text-blue-600">Fett</span>
+                          <span className="text-amber-600 text-xs font-medium">Fett</span>
                         </label>
                       </div>
                     </div>
 
                     {/* Percentage input */}
                     {method === 'percentage' && (
-                      <div className="flex items-center gap-2">
-                        <Label className="text-xs w-20">Andel:</Label>
-                        <Input
-                          type="number"
-                          min={0}
-                          max={100}
-                          value={config.percentOfTotal || 0}
-                          onChange={(e) =>
-                            updateConfig(index, { percentOfTotal: parseInt(e.target.value) || 0 })
-                          }
-                          className="h-8 w-20 text-sm"
-                        />
-                        <span className="text-sm text-zinc-500">%</span>
+                      <div className="flex items-center gap-3">
+                        <Label className="text-xs text-muted-foreground w-16">Andel:</Label>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={config.percentOfTotal || 0}
+                            onChange={(e) =>
+                              updateConfig(index, { percentOfTotal: parseInt(e.target.value) || 0 })
+                            }
+                            className="h-8 w-20 text-sm"
+                          />
+                          <span className="text-sm text-muted-foreground">%</span>
+                        </div>
                       </div>
                     )}
 
                     {/* Fixed macros input */}
                     {method === 'fixed' && (
-                      <div className="grid grid-cols-4 gap-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         <div>
-                          <Label className="text-xs text-rose-600">Protein (g)</Label>
+                          <Label className="text-xs text-red-600">Protein (g)</Label>
                           <Input
                             type="number"
                             min={0}
@@ -287,7 +282,7 @@ export function MealSettingsEditor({
                           />
                         </div>
                         <div>
-                          <Label className="text-xs text-amber-600">Kolhydrater (g)</Label>
+                          <Label className="text-xs text-green-600">Kolhydrater (g)</Label>
                           <Input
                             type="number"
                             min={0}
@@ -304,7 +299,7 @@ export function MealSettingsEditor({
                           />
                         </div>
                         <div>
-                          <Label className="text-xs text-blue-600">Fett (g)</Label>
+                          <Label className="text-xs text-amber-600">Fett (g)</Label>
                           <Input
                             type="number"
                             min={0}
@@ -321,7 +316,7 @@ export function MealSettingsEditor({
                           />
                         </div>
                         <div>
-                          <Label className="text-xs text-zinc-600">Kcal</Label>
+                          <Label className="text-xs text-muted-foreground">Kcal</Label>
                           <Input
                             type="number"
                             min={0}
@@ -348,14 +343,14 @@ export function MealSettingsEditor({
 
         {/* Validation messages */}
         {method === 'percentage' && !percentValid && (
-          <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
-            <AlertCircle className="h-4 w-4" />
+          <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 dark:bg-amber-950/30 px-3 py-2 rounded-lg">
+            <AlertCircle className="h-4 w-4 shrink-0" />
             <span>Totalt: {totalPercent}% (bör vara 100%)</span>
           </div>
         )}
 
         {method === 'fixed' && (
-          <div className="text-xs text-zinc-500 bg-zinc-50 px-3 py-2 rounded-lg">
+          <div className="text-xs text-muted-foreground bg-muted/50 px-3 py-2 rounded-lg space-y-1">
             <div>Dagsmål: {dailyMacros.protein}g P / {dailyMacros.carbs}g K / {dailyMacros.fat}g F / {dailyMacros.kcal} kcal</div>
             <div>
               Inställt:{' '}
@@ -383,7 +378,7 @@ export function MealSettingsEditor({
             size="sm"
             onClick={handleApply}
             disabled={!percentValid}
-            className="bg-amber-500 hover:bg-amber-600"
+            className="bg-amber-500 hover:bg-amber-600 text-white"
           >
             Tillämpa
           </Button>
