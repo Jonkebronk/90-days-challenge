@@ -199,8 +199,8 @@ export default function NutritionPlanDetailPage() {
             Tillbaka
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{plan.name}</h1>
-            <p className="text-sm text-gray-500">
+            <h1 className="text-2xl font-bold">{plan.name}</h1>
+            <p className="text-sm text-muted-foreground">
               Skapad {new Date(plan.createdAt).toLocaleDateString('sv-SE')}
             </p>
           </div>
