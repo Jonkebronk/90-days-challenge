@@ -35,6 +35,7 @@ export function AIChatPanel({
   const [initialLoading, setInitialLoading] = useState(true);
   const [attachedImages, setAttachedImages] = useState<{ file: File; preview: string }[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -43,9 +44,14 @@ export function AIChatPanel({
     loadConversation();
   }, [nutritionPlanId]);
 
-  // Scrolla till botten vid nya meddelanden
+  // Scrolla till botten vid nya meddelanden (endast inom chat-panelen)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (scrollAreaRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }
+    }
   }, [messages]);
 
   // Hantera bilduppladdning
@@ -264,7 +270,7 @@ export function AIChatPanel({
       </CardHeader>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 bg-[#2f2f2f]">
+      <ScrollArea ref={scrollAreaRef} className="flex-1 bg-[#2f2f2f]">
         <CardContent className="p-4 space-y-4">
           {messages.length === 0 && (
             <div className="text-center py-12">
