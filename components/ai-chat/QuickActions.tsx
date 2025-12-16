@@ -1,6 +1,6 @@
 'use client';
 
-import { Wand2, Coffee, Clock, Moon, Apple, Search } from 'lucide-react';
+import { Wand2, Coffee, Clock, Moon, Apple, Search, Utensils } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface QuickActionsProps {
@@ -13,6 +13,7 @@ const quickActions = [
     label: 'Generera schema',
     prompt: 'Generera ett komplett kostschema för hela dagen baserat på mina makromål. Visa varje måltid med exakta mängder i gram.',
     icon: Wand2,
+    primary: true,
   },
   {
     label: 'Frukost',
@@ -20,8 +21,13 @@ const quickActions = [
     icon: Coffee,
   },
   {
-    label: 'Snabb lunch',
+    label: 'Lunch',
     prompt: 'Föreslå luncher som tar under 20 minuter att laga med bra proteininnehåll.',
+    icon: Utensils,
+  },
+  {
+    label: 'Middag',
+    prompt: 'Ge mig middagsförslag med balanserade makros och bra mikronutrienter.',
     icon: Clock,
   },
   {
@@ -35,7 +41,7 @@ const quickActions = [
     icon: Apple,
   },
   {
-    label: 'Mikronutrienter',
+    label: 'Mikros',
     prompt: 'Analysera mitt kostschema och visa hur jag ligger till med järn, kalcium, vitamin D, B12 och zink. Ge förslag på hur jag kan täcka eventuella brister.',
     icon: Search,
   },
@@ -43,14 +49,14 @@ const quickActions = [
 
 export function QuickActions({ onSelect, disabled }: QuickActionsProps) {
   return (
-    <div className="px-4 py-2 border-b flex-shrink-0">
-      <div className="flex flex-wrap gap-1.5">
+    <div className="px-3 py-2 border-b flex-shrink-0 bg-muted/30">
+      <div className="flex flex-wrap gap-1">
         {quickActions.map((action, i) => (
           <Button
             key={i}
-            variant="outline"
+            variant={action.primary ? 'default' : 'outline'}
             size="sm"
-            className="h-7 text-xs gap-1"
+            className={`h-6 text-[11px] gap-1 px-2 ${action.primary ? 'bg-purple-500 hover:bg-purple-600' : ''}`}
             onClick={() => onSelect(action.prompt)}
             disabled={disabled}
           >

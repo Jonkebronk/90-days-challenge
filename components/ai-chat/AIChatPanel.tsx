@@ -160,8 +160,8 @@ export function AIChatPanel({
 
   if (initialLoading) {
     return (
-      <Card className="flex flex-col h-[700px]">
-        <CardHeader className="pb-3 border-b">
+      <Card className="flex flex-col h-[calc(100vh-180px)] min-h-[500px] max-h-[800px]">
+        <CardHeader className="py-3 border-b">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-purple-500" />
             <h3 className="font-semibold">AI Kostassistent</h3>
@@ -175,28 +175,28 @@ export function AIChatPanel({
   }
 
   return (
-    <Card className="flex flex-col h-[700px]">
-      <CardHeader className="pb-3 border-b flex-shrink-0">
+    <Card className="flex flex-col h-[calc(100vh-180px)] min-h-[500px] max-h-[800px]">
+      <CardHeader className="py-2 px-4 border-b flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-purple-500" />
-            <h3 className="font-semibold">AI Kostassistent</h3>
+            <Sparkles className="h-4 w-4 text-purple-500" />
+            <h3 className="font-semibold text-sm">AI Kostassistent</h3>
           </div>
           {messages.length > 0 && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleClearConversation}
-              className="text-muted-foreground hover:text-destructive"
+              className="text-muted-foreground hover:text-destructive h-7 w-7 p-0"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3.5 w-3.5" />
             </Button>
           )}
         </div>
-        <p className="text-xs text-muted-foreground">
-          Hjälper {clientName} nå sina mål |{' '}
+        <p className="text-[11px] text-muted-foreground">
+          {clientName} |{' '}
           <span className="font-medium">
-            P{targetMacros.protein}g K{targetMacros.carbs}g F{targetMacros.fat}g
+            P{targetMacros.protein}g K{targetMacros.carbs}g F{targetMacros.fat}g = {targetMacros.kcal}kcal
           </span>
         </p>
       </CardHeader>

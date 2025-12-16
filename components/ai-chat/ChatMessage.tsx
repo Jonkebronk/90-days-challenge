@@ -28,57 +28,106 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
 
   // Formatera innehållet för bättre visning
   const formatContent = (content: string) => {
-    // Konvertera markdown-liknande formatering till enkel HTML
     return content
       .split('\n')
       .map((line, i) => {
-        // Rubrikrader
-        if (line.startsWith('MÅLTID') || line.startsWith('TOTALT:') || line.startsWith('ALTERNATIV:')) {
+        // Markdown-rubriker (## eller **)
+        if (line.startsWith('## ') || line.startsWith('### ')) {
+          const text = line.replace(/^#+\s*/, '');
           return (
-            <span key={i} className="font-semibold text-primary block mt-2">
-              {line}
-            </span>
+            <div key={i} className="font-semibold text-primary mt-4 mb-2 text-base border-b border-border pb-1">
+              {text}
+            </div>
           );
         }
-        // Träd-struktur
-        if (line.startsWith('├─') || line.startsWith('└─')) {
+        // Bold text med **
+        if (line.startsWith('**') && line.endsWith('**')) {
+          const text = line.replace(/\*\*/g, '');
           return (
-            <span key={i} className="block ml-2 text-sm font-mono">
+            <div key={i} className="font-semibold mt-3 mb-1">
+              {text}
+            </div>
+          );
+        }
+        // MÅLTID-rubriker
+        if (line.startsWith('MÅLTID') || line.includes('MÅLTID')) {
+          return (
+            <div key={i} className="font-semibold text-primary mt-4 mb-2 text-base bg-primary/5 px-2 py-1 rounded">
               {line}
-            </span>
+            </div>
+          );
+        }
+        // TOTALT och ALTERNATIV
+        if (line.startsWith('TOTALT:') || line.startsWith('**TOTALT')) {
+          const text = line.replace(/\*\*/g, '');
+          return (
+            <div key={i} className="font-medium text-sm bg-muted/50 px-2 py-1 rounded mt-2">
+              {text}
+            </div>
+          );
+        }
+        if (line.startsWith('ALTERNATIV:') || line.startsWith('**ALTERNATIV')) {
+          const text = line.replace(/\*\*/g, '');
+          return (
+            <div key={i} className="font-medium text-sm mt-3 mb-1 text-muted-foreground">
+              {text}
+            </div>
+          );
+        }
+        // LIVSMEDEL-rubrik
+        if (line.startsWith('LIVSMEDEL:') || line.startsWith('**LIVSMEDEL')) {
+          const text = line.replace(/\*\*/g, '');
+          return (
+            <div key={i} className="font-medium text-sm mt-2 mb-1">
+              {text}
+            </div>
+          );
+        }
+        // Träd-struktur (livsmedel med mängder)
+        if (line.startsWith('├─') || line.startsWith('└─') || line.startsWith('├') || line.startsWith('└')) {
+          return (
+            <div key={i} className="font-mono text-sm ml-1 py-0.5 text-foreground/90">
+              {line}
+            </div>
           );
         }
         // Streckade linjer
         if (line.includes('───')) {
           return (
-            <span key={i} className="block text-muted-foreground text-xs">
+            <div key={i} className="text-muted-foreground text-xs my-1">
               {line}
-            </span>
+            </div>
           );
         }
-        // Listor
-        if (line.startsWith('•') || line.startsWith('-')) {
+        // Listor med •
+        if (line.trim().startsWith('•') || line.trim().startsWith('- ')) {
           return (
-            <span key={i} className="block ml-4 text-sm">
+            <div key={i} className="text-sm ml-2 py-0.5">
               {line}
-            </span>
+            </div>
           );
         }
-        // Warnings/tips
-        if (line.includes('⚠️') || line.includes('✅') || line.includes('📊')) {
+        // Warnings/tips/emojis
+        if (line.includes('⚠️') || line.includes('✅') || line.includes('📊') || line.includes('📝')) {
           return (
-            <span key={i} className="block font-medium">
+            <div key={i} className="font-medium mt-2">
               {line}
-            </span>
+            </div>
           );
+        }
+        // Separatorer
+        if (line.trim() === '---') {
+          return <hr key={i} className="my-3 border-border" />;
+        }
+        // Tom rad
+        if (!line.trim()) {
+          return <div key={i} className="h-2" />;
         }
         // Normal text
-        return line ? (
-          <span key={i} className="block">
+        return (
+          <div key={i} className="text-sm leading-relaxed">
             {line}
-          </span>
-        ) : (
-          <br key={i} />
+          </div>
         );
       });
   };

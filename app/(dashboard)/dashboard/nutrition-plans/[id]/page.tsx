@@ -472,7 +472,7 @@ export default function NutritionPlanDetailPage() {
         </div>
 
         {/* Right sidebar - AI Chat */}
-        <div className="xl:w-96 flex-shrink-0 xl:sticky xl:top-6 xl:self-start">
+        <div className="xl:w-[450px] flex-shrink-0 xl:sticky xl:top-6 xl:self-start">
           <AIChatPanel
             nutritionPlanId={plan.id}
             clientName={plan.client.name}
