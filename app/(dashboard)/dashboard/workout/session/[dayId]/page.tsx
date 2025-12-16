@@ -27,7 +27,8 @@ import {
   UserCircle,
   Pencil,
   Trash2,
-  Timer
+  Timer,
+  StickyNote
 } from 'lucide-react'
 import { RestTimerDialog, MinimizedRestBar } from '@/components/workout/rest-timer-dialog'
 import Link from 'next/link'
@@ -129,11 +130,18 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   // Video visibility per exercise
   const [activeVideoIndex, setActiveVideoIndex] = useState<number | null>(null)
 
+  // User exercise notes (personal memory notes)
+  const [userExerciseNotes, setUserExerciseNotes] = useState<Record<string, string>>({})
+  const [editingNoteExerciseId, setEditingNoteExerciseId] = useState<string | null>(null)
+  const [noteText, setNoteText] = useState('')
+  const [isSavingNote, setIsSavingNote] = useState(false)
+
   useEffect(() => {
     const loadData = async () => {
       const { dayId: id } = await params
       setDayId(id)
       await fetchWorkoutDay(id)
+      await fetchUserNotes() // Load personal exercise notes
       // Check for incomplete session first, otherwise start new
       const resumed = await checkAndResumeSession(id)
       if (!resumed) {
@@ -309,6 +317,55 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     } catch (error) {
       console.error('Error fetching previous session:', error)
     }
+  }
+
+  // Fetch user's personal exercise notes
+  const fetchUserNotes = async () => {
+    try {
+      const response = await fetch('/api/user-exercise-notes')
+      if (response.ok) {
+        const data = await response.json()
+        const notesMap: Record<string, string> = {}
+        data.notes?.forEach((n: any) => {
+          notesMap[n.workoutProgramExerciseId] = n.notes
+        })
+        setUserExerciseNotes(notesMap)
+      }
+    } catch (error) {
+      console.error('Error fetching user notes:', error)
+    }
+  }
+
+  // Save personal exercise note
+  const saveExerciseNote = async (exerciseId: string) => {
+    setIsSavingNote(true)
+    try {
+      const response = await fetch('/api/user-exercise-notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workoutProgramExerciseId: exerciseId,
+          notes: noteText
+        })
+      })
+      if (response.ok) {
+        setUserExerciseNotes(prev => ({ ...prev, [exerciseId]: noteText }))
+        setEditingNoteExerciseId(null)
+        setNoteText('')
+        toast.success('Anteckning sparad')
+      }
+    } catch (error) {
+      console.error('Error saving note:', error)
+      toast.error('Kunde inte spara anteckning')
+    } finally {
+      setIsSavingNote(false)
+    }
+  }
+
+  // Open note editor
+  const openNoteEditor = (exerciseId: string) => {
+    setNoteText(userExerciseNotes[exerciseId] || '')
+    setEditingNoteExerciseId(exerciseId)
   }
 
   // Check for and resume an incomplete session from today
@@ -929,6 +986,73 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     </div>
                   )}
 
+                  {/* User Exercise Notes - Personal memory notes */}
+                  <div className="p-3 bg-zinc-800/30 border border-zinc-700 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <StickyNote className="w-4 h-4 text-blue-400" />
+                        <span className="text-sm font-medium text-blue-300">Min anteckning</span>
+                      </div>
+                      {editingNoteExerciseId !== exercise.id && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            openNoteEditor(exercise.id)
+                          }}
+                          className="p-1 rounded hover:bg-white/10 transition-colors"
+                          title="Redigera anteckning"
+                        >
+                          <Pencil className="w-3.5 h-3.5 text-gray-500 hover:text-white" />
+                        </button>
+                      )}
+                    </div>
+
+                    {editingNoteExerciseId === exercise.id ? (
+                      <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+                        <textarea
+                          value={noteText}
+                          onChange={(e) => setNoteText(e.target.value)}
+                          placeholder="Skriv ner det du vill komma ihåg – som maskininställning, eller något att tänka på nästa gång."
+                          className="w-full p-2 bg-zinc-900 border border-zinc-600 rounded text-sm text-white placeholder:text-gray-500 focus:border-blue-500 focus:outline-none resize-none"
+                          rows={3}
+                          autoFocus
+                        />
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => saveExerciseNote(exercise.id)}
+                            disabled={isSavingNote}
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                          >
+                            {isSavingNote ? 'Sparar...' : 'Spara'}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              setEditingNoteExerciseId(null)
+                              setNoteText('')
+                            }}
+                            className="text-gray-400 hover:text-white"
+                          >
+                            Avbryt
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p
+                        className="text-sm text-gray-400 cursor-pointer hover:text-gray-300"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          openNoteEditor(exercise.id)
+                        }}
+                      >
+                        {userExerciseNotes[exercise.id] || (
+                          <span className="text-gray-600 italic">Klicka för att lägga till en anteckning...</span>
+                        )}
+                      </p>
+                    )}
+                  </div>
 
                   {/* Logged Sets - Compact view with border boxes */}
                   {exerciseSets.length > 0 && (
