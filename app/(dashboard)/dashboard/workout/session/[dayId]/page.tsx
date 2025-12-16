@@ -987,11 +987,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   )}
 
                   {/* User Exercise Notes - Personal memory notes */}
-                  <div className="p-3 bg-zinc-800/30 border border-zinc-700 rounded-lg">
+                  <div className="p-3 bg-blue-950/40 border-2 border-blue-500/30 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <StickyNote className="w-4 h-4 text-blue-400" />
-                        <span className="text-sm font-medium text-blue-300">Min anteckning</span>
+                        <span className="text-sm font-semibold text-blue-300">Min anteckning</span>
                       </div>
                       {editingNoteExerciseId !== exercise.id && (
                         <button
@@ -1054,16 +1054,20 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     )}
                   </div>
 
-                  {/* Logged Sets - Compact view with border boxes */}
+                  {/* Logged Sets - with clear success styling */}
                   {exerciseSets.length > 0 && (
                     <div className="space-y-2">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Check className="w-4 h-4 text-green-500" />
+                        <span className="text-xs font-semibold text-green-400 uppercase tracking-wide">Loggade set</span>
+                      </div>
                       {exerciseSets.map((set, setIdx) => {
                         const isEditing = editingSet?.id === set.id
                         return (
                           <div key={set.id || setIdx}>
                             {isEditing ? (
                               /* Inline edit mode */
-                              <div className="p-2 bg-zinc-800/50 rounded-lg space-y-2">
+                              <div className="p-3 bg-zinc-800 rounded-lg border border-zinc-600 space-y-2">
                                 <div className="flex items-center gap-2">
                                   <Input
                                     type="number"
@@ -1098,11 +1102,13 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                 </div>
                               </div>
                             ) : (
-                              /* Display mode - compact single line with border box */
-                              <div className="flex items-center gap-2 py-2 px-3 rounded-md border border-zinc-700 hover:border-zinc-600 group">
-                                <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                                <span className="text-sm text-gray-400">S{set.setNumber}</span>
-                                <span className="text-sm text-white font-medium">
+                              /* Display mode - clear success styling */
+                              <div className="flex items-center gap-3 py-2.5 px-3 rounded-lg bg-green-950/30 border-2 border-green-500/40 group">
+                                <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                                  <Check className="w-3.5 h-3.5 text-white" />
+                                </div>
+                                <span className="text-sm font-bold text-green-400">S{set.setNumber}</span>
+                                <span className="text-sm text-white font-semibold">
                                   {set.setType === 'TIME' ? (
                                     `${set.timeSeconds}s`
                                   ) : (
@@ -1146,10 +1152,15 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Log Next Set */}
                   {sessionId && !isExerciseComplete && (
-                    <div className="space-y-4 p-3 sm:p-4 bg-amber-900/20 border border-amber-500/40 rounded-lg">
-                      <Label className="text-base font-bold text-amber-400">
-                        Set {exerciseSets.length + 1} av {exercise.sets}
-                      </Label>
+                    <div className="space-y-4 p-4 bg-amber-950/50 border-2 border-amber-500/60 rounded-xl shadow-lg">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center">
+                          <span className="text-sm font-bold text-white">{exerciseSets.length + 1}</span>
+                        </div>
+                        <Label className="text-lg font-bold text-amber-300">
+                          Set {exerciseSets.length + 1} av {exercise.sets}
+                        </Label>
+                      </div>
 
                       {/* Input Fields - stacked on mobile, side by side on desktop */}
                       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
