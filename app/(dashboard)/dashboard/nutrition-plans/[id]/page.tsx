@@ -191,43 +191,6 @@ export default function NutritionPlanDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Macros */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Makronutrienter</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-4 gap-4 text-center">
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">
-                {plan.dailyCalorieTarget}
-              </div>
-              <div className="text-xs text-blue-500 mt-1">kcal/dag</div>
-            </div>
-            <div className="p-4 bg-pink-50 rounded-lg">
-              <div className="text-2xl font-bold text-pink-600">
-                {plan.proteinGrams}g
-              </div>
-              <div className="text-xs text-pink-500 mt-1">Protein</div>
-              <div className="text-xs text-gray-400">{plan.proteinPerKg}g/kg</div>
-            </div>
-            <div className="p-4 bg-teal-50 rounded-lg">
-              <div className="text-2xl font-bold text-teal-600">
-                {plan.carbGrams}g
-              </div>
-              <div className="text-xs text-teal-500 mt-1">Kolhydrater</div>
-            </div>
-            <div className="p-4 bg-amber-50 rounded-lg">
-              <div className="text-2xl font-bold text-amber-600">
-                {plan.fatGrams}g
-              </div>
-              <div className="text-xs text-amber-500 mt-1">Fett</div>
-              <div className="text-xs text-gray-400">{plan.fatPerKg}g/kg</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Meal settings */}
       <Card>
         <CardHeader className="pb-3">
