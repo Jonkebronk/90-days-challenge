@@ -189,10 +189,13 @@ export default function NutritionPlanDetailPage() {
     );
   }
 
+  // Calculate actual macros from existing meal plan
+  const actualMacros = existingMealPlan?.actualMacros || { protein: 0, carbs: 0, fat: 0, kcal: 0 };
+
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -210,111 +213,203 @@ export default function NutritionPlanDetailPage() {
         </Badge>
       </div>
 
-      {/* Client info */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Klient
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-              <span className="text-amber-700 font-semibold text-lg">
-                {plan.client.name.charAt(0).toUpperCase()}
-              </span>
-            </div>
-            <div>
-              <p className="font-medium">{plan.client.name}</p>
-              <p className="text-sm text-gray-500">{plan.client.email}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Meal settings */}
-      {showSettingsEditor ? (
-        <MealSettingsEditor
-          initialConfigs={mealConfigs}
-          initialMethod={distributionMethod}
-          dailyMacros={targetMacros}
-          onApply={handleApplySettings}
-          onCancel={() => setShowSettingsEditor(false)}
-        />
-      ) : (
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
+      {/* Two-column layout on desktop */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Left sidebar - sticky on desktop */}
+        <div className="lg:w-80 xl:w-96 flex-shrink-0 space-y-4 lg:sticky lg:top-6 lg:self-start">
+          {/* Client info */}
+          <Card>
+            <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
-                <Utensils className="h-5 w-5" />
-                Måltidsinställningar
+                <User className="h-5 w-5" />
+                Klient
               </CardTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowSettingsEditor(true)}
-                disabled={isRecreating}
-              >
-                <Settings2 className="h-4 w-4 mr-1" />
-                Redigera
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-4 text-sm">
-              <div>
-                <span className="text-gray-500">Måltider per dag</span>
-                <p className="font-medium">{mealConfigs.length}</p>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
+                  <span className="text-amber-700 font-semibold text-lg">
+                    {plan.client.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-medium">{plan.client.name}</p>
+                  <p className="text-sm text-muted-foreground">{plan.client.email}</p>
+                </div>
               </div>
-              <div>
-                <span className="text-gray-500">Träningstid</span>
-                <p className="font-medium">
-                  {WORKOUT_TIME_LABELS[plan.workoutTime] || plan.workoutTime}
-                </p>
-              </div>
-              <div>
-                <span className="text-gray-500">Näringssystem</span>
-                <p className="font-medium">
-                  {NUTRITION_SYSTEM_LABELS[plan.nutritionSystem] || plan.nutritionSystem}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            </CardContent>
+          </Card>
 
-      {/* Meal Plan Section */}
-      {existingMealPlan ? (
-        /* Show existing meal plan */
-        <MealPlanGenerator
-          key={mealPlanKey}
-          nutritionPlanId={plan.id}
-          targetMacros={targetMacros}
-          onSave={() => {}}
-          onCancel={() => {}}
-        />
-      ) : (
-        /* Generate meal plan button */
-        <Card className="border-2 border-dashed border-purple-200 bg-purple-50/50">
-          <CardContent className="py-8 text-center">
-            <Wand2 className="h-12 w-12 text-purple-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Generera kostschema
-            </h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Skapa ett detaljerat kostschema med exakta gramtal baserat på makromålen
-            </p>
-            <Button
-              onClick={() => setShowGenerator(true)}
-              className="bg-purple-500 hover:bg-purple-600"
-            >
-              <Wand2 className="h-4 w-4 mr-2" />
-              Generera kostschema
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+          {/* Meal settings */}
+          {showSettingsEditor ? (
+            <MealSettingsEditor
+              initialConfigs={mealConfigs}
+              initialMethod={distributionMethod}
+              dailyMacros={targetMacros}
+              onApply={handleApplySettings}
+              onCancel={() => setShowSettingsEditor(false)}
+            />
+          ) : (
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Utensils className="h-5 w-5" />
+                    Måltidsinställningar
+                  </CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowSettingsEditor(true)}
+                    disabled={isRecreating}
+                  >
+                    <Settings2 className="h-4 w-4 mr-1" />
+                    Redigera
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Måltider per dag</span>
+                    <p className="font-medium">{mealConfigs.length}</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Träningstid</span>
+                    <p className="font-medium">
+                      {WORKOUT_TIME_LABELS[plan.workoutTime] || plan.workoutTime}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Näringssystem</span>
+                    <p className="font-medium">
+                      {NUTRITION_SYSTEM_LABELS[plan.nutritionSystem] || plan.nutritionSystem}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Macro overview */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Makroöversikt</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Protein */}
+              <div>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-red-500 font-medium">Protein</span>
+                  <span>
+                    {actualMacros.protein.toFixed(1)}g / {targetMacros.protein}g{' '}
+                    <span className={actualMacros.protein >= targetMacros.protein ? 'text-green-500' : 'text-red-500'}>
+                      ({actualMacros.protein >= targetMacros.protein ? '+' : ''}{(actualMacros.protein - targetMacros.protein).toFixed(1)}g)
+                    </span>
+                  </span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-red-500 rounded-full transition-all"
+                    style={{ width: `${Math.min(100, (actualMacros.protein / targetMacros.protein) * 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Carbs */}
+              <div>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-green-500 font-medium">Kolhydrater</span>
+                  <span>
+                    {actualMacros.carbs.toFixed(1)}g / {targetMacros.carbs}g{' '}
+                    <span className={actualMacros.carbs >= targetMacros.carbs ? 'text-green-500' : 'text-red-500'}>
+                      ({actualMacros.carbs >= targetMacros.carbs ? '+' : ''}{(actualMacros.carbs - targetMacros.carbs).toFixed(1)}g)
+                    </span>
+                  </span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-green-500 rounded-full transition-all"
+                    style={{ width: `${Math.min(100, (actualMacros.carbs / targetMacros.carbs) * 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Fat */}
+              <div>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-amber-500 font-medium">Fett</span>
+                  <span>
+                    {actualMacros.fat.toFixed(1)}g / {targetMacros.fat}g{' '}
+                    <span className={actualMacros.fat >= targetMacros.fat ? 'text-green-500' : 'text-red-500'}>
+                      ({actualMacros.fat >= targetMacros.fat ? '+' : ''}{(actualMacros.fat - targetMacros.fat).toFixed(1)}g)
+                    </span>
+                  </span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-amber-500 rounded-full transition-all"
+                    style={{ width: `${Math.min(100, (actualMacros.fat / targetMacros.fat) * 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Calories */}
+              <div>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-blue-500 font-medium">Kalorier</span>
+                  <span>
+                    {actualMacros.kcal.toFixed(0)}kcal / {targetMacros.kcal}kcal{' '}
+                    <span className={actualMacros.kcal >= targetMacros.kcal ? 'text-green-500' : 'text-red-500'}>
+                      ({actualMacros.kcal >= targetMacros.kcal ? '+' : ''}{(actualMacros.kcal - targetMacros.kcal).toFixed(0)}kcal)
+                    </span>
+                  </span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-blue-500 rounded-full transition-all"
+                    style={{ width: `${Math.min(100, (actualMacros.kcal / targetMacros.kcal) * 100)}%` }}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right content - Meal Plan */}
+        <div className="flex-1 min-w-0">
+          {existingMealPlan ? (
+            /* Show existing meal plan */
+            <MealPlanGenerator
+              key={mealPlanKey}
+              nutritionPlanId={plan.id}
+              targetMacros={targetMacros}
+              onSave={() => {}}
+              onCancel={() => {}}
+            />
+          ) : (
+            /* Generate meal plan button */
+            <Card className="border-2 border-dashed border-purple-200 bg-purple-50/50 dark:bg-purple-950/20 dark:border-purple-800">
+              <CardContent className="py-8 text-center">
+                <Wand2 className="h-12 w-12 text-purple-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">
+                  Generera kostschema
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Skapa ett detaljerat kostschema med exakta gramtal baserat på makromålen
+                </p>
+                <Button
+                  onClick={() => setShowGenerator(true)}
+                  className="bg-purple-500 hover:bg-purple-600"
+                >
+                  <Wand2 className="h-4 w-4 mr-2" />
+                  Generera kostschema
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
