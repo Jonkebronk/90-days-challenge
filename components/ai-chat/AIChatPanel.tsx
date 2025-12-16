@@ -37,58 +37,70 @@ interface ParsedMeal {
   items: ParsedMealItem[];
 }
 
+// Determine food category based on name
+function determineFoodCategory(name: string): 'protein' | 'carb' | 'fat' {
+  const nameLower = name.toLowerCase();
+
+  // Carb sources
+  if (nameLower.includes('ris') || nameLower.includes('pasta') ||
+      nameLower.includes('potatis') || nameLower.includes('bröd') ||
+      nameLower.includes('havre') || nameLower.includes('müsli') ||
+      nameLower.includes('quinoa') || nameLower.includes('bulgur') ||
+      nameLower.includes('couscous') || nameLower.includes('banan') ||
+      nameLower.includes('frukt') || nameLower.includes('äpple') ||
+      nameLower.includes('honung') || nameLower.includes('sylt')) {
+    return 'carb';
+  }
+
+  // Fat sources
+  if (nameLower.includes('olja') || nameLower.includes('nöt') ||
+      nameLower.includes('mandel') || nameLower.includes('mandlar') ||
+      nameLower.includes('avokado') || nameLower.includes('smör') ||
+      (nameLower.includes('ost') && !nameLower.includes('cottage') && !nameLower.includes('kvarg')) ||
+      nameLower.includes('frön') || nameLower.includes('jordnöt') ||
+      nameLower.includes('olivolja') || nameLower.includes('rapsolja')) {
+    return 'fat';
+  }
+
+  // Default to protein
+  return 'protein';
+}
+
 // Parse AI response to extract meal plan items
 function parseAIMealPlan(content: string): ParsedMeal[] {
   const meals: ParsedMeal[] = [];
 
-  // Split by MÅLTID markers
-  const mealSections = content.split(/MÅLTID\s*(\d+)/i);
+  // Find all meal sections using regex - handles "MÅLTID 4" or "MÅLTID 4 - POST-WORKOUT" etc
+  const mealRegex = /MÅLTID\s*(\d+)[^\n]*\n([\s\S]*?)(?=MÅLTID\s*\d|SLUTSATS|$)/gi;
+  let match;
 
-  for (let i = 1; i < mealSections.length; i += 2) {
-    const mealIndex = parseInt(mealSections[i]) - 1; // Convert to 0-based index
-    const section = mealSections[i + 1] || '';
+  while ((match = mealRegex.exec(content)) !== null) {
+    const mealIndex = parseInt(match[1]) - 1; // Convert to 0-based index
+    const section = match[2];
 
     const items: ParsedMealItem[] = [];
 
-    // Look for LIVSMEDEL section
-    const livsmedelMatch = section.match(/LIVSMEDEL[:\s]*([\s\S]*?)(?=TOTALT:|ALTERNATIV:|MÅLTID|\n\n\n|$)/i);
-    if (livsmedelMatch) {
-      const livsmedelSection = livsmedelMatch[1];
+    // Parse lines looking for food items with grams
+    // Handles: "├─ Kvarg: 200g", "Kvarg naturell: 200g (20g P...)", "- Banan: 150g"
+    const lines = section.split('\n');
+    for (const line of lines) {
+      // Skip totalt lines and empty lines
+      if (line.includes('Totalt') || line.includes('TOTALT') || !line.trim()) {
+        continue;
+      }
 
-      // Parse lines with tree structure (├─ or └─) or simple lines
-      const lines = livsmedelSection.split('\n');
-      for (const line of lines) {
-        // Match patterns like "├─ Kycklingfilé: 150g" or "Kycklingfilé: 150g" or "Kycklingfilé 150g"
-        const match = line.match(/[├└─\s]*([^:]+?)[\s:]+(\d+)\s*g/i);
-        if (match) {
-          const name = match[1].trim().replace(/^\*\*|\*\*$/g, ''); // Remove bold markers
-          const grams = parseInt(match[2]);
+      // Match patterns like:
+      // "├─ Kvarg naturell fett 0,2%: 200g (20g P, 10g K, 0g F)"
+      // "├─ Banan: 150g (2g P, 34g K, 0g F)"
+      // "Kycklingfilé: 150g"
+      const foodMatch = line.match(/[├└─\-\s]*([^:(\d]+?):\s*(\d+)\s*g/i);
+      if (foodMatch) {
+        const name = foodMatch[1].trim().replace(/^\*\*|\*\*$/g, '').replace(/^\s*[├└─\-]\s*/, '');
+        const grams = parseInt(foodMatch[2]);
 
-          if (name && grams > 0) {
-            // Determine category based on common patterns
-            const nameLower = name.toLowerCase();
-            let category: 'protein' | 'carb' | 'fat' = 'protein';
-
-            // Carb sources
-            if (nameLower.includes('ris') || nameLower.includes('pasta') ||
-                nameLower.includes('potatis') || nameLower.includes('bröd') ||
-                nameLower.includes('havre') || nameLower.includes('müsli') ||
-                nameLower.includes('quinoa') || nameLower.includes('bulgur') ||
-                nameLower.includes('couscous') || nameLower.includes('banan') ||
-                nameLower.includes('frukt') || nameLower.includes('äpple')) {
-              category = 'carb';
-            }
-            // Fat sources
-            else if (nameLower.includes('olja') || nameLower.includes('nöt') ||
-                     nameLower.includes('mandel') || nameLower.includes('avokado') ||
-                     nameLower.includes('smör') || nameLower.includes('ost') && !nameLower.includes('cottage') ||
-                     nameLower.includes('frön') || nameLower.includes('jordnöt')) {
-              category = 'fat';
-            }
-            // Default to protein (fish, chicken, eggs, cottage cheese, etc.)
-
-            items.push({ name, grams, category });
-          }
+        if (name && grams > 0 && name.length > 1) {
+          const category = determineFoodCategory(name);
+          items.push({ name, grams, category });
         }
       }
     }
