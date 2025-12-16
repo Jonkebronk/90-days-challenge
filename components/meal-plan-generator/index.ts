@@ -6,3 +6,4 @@ export { MacroProgressBar } from './MacroProgressBar';
 export { MacroSummary } from './MacroSummary';
 export { SauceSelector } from './SauceSelector';
 export { FoodSwapModal } from './FoodSwapModal';
+export { MealSettingsEditor } from './MealSettingsEditor';

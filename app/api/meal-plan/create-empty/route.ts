@@ -6,6 +6,7 @@ import type {
   MealConfig,
   MacroTargets,
   GeneratedMeal,
+  DistributionMethod,
 } from '@/lib/types/meal-plan-generator';
 import { DEFAULT_MEAL_CONFIGS, VEGETABLE_GRAMS } from '@/lib/types/meal-plan-generator';
 import { distributeMacros } from '@/lib/calculations/meal-plan-generator';
@@ -22,9 +23,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { nutritionPlanId, mealConfigs } = body as {
+    const { nutritionPlanId, mealConfigs, distributionMethod, forceRecreate } = body as {
       nutritionPlanId: string;
       mealConfigs?: MealConfig[];
+      distributionMethod?: DistributionMethod;
+      forceRecreate?: boolean;
     };
 
     if (!nutritionPlanId) {
@@ -59,13 +62,20 @@ export async function POST(request: NextRequest) {
       where: { nutritionPlanId },
     });
 
-    if (existingPlan) {
+    if (existingPlan && !forceRecreate) {
       // Return existing plan instead of creating duplicate
       return NextResponse.json({
         id: existingPlan.id,
         meals: existingPlan.meals,
         targetMacros: existingPlan.targetMacros,
         actualMacros: existingPlan.actualMacros,
+      });
+    }
+
+    // Delete existing plan if forceRecreate is set
+    if (existingPlan && forceRecreate) {
+      await prisma.generatedMealPlan.delete({
+        where: { id: existingPlan.id },
       });
     }
 
@@ -80,8 +90,9 @@ export async function POST(request: NextRequest) {
       kcal: Number(nutritionPlan.dailyCalorieTarget),
     };
 
-    // Distribute macros across meals
-    const macroDistribution = distributeMacros(dailyMacros, configs);
+    // Distribute macros across meals using specified method
+    const method = distributionMethod || 'auto';
+    const macroDistribution = distributeMacros(dailyMacros, configs, method);
 
     // Create empty meals with target macros
     const meals: GeneratedMeal[] = configs.map((config, index) => {

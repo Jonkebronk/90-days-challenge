@@ -12,8 +12,12 @@ import {
   Utensils,
   Loader2,
   Wand2,
+  Settings2,
 } from 'lucide-react';
 import { MealPlanGenerator } from '@/components/meal-plan-generator';
+import { MealSettingsEditor } from '@/components/meal-plan-generator/MealSettingsEditor';
+import type { MealConfig, DistributionMethod } from '@/lib/types/meal-plan-generator';
+import { DEFAULT_MEAL_CONFIGS } from '@/lib/types/meal-plan-generator';
 
 interface NutritionPlan {
   id: string;
@@ -67,6 +71,11 @@ export default function NutritionPlanDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showGenerator, setShowGenerator] = useState(false);
+  const [showSettingsEditor, setShowSettingsEditor] = useState(false);
+  const [mealConfigs, setMealConfigs] = useState<MealConfig[]>(DEFAULT_MEAL_CONFIGS);
+  const [distributionMethod, setDistributionMethod] = useState<DistributionMethod>('auto');
+  const [isRecreating, setIsRecreating] = useState(false);
+  const [mealPlanKey, setMealPlanKey] = useState(0); // Force re-render of MealPlanGenerator
 
   const planId = params.id as string;
 
@@ -98,6 +107,39 @@ export default function NutritionPlanDetailPage() {
       setError(err instanceof Error ? err.message : 'Ett fel uppstod');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Handle applying new meal settings
+  const handleApplySettings = async (configs: MealConfig[], method: DistributionMethod) => {
+    if (!plan) return;
+
+    setIsRecreating(true);
+    try {
+      // Recreate meal plan with new settings
+      const response = await fetch('/api/meal-plan/create-empty', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nutritionPlanId: plan.id,
+          mealConfigs: configs,
+          distributionMethod: method,
+          forceRecreate: true,
+        }),
+      });
+
+      if (response.ok) {
+        const newPlan = await response.json();
+        setExistingMealPlan(newPlan);
+        setMealConfigs(configs);
+        setDistributionMethod(method);
+        setShowSettingsEditor(false);
+        setMealPlanKey((prev) => prev + 1); // Force re-render
+      }
+    } catch (err) {
+      console.error('Error recreating meal plan:', err);
+    } finally {
+      setIsRecreating(false);
     }
   };
 
@@ -192,39 +234,61 @@ export default function NutritionPlanDetailPage() {
       </Card>
 
       {/* Meal settings */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Utensils className="h-5 w-5" />
-            Måltidsinställningar
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-4 text-sm">
-            <div>
-              <span className="text-gray-500">Måltider per dag</span>
-              <p className="font-medium">{plan.mealsPerDay}</p>
+      {showSettingsEditor ? (
+        <MealSettingsEditor
+          initialConfigs={mealConfigs}
+          initialMethod={distributionMethod}
+          dailyMacros={targetMacros}
+          onApply={handleApplySettings}
+          onCancel={() => setShowSettingsEditor(false)}
+        />
+      ) : (
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Utensils className="h-5 w-5" />
+                Måltidsinställningar
+              </CardTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowSettingsEditor(true)}
+                disabled={isRecreating}
+              >
+                <Settings2 className="h-4 w-4 mr-1" />
+                Redigera
+              </Button>
             </div>
-            <div>
-              <span className="text-gray-500">Träningstid</span>
-              <p className="font-medium">
-                {WORKOUT_TIME_LABELS[plan.workoutTime] || plan.workoutTime}
-              </p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-4 text-sm">
+              <div>
+                <span className="text-gray-500">Måltider per dag</span>
+                <p className="font-medium">{mealConfigs.length}</p>
+              </div>
+              <div>
+                <span className="text-gray-500">Träningstid</span>
+                <p className="font-medium">
+                  {WORKOUT_TIME_LABELS[plan.workoutTime] || plan.workoutTime}
+                </p>
+              </div>
+              <div>
+                <span className="text-gray-500">Näringssystem</span>
+                <p className="font-medium">
+                  {NUTRITION_SYSTEM_LABELS[plan.nutritionSystem] || plan.nutritionSystem}
+                </p>
+              </div>
             </div>
-            <div>
-              <span className="text-gray-500">Näringssystem</span>
-              <p className="font-medium">
-                {NUTRITION_SYSTEM_LABELS[plan.nutritionSystem] || plan.nutritionSystem}
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Meal Plan Section */}
       {existingMealPlan ? (
         /* Show existing meal plan */
         <MealPlanGenerator
+          key={mealPlanKey}
           nutritionPlanId={plan.id}
           targetMacros={targetMacros}
           onSave={() => {}}

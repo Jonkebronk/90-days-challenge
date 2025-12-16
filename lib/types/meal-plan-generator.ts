@@ -42,22 +42,59 @@ export const ALTERNATIVES_COUNT = 3;
 // MEAL CONFIGURATION
 // ===================
 
+export type DistributionMethod = 'auto' | 'percentage' | 'fixed';
+
 export interface MealConfig {
   type: MealType;
+  label?: string; // Custom label (e.g., "Mellanmål 1")
   includeProtein: boolean;
   includeCarbs: boolean;
   includeFat: boolean;
+  // For percentage distribution (0-100)
+  percentOfTotal?: number;
+  // For fixed gram distribution
+  fixedMacros?: CalculatedMacros;
 }
 
-// Default meal configuration (6 meals)
+export interface MealPlanSettings {
+  mealConfigs: MealConfig[];
+  distributionMethod: DistributionMethod;
+}
+
+// Default meal configuration (5 meals)
 export const DEFAULT_MEAL_CONFIGS: MealConfig[] = [
-  { type: 'frukost', includeProtein: true, includeCarbs: true, includeFat: true },
-  { type: 'mellanmål', includeProtein: true, includeCarbs: false, includeFat: true },
-  { type: 'lunch', includeProtein: true, includeCarbs: true, includeFat: false },
-  { type: 'mellanmål', includeProtein: true, includeCarbs: false, includeFat: true },
-  { type: 'middag', includeProtein: true, includeCarbs: true, includeFat: false },
-  { type: 'kvällsmål', includeProtein: true, includeCarbs: false, includeFat: true },
+  { type: 'frukost', includeProtein: true, includeCarbs: true, includeFat: true, percentOfTotal: 20 },
+  { type: 'mellanmål', includeProtein: true, includeCarbs: false, includeFat: true, percentOfTotal: 10 },
+  { type: 'lunch', includeProtein: true, includeCarbs: true, includeFat: false, percentOfTotal: 30 },
+  { type: 'mellanmål', includeProtein: true, includeCarbs: false, includeFat: true, percentOfTotal: 10 },
+  { type: 'middag', includeProtein: true, includeCarbs: true, includeFat: false, percentOfTotal: 30 },
 ];
+
+// Generate default config for N meals
+export function generateDefaultMealConfigs(mealCount: number): MealConfig[] {
+  const templates: { type: MealType; p: boolean; k: boolean; f: boolean }[] = [
+    { type: 'frukost', p: true, k: true, f: true },
+    { type: 'mellanmål', p: true, k: false, f: true },
+    { type: 'lunch', p: true, k: true, f: false },
+    { type: 'mellanmål', p: true, k: false, f: true },
+    { type: 'middag', p: true, k: true, f: false },
+    { type: 'kvällsmål', p: true, k: false, f: true },
+    { type: 'mellanmål', p: true, k: false, f: true },
+    { type: 'mellanmål', p: true, k: false, f: true },
+  ];
+
+  const basePercent = Math.floor(100 / mealCount);
+  const remainder = 100 - basePercent * mealCount;
+
+  return templates.slice(0, mealCount).map((t, i) => ({
+    type: t.type,
+    includeProtein: t.p,
+    includeCarbs: t.k,
+    includeFat: t.f,
+    // Distribute remainder to first meals
+    percentOfTotal: basePercent + (i < remainder ? 1 : 0),
+  }));
+}
 
 // ===================
 // MACRO TARGETS

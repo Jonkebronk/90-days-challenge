@@ -20,6 +20,7 @@ import type {
   FoodPer100g,
   RecipeForMealPlan,
   RecipeSwapOption,
+  DistributionMethod,
 } from '@/lib/types/meal-plan-generator';
 import {
   KCAL_PER_GRAM,
@@ -111,18 +112,63 @@ function countMealsWithCategory(
 
 /**
  * Distribute daily macros across meals based on which categories are enabled
+ * Supports three methods:
+ * - 'auto': Even distribution based on include flags
+ * - 'percentage': Use percentOfTotal from each MealConfig
+ * - 'fixed': Use fixedMacros from each MealConfig
  */
 export function distributeMacros(
   dailyMacros: MacroTargets,
-  mealConfigs: MealConfig[]
+  mealConfigs: MealConfig[],
+  method: DistributionMethod = 'auto'
 ): Map<number, MacroTargets> {
   const distribution = new Map<number, MacroTargets>();
 
+  if (method === 'fixed') {
+    // Use fixedMacros directly from each config
+    mealConfigs.forEach((config, index) => {
+      if (config.fixedMacros) {
+        distribution.set(index, {
+          protein: config.fixedMacros.protein,
+          carbs: config.fixedMacros.carbs,
+          fat: config.fixedMacros.fat,
+          kcal: config.fixedMacros.kcal,
+        });
+      } else {
+        // Fallback to auto if no fixedMacros
+        distribution.set(index, { protein: 0, carbs: 0, fat: 0, kcal: 0 });
+      }
+    });
+    return distribution;
+  }
+
+  if (method === 'percentage') {
+    // Use percentOfTotal from each config
+    mealConfigs.forEach((config, index) => {
+      const percent = (config.percentOfTotal || 0) / 100;
+      const protein = config.includeProtein ? dailyMacros.protein * percent : 0;
+      const carbs = config.includeCarbs ? dailyMacros.carbs * percent : 0;
+      const fat = config.includeFat ? dailyMacros.fat * percent : 0;
+      const kcal =
+        protein * KCAL_PER_GRAM.protein +
+        carbs * KCAL_PER_GRAM.carbs +
+        fat * KCAL_PER_GRAM.fat;
+
+      distribution.set(index, {
+        protein: Math.round(protein * 10) / 10,
+        carbs: Math.round(carbs * 10) / 10,
+        fat: Math.round(fat * 10) / 10,
+        kcal: Math.round(kcal),
+      });
+    });
+    return distribution;
+  }
+
+  // Default: 'auto' - even distribution based on include flags
   const proteinMeals = countMealsWithCategory(mealConfigs, 'protein');
   const carbMeals = countMealsWithCategory(mealConfigs, 'carbs');
   const fatMeals = countMealsWithCategory(mealConfigs, 'fat');
 
-  // Protein/carbs/fat per meal (evenly distributed)
   const proteinPerMeal = proteinMeals > 0 ? dailyMacros.protein / proteinMeals : 0;
   const carbsPerMeal = carbMeals > 0 ? dailyMacros.carbs / carbMeals : 0;
   const fatPerMeal = fatMeals > 0 ? dailyMacros.fat / fatMeals : 0;
