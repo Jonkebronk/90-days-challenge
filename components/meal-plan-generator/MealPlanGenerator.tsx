@@ -79,21 +79,24 @@ export function MealPlanGenerator({
             targetMacros: existingData.targetMacros,
             actualMacros: existingData.actualMacros,
           });
+          setIsLoading(false);
           return;
         }
       }
 
-      // No existing plan, create a new one
-      await createEmptyPlan();
+      // No existing plan, create a new one (don't force recreate on initial load)
+      await createEmptyPlan(false);
     } catch (err) {
       setError('Ett fel uppstod vid laddning av kostschema');
       console.error('Load error:', err);
-    } finally {
       setIsLoading(false);
     }
   };
 
-  const createEmptyPlan = async () => {
+  const createEmptyPlan = async (forceRecreate: boolean = false) => {
+    setIsLoading(true);
+    setError(null);
+
     try {
       const response = await fetch('/api/meal-plan/create-empty', {
         method: 'POST',
@@ -101,6 +104,7 @@ export function MealPlanGenerator({
         body: JSON.stringify({
           nutritionPlanId,
           mealConfigs: DEFAULT_MEAL_CONFIGS,
+          forceRecreate,
         }),
       });
 
@@ -120,6 +124,8 @@ export function MealPlanGenerator({
     } catch (err) {
       setError('Ett fel uppstod vid skapande av kostschema');
       console.error('Create error:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -636,7 +642,8 @@ export function MealPlanGenerator({
           <div className="flex justify-between items-center pt-4 border-t border-zinc-200">
             <Button
               variant="outline"
-              onClick={createEmptyPlan}
+              onClick={() => createEmptyPlan(true)}
+              disabled={isLoading}
               className="text-zinc-600"
             >
               Börja om
