@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, RefreshCw, Trash2 } from 'lucide-react';
+import { Send, Sparkles, RefreshCw, Trash2, ImagePlus, X, Paperclip } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatMessage } from './ChatMessage';
 import { QuickActions } from './QuickActions';
 import { AIChatResponse, AIMessage } from '@/lib/ai/types';
+import Image from 'next/image';
 
 interface AIChatPanelProps {
   nutritionPlanId: string;
@@ -32,8 +33,10 @@ export function AIChatPanel({
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [attachedImages, setAttachedImages] = useState<{ file: File; preview: string }[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Ladda konversationshistorik vid mount
   useEffect(() => {
@@ -44,6 +47,52 @@ export function AIChatPanel({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Hantera bilduppladdning
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newImages: { file: File; preview: string }[] = [];
+
+    Array.from(files).forEach(file => {
+      if (file.type.startsWith('image/')) {
+        const preview = URL.createObjectURL(file);
+        newImages.push({ file, preview });
+      }
+    });
+
+    setAttachedImages(prev => [...prev, ...newImages].slice(0, 5)); // Max 5 bilder
+
+    // Rensa input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setAttachedImages(prev => {
+      const newImages = [...prev];
+      URL.revokeObjectURL(newImages[index].preview);
+      newImages.splice(index, 1);
+      return newImages;
+    });
+  };
+
+  // Konvertera bild till base64
+  const imageToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        // Ta bort data:image/xxx;base64, prefixet
+        const base64 = result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
 
   const loadConversation = async () => {
     try {
@@ -63,16 +112,28 @@ export function AIChatPanel({
 
   const handleSend = async (messageText?: string) => {
     const text = messageText || input;
-    if (!text.trim() || loading) return;
+    if ((!text.trim() && attachedImages.length === 0) || loading) return;
+
+    // Konvertera bilder till base64
+    const imageData: { base64: string; mediaType: string }[] = [];
+    for (const img of attachedImages) {
+      const base64 = await imageToBase64(img.file);
+      imageData.push({
+        base64,
+        mediaType: img.file.type as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+      });
+    }
 
     const userMessage: AIMessage = {
       role: 'user',
-      content: text,
+      content: text || (attachedImages.length > 0 ? `[${attachedImages.length} bild(er) bifogade]` : ''),
       timestamp: new Date(),
+      images: attachedImages.map(img => img.preview),
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setAttachedImages([]);
     setLoading(true);
 
     try {
@@ -82,6 +143,7 @@ export function AIChatPanel({
         body: JSON.stringify({
           nutritionPlanId,
           message: text,
+          images: imageData,
           includeHistory: true,
         }),
       });
@@ -235,22 +297,67 @@ export function AIChatPanel({
         </CardContent>
       </ScrollArea>
 
+      {/* Attached images preview */}
+      {attachedImages.length > 0 && (
+        <div className="px-4 py-2 border-t flex-shrink-0 bg-muted/30">
+          <div className="flex gap-2 flex-wrap">
+            {attachedImages.map((img, i) => (
+              <div key={i} className="relative group">
+                <img
+                  src={img.preview}
+                  alt={`Bifogad bild ${i + 1}`}
+                  className="h-16 w-16 object-cover rounded-md border"
+                />
+                <button
+                  onClick={() => removeImage(i)}
+                  className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Input */}
-      <div className="p-4 border-t flex-shrink-0">
+      <div className="p-3 border-t flex-shrink-0">
         <div className="flex gap-2">
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImageSelect}
+            className="hidden"
+          />
+
+          {/* Image upload button */}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={loading || attachedImages.length >= 5}
+            className="self-end h-9 w-9 flex-shrink-0"
+            title="Bifoga bild (max 5)"
+          >
+            <ImagePlus className="h-4 w-4" />
+          </Button>
+
           <Textarea
             ref={textareaRef}
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="Ställ en fråga om kost, makros eller recept..."
-            className="min-h-[60px] max-h-[120px] resize-none"
+            placeholder="Ställ en fråga eller bifoga en bild..."
+            className="min-h-[36px] max-h-[120px] resize-none text-sm"
             onKeyDown={handleKeyDown}
             disabled={loading}
           />
           <Button
             onClick={() => handleSend()}
-            disabled={loading || !input.trim()}
-            className="self-end"
+            disabled={loading || (!input.trim() && attachedImages.length === 0)}
+            className="self-end h-9 w-9 flex-shrink-0"
             size="icon"
           >
             {loading ? (
@@ -260,6 +367,9 @@ export function AIChatPanel({
             )}
           </Button>
         </div>
+        <p className="text-[10px] text-muted-foreground mt-1.5 text-center">
+          Bifoga bilder på mat för analys eller ställ frågor om kost
+        </p>
       </div>
     </Card>
   );

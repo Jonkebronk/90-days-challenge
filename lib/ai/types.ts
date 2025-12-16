@@ -17,6 +17,7 @@ export interface AIMessage {
   content: string;
   timestamp: Date;
   reasoning?: string; // Chain-of-thought från <reasoning> tags
+  images?: string[]; // Base64 eller URL:er till bilder
 }
 
 export interface AIConversationHistory {
@@ -298,9 +299,15 @@ export interface ValidationResult {
 // API REQUEST/RESPONSE
 // ============================================================================
 
+export interface ImageAttachment {
+  base64: string;
+  mediaType: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
+}
+
 export interface AIChatRequest {
   nutritionPlanId: string;
   message: string;
+  images?: ImageAttachment[];
   includeHistory?: boolean;
 }
 

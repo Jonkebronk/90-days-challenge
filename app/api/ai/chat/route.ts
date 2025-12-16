@@ -27,7 +27,9 @@ import {
   ClientMemory,
   CoachAISettingsInput,
   AIMessage,
+  ImageAttachment,
 } from '@/lib/ai/types';
+import type { ImageBlockParam, TextBlockParam } from '@anthropic-ai/sdk/resources/messages';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -55,11 +57,11 @@ function loadSlvData(): SlvFoodForPrompt[] {
 export async function POST(request: Request) {
   try {
     const body: AIChatRequest = await request.json();
-    const { nutritionPlanId, message, includeHistory = true } = body;
+    const { nutritionPlanId, message, images = [], includeHistory = true } = body;
 
-    if (!nutritionPlanId || !message) {
+    if (!nutritionPlanId || (!message && images.length === 0)) {
       return NextResponse.json(
-        { error: 'nutritionPlanId och message krävs' },
+        { error: 'nutritionPlanId och message eller bilder krävs' },
         { status: 400 }
       );
     }
@@ -200,14 +202,47 @@ export async function POST(request: Request) {
       ? (plan.aiConversation.messages as unknown as AIMessage[]) || []
       : [];
 
-    // Bygg meddelandelista för Claude
-    const claudeMessages = [
-      ...previousMessages.map(m => ({
-        role: m.role as 'user' | 'assistant',
-        content: m.content,
-      })),
-      { role: 'user' as const, content: message },
-    ];
+    // Bygg meddelandelista för Claude (med bildstöd)
+    const claudeMessages: Anthropic.MessageParam[] = previousMessages.map(m => ({
+      role: m.role as 'user' | 'assistant',
+      content: m.content,
+    }));
+
+    // Bygg det nya user-meddelandet med eventuella bilder
+    const userContent: (ImageBlockParam | TextBlockParam)[] = [];
+
+    // Lägg till bilder först
+    if (images && images.length > 0) {
+      for (const img of images) {
+        userContent.push({
+          type: 'image',
+          source: {
+            type: 'base64',
+            media_type: img.mediaType,
+            data: img.base64,
+          },
+        });
+      }
+    }
+
+    // Lägg till textmeddelandet
+    if (message) {
+      userContent.push({
+        type: 'text',
+        text: message,
+      });
+    } else if (images.length > 0) {
+      // Om bara bilder, be om analys
+      userContent.push({
+        type: 'text',
+        text: 'Analysera denna bild/dessa bilder och uppskatta näringsinnehållet (kalorier, protein, kolhydrater, fett). Ge också förslag på hur det passar in i kostplanen.',
+      });
+    }
+
+    claudeMessages.push({
+      role: 'user',
+      content: userContent,
+    });
 
     // Anropa Claude API
     const response = await anthropic.messages.create({

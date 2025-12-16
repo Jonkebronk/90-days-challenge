@@ -187,6 +187,20 @@ export function ChatMessage({ message, onFeedback, isLast }: ChatMessageProps) {
           </div>
         )}
 
+        {/* Images if any */}
+        {message.images && message.images.length > 0 && (
+          <div className="flex gap-2 flex-wrap mb-2">
+            {message.images.map((img, i) => (
+              <img
+                key={i}
+                src={img}
+                alt={`Bifogad bild ${i + 1}`}
+                className="max-h-32 max-w-[200px] object-cover rounded-md border"
+              />
+            ))}
+          </div>
+        )}
+
         {/* Message content */}
         <div className="text-sm whitespace-pre-wrap break-words">
           {formatContent(message.content)}
