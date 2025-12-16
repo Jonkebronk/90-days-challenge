@@ -166,10 +166,13 @@ export async function POST(request: Request) {
       : [];
 
     // Bygg meddelandelista för Claude (med bildstöd)
-    const claudeMessages: Anthropic.MessageParam[] = previousMessages.map(m => ({
-      role: m.role as 'user' | 'assistant',
-      content: m.content,
-    }));
+    // Filtrera och formatera tidigare meddelanden korrekt
+    const claudeMessages: Anthropic.MessageParam[] = previousMessages
+      .filter(m => m.content && typeof m.content === 'string' && m.content.trim().length > 0)
+      .map(m => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+      }));
 
     // Bygg det nya user-meddelandet med eventuella bilder
     const userContent: (ImageBlockParam | TextBlockParam)[] = [];
@@ -254,6 +257,11 @@ export async function POST(request: Request) {
     return NextResponse.json(responseData);
   } catch (error) {
     console.error('AI Chat error:', error);
+    // Logga mer detaljer för felsökning
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
     return NextResponse.json(
       { error: 'Ett fel uppstod vid kommunikation med AI:n' },
       { status: 500 }
