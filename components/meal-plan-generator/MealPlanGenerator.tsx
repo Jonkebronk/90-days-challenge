@@ -46,6 +46,7 @@ export function MealPlanGenerator({
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasLoaded, setHasLoaded] = useState(false); // Prevent re-loading on tab focus
 
   // Modal state
   const [sauceModalOpen, setSauceModalOpen] = useState(false);
@@ -61,8 +62,11 @@ export function MealPlanGenerator({
 
   // Load existing meal plan or create new one on mount
   useEffect(() => {
-    loadOrCreatePlan();
-  }, [nutritionPlanId]);
+    // Only load once per nutritionPlanId to prevent re-fetching on tab focus
+    if (!hasLoaded) {
+      loadOrCreatePlan();
+    }
+  }, [nutritionPlanId, hasLoaded]);
 
   const loadOrCreatePlan = async () => {
     setIsLoading(true);
@@ -86,12 +90,14 @@ export function MealPlanGenerator({
             onMealPlanIdChange(existingData.id);
           }
           setIsLoading(false);
+          setHasLoaded(true);
           return;
         }
       }
 
       // No existing plan, create a new one (don't force recreate on initial load)
       await createEmptyPlan(false);
+      setHasLoaded(true);
     } catch (err) {
       setError('Ett fel uppstod vid laddning av kostschema');
       console.error('Load error:', err);
