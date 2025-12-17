@@ -37,7 +37,6 @@ import {
   ArrowUp,
   ArrowDown,
   Utensils,
-  Dumbbell,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AddMealOptionDialog } from '@/components/AddMealOptionDialog'
@@ -186,8 +185,8 @@ export default function MealPlanTemplatePage() {
     calories: '',
   })
 
-  // Tabs state for Kostschema / Flexibel / Träning
-  const [activeTab, setActiveTab] = useState<'kostschema' | 'flexible' | 'training'>('kostschema')
+  // Tabs state for Kostschema / Flexibel
+  const [activeTab, setActiveTab] = useState<'kostschema' | 'flexible'>('kostschema')
   const [nutritionPlanId, setNutritionPlanId] = useState<string | null>(null)
   const [flexibleTargetMacros, setFlexibleTargetMacros] = useState<{ protein: number; carbs: number; fat: number; kcal: number } | null>(null)
 
@@ -868,9 +867,9 @@ export default function MealPlanTemplatePage() {
         defaultCarbs={formData.targetCarbs}
       />
 
-      {/* Tabs: Kostschema / Flexibel / Träning */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'kostschema' | 'flexible' | 'training')} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-white/5 border border-gold-primary/20 rounded-xl p-1">
+      {/* Tabs: Kostschema / Flexibel */}
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'kostschema' | 'flexible')} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-gold-primary/20 rounded-xl p-1">
           <TabsTrigger
             value="kostschema"
             className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-400 rounded-lg transition-all"
@@ -884,13 +883,6 @@ export default function MealPlanTemplatePage() {
           >
             <UtensilsCrossed className="w-4 h-4 mr-2" />
             Flexibel
-          </TabsTrigger>
-          <TabsTrigger
-            value="training"
-            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-400 rounded-lg transition-all"
-          >
-            <Dumbbell className="w-4 h-4 mr-2" />
-            Träning
           </TabsTrigger>
         </TabsList>
 
@@ -1236,20 +1228,6 @@ export default function MealPlanTemplatePage() {
           )}
         </TabsContent>
 
-        {/* Träning Tab */}
-        <TabsContent value="training" className="mt-6">
-          <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
-            <CardContent className="py-12 text-center">
-              <Dumbbell className="w-12 h-12 mx-auto text-gold-primary/50 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-200 mb-2">
-                Träningskosttillskott
-              </h3>
-              <p className="text-gray-400 text-sm">
-                Här kan du lägga till pre- och post-workout kosttillskott för klienten
-              </p>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
 
       {/* Add Meal Dialog */}

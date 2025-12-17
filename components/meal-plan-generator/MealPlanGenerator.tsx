@@ -99,15 +99,16 @@ export function MealPlanGenerator({
         try {
           const response = await fetch(`/api/recipes?mealType=${mealType}&limit=5`);
           if (response.ok) {
-            const recipes = await response.json();
+            const data = await response.json();
+            const recipes = data.recipes || [];
             suggestions[mealType] = recipes.map((r: any) => ({
               id: r.id,
-              name: r.name,
-              image: r.image,
-              kcal: r.kcal || 0,
-              protein: r.protein || 0,
-              carbs: r.carbs || 0,
-              fat: r.fat || 0,
+              name: r.title || r.name,
+              image: r.coverImage || r.image,
+              kcal: r.caloriesPerServing || r.kcal || 0,
+              protein: r.proteinPerServing || r.protein || 0,
+              carbs: r.carbsPerServing || r.carbs || 0,
+              fat: r.fatPerServing || r.fat || 0,
             }));
           }
         } catch (err) {

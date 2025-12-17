@@ -133,7 +133,7 @@ export function ClientStyleMealCard({
   recipeSuggestions = [],
   onSelectRecipe,
 }: ClientStyleMealCardProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Modal state for product selection
   const [selectModalOpen, setSelectModalOpen] = useState(false);
