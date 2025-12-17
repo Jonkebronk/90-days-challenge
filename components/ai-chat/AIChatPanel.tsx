@@ -92,25 +92,39 @@ function parseAIMealPlan(content: string): ParsedMeal[] {
     const items: ParsedMealItem[] = [];
 
     // Parse lines looking for food items with grams
-    // Handles: "├─ Kvarg: 200g", "Kvarg naturell: 200g (20g P...)", "- Banan: 150g"
+    // Handles various formats:
+    // "├─ Havregryn (torr): 50g (P 6.75g...)"
+    // "├─ Kvarg naturell fett 0,2%: 200g"
+    // "- Banan: 150g"
     const lines = section.split('\n');
     for (const line of lines) {
-      // Skip totalt lines and empty lines
-      if (line.includes('Totalt') || line.includes('TOTALT') || !line.trim()) {
+      // Skip totalt lines, empty lines, and non-food lines
+      if (line.includes('Totalt') || line.includes('TOTALT') ||
+          line.includes('Makromål') || line.includes('LIVSMEDEL') ||
+          line.includes('kcal') && !line.includes(':') ||
+          !line.trim()) {
         continue;
       }
 
       // Match patterns like:
-      // "├─ Kvarg naturell fett 0,2%: 200g (20g P, 10g K, 0g F)"
-      // "├─ Banan: 150g (2g P, 34g K, 0g F)"
-      // "Kycklingfilé: 150g"
-      const foodMatch = line.match(/[├└─\-\s]*([^:(\d]+?):\s*(\d+)\s*g/i);
+      // "├─ Havregryn (torr): 50g (P 6.75g, K 32.5g, F 3.4g) - 187 kcal"
+      // "├─ Ägg (2 st medelstora, rå): 130g"
+      // "└─ Kvarg färskost fett 1%: 150g"
+      // Allow parentheses in food name before the colon
+      const foodMatch = line.match(/[├└─\-\s]*([^:]+?):\s*(\d+)\s*g/i);
       if (foodMatch) {
-        const name = foodMatch[1].trim().replace(/^\*\*|\*\*$/g, '').replace(/^\s*[├└─\-]\s*/, '');
+        let name = foodMatch[1].trim()
+          .replace(/^\*\*|\*\*$/g, '')  // Remove markdown bold
+          .replace(/^\s*[├└─\-]\s*/, '')  // Remove tree characters
+          .replace(/\s*\([^)]*\)\s*$/, '')  // Remove trailing parentheses like "(torr)" or "(2 st...)"
+          .trim();
         const grams = parseInt(foodMatch[2]);
+
+        console.log(`Parsed food: "${name}" ${grams}g from line: "${line.substring(0, 60)}..."`);
 
         if (name && grams > 0 && name.length > 1) {
           const category = determineFoodCategory(name);
+          console.log(`  Category for "${name}": ${category}`);
           // Only add items with valid categories (skip vegetables)
           if (category) {
             items.push({ name, grams, category });

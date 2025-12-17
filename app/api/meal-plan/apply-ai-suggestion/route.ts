@@ -308,24 +308,34 @@ export async function POST(request: NextRequest) {
     const appliedItems: string[] = [];
     const failedItems: string[] = [];
 
+    console.log('Processing suggestions:', JSON.stringify(suggestions, null, 2));
+
     // Process each suggested meal
     for (const suggestion of suggestions) {
       const { mealIndex, items } = suggestion;
 
+      console.log(`Processing meal ${mealIndex} with ${items.length} items`);
+
       if (mealIndex < 0 || mealIndex >= meals.length) {
+        console.log(`  Skipping - invalid meal index (max: ${meals.length - 1})`);
         continue;
       }
 
       const meal = updatedMeals[mealIndex];
 
       for (const item of items) {
+        console.log(`  Processing item: "${item.name}" ${item.grams}g (${item.category})`);
+
         // Find matching SLV food
         const slvFood = findBestMatch(item.name, slvFoods);
 
         if (!slvFood) {
+          console.log(`    FAILED: No SLV match found for "${item.name}"`);
           failedItems.push(item.name);
           continue;
         }
+
+        console.log(`    MATCHED: "${item.name}" -> "${slvFood.namn}"`)
 
         // Calculate macros
         const macros = calculateMacros(slvFood, item.grams);
