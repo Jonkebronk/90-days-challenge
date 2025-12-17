@@ -95,9 +95,19 @@ export function MealPlanGenerator({
         fat: number;
       }>> = {};
 
+      // Map Swedish meal types to English for recipe API
+      const mealTypeMapping: Record<string, string> = {
+        'frukost': 'breakfast',
+        'mellanmål': 'snack',
+        'lunch': 'lunch',
+        'middag': 'dinner',
+        'kvällsmål': 'snack',
+      };
+
       for (const mealType of mealTypes) {
         try {
-          const response = await fetch(`/api/recipes?mealType=${mealType}&limit=5`);
+          const englishMealType = mealTypeMapping[mealType] || mealType;
+          const response = await fetch(`/api/recipes?mealType=${englishMealType}&limit=5`);
           if (response.ok) {
             const data = await response.json();
             const recipes = data.recipes || [];
