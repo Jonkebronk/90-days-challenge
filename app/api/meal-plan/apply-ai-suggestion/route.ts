@@ -37,6 +37,7 @@ interface AISuggestedMeal {
 }
 
 // Categories that are compound dishes (rätter) - should be EXCLUDED
+// NOTE: 'gröt' is NOT excluded since we want "Havregrynsgröt fullkorn" for havregryn
 const EXCLUDED_CATEGORIES = [
   'blodprodukter',
   'blodrätter',
@@ -44,14 +45,11 @@ const EXCLUDED_CATEGORIES = [
   'kakor',
   'tårtor',
   'efterrätter',
-  'rätter',
   'glass',
   'godis',
   'grynrätter',
-  'gröt',
   'hamburgare',
   'korvrätter',
-  'köttprodukter',
   'kötträtter',
   'majonnässallad',
   'röror',
@@ -64,7 +62,6 @@ const EXCLUDED_CATEGORIES = [
   'paj',
   'pirog',
   'färdig smörgås',
-  'potatisprodukter',
   'potatisrätter',
   'risrätter',
   'sallad blandad',
@@ -72,7 +69,6 @@ const EXCLUDED_CATEGORIES = [
   'söta soppor',
   'kräm',
   'efterrättssås',
-  'äggprodukter',
   'äggrätter',
   'blandade rätter',
 ];
@@ -116,11 +112,11 @@ function normalizeName(name: string): string {
 
 // Common food name mappings for better matching
 const FOOD_MAPPINGS: Record<string, string[]> = {
-  'ägg': ['ägg hönsägg helt rå', 'ägg hela rå', 'hönsägg'],
-  'havregryn': ['havregryn', 'havregrynsgröt'],
-  'hallon': ['hallon', 'hallon frysta', 'hallon fryst'],
-  'blåbär': ['blåbär', 'blåbär frysta', 'blåbär fryst'],
-  'kvarg': ['kvarg naturell', 'kvarg'],
+  'ägg': ['ägg kokt', 'ägg hönsägg helt rå', 'ägg hela rå', 'hönsägg'],
+  'havregryn': ['havregryn fullkorn', 'havregrynsgröt fullkorn', 'havregryn'],
+  'hallon': ['hallon', 'hallon frysta', 'hallon blåbär frysvara'],
+  'blåbär': ['blåbär', 'blåbär frysta', 'hallon blåbär frysvara'],
+  'kvarg': ['kvarg naturell fett 0,2%', 'kvarg naturell', 'kvarg färskost fett 1%'],
   'keso': ['keso', 'cottage cheese'],
   'ris': ['ris vitt rått', 'ris råris rått', 'ris'],
   'kyckling': ['kycklingfilé rå', 'kycklingbröst rå', 'kyckling'],
@@ -134,7 +130,7 @@ const FOOD_MAPPINGS: Record<string, string[]> = {
   'yoghurt': ['yoghurt naturell', 'yoghurt'],
   'ost': ['ost hårdost', 'ost'],
   'bröd': ['bröd', 'knäckebröd'],
-  'havre': ['havregryn', 'havreflingor'],
+  'havre': ['havregryn fullkorn', 'havregrynsgröt fullkorn'],
   'jordnötssmör': ['jordnötssmör', 'jordnötter'],
 };
 
