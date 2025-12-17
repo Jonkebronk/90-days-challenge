@@ -11,10 +11,7 @@ import {
   User,
   Loader2,
   Wand2,
-  LayoutGrid,
-  Utensils,
 } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MealPlanGenerator } from '@/components/meal-plan-generator';
 import { InlineMealSettings } from '@/components/meal-plan-generator/InlineMealSettings';
 import { AIChatPanel } from '@/components/ai-chat';
@@ -105,7 +102,6 @@ export default function NutritionPlanDetailPage() {
   const [nutritionSystem, setNutritionSystem] = useState<string>('balanced');
   const [isRecreating, setIsRecreating] = useState(false);
   const [mealPlanKey, setMealPlanKey] = useState(0); // Force re-render of MealPlanGenerator
-  const [activeTab, setActiveTab] = useState<'overview' | 'flexible'>('flexible');
 
   const planId = params.id as string;
 
@@ -431,112 +427,51 @@ export default function NutritionPlanDetailPage() {
           </Card>
         </div>
 
-        {/* Middle content - Tabs */}
+        {/* Middle content - Meal Plan */}
         <div className="flex-1 min-w-0">
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'overview' | 'flexible')}>
-            <TabsList className="mb-4">
-              <TabsTrigger value="flexible" className="gap-2">
-                <Utensils className="h-4 w-4" />
-                Flexibel kosthållning
-              </TabsTrigger>
-              <TabsTrigger value="overview" className="gap-2">
-                <LayoutGrid className="h-4 w-4" />
-                Översikt
-              </TabsTrigger>
-            </TabsList>
-
-            {/* Flexibel kosthållning - MealPlanGenerator */}
-            <TabsContent value="flexible" className="mt-0">
-              {existingMealPlan ? (
-                <MealPlanGenerator
-                  key={mealPlanKey}
-                  nutritionPlanId={plan.id}
-                  targetMacros={targetMacros}
-                  onSave={() => {
-                    fetchPlan();
-                  }}
-                  onMealPlanIdChange={(newId: string) => {
-                    console.log('Meal plan ID changed to:', newId);
-                    setExistingMealPlan(prev => {
-                      const updated = prev
-                        ? { ...prev, id: newId }
-                        : { id: newId, meals: [], actualMacros: { protein: 0, carbs: 0, fat: 0, kcal: 0 }, targetMacros: targetMacros };
-                      return updated;
-                    });
-                  }}
-                />
-              ) : (
-                <Card className="border-2 border-dashed border-purple-200 bg-purple-50/50 dark:bg-purple-950/20 dark:border-purple-800">
-                  <CardContent className="py-8 text-center">
-                    <Wand2 className="h-12 w-12 text-purple-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">
-                      Generera kostschema
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Skapa ett detaljerat kostschema med exakta gramtal baserat på makromålen
-                    </p>
-                    <Button
-                      onClick={() => setShowGenerator(true)}
-                      className="bg-purple-500 hover:bg-purple-600"
-                    >
-                      <Wand2 className="h-4 w-4 mr-2" />
-                      Generera kostschema
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-
-            {/* Översikt - Summary view */}
-            <TabsContent value="overview" className="mt-0">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Kostplans-översikt</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <p className="text-2xl font-bold text-blue-600">{Math.round(plan.dailyCalorieTarget)}</p>
-                      <p className="text-sm text-muted-foreground">Kalorier/dag</p>
-                    </div>
-                    <div className="text-center p-4 bg-red-50 rounded-lg">
-                      <p className="text-2xl font-bold text-red-600">{plan.proteinGrams}g</p>
-                      <p className="text-sm text-muted-foreground">Protein</p>
-                    </div>
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <p className="text-2xl font-bold text-green-600">{plan.carbGrams}g</p>
-                      <p className="text-sm text-muted-foreground">Kolhydrater</p>
-                    </div>
-                    <div className="text-center p-4 bg-amber-50 rounded-lg">
-                      <p className="text-2xl font-bold text-amber-600">{plan.fatGrams}g</p>
-                      <p className="text-sm text-muted-foreground">Fett</p>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-muted-foreground">Antal måltider</span>
-                      <p className="font-medium">{mealConfigs.length} per dag</p>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Träningstid</span>
-                      <p className="font-medium">{WORKOUT_TIME_LABELS[workoutTime] || workoutTime}</p>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Kostsystem</span>
-                      <p className="font-medium">{NUTRITION_SYSTEM_LABELS[nutritionSystem] || nutritionSystem}</p>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Status</span>
-                      <p className="font-medium">{plan.status === 'ACTIVE' ? 'Aktiv' : plan.status === 'DRAFT' ? 'Utkast' : 'Arkiverad'}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          {existingMealPlan ? (
+            /* Show existing meal plan */
+            <MealPlanGenerator
+              key={mealPlanKey}
+              nutritionPlanId={plan.id}
+              targetMacros={targetMacros}
+              onSave={() => {
+                // Refresh data after save
+                fetchPlan();
+              }}
+              onMealPlanIdChange={(newId: string) => {
+                // Update meal plan ID when it changes (e.g., after "Börja om")
+                console.log('Meal plan ID changed to:', newId);
+                setExistingMealPlan(prev => {
+                  const updated = prev
+                    ? { ...prev, id: newId }
+                    : { id: newId, meals: [], actualMacros: { protein: 0, carbs: 0, fat: 0, kcal: 0 }, targetMacros: targetMacros };
+                  console.log('Updated existingMealPlan:', updated);
+                  return updated;
+                });
+              }}
+            />
+          ) : (
+            /* Generate meal plan button */
+            <Card className="border-2 border-dashed border-purple-200 bg-purple-50/50 dark:bg-purple-950/20 dark:border-purple-800">
+              <CardContent className="py-8 text-center">
+                <Wand2 className="h-12 w-12 text-purple-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">
+                  Generera kostschema
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Skapa ett detaljerat kostschema med exakta gramtal baserat på makromålen
+                </p>
+                <Button
+                  onClick={() => setShowGenerator(true)}
+                  className="bg-purple-500 hover:bg-purple-600"
+                >
+                  <Wand2 className="h-4 w-4 mr-2" />
+                  Generera kostschema
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Right sidebar - AI Chat */}
