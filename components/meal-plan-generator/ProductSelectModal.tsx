@@ -347,18 +347,18 @@ export function ProductSelectModal({
 
         {/* Subkategori-chips */}
         {subcategories.length > 1 && (
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {subcategories.map((sub) => (
               <button
                 key={sub.key}
                 onClick={() => setActiveSubcategory(sub.key)}
                 className={cn(
-                  'px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shrink-0',
+                  'px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shrink-0 border',
                   activeSubcategory === sub.key
                     ? activeTab === 'slv'
-                      ? 'bg-green-600 text-white'
-                      : 'bg-amber-500 text-white'
-                    : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                      ? 'bg-green-600 text-white border-green-600'
+                      : 'bg-amber-500 text-white border-amber-500'
+                    : 'bg-white text-zinc-700 border-zinc-300 hover:bg-zinc-50 hover:border-zinc-400'
                 )}
               >
                 {sub.label}
