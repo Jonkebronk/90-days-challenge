@@ -81,16 +81,33 @@ export async function PUT(
       return NextResponse.json({ error: 'Food item not found' }, { status: 404 });
     }
 
-    // Calculate new macros based on new grams
-    const oldGrams = item.selected.grams;
-    const factor = grams / oldGrams;
+    // Fetch the food item to get accurate per-100g values
+    const foodItem = await prisma.foodItem.findUnique({
+      where: { id: item.selected.foodId },
+    });
 
-    const newMacros: CalculatedMacros = {
-      protein: Math.round(item.selected.macros.protein * factor * 10) / 10,
-      carbs: Math.round(item.selected.macros.carbs * factor * 10) / 10,
-      fat: Math.round(item.selected.macros.fat * factor * 10) / 10,
-      kcal: Math.round(item.selected.macros.kcal * factor),
-    };
+    let newMacros: CalculatedMacros;
+
+    if (foodItem) {
+      // Calculate macros from per-100g values for accuracy
+      const factor = grams / 100;
+      newMacros = {
+        protein: Math.round(Number(foodItem.proteinG || 0) * factor * 10) / 10,
+        carbs: Math.round(Number(foodItem.carbsG || 0) * factor * 10) / 10,
+        fat: Math.round(Number(foodItem.fatG || 0) * factor * 10) / 10,
+        kcal: Math.round(Number(foodItem.calories || 0) * factor),
+      };
+    } else {
+      // Fallback: scale from existing macros (if food not found)
+      const oldGrams = item.selected.grams || 100;
+      const factor = oldGrams > 0 ? grams / oldGrams : 0;
+      newMacros = {
+        protein: Math.round(item.selected.macros.protein * factor * 10) / 10,
+        carbs: Math.round(item.selected.macros.carbs * factor * 10) / 10,
+        fat: Math.round(item.selected.macros.fat * factor * 10) / 10,
+        kcal: Math.round(item.selected.macros.kcal * factor),
+      };
+    }
 
     // Update the item
     item.selected.grams = Math.round(grams);

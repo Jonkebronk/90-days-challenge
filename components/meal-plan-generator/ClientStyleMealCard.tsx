@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ProductSelectModal } from './ProductSelectModal';
+import { RecipeDetailDialog } from './RecipeDetailDialog';
 import { cn } from '@/lib/utils';
 import type {
   GeneratedMeal,
@@ -157,6 +158,16 @@ export function ClientStyleMealCard({
   const [selectCategory, setSelectCategory] = useState<MacroCategory | null>(null);
   const [selectTargetMacro, setSelectTargetMacro] = useState(0);
 
+  // Recipe detail dialog state
+  const [recipeDialogOpen, setRecipeDialogOpen] = useState(false);
+  const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
+
+  // Handle recipe click
+  const handleRecipeClick = (recipeId: string) => {
+    setSelectedRecipeId(recipeId);
+    setRecipeDialogOpen(true);
+  };
+
   const mealLabel = mealNumber
     ? `${MEAL_TYPE_LABELS[meal.type]} ${mealNumber}`
     : MEAL_TYPE_LABELS[meal.type];
@@ -203,7 +214,7 @@ export function ClientStyleMealCard({
     }
   };
 
-  // Render a single food item - compact single row layout
+  // Render a single food item - responsive layout (stacked on mobile, row on desktop)
   const renderFoodItem = (
     item: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros } },
     category: MacroCategory,
@@ -214,53 +225,77 @@ export function ClientStyleMealCard({
     return (
       <div
         key={item.selected.foodId}
-        className="flex items-center gap-3 py-2 px-1"
+        className="py-2 px-1 space-y-1.5 sm:space-y-0 sm:flex sm:items-center sm:gap-3"
       >
-        {/* Food name */}
-        <div className="flex-1 min-w-0">
-          <span className="text-sm text-zinc-800 truncate block">
+        {/* Row 1 on mobile: Food name + actions */}
+        <div className="flex items-center gap-2 sm:flex-1 sm:min-w-0">
+          <span className="flex-1 text-sm text-zinc-800 font-medium sm:font-normal truncate">
             {item.selected.name}
           </span>
-        </div>
-
-        {/* Gram input */}
-        <input
-          type="number"
-          value={item.selected.grams}
-          onChange={(e) => handleGramInputChange(category, item.selected.foodId, parseInt(e.target.value) || 0)}
-          disabled={disabled}
-          className="w-14 text-center text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded px-1 py-0.5 focus:outline-none focus:border-amber-400"
-          min="0"
-        />
-
-        {/* Macros - compact */}
-        <div className="flex items-center gap-3 text-xs tabular-nums">
-          <span className="text-red-600 font-medium w-12 text-right">{macros.protein.toFixed(1)}g</span>
-          <span className="text-blue-600 font-medium w-10 text-right">{macros.fat.toFixed(1)}g</span>
-          <span className="text-green-600 font-medium w-10 text-right">{macros.carbs.toFixed(1)}g</span>
-          <span className="text-amber-600 font-medium w-10 text-right">{Math.round(macros.kcal)}</span>
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-0.5 shrink-0">
-          <button
-            onClick={() => !disabled && handleOpenSelectModal(category, getTargetMacro(category))}
-            disabled={disabled}
-            className="p-1 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 disabled:opacity-30 transition-colors"
-            title="Byt"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-          </button>
-          {onRemoveFood && (
+          {/* Actions - visible on mobile */}
+          <div className="flex items-center gap-0.5 shrink-0 sm:hidden">
             <button
-              onClick={() => !disabled && onRemoveFood(mealIndex, category, item.selected.foodId)}
+              onClick={() => !disabled && handleOpenSelectModal(category, getTargetMacro(category))}
               disabled={disabled}
-              className="p-1 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 disabled:opacity-30 transition-colors"
-              title="Ta bort"
+              className="p-1.5 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 disabled:opacity-30 transition-colors"
+              title="Byt"
             >
-              <X className="h-3.5 w-3.5" />
+              <RefreshCw className="h-4 w-4" />
             </button>
-          )}
+            {onRemoveFood && (
+              <button
+                onClick={() => !disabled && onRemoveFood(mealIndex, category, item.selected.foodId)}
+                disabled={disabled}
+                className="p-1.5 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 disabled:opacity-30 transition-colors"
+                title="Ta bort"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Row 2 on mobile: Gram input + Macros */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Gram input - no spinners */}
+          <input
+            type="number"
+            value={item.selected.grams}
+            onChange={(e) => handleGramInputChange(category, item.selected.foodId, parseInt(e.target.value) || 0)}
+            disabled={disabled}
+            className="w-14 text-center text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded px-1 py-0.5 focus:outline-none focus:border-amber-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            min="0"
+          />
+
+          {/* Macros */}
+          <div className="flex items-center gap-2 sm:gap-3 text-xs tabular-nums flex-1 sm:flex-none">
+            <span className="text-red-600 font-medium">{macros.protein.toFixed(1)}g</span>
+            <span className="text-blue-600 font-medium">{macros.fat.toFixed(1)}g</span>
+            <span className="text-green-600 font-medium">{macros.carbs.toFixed(1)}g</span>
+            <span className="text-amber-600 font-medium">{Math.round(macros.kcal)}</span>
+          </div>
+
+          {/* Actions - hidden on mobile, visible on desktop */}
+          <div className="hidden sm:flex items-center gap-0.5 shrink-0">
+            <button
+              onClick={() => !disabled && handleOpenSelectModal(category, getTargetMacro(category))}
+              disabled={disabled}
+              className="p-1 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 disabled:opacity-30 transition-colors"
+              title="Byt"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+            </button>
+            {onRemoveFood && (
+              <button
+                onClick={() => !disabled && onRemoveFood(mealIndex, category, item.selected.foodId)}
+                disabled={disabled}
+                className="p-1 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 disabled:opacity-30 transition-colors"
+                title="Ta bort"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -511,7 +546,8 @@ export function ClientStyleMealCard({
                   {mealRecipes.map((recipe) => (
                     <div
                       key={recipe.id}
-                      className="flex items-center gap-3 p-2 bg-zinc-50 rounded-lg"
+                      className="flex items-center gap-3 p-2 bg-zinc-50 rounded-lg hover:bg-zinc-100 transition-colors cursor-pointer"
+                      onClick={() => handleRecipeClick(recipe.recipeId)}
                     >
                       {/* Recipe image - round */}
                       <div className="w-10 h-10 rounded-full overflow-hidden bg-zinc-200 shrink-0">
@@ -538,7 +574,10 @@ export function ClientStyleMealCard({
                       {/* Remove button */}
                       {onRemoveMealRecipe && (
                         <button
-                          onClick={() => onRemoveMealRecipe(mealIndex, recipe.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRemoveMealRecipe(mealIndex, recipe.id);
+                          }}
                           disabled={disabled}
                           className="p-1.5 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 transition-colors"
                           title="Ta bort"
@@ -589,6 +628,13 @@ export function ClientStyleMealCard({
           onSelect={handleProductSelect}
         />
       )}
+
+      {/* Recipe Detail Dialog */}
+      <RecipeDetailDialog
+        recipeId={selectedRecipeId}
+        open={recipeDialogOpen}
+        onOpenChange={setRecipeDialogOpen}
+      />
     </div>
   );
 }
