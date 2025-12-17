@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Sparkles, RefreshCw, Trash2, Bot, Loader2 } from 'lucide-react';
+import { Send, Sparkles, RefreshCw, Trash2, Bot, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { ChatMessage } from './ChatMessage';
 import { ApprovalDialog } from './ApprovalDialog';
+import { RecipeCard } from './RecipeCard';
 import type { AIMessage } from '@/lib/ai/types';
 
 // =============================================================================
@@ -17,20 +18,16 @@ import type { AIMessage } from '@/lib/ai/types';
 
 type AgentMode = 'wizard' | 'planning';
 
-interface AgentResponse {
-  response: string;
-  toolCalls?: Array<{
-    name: string;
-    input: any;
-    result: any;
-  }>;
-  requiresApproval?: boolean;
-  approvalRequest?: {
-    type: 'meal_plan' | 'nutrition_plan';
-    summary: string;
-    details: any;
-  };
-  conversationId: string;
+interface StreamEvent {
+  type: 'status' | 'tool_start' | 'tool_end' | 'text_delta' | 'text_done' | 'approval' | 'error' | 'done';
+  data: any;
+}
+
+interface ToolStatus {
+  name: string;
+  status: 'running' | 'done' | 'error';
+  message?: string;
+  summary?: string;
 }
 
 interface AIChatPanelAgentProps {
@@ -66,23 +63,27 @@ export function AIChatPanelAgent({
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [conversationId, setConversationId] = useState<string | undefined>();
-  const [pendingApproval, setPendingApproval] = useState<AgentResponse['approvalRequest'] | null>(null);
+  const [pendingApproval, setPendingApproval] = useState<any>(null);
   const [approving, setApproving] = useState(false);
+
+  // Streaming state
+  const [streamingText, setStreamingText] = useState('');
+  const [currentStatus, setCurrentStatus] = useState<string | null>(null);
+  const [activeTools, setActiveTools] = useState<ToolStatus[]>([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // ==========================================================================
   // EFFECTS
   // ==========================================================================
 
-  // Load conversation on mount
   useEffect(() => {
     loadConversation();
   }, [nutritionPlanId, clientId]);
 
-  // Scroll to bottom on new messages
   useEffect(() => {
     if (scrollAreaRef.current) {
       const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
@@ -90,7 +91,7 @@ export function AIChatPanelAgent({
         scrollContainer.scrollTop = scrollContainer.scrollHeight;
       }
     }
-  }, [messages]);
+  }, [messages, streamingText, activeTools]);
 
   // ==========================================================================
   // HANDLERS
@@ -119,9 +120,15 @@ export function AIChatPanelAgent({
     }
   };
 
-  const handleSend = useCallback(async (messageText?: string) => {
+  const handleSendStreaming = useCallback(async (messageText?: string) => {
     const text = messageText || input;
     if (!text.trim() || loading) return;
+
+    // Abort any existing request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
 
     const userMessage: AIMessage = {
       role: 'user',
@@ -132,9 +139,12 @@ export function AIChatPanelAgent({
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setLoading(true);
+    setStreamingText('');
+    setCurrentStatus(null);
+    setActiveTools([]);
 
     try {
-      const response = await fetch('/api/ai/agent', {
+      const response = await fetch('/api/ai/agent/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -144,132 +154,139 @@ export function AIChatPanelAgent({
           nutritionPlanId,
           clientId,
         }),
+        signal: abortControllerRef.current.signal,
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `API error (${response.status})`);
+        throw new Error(`API error (${response.status})`);
       }
 
-      const data: AgentResponse = await response.json();
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('No response body');
 
-      // Save conversation ID
-      if (data.conversationId) {
-        setConversationId(data.conversationId);
-      }
+      const decoder = new TextDecoder();
+      let buffer = '';
 
-      // Add assistant message
-      const assistantMessage: AIMessage = {
-        role: 'assistant',
-        content: data.response,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, assistantMessage]);
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
 
-      // Handle approval requests
-      if (data.requiresApproval && data.approvalRequest) {
-        setPendingApproval(data.approvalRequest);
-      }
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
 
-      // Check if a plan was created (for wizard mode)
-      if (mode === 'wizard' && data.toolCalls) {
-        const createPlanCall = data.toolCalls.find(tc => tc.name === 'create_nutrition_plan');
-        if (createPlanCall?.result?.data?.planId) {
-          onPlanCreated?.(createPlanCall.result.data.planId);
-        }
-      }
-
-      // Check if meal plan was saved
-      if (data.toolCalls) {
-        const saveMealCall = data.toolCalls.find(tc => tc.name === 'save_meal_plan');
-        if (saveMealCall?.result?.success) {
-          onMealPlanUpdated?.();
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const event: StreamEvent = JSON.parse(line.slice(6));
+              handleStreamEvent(event);
+            } catch (e) {
+              // Ignore parse errors
+            }
+          }
         }
       }
 
     } catch (error) {
-      console.error('Agent error:', error);
+      if ((error as Error).name === 'AbortError') return;
+
+      console.error('Streaming error:', error);
       const errorMessage: AIMessage = {
         role: 'assistant',
-        content: error instanceof Error ? error.message : 'An error occurred. Please try again.',
+        content: error instanceof Error ? error.message : 'Ett fel uppstod',
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setLoading(false);
+      setStreamingText('');
+      setCurrentStatus(null);
+      setActiveTools([]);
       textareaRef.current?.focus();
     }
-  }, [input, loading, conversationId, mode, nutritionPlanId, clientId, onPlanCreated, onMealPlanUpdated]);
+  }, [input, loading, conversationId, mode, nutritionPlanId, clientId]);
 
-  const handleApproval = async (approved: boolean, feedback?: string) => {
-    if (!pendingApproval) return;
+  const handleStreamEvent = (event: StreamEvent) => {
+    switch (event.type) {
+      case 'status':
+        setCurrentStatus(event.data.message);
+        break;
 
-    setApproving(true);
+      case 'tool_start':
+        setActiveTools(prev => [
+          ...prev,
+          { name: event.data.name, status: 'running', message: event.data.message }
+        ]);
+        break;
 
-    try {
-      // Send approval message
-      const approvalMessage = approved ? 'OK' : feedback || 'Avbryt';
+      case 'tool_end':
+        setActiveTools(prev =>
+          prev.map(t =>
+            t.name === event.data.name
+              ? { ...t, status: event.data.success ? 'done' : 'error', summary: event.data.summary }
+              : t
+          )
+        );
+        break;
 
-      const response = await fetch('/api/ai/agent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: approvalMessage,
-          conversationId,
-          mode,
-          nutritionPlanId,
-          clientId,
-          approvalContext: approved ? pendingApproval : undefined,
-        }),
-      });
+      case 'text_delta':
+        setStreamingText(prev => prev + event.data.text);
+        break;
 
-      if (!response.ok) {
-        throw new Error('Failed to process approval');
-      }
+      case 'text_done':
+        const assistantMessage: AIMessage = {
+          role: 'assistant',
+          content: event.data.text,
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+        setStreamingText('');
+        break;
 
-      const data: AgentResponse = await response.json();
+      case 'approval':
+        setPendingApproval(event.data);
+        break;
 
-      // Add user message
-      const userMessage: AIMessage = {
-        role: 'user',
-        content: approvalMessage,
-        timestamp: new Date(),
-      };
-
-      // Add assistant response
-      const assistantMessage: AIMessage = {
-        role: 'assistant',
-        content: data.response,
-        timestamp: new Date(),
-      };
-
-      setMessages(prev => [...prev, userMessage, assistantMessage]);
-
-      // Check for new approval requests
-      if (data.requiresApproval && data.approvalRequest) {
-        setPendingApproval(data.approvalRequest);
-      } else {
-        setPendingApproval(null);
-      }
-
-      // Handle callbacks
-      if (approved) {
-        if (pendingApproval.type === 'nutrition_plan' && data.toolCalls) {
-          const createCall = data.toolCalls.find(tc => tc.name === 'create_nutrition_plan');
-          if (createCall?.result?.data?.planId) {
-            onPlanCreated?.(createCall.result.data.planId);
-          }
+      case 'done':
+        if (event.data.conversationId) {
+          setConversationId(event.data.conversationId);
         }
-        if (pendingApproval.type === 'meal_plan' && data.toolCalls) {
-          const saveCall = data.toolCalls.find(tc => tc.name === 'save_meal_plan');
-          if (saveCall?.result?.success) {
+        // Check for callbacks
+        if (event.data.toolCalls) {
+          const createPlanCall = event.data.toolCalls.find(
+            (tc: any) => tc.name === 'create_nutrition_plan'
+          );
+          if (createPlanCall?.result?.data?.planId) {
+            onPlanCreated?.(createPlanCall.result.data.planId);
+          }
+          const saveMealCall = event.data.toolCalls.find(
+            (tc: any) => tc.name === 'save_meal_plan'
+          );
+          if (saveMealCall?.result?.success) {
             onMealPlanUpdated?.();
           }
         }
-      }
+        break;
 
-    } catch (error) {
-      console.error('Approval error:', error);
+      case 'error':
+        const errorMsg: AIMessage = {
+          role: 'assistant',
+          content: event.data.message || 'Ett fel uppstod',
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, errorMsg]);
+        break;
+    }
+  };
+
+  const handleApproval = async (approved: boolean, feedback?: string) => {
+    if (!pendingApproval) return;
+    setApproving(true);
+
+    try {
+      const approvalMessage = approved ? 'OK' : feedback || 'Avbryt';
+      setPendingApproval(null);
+      await handleSendStreaming(approvalMessage);
     } finally {
       setApproving(false);
     }
@@ -295,7 +312,7 @@ export function AIChatPanelAgent({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      handleSendStreaming();
     }
   };
 
@@ -360,7 +377,7 @@ export function AIChatPanelAgent({
       {/* Messages */}
       <ScrollArea ref={scrollAreaRef} className="flex-1 bg-[#2f2f2f]">
         <CardContent className="p-4 space-y-4">
-          {messages.length === 0 && (
+          {messages.length === 0 && !loading && (
             <div className="text-center py-12">
               <Bot className="h-10 w-10 mx-auto mb-3 text-[#e07a5f] opacity-70" />
               <p className="text-gray-300 text-sm font-medium">
@@ -371,7 +388,7 @@ export function AIChatPanelAgent({
               <p className="text-gray-500 text-xs mt-2 max-w-[280px] mx-auto">
                 {mode === 'wizard'
                   ? 'Beskriv dig sjalv - alder, vikt, mal - sa bygger jag en personlig plan at dig.'
-                  : 'Jag kan generera maltidsscheman, byta livsmedel, och optimera makros.'}
+                  : 'Jag kan generera maltidsscheman, byta livsmedel, foresla recept och optimera makros.'}
               </p>
             </div>
           )}
@@ -380,9 +397,69 @@ export function AIChatPanelAgent({
             <ChatMessage
               key={i}
               message={msg}
-              isLast={i === messages.length - 1 && !pendingApproval}
+              isLast={i === messages.length - 1 && !loading && !pendingApproval}
             />
           ))}
+
+          {/* Streaming/Loading indicator */}
+          {loading && (
+            <div className="space-y-3">
+              {/* Status */}
+              {currentStatus && (
+                <div className="flex items-center gap-2 text-gray-400 text-sm">
+                  <Loader2 className="h-4 w-4 animate-spin text-[#e07a5f]" />
+                  <span>{currentStatus}</span>
+                </div>
+              )}
+
+              {/* Active tools */}
+              {activeTools.length > 0 && (
+                <div className="space-y-1.5">
+                  {activeTools.map((tool, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-2 text-xs bg-[#3a3a3a] rounded-lg px-3 py-2"
+                    >
+                      {tool.status === 'running' ? (
+                        <Loader2 className="h-3 w-3 animate-spin text-[#e07a5f]" />
+                      ) : tool.status === 'done' ? (
+                        <CheckCircle className="h-3 w-3 text-green-400" />
+                      ) : (
+                        <AlertCircle className="h-3 w-3 text-red-400" />
+                      )}
+                      <span className="text-gray-300">{tool.message || tool.name}</span>
+                      {tool.summary && (
+                        <span className="text-gray-500 ml-auto">{tool.summary}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Streaming text */}
+              {streamingText && (
+                <div className="bg-[#353535] rounded-xl p-3">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#5a5a5a] flex items-center justify-center">
+                      <Bot className="h-4 w-4 text-[#e07a5f]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-gray-200 whitespace-pre-wrap">{streamingText}</p>
+                      <span className="inline-block w-2 h-4 bg-[#e07a5f] animate-pulse ml-0.5" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Simple loading when no streaming yet */}
+              {!streamingText && !currentStatus && activeTools.length === 0 && (
+                <div className="flex items-center gap-2 text-gray-400 p-3 bg-[#3a3a3a] rounded-lg">
+                  <Loader2 className="h-4 w-4 animate-spin text-[#e07a5f]" />
+                  <span className="text-sm">Tanker...</span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Pending approval dialog */}
           {pendingApproval && (
@@ -395,13 +472,6 @@ export function AIChatPanelAgent({
               onModify={(feedback) => handleApproval(false, feedback)}
               isLoading={approving}
             />
-          )}
-
-          {loading && (
-            <div className="flex items-center gap-2 text-gray-400 p-3 bg-[#3a3a3a] rounded-lg">
-              <Loader2 className="h-4 w-4 animate-spin text-[#e07a5f]" />
-              <span className="text-sm">Tanker...</span>
-            </div>
           )}
 
           <div ref={messagesEndRef} />
@@ -421,7 +491,7 @@ export function AIChatPanelAgent({
             disabled={loading || !!pendingApproval}
           />
           <button
-            onClick={() => handleSend()}
+            onClick={() => handleSendStreaming()}
             disabled={loading || !input.trim() || !!pendingApproval}
             className="p-2 bg-[#e07a5f] hover:bg-[#c96a52] disabled:bg-[#4a4a4a] disabled:cursor-not-allowed text-white rounded-full transition-colors"
           >

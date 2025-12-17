@@ -2760,6 +2760,22 @@ model GeneratedMealPlan {
   @@map("generated_meal_plans")
 }
 
+// Meal Plan Version History - För undo/rollback
+model MealPlanVersion {
+  id              String   @id @default(cuid())
+  nutritionPlanId String
+
+  version       Int      // Versionsnummer, börjar på 1
+  meals         Json     // Snapshot av meals vid denna version
+  changeSummary String?  // Beskrivning av ändringen (t.ex. "Bytte lax mot kyckling")
+
+  createdAt DateTime @default(now())
+
+  @@unique([nutritionPlanId, version])
+  @@index([nutritionPlanId])
+  @@map("meal_plan_versions")
+}
+
 // ============================================================================
 // AI KOSTPLANERINGSAGENT - Tabeller för AI-assistenten
 // ============================================================================

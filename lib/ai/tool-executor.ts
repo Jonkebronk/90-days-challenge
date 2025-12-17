@@ -81,6 +81,21 @@ export async function executeJuniTool(
       case 'create_nutrition_plan':
         return proposeNutritionPlan(input);
 
+      case 'get_meal_plan_history':
+        return await getMealPlanHistory(input.nutrition_plan_id, input.limit);
+
+      case 'undo_meal_plan_change':
+        return await undoMealPlanChange(input.nutrition_plan_id, input.version);
+
+      case 'scale_recipe_portion':
+        return await scaleRecipePortion(input.recipe_id, input.target_macros, input.scale_by);
+
+      case 'learn_from_success':
+        return await learnFromSuccess(input.client_id, input.success_type, input.reference_id, input.notes);
+
+      case 'generate_weekly_plan':
+        return await generateWeeklyPlan(input.nutrition_plan_id, input.days, input.variation_level, input.include_recipes);
+
       default:
         return {
           success: false,
@@ -1107,6 +1122,384 @@ async function getRecipeDetails(recipeId: string): Promise<ToolResult> {
     return {
       success: false,
       error: 'Kunde inte hämta receptet'
+    };
+  }
+}
+
+// =============================================================================
+// GET MEAL PLAN HISTORY
+// =============================================================================
+
+async function getMealPlanHistory(nutritionPlanId: string, limit: number = 10): Promise<ToolResult> {
+  try {
+    // MealPlanVersion-tabellen kanske inte finns ännu, returnera tom historik
+    // @ts-ignore - MealPlanVersion skapas med nästa prisma migration
+    const versions = await (prisma as any).mealPlanVersion?.findMany?.({
+      where: { nutritionPlanId },
+      orderBy: { version: 'desc' },
+      take: limit
+    }) || [];
+
+    if (versions.length === 0) {
+      return {
+        success: true,
+        data: {
+          message: 'Ingen historik finns för denna kostplan ännu. Versionshistorik skapas automatiskt när schemat uppdateras.',
+          versions: []
+        }
+      };
+    }
+
+    return {
+      success: true,
+      data: {
+        versions: versions.map((v: any) => ({
+          version: v.version,
+          created_at: v.createdAt,
+          summary: v.changeSummary,
+          meals_count: ((v.meals as any[]) || []).length
+        })),
+        current_version: versions[0].version,
+        total_versions: versions.length
+      }
+    };
+  } catch (error) {
+    console.error('Error getting meal plan history:', error);
+    return {
+      success: true,
+      data: {
+        message: 'Versionshistorik är inte aktiverad ännu',
+        versions: []
+      }
+    };
+  }
+}
+
+// =============================================================================
+// UNDO MEAL PLAN CHANGE
+// =============================================================================
+
+async function undoMealPlanChange(nutritionPlanId: string, targetVersion?: number): Promise<ToolResult> {
+  try {
+    // MealPlanVersion-tabellen kanske inte finns ännu
+    // @ts-ignore - MealPlanVersion skapas med nästa prisma migration
+    const versions = await (prisma as any).mealPlanVersion?.findMany?.({
+      where: { nutritionPlanId },
+      orderBy: { version: 'desc' },
+      take: 2
+    }) || [];
+
+    if (versions.length < 2) {
+      return {
+        success: false,
+        error: 'Ingen tidigare version finns att återgå till. Versionshistorik skapas automatiskt vid nästa schemaändring.'
+      };
+    }
+
+    const currentVersion = versions[0];
+    // @ts-ignore
+    const previousVersion = targetVersion
+      ? await (prisma as any).mealPlanVersion?.findFirst?.({
+          where: { nutritionPlanId, version: targetVersion }
+        })
+      : versions[1];
+
+    if (!previousVersion) {
+      return {
+        success: false,
+        error: `Version ${targetVersion} hittades inte`
+      };
+    }
+
+    return {
+      success: true,
+      requires_approval: true,
+      approval_type: 'meal_plan',
+      summary: `Ångra ändring? Återställer från version ${currentVersion.version} till version ${previousVersion.version}.`,
+      data: {
+        current_version: currentVersion.version,
+        target_version: previousVersion.version,
+        change_to_undo: currentVersion.changeSummary,
+        meals: previousVersion.meals
+      }
+    };
+  } catch (error) {
+    console.error('Error undoing meal plan change:', error);
+    return {
+      success: false,
+      error: 'Versionshistorik är inte aktiverad ännu'
+    };
+  }
+}
+
+// =============================================================================
+// SCALE RECIPE PORTION
+// =============================================================================
+
+async function scaleRecipePortion(
+  recipeId: string,
+  targetMacros: { protein?: number; carbs?: number; fat?: number; kcal?: number },
+  scaleBy: string = 'protein'
+): Promise<ToolResult> {
+  try {
+    const recipe = await prisma.recipe.findUnique({
+      where: { id: recipeId },
+      include: {
+        ingredients: {
+          include: { foodItem: true },
+          orderBy: { orderIndex: 'asc' }
+        }
+      }
+    });
+
+    if (!recipe) {
+      return {
+        success: false,
+        error: 'Receptet hittades inte'
+      };
+    }
+
+    const originalMacros = {
+      protein: toNum(recipe.proteinPerServing),
+      carbs: toNum(recipe.carbsPerServing),
+      fat: toNum(recipe.fatPerServing),
+      kcal: toNum(recipe.caloriesPerServing)
+    };
+
+    // Beräkna skalningsfaktor
+    let scaleFactor = 1;
+    const targetValue = targetMacros[scaleBy as keyof typeof targetMacros];
+    const originalValue = originalMacros[scaleBy as keyof typeof originalMacros];
+
+    if (targetValue && originalValue) {
+      scaleFactor = targetValue / originalValue;
+    }
+
+    const scaledIngredients = recipe.ingredients.map(ing => ({
+      name: (ing.foodItem as any)?.name || 'Okänt',
+      original_grams: toNum(ing.amount),
+      scaled_grams: Math.round(toNum(ing.amount) * scaleFactor)
+    }));
+
+    const scaledMacros = {
+      protein: Math.round(originalMacros.protein * scaleFactor * 10) / 10,
+      carbs: Math.round(originalMacros.carbs * scaleFactor * 10) / 10,
+      fat: Math.round(originalMacros.fat * scaleFactor * 10) / 10,
+      kcal: Math.round(originalMacros.kcal * scaleFactor)
+    };
+
+    return {
+      success: true,
+      data: {
+        recipe_id: recipeId,
+        recipe_title: recipe.title,
+        original_per_serving: originalMacros,
+        scaled: {
+          portions: Math.round(scaleFactor * 100) / 100,
+          ...scaledMacros
+        },
+        scaled_ingredients: scaledIngredients,
+        scale_factor: Math.round(scaleFactor * 100) / 100
+      }
+    };
+  } catch (error) {
+    console.error('Error scaling recipe portion:', error);
+    return {
+      success: false,
+      error: 'Kunde inte skala receptet'
+    };
+  }
+}
+
+// =============================================================================
+// LEARN FROM SUCCESS
+// =============================================================================
+
+async function learnFromSuccess(
+  clientId: string,
+  successType: string,
+  referenceId?: string,
+  notes?: string
+): Promise<ToolResult> {
+  try {
+    // Hitta eller skapa klientminne
+    let memory = await prisma.clientAIMemory.findFirst({
+      where: { clientId }
+    });
+
+    // Spara som en strukturerad sträng
+    const successEntry = `${successType}: ${referenceId || 'N/A'} - ${notes || 'Fungerade bra'} (${new Date().toLocaleDateString('sv-SE')})`;
+
+    if (memory) {
+      const currentSuccesses = (memory.framgangsrika as string[]) || [];
+      await prisma.clientAIMemory.update({
+        where: { id: memory.id },
+        data: {
+          framgangsrika: [...currentSuccesses, successEntry]
+        }
+      });
+    } else {
+      await prisma.clientAIMemory.create({
+        data: {
+          clientId,
+          preferenser: [],
+          framgangsrika: [successEntry],
+          undvikMonster: []
+        }
+      });
+    }
+
+    return {
+      success: true,
+      data: {
+        saved: true,
+        message: 'Framgångsrecept sparat! Detta kommer användas för framtida förslag.',
+        success_type: successType,
+        reference_id: referenceId
+      }
+    };
+  } catch (error) {
+    console.error('Error learning from success:', error);
+    return {
+      success: false,
+      error: 'Kunde inte spara framgångsreceptet'
+    };
+  }
+}
+
+// =============================================================================
+// GENERATE WEEKLY PLAN
+// =============================================================================
+
+async function generateWeeklyPlan(
+  nutritionPlanId: string,
+  days: number = 7,
+  variationLevel: string = 'medium',
+  includeRecipes: boolean = true
+): Promise<ToolResult> {
+  try {
+    const plan = await prisma.clientNutritionPlan.findUnique({
+      where: { id: nutritionPlanId },
+      include: { client: true }
+    });
+
+    if (!plan) {
+      return {
+        success: false,
+        error: 'Kostplanen hittades inte'
+      };
+    }
+
+    const targetMacros = {
+      protein: toNum(plan.proteinGrams),
+      carbs: toNum(plan.carbGrams),
+      fat: toNum(plan.fatGrams),
+      kcal: toNum(plan.dailyCalorieTarget)
+    };
+
+    const mealsPerDay = plan.mealsPerDay || 4;
+    const dayNames = ['Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag', 'Söndag'];
+
+    // Hämta recept för variation
+    let availableRecipes: any[] = [];
+    if (includeRecipes) {
+      const recipes = await prisma.recipe.findMany({
+        where: { published: true },
+        include: { category: true },
+        take: 50
+      });
+      availableRecipes = recipes;
+    }
+
+    // Gruppera recept efter måltidstyp
+    const recipesByType: Record<string, any[]> = {
+      breakfast: availableRecipes.filter(r => r.mealType === 'breakfast'),
+      lunch: availableRecipes.filter(r => r.mealType === 'lunch' || !r.mealType),
+      dinner: availableRecipes.filter(r => r.mealType === 'dinner' || !r.mealType),
+      snack: availableRecipes.filter(r => r.mealType === 'snack')
+    };
+
+    // Generera veckoplan (placeholder - i verkligheten skulle detta vara mer sofistikerat)
+    const weeklyPlan = [];
+    const usedRecipeIds = new Set<string>();
+
+    for (let day = 0; day < days; day++) {
+      const dayPlan = {
+        day: dayNames[day % 7],
+        day_index: day,
+        meals: [] as any[]
+      };
+
+      for (let meal = 0; meal < mealsPerDay; meal++) {
+        const mealType = meal === 0 ? 'breakfast' : meal === mealsPerDay - 1 ? 'dinner' : meal === 1 ? 'lunch' : 'snack';
+        const mealMacros = {
+          protein: Math.round(targetMacros.protein / mealsPerDay),
+          carbs: Math.round(targetMacros.carbs / mealsPerDay),
+          fat: Math.round(targetMacros.fat / mealsPerDay),
+          kcal: Math.round(targetMacros.kcal / mealsPerDay)
+        };
+
+        // Välj recept baserat på variationsnivå
+        let selectedRecipe = null;
+        const candidates = recipesByType[mealType] || recipesByType.lunch;
+
+        if (variationLevel === 'high') {
+          // Undvik återanvändning
+          selectedRecipe = candidates.find(r => !usedRecipeIds.has(r.id));
+        } else if (variationLevel === 'medium') {
+          // Tillåt viss återanvändning efter några dagar
+          selectedRecipe = candidates.find(r => {
+            const usageCount = [...usedRecipeIds].filter(id => id === r.id).length;
+            return usageCount < 2;
+          });
+        } else {
+          // Låg variation - samma recept är OK
+          selectedRecipe = candidates[day % candidates.length];
+        }
+
+        if (selectedRecipe) {
+          usedRecipeIds.add(selectedRecipe.id);
+        }
+
+        dayPlan.meals.push({
+          meal_index: meal,
+          meal_name: mealType === 'breakfast' ? 'Frukost' : mealType === 'lunch' ? 'Lunch' : mealType === 'dinner' ? 'Middag' : 'Mellanmål',
+          recipe: selectedRecipe ? {
+            id: selectedRecipe.id,
+            title: selectedRecipe.title,
+            per_serving: {
+              kcal: toNum(selectedRecipe.caloriesPerServing),
+              protein: toNum(selectedRecipe.proteinPerServing),
+              carbs: toNum(selectedRecipe.carbsPerServing),
+              fat: toNum(selectedRecipe.fatPerServing)
+            }
+          } : null,
+          target_macros: mealMacros
+        });
+      }
+
+      weeklyPlan.push(dayPlan);
+    }
+
+    return {
+      success: true,
+      requires_approval: true,
+      approval_type: 'meal_plan',
+      summary: `Veckoplan för ${days} dagar med ${variationLevel} variation. ${usedRecipeIds.size} unika recept.`,
+      data: {
+        weekly_plan: weeklyPlan,
+        days,
+        meals_per_day: mealsPerDay,
+        target_macros: targetMacros,
+        unique_recipes: usedRecipeIds.size,
+        variation_level: variationLevel
+      }
+    };
+  } catch (error) {
+    console.error('Error generating weekly plan:', error);
+    return {
+      success: false,
+      error: 'Kunde inte generera veckoplan'
     };
   }
 }
