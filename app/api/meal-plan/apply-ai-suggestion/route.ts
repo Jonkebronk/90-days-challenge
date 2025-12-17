@@ -42,10 +42,10 @@ interface ProductLibraryFood {
   id: string;
   name: string;
   brand: string | null;
-  kcal: number;
-  protein: number;
-  carbs: number;
-  fat: number;
+  kcal: number | { toNumber(): number };  // Prisma Decimal
+  protein: number | { toNumber(): number };
+  carbs: number | { toNumber(): number };
+  fat: number | { toNumber(): number };
   image: string | null;
 }
 
@@ -254,19 +254,27 @@ function findBestMatch(searchName: string, slvFoods: SlvFood[]): SlvFood | null 
   return null;
 }
 
+// Helper to convert Decimal or number to number
+function toNum(val: number | { toNumber(): number } | null | undefined): number {
+  if (val === null || val === undefined) return 0;
+  if (typeof val === 'number') return val;
+  if (typeof val === 'object' && 'toNumber' in val) return val.toNumber();
+  return Number(val) || 0;
+}
+
 // Calculate macros for given grams
 function calculateMacros(food: SlvFood | ProductLibraryFood, grams: number): CalculatedMacros {
   const factor = grams / 100;
   return {
-    protein: Math.round((food.protein || 0) * factor * 10) / 10,
-    carbs: Math.round((food.carbs || 0) * factor * 10) / 10,
-    fat: Math.round((food.fat || 0) * factor * 10) / 10,
-    kcal: Math.round((food.kcal || 0) * factor),
+    protein: Math.round(toNum(food.protein) * factor * 10) / 10,
+    carbs: Math.round(toNum(food.carbs) * factor * 10) / 10,
+    fat: Math.round(toNum(food.fat) * factor * 10) / 10,
+    kcal: Math.round(toNum(food.kcal) * factor),
   };
 }
 
-// Search product library for a food
-async function searchProductLibrary(searchName: string, coachId: string): Promise<ProductLibraryFood | null> {
+// Search product library for a food (Product is global, not per coach)
+async function searchProductLibrary(searchName: string): Promise<ProductLibraryFood | null> {
   const searchLower = searchName.toLowerCase().trim();
 
   console.log(`Searching product library for: "${searchName}"`);
@@ -274,7 +282,6 @@ async function searchProductLibrary(searchName: string, coachId: string): Promis
   // Try exact match first
   const exactMatch = await prisma.product.findFirst({
     where: {
-      coachId,
       name: { equals: searchName, mode: 'insensitive' },
     },
     select: {
@@ -297,7 +304,6 @@ async function searchProductLibrary(searchName: string, coachId: string): Promis
   // Try contains match
   const containsMatch = await prisma.product.findFirst({
     where: {
-      coachId,
       OR: [
         { name: { contains: searchLower, mode: 'insensitive' } },
         { brand: { contains: searchLower, mode: 'insensitive' } },
@@ -326,11 +332,10 @@ async function searchProductLibrary(searchName: string, coachId: string): Promis
 }
 
 // Get product by ID
-async function getProductById(productId: string, coachId: string): Promise<ProductLibraryFood | null> {
+async function getProductById(productId: string): Promise<ProductLibraryFood | null> {
   const product = await prisma.product.findFirst({
     where: {
       id: productId,
-      coachId,
     },
     select: {
       id: true,
@@ -387,10 +392,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const coachId = (session.user as any).id;
-
     // Check coach access
-    if (generatedPlan.nutritionPlan.coachId !== coachId) {
+    if (generatedPlan.nutritionPlan.coachId !== (session.user as any).id) {
       return NextResponse.json(
         { error: 'You do not have access to this plan' },
         { status: 403 }
@@ -434,7 +437,7 @@ export async function POST(request: NextRequest) {
         // Check if item specifically requests product library or has a direct product ID
         if (item.productId) {
           // Direct product ID provided
-          const product = await getProductById(item.productId, coachId);
+          const product = await getProductById(item.productId);
           if (!product) {
             console.log(`    FAILED: Product ID "${item.productId}" not found`);
             failedItems.push(item.name);
@@ -448,7 +451,7 @@ export async function POST(request: NextRequest) {
           console.log(`    MATCHED (product ID): "${item.name}" -> "${foodName}"`);
         } else if (item.useProductLibrary) {
           // Explicitly use product library
-          const product = await searchProductLibrary(item.name, coachId);
+          const product = await searchProductLibrary(item.name);
           if (!product) {
             console.log(`    FAILED: No product library match found for "${item.name}"`);
             failedItems.push(item.name);
@@ -472,7 +475,7 @@ export async function POST(request: NextRequest) {
           } else if (useProductLibrary) {
             // SLV failed, try product library as fallback
             console.log(`    SLV failed, trying product library...`);
-            const product = await searchProductLibrary(item.name, coachId);
+            const product = await searchProductLibrary(item.name);
             if (product) {
               foodId = product.id;
               foodName = product.brand ? `${product.name} (${product.brand})` : product.name;

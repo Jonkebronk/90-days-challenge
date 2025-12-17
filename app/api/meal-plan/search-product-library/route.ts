@@ -21,12 +21,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Query must be at least 2 characters' }, { status: 400 });
     }
 
-    const coachId = (session.user as any).id;
-
-    // Search in product library
+    // Search in product library (global, not per coach)
     const products = await prisma.product.findMany({
       where: {
-        coachId,
         OR: [
           { name: { contains: query, mode: 'insensitive' } },
           { brand: { contains: query, mode: 'insensitive' } },
