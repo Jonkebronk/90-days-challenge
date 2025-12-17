@@ -216,6 +216,13 @@ export function AIChatPanel({
   const [editWorkout, setEditWorkout] = useState(mealSettings?.workoutTime || 'afternoon');
   const [editNutrition, setEditNutrition] = useState(mealSettings?.nutritionSystem || 'balanced');
   const [editDistribution, setEditDistribution] = useState<string>(mealSettings?.distributionMethod || 'auto');
+
+  // Client data editing state
+  const [isEditingClient, setIsEditingClient] = useState(false);
+  const [savingClient, setSavingClient] = useState(false);
+  const [editWeight, setEditWeight] = useState(String(clientData?.weight || 70));
+  const [editActivity, setEditActivity] = useState(clientData?.lifestyleActivity || 'moderately_active');
+  const [editGoal, setEditGoal] = useState(clientData?.calorieGoal || 'maintenance');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -281,6 +288,15 @@ export function AIChatPanel({
     }
   }, [mealSettings]);
 
+  // Sync client data when it changes from parent
+  useEffect(() => {
+    if (clientData) {
+      setEditWeight(String(clientData.weight));
+      setEditActivity(clientData.lifestyleActivity);
+      setEditGoal(clientData.calorieGoal || 'maintenance');
+    }
+  }, [clientData]);
+
   // Handle saving meal settings
   const handleSaveSettings = async () => {
     setSavingSettings(true);
@@ -329,6 +345,48 @@ export function AIChatPanel({
       setEditDistribution(mealSettings.distributionMethod);
     }
     setIsEditingSettings(false);
+  };
+
+  // Handle saving client data
+  const handleSaveClientData = async () => {
+    setSavingClient(true);
+    try {
+      // Update nutrition plan with new client data
+      const response = await fetch(`/api/nutrition-plans/${nutritionPlanId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          weight: parseFloat(editWeight),
+          lifestyleActivity: editActivity,
+          calorieGoal: editGoal,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update client data');
+      }
+
+      // Notify parent to refresh
+      if (onMealPlanUpdated) {
+        onMealPlanUpdated();
+      }
+
+      setIsEditingClient(false);
+    } catch (error) {
+      console.error('Failed to save client data:', error);
+    } finally {
+      setSavingClient(false);
+    }
+  };
+
+  const handleCancelEditClient = () => {
+    // Reset to original values
+    if (clientData) {
+      setEditWeight(String(clientData.weight));
+      setEditActivity(clientData.lifestyleActivity);
+      setEditGoal(clientData.calorieGoal || 'maintenance');
+    }
+    setIsEditingClient(false);
   };
 
   // Ladda AI-inställningar (för att kolla om mallbild finns)
@@ -772,15 +830,32 @@ export function AIChatPanel({
                 <User className="h-4 w-4" />
                 <span>Klient</span>
               </div>
-              {expandedContextSections.includes('client') ? (
-                <ChevronUp className="h-4 w-4 text-gray-500" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-gray-500" />
-              )}
+              <div className="flex items-center gap-2">
+                {!isEditingClient && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsEditingClient(true);
+                      if (!expandedContextSections.includes('client')) {
+                        setExpandedContextSections(prev => [...prev, 'client']);
+                      }
+                    }}
+                    className="p-1 text-gray-500 hover:text-amber-400 transition-colors"
+                    title="Redigera"
+                  >
+                    <Settings2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+                {expandedContextSections.includes('client') ? (
+                  <ChevronUp className="h-4 w-4 text-gray-500" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                )}
+              </div>
             </button>
             {expandedContextSections.includes('client') && (
               <div className="px-4 pb-4 space-y-3 bg-[#2a2a2a]">
-                {/* Client name and email */}
+                {/* Client name and email - always read-only */}
                 <div className="flex items-center gap-3 pt-2">
                   <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
                     <span className="text-amber-400 font-semibold">
@@ -793,35 +868,134 @@ export function AIChatPanel({
                   </div>
                 </div>
 
-                {/* Stats grid */}
-                <div className="grid grid-cols-3 gap-2 text-xs">
-                  <div className="bg-[#353535] rounded-lg p-2">
-                    <span className="text-gray-500 block">Vikt</span>
-                    <span className="text-white font-medium">{clientData.weight} kg</span>
-                  </div>
-                  <div className="bg-[#353535] rounded-lg p-2">
-                    <span className="text-gray-500 block">Aktivitet</span>
-                    <span className="text-white font-medium text-[11px]">
-                      {LIFESTYLE_ACTIVITY_LABELS[clientData.lifestyleActivity] || clientData.lifestyleActivity}
-                    </span>
-                  </div>
-                  <div className="bg-[#353535] rounded-lg p-2">
-                    <span className="text-gray-500 block">Mål</span>
-                    <span className="text-white font-medium">{getGoalLabel(clientData.calorieGoal)}</span>
-                  </div>
-                </div>
+                {isEditingClient ? (
+                  /* Edit mode */
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-3 gap-2">
+                      {/* Weight */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-gray-500">Vikt (kg)</label>
+                        <input
+                          type="number"
+                          value={editWeight}
+                          onChange={(e) => setEditWeight(e.target.value)}
+                          className="w-full h-8 bg-[#353535] border border-[#454545] rounded-md px-2 text-white text-xs"
+                        />
+                      </div>
 
-                {/* BMR and daily calories */}
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="bg-[#353535] rounded-lg p-2">
-                    <span className="text-gray-500 block">BMR</span>
-                    <span className="text-white font-medium">{Math.round(clientData.bmr)} kcal</span>
+                      {/* Activity */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-gray-500">Aktivitet</label>
+                        <Select value={editActivity} onValueChange={setEditActivity}>
+                          <SelectTrigger className="h-8 bg-[#353535] border-[#454545] text-white text-[10px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="sedentary">Stillasittande</SelectItem>
+                            <SelectItem value="lightly_active">Lätt aktiv</SelectItem>
+                            <SelectItem value="moderately_active">Måttligt aktiv</SelectItem>
+                            <SelectItem value="very_active">Mycket aktiv</SelectItem>
+                            <SelectItem value="extremely_active">Extremt aktiv</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Goal */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-gray-500">Mål</label>
+                        <Select value={editGoal || 'maintenance'} onValueChange={setEditGoal}>
+                          <SelectTrigger className="h-8 bg-[#353535] border-[#454545] text-white text-[10px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="aggressive">Viktnedgång (aggressiv)</SelectItem>
+                            <SelectItem value="moderate">Viktnedgång (måttlig)</SelectItem>
+                            <SelectItem value="conservative">Viktnedgång (försiktig)</SelectItem>
+                            <SelectItem value="maintenance">Balans</SelectItem>
+                            <SelectItem value="surplus">Viktuppgång</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* BMR and daily calories - read-only info */}
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="bg-[#353535] rounded-lg p-2">
+                        <span className="text-gray-500 block">BMR</span>
+                        <span className="text-white font-medium">{Math.round(clientData.bmr)} kcal</span>
+                      </div>
+                      <div className="bg-[#353535] rounded-lg p-2">
+                        <span className="text-gray-500 block">Dagligt kaloriintag</span>
+                        <span className="text-white font-medium">{Math.round(clientData.dailyCalorieTarget)} kcal</span>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-gray-500">BMR och kaloriintag beräknas om automatiskt vid sparning</p>
+
+                    {/* Save/Cancel buttons */}
+                    <div className="flex justify-end gap-2 pt-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleCancelEditClient}
+                        disabled={savingClient}
+                        className="h-7 text-xs text-gray-400 hover:text-white"
+                      >
+                        <X className="h-3.5 w-3.5 mr-1" />
+                        Avbryt
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={handleSaveClientData}
+                        disabled={savingClient}
+                        className="h-7 text-xs bg-amber-600 hover:bg-amber-700"
+                      >
+                        {savingClient ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />
+                        ) : (
+                          <Check className="h-3.5 w-3.5 mr-1" />
+                        )}
+                        Spara
+                      </Button>
+                    </div>
                   </div>
-                  <div className="bg-[#353535] rounded-lg p-2">
-                    <span className="text-gray-500 block">Dagligt kaloriintag</span>
-                    <span className="text-white font-medium">{Math.round(clientData.dailyCalorieTarget)} kcal</span>
-                  </div>
-                </div>
+                ) : (
+                  /* View mode */
+                  <>
+                    {/* Stats grid */}
+                    <div
+                      className="grid grid-cols-3 gap-2 text-xs cursor-pointer"
+                      onClick={() => setIsEditingClient(true)}
+                    >
+                      <div className="bg-[#353535] rounded-lg p-2 hover:bg-[#404040] transition-colors">
+                        <span className="text-gray-500 block">Vikt</span>
+                        <span className="text-white font-medium">{clientData.weight} kg</span>
+                      </div>
+                      <div className="bg-[#353535] rounded-lg p-2 hover:bg-[#404040] transition-colors">
+                        <span className="text-gray-500 block">Aktivitet</span>
+                        <span className="text-white font-medium text-[11px]">
+                          {LIFESTYLE_ACTIVITY_LABELS[clientData.lifestyleActivity] || clientData.lifestyleActivity}
+                        </span>
+                      </div>
+                      <div className="bg-[#353535] rounded-lg p-2 hover:bg-[#404040] transition-colors">
+                        <span className="text-gray-500 block">Mål</span>
+                        <span className="text-white font-medium">{getGoalLabel(clientData.calorieGoal)}</span>
+                      </div>
+                    </div>
+
+                    {/* BMR and daily calories */}
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="bg-[#353535] rounded-lg p-2">
+                        <span className="text-gray-500 block">BMR</span>
+                        <span className="text-white font-medium">{Math.round(clientData.bmr)} kcal</span>
+                      </div>
+                      <div className="bg-[#353535] rounded-lg p-2">
+                        <span className="text-gray-500 block">Dagligt kaloriintag</span>
+                        <span className="text-white font-medium">{Math.round(clientData.dailyCalorieTarget)} kcal</span>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-gray-500 text-center">Klicka på fälten för att redigera</p>
+                  </>
+                )}
               </div>
             )}
           </div>
