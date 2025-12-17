@@ -72,6 +72,15 @@ export async function executeJuniTool(
       case 'get_recipe_details':
         return await getRecipeDetails(input.recipe_id);
 
+      case 'update_meal_settings':
+        return await updateMealSettings(
+          input.nutrition_plan_id,
+          input.meals_per_day,
+          input.workout_time,
+          input.nutrition_system,
+          input.distribution_method
+        );
+
       case 'calculate_bmr_tdee':
         return calculateBmrTdee(input as Parameters<typeof calculateBmrTdee>[0]);
 
@@ -1122,6 +1131,125 @@ async function getRecipeDetails(recipeId: string): Promise<ToolResult> {
     return {
       success: false,
       error: 'Kunde inte hämta receptet'
+    };
+  }
+}
+
+// =============================================================================
+// UPDATE MEAL SETTINGS
+// =============================================================================
+
+async function updateMealSettings(
+  nutritionPlanId: string,
+  mealsPerDay?: number,
+  workoutTime?: string,
+  nutritionSystem?: string,
+  distributionMethod?: string
+): Promise<ToolResult> {
+  try {
+    // Get current plan
+    const plan = await prisma.clientNutritionPlan.findUnique({
+      where: { id: nutritionPlanId }
+    });
+
+    if (!plan) {
+      return {
+        success: false,
+        error: 'Kostplanen hittades inte'
+      };
+    }
+
+    // Build update object with only provided values
+    const updateData: any = {};
+    const changes: string[] = [];
+
+    if (mealsPerDay !== undefined) {
+      updateData.mealsPerDay = mealsPerDay;
+      changes.push(`antal måltider ändrat till ${mealsPerDay}`);
+    }
+
+    if (workoutTime !== undefined) {
+      updateData.workoutTime = workoutTime;
+      const workoutTimeLabels: Record<string, string> = {
+        morning: 'morgon',
+        lunch: 'lunch',
+        afternoon: 'eftermiddag',
+        evening: 'kväll'
+      };
+      changes.push(`träningstid ändrad till ${workoutTimeLabels[workoutTime] || workoutTime}`);
+    }
+
+    if (nutritionSystem !== undefined) {
+      updateData.nutritionSystem = nutritionSystem;
+      const nutritionSystemLabels: Record<string, string> = {
+        low_carb: 'lågkolhydrat',
+        balanced: 'balanserad',
+        high_carb: 'högkolhydrat',
+        carb_cycling: 'kolhydratcykling'
+      };
+      changes.push(`näringssystem ändrat till ${nutritionSystemLabels[nutritionSystem] || nutritionSystem}`);
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return {
+        success: false,
+        error: 'Inga inställningar att uppdatera angavs'
+      };
+    }
+
+    // Update the nutrition plan
+    await prisma.clientNutritionPlan.update({
+      where: { id: nutritionPlanId },
+      data: updateData
+    });
+
+    // If meals per day changed, recreate the meal plan structure
+    if (mealsPerDay !== undefined) {
+      const mealNames = ['Frukost', 'Lunch', 'Mellanmål', 'Middag', 'Kvällsmål', 'Nattmål'];
+      const mealConfigs = Array.from({ length: mealsPerDay }, (_, i) => ({
+        mealIndex: i,
+        mealName: mealNames[i] || `Måltid ${i + 1}`,
+        proteinPercent: Math.round(100 / mealsPerDay),
+        carbsPercent: Math.round(100 / mealsPerDay),
+        fatPercent: Math.round(100 / mealsPerDay)
+      }));
+
+      // Update or create GeneratedMealPlan
+      const existingMealPlan = await prisma.generatedMealPlan.findFirst({
+        where: { nutritionPlanId }
+      });
+
+      if (existingMealPlan) {
+        await prisma.generatedMealPlan.update({
+          where: { id: existingMealPlan.id },
+          data: {
+            mealConfigs: mealConfigs as any,
+            // Reset meals to match new structure
+            meals: mealConfigs.map((config, i) => ({
+              mealIndex: i,
+              mealName: config.mealName,
+              foodItems: [],
+              totalMacros: { protein: 0, carbs: 0, fat: 0, kcal: 0 }
+            }))
+          }
+        });
+      }
+    }
+
+    return {
+      success: true,
+      data: {
+        updated: true,
+        nutrition_plan_id: nutritionPlanId,
+        changes,
+        message: `Inställningar uppdaterade: ${changes.join(', ')}`
+      }
+    };
+  } catch (error) {
+    console.error('Error updating meal settings:', error);
+    return {
+      success: false,
+      error: 'Kunde inte uppdatera måltidsinställningarna'
     };
   }
 }

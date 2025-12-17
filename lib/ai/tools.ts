@@ -440,6 +440,59 @@ Använd denna när användaren vill se ett helt recept.
       },
       required: ['recipe_id']
     }
+  },
+  {
+    name: 'update_meal_settings',
+    description: `Uppdatera måltidsinställningar för en kostplan.
+Ändrar antal måltider, träningstid, näringssystem eller fördelningsmetod.
+VIKTIGT: Detta påverkar hur kostschemat struktureras och fördelas.
+
+<examples>
+<example>
+<description>Ändra antal måltider</description>
+<input>{"nutrition_plan_id": "plan_abc123", "meals_per_day": 5}</input>
+<output>{"success": true, "data": {"updated": true, "meals_per_day": 5, "message": "Antal måltider ändrat till 5"}}</output>
+</example>
+<example>
+<description>Ändra träningstid för bättre kolhydratfördelning</description>
+<input>{"nutrition_plan_id": "plan_abc123", "workout_time": "morning"}</input>
+<output>{"success": true, "data": {"updated": true, "workout_time": "morning", "message": "Träningstid ändrad till morgon - kolhydrater omfördelas"}}</output>
+</example>
+<example>
+<description>Byt till lågkolhydrat-system</description>
+<input>{"nutrition_plan_id": "plan_abc123", "nutrition_system": "low_carb"}</input>
+<output>{"success": true, "data": {"updated": true, "nutrition_system": "low_carb", "message": "Kostplan uppdaterad till lågkolhydrat"}}</output>
+</example>
+</examples>`,
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        nutrition_plan_id: {
+          type: 'string',
+          description: 'ID för kostplanen att uppdatera'
+        },
+        meals_per_day: {
+          type: 'number',
+          description: 'Antal måltider per dag (3-6)'
+        },
+        workout_time: {
+          type: 'string',
+          enum: ['morning', 'lunch', 'afternoon', 'evening'],
+          description: 'Träningstid för optimal kolhydratfördelning'
+        },
+        nutrition_system: {
+          type: 'string',
+          enum: ['low_carb', 'balanced', 'high_carb', 'carb_cycling'],
+          description: 'Näringssystem: lågkolhydrat, balanserad, högkolhydrat, kolhydratcykling'
+        },
+        distribution_method: {
+          type: 'string',
+          enum: ['auto', 'even', 'custom'],
+          description: 'Fördelningsmetod: automatisk, jämn, eller anpassad'
+        }
+      },
+      required: ['nutrition_plan_id']
+    }
   }
 ];
 
@@ -845,6 +898,7 @@ export type JuniToolName =
   | 'search_recipes'
   | 'suggest_recipes_for_meal'
   | 'get_recipe_details'
+  | 'update_meal_settings'
   | 'calculate_bmr_tdee'
   | 'calculate_macro_targets'
   | 'create_nutrition_plan'
