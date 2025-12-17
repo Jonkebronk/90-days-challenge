@@ -448,6 +448,10 @@ export default function NutritionPlanDetailPage() {
                 // Refresh data after save
                 fetchPlan();
               }}
+              onMealPlanIdChange={(newId: string) => {
+                // Update meal plan ID when it changes (e.g., after "Börja om")
+                setExistingMealPlan(prev => prev ? { ...prev, id: newId } : { id: newId, meals: [], actualMacros: { protein: 0, carbs: 0, fat: 0, kcal: 0 }, targetMacros: targetMacros });
+              }}
             />
           ) : (
             /* Generate meal plan button */

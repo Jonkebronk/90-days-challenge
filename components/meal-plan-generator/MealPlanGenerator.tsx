@@ -23,6 +23,7 @@ interface MealPlanGeneratorProps {
   nutritionPlanId: string;
   targetMacros: MacroTargets;
   onSave?: (planId: string) => void;
+  onMealPlanIdChange?: (newId: string) => void;
 }
 
 interface GeneratedPlanState {
@@ -36,6 +37,7 @@ export function MealPlanGenerator({
   nutritionPlanId,
   targetMacros,
   onSave,
+  onMealPlanIdChange,
 }: MealPlanGeneratorProps) {
   // Generated plan state
   const [generatedPlan, setGeneratedPlan] = useState<GeneratedPlanState | null>(null);
@@ -79,6 +81,10 @@ export function MealPlanGenerator({
             targetMacros: existingData.targetMacros,
             actualMacros: existingData.actualMacros,
           });
+          // Notify parent of meal plan ID
+          if (onMealPlanIdChange) {
+            onMealPlanIdChange(existingData.id);
+          }
           setIsLoading(false);
           return;
         }
@@ -121,6 +127,11 @@ export function MealPlanGenerator({
         targetMacros: data.targetMacros,
         actualMacros: data.actualMacros,
       });
+
+      // Notify parent of new meal plan ID
+      if (onMealPlanIdChange) {
+        onMealPlanIdChange(data.id);
+      }
     } catch (err) {
       setError('Ett fel uppstod vid skapande av kostschema');
       console.error('Create error:', err);
