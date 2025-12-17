@@ -253,6 +253,13 @@ export function AIChatPanel({
     setLoading(true);
 
     try {
+      console.log('Sending to AI chat:', {
+        nutritionPlanId,
+        message: text,
+        imagesCount: imageData.length,
+        imageTypes: imageData.map(i => i.mediaType),
+      });
+
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
