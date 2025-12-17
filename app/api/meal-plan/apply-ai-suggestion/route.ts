@@ -66,6 +66,30 @@ function normalizeName(name: string): string {
     .trim();
 }
 
+// Common food name mappings for better matching
+const FOOD_MAPPINGS: Record<string, string[]> = {
+  'ägg': ['ägg hönsägg helt rå', 'ägg hela rå', 'hönsägg'],
+  'havregryn': ['havregryn', 'havregrynsgröt'],
+  'hallon': ['hallon', 'hallon frysta', 'hallon fryst'],
+  'blåbär': ['blåbär', 'blåbär frysta', 'blåbär fryst'],
+  'kvarg': ['kvarg naturell', 'kvarg'],
+  'keso': ['keso', 'cottage cheese'],
+  'ris': ['ris vitt rått', 'ris råris rått', 'ris'],
+  'kyckling': ['kycklingfilé rå', 'kycklingbröst rå', 'kyckling'],
+  'lax': ['lax rå', 'laxfilé rå'],
+  'nötfärs': ['nötfärs rå', 'färs nöt rå'],
+  'pasta': ['pasta torr', 'pasta'],
+  'potatis': ['potatis rå', 'potatis'],
+  'banan': ['banan', 'banan färsk'],
+  'äpple': ['äpple', 'äpple med skal'],
+  'mjölk': ['mjölk', 'mellanmjölk'],
+  'yoghurt': ['yoghurt naturell', 'yoghurt'],
+  'ost': ['ost hårdost', 'ost'],
+  'bröd': ['bröd', 'knäckebröd'],
+  'havre': ['havregryn', 'havreflingor'],
+  'jordnötssmör': ['jordnötssmör', 'jordnötter'],
+};
+
 // Find best matching SLV food by name
 function findBestMatch(searchName: string, slvFoods: SlvFood[]): SlvFood | null {
   const searchLower = searchName.toLowerCase().trim();
@@ -87,25 +111,52 @@ function findBestMatch(searchName: string, slvFoods: SlvFood[]): SlvFood | null 
     return normalizedExact;
   }
 
-  // Try contains match (search in food name)
-  const contains = slvFoods.find(f => f.namn.toLowerCase().includes(searchLower));
-  if (contains) {
-    console.log(`  Contains match: ${contains.namn}`);
-    return contains;
-  }
-
-  // Try starts-with on first word
-  const firstWord = searchLower.split(/\s+/)[0];
-  if (firstWord.length >= 3) {
-    const startsWith = slvFoods.find(f => f.namn.toLowerCase().startsWith(firstWord));
-    if (startsWith) {
-      console.log(`  Starts-with match: ${startsWith.namn}`);
-      return startsWith;
+  // Check common food mappings
+  for (const [key, alternatives] of Object.entries(FOOD_MAPPINGS)) {
+    if (searchLower.includes(key)) {
+      for (const alt of alternatives) {
+        const mapped = slvFoods.find(f => f.namn.toLowerCase().includes(alt));
+        if (mapped) {
+          console.log(`  Mapped match: "${key}" -> ${mapped.namn}`);
+          return mapped;
+        }
+      }
     }
   }
 
+  // Try food name starts with search term (better than contains)
+  const startsWithSearch = slvFoods.find(f => f.namn.toLowerCase().startsWith(searchLower));
+  if (startsWithSearch) {
+    console.log(`  Starts-with match: ${startsWithSearch.namn}`);
+    return startsWithSearch;
+  }
+
+  // Try search term starts with food name first word
+  const firstWord = searchLower.split(/[\s\/]+/)[0]; // Split on space or slash
+  if (firstWord.length >= 3) {
+    // Prefer simple foods (shorter names) over compound foods
+    const startsWithMatches = slvFoods
+      .filter(f => f.namn.toLowerCase().startsWith(firstWord))
+      .sort((a, b) => a.namn.length - b.namn.length); // Shorter names first
+
+    if (startsWithMatches.length > 0) {
+      console.log(`  Starts-with match (shortest): ${startsWithMatches[0].namn}`);
+      return startsWithMatches[0];
+    }
+  }
+
+  // Try contains match - but prefer shorter/simpler foods
+  const containsMatches = slvFoods
+    .filter(f => f.namn.toLowerCase().includes(searchLower) || searchLower.includes(f.namn.toLowerCase()))
+    .sort((a, b) => a.namn.length - b.namn.length);
+
+  if (containsMatches.length > 0) {
+    console.log(`  Contains match (shortest): ${containsMatches[0].namn}`);
+    return containsMatches[0];
+  }
+
   // Try fuzzy match - split words and match
-  const searchWords = searchLower.split(/\s+/).filter(w => w.length >= 3);
+  const searchWords = searchLower.split(/[\s\/]+/).filter(w => w.length >= 3);
   let bestMatch: SlvFood | null = null;
   let bestScore = 0;
 
@@ -115,13 +166,17 @@ function findBestMatch(searchName: string, slvFoods: SlvFood[]): SlvFood | null 
 
     for (const searchWord of searchWords) {
       if (foodLower.includes(searchWord)) {
-        score += 2; // Higher score for direct inclusion
+        score += 2;
+      }
+      // Extra points if food name starts with search word
+      if (foodLower.startsWith(searchWord)) {
+        score += 3;
       }
     }
 
-    // Bonus for matching first word
-    if (foodLower.startsWith(firstWord)) {
-      score += 3;
+    // Prefer shorter/simpler food names (penalize long compound names)
+    if (score > 0) {
+      score -= food.namn.length * 0.05; // Small penalty for longer names
     }
 
     if (score > bestScore) {
@@ -130,13 +185,13 @@ function findBestMatch(searchName: string, slvFoods: SlvFood[]): SlvFood | null 
     }
   }
 
-  if (bestMatch) {
-    console.log(`  Fuzzy match (score ${bestScore}): ${bestMatch.namn}`);
-  } else {
-    console.log(`  No match found`);
+  if (bestMatch && bestScore >= 1.5) {
+    console.log(`  Fuzzy match (score ${bestScore.toFixed(2)}): ${bestMatch.namn}`);
+    return bestMatch;
   }
 
-  return bestScore >= 2 ? bestMatch : null;
+  console.log(`  No match found`);
+  return null;
 }
 
 // Calculate macros for given grams
