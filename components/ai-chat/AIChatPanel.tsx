@@ -617,7 +617,7 @@ export function AIChatPanel({
         <CardHeader className="py-3 border-b border-[#3f3f3f]">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-[#e07a5f]" />
-            <h3 className="font-semibold text-white">AI Kostassistent</h3>
+            <h3 className="font-semibold text-white">Juni - AI Kostassistent</h3>
           </div>
         </CardHeader>
         <CardContent className="flex-1 flex items-center justify-center">
@@ -633,7 +633,7 @@ export function AIChatPanel({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-[#e07a5f]" />
-            <h3 className="font-medium text-sm text-white">AI Kostassistent</h3>
+            <h3 className="font-medium text-sm text-white">Juni - AI Kostassistent</h3>
           </div>
           <div className="flex items-center gap-1">
             {/* Mallbild-knapp */}
@@ -1015,6 +1015,13 @@ export function AIChatPanel({
 
       {/* Food Database Viewer - expandable, at bottom */}
       <FoodDatabaseViewer />
+
+      {/* AI Disclaimer */}
+      <div className="px-4 py-2 border-t border-[#3f3f3f] bg-[#2a2a2a]">
+        <p className="text-[11px] text-gray-500 text-center">
+          Juni är AI och kan göra misstag. Dubbelkolla informationen och stäm av med din coach.
+        </p>
+      </div>
     </Card>
   );
 }
