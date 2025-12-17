@@ -36,15 +36,63 @@ interface AISuggestedMeal {
   items: AISuggestedItem[];
 }
 
-// Load SLV foods
+// Categories that are compound dishes (rätter) - should be EXCLUDED
+const EXCLUDED_CATEGORIES = [
+  'blodprodukter',
+  'blodrätter',
+  'bullar',
+  'kakor',
+  'tårtor',
+  'efterrätter',
+  'rätter',
+  'glass',
+  'godis',
+  'grynrätter',
+  'gröt',
+  'hamburgare',
+  'korvrätter',
+  'köttprodukter',
+  'kötträtter',
+  'majonnässallad',
+  'röror',
+  'osträtter',
+  'pannkakor',
+  'våfflor',
+  'crêpes',
+  'pastarätter',
+  'pizza',
+  'paj',
+  'pirog',
+  'färdig smörgås',
+  'potatisprodukter',
+  'potatisrätter',
+  'risrätter',
+  'sallad blandad',
+  'soppa mat',
+  'söta soppor',
+  'kräm',
+  'efterrättssås',
+  'äggprodukter',
+  'äggrätter',
+  'blandade rätter',
+];
+
+// Load SLV foods - excluding compound dishes (rätter)
 function loadSlvFoods(): SlvFood[] {
   try {
     const filePath = path.join(process.cwd(), 'public', 'data', 'slv-foods.json');
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
     const allFoods: SlvFood[] = [];
-    for (const category of Object.values(data.categories)) {
-      allFoods.push(...(category as SlvFood[]));
+
+    for (const [categoryName, foods] of Object.entries(data.categories)) {
+      // Skip excluded categories (compound dishes)
+      if (EXCLUDED_CATEGORIES.some(exc => categoryName.toLowerCase().includes(exc.toLowerCase()))) {
+        continue;
+      }
+      allFoods.push(...(foods as SlvFood[]));
     }
+
+    console.log(`Loaded ${allFoods.length} SLV foods (excluding compound dishes)`);
     return allFoods;
   } catch (error) {
     console.error('Could not load SLV data:', error);
