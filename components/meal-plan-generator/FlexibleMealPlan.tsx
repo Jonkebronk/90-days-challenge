@@ -8,6 +8,7 @@ import { Loader2, Save, AlertTriangle } from 'lucide-react';
 import { ClientStyleMealCard } from './ClientStyleMealCard';
 import { SauceSelector } from './SauceSelector';
 import { FoodSwapModal } from './FoodSwapModal';
+import { RecipeSelectionDialog } from '@/components/RecipeSelectionDialog';
 import type {
   MealConfig,
   MacroCategory,
@@ -60,7 +61,7 @@ export function FlexibleMealPlan({
   } | null>(null);
   const [addingSauce, setAddingSauce] = useState(false);
 
-  // Recipe suggestions state
+  // Recipe suggestions state (auto-loaded)
   const [recipeSuggestions, setRecipeSuggestions] = useState<Record<string, Array<{
     id: string;
     name: string;
@@ -70,6 +71,22 @@ export function FlexibleMealPlan({
     carbs: number;
     fat: number;
   }>>>({});
+
+  // Meal recipes state (manually added by coach)
+  const [mealRecipes, setMealRecipes] = useState<Record<number, Array<{
+    id: string;
+    recipeId: string;
+    name: string;
+    image?: string | null;
+    kcal: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }>>>({});
+
+  // Recipe selector modal state
+  const [recipeModalOpen, setRecipeModalOpen] = useState(false);
+  const [recipeMealIndex, setRecipeMealIndex] = useState<number | null>(null);
 
   // Load existing meal plan or create new one on mount
   useEffect(() => {
@@ -511,6 +528,52 @@ export function FlexibleMealPlan({
     }
   };
 
+  // Handle opening recipe selector for a meal
+  const handleAddMealRecipe = (mealIndex: number) => {
+    setRecipeMealIndex(mealIndex);
+    setRecipeModalOpen(true);
+  };
+
+  // Handle selecting a recipe from the modal
+  const handleSelectRecipeForMeal = (recipe: {
+    id: string;
+    name: string;
+    image?: string | null;
+    kcal: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }) => {
+    if (recipeMealIndex === null) return;
+
+    const newRecipe = {
+      id: `recipe-${Date.now()}`,
+      recipeId: recipe.id,
+      name: recipe.name,
+      image: recipe.image,
+      kcal: recipe.kcal,
+      protein: recipe.protein,
+      carbs: recipe.carbs,
+      fat: recipe.fat,
+    };
+
+    setMealRecipes(prev => ({
+      ...prev,
+      [recipeMealIndex]: [...(prev[recipeMealIndex] || []), newRecipe],
+    }));
+
+    setRecipeModalOpen(false);
+    setRecipeMealIndex(null);
+  };
+
+  // Handle removing a recipe from a meal
+  const handleRemoveMealRecipe = (mealIndex: number, recipeId: string) => {
+    setMealRecipes(prev => ({
+      ...prev,
+      [mealIndex]: (prev[mealIndex] || []).filter(r => r.id !== recipeId),
+    }));
+  };
+
   // Add alternative handler
   const handleAddAlternative = async (
     mealIndex: number,
@@ -713,7 +776,9 @@ export function FlexibleMealPlan({
                 onRemoveSauce={handleRemoveSauce}
                 onUpdateGrams={handleUpdateGrams}
                 onUpdateMealMacros={handleUpdateMealMacros}
-                recipeSuggestions={recipeSuggestions[meal.type] || []}
+                mealRecipes={mealRecipes[index] || []}
+                onAddMealRecipe={handleAddMealRecipe}
+                onRemoveMealRecipe={handleRemoveMealRecipe}
               />
             ))}
           </div>
@@ -782,6 +847,27 @@ export function FlexibleMealPlan({
           currentFoodId={swapContext.currentFoodId}
         />
       )}
+
+      {/* Recipe Selection Modal */}
+      <RecipeSelectionDialog
+        open={recipeModalOpen}
+        onOpenChange={(open) => {
+          setRecipeModalOpen(open);
+          if (!open) setRecipeMealIndex(null);
+        }}
+        onSelect={(recipe, servingMultiplier) => {
+          const multiplier = servingMultiplier || 1;
+          handleSelectRecipeForMeal({
+            id: recipe.id,
+            name: recipe.title,
+            image: recipe.coverImage,
+            kcal: Math.round((recipe.caloriesPerServing || 0) * multiplier),
+            protein: Math.round((recipe.proteinPerServing || 0) * multiplier),
+            carbs: Math.round((recipe.carbsPerServing || 0) * multiplier),
+            fat: Math.round((recipe.fatPerServing || 0) * multiplier),
+          });
+        }}
+      />
     </div>
   );
 }

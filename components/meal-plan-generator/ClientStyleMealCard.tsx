@@ -34,6 +34,17 @@ interface RecipeSuggestion {
   fat: number;
 }
 
+interface MealRecipe {
+  id: string;
+  recipeId: string;
+  name: string;
+  image?: string | null;
+  kcal: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
 interface ClientStyleMealCardProps {
   meal: GeneratedMeal;
   mealIndex: number;
@@ -50,6 +61,10 @@ interface ClientStyleMealCardProps {
   disabled?: boolean;
   recipeSuggestions?: RecipeSuggestion[];
   onSelectRecipe?: (mealIndex: number, recipeId: string) => void;
+  // Recipe management props
+  mealRecipes?: MealRecipe[];
+  onAddMealRecipe?: (mealIndex: number) => void;
+  onRemoveMealRecipe?: (mealIndex: number, recipeId: string) => void;
 }
 
 // Category styling config with distinct colors
@@ -132,6 +147,9 @@ export function ClientStyleMealCard({
   disabled = false,
   recipeSuggestions = [],
   onSelectRecipe,
+  mealRecipes = [],
+  onAddMealRecipe,
+  onRemoveMealRecipe,
 }: ClientStyleMealCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -489,39 +507,70 @@ export function ClientStyleMealCard({
             </div>
           )}
 
-          {/* Receptförslag */}
-          {recipeSuggestions.length > 0 && (
+          {/* Receptförslag - manuellt hanterade */}
+          {onAddMealRecipe && (
             <div className="pt-3 mt-2 border-t border-zinc-200">
               <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-3">
                 Receptförslag
               </div>
-              <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                {recipeSuggestions.map((recipe) => (
-                  <button
-                    key={recipe.id}
-                    onClick={() => onSelectRecipe?.(mealIndex, recipe.id)}
-                    disabled={disabled}
-                    className="flex-shrink-0 group cursor-pointer"
-                  >
-                    <div className="w-24 h-24 rounded-lg overflow-hidden bg-zinc-100 mb-1.5">
-                      {recipe.image ? (
-                        <img
-                          src={recipe.image}
-                          alt={recipe.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-zinc-400">
-                          <Utensils className="w-8 h-8" />
+
+              {mealRecipes.length > 0 ? (
+                <div className="space-y-2">
+                  {mealRecipes.map((recipe) => (
+                    <div
+                      key={recipe.id}
+                      className="flex items-center gap-3 p-2 bg-zinc-50 rounded-lg"
+                    >
+                      {/* Recipe image - round */}
+                      <div className="w-10 h-10 rounded-full overflow-hidden bg-zinc-200 shrink-0">
+                        {recipe.image ? (
+                          <img
+                            src={recipe.image}
+                            alt={recipe.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-zinc-400">
+                            <Utensils className="w-5 h-5" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Recipe info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-sm text-zinc-800 truncate">
+                          {recipe.name}
                         </div>
+                        <div className="text-xs text-zinc-500">
+                          {recipe.kcal} kcal • P: {recipe.protein}g • F: {recipe.fat}g • K: {recipe.carbs}g
+                        </div>
+                      </div>
+
+                      {/* Remove button */}
+                      {onRemoveMealRecipe && (
+                        <button
+                          onClick={() => onRemoveMealRecipe(mealIndex, recipe.id)}
+                          disabled={disabled}
+                          className="p-1.5 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 transition-colors"
+                          title="Ta bort"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
                       )}
                     </div>
-                    <p className="text-xs text-zinc-700 text-center line-clamp-2 group-hover:text-amber-600 transition-colors">
-                      {recipe.name}
-                    </p>
-                  </button>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : null}
+
+              {/* Add recipe button */}
+              <button
+                onClick={() => onAddMealRecipe(mealIndex)}
+                disabled={disabled}
+                className="w-full mt-2 py-2 px-3 border border-dashed border-zinc-300 rounded-lg text-sm text-zinc-500 hover:border-amber-400 hover:text-amber-600 hover:bg-amber-50/50 transition-colors flex items-center justify-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Lägg till alternativ
+              </button>
             </div>
           )}
 
