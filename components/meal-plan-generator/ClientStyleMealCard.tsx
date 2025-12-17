@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { MacroBadge } from './MacroBadge';
 import { ProductSelectModal } from './ProductSelectModal';
 import { cn } from '@/lib/utils';
 import type {
@@ -364,15 +363,8 @@ export function ClientStyleMealCard({
             <span className="text-lg font-semibold text-zinc-900">{mealLabel}</span>
           </div>
 
-          {/* Right side: Macro badges + Chevron */}
-          <div className="flex items-center gap-2 sm:gap-4">
-            <div className="flex items-center gap-1.5 sm:gap-3">
-              <MacroBadge label="K" value={meal.totalMacros.kcal} color="green" />
-              <MacroBadge label="P" value={meal.totalMacros.protein} color="red" />
-              <MacroBadge label="F" value={meal.totalMacros.fat} color="blue" />
-              <MacroBadge label="C" value={meal.totalMacros.carbs} color="amber" />
-            </div>
-
+          {/* Right side: Chevron */}
+          <div className="flex items-center">
             {isExpanded ? (
               <ChevronUp className="w-5 h-5 text-zinc-400" />
             ) : (
