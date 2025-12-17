@@ -8,6 +8,59 @@ import { cn } from '@/lib/utils';
 import type { MacroCategory, MealType, CalculatedMacros } from '@/lib/types/meal-plan-generator';
 import { MACRO_CATEGORY_LABELS } from '@/lib/types/meal-plan-generator';
 
+// Subkategorier för varje makrokategori
+const SUBCATEGORIES: Record<MacroCategory, { key: string; label: string; keywords: string[] }[]> = {
+  protein: [
+    { key: 'all', label: 'Alla', keywords: [] },
+    { key: 'chicken', label: 'Kyckling', keywords: ['kyckling', 'höns'] },
+    { key: 'beef', label: 'Nöt', keywords: ['nöt', 'biff', 'oxfilé', 'lövbiff', 'rostbiff', 'entrecote', 'färs'] },
+    { key: 'pork', label: 'Fläsk', keywords: ['fläsk', 'kassler', 'bacon', 'skinka'] },
+    { key: 'fish', label: 'Fisk', keywords: ['lax', 'torsk', 'sej', 'pollock', 'tonfisk', 'fisk', 'pangasius', 'makrill', 'sill'] },
+    { key: 'seafood', label: 'Skaldjur', keywords: ['räk', 'krabba', 'musslor', 'bläckfisk'] },
+    { key: 'egg', label: 'Ägg', keywords: ['ägg', 'äggvita'] },
+    { key: 'dairy', label: 'Mejeri', keywords: ['kvarg', 'cottage', 'yoghurt', 'skyr', 'ost', 'fil'] },
+    { key: 'game', label: 'Vilt', keywords: ['älg', 'vildsvin', 'rådjur', 'hjort', 'ren'] },
+    { key: 'turkey', label: 'Kalkon', keywords: ['kalkon'] },
+  ],
+  carb: [
+    { key: 'all', label: 'Alla', keywords: [] },
+    { key: 'rice', label: 'Ris', keywords: ['ris', 'jasmin', 'basmati'] },
+    { key: 'pasta', label: 'Pasta', keywords: ['pasta', 'spagetti', 'penne', 'fusilli', 'makaroner'] },
+    { key: 'potato', label: 'Potatis', keywords: ['potatis', 'sötpotatis', 'potatismos'] },
+    { key: 'bread', label: 'Bröd', keywords: ['bröd', 'knäcke', 'fralla', 'bagel'] },
+    { key: 'oats', label: 'Havre', keywords: ['havre', 'gryn', 'havrefras', 'müsli'] },
+    { key: 'fruit', label: 'Frukt', keywords: ['banan', 'äpple', 'apelsin', 'ananas', 'blåbär', 'jordgubb', 'mango', 'frukt'] },
+    { key: 'beans', label: 'Baljväxter', keywords: ['bönor', 'linser', 'kikärter', 'ärtor'] },
+    { key: 'couscous', label: 'Bulgur/Couscous', keywords: ['bulgur', 'couscous', 'quinoa'] },
+  ],
+  fat: [
+    { key: 'all', label: 'Alla', keywords: [] },
+    { key: 'nuts', label: 'Nötter', keywords: ['mandel', 'cashew', 'valnöt', 'hasselnöt', 'pistasch', 'jordnöt', 'nötter'] },
+    { key: 'seeds', label: 'Frön', keywords: ['chia', 'lin', 'sesam', 'pumpa', 'solros', 'frö'] },
+    { key: 'oil', label: 'Oljor', keywords: ['olja', 'olivolja', 'kokosolja', 'rapsolja'] },
+    { key: 'avocado', label: 'Avokado', keywords: ['avokado'] },
+    { key: 'butter', label: 'Smör/Ost', keywords: ['smör', 'ost', 'cream cheese', 'grädde'] },
+    { key: 'nutbutter', label: 'Nötsmör', keywords: ['jordnötssmör', 'mandelsmör', 'peanut butter', 'nötsmör'] },
+  ],
+  vegetable: [
+    { key: 'all', label: 'Alla', keywords: [] },
+    { key: 'leafy', label: 'Bladgrönsaker', keywords: ['sallad', 'spenat', 'grönkål', 'ruccola'] },
+    { key: 'root', label: 'Rotfrukter', keywords: ['morot', 'rödbetor', 'palsternacka', 'selleri'] },
+    { key: 'cruciferous', label: 'Kål', keywords: ['broccoli', 'blomkål', 'vitkål', 'brysselkål'] },
+    { key: 'other', label: 'Övrigt', keywords: ['tomat', 'gurka', 'paprika', 'zucchini', 'lök'] },
+  ],
+  sauce: [
+    { key: 'all', label: 'Alla', keywords: [] },
+  ],
+};
+
+// Funktion för att matcha produkt mot subkategori
+function matchesSubcategory(productName: string, subcategory: { key: string; keywords: string[] }): boolean {
+  if (subcategory.key === 'all') return true;
+  const nameLower = productName.toLowerCase();
+  return subcategory.keywords.some(keyword => nameLower.includes(keyword));
+}
+
 interface Product {
   id: string;
   name: string;
@@ -117,6 +170,15 @@ export function ProductSelectModal({
   const [slvFoods, setSlvFoods] = useState<SlvFood[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<SourceTab>('products');
+  const [activeSubcategory, setActiveSubcategory] = useState('all');
+
+  // Hämta subkategorier för aktuell makrokategori
+  const subcategories = SUBCATEGORIES[category] || [{ key: 'all', label: 'Alla', keywords: [] }];
+
+  // Reset subkategori när kategori ändras
+  useEffect(() => {
+    setActiveSubcategory('all');
+  }, [category]);
 
   // Fetch products for the category
   useEffect(() => {
@@ -211,8 +273,14 @@ export function ProductSelectModal({
           (p.brand && p.brand.toLowerCase().includes(query))
         );
       })
+      .filter((p) => {
+        // Subkategori-filter
+        const selectedSubcategory = subcategories.find(s => s.key === activeSubcategory);
+        if (!selectedSubcategory) return true;
+        return matchesSubcategory(p.name, selectedSubcategory);
+      })
       .sort((a, b) => a.name.localeCompare(b.name, 'sv'));
-  }, [sourceItems, targetMacro, category, mealType, searchQuery, isVegetable, activeTab]);
+  }, [sourceItems, targetMacro, category, mealType, searchQuery, isVegetable, activeTab, activeSubcategory, subcategories]);
 
   const handleSelect = (product: ProductWithCalculation) => {
     onSelect(product, product.calculatedGrams, product.calculatedMacros);
@@ -276,6 +344,28 @@ export function ProductSelectModal({
             </button>
           )}
         </div>
+
+        {/* Subkategori-chips */}
+        {subcategories.length > 1 && (
+          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+            {subcategories.map((sub) => (
+              <button
+                key={sub.key}
+                onClick={() => setActiveSubcategory(sub.key)}
+                className={cn(
+                  'px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shrink-0',
+                  activeSubcategory === sub.key
+                    ? activeTab === 'slv'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-amber-500 text-white'
+                    : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                )}
+              >
+                {sub.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Target info */}
         {isVegetable ? (
