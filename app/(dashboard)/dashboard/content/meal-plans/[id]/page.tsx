@@ -36,12 +36,16 @@ import {
   Apple,
   ArrowUp,
   ArrowDown,
+  Utensils,
+  Dumbbell,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AddMealOptionDialog } from '@/components/AddMealOptionDialog'
 import { AssignTemplateDialog } from '@/components/AssignTemplateDialog'
 import { StructuredIngredientInput } from '@/components/StructuredIngredientInput'
 import { WeeklyConfigPanel } from '@/components/meal-plan/weekly-config-panel'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { MealPlanGenerator } from '@/components/meal-plan-generator'
 
 type TemplateMealOption = {
   id: string
@@ -182,6 +186,11 @@ export default function MealPlanTemplatePage() {
     calories: '',
   })
 
+  // Tabs state for Kostschema / Flexibel / Träning
+  const [activeTab, setActiveTab] = useState<'kostschema' | 'flexible' | 'training'>('kostschema')
+  const [nutritionPlanId, setNutritionPlanId] = useState<string | null>(null)
+  const [flexibleTargetMacros, setFlexibleTargetMacros] = useState<{ protein: number; carbs: number; fat: number; kcal: number } | null>(null)
+
   // Daily targets state
   const [useDifferentDailyTargets, setUseDifferentDailyTargets] = useState(false)
   const [dailyTargets, setDailyTargets] = useState<Array<{
@@ -219,6 +228,25 @@ export default function MealPlanTemplatePage() {
         targetCarbs: template.targetCarbs?.toString() || '',
         targetCalories: template.targetCalories?.toString() || '',
       })
+
+      // Set flexible target macros from template
+      if (template.targetProtein || template.targetCarbs || template.targetFat || template.targetCalories) {
+        setFlexibleTargetMacros({
+          protein: template.targetProtein || 0,
+          carbs: template.targetCarbs || 0,
+          fat: template.targetFat || 0,
+          kcal: template.targetCalories || 0,
+        })
+      }
+
+      // Check if there's an associated nutrition plan for the first assigned client
+      if (template.assignments && template.assignments.length > 0) {
+        const firstAssignment = template.assignments.find(a => a.active)
+        if (firstAssignment) {
+          // Fetch the client's nutrition plan
+          fetchClientNutritionPlan(firstAssignment.userId)
+        }
+      }
       // Sync daily targets
       setUseDifferentDailyTargets(template.useDifferentDailyTargets || false)
       if (template.dailyTargets && template.dailyTargets.length > 0) {
@@ -254,6 +282,27 @@ export default function MealPlanTemplatePage() {
       toast.error('Ett fel uppstod')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const fetchClientNutritionPlan = async (clientId: string) => {
+    try {
+      const response = await fetch(`/api/nutrition-plans?clientId=${clientId}`)
+      if (response.ok) {
+        const plans = await response.json()
+        const activePlan = plans.find((p: any) => p.status === 'ACTIVE')
+        if (activePlan) {
+          setNutritionPlanId(activePlan.id)
+          setFlexibleTargetMacros({
+            protein: Number(activePlan.proteinGrams) || 0,
+            carbs: Number(activePlan.carbGrams) || 0,
+            fat: Number(activePlan.fatGrams) || 0,
+            kcal: Number(activePlan.dailyCalorieTarget) || 0,
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching client nutrition plan:', error)
     }
   }
 
@@ -819,8 +868,36 @@ export default function MealPlanTemplatePage() {
         defaultCarbs={formData.targetCarbs}
       />
 
-      {/* Meals Card */}
-      <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
+      {/* Tabs: Kostschema / Flexibel / Träning */}
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'kostschema' | 'flexible' | 'training')} className="w-full">
+        <TabsList className="grid w-full grid-cols-3 bg-white/5 border border-gold-primary/20 rounded-xl p-1">
+          <TabsTrigger
+            value="kostschema"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-400 rounded-lg transition-all"
+          >
+            <Utensils className="w-4 h-4 mr-2" />
+            Kostschema
+          </TabsTrigger>
+          <TabsTrigger
+            value="flexible"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-400 rounded-lg transition-all"
+          >
+            <UtensilsCrossed className="w-4 h-4 mr-2" />
+            Flexibel
+          </TabsTrigger>
+          <TabsTrigger
+            value="training"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-400 rounded-lg transition-all"
+          >
+            <Dumbbell className="w-4 h-4 mr-2" />
+            Träning
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Kostschema Tab - Original Meals Content */}
+        <TabsContent value="kostschema" className="mt-6">
+          {/* Meals Card */}
+          <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl font-bold text-gold-light tracking-[1px]">
@@ -1131,6 +1208,49 @@ export default function MealPlanTemplatePage() {
           )}
         </CardContent>
       </Card>
+        </TabsContent>
+
+        {/* Flexibel Tab - MealPlanGenerator */}
+        <TabsContent value="flexible" className="mt-6">
+          {nutritionPlanId && flexibleTargetMacros ? (
+            <MealPlanGenerator
+              nutritionPlanId={nutritionPlanId}
+              targetMacros={flexibleTargetMacros}
+              onSave={() => {
+                fetchTemplate()
+              }}
+              onMealPlanIdChange={() => {}}
+            />
+          ) : (
+            <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
+              <CardContent className="py-12 text-center">
+                <UtensilsCrossed className="w-12 h-12 mx-auto text-gold-primary/50 mb-4" />
+                <h3 className="text-lg font-semibold text-gray-200 mb-2">
+                  Ingen kostplan kopplad
+                </h3>
+                <p className="text-gray-400 text-sm">
+                  Tilldela måltidsplanen till en klient med en aktiv kostplan för att använda flexibel kosthållning
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* Träning Tab */}
+        <TabsContent value="training" className="mt-6">
+          <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px]">
+            <CardContent className="py-12 text-center">
+              <Dumbbell className="w-12 h-12 mx-auto text-gold-primary/50 mb-4" />
+              <h3 className="text-lg font-semibold text-gray-200 mb-2">
+                Träningskosttillskott
+              </h3>
+              <p className="text-gray-400 text-sm">
+                Här kan du lägga till pre- och post-workout kosttillskott för klienten
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Add Meal Dialog */}
       <Dialog open={isAddMealDialogOpen} onOpenChange={setIsAddMealDialogOpen}>
