@@ -111,27 +111,28 @@ function normalizeName(name: string): string {
 }
 
 // Common food name mappings for better matching
+// NOTE: Alternatives should be exact SLV food names that START with these strings
 const FOOD_MAPPINGS: Record<string, string[]> = {
-  'ägg': ['ägg kokt', 'ägg hönsägg helt rå', 'ägg hela rå', 'hönsägg'],
-  'havregryn': ['havregryn fullkorn', 'havregrynsgröt fullkorn', 'havregryn'],
-  'hallon': ['hallon', 'hallon frysta', 'hallon blåbär frysvara'],
-  'blåbär': ['blåbär', 'blåbär frysta', 'hallon blåbär frysvara'],
-  'kvarg': ['kvarg naturell fett 0,2%', 'kvarg naturell', 'kvarg färskost fett 1%'],
-  'keso': ['keso', 'cottage cheese'],
-  'ris': ['ris vitt rått', 'ris råris rått', 'ris'],
-  'kyckling': ['kycklingfilé rå', 'kycklingbröst rå', 'kyckling'],
-  'lax': ['lax rå', 'laxfilé rå'],
-  'nötfärs': ['nötfärs rå', 'färs nöt rå'],
-  'pasta': ['pasta torr', 'pasta'],
-  'potatis': ['potatis rå', 'potatis'],
-  'banan': ['banan', 'banan färsk'],
-  'äpple': ['äpple', 'äpple med skal'],
-  'mjölk': ['mjölk', 'mellanmjölk'],
+  'ägg': ['ägg kokt', 'ägg rått'],  // Exact SLV names
+  'havregryn': ['havregryn fullkorn', 'havregrynsgröt fullkorn'],
+  'hallon': ['hallon'],
+  'blåbär': ['blåbär'],
+  'kvarg': ['kvarg naturell fett 0,2%', 'kvarg färskost fett 1%'],
+  'keso': ['keso'],
+  'ris': ['ris vitt', 'ris råris'],
+  'kyckling': ['kycklingfilé', 'kycklingbröst'],
+  'lax': ['lax'],
+  'nötfärs': ['nötfärs'],
+  'pasta': ['pasta'],
+  'potatis': ['potatis'],
+  'banan': ['banan'],
+  'äpple': ['äpple'],
+  'mjölk': ['mjölk'],
   'yoghurt': ['yoghurt naturell', 'yoghurt'],
-  'ost': ['ost hårdost', 'ost'],
-  'bröd': ['bröd', 'knäckebröd'],
+  'ost': ['ost'],
+  'bröd': ['bröd'],
   'havre': ['havregryn fullkorn', 'havregrynsgröt fullkorn'],
-  'jordnötssmör': ['jordnötssmör', 'jordnötter'],
+  'jordnötssmör': ['jordnötssmör'],
 };
 
 // Find best matching SLV food by name
@@ -155,11 +156,13 @@ function findBestMatch(searchName: string, slvFoods: SlvFood[]): SlvFood | null 
     return normalizedExact;
   }
 
-  // Check common food mappings
+  // Check common food mappings - require search to START with key or be exact
   for (const [key, alternatives] of Object.entries(FOOD_MAPPINGS)) {
-    if (searchLower.includes(key)) {
+    // Only match if search term starts with key (e.g. "ägg" matches "ägg hönsägg" but not "gris lägg")
+    if (searchLower.startsWith(key) || searchLower === key) {
       for (const alt of alternatives) {
-        const mapped = slvFoods.find(f => f.namn.toLowerCase().includes(alt));
+        // Find food that STARTS with the alternative (more precise)
+        const mapped = slvFoods.find(f => f.namn.toLowerCase().startsWith(alt));
         if (mapped) {
           console.log(`  Mapped match: "${key}" -> ${mapped.namn}`);
           return mapped;
