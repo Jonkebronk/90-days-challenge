@@ -10,11 +10,8 @@ import {
   ArrowLeft,
   User,
   Loader2,
-  Wand2,
 } from 'lucide-react';
-import { MealPlanGenerator } from '@/components/meal-plan-generator';
 import { InlineMealSettings } from '@/components/meal-plan-generator/InlineMealSettings';
-import { AIChatPanel } from '@/components/ai-chat';
 import type { MealConfig, DistributionMethod } from '@/lib/types/meal-plan-generator';
 import { DEFAULT_MEAL_CONFIGS, generateDefaultMealConfigs } from '@/lib/types/meal-plan-generator';
 
@@ -45,12 +42,6 @@ interface NutritionPlan {
   };
 }
 
-interface ExistingMealPlan {
-  id: string;
-  meals: any[];
-  targetMacros: any;
-  actualMacros: any;
-}
 
 const WORKOUT_TIME_LABELS: Record<string, string> = {
   morning: 'Morgon',
@@ -92,16 +83,13 @@ export default function NutritionPlanDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [plan, setPlan] = useState<NutritionPlan | null>(null);
-  const [existingMealPlan, setExistingMealPlan] = useState<ExistingMealPlan | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showGenerator, setShowGenerator] = useState(false);
   const [mealConfigs, setMealConfigs] = useState<MealConfig[]>(DEFAULT_MEAL_CONFIGS);
   const [distributionMethod, setDistributionMethod] = useState<DistributionMethod>('auto');
   const [workoutTime, setWorkoutTime] = useState<string>('afternoon');
   const [nutritionSystem, setNutritionSystem] = useState<string>('balanced');
   const [isRecreating, setIsRecreating] = useState(false);
-  const [mealPlanKey, setMealPlanKey] = useState(0); // Force re-render of MealPlanGenerator
 
   const planId = params.id as string;
 
@@ -128,15 +116,6 @@ export default function NutritionPlanDetailPage() {
         // Use the generateDefaultMealConfigs helper
         const configs = generateDefaultMealConfigs(data.mealsPerDay);
         setMealConfigs(configs);
-      }
-
-      // Check if meal plan exists
-      const mealPlanResponse = await fetch(`/api/meal-plan/by-nutrition-plan/${planId}`);
-      if (mealPlanResponse.ok) {
-        const mealPlanData = await mealPlanResponse.json();
-        if (mealPlanData) {
-          setExistingMealPlan(mealPlanData);
-        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ett fel uppstod');
@@ -171,30 +150,12 @@ export default function NutritionPlanDetailPage() {
         throw new Error('Failed to update nutrition plan');
       }
 
-      // Create new meal configs using helper
+      // Update local state
       const newConfigs = generateDefaultMealConfigs(settings.mealsPerDay);
-
-      // Recreate meal plan with new settings
-      const response = await fetch('/api/meal-plan/create-empty', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nutritionPlanId: plan.id,
-          mealConfigs: newConfigs,
-          distributionMethod: settings.distributionMethod,
-          forceRecreate: true,
-        }),
-      });
-
-      if (response.ok) {
-        const newPlan = await response.json();
-        setExistingMealPlan(newPlan);
-        setMealConfigs(newConfigs);
-        setDistributionMethod(settings.distributionMethod);
-        setWorkoutTime(settings.workoutTime);
-        setNutritionSystem(settings.nutritionSystem);
-        setMealPlanKey((prev) => prev + 1); // Force re-render
-      }
+      setMealConfigs(newConfigs);
+      setDistributionMethod(settings.distributionMethod);
+      setWorkoutTime(settings.workoutTime);
+      setNutritionSystem(settings.nutritionSystem);
     } catch (err) {
       console.error('Error updating meal settings:', err);
       throw err;
@@ -232,25 +193,6 @@ export default function NutritionPlanDetailPage() {
     kcal: plan.dailyCalorieTarget,
   };
 
-  if (showGenerator) {
-    return (
-      <div className="p-6 max-w-4xl mx-auto">
-        <Button variant="ghost" onClick={() => setShowGenerator(false)} className="mb-4">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Tillbaka till översikt
-        </Button>
-        <MealPlanGenerator
-          nutritionPlanId={plan.id}
-          targetMacros={targetMacros}
-          onSave={() => setShowGenerator(false)}
-        />
-      </div>
-    );
-  }
-
-  // Calculate actual macros from existing meal plan
-  const actualMacros = existingMealPlan?.actualMacros || { protein: 0, carbs: 0, fat: 0, kcal: 0 };
-
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -272,247 +214,105 @@ export default function NutritionPlanDetailPage() {
         </Badge>
       </div>
 
-      {/* Three-column layout on desktop */}
-      <div className="flex flex-col xl:flex-row gap-6">
-        {/* Left sidebar - Client + Settings + Macros */}
-        <div className="xl:w-72 flex-shrink-0 space-y-4 xl:sticky xl:top-6 xl:self-start">
-          {/* Client info */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Klient
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Namn och email */}
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                  <span className="text-amber-700 font-semibold text-lg">
-                    {plan.client.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div>
-                  <p className="font-medium">{plan.client.name}</p>
-                  <p className="text-sm text-muted-foreground">{plan.client.email}</p>
-                </div>
+      {/* Single column layout - just the wizard sidebar */}
+      <div className="max-w-md space-y-4">
+        {/* Client info */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Klient
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Namn och email */}
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
+                <span className="text-amber-700 font-semibold text-lg">
+                  {plan.client.name.charAt(0).toUpperCase()}
+                </span>
               </div>
-
-              <Separator />
-
-              {/* Grunddata */}
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Vikt</span>
-                  <p className="font-medium">{plan.weight} kg</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Aktivitet</span>
-                  <p className="font-medium">{LIFESTYLE_ACTIVITY_LABELS[plan.lifestyleActivity] || plan.lifestyleActivity}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Mål</span>
-                  <p className="font-medium">{getGoalLabel(plan.calorieGoal, plan.caloricAdjustmentPercent)}</p>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Kaloriberäkning */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Ämnesomsättning (BMR)</span>
-                  <p className="font-medium">{Math.round(plan.bmr)} kcal</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Dagligt kaloriintag</span>
-                  <p className="font-medium">{Math.round(plan.dailyCalorieTarget)} kcal</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Meal settings - inline editable */}
-          <InlineMealSettings
-            mealsPerDay={mealConfigs.length}
-            workoutTime={workoutTime}
-            nutritionSystem={nutritionSystem}
-            distributionMethod={distributionMethod}
-            onSave={handleSaveSettings}
-            disabled={isRecreating}
-          />
-
-          {/* Macro overview */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Makroöversikt</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Protein */}
               <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-red-500 font-medium">Protein</span>
-                  <span>
-                    {actualMacros.protein.toFixed(1)}g / {targetMacros.protein}g{' '}
-                    <span className={actualMacros.protein >= targetMacros.protein ? 'text-green-500' : 'text-red-500'}>
-                      ({actualMacros.protein >= targetMacros.protein ? '+' : ''}{(actualMacros.protein - targetMacros.protein).toFixed(1)}g)
-                    </span>
-                  </span>
-                </div>
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-red-500 rounded-full transition-all"
-                    style={{ width: `${Math.min(100, (actualMacros.protein / targetMacros.protein) * 100)}%` }}
-                  />
-                </div>
+                <p className="font-medium">{plan.client.name}</p>
+                <p className="text-sm text-muted-foreground">{plan.client.email}</p>
               </div>
+            </div>
 
-              {/* Carbs */}
+            <Separator />
+
+            {/* Grunddata */}
+            <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-green-500 font-medium">Kolhydrater</span>
-                  <span>
-                    {actualMacros.carbs.toFixed(1)}g / {targetMacros.carbs}g{' '}
-                    <span className={actualMacros.carbs >= targetMacros.carbs ? 'text-green-500' : 'text-red-500'}>
-                      ({actualMacros.carbs >= targetMacros.carbs ? '+' : ''}{(actualMacros.carbs - targetMacros.carbs).toFixed(1)}g)
-                    </span>
-                  </span>
-                </div>
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-green-500 rounded-full transition-all"
-                    style={{ width: `${Math.min(100, (actualMacros.carbs / targetMacros.carbs) * 100)}%` }}
-                  />
-                </div>
+                <span className="text-muted-foreground">Vikt</span>
+                <p className="font-medium">{plan.weight} kg</p>
               </div>
-
-              {/* Fat */}
               <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-amber-500 font-medium">Fett</span>
-                  <span>
-                    {actualMacros.fat.toFixed(1)}g / {targetMacros.fat}g{' '}
-                    <span className={actualMacros.fat >= targetMacros.fat ? 'text-green-500' : 'text-red-500'}>
-                      ({actualMacros.fat >= targetMacros.fat ? '+' : ''}{(actualMacros.fat - targetMacros.fat).toFixed(1)}g)
-                    </span>
-                  </span>
-                </div>
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-amber-500 rounded-full transition-all"
-                    style={{ width: `${Math.min(100, (actualMacros.fat / targetMacros.fat) * 100)}%` }}
-                  />
-                </div>
+                <span className="text-muted-foreground">Aktivitet</span>
+                <p className="font-medium">{LIFESTYLE_ACTIVITY_LABELS[plan.lifestyleActivity] || plan.lifestyleActivity}</p>
               </div>
-
-              {/* Calories */}
               <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-blue-500 font-medium">Kalorier</span>
-                  <span>
-                    {actualMacros.kcal.toFixed(0)}kcal / {targetMacros.kcal}kcal{' '}
-                    <span className={actualMacros.kcal >= targetMacros.kcal ? 'text-green-500' : 'text-red-500'}>
-                      ({actualMacros.kcal >= targetMacros.kcal ? '+' : ''}{(actualMacros.kcal - targetMacros.kcal).toFixed(0)}kcal)
-                    </span>
-                  </span>
-                </div>
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-blue-500 rounded-full transition-all"
-                    style={{ width: `${Math.min(100, (actualMacros.kcal / targetMacros.kcal) * 100)}%` }}
-                  />
-                </div>
+                <span className="text-muted-foreground">Mål</span>
+                <p className="font-medium">{getGoalLabel(plan.calorieGoal, plan.caloricAdjustmentPercent)}</p>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
 
-        {/* Middle content - Meal Plan */}
-        <div className="flex-1 min-w-0">
-          {existingMealPlan ? (
-            /* Show existing meal plan */
-            <MealPlanGenerator
-              key={mealPlanKey}
-              nutritionPlanId={plan.id}
-              targetMacros={targetMacros}
-              onSave={() => {
-                // Refresh data after save
-                fetchPlan();
-              }}
-              onMealPlanIdChange={(newId: string) => {
-                // Update meal plan ID when it changes (e.g., after "Börja om")
-                console.log('Meal plan ID changed to:', newId);
-                setExistingMealPlan(prev => {
-                  const updated = prev
-                    ? { ...prev, id: newId }
-                    : { id: newId, meals: [], actualMacros: { protein: 0, carbs: 0, fat: 0, kcal: 0 }, targetMacros: targetMacros };
-                  console.log('Updated existingMealPlan:', updated);
-                  return updated;
-                });
-              }}
-            />
-          ) : (
-            /* Generate meal plan button */
-            <Card className="border-2 border-dashed border-purple-200 bg-purple-50/50 dark:bg-purple-950/20 dark:border-purple-800">
-              <CardContent className="py-8 text-center">
-                <Wand2 className="h-12 w-12 text-purple-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">
-                  Generera kostschema
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Skapa ett detaljerat kostschema med exakta gramtal baserat på makromålen
-                </p>
-                <Button
-                  onClick={() => setShowGenerator(true)}
-                  className="bg-purple-500 hover:bg-purple-600"
-                >
-                  <Wand2 className="h-4 w-4 mr-2" />
-                  Generera kostschema
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+            <Separator />
 
-        {/* Right sidebar - AI Chat */}
-        <div className="xl:w-[450px] flex-shrink-0 xl:sticky xl:top-6 xl:self-start">
-          <AIChatPanel
-            nutritionPlanId={plan.id}
-            mealPlanId={existingMealPlan?.id}
-            clientName={plan.client.name}
-            targetMacros={targetMacros}
-            actualMacros={actualMacros}
-            clientData={{
-              name: plan.client.name,
-              email: plan.client.email,
-              weight: plan.weight,
-              lifestyleActivity: plan.lifestyleActivity,
-              calorieGoal: plan.calorieGoal,
-              bmr: plan.bmr,
-              dailyCalorieTarget: plan.dailyCalorieTarget,
-            }}
-            mealSettings={{
-              mealsPerDay: mealConfigs.length,
-              workoutTime: workoutTime,
-              nutritionSystem: nutritionSystem,
-              distributionMethod: distributionMethod,
-            }}
-            onMealPlanUpdated={() => {
-              // Refresh the meal plan to reflect AI changes
-              setMealPlanKey((prev) => prev + 1);
-              fetchPlan();
-            }}
-            onMealSettingsUpdated={(settings) => {
-              // Update local state when settings change in AI panel
-              setWorkoutTime(settings.workoutTime);
-              setNutritionSystem(settings.nutritionSystem);
-              setDistributionMethod(settings.distributionMethod);
-              const newConfigs = generateDefaultMealConfigs(settings.mealsPerDay);
-              setMealConfigs(newConfigs);
-              setMealPlanKey((prev) => prev + 1);
-            }}
-          />
-        </div>
+            {/* Kaloriberäkning */}
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-muted-foreground">Ämnesomsättning (BMR)</span>
+                <p className="font-medium">{Math.round(plan.bmr)} kcal</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Dagligt kaloriintag</span>
+                <p className="font-medium">{Math.round(plan.dailyCalorieTarget)} kcal</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Meal settings - inline editable */}
+        <InlineMealSettings
+          mealsPerDay={mealConfigs.length}
+          workoutTime={workoutTime}
+          nutritionSystem={nutritionSystem}
+          distributionMethod={distributionMethod}
+          onSave={handleSaveSettings}
+          disabled={isRecreating}
+        />
+
+        {/* Macro targets */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Makromål</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Protein */}
+            <div className="flex justify-between text-sm">
+              <span className="text-red-500 font-medium">Protein</span>
+              <span className="font-medium">{targetMacros.protein}g</span>
+            </div>
+
+            {/* Carbs */}
+            <div className="flex justify-between text-sm">
+              <span className="text-green-500 font-medium">Kolhydrater</span>
+              <span className="font-medium">{targetMacros.carbs}g</span>
+            </div>
+
+            {/* Fat */}
+            <div className="flex justify-between text-sm">
+              <span className="text-amber-500 font-medium">Fett</span>
+              <span className="font-medium">{targetMacros.fat}g</span>
+            </div>
+
+            {/* Calories */}
+            <div className="flex justify-between text-sm">
+              <span className="text-blue-500 font-medium">Kalorier</span>
+              <span className="font-medium">{targetMacros.kcal} kcal</span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
