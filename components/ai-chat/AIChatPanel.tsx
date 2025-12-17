@@ -317,17 +317,23 @@ export function AIChatPanel({
 
   // Handle applying AI meal plan to the schema
   const handleApplyToSchema = async (content: string): Promise<void> => {
+    console.log('handleApplyToSchema called');
+    console.log('mealPlanId:', mealPlanId);
+
     if (!mealPlanId) {
       console.error('No meal plan ID available');
       throw new Error('Inget kostschema finns. Skapa ett kostschema först.');
     }
 
     const parsedMeals = parseAIMealPlan(content);
+    console.log('Parsed meals:', JSON.stringify(parsedMeals, null, 2));
 
     if (parsedMeals.length === 0) {
+      console.error('No meals parsed from content');
       throw new Error('Kunde inte tolka måltidsförslaget. Försök igen.');
     }
 
+    console.log('Sending to API...');
     const response = await fetch('/api/meal-plan/apply-ai-suggestion', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -337,15 +343,20 @@ export function AIChatPanel({
       }),
     });
 
+    console.log('API response status:', response.status);
+
     if (!response.ok) {
       const error = await response.json();
+      console.error('API error:', error);
       throw new Error(error.error || 'Kunde inte applicera förslaget');
     }
 
     const result = await response.json();
+    console.log('API result:', result);
 
     // Notify parent to refresh meal plan
     if (onMealPlanUpdated) {
+      console.log('Calling onMealPlanUpdated');
       onMealPlanUpdated();
     }
 

@@ -30,16 +30,22 @@ export function ChatMessage({ message, onFeedback, onApplyToSchema, isLast }: Ch
   };
 
   // Check if message contains a meal plan that can be applied
-  const hasMealPlan = !isUser && message.content.includes('MÅLTID') && message.content.includes('LIVSMEDEL');
+  // Look for MÅLTID pattern with food items (contains grams like "200g" or ": 150g")
+  const hasMealPlan = !isUser &&
+    message.content.includes('MÅLTID') &&
+    /\d+\s*g/.test(message.content);
 
   const handleApplyToSchema = async () => {
     if (!onApplyToSchema || applying || applied) return;
     setApplying(true);
     try {
+      console.log('Applying to schema, content:', message.content.substring(0, 500));
       await onApplyToSchema(message.content);
       setApplied(true);
     } catch (error) {
       console.error('Error applying to schema:', error);
+      // Show error to user
+      alert(error instanceof Error ? error.message : 'Kunde inte applicera förslaget');
     } finally {
       setApplying(false);
     }
