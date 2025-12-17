@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ProductSelectModal } from './ProductSelectModal';
@@ -13,6 +13,63 @@ import type {
   CalculatedMacros,
 } from '@/lib/types/meal-plan-generator';
 import { MEAL_TYPE_LABELS, VEGETABLE_GRAMS } from '@/lib/types/meal-plan-generator';
+
+// Debounced gram input component
+function GramInput({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: number;
+  onChange: (grams: number) => void;
+  disabled?: boolean;
+}) {
+  const [localValue, setLocalValue] = useState(value.toString());
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync local value when prop changes (from API response)
+  useEffect(() => {
+    setLocalValue(value.toString());
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setLocalValue(newValue);
+
+    // Clear previous debounce
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    // Debounce API call
+    debounceRef.current = setTimeout(() => {
+      const numValue = parseInt(newValue) || 0;
+      if (numValue >= 0) {
+        onChange(numValue);
+      }
+    }, 500);
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <input
+      type="number"
+      value={localValue}
+      onChange={handleChange}
+      disabled={disabled}
+      className="w-14 text-center text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded px-1 py-0.5 focus:outline-none focus:border-amber-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+      min="0"
+    />
+  );
+}
 
 interface ProductForSelect {
   id: string;
@@ -292,14 +349,11 @@ export function ClientStyleMealCard({
 
         {/* Row 2 on mobile: Gram input + Macros */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Gram input - no spinners */}
-          <input
-            type="number"
+          {/* Gram input - debounced */}
+          <GramInput
             value={item.selected.grams}
-            onChange={(e) => handleGramInputChange(category, item.selected.foodId, parseInt(e.target.value) || 0)}
+            onChange={(grams) => handleGramInputChange(category, item.selected.foodId, grams)}
             disabled={disabled}
-            className="w-14 text-center text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded px-1 py-0.5 focus:outline-none focus:border-amber-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            min="0"
           />
 
           {/* Macros */}
