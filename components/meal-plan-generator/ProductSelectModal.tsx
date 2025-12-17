@@ -381,7 +381,7 @@ export function ProductSelectModal({
               className="w-4 h-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500"
             />
             <span className="text-sm text-amber-800 font-medium">
-              Lägg till som alternativ (visar "ELLER")
+              Lägg till som alternativ (visar ELLER)
             </span>
           </label>
         )}
