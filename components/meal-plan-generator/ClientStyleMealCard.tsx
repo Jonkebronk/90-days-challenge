@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Plus, Minus, Utensils, Leaf, RefreshCw } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Minus, Utensils, Leaf, RefreshCw, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MacroBadge } from './MacroBadge';
 import { ProductSelectModal } from './ProductSelectModal';
@@ -54,6 +54,7 @@ export function ClientStyleMealCard({
   mealIndex,
   mealNumber,
   onSelectFood,
+  onRemoveFood,
   onAddSauce,
   onRemoveSauce,
   onUpdateGrams,
@@ -196,6 +197,18 @@ export function ClientStyleMealCard({
           >
             <RefreshCw className="h-4 w-4" />
           </button>
+
+          {/* Remove food */}
+          {onRemoveFood && (
+            <button
+              onClick={() => !disabled && onRemoveFood(mealIndex, category)}
+              disabled={disabled}
+              className="p-1.5 rounded hover:bg-red-100 text-zinc-400 hover:text-red-600 disabled:opacity-30 transition-colors"
+              title="Ta bort"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
     );
