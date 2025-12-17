@@ -14,7 +14,7 @@ import type {
 } from '@/lib/types/meal-plan-generator';
 import { MEAL_TYPE_LABELS, VEGETABLE_GRAMS } from '@/lib/types/meal-plan-generator';
 
-// Debounced gram input component
+// Gram input component - updates on blur or Enter
 function GramInput({
   value,
   onChange,
@@ -25,45 +25,42 @@ function GramInput({
   disabled?: boolean;
 }) {
   const [localValue, setLocalValue] = useState(value.toString());
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSavedValue = useRef(value);
 
-  // Sync local value when prop changes (from API response)
+  // Only sync if the external value changed (from another source, not our own update)
   useEffect(() => {
-    setLocalValue(value.toString());
+    if (value !== lastSavedValue.current) {
+      setLocalValue(value.toString());
+      lastSavedValue.current = value;
+    }
   }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setLocalValue(newValue);
-
-    // Clear previous debounce
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    // Debounce API call
-    debounceRef.current = setTimeout(() => {
-      const numValue = parseInt(newValue) || 0;
-      if (numValue >= 0) {
-        onChange(numValue);
-      }
-    }, 500);
+    setLocalValue(e.target.value);
   };
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, []);
+  const handleSave = () => {
+    const numValue = parseInt(localValue) || 0;
+    if (numValue >= 0 && numValue !== lastSavedValue.current) {
+      lastSavedValue.current = numValue;
+      onChange(numValue);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSave();
+      (e.target as HTMLInputElement).blur();
+    }
+  };
 
   return (
     <input
       type="number"
       value={localValue}
       onChange={handleChange}
+      onBlur={handleSave}
+      onKeyDown={handleKeyDown}
       disabled={disabled}
       className="w-14 text-center text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded px-1 py-0.5 focus:outline-none focus:border-amber-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="0"
