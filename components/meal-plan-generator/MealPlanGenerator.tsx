@@ -82,9 +82,10 @@ export function MealPlanGenerator({
   // Load recipe suggestions for each meal type
   useEffect(() => {
     const loadRecipeSuggestions = async () => {
-      if (!generatedPlan?.meals) return;
-
-      const mealTypes = [...new Set(generatedPlan.meals.map(m => m.type))];
+      // Load recipes based on plan meals, or use default meal types if no plan yet
+      const mealTypes = generatedPlan?.meals
+        ? [...new Set(generatedPlan.meals.map(m => m.type))]
+        : ['frukost', 'mellanmål', 'lunch', 'middag', 'kvällsmål'];
       const suggestions: Record<string, Array<{
         id: string;
         name: string;
@@ -130,7 +131,7 @@ export function MealPlanGenerator({
     };
 
     loadRecipeSuggestions();
-  }, [generatedPlan?.meals]);
+  }, [generatedPlan?.meals, nutritionPlanId]);
 
   const loadOrCreatePlan = async () => {
     setIsLoading(true);
