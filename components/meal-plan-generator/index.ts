@@ -11,3 +11,4 @@ export { FoodSwapModal } from './FoodSwapModal';
 export { MealSettingsEditor } from './MealSettingsEditor';
 export { InlineMealSettings } from './InlineMealSettings';
 export { RecipeDetailDialog } from './RecipeDetailDialog';
+export { FoodItemDetailDialog } from './FoodItemDetailDialog';

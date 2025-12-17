@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry } fr
 import { Button } from '@/components/ui/button';
 import { ProductSelectModal } from './ProductSelectModal';
 import { RecipeDetailDialog } from './RecipeDetailDialog';
+import { FoodItemDetailDialog } from './FoodItemDetailDialog';
 import { cn } from '@/lib/utils';
 import type {
   GeneratedMeal,
@@ -162,10 +163,24 @@ export function ClientStyleMealCard({
   const [recipeDialogOpen, setRecipeDialogOpen] = useState(false);
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
 
+  // Food item detail dialog state
+  const [foodDialogOpen, setFoodDialogOpen] = useState(false);
+  const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
+  const [selectedFoodName, setSelectedFoodName] = useState<string>('');
+  const [selectedFoodGrams, setSelectedFoodGrams] = useState<number>(100);
+
   // Handle recipe click
   const handleRecipeClick = (recipeId: string) => {
     setSelectedRecipeId(recipeId);
     setRecipeDialogOpen(true);
+  };
+
+  // Handle food item click
+  const handleFoodClick = (foodId: string, name: string, grams: number) => {
+    setSelectedFoodId(foodId);
+    setSelectedFoodName(name);
+    setSelectedFoodGrams(grams);
+    setFoodDialogOpen(true);
   };
 
   const mealLabel = mealNumber
@@ -229,9 +244,12 @@ export function ClientStyleMealCard({
       >
         {/* Row 1 on mobile: Food name + actions */}
         <div className="flex items-center gap-2 sm:flex-1 sm:min-w-0">
-          <span className="flex-1 text-sm text-zinc-800 font-medium sm:font-normal truncate">
+          <button
+            onClick={() => handleFoodClick(item.selected.foodId, item.selected.name, item.selected.grams)}
+            className="flex-1 text-left text-sm text-zinc-800 font-medium sm:font-normal truncate hover:text-amber-600 transition-colors"
+          >
             {item.selected.name}
-          </span>
+          </button>
           {/* Actions - visible on mobile */}
           <div className="flex items-center gap-0.5 shrink-0 sm:hidden">
             <button
@@ -634,6 +652,15 @@ export function ClientStyleMealCard({
         recipeId={selectedRecipeId}
         open={recipeDialogOpen}
         onOpenChange={setRecipeDialogOpen}
+      />
+
+      {/* Food Item Detail Dialog */}
+      <FoodItemDetailDialog
+        foodId={selectedFoodId}
+        foodName={selectedFoodName}
+        currentGrams={selectedFoodGrams}
+        open={foodDialogOpen}
+        onOpenChange={setFoodDialogOpen}
       />
     </div>
   );
