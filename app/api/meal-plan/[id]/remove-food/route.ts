@@ -20,9 +20,10 @@ export async function POST(
 
     const { id } = await params;
     const body = await request.json();
-    const { mealIndex, category } = body as {
+    const { mealIndex, category, foodId } = body as {
       mealIndex: number;
       category: MacroCategory;
+      foodId?: string;  // Optional - if provided, remove specific food; otherwise remove first in category
     };
 
     if (typeof mealIndex !== 'number' || !category) {
@@ -68,8 +69,15 @@ export async function POST(
 
     const meal = meals[mealIndex];
 
-    // Find and remove the item with the specified category
-    const itemIndex = meal.items.findIndex((item) => item.category === category);
+    // Find the item to remove - either by foodId or by category
+    let itemIndex: number;
+    if (foodId) {
+      // Remove specific food by ID
+      itemIndex = meal.items.findIndex((item) => item.selected.foodId === foodId);
+    } else {
+      // Fallback: remove first item in category
+      itemIndex = meal.items.findIndex((item) => item.category === category);
+    }
 
     if (itemIndex === -1) {
       return NextResponse.json(

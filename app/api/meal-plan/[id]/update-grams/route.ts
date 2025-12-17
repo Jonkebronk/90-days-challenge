@@ -25,10 +25,11 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { mealIndex, category, grams } = body as {
+    const { mealIndex, category, grams, foodId } = body as {
       mealIndex: number;
       category: MacroCategory;
       grams: number;
+      foodId?: string;  // Optional - if provided, update specific food; otherwise update first in category
     };
 
     if (mealIndex === undefined || !category || grams === undefined) {
@@ -67,7 +68,14 @@ export async function PUT(
     }
 
     const meal = meals[mealIndex];
-    const item = meal.items.find((i) => i.category === category);
+
+    // Find item - either by foodId or by category
+    let item;
+    if (foodId) {
+      item = meal.items.find((i) => i.selected.foodId === foodId);
+    } else {
+      item = meal.items.find((i) => i.category === category);
+    }
 
     if (!item) {
       return NextResponse.json({ error: 'Food item not found' }, { status: 404 });

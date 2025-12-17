@@ -30,12 +30,12 @@ interface ClientStyleMealCardProps {
   mealNumber?: number;
   onSwapFood: (mealIndex: number, category: MacroCategory, foodId: string) => void;
   onSelectFood?: (mealIndex: number, category: MacroCategory, product: ProductForSelect, grams: number, macros: CalculatedMacros) => void;
-  onRemoveFood?: (mealIndex: number, category: MacroCategory) => void;
+  onRemoveFood?: (mealIndex: number, category: MacroCategory, foodId?: string) => void;
   onRemoveAlternative?: (mealIndex: number, category: MacroCategory, foodId: string) => void;
   onAddAlternative?: (mealIndex: number, category: MacroCategory, product: ProductForSelect, grams: number, macros: CalculatedMacros) => void;
   onAddSauce: (mealIndex: number) => void;
   onRemoveSauce: (mealIndex: number) => void;
-  onUpdateGrams?: (mealIndex: number, category: MacroCategory, grams: number) => void;
+  onUpdateGrams?: (mealIndex: number, category: MacroCategory, grams: number, foodId?: string) => void;
   onUpdateMealMacros?: (mealIndex: number, targetMacros: CalculatedMacros) => void;
   disabled?: boolean;
 }
@@ -71,10 +71,10 @@ export function ClientStyleMealCard({
     ? `${MEAL_TYPE_LABELS[meal.type]} ${mealNumber}`
     : MEAL_TYPE_LABELS[meal.type];
 
-  // Get items by category
-  const proteinItem = meal.items.find(item => item.category === 'protein');
-  const carbItem = meal.items.find(item => item.category === 'carb');
-  const fatItem = meal.items.find(item => item.category === 'fat');
+  // Get items by category - support multiple items per category
+  const proteinItems = meal.items.filter(item => item.category === 'protein');
+  const carbItems = meal.items.filter(item => item.category === 'carb');
+  const fatItems = meal.items.filter(item => item.category === 'fat');
 
   const canHaveSauce = meal.type === 'lunch' || meal.type === 'middag';
   const hasVegetables = meal.vegetableGrams > 0;
@@ -94,12 +94,12 @@ export function ClientStyleMealCard({
     setSelectModalOpen(false);
   };
 
-  // Handle grams adjustment
-  const adjustGrams = (category: MacroCategory, delta: number) => {
-    const item = meal.items.find(i => i.category === category);
+  // Handle grams adjustment for a specific food item
+  const adjustGrams = (category: MacroCategory, foodId: string, delta: number) => {
+    const item = meal.items.find(i => i.category === category && i.selected.foodId === foodId);
     if (item && onUpdateGrams) {
       const newGrams = Math.max(10, item.selected.grams + delta);
-      onUpdateGrams(mealIndex, category, newGrams);
+      onUpdateGrams(mealIndex, category, newGrams, foodId);
     }
   };
 
@@ -113,45 +113,14 @@ export function ClientStyleMealCard({
     }
   };
 
-  // Render a food item row
-  const renderFoodRow = (
-    item: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros } } | undefined,
+  // Render a single food item
+  const renderSingleFoodItem = (
+    item: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros } },
     category: MacroCategory
   ) => {
-    const config = CATEGORY_CONFIG[category];
-    const targetMacro = getTargetMacro(category);
-
-    if (!item) {
-      // Empty state - show add button
-      return (
-        <div
-          key={category}
-          className={cn(
-            "flex items-center justify-between p-3 rounded-lg border-2 border-dashed",
-            config.border, config.bg
-          )}
-        >
-          <span className={cn("text-sm font-medium", config.text)}>
-            {config.label}
-          </span>
-          <button
-            onClick={() => !disabled && handleOpenSelectModal(category, targetMacro)}
-            disabled={disabled}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
-              config.bg, config.text, "hover:opacity-80"
-            )}
-          >
-            <Plus className="h-4 w-4" />
-            Lägg till
-          </button>
-        </div>
-      );
-    }
-
     return (
       <div
-        key={category}
+        key={item.selected.foodId}
         className="flex items-center gap-3 p-3 bg-zinc-50 rounded-lg border border-zinc-200"
       >
         {/* Food name and grams */}
@@ -170,7 +139,7 @@ export function ClientStyleMealCard({
         <div className="flex items-center gap-0.5">
           {/* Decrease grams */}
           <button
-            onClick={() => adjustGrams(category, -10)}
+            onClick={() => adjustGrams(category, item.selected.foodId, -10)}
             disabled={disabled || item.selected.grams <= 10}
             className="p-1.5 rounded hover:bg-zinc-200 text-zinc-500 hover:text-zinc-700 disabled:opacity-30 transition-colors"
             title="Minska 10g"
@@ -180,7 +149,7 @@ export function ClientStyleMealCard({
 
           {/* Increase grams */}
           <button
-            onClick={() => adjustGrams(category, 10)}
+            onClick={() => adjustGrams(category, item.selected.foodId, 10)}
             disabled={disabled}
             className="p-1.5 rounded hover:bg-zinc-200 text-zinc-500 hover:text-zinc-700 disabled:opacity-30 transition-colors"
             title="Öka 10g"
@@ -190,7 +159,7 @@ export function ClientStyleMealCard({
 
           {/* Swap food */}
           <button
-            onClick={() => !disabled && handleOpenSelectModal(category, targetMacro)}
+            onClick={() => !disabled && handleOpenSelectModal(category, getTargetMacro(category))}
             disabled={disabled}
             className="p-1.5 rounded hover:bg-zinc-200 text-zinc-500 hover:text-zinc-700 disabled:opacity-30 transition-colors"
             title="Byt livsmedel"
@@ -201,7 +170,7 @@ export function ClientStyleMealCard({
           {/* Remove food */}
           {onRemoveFood && (
             <button
-              onClick={() => !disabled && onRemoveFood(mealIndex, category)}
+              onClick={() => !disabled && onRemoveFood(mealIndex, category, item.selected.foodId)}
               disabled={disabled}
               className="p-1.5 rounded hover:bg-red-100 text-zinc-400 hover:text-red-600 disabled:opacity-30 transition-colors"
               title="Ta bort"
@@ -209,6 +178,45 @@ export function ClientStyleMealCard({
               <X className="h-4 w-4" />
             </button>
           )}
+        </div>
+      </div>
+    );
+  };
+
+  // Render all food items for a category (supports multiple items)
+  const renderFoodCategory = (
+    items: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros } }[],
+    category: MacroCategory
+  ) => {
+    const config = CATEGORY_CONFIG[category];
+    const targetMacro = getTargetMacro(category);
+
+    return (
+      <div key={category} className="space-y-2">
+        {/* Render existing items */}
+        {items.map(item => renderSingleFoodItem(item, category))}
+
+        {/* Add button - always show so user can add more */}
+        <div
+          className={cn(
+            "flex items-center justify-between p-3 rounded-lg border-2 border-dashed",
+            config.border, config.bg
+          )}
+        >
+          <span className={cn("text-sm font-medium", config.text)}>
+            {items.length === 0 ? config.label : `+ ${config.label}`}
+          </span>
+          <button
+            onClick={() => !disabled && handleOpenSelectModal(category, targetMacro)}
+            disabled={disabled}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+              config.bg, config.text, "hover:opacity-80"
+            )}
+          >
+            <Plus className="h-4 w-4" />
+            Lägg till
+          </button>
         </div>
       </div>
     );
@@ -248,11 +256,11 @@ export function ClientStyleMealCard({
 
       {/* Expanded content */}
       {isExpanded && (
-        <div className="px-5 pb-5 space-y-2">
-          {/* Food items list */}
-          {renderFoodRow(proteinItem, 'protein')}
-          {renderFoodRow(carbItem, 'carb')}
-          {renderFoodRow(fatItem, 'fat')}
+        <div className="px-5 pb-5 space-y-3">
+          {/* Food items list - supports multiple items per category */}
+          {renderFoodCategory(proteinItems, 'protein')}
+          {renderFoodCategory(carbItems, 'carb')}
+          {renderFoodCategory(fatItems, 'fat')}
 
           {/* Vegetables section */}
           {hasVegetables && (

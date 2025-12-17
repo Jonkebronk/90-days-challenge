@@ -353,12 +353,19 @@ export async function POST(request: NextRequest) {
           alternatives: [],
         };
 
-        // Find existing item in this category or add new
-        const existingIndex = meal.items.findIndex(i => i.category === item.category);
-        if (existingIndex >= 0) {
-          meal.items[existingIndex] = newItem;
+        // Check if this exact food already exists in the meal
+        const existingFoodIndex = meal.items.findIndex(
+          i => i.selected.foodId === newItem.selected.foodId
+        );
+
+        if (existingFoodIndex >= 0) {
+          // Update existing food (same food, update grams)
+          meal.items[existingFoodIndex] = newItem;
+          console.log(`    Updated existing food: ${slvFood.namn}`);
         } else {
+          // Add as new item (allow multiple items per category!)
           meal.items.push(newItem);
+          console.log(`    Added new food: ${slvFood.namn}`);
         }
 
         appliedItems.push(`${slvFood.namn} (${item.grams}g)`);

@@ -340,15 +340,15 @@ export function MealPlanGenerator({
     }
   };
 
-  // Remove food handler
-  const handleRemoveFood = async (mealIndex: number, category: MacroCategory) => {
+  // Remove food handler - now supports foodId for multiple items per category
+  const handleRemoveFood = async (mealIndex: number, category: MacroCategory, foodId?: string) => {
     if (!generatedPlan) return;
 
     try {
       const response = await fetch(`/api/meal-plan/${generatedPlan.id}/remove-food`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mealIndex, category }),
+        body: JSON.stringify({ mealIndex, category, foodId }),
       });
 
       const data = await response.json();
@@ -370,11 +370,12 @@ export function MealPlanGenerator({
     }
   };
 
-  // Update grams handler
+  // Update grams handler - now supports foodId for multiple items per category
   const handleUpdateGrams = async (
     mealIndex: number,
     category: MacroCategory,
-    grams: number
+    grams: number,
+    foodId?: string
   ) => {
     if (!generatedPlan) return;
 
@@ -382,7 +383,7 @@ export function MealPlanGenerator({
       const response = await fetch(`/api/meal-plan/${generatedPlan.id}/update-grams`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mealIndex, category, grams }),
+        body: JSON.stringify({ mealIndex, category, grams, foodId }),
       });
 
       const data = await response.json();
