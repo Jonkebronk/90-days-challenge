@@ -38,8 +38,16 @@ interface ParsedMeal {
 }
 
 // Determine food category based on name
-function determineFoodCategory(name: string): 'protein' | 'carb' | 'fat' {
+function determineFoodCategory(name: string): 'protein' | 'carb' | 'fat' | null {
   const nameLower = name.toLowerCase();
+
+  // Skip vegetables and non-macro items
+  if (nameLower.includes('grönsak') || nameLower.includes('sallad') ||
+      nameLower.includes('spenat') || nameLower.includes('broccoli') ||
+      nameLower.includes('tomat') || nameLower.includes('gurka') ||
+      nameLower.includes('paprika') || nameLower.includes('lök')) {
+    return null; // Skip vegetables
+  }
 
   // Carb sources
   if (nameLower.includes('ris') || nameLower.includes('pasta') ||
@@ -48,7 +56,10 @@ function determineFoodCategory(name: string): 'protein' | 'carb' | 'fat' {
       nameLower.includes('quinoa') || nameLower.includes('bulgur') ||
       nameLower.includes('couscous') || nameLower.includes('banan') ||
       nameLower.includes('frukt') || nameLower.includes('äpple') ||
-      nameLower.includes('honung') || nameLower.includes('sylt')) {
+      nameLower.includes('honung') || nameLower.includes('sylt') ||
+      nameLower.includes('blåbär') || nameLower.includes('hallon') ||
+      nameLower.includes('jordgubb') || nameLower.includes('lasagne') ||
+      nameLower.includes('cornflakes') || nameLower.includes('flingor')) {
     return 'carb';
   }
 
@@ -100,7 +111,10 @@ function parseAIMealPlan(content: string): ParsedMeal[] {
 
         if (name && grams > 0 && name.length > 1) {
           const category = determineFoodCategory(name);
-          items.push({ name, grams, category });
+          // Only add items with valid categories (skip vegetables)
+          if (category) {
+            items.push({ name, grams, category });
+          }
         }
       }
     }
