@@ -231,7 +231,7 @@ export function ClientStyleMealCard({
 
   // Render a single food item - responsive layout (stacked on mobile, row on desktop)
   const renderFoodItem = (
-    item: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros } },
+    item: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros; image?: string | null } },
     category: MacroCategory,
     configKey: string
   ) => {
@@ -242,8 +242,25 @@ export function ClientStyleMealCard({
         key={item.selected.foodId}
         className="py-2 px-1 space-y-1.5 sm:space-y-0 sm:flex sm:items-center sm:gap-3"
       >
-        {/* Row 1 on mobile: Food name + actions */}
+        {/* Row 1 on mobile: Image + Food name + actions */}
         <div className="flex items-center gap-2 sm:flex-1 sm:min-w-0">
+          {/* Round food image */}
+          <button
+            onClick={() => handleFoodClick(item.selected.foodId, item.selected.name, item.selected.grams)}
+            className="w-10 h-10 rounded-full overflow-hidden bg-zinc-100 shrink-0 hover:ring-2 hover:ring-amber-400 transition-all"
+          >
+            {item.selected.image ? (
+              <img
+                src={item.selected.image}
+                alt={item.selected.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-zinc-400">
+                <Utensils className="w-4 h-4" />
+              </div>
+            )}
+          </button>
           <button
             onClick={() => handleFoodClick(item.selected.foodId, item.selected.name, item.selected.grams)}
             className="flex-1 text-left text-sm text-zinc-800 font-medium sm:font-normal truncate hover:text-amber-600 transition-colors"
@@ -321,7 +338,7 @@ export function ClientStyleMealCard({
 
   // Render a complete category section with header
   const renderCategorySection = (
-    items: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros }; isAlternative?: boolean }[],
+    items: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros; image?: string | null }; isAlternative?: boolean }[],
     category: MacroCategory,
     configKey: string,
     showAddButton: boolean = true
