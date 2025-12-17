@@ -28,12 +28,25 @@ interface AISuggestedItem {
   name: string;
   grams: number;
   category: 'protein' | 'carb' | 'fat';
+  useProductLibrary?: boolean;  // If true, search product library instead of SLV
+  productId?: string;  // Direct product ID if specified
 }
 
 interface AISuggestedMeal {
   mealType: MealType;
   mealIndex: number;
   items: AISuggestedItem[];
+}
+
+interface ProductLibraryFood {
+  id: string;
+  name: string;
+  brand: string | null;
+  kcal: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  image: string | null;
 }
 
 // Categories that are compound dishes (rätter) - should be EXCLUDED
@@ -242,7 +255,7 @@ function findBestMatch(searchName: string, slvFoods: SlvFood[]): SlvFood | null 
 }
 
 // Calculate macros for given grams
-function calculateMacros(food: SlvFood, grams: number): CalculatedMacros {
+function calculateMacros(food: SlvFood | ProductLibraryFood, grams: number): CalculatedMacros {
   const factor = grams / 100;
   return {
     protein: Math.round((food.protein || 0) * factor * 10) / 10,
@@ -250,6 +263,88 @@ function calculateMacros(food: SlvFood, grams: number): CalculatedMacros {
     fat: Math.round((food.fat || 0) * factor * 10) / 10,
     kcal: Math.round((food.kcal || 0) * factor),
   };
+}
+
+// Search product library for a food
+async function searchProductLibrary(searchName: string, coachId: string): Promise<ProductLibraryFood | null> {
+  const searchLower = searchName.toLowerCase().trim();
+
+  console.log(`Searching product library for: "${searchName}"`);
+
+  // Try exact match first
+  const exactMatch = await prisma.product.findFirst({
+    where: {
+      coachId,
+      name: { equals: searchName, mode: 'insensitive' },
+    },
+    select: {
+      id: true,
+      name: true,
+      brand: true,
+      kcal: true,
+      protein: true,
+      carbs: true,
+      fat: true,
+      image: true,
+    },
+  });
+
+  if (exactMatch) {
+    console.log(`  Product library exact match: ${exactMatch.name}`);
+    return exactMatch;
+  }
+
+  // Try contains match
+  const containsMatch = await prisma.product.findFirst({
+    where: {
+      coachId,
+      OR: [
+        { name: { contains: searchLower, mode: 'insensitive' } },
+        { brand: { contains: searchLower, mode: 'insensitive' } },
+      ],
+    },
+    select: {
+      id: true,
+      name: true,
+      brand: true,
+      kcal: true,
+      protein: true,
+      carbs: true,
+      fat: true,
+      image: true,
+    },
+    orderBy: { name: 'asc' },
+  });
+
+  if (containsMatch) {
+    console.log(`  Product library contains match: ${containsMatch.name}`);
+    return containsMatch;
+  }
+
+  console.log(`  No product library match found`);
+  return null;
+}
+
+// Get product by ID
+async function getProductById(productId: string, coachId: string): Promise<ProductLibraryFood | null> {
+  const product = await prisma.product.findFirst({
+    where: {
+      id: productId,
+      coachId,
+    },
+    select: {
+      id: true,
+      name: true,
+      brand: true,
+      kcal: true,
+      protein: true,
+      carbs: true,
+      fat: true,
+      image: true,
+    },
+  });
+
+  return product;
 }
 
 /**
@@ -264,9 +359,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { mealPlanId, suggestions } = body as {
+    const { mealPlanId, suggestions, useProductLibrary } = body as {
       mealPlanId: string;
       suggestions: AISuggestedMeal[];
+      useProductLibrary?: boolean;  // Global flag to use product library for all failed SLV matches
     };
 
     if (!mealPlanId || !suggestions || suggestions.length === 0) {
@@ -291,8 +387,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const coachId = (session.user as any).id;
+
     // Check coach access
-    if (generatedPlan.nutritionPlan.coachId !== (session.user as any).id) {
+    if (generatedPlan.nutritionPlan.coachId !== coachId) {
       return NextResponse.json(
         { error: 'You do not have access to this plan' },
         { status: 403 }
@@ -307,6 +405,7 @@ export async function POST(request: NextRequest) {
     const updatedMeals = [...meals];
     const appliedItems: string[] = [];
     const failedItems: string[] = [];
+    const productLibraryItems: string[] = [];  // Items found in product library
 
     console.log('Processing suggestions:', JSON.stringify(suggestions, null, 2));
 
@@ -326,29 +425,82 @@ export async function POST(request: NextRequest) {
       for (const item of items) {
         console.log(`  Processing item: "${item.name}" ${item.grams}g (${item.category})`);
 
-        // Find matching SLV food
-        const slvFood = findBestMatch(item.name, slvFoods);
+        let foodId: string;
+        let foodName: string;
+        let macros: CalculatedMacros;
+        let foodImage: string | null = null;
+        let fromProductLibrary = false;
 
-        if (!slvFood) {
-          console.log(`    FAILED: No SLV match found for "${item.name}"`);
-          failedItems.push(item.name);
-          continue;
+        // Check if item specifically requests product library or has a direct product ID
+        if (item.productId) {
+          // Direct product ID provided
+          const product = await getProductById(item.productId, coachId);
+          if (!product) {
+            console.log(`    FAILED: Product ID "${item.productId}" not found`);
+            failedItems.push(item.name);
+            continue;
+          }
+          foodId = product.id;
+          foodName = product.brand ? `${product.name} (${product.brand})` : product.name;
+          macros = calculateMacros(product, item.grams);
+          foodImage = product.image;
+          fromProductLibrary = true;
+          console.log(`    MATCHED (product ID): "${item.name}" -> "${foodName}"`);
+        } else if (item.useProductLibrary) {
+          // Explicitly use product library
+          const product = await searchProductLibrary(item.name, coachId);
+          if (!product) {
+            console.log(`    FAILED: No product library match found for "${item.name}"`);
+            failedItems.push(item.name);
+            continue;
+          }
+          foodId = product.id;
+          foodName = product.brand ? `${product.name} (${product.brand})` : product.name;
+          macros = calculateMacros(product, item.grams);
+          foodImage = product.image;
+          fromProductLibrary = true;
+          console.log(`    MATCHED (product library): "${item.name}" -> "${foodName}"`);
+        } else {
+          // Try SLV database first
+          const slvFood = findBestMatch(item.name, slvFoods);
+
+          if (slvFood) {
+            foodId = `slv-${slvFood.nummer}`;
+            foodName = slvFood.namn;
+            macros = calculateMacros(slvFood, item.grams);
+            console.log(`    MATCHED (SLV): "${item.name}" -> "${foodName}"`);
+          } else if (useProductLibrary) {
+            // SLV failed, try product library as fallback
+            console.log(`    SLV failed, trying product library...`);
+            const product = await searchProductLibrary(item.name, coachId);
+            if (product) {
+              foodId = product.id;
+              foodName = product.brand ? `${product.name} (${product.brand})` : product.name;
+              macros = calculateMacros(product, item.grams);
+              foodImage = product.image;
+              fromProductLibrary = true;
+              console.log(`    MATCHED (product library fallback): "${item.name}" -> "${foodName}"`);
+            } else {
+              console.log(`    FAILED: No match in SLV or product library for "${item.name}"`);
+              failedItems.push(item.name);
+              continue;
+            }
+          } else {
+            console.log(`    FAILED: No SLV match found for "${item.name}"`);
+            failedItems.push(item.name);
+            continue;
+          }
         }
-
-        console.log(`    MATCHED: "${item.name}" -> "${slvFood.namn}"`)
-
-        // Calculate macros
-        const macros = calculateMacros(slvFood, item.grams);
 
         // Create the new item
         const newItem = {
           category: item.category,
           selected: {
-            foodId: `slv-${slvFood.nummer}`,
-            name: slvFood.namn,
+            foodId,
+            name: foodName,
             grams: item.grams,
             macros,
-            image: null,
+            image: foodImage,
           },
           alternatives: [],
         };
@@ -361,14 +513,17 @@ export async function POST(request: NextRequest) {
         if (existingFoodIndex >= 0) {
           // Update existing food (same food, update grams)
           meal.items[existingFoodIndex] = newItem;
-          console.log(`    Updated existing food: ${slvFood.namn}`);
+          console.log(`    Updated existing food: ${foodName}`);
         } else {
           // Add as new item (allow multiple items per category!)
           meal.items.push(newItem);
-          console.log(`    Added new food: ${slvFood.namn}`);
+          console.log(`    Added new food: ${foodName}`);
         }
 
-        appliedItems.push(`${slvFood.namn} (${item.grams}g)`);
+        if (fromProductLibrary) {
+          productLibraryItems.push(`${foodName} (${item.grams}g)`);
+        }
+        appliedItems.push(`${foodName} (${item.grams}g)`);
       }
 
       // Recalculate meal totals
@@ -388,14 +543,22 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Build message
+    let message = `${appliedItems.length} livsmedel tillagda i kostschemat.`;
+    if (productLibraryItems.length > 0) {
+      message += ` (${productLibraryItems.length} från livsmedelsbiblioteket)`;
+    }
+    if (failedItems.length > 0) {
+      message = `${appliedItems.length} livsmedel tillagda. ${failedItems.length} kunde inte matchas: ${failedItems.join(', ')}`;
+    }
+
     return NextResponse.json({
       success: true,
       appliedItems,
       failedItems,
+      productLibraryItems,
       actualMacros,
-      message: failedItems.length > 0
-        ? `${appliedItems.length} livsmedel tillagda. ${failedItems.length} kunde inte matchas.`
-        : `${appliedItems.length} livsmedel tillagda i kostschemat.`,
+      message,
     });
   } catch (error) {
     console.error('Error applying AI suggestion:', error);

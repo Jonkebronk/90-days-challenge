@@ -450,8 +450,8 @@ export function AIChatPanel({
   };
 
   // Handle applying AI meal plan to the schema
-  const handleApplyToSchema = async (content: string): Promise<void> => {
-    console.log('handleApplyToSchema called');
+  const handleApplyToSchema = async (content: string, useProductLibrary: boolean = false): Promise<void> => {
+    console.log('handleApplyToSchema called, useProductLibrary:', useProductLibrary);
     console.log('mealPlanId:', mealPlanId);
 
     if (!mealPlanId) {
@@ -474,6 +474,7 @@ export function AIChatPanel({
       body: JSON.stringify({
         mealPlanId,
         suggestions: parsedMeals,
+        useProductLibrary,  // Allow fallback to product library
       }),
     });
 
@@ -494,9 +495,28 @@ export function AIChatPanel({
       onMealPlanUpdated();
     }
 
-    // Show success notification in chat
-    if (result.failedItems && result.failedItems.length > 0) {
-      console.warn('Some items could not be matched:', result.failedItems);
+    // If there are failed items and we haven't tried product library yet, ask user
+    if (result.failedItems && result.failedItems.length > 0 && !useProductLibrary) {
+      const failedNames = result.failedItems.join(', ');
+      const useLibrary = confirm(
+        `Följande livsmedel kunde inte hittas i Livsmedelsverkets databas:\n\n${failedNames}\n\nVill du söka i ditt livsmedelsbibliotek istället?`
+      );
+
+      if (useLibrary) {
+        // Re-apply with product library fallback enabled
+        await handleApplyToSchema(content, true);
+        return;
+      }
+    }
+
+    // Add result message to chat
+    if (result.message) {
+      const resultMessage: AIMessage = {
+        role: 'assistant',
+        content: `✅ ${result.message}`,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, resultMessage]);
     }
   };
 
