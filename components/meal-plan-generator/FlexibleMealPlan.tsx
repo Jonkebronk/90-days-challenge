@@ -19,28 +19,28 @@ import type {
 } from '@/lib/types/meal-plan-generator';
 import { DEFAULT_MEAL_CONFIGS } from '@/lib/types/meal-plan-generator';
 
-interface MealPlanGeneratorProps {
+interface FlexibleMealPlanProps {
   nutritionPlanId: string;
   targetMacros: MacroTargets;
   onSave?: (planId: string) => void;
   onMealPlanIdChange?: (newId: string) => void;
 }
 
-interface GeneratedPlanState {
+interface FlexiblePlanState {
   id: string;
   meals: GeneratedMeal[];
   targetMacros: MacroTargets;
   actualMacros: MacroTargets;
 }
 
-export function MealPlanGenerator({
+export function FlexibleMealPlan({
   nutritionPlanId,
   targetMacros,
   onSave,
   onMealPlanIdChange,
-}: MealPlanGeneratorProps) {
-  // Generated plan state
-  const [generatedPlan, setGeneratedPlan] = useState<GeneratedPlanState | null>(null);
+}: FlexibleMealPlanProps) {
+  // Flexible plan state
+  const [flexiblePlan, setFlexiblePlan] = useState<FlexiblePlanState | null>(null);
 
   // UI state
   const [isLoading, setIsLoading] = useState(true);
@@ -83,8 +83,8 @@ export function MealPlanGenerator({
   useEffect(() => {
     const loadRecipeSuggestions = async () => {
       // Load recipes based on plan meals, or use default meal types if no plan yet
-      const mealTypes = generatedPlan?.meals
-        ? [...new Set(generatedPlan.meals.map(m => m.type))]
+      const mealTypes = flexiblePlan?.meals
+        ? [...new Set(flexiblePlan.meals.map(m => m.type))]
         : ['frukost', 'mellanmål', 'lunch', 'middag', 'kvällsmål'];
       const suggestions: Record<string, Array<{
         id: string;
@@ -131,7 +131,7 @@ export function MealPlanGenerator({
     };
 
     loadRecipeSuggestions();
-  }, [generatedPlan?.meals, nutritionPlanId]);
+  }, [flexiblePlan?.meals, nutritionPlanId]);
 
   const loadOrCreatePlan = async () => {
     setIsLoading(true);
@@ -144,7 +144,7 @@ export function MealPlanGenerator({
       if (existingResponse.ok) {
         const existingData = await existingResponse.json();
         if (existingData) {
-          setGeneratedPlan({
+          setFlexiblePlan({
             id: existingData.id,
             meals: existingData.meals,
             targetMacros: existingData.targetMacros,
@@ -192,7 +192,7 @@ export function MealPlanGenerator({
         return;
       }
 
-      setGeneratedPlan({
+      setFlexiblePlan({
         id: data.id,
         meals: data.meals,
         targetMacros: data.targetMacros,
@@ -213,9 +213,9 @@ export function MealPlanGenerator({
 
   // Food swap handler
   const handleSwapFood = (mealIndex: number, category: MacroCategory, foodId: string) => {
-    if (!generatedPlan) return;
+    if (!flexiblePlan) return;
 
-    const meal = generatedPlan.meals[mealIndex];
+    const meal = flexiblePlan.meals[mealIndex];
     const item = meal.items.find((i) => i.category === category);
 
     // Check if this is one of the alternatives (direct swap)
@@ -242,10 +242,10 @@ export function MealPlanGenerator({
     category: MacroCategory,
     newFoodId: string
   ): Promise<SwapFeedback | null> => {
-    if (!generatedPlan) return null;
+    if (!flexiblePlan) return null;
 
     try {
-      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/swap`, {
+      const response = await fetch(`/api/meal-plan/${flexiblePlan.id}/swap`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -265,11 +265,11 @@ export function MealPlanGenerator({
       }
 
       // Update local state
-      const newMeals = [...generatedPlan.meals];
+      const newMeals = [...flexiblePlan.meals];
       newMeals[mealIndex] = data.updatedMeal;
 
-      setGeneratedPlan({
-        ...generatedPlan,
+      setFlexiblePlan({
+        ...flexiblePlan,
         meals: newMeals,
         actualMacros: data.actualMacros,
       });
@@ -291,11 +291,11 @@ export function MealPlanGenerator({
   };
 
   const handleSauceSelect = async (sauceId: string, grams: number) => {
-    if (sauceMealIndex === null || !generatedPlan) return;
+    if (sauceMealIndex === null || !flexiblePlan) return;
 
     setAddingSauce(true);
     try {
-      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/sauce`, {
+      const response = await fetch(`/api/meal-plan/${flexiblePlan.id}/sauce`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -313,8 +313,8 @@ export function MealPlanGenerator({
       }
 
       // Update local state with the updated plan
-      setGeneratedPlan({
-        ...generatedPlan,
+      setFlexiblePlan({
+        ...flexiblePlan,
         meals: data.updatedPlan.meals,
         actualMacros: data.updatedPlan.actualMacros,
       });
@@ -330,11 +330,11 @@ export function MealPlanGenerator({
   };
 
   const handleRemoveSauce = async (mealIndex: number) => {
-    if (!generatedPlan) return;
+    if (!flexiblePlan) return;
 
     try {
       const response = await fetch(
-        `/api/meal-plan/${generatedPlan.id}/sauce?mealIndex=${mealIndex}`,
+        `/api/meal-plan/${flexiblePlan.id}/sauce?mealIndex=${mealIndex}`,
         { method: 'DELETE' }
       );
 
@@ -346,11 +346,11 @@ export function MealPlanGenerator({
       }
 
       // Update local state
-      const newMeals = [...generatedPlan.meals];
+      const newMeals = [...flexiblePlan.meals];
       newMeals[mealIndex] = data.updatedMeal;
 
-      setGeneratedPlan({
-        ...generatedPlan,
+      setFlexiblePlan({
+        ...flexiblePlan,
         meals: newMeals,
         actualMacros: data.actualMacros,
       });
@@ -369,10 +369,10 @@ export function MealPlanGenerator({
     macros: CalculatedMacros,
     isAlternative?: boolean
   ) => {
-    if (!generatedPlan) return;
+    if (!flexiblePlan) return;
 
     try {
-      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/select-food`, {
+      const response = await fetch(`/api/meal-plan/${flexiblePlan.id}/select-food`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -394,11 +394,11 @@ export function MealPlanGenerator({
       }
 
       // Update local state
-      const newMeals = [...generatedPlan.meals];
+      const newMeals = [...flexiblePlan.meals];
       newMeals[mealIndex] = data.updatedMeal;
 
-      setGeneratedPlan({
-        ...generatedPlan,
+      setFlexiblePlan({
+        ...flexiblePlan,
         meals: newMeals,
         actualMacros: data.actualMacros,
       });
@@ -410,10 +410,10 @@ export function MealPlanGenerator({
 
   // Remove food handler - now supports foodId for multiple items per category
   const handleRemoveFood = async (mealIndex: number, category: MacroCategory, foodId?: string) => {
-    if (!generatedPlan) return;
+    if (!flexiblePlan) return;
 
     try {
-      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/remove-food`, {
+      const response = await fetch(`/api/meal-plan/${flexiblePlan.id}/remove-food`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mealIndex, category, foodId }),
@@ -427,8 +427,8 @@ export function MealPlanGenerator({
       }
 
       // Update local state
-      setGeneratedPlan({
-        ...generatedPlan,
+      setFlexiblePlan({
+        ...flexiblePlan,
         meals: data.meals,
         actualMacros: data.actualMacros,
       });
@@ -445,10 +445,10 @@ export function MealPlanGenerator({
     grams: number,
     foodId?: string
   ) => {
-    if (!generatedPlan) return;
+    if (!flexiblePlan) return;
 
     try {
-      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/update-grams`, {
+      const response = await fetch(`/api/meal-plan/${flexiblePlan.id}/update-grams`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mealIndex, category, grams, foodId }),
@@ -462,11 +462,11 @@ export function MealPlanGenerator({
       }
 
       // Update local state
-      const newMeals = [...generatedPlan.meals];
+      const newMeals = [...flexiblePlan.meals];
       newMeals[mealIndex] = data.updatedMeal;
 
-      setGeneratedPlan({
-        ...generatedPlan,
+      setFlexiblePlan({
+        ...flexiblePlan,
         meals: newMeals,
         actualMacros: data.actualMacros,
       });
@@ -481,10 +481,10 @@ export function MealPlanGenerator({
     mealIndex: number,
     targetMacros: CalculatedMacros
   ) => {
-    if (!generatedPlan) return;
+    if (!flexiblePlan) return;
 
     try {
-      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/update-meal-macros`, {
+      const response = await fetch(`/api/meal-plan/${flexiblePlan.id}/update-meal-macros`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mealIndex, targetMacros }),
@@ -498,11 +498,11 @@ export function MealPlanGenerator({
       }
 
       // Update local state
-      const newMeals = [...generatedPlan.meals];
+      const newMeals = [...flexiblePlan.meals];
       newMeals[mealIndex] = data.updatedMeal;
 
-      setGeneratedPlan({
-        ...generatedPlan,
+      setFlexiblePlan({
+        ...flexiblePlan,
         meals: newMeals,
       });
     } catch (err) {
@@ -519,10 +519,10 @@ export function MealPlanGenerator({
     grams: number,
     macros: CalculatedMacros
   ) => {
-    if (!generatedPlan) return;
+    if (!flexiblePlan) return;
 
     try {
-      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/add-alternative`, {
+      const response = await fetch(`/api/meal-plan/${flexiblePlan.id}/add-alternative`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -542,8 +542,8 @@ export function MealPlanGenerator({
       }
 
       // Update local state
-      setGeneratedPlan({
-        ...generatedPlan,
+      setFlexiblePlan({
+        ...flexiblePlan,
         meals: data.meals,
       });
     } catch (err) {
@@ -558,10 +558,10 @@ export function MealPlanGenerator({
     category: MacroCategory,
     foodId: string
   ) => {
-    if (!generatedPlan) return;
+    if (!flexiblePlan) return;
 
     try {
-      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/remove-alternative`, {
+      const response = await fetch(`/api/meal-plan/${flexiblePlan.id}/remove-alternative`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mealIndex, category, foodId }),
@@ -575,8 +575,8 @@ export function MealPlanGenerator({
       }
 
       // Update local state
-      setGeneratedPlan({
-        ...generatedPlan,
+      setFlexiblePlan({
+        ...flexiblePlan,
         meals: data.meals,
       });
     } catch (err) {
@@ -592,10 +592,10 @@ export function MealPlanGenerator({
     scaledServings: number,
     scaledMacros: CalculatedMacros
   ) => {
-    if (!generatedPlan) return;
+    if (!flexiblePlan) return;
 
     try {
-      const response = await fetch(`/api/meal-plan/${generatedPlan.id}/select-recipe`, {
+      const response = await fetch(`/api/meal-plan/${flexiblePlan.id}/select-recipe`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -614,11 +614,11 @@ export function MealPlanGenerator({
       }
 
       // Update local state
-      const newMeals = [...generatedPlan.meals];
+      const newMeals = [...flexiblePlan.meals];
       newMeals[mealIndex] = data.updatedMeal;
 
-      setGeneratedPlan({
-        ...generatedPlan,
+      setFlexiblePlan({
+        ...flexiblePlan,
         meals: newMeals,
         actualMacros: data.actualMacros,
       });
@@ -630,11 +630,11 @@ export function MealPlanGenerator({
 
   // Clear recipe handler
   const handleClearRecipe = async (mealIndex: number) => {
-    if (!generatedPlan) return;
+    if (!flexiblePlan) return;
 
     try {
       const response = await fetch(
-        `/api/meal-plan/${generatedPlan.id}/clear-recipe?mealIndex=${mealIndex}`,
+        `/api/meal-plan/${flexiblePlan.id}/clear-recipe?mealIndex=${mealIndex}`,
         { method: 'DELETE' }
       );
 
@@ -646,11 +646,11 @@ export function MealPlanGenerator({
       }
 
       // Update local state
-      const newMeals = [...generatedPlan.meals];
+      const newMeals = [...flexiblePlan.meals];
       newMeals[mealIndex] = data.updatedMeal;
 
-      setGeneratedPlan({
-        ...generatedPlan,
+      setFlexiblePlan({
+        ...flexiblePlan,
         meals: newMeals,
         actualMacros: data.actualMacros,
       });
@@ -662,7 +662,7 @@ export function MealPlanGenerator({
 
   // Save handler - shows confirmation since changes are already saved automatically
   const handleSave = async () => {
-    if (!generatedPlan) return;
+    if (!flexiblePlan) return;
 
     setIsSaving(true);
     // Small delay to show saving state
@@ -670,7 +670,7 @@ export function MealPlanGenerator({
     setIsSaving(false);
 
     if (onSave) {
-      onSave(generatedPlan.id);
+      onSave(flexiblePlan.id);
     }
   };
 
@@ -694,16 +694,16 @@ export function MealPlanGenerator({
   return (
     <div className="space-y-6">
       {/* Generated plan */}
-      {generatedPlan && (
+      {flexiblePlan && (
         <>
           {/* Meals - vertical list */}
           <div className="space-y-4">
-            {generatedPlan.meals.map((meal, index) => (
+            {flexiblePlan.meals.map((meal, index) => (
               <ClientStyleMealCard
                 key={index}
                 meal={meal}
                 mealIndex={index}
-                mealNumber={getMealNumber(generatedPlan.meals, index)}
+                mealNumber={getMealNumber(flexiblePlan.meals, index)}
                 onSwapFood={handleSwapFood}
                 onSelectFood={handleSelectFood}
                 onRemoveFood={handleRemoveFood}
@@ -733,7 +733,7 @@ export function MealPlanGenerator({
               disabled={isLoading}
               className="text-zinc-600"
             >
-              Börja om
+              Rensa allt
             </Button>
             <Button
               onClick={handleSave}
@@ -748,7 +748,7 @@ export function MealPlanGenerator({
               ) : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
-                  Spara kostschema
+                  Spara
                 </>
               )}
             </Button>

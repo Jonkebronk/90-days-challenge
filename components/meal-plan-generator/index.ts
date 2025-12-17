@@ -1,4 +1,6 @@
-export { MealPlanGenerator } from './MealPlanGenerator';
+export { FlexibleMealPlan } from './FlexibleMealPlan';
+// Backwards compatibility alias
+export { FlexibleMealPlan as MealPlanGenerator } from './FlexibleMealPlan';
 export { MealConfigMatrix } from './MealConfigMatrix';
 export { MealCard } from './MealCard';
 export { FoodItemDisplay } from './FoodItemDisplay';
