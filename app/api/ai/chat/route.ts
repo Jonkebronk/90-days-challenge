@@ -258,13 +258,20 @@ export async function POST(request: Request) {
             },
             {
               type: 'text',
-              text: 'REFERENSBILD: Detta är mallbilden för kostschemaformat. Analysera bilden noggrant och memorera strukturen, livsmedlen och gramvikterna. När jag ber dig generera ett kostschema, använd EXAKT samma format och struktur som i denna bild.',
+              text: `MALL-KOSTSCHEMA: Detta är ett exempel på hur ett kostschema ska se ut.
+
+VIKTIGT: När användaren ber dig "generera ett kostschema" eller "applicera på schemat", ska du:
+1. Läsa av EXAKT vilka livsmedel och gramvikter som visas i denna mallbild
+2. Återge dessa i MÅLTID X-formatet med exakta namn och vikter
+3. INTE hitta på egna livsmedel eller vikter - använd ENDAST det som syns i bilden
+
+Analysera bilden nu och lista alla måltider med livsmedel och gramvikter du ser.`,
             },
           ],
         },
         {
           role: 'assistant',
-          content: 'Jag har analyserat mallbilden noggrant. Jag ser kostschemaformatet med måltider, livsmedel och gramvikter. Jag kommer använda exakt samma struktur och format när jag genererar kostscheman. Vad kan jag hjälpa dig med?',
+          content: `Jag har analyserat mallbilden. Jag ser ett komplett kostschema med flera måltider. När du ber mig generera eller applicera ett kostschema kommer jag att återge EXAKT de livsmedel och gramvikter som visas i mallbilden, inte hitta på egna. Vad vill du att jag ska göra?`,
         }
       );
     }

@@ -450,7 +450,14 @@ export default function NutritionPlanDetailPage() {
               }}
               onMealPlanIdChange={(newId: string) => {
                 // Update meal plan ID when it changes (e.g., after "Börja om")
-                setExistingMealPlan(prev => prev ? { ...prev, id: newId } : { id: newId, meals: [], actualMacros: { protein: 0, carbs: 0, fat: 0, kcal: 0 }, targetMacros: targetMacros });
+                console.log('Meal plan ID changed to:', newId);
+                setExistingMealPlan(prev => {
+                  const updated = prev
+                    ? { ...prev, id: newId }
+                    : { id: newId, meals: [], actualMacros: { protein: 0, carbs: 0, fat: 0, kcal: 0 }, targetMacros: targetMacros };
+                  console.log('Updated existingMealPlan:', updated);
+                  return updated;
+                });
               }}
             />
           ) : (
