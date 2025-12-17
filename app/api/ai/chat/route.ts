@@ -239,9 +239,10 @@ export async function POST(request: Request) {
       content: userContent,
     });
 
-    // Lägg till mallbild som första meddelande om den finns och konversationen är ny
-    if (coachSettings?.templateImage && coachSettings?.templateImageType && previousMessages.length === 0) {
-      console.log('Adding template image as first message');
+    // Lägg till mallbild som första meddelande om den finns
+    // Skickas ALLTID i början av konversationen så AI:n har referensen
+    if (coachSettings?.templateImage && coachSettings?.templateImageType) {
+      console.log('Adding template image as first message, base64 length:', coachSettings.templateImage.length);
       // Injicera mallbild som första user+assistant-utbyte
       claudeMessages.unshift(
         {
@@ -257,13 +258,13 @@ export async function POST(request: Request) {
             },
             {
               type: 'text',
-              text: 'Här är en mallbild som visar hur kostscheman ska formateras och struktureras. Använd detta som referens för format och layout när du genererar kostscheman.',
+              text: 'REFERENSBILD: Detta är mallbilden för kostschemaformat. Analysera bilden noggrant och memorera strukturen, livsmedlen och gramvikterna. När jag ber dig generera ett kostschema, använd EXAKT samma format och struktur som i denna bild.',
             },
           ],
         },
         {
           role: 'assistant',
-          content: 'Jag har tagit emot mallbilden och kommer att använda den som referens för format och layout när jag genererar kostscheman. Vad kan jag hjälpa dig med?',
+          content: 'Jag har analyserat mallbilden noggrant. Jag ser kostschemaformatet med måltider, livsmedel och gramvikter. Jag kommer använda exakt samma struktur och format när jag genererar kostscheman. Vad kan jag hjälpa dig med?',
         }
       );
     }
