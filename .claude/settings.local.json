@@ -68,7 +68,9 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:docs.claude.com)",
-      "WebFetch(domain:www.anthropic.com)"
+      "WebFetch(domain:www.anthropic.com)",
+      "Bash(node scripts/get-subcategories.js:*)",
+      "Bash(git revert:*)"
     ],
     "deny": [],
     "ask": []

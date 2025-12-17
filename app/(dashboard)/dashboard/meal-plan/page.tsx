@@ -7,10 +7,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Utensils, Dumbbell, Sparkles, Lightbulb, Info, ChevronDown, ChevronUp } from 'lucide-react'
+import { Utensils, Dumbbell, Sparkles, Lightbulb, Info, ChevronDown, ChevronUp, UtensilsCrossed, Wand2 } from 'lucide-react'
 import { MDXPreview } from '@/components/mdx-preview'
 import { WeekCalendar } from '@/components/meal-plan/week-calendar'
 import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
+import { MealPlanGenerator } from '@/components/meal-plan-generator'
 
 interface MealPlanItem {
   id: string
@@ -106,6 +107,9 @@ export default function MealPlanPage() {
     const jsDay = new Date().getDay()
     return jsDay === 0 ? 6 : jsDay - 1
   })
+  const [nutritionPlanId, setNutritionPlanId] = useState<string | null>(null)
+  const [flexibleMealPlanId, setFlexibleMealPlanId] = useState<string | null>(null)
+  const [flexibleTargetMacros, setFlexibleTargetMacros] = useState<{ protein: number; carbs: number; fat: number; kcal: number } | null>(null)
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
@@ -124,7 +128,37 @@ export default function MealPlanPage() {
     fetchNutritionTips()
     fetchMealPlanDescription()
     fetchDailyTargets()
+    fetchNutritionPlan()
   }, [])
+
+  const fetchNutritionPlan = async () => {
+    try {
+      // Fetch the client's nutrition plan to get macros for flexible meal planning
+      const response = await fetch('/api/nutrition-plans/my-plan')
+      if (response.ok) {
+        const data = await response.json()
+        if (data) {
+          setNutritionPlanId(data.id)
+          setFlexibleTargetMacros({
+            protein: data.proteinGrams || 0,
+            carbs: data.carbGrams || 0,
+            fat: data.fatGrams || 0,
+            kcal: data.dailyCalorieTarget || 0,
+          })
+          // Check if there's already a flexible meal plan
+          const mealPlanRes = await fetch(`/api/meal-plan/by-nutrition-plan/${data.id}`)
+          if (mealPlanRes.ok) {
+            const mealPlanData = await mealPlanRes.json()
+            if (mealPlanData?.id) {
+              setFlexibleMealPlanId(mealPlanData.id)
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching nutrition plan:', error)
+    }
+  }
 
   const fetchDailyTargets = async () => {
     try {
@@ -317,13 +351,20 @@ export default function MealPlanPage() {
       {/* Main Content */}
       <div>
           <Tabs defaultValue="meals" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-gray-100 border border-gray-200 rounded-xl p-1">
+            <TabsList className="grid w-full grid-cols-3 bg-gray-100 border border-gray-200 rounded-xl p-1">
               <TabsTrigger
                 value="meals"
                 className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-600 rounded-lg transition-all"
               >
                 <Utensils className="w-4 h-4 mr-2" />
                 Kostschema
+              </TabsTrigger>
+              <TabsTrigger
+                value="flexible"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-600 rounded-lg transition-all"
+              >
+                <UtensilsCrossed className="w-4 h-4 mr-2" />
+                Flexibel
               </TabsTrigger>
               <TabsTrigger
                 value="supplements"
@@ -532,6 +573,35 @@ export default function MealPlanPage() {
                 </div>
                 )
               })}
+            </TabsContent>
+
+            <TabsContent value="flexible" className="space-y-4 mt-6">
+              {/* Flexibel kosthållning - MealPlanGenerator */}
+              {nutritionPlanId && flexibleTargetMacros ? (
+                <MealPlanGenerator
+                  nutritionPlanId={nutritionPlanId}
+                  targetMacros={flexibleTargetMacros}
+                  onSave={() => {
+                    // Refresh when saved
+                    fetchNutritionPlan()
+                  }}
+                  onMealPlanIdChange={(newId: string) => {
+                    setFlexibleMealPlanId(newId)
+                  }}
+                />
+              ) : (
+                <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm">
+                  <div className="text-center">
+                    <Wand2 className="w-12 h-12 mx-auto text-purple-500 mb-4" />
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">
+                      Ingen kostplan tilldelad
+                    </h3>
+                    <p className="text-gray-500 text-sm">
+                      Din coach behöver först skapa en kostplan med makromål för att du ska kunna använda flexibel kosthållning
+                    </p>
+                  </div>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="supplements" className="space-y-4 mt-6">
