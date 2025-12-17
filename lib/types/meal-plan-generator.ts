@@ -61,13 +61,14 @@ export interface MealPlanSettings {
   distributionMethod: DistributionMethod;
 }
 
-// Default meal configuration (5 meals)
+// Default meal configuration (6 meals including kvällsmål)
 export const DEFAULT_MEAL_CONFIGS: MealConfig[] = [
-  { type: 'frukost', includeProtein: true, includeCarbs: true, includeFat: true, percentOfTotal: 20 },
-  { type: 'mellanmål', includeProtein: true, includeCarbs: false, includeFat: true, percentOfTotal: 10 },
-  { type: 'lunch', includeProtein: true, includeCarbs: true, includeFat: false, percentOfTotal: 30 },
-  { type: 'mellanmål', includeProtein: true, includeCarbs: false, includeFat: true, percentOfTotal: 10 },
-  { type: 'middag', includeProtein: true, includeCarbs: true, includeFat: false, percentOfTotal: 30 },
+  { type: 'frukost', includeProtein: true, includeCarbs: true, includeFat: true, percentOfTotal: 18 },
+  { type: 'mellanmål', includeProtein: true, includeCarbs: false, includeFat: true, percentOfTotal: 8 },
+  { type: 'lunch', includeProtein: true, includeCarbs: true, includeFat: false, percentOfTotal: 27 },
+  { type: 'mellanmål', includeProtein: true, includeCarbs: false, includeFat: true, percentOfTotal: 8 },
+  { type: 'middag', includeProtein: true, includeCarbs: true, includeFat: false, percentOfTotal: 27 },
+  { type: 'kvällsmål', includeProtein: true, includeCarbs: false, includeFat: true, percentOfTotal: 12 },
 ];
 
 // Generate default config for N meals

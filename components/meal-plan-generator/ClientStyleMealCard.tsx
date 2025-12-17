@@ -24,6 +24,16 @@ interface ProductForSelect {
   fat: number;
 }
 
+interface RecipeSuggestion {
+  id: string;
+  name: string;
+  image?: string | null;
+  kcal: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
 interface ClientStyleMealCardProps {
   meal: GeneratedMeal;
   mealIndex: number;
@@ -38,6 +48,8 @@ interface ClientStyleMealCardProps {
   onUpdateGrams?: (mealIndex: number, category: MacroCategory, grams: number, foodId?: string) => void;
   onUpdateMealMacros?: (mealIndex: number, targetMacros: CalculatedMacros) => void;
   disabled?: boolean;
+  recipeSuggestions?: RecipeSuggestion[];
+  onSelectRecipe?: (mealIndex: number, recipeId: string) => void;
 }
 
 // Category styling config with distinct colors
@@ -118,6 +130,8 @@ export function ClientStyleMealCard({
   onRemoveSauce,
   onUpdateGrams,
   disabled = false,
+  recipeSuggestions = [],
+  onSelectRecipe,
 }: ClientStyleMealCardProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -475,6 +489,42 @@ export function ClientStyleMealCard({
                     Ingen sås tillagd
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* Receptförslag */}
+          {recipeSuggestions.length > 0 && (
+            <div className="pt-3 mt-2 border-t border-zinc-200">
+              <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-3">
+                Receptförslag
+              </div>
+              <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {recipeSuggestions.map((recipe) => (
+                  <button
+                    key={recipe.id}
+                    onClick={() => onSelectRecipe?.(mealIndex, recipe.id)}
+                    disabled={disabled}
+                    className="flex-shrink-0 group cursor-pointer"
+                  >
+                    <div className="w-24 h-24 rounded-lg overflow-hidden bg-zinc-100 mb-1.5">
+                      {recipe.image ? (
+                        <img
+                          src={recipe.image}
+                          alt={recipe.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-zinc-400">
+                          <Utensils className="w-8 h-8" />
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-zinc-700 text-center line-clamp-2 group-hover:text-amber-600 transition-colors">
+                      {recipe.name}
+                    </p>
+                  </button>
+                ))}
               </div>
             </div>
           )}

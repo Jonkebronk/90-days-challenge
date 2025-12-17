@@ -60,6 +60,17 @@ export function MealPlanGenerator({
   } | null>(null);
   const [addingSauce, setAddingSauce] = useState(false);
 
+  // Recipe suggestions state
+  const [recipeSuggestions, setRecipeSuggestions] = useState<Record<string, Array<{
+    id: string;
+    name: string;
+    image?: string | null;
+    kcal: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }>>>({});
+
   // Load existing meal plan or create new one on mount
   useEffect(() => {
     // Only load once per nutritionPlanId to prevent re-fetching on tab focus
@@ -67,6 +78,48 @@ export function MealPlanGenerator({
       loadOrCreatePlan();
     }
   }, [nutritionPlanId, hasLoaded]);
+
+  // Load recipe suggestions for each meal type
+  useEffect(() => {
+    const loadRecipeSuggestions = async () => {
+      if (!generatedPlan?.meals) return;
+
+      const mealTypes = [...new Set(generatedPlan.meals.map(m => m.type))];
+      const suggestions: Record<string, Array<{
+        id: string;
+        name: string;
+        image?: string | null;
+        kcal: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+      }>> = {};
+
+      for (const mealType of mealTypes) {
+        try {
+          const response = await fetch(`/api/recipes?mealType=${mealType}&limit=5`);
+          if (response.ok) {
+            const recipes = await response.json();
+            suggestions[mealType] = recipes.map((r: any) => ({
+              id: r.id,
+              name: r.name,
+              image: r.image,
+              kcal: r.kcal || 0,
+              protein: r.protein || 0,
+              carbs: r.carbs || 0,
+              fat: r.fat || 0,
+            }));
+          }
+        } catch (err) {
+          console.error(`Error loading recipes for ${mealType}:`, err);
+        }
+      }
+
+      setRecipeSuggestions(suggestions);
+    };
+
+    loadRecipeSuggestions();
+  }, [generatedPlan?.meals]);
 
   const loadOrCreatePlan = async () => {
     setIsLoading(true);
@@ -647,6 +700,7 @@ export function MealPlanGenerator({
                 onRemoveSauce={handleRemoveSauce}
                 onUpdateGrams={handleUpdateGrams}
                 onUpdateMealMacros={handleUpdateMealMacros}
+                recipeSuggestions={recipeSuggestions[meal.type] || []}
               />
             ))}
           </div>
