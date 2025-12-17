@@ -367,6 +367,7 @@ export function MealPlanGenerator({
           mealIndex,
           category,
           productId: product.id,
+          productName: product.name, // Needed for SLV products
           grams,
           macros,
           isAlternative: isAlternative || false,

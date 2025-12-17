@@ -337,7 +337,6 @@ export function ProductSelectModal({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
-            autoFocus
           />
           {searchQuery && (
             <button
@@ -386,22 +385,10 @@ export function ProductSelectModal({
           </label>
         )}
 
-        {/* Target info */}
-        {isVegetable ? (
+        {/* Target info - only show for vegetables */}
+        {isVegetable && (
           <div className="text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg">
             Grönsaker räknas inte i makros - ät fritt!
-          </div>
-        ) : (
-          <div className={cn(
-            "text-sm px-3 py-2 rounded-lg",
-            activeTab === 'slv' ? 'text-green-700 bg-green-50' : 'text-zinc-500 bg-zinc-50'
-          )}>
-            Mål: <span className={cn("font-medium", activeTab === 'slv' ? 'text-green-800' : 'text-zinc-700')}>
-              {targetMacro}g {macroLabel}
-            </span>
-            {activeTab === 'slv' && (
-              <span className="ml-2 text-xs">(Livsmedelsverkets officiella data)</span>
-            )}
           </div>
         )}
 

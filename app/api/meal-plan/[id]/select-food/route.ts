@@ -66,28 +66,72 @@ export async function PUT(
       );
     }
 
-    // Check coach access
-    if (generatedPlan.nutritionPlan.coachId !== (session.user as any).id) {
+    // Check access - coach or client can update
+    const userId = (session.user as any).id;
+    const isCoach = generatedPlan.nutritionPlan.coachId === userId;
+    const isClient = generatedPlan.nutritionPlan.clientId === userId;
+
+    if (!isCoach && !isClient) {
       return NextResponse.json(
         { error: 'You do not have access to this plan' },
         { status: 403 }
       );
     }
 
-    // Fetch the product
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
-      select: {
-        id: true,
-        name: true,
-        kcal: true,
-        protein: true,
-        carbs: true,
-        fat: true,
-        macroCategory: true,
-        image: true,
-      },
-    });
+    // Fetch the product (or handle SLV products which have ID like "slv-123")
+    let product: {
+      id: string;
+      name: string;
+      kcal: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      macroCategory: string | null;
+      image: string | null;
+    } | null = null;
+
+    if (productId.startsWith('slv-')) {
+      // SLV product - we don't have it in our database, use the macros from the request
+      // The name should be sent in the request body for SLV products
+      product = {
+        id: productId,
+        name: body.productName || 'Livsmedelsverket produkt',
+        kcal: macros.kcal,
+        protein: macros.protein,
+        carbs: macros.carbs,
+        fat: macros.fat,
+        macroCategory: category,
+        image: null,
+      };
+    } else {
+      // Regular product from database
+      const dbProduct = await prisma.product.findUnique({
+        where: { id: productId },
+        select: {
+          id: true,
+          name: true,
+          kcal: true,
+          protein: true,
+          carbs: true,
+          fat: true,
+          macroCategory: true,
+          image: true,
+        },
+      });
+
+      if (dbProduct) {
+        product = {
+          id: dbProduct.id,
+          name: dbProduct.name,
+          kcal: Number(dbProduct.kcal),
+          protein: Number(dbProduct.protein),
+          carbs: Number(dbProduct.carbs),
+          fat: Number(dbProduct.fat),
+          macroCategory: dbProduct.macroCategory,
+          image: dbProduct.image,
+        };
+      }
+    }
 
     if (!product) {
       return NextResponse.json(
