@@ -149,6 +149,7 @@ export interface GeneratedMealItem {
   category: MacroCategory;
   selected: FoodWithGrams;
   alternatives: FoodAlternative[];
+  isAlternative?: boolean; // If true, shows "ELLER" separator before this item
 }
 
 export interface GeneratedMeal {

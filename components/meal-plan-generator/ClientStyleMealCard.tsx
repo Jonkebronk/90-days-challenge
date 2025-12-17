@@ -29,7 +29,7 @@ interface ClientStyleMealCardProps {
   mealIndex: number;
   mealNumber?: number;
   onSwapFood: (mealIndex: number, category: MacroCategory, foodId: string) => void;
-  onSelectFood?: (mealIndex: number, category: MacroCategory, product: ProductForSelect, grams: number, macros: CalculatedMacros) => void;
+  onSelectFood?: (mealIndex: number, category: MacroCategory, product: ProductForSelect, grams: number, macros: CalculatedMacros, isAlternative?: boolean) => void;
   onRemoveFood?: (mealIndex: number, category: MacroCategory, foodId?: string) => void;
   onRemoveAlternative?: (mealIndex: number, category: MacroCategory, foodId: string) => void;
   onAddAlternative?: (mealIndex: number, category: MacroCategory, product: ProductForSelect, grams: number, macros: CalculatedMacros) => void;
@@ -148,9 +148,9 @@ export function ClientStyleMealCard({
   };
 
   // Handle product selection from modal
-  const handleProductSelect = (product: ProductForSelect, grams: number, macros: CalculatedMacros) => {
+  const handleProductSelect = (product: ProductForSelect, grams: number, macros: CalculatedMacros, isAlternative?: boolean) => {
     if (selectCategory && onSelectFood) {
-      onSelectFood(mealIndex, selectCategory, product, grams, macros);
+      onSelectFood(mealIndex, selectCategory, product, grams, macros, isAlternative);
     }
     setSelectModalOpen(false);
   };
@@ -241,13 +241,17 @@ export function ClientStyleMealCard({
 
   // Render a complete category section with header
   const renderCategorySection = (
-    items: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros } }[],
+    items: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros }; isAlternative?: boolean }[],
     category: MacroCategory,
     configKey: string,
     showAddButton: boolean = true
   ) => {
     const config = CATEGORY_CONFIG[configKey];
     const targetMacro = getTargetMacro(category);
+
+    // Separate primary items from alternatives
+    const primaryItems = items.filter(item => !item.isAlternative);
+    const alternativeItems = items.filter(item => item.isAlternative);
 
     return (
       <div key={configKey} className={cn("rounded-xl overflow-hidden border", config.border)}>
@@ -273,9 +277,41 @@ export function ClientStyleMealCard({
         </div>
 
         {/* Items */}
-        <div className={cn("p-2 space-y-1.5", config.bg)}>
+        <div className={cn("p-2", config.bg)}>
           {items.length > 0 ? (
-            items.map(item => renderFoodItem(item, category, configKey))
+            <div className="space-y-1.5">
+              {/* Primary items */}
+              {primaryItems.map((item, index) => (
+                <div key={item.selected.foodId}>
+                  {renderFoodItem(item, category, configKey)}
+                  {/* Show ELLER between primary items if there are alternatives or more primaries */}
+                  {index < primaryItems.length - 1 && (
+                    <div className="flex items-center justify-center py-1.5">
+                      <span className="text-xs font-bold text-amber-500 tracking-wider">ELLER</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* ELLER separator before alternatives */}
+              {primaryItems.length > 0 && alternativeItems.length > 0 && (
+                <div className="flex items-center justify-center py-1.5">
+                  <span className="text-xs font-bold text-amber-500 tracking-wider">ELLER</span>
+                </div>
+              )}
+
+              {/* Alternative items */}
+              {alternativeItems.map((item, index) => (
+                <div key={item.selected.foodId}>
+                  {renderFoodItem(item, category, configKey)}
+                  {index < alternativeItems.length - 1 && (
+                    <div className="flex items-center justify-center py-1.5">
+                      <span className="text-xs font-bold text-amber-500 tracking-wider">ELLER</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="text-center py-3 text-sm text-zinc-400 italic">
               Inga {config.label.toLowerCase()} tillagda

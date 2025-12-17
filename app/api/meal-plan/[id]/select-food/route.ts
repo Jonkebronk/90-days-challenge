@@ -28,12 +28,13 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { mealIndex, category, productId, grams, macros } = body as {
+    const { mealIndex, category, productId, grams, macros, isAlternative } = body as {
       mealIndex: number;
       category: MacroCategory;
       productId: string;
       grams: number;
       macros: CalculatedMacros;
+      isAlternative?: boolean;
     };
 
     // Validate required fields
@@ -107,10 +108,7 @@ export async function PUT(
 
     const meal = meals[mealIndex];
 
-    // Find the item to update, or create a new one if it doesn't exist
-    const itemIndex = meal.items.findIndex((item) => item.category === category);
-
-    // Create the new/updated item (alternatives are empty - user adds them manually)
+    // Create the new item
     const newItem = {
       category,
       selected: {
@@ -121,18 +119,30 @@ export async function PUT(
         image: product.image,
       },
       alternatives: [],
+      isAlternative: isAlternative || false,
     };
 
-    // Update the meal - either replace existing item or add new one
+    // If isAlternative is true, always add as a new item (don't replace)
+    // Otherwise, find existing item to update or add new
     let updatedItems;
-    if (itemIndex >= 0) {
-      // Update existing item
-      updatedItems = meal.items.map((item, idx) =>
-        idx === itemIndex ? newItem : item
-      );
-    } else {
-      // Add new item
+    if (isAlternative) {
+      // Add as alternative (new item marked as alternative)
       updatedItems = [...meal.items, newItem];
+    } else {
+      // Find existing item without isAlternative flag to replace
+      const itemIndex = meal.items.findIndex(
+        (item) => item.category === category && !item.isAlternative
+      );
+
+      if (itemIndex >= 0) {
+        // Update existing primary item
+        updatedItems = meal.items.map((item, idx) =>
+          idx === itemIndex ? newItem : item
+        );
+      } else {
+        // Add new primary item
+        updatedItems = [...meal.items, newItem];
+      }
     }
 
     const updatedMeal: GeneratedMeal = {

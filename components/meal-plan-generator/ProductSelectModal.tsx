@@ -97,7 +97,8 @@ interface ProductSelectModalProps {
   category: MacroCategory;
   targetMacro: number;
   mealType: MealType;
-  onSelect: (product: Product, grams: number, macros: CalculatedMacros) => void;
+  onSelect: (product: Product, grams: number, macros: CalculatedMacros, isAlternative?: boolean) => void;
+  showAlternativeOption?: boolean; // Show "Lägg till som alternativ" checkbox
 }
 
 type SourceTab = 'products' | 'slv';
@@ -164,6 +165,7 @@ export function ProductSelectModal({
   targetMacro,
   mealType,
   onSelect,
+  showAlternativeOption = true,
 }: ProductSelectModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
@@ -171,6 +173,7 @@ export function ProductSelectModal({
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<SourceTab>('products');
   const [activeSubcategory, setActiveSubcategory] = useState('all');
+  const [addAsAlternative, setAddAsAlternative] = useState(false);
 
   // Hämta subkategorier för aktuell makrokategori
   const subcategories = SUBCATEGORIES[category] || [{ key: 'all', label: 'Alla', keywords: [] }];
@@ -283,7 +286,8 @@ export function ProductSelectModal({
   }, [sourceItems, targetMacro, category, mealType, searchQuery, isVegetable, activeTab, activeSubcategory, subcategories]);
 
   const handleSelect = (product: ProductWithCalculation) => {
-    onSelect(product, product.calculatedGrams, product.calculatedMacros);
+    onSelect(product, product.calculatedGrams, product.calculatedMacros, addAsAlternative);
+    setAddAsAlternative(false); // Reset for next selection
     onClose();
   };
 
@@ -365,6 +369,21 @@ export function ProductSelectModal({
               </button>
             ))}
           </div>
+        )}
+
+        {/* Add as alternative checkbox */}
+        {showAlternativeOption && (
+          <label className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 cursor-pointer hover:bg-amber-100 transition-colors">
+            <input
+              type="checkbox"
+              checked={addAsAlternative}
+              onChange={(e) => setAddAsAlternative(e.target.checked)}
+              className="w-4 h-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500"
+            />
+            <span className="text-sm text-amber-800 font-medium">
+              Lägg till som alternativ (visar "ELLER")
+            </span>
+          </label>
         )}
 
         {/* Target info */}

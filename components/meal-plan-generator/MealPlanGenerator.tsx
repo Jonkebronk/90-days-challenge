@@ -301,7 +301,8 @@ export function MealPlanGenerator({
     category: MacroCategory,
     product: { id: string; name: string },
     grams: number,
-    macros: CalculatedMacros
+    macros: CalculatedMacros,
+    isAlternative?: boolean
   ) => {
     if (!generatedPlan) return;
 
@@ -315,6 +316,7 @@ export function MealPlanGenerator({
           productId: product.id,
           grams,
           macros,
+          isAlternative: isAlternative || false,
         }),
       });
 
