@@ -8,6 +8,7 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatMessage } from './ChatMessage';
 import { QuickActions } from './QuickActions';
+import { FoodDatabaseViewer } from './FoodDatabaseViewer';
 import { AIChatResponse, AIMessage } from '@/lib/ai/types';
 import Image from 'next/image';
 
@@ -608,6 +609,9 @@ export function AIChatPanel({
           )}
         </p>
       </CardHeader>
+
+      {/* Food Database Viewer - expandable */}
+      <FoodDatabaseViewer />
 
       {/* Messages */}
       <ScrollArea ref={scrollAreaRef} className="flex-1 bg-[#2f2f2f]">
