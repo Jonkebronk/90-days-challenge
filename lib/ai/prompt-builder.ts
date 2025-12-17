@@ -152,7 +152,7 @@ OBS: Alla vikter är RÅ VIKT före tillagning.
 
 /**
  * Bygger SLV-sektionen med råvaror från Livsmedelsverket
- * Kategoriserar efter makronäringsämne (protein, kolhydrat, fett)
+ * Inkluderar ALLA relevanta livsmedel sorterade efter kategori
  */
 function buildSlvSection(slvFoods: SlvFoodForPrompt[]): string {
   if (slvFoods.length === 0) {
@@ -160,124 +160,109 @@ function buildSlvSection(slvFoods: SlvFoodForPrompt[]): string {
   }
 
   const formatSlvFood = (f: SlvFoodForPrompt) => {
-    const micros = [];
-    if (f.iron) micros.push(`Fe${f.iron}mg`);
-    if (f.calcium) micros.push(`Ca${f.calcium}mg`);
-    if (f.vitaminD) micros.push(`D${f.vitaminD}µg`);
-    if (f.vitaminB12) micros.push(`B12${f.vitaminB12}µg`);
-
-    return `  ${f.namn}: ${f.kcal}kcal P${f.protein}g K${f.carbs}g F${f.fat}g${micros.length > 0 ? ' | ' + micros.join(' ') : ''}`;
+    return `  ${f.namn}: ${f.kcal}kcal P${f.protein}g K${f.carbs}g F${f.fat}g`;
   };
 
-  // PROTEINKÄLLOR: Kött, fisk, fågel, skaldjur (högt protein, lågt fett)
-  // Kvarg klassas som protein pga hög proteinhalt
-  const proteinSources = slvFoods
-    .filter(f => {
-      const name = f.namn.toLowerCase();
-      const typ = (f.typ || '').toLowerCase();
-      // Kött, fisk, fågel, skaldjur
-      if (typ.includes('kött') || typ.includes('fisk') || typ.includes('fågel') ||
-          typ.includes('skaldjur') || name.includes('kvarg')) {
-        return f.protein > 10;
-      }
-      // Baljväxter (linser, bönor)
-      if (typ.includes('baljväxt')) {
-        return f.protein > 5;
-      }
-      return false;
-    })
+  // SLV kategorier att använda direkt
+  const SLV_PROTEIN_CATEGORIES = [
+    'Fågel ',              // Kyckling, kalkon, anka, etc.
+    'Kött färskt fryst tillagat ',  // Nötkött, fläsk, vilt, etc.
+    'Fisk färsk fryst kokt',  // Lax, torsk, sej, etc.
+    'Skaldjur bläckfisk färsk fryst kokt',  // Räkor, kräftor, etc.
+    'Färskost o kvarg',    // Kvarg, keso, etc.
+    'Baljväxter (bönor, linser och ärter)',  // Linser, kikärtor, etc.
+  ];
+
+  const SLV_CARB_CATEGORIES = [
+    'Ris risnudlar',       // Jasminris, basmatiris, vitt ris, fullkornsris, etc.
+    'Pasta',               // Pasta, spaghetti, etc.
+    'Matgryn',             // Havregryn, couscous, quinoa, bulgur, etc.
+    'Potatis',             // Potatis, sötpotatis
+    'Frukt färsk fryst',   // Banan, äpple, etc.
+    'Bär färska frysta',   // Hallon, blåbär, etc.
+    'Mjöl stärkelse kli',  // Havregryn, rismjöl, etc.
+    'Rotfrukter',          // Morot, palsternacka, etc.
+    'Socker sirap honung', // Honung
+    'Frukt o bär torkade', // Russin, etc.
+    'Riskakor',            // Riskakor
+    'Hårt bröd ',          // Knäckebröd, riskakor
+    'Mjukt bröd ',         // Bröd
+  ];
+
+  const SLV_FAT_CATEGORIES = [
+    'Olja',                // Olivolja, rapsolja, kokosolja, etc.
+    'Nötter frön',         // Mandlar, valnötter, cashew, jordnötssmör, etc.
+    'Ägg ',                // Ägg
+    'Smör',                // Smör
+    'Hård ost mm',         // Ost (fettkälla)
+  ];
+
+  const SLV_VEGETABLE_CATEGORIES = [
+    'Grönsaker',           // Alla grönsaker
+    'Svamp',               // Svamp
+  ];
+
+  const SLV_DAIRY_CATEGORIES = [
+    'Mjölk',               // Mjölk
+    'Naturell fil yoghurt', // Yoghurt
+  ];
+
+  // Filtrera livsmedel efter kategori
+  const filterByCategories = (categories: string[]) => {
+    return slvFoods.filter(f => {
+      const typ = f.typ || '';
+      return categories.some(cat => typ.includes(cat.trim()));
+    });
+  };
+
+  // Hämta livsmedel per makrokategori
+  const proteinSources = filterByCategories(SLV_PROTEIN_CATEGORIES)
     .sort((a, b) => b.protein - a.protein)
-    .slice(0, 50);
+    .slice(0, 80);
 
-  // KOLHYDRATKÄLLOR: Spannmål, bröd, pasta, ris, frukt, bär, potatis
-  // Havregryn, ris, pasta, banan, bär = kolhydrater
-  const carbSources = slvFoods
-    .filter(f => {
-      const name = f.namn.toLowerCase();
-      const typ = (f.typ || '').toLowerCase();
-      // Spannmål, gryn, mjöl, bröd
-      if (typ.includes('gryn') || typ.includes('mjöl') || typ.includes('bröd') ||
-          typ.includes('pasta') || typ.includes('ris') || typ.includes('potatis') ||
-          typ.includes('flingor')) {
-        return f.carbs > 15;
-      }
-      // Frukt och bär
-      if (typ.includes('frukt') || typ.includes('bär')) {
-        return f.carbs > 5;
-      }
-      // Specifika kolhydratkällor
-      if (name.includes('havre') || name.includes('ris') || name.includes('pasta') ||
-          name.includes('banan') || name.includes('potatis') || name.includes('bröd')) {
-        return f.carbs > 10;
-      }
-      return false;
-    })
+  const carbSources = filterByCategories(SLV_CARB_CATEGORIES)
+    .filter(f => f.carbs > 10) // Måste ha kolhydrater
     .sort((a, b) => b.carbs - a.carbs)
-    .slice(0, 50);
+    .slice(0, 80);
 
-  // FETTKÄLLOR: Nötter, frön, oljor, ägg, ost, avokado
-  // Ägg klassas som fett pga hög fetthalt relativt
-  const fatSources = slvFoods
-    .filter(f => {
-      const name = f.namn.toLowerCase();
-      const typ = (f.typ || '').toLowerCase();
-      // Nötter, frön, oljor
-      if (typ.includes('nöt') || typ.includes('frö') || typ.includes('olja') ||
-          typ.includes('smör') || typ.includes('fett')) {
-        return f.fat > 10;
-      }
-      // Ägg (fettkälla)
-      if (name.includes('ägg') && !name.includes('lägg')) {
-        return true;
-      }
-      // Ost (fettkälla)
-      if (typ.includes('ost') && f.fat > 15) {
-        return true;
-      }
-      // Avokado
-      if (name.includes('avokado')) {
-        return true;
-      }
-      return false;
-    })
+  const fatSources = filterByCategories(SLV_FAT_CATEGORIES)
+    .filter(f => f.fat > 5) // Måste ha fett
     .sort((a, b) => b.fat - a.fat)
-    .slice(0, 40);
+    .slice(0, 60);
 
-  // GRÖNSAKER: Låg energitäthet
-  const vegetables = slvFoods
-    .filter(f => {
-      const typ = (f.typ || '').toLowerCase();
-      return typ.includes('grönsak') || typ.includes('rotfrukt') || typ.includes('svamp');
-    })
-    .slice(0, 50);
+  const vegetables = filterByCategories(SLV_VEGETABLE_CATEGORIES)
+    .slice(0, 60);
 
-  // MEJERI: Mjölk, yoghurt (inte ost - det är fettkälla)
-  const dairy = slvFoods
-    .filter(f => {
-      const typ = (f.typ || '').toLowerCase();
-      const name = f.namn.toLowerCase();
-      return (typ.includes('mjölk') || typ.includes('yoghurt') || typ.includes('fil') ||
-              name.includes('yoghurt') || name.includes('mjölk')) && f.fat < 10;
-    })
-    .slice(0, 20);
+  const dairy = filterByCategories(SLV_DAIRY_CATEGORIES)
+    .slice(0, 30);
+
+  // Bär separerat
+  const berries = slvFoods
+    .filter(f => (f.typ || '').includes('Bär'))
+    .slice(0, 30);
 
   return `<livsmedelsverket count="${slvFoods.length}">
 LIVSMEDELSVERKETS OFFICIELLA DATABAS - ENDAST RÅVAROR
 Alla värden per 100g. Använd EXAKT dessa namn och näringsvärden.
 
 KATEGORISERING FÖR KOSTSCHEMA:
-- PROTEINKÄLLOR: Kött, fisk, fågel, skaldjur, kvarg, baljväxter
-- KOLHYDRATKÄLLOR: Havregryn, ris, pasta, bröd, potatis, frukt, bär
-- FETTKÄLLOR: Ägg, nötter, frön, oljor, ost, avokado
+- PROTEINKÄLLOR: Fågel (kyckling, kalkon, anka), Nötkött, Viltkött, Fisk & skaldjur, Fläsk, Kvarg, Baljväxter
+- KOLHYDRATKÄLLOR: Ris (jasmin, basmati, vitt, fullkorn), Pasta, Havregryn, Potatis, Sötpotatis, Couscous, Quinoa, Bulgur, Banan, Äpple, Bröd, Riskakor, Honung, Russin
+- FETTKÄLLOR: Ägg, Ost, Olivolja, Rapsolja, Kokosolja, Avokado, Jordnötssmör, Mandelsmör, Mandlar, Valnötter, Cashewnötter, Hasselnötter, Paranötter, Pekannötter, Macadamianötter, Solrosfrön, Pumpafrön, Chiafrön, Sesamfrön, Linfrön
+- GRÖNSAKER: Valfria grönsaker
+- BÄR: Hallon, Blåbär, Jordgubbar, etc.
 
-[PROTEINKÄLLOR]
+[PROTEINKÄLLOR - Fågel, kött, fisk, skaldjur, kvarg, baljväxter]
 ${proteinSources.map(formatSlvFood).join('\n')}
 
-[KOLHYDRATKÄLLOR - Spannmål, frukt, bär, potatis]
+[KOLHYDRATKÄLLOR - Ris, pasta, gryn, potatis, frukt]
 ${carbSources.map(formatSlvFood).join('\n')}
 
-[FETTKÄLLOR - Ägg, nötter, oljor, ost]
+[FETTKÄLLOR - Ägg, ost, oljor, nötter, frön]
 ${fatSources.map(formatSlvFood).join('\n')}
+
+[BÄR]
+${berries.map(formatSlvFood).join('\n')}
 
 [GRÖNSAKER]
 ${vegetables.map(formatSlvFood).join('\n')}
