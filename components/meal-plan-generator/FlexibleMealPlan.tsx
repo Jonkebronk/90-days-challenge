@@ -167,6 +167,10 @@ export function FlexibleMealPlan({
             targetMacros: existingData.targetMacros,
             actualMacros: existingData.actualMacros,
           });
+          // Load saved meal recipes
+          if (existingData.mealRecipes) {
+            setMealRecipes(existingData.mealRecipes);
+          }
           // Notify parent of meal plan ID
           if (onMealPlanIdChange) {
             onMealPlanIdChange(existingData.id);
@@ -728,12 +732,28 @@ export function FlexibleMealPlan({
     if (!flexiblePlan) return;
 
     setIsSaving(true);
-    // Small delay to show saving state
-    await new Promise(resolve => setTimeout(resolve, 500));
-    setIsSaving(false);
+    try {
+      // Save meal recipes to database
+      const response = await fetch(`/api/meal-plan/${flexiblePlan.id}/save-recipes`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mealRecipes }),
+      });
 
-    if (onSave) {
-      onSave(flexiblePlan.id);
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || 'Kunde inte spara receptförslag');
+        return;
+      }
+
+      if (onSave) {
+        onSave(flexiblePlan.id);
+      }
+    } catch (err) {
+      setError('Ett fel uppstod vid sparning');
+      console.error('Save error:', err);
+    } finally {
+      setIsSaving(false);
     }
   };
 

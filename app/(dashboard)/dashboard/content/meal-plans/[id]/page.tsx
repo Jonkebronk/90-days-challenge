@@ -868,7 +868,18 @@ export default function MealPlanTemplatePage() {
       />
 
       {/* Tabs: Kostschema / Flexibel */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'kostschema' | 'flexible')} className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => {
+          const scrollY = window.scrollY;
+          setActiveTab(v as 'kostschema' | 'flexible');
+          // Restore scroll position after tab change
+          requestAnimationFrame(() => {
+            window.scrollTo(0, scrollY);
+          });
+        }}
+        className="w-full"
+      >
         <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-gold-primary/20 rounded-xl p-1">
           <TabsTrigger
             value="kostschema"

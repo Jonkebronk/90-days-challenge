@@ -2753,6 +2753,9 @@ model GeneratedMealPlan {
   targetMacros Json // { protein, carbs, fat, kcal }
   actualMacros Json // { protein, carbs, fat, kcal }
 
+  // Recipe suggestions per meal (manually added by coach)
+  mealRecipes Json? // Record<number, MealRecipe[]> - indexed by meal index
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
