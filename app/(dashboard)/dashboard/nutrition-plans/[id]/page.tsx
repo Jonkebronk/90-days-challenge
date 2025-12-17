@@ -493,14 +493,23 @@ export default function NutritionPlanDetailPage() {
             }}
             mealSettings={{
               mealsPerDay: mealConfigs.length,
-              workoutTime: plan.workoutTime,
-              nutritionSystem: plan.nutritionSystem,
+              workoutTime: workoutTime,
+              nutritionSystem: nutritionSystem,
               distributionMethod: distributionMethod,
             }}
             onMealPlanUpdated={() => {
               // Refresh the meal plan to reflect AI changes
               setMealPlanKey((prev) => prev + 1);
               fetchPlan();
+            }}
+            onMealSettingsUpdated={(settings) => {
+              // Update local state when settings change in AI panel
+              setWorkoutTime(settings.workoutTime);
+              setNutritionSystem(settings.nutritionSystem);
+              setDistributionMethod(settings.distributionMethod);
+              const newConfigs = generateDefaultMealConfigs(settings.mealsPerDay);
+              setMealConfigs(newConfigs);
+              setMealPlanKey((prev) => prev + 1);
             }}
           />
         </div>

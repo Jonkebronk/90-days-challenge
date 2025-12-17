@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, RefreshCw, Trash2, ImagePlus, X, Paperclip, Settings, FileImage, Check, ChevronDown, ChevronUp, User, Utensils, Settings2 } from 'lucide-react';
+import { Send, Sparkles, RefreshCw, Trash2, ImagePlus, X, Paperclip, Settings, FileImage, Check, ChevronDown, ChevronUp, User, Utensils, Settings2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
@@ -11,6 +11,13 @@ import { QuickActions } from './QuickActions';
 import { FoodDatabaseViewer } from './FoodDatabaseViewer';
 import { AIChatResponse, AIMessage } from '@/lib/ai/types';
 import Image from 'next/image';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface ClientData {
   name: string;
@@ -49,7 +56,7 @@ interface AIChatPanelProps {
   mealSettings?: MealSettings;
   onGenerateSchema?: (response: string) => void;
   onMealPlanUpdated?: () => void;
-  onEditMealSettings?: () => void;
+  onMealSettingsUpdated?: (settings: MealSettings) => void;
 }
 
 interface ParsedMealItem {
@@ -191,7 +198,7 @@ export function AIChatPanel({
   mealSettings,
   onGenerateSchema,
   onMealPlanUpdated,
-  onEditMealSettings,
+  onMealSettingsUpdated,
 }: AIChatPanelProps) {
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [input, setInput] = useState('');
@@ -201,6 +208,14 @@ export function AIChatPanel({
   const [hasTemplateImage, setHasTemplateImage] = useState(false);
   const [uploadingTemplate, setUploadingTemplate] = useState(false);
   const [expandedContextSections, setExpandedContextSections] = useState<string[]>([]);
+
+  // Meal settings editing state
+  const [isEditingSettings, setIsEditingSettings] = useState(false);
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [editMeals, setEditMeals] = useState(String(mealSettings?.mealsPerDay || 4));
+  const [editWorkout, setEditWorkout] = useState(mealSettings?.workoutTime || 'afternoon');
+  const [editNutrition, setEditNutrition] = useState(mealSettings?.nutritionSystem || 'balanced');
+  const [editDistribution, setEditDistribution] = useState<string>(mealSettings?.distributionMethod || 'auto');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -255,6 +270,66 @@ export function AIChatPanel({
     loadConversation();
     loadAISettings();
   }, [nutritionPlanId]);
+
+  // Sync meal settings when they change from parent
+  useEffect(() => {
+    if (mealSettings) {
+      setEditMeals(String(mealSettings.mealsPerDay));
+      setEditWorkout(mealSettings.workoutTime);
+      setEditNutrition(mealSettings.nutritionSystem);
+      setEditDistribution(mealSettings.distributionMethod);
+    }
+  }, [mealSettings]);
+
+  // Handle saving meal settings
+  const handleSaveSettings = async () => {
+    setSavingSettings(true);
+    try {
+      // Update nutrition plan settings via API
+      const response = await fetch(`/api/nutrition-plans/${nutritionPlanId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mealsPerDay: parseInt(editMeals),
+          workoutTime: editWorkout,
+          nutritionSystem: editNutrition,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update settings');
+      }
+
+      const newSettings: MealSettings = {
+        mealsPerDay: parseInt(editMeals),
+        workoutTime: editWorkout,
+        nutritionSystem: editNutrition,
+        distributionMethod: editDistribution as 'auto' | 'percentage' | 'fixed',
+      };
+
+      // Notify parent
+      if (onMealSettingsUpdated) {
+        onMealSettingsUpdated(newSettings);
+      }
+
+      setIsEditingSettings(false);
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
+  const handleCancelEditSettings = () => {
+    // Reset to original values
+    if (mealSettings) {
+      setEditMeals(String(mealSettings.mealsPerDay));
+      setEditWorkout(mealSettings.workoutTime);
+      setEditNutrition(mealSettings.nutritionSystem);
+      setEditDistribution(mealSettings.distributionMethod);
+    }
+    setIsEditingSettings(false);
+  };
 
   // Ladda AI-inställningar (för att kolla om mallbild finns)
   const loadAISettings = async () => {
@@ -764,11 +839,14 @@ export function AIChatPanel({
                 <span>Måltidsinställningar</span>
               </div>
               <div className="flex items-center gap-2">
-                {onEditMealSettings && (
+                {!isEditingSettings && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onEditMealSettings();
+                      setIsEditingSettings(true);
+                      if (!expandedContextSections.includes('mealSettings')) {
+                        setExpandedContextSections(prev => [...prev, 'mealSettings']);
+                      }
                     }}
                     className="p-1 text-gray-500 hover:text-amber-400 transition-colors"
                     title="Redigera"
@@ -785,30 +863,134 @@ export function AIChatPanel({
             </button>
             {expandedContextSections.includes('mealSettings') && (
               <div className="px-4 pb-4 pt-2 bg-[#2a2a2a]">
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="bg-[#353535] rounded-lg p-2">
-                    <span className="text-gray-500 block">Antal måltider</span>
-                    <span className="text-white font-medium">{mealSettings.mealsPerDay}</span>
+                {isEditingSettings ? (
+                  /* Edit mode */
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-2">
+                      {/* Meals per day */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-gray-500">Antal måltider</label>
+                        <Select value={editMeals} onValueChange={setEditMeals}>
+                          <SelectTrigger className="h-8 bg-[#353535] border-[#454545] text-white text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="3">3 måltider</SelectItem>
+                            <SelectItem value="4">4 måltider</SelectItem>
+                            <SelectItem value="5">5 måltider</SelectItem>
+                            <SelectItem value="6">6 måltider</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Distribution method */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-gray-500">Fördelning</label>
+                        <Select value={editDistribution} onValueChange={setEditDistribution}>
+                          <SelectTrigger className="h-8 bg-[#353535] border-[#454545] text-white text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="auto">Automatisk</SelectItem>
+                            <SelectItem value="percentage">Procent</SelectItem>
+                            <SelectItem value="fixed">Exakta gram</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Workout time */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-gray-500">Träningstid</label>
+                        <Select value={editWorkout} onValueChange={setEditWorkout}>
+                          <SelectTrigger className="h-8 bg-[#353535] border-[#454545] text-white text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="morning">Morgon</SelectItem>
+                            <SelectItem value="lunch">Lunch</SelectItem>
+                            <SelectItem value="afternoon">Eftermiddag</SelectItem>
+                            <SelectItem value="evening">Kväll</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Nutrition system */}
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-gray-500">Näringssystem</label>
+                        <Select value={editNutrition} onValueChange={setEditNutrition}>
+                          <SelectTrigger className="h-8 bg-[#353535] border-[#454545] text-white text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="low_carb">Lågkolhydrat</SelectItem>
+                            <SelectItem value="balanced">Balanserad</SelectItem>
+                            <SelectItem value="high_carb">Högkolhydrat</SelectItem>
+                            <SelectItem value="carb_cycling">Kolhydratcykling</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Save/Cancel buttons */}
+                    <div className="flex justify-end gap-2 pt-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleCancelEditSettings}
+                        disabled={savingSettings}
+                        className="h-7 text-xs text-gray-400 hover:text-white"
+                      >
+                        <X className="h-3.5 w-3.5 mr-1" />
+                        Avbryt
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={handleSaveSettings}
+                        disabled={savingSettings}
+                        className="h-7 text-xs bg-amber-600 hover:bg-amber-700"
+                      >
+                        {savingSettings ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />
+                        ) : (
+                          <Check className="h-3.5 w-3.5 mr-1" />
+                        )}
+                        Spara
+                      </Button>
+                    </div>
                   </div>
-                  <div className="bg-[#353535] rounded-lg p-2">
-                    <span className="text-gray-500 block">Fördelningsmetod</span>
-                    <span className="text-white font-medium">
-                      {DISTRIBUTION_METHOD_LABELS[mealSettings.distributionMethod] || mealSettings.distributionMethod}
-                    </span>
+                ) : (
+                  /* View mode */
+                  <div
+                    className="grid grid-cols-2 gap-2 text-xs cursor-pointer"
+                    onClick={() => setIsEditingSettings(true)}
+                  >
+                    <div className="bg-[#353535] rounded-lg p-2 hover:bg-[#404040] transition-colors">
+                      <span className="text-gray-500 block">Antal måltider</span>
+                      <span className="text-white font-medium">{mealSettings.mealsPerDay}</span>
+                    </div>
+                    <div className="bg-[#353535] rounded-lg p-2 hover:bg-[#404040] transition-colors">
+                      <span className="text-gray-500 block">Fördelningsmetod</span>
+                      <span className="text-white font-medium">
+                        {DISTRIBUTION_METHOD_LABELS[mealSettings.distributionMethod] || mealSettings.distributionMethod}
+                      </span>
+                    </div>
+                    <div className="bg-[#353535] rounded-lg p-2 hover:bg-[#404040] transition-colors">
+                      <span className="text-gray-500 block">Träningstid</span>
+                      <span className="text-white font-medium">
+                        {WORKOUT_TIME_LABELS[mealSettings.workoutTime] || mealSettings.workoutTime}
+                      </span>
+                    </div>
+                    <div className="bg-[#353535] rounded-lg p-2 hover:bg-[#404040] transition-colors">
+                      <span className="text-gray-500 block">Näringssystem</span>
+                      <span className="text-white font-medium text-[11px]">
+                        {NUTRITION_SYSTEM_LABELS[mealSettings.nutritionSystem] || mealSettings.nutritionSystem}
+                      </span>
+                    </div>
+                    <p className="col-span-2 text-[10px] text-gray-500 text-center pt-1">
+                      Klicka för att redigera
+                    </p>
                   </div>
-                  <div className="bg-[#353535] rounded-lg p-2">
-                    <span className="text-gray-500 block">Träningstid</span>
-                    <span className="text-white font-medium">
-                      {WORKOUT_TIME_LABELS[mealSettings.workoutTime] || mealSettings.workoutTime}
-                    </span>
-                  </div>
-                  <div className="bg-[#353535] rounded-lg p-2">
-                    <span className="text-gray-500 block">Näringssystem</span>
-                    <span className="text-white font-medium text-[11px]">
-                      {NUTRITION_SYSTEM_LABELS[mealSettings.nutritionSystem] || mealSettings.nutritionSystem}
-                    </span>
-                  </div>
-                </div>
+                )}
               </div>
             )}
           </div>
