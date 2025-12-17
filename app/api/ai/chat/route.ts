@@ -55,6 +55,13 @@ export async function POST(request: Request) {
     const body: AIChatRequest = await request.json();
     const { nutritionPlanId, message, images = [], includeHistory = true } = body;
 
+    console.log('AI Chat API received:', {
+      nutritionPlanId,
+      messageLength: message?.length,
+      imagesCount: images?.length || 0,
+      imageTypes: images?.map(i => i.mediaType) || [],
+    });
+
     if (!nutritionPlanId || (!message && images.length === 0)) {
       return NextResponse.json(
         { error: 'nutritionPlanId och message eller bilder krävs' },
@@ -80,9 +87,29 @@ export async function POST(request: Request) {
 
     // Hämta coach-inställningar och klientminne
     const [coachSettings, clientMemory] = await Promise.all([
-      // Coach AI-inställningar
+      // Coach AI-inställningar (inkl. mallbild)
       prisma.coachAISettings.findUnique({
         where: { coachId: plan.coachId },
+        select: {
+          proteinMinPerKg: true,
+          proteinMaxPerKg: true,
+          fettMinPerKg: true,
+          kolhydratPreWorkout: true,
+          kolhydratPostWorkout: true,
+          kolhydratKvallsmal: true,
+          fettPreWorkout: true,
+          fettPostWorkout: true,
+          fettKvallsmal: true,
+          favoritProteinkallor: true,
+          favoritKolhydratkallor: true,
+          favoritFettkallor: true,
+          undviknaLivsmedel: true,
+          ton: true,
+          detaljniva: true,
+          extraInstruktioner: true,
+          templateImage: true,
+          templateImageType: true,
+        },
       }),
       // Klientminne
       prisma.clientAIMemory.findUnique({
@@ -179,7 +206,9 @@ export async function POST(request: Request) {
 
     // Lägg till bilder först
     if (images && images.length > 0) {
+      console.log(`Processing ${images.length} images for Claude`);
       for (const img of images) {
+        console.log(`Adding image: type=${img.mediaType}, base64Length=${img.base64?.length || 0}`);
         userContent.push({
           type: 'image',
           source: {
@@ -198,10 +227,10 @@ export async function POST(request: Request) {
         text: message,
       });
     } else if (images.length > 0) {
-      // Om bara bilder, be om analys
+      // Om bara bilder utan text - be AI:n analysera kostschema-bilden
       userContent.push({
         type: 'text',
-        text: 'Analysera denna bild/dessa bilder och uppskatta näringsinnehållet (kalorier, protein, kolhydrater, fett). Ge också förslag på hur det passar in i kostplanen.',
+        text: `Analysera denna bild. Om det är ett kostschema/måltidsplan, extrahera alla måltider och livsmedel med gramvikter. Använd sedan MÅLTID X-formatet för att visa varje måltid med livsmedel och makros. Om det är en bild av mat, uppskatta näringsinnehållet.`,
       });
     }
 
@@ -209,6 +238,35 @@ export async function POST(request: Request) {
       role: 'user',
       content: userContent,
     });
+
+    // Lägg till mallbild som första meddelande om den finns och konversationen är ny
+    if (coachSettings?.templateImage && coachSettings?.templateImageType && previousMessages.length === 0) {
+      console.log('Adding template image as first message');
+      // Injicera mallbild som första user+assistant-utbyte
+      claudeMessages.unshift(
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: coachSettings.templateImageType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+                data: coachSettings.templateImage,
+              },
+            },
+            {
+              type: 'text',
+              text: 'Här är en mallbild som visar hur kostscheman ska formateras och struktureras. Använd detta som referens för format och layout när du genererar kostscheman.',
+            },
+          ],
+        },
+        {
+          role: 'assistant',
+          content: 'Jag har tagit emot mallbilden och kommer att använda den som referens för format och layout när jag genererar kostscheman. Vad kan jag hjälpa dig med?',
+        }
+      );
+    }
 
     // Anropa Claude API
     const response = await anthropic.messages.create({
@@ -261,9 +319,15 @@ export async function POST(request: Request) {
     if (error instanceof Error) {
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
+      // Kolla om det är ett Anthropic API-fel
+      if (error.message.includes('image') || error.message.includes('base64')) {
+        console.error('Possible image encoding issue');
+      }
     }
+    // Returnera mer specifikt felmeddelande
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Ett fel uppstod vid kommunikation med AI:n' },
+      { error: `Ett fel uppstod vid kommunikation med AI:n: ${errorMsg}` },
       { status: 500 }
     );
   }

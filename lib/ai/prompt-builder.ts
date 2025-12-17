@@ -117,6 +117,12 @@ ${buildSlvSection(slvFoods)}
 8. Inkludera alltid mikronutrienter (järn, kalcium, vitamin D, B12, zink) i dina beräkningar
 9. Svara ALLTID på svenska
 10. Formatera output tydligt med makros och mikros per livsmedel
+11. När användaren skickar en BILD av ett kostschema:
+    - Läs av alla måltider och livsmedel från bilden
+    - Identifiera gramvikter för varje livsmedel
+    - Matcha livsmedel mot SLV-databasen
+    - Generera output i standardformatet (MÅLTID X med livsmedel och makros)
+    - Behåll strukturen från originalbilden
 </instruktioner>
 
 <output_format>

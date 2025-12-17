@@ -2842,6 +2842,10 @@ model CoachAISettings {
   detaljniva         String  @default("detaljerad")    // "kortfattad", "detaljerad", "utforlig"
   extraInstruktioner String? @db.Text
 
+  // Mallbild för kostschema (base64-kodad)
+  templateImage     String? @db.Text // Base64-kodad bild
+  templateImageType String? // MIME-typ, t.ex. "image/png"
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

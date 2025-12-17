@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, RefreshCw, Trash2, ImagePlus, X, Paperclip } from 'lucide-react';
+import { Send, Sparkles, RefreshCw, Trash2, ImagePlus, X, Paperclip, Settings, FileImage, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
@@ -144,15 +144,108 @@ export function AIChatPanel({
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [attachedImages, setAttachedImages] = useState<{ file: File; preview: string }[]>([]);
+  const [hasTemplateImage, setHasTemplateImage] = useState(false);
+  const [uploadingTemplate, setUploadingTemplate] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const templateInputRef = useRef<HTMLInputElement>(null);
 
-  // Ladda konversationshistorik vid mount
+  // Ladda konversationshistorik och inställningar vid mount
   useEffect(() => {
     loadConversation();
+    loadAISettings();
   }, [nutritionPlanId]);
+
+  // Ladda AI-inställningar (för att kolla om mallbild finns)
+  const loadAISettings = async () => {
+    try {
+      const response = await fetch('/api/ai/settings');
+      if (response.ok) {
+        const data = await response.json();
+        setHasTemplateImage(data.hasTemplateImage || false);
+      }
+    } catch (error) {
+      console.error('Kunde inte ladda AI-inställningar:', error);
+    }
+  };
+
+  // Ladda upp mallbild
+  const handleTemplateImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Endast bildfiler är tillåtna');
+      return;
+    }
+
+    // Max 5MB
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Bilden får max vara 5MB');
+      return;
+    }
+
+    setUploadingTemplate(true);
+
+    try {
+      // Konvertera till base64
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(',')[1]); // Ta bort data:image/xxx;base64, prefix
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      // Spara till API
+      const response = await fetch('/api/ai/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          templateImage: base64,
+          templateImageType: file.type,
+        }),
+      });
+
+      if (response.ok) {
+        setHasTemplateImage(true);
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Kunde inte spara mallbilden');
+      }
+    } catch (error) {
+      console.error('Fel vid uppladdning av mallbild:', error);
+      alert('Något gick fel vid uppladdning');
+    } finally {
+      setUploadingTemplate(false);
+      if (templateInputRef.current) {
+        templateInputRef.current.value = '';
+      }
+    }
+  };
+
+  // Ta bort mallbild
+  const handleRemoveTemplateImage = async () => {
+    if (!confirm('Vill du ta bort mallbilden?')) return;
+
+    try {
+      const response = await fetch('/api/ai/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ removeTemplateImage: true }),
+      });
+
+      if (response.ok) {
+        setHasTemplateImage(false);
+      }
+    } catch (error) {
+      console.error('Kunde inte ta bort mallbild:', error);
+    }
+  };
 
   // Scrolla till botten vid nya meddelanden (endast inom chat-panelen)
   useEffect(() => {
@@ -272,7 +365,8 @@ export function AIChatPanel({
       });
 
       if (!response.ok) {
-        throw new Error('API-fel');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `API-fel (${response.status})`);
       }
 
       const data: AIChatResponse = await response.json();
@@ -292,9 +386,14 @@ export function AIChatPanel({
       }
     } catch (error) {
       console.error('AI chat error:', error);
+      // Visa mer specifikt fel om möjligt
+      let errorText = 'Ett fel uppstod. Försök igen.';
+      if (error instanceof Error) {
+        errorText = error.message;
+      }
       const errorMessage: AIMessage = {
         role: 'assistant',
-        content: 'Ett fel uppstod. Försök igen.',
+        content: errorText,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMessage]);
@@ -418,22 +517,52 @@ export function AIChatPanel({
             <Sparkles className="h-4 w-4 text-[#e07a5f]" />
             <h3 className="font-medium text-sm text-white">AI Kostassistent</h3>
           </div>
-          {messages.length > 0 && (
+          <div className="flex items-center gap-1">
+            {/* Mallbild-knapp */}
+            <input
+              ref={templateInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleTemplateImageSelect}
+              className="hidden"
+            />
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleClearConversation}
-              className="text-gray-400 hover:text-red-400 h-7 w-7 p-0"
+              onClick={() => hasTemplateImage ? handleRemoveTemplateImage() : templateInputRef.current?.click()}
+              disabled={uploadingTemplate}
+              className={`h-7 w-7 p-0 ${hasTemplateImage ? 'text-green-400 hover:text-green-300' : 'text-gray-400 hover:text-gray-200'}`}
+              title={hasTemplateImage ? 'Mallbild aktiv - klicka för att ta bort' : 'Ladda upp mallbild för kostschema'}
             >
-              <Trash2 className="h-3.5 w-3.5" />
+              {uploadingTemplate ? (
+                <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+              ) : hasTemplateImage ? (
+                <Check className="h-3.5 w-3.5" />
+              ) : (
+                <FileImage className="h-3.5 w-3.5" />
+              )}
             </Button>
-          )}
+            {/* Rensa konversation */}
+            {messages.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleClearConversation}
+                className="text-gray-400 hover:text-red-400 h-7 w-7 p-0"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            )}
+          </div>
         </div>
         <p className="text-xs text-gray-400">
           {clientName} |{' '}
           <span className="text-gray-300">
             P{targetMacros.protein}g K{targetMacros.carbs}g F{targetMacros.fat}g
           </span>
+          {hasTemplateImage && (
+            <span className="text-green-400 ml-2">| Mall aktiv</span>
+          )}
         </p>
       </CardHeader>
 
