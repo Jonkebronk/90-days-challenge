@@ -188,66 +188,109 @@ export function ClientStyleMealCard({
     }
   };
 
-  // Render a single food item within a section
+  // Handle direct gram input change
+  const handleGramInputChange = (category: MacroCategory, foodId: string, newGrams: number) => {
+    if (onUpdateGrams && newGrams >= 0) {
+      onUpdateGrams(mealIndex, category, newGrams, foodId);
+    }
+  };
+
+  // Render a single food item within a section - table-like layout
   const renderFoodItem = (
     item: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros } },
     category: MacroCategory,
     configKey: string
   ) => {
     const config = CATEGORY_CONFIG[configKey];
+    const macros = item.selected.macros;
+
     return (
       <div
         key={item.selected.foodId}
-        className={cn("flex items-center gap-3 p-2.5 rounded-lg", config.bg)}
+        className={cn("p-3 rounded-lg", config.bg)}
       >
-        {/* Food name and grams */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-zinc-900 truncate text-sm">
-              {item.selected.name}
-            </span>
-            <span className="text-sm font-semibold text-zinc-500">
-              {item.selected.grams}g
-            </span>
+        {/* Row 1: Food name and actions */}
+        <div className="flex items-center justify-between mb-2">
+          <span className="font-medium text-zinc-900 text-sm flex-1 truncate pr-2">
+            {item.selected.name}
+          </span>
+          <div className="flex items-center gap-0.5 shrink-0">
+            <button
+              onClick={() => !disabled && handleOpenSelectModal(category, getTargetMacro(category))}
+              disabled={disabled}
+              className="p-1 rounded hover:bg-white/50 text-zinc-500 hover:text-zinc-700 disabled:opacity-30 transition-colors"
+              title="Byt livsmedel"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+            </button>
+            {onRemoveFood && (
+              <button
+                onClick={() => !disabled && onRemoveFood(mealIndex, category, item.selected.foodId)}
+                disabled={disabled}
+                className="p-1 rounded hover:bg-red-100 text-zinc-400 hover:text-red-600 disabled:opacity-30 transition-colors"
+                title="Ta bort"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Action buttons */}
-        <div className="flex items-center gap-0.5">
-          <button
-            onClick={() => adjustGrams(category, item.selected.foodId, -10)}
-            disabled={disabled || item.selected.grams <= 10}
-            className="p-1 rounded hover:bg-white/50 text-zinc-500 hover:text-zinc-700 disabled:opacity-30 transition-colors"
-            title="Minska 10g"
-          >
-            <Minus className="h-3.5 w-3.5" />
-          </button>
-          <button
-            onClick={() => adjustGrams(category, item.selected.foodId, 10)}
-            disabled={disabled}
-            className="p-1 rounded hover:bg-white/50 text-zinc-500 hover:text-zinc-700 disabled:opacity-30 transition-colors"
-            title="Öka 10g"
-          >
-            <Plus className="h-3.5 w-3.5" />
-          </button>
-          <button
-            onClick={() => !disabled && handleOpenSelectModal(category, getTargetMacro(category))}
-            disabled={disabled}
-            className="p-1 rounded hover:bg-white/50 text-zinc-500 hover:text-zinc-700 disabled:opacity-30 transition-colors"
-            title="Byt livsmedel"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-          </button>
-          {onRemoveFood && (
-            <button
-              onClick={() => !disabled && onRemoveFood(mealIndex, category, item.selected.foodId)}
-              disabled={disabled}
-              className="p-1 rounded hover:bg-red-100 text-zinc-400 hover:text-red-600 disabled:opacity-30 transition-colors"
-              title="Ta bort"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          )}
+        {/* Row 2: Grams input and macros table */}
+        <div className="grid grid-cols-5 gap-2 text-xs">
+          {/* Mängd (gram) - editable */}
+          <div className="text-center">
+            <div className="text-zinc-500 mb-1">Mängd</div>
+            <div className="flex items-center justify-center gap-1">
+              <button
+                onClick={() => adjustGrams(category, item.selected.foodId, -10)}
+                disabled={disabled || item.selected.grams <= 10}
+                className="p-0.5 rounded hover:bg-white/70 text-zinc-500 hover:text-zinc-700 disabled:opacity-30 transition-colors"
+              >
+                <Minus className="h-3 w-3" />
+              </button>
+              <input
+                type="number"
+                value={item.selected.grams}
+                onChange={(e) => handleGramInputChange(category, item.selected.foodId, parseInt(e.target.value) || 0)}
+                disabled={disabled}
+                className="w-12 text-center font-semibold text-zinc-800 bg-white/80 border border-zinc-300 rounded px-1 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-amber-400"
+                min="0"
+                step="5"
+              />
+              <button
+                onClick={() => adjustGrams(category, item.selected.foodId, 10)}
+                disabled={disabled}
+                className="p-0.5 rounded hover:bg-white/70 text-zinc-500 hover:text-zinc-700 disabled:opacity-30 transition-colors"
+              >
+                <Plus className="h-3 w-3" />
+              </button>
+            </div>
+          </div>
+
+          {/* Protein */}
+          <div className="text-center">
+            <div className="text-zinc-500 mb-1">Protein</div>
+            <div className="font-semibold text-red-600">{macros.protein.toFixed(1)}g</div>
+          </div>
+
+          {/* Fett */}
+          <div className="text-center">
+            <div className="text-zinc-500 mb-1">Fett</div>
+            <div className="font-semibold text-blue-600">{macros.fat.toFixed(1)}g</div>
+          </div>
+
+          {/* Kolhydrater */}
+          <div className="text-center">
+            <div className="text-zinc-500 mb-1">Kolh.</div>
+            <div className="font-semibold text-green-600">{macros.carbs.toFixed(1)}g</div>
+          </div>
+
+          {/* Kcal */}
+          <div className="text-center">
+            <div className="text-zinc-500 mb-1">Kcal</div>
+            <div className="font-semibold text-amber-600">{Math.round(macros.kcal)}</div>
+          </div>
         </div>
       </div>
     );
