@@ -351,13 +351,13 @@ export function ProductSelectModal({
 
         {/* Subkategori-chips */}
         {subcategories.length > 1 && (
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {subcategories.map((sub) => (
               <button
                 key={sub.key}
                 onClick={() => setActiveSubcategory(sub.key)}
                 className={cn(
-                  'px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shrink-0 border',
+                  'px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0 border min-w-fit',
                   activeSubcategory === sub.key
                     ? activeTab === 'slv'
                       ? 'bg-green-600 text-white border-green-600'
