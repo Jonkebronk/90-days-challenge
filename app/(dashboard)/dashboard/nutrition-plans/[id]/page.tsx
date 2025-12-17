@@ -490,11 +490,28 @@ export default function NutritionPlanDetailPage() {
             mealPlanId={existingMealPlan?.id}
             clientName={plan.client.name}
             targetMacros={targetMacros}
+            actualMacros={actualMacros}
+            clientData={{
+              name: plan.client.name,
+              email: plan.client.email,
+              weight: plan.weight,
+              lifestyleActivity: plan.lifestyleActivity,
+              calorieGoal: plan.calorieGoal,
+              bmr: plan.bmr,
+              dailyCalorieTarget: plan.dailyCalorieTarget,
+            }}
+            mealSettings={{
+              mealsPerDay: mealConfigs.length,
+              workoutTime: plan.workoutTime,
+              nutritionSystem: plan.nutritionSystem,
+              distributionMethod: distributionMethod,
+            }}
             onMealPlanUpdated={() => {
               // Refresh the meal plan to reflect AI changes
               setMealPlanKey((prev) => prev + 1);
               fetchPlan();
             }}
+            onEditMealSettings={() => setShowSettingsEditor(true)}
           />
         </div>
       </div>

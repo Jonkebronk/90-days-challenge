@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, RefreshCw, Trash2, ImagePlus, X, Paperclip, Settings, FileImage, Check } from 'lucide-react';
+import { Send, Sparkles, RefreshCw, Trash2, ImagePlus, X, Paperclip, Settings, FileImage, Check, ChevronDown, ChevronUp, User, Utensils, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
@@ -11,6 +11,23 @@ import { QuickActions } from './QuickActions';
 import { FoodDatabaseViewer } from './FoodDatabaseViewer';
 import { AIChatResponse, AIMessage } from '@/lib/ai/types';
 import Image from 'next/image';
+
+interface ClientData {
+  name: string;
+  email: string;
+  weight: number;
+  lifestyleActivity: string;
+  calorieGoal: string | null;
+  bmr: number;
+  dailyCalorieTarget: number;
+}
+
+interface MealSettings {
+  mealsPerDay: number;
+  workoutTime: string;
+  nutritionSystem: string;
+  distributionMethod: 'auto' | 'percentage' | 'fixed';
+}
 
 interface AIChatPanelProps {
   nutritionPlanId: string;
@@ -22,8 +39,17 @@ interface AIChatPanelProps {
     fat: number;
     kcal: number;
   };
+  actualMacros?: {
+    protein: number;
+    carbs: number;
+    fat: number;
+    kcal: number;
+  };
+  clientData?: ClientData;
+  mealSettings?: MealSettings;
   onGenerateSchema?: (response: string) => void;
   onMealPlanUpdated?: () => void;
+  onEditMealSettings?: () => void;
 }
 
 interface ParsedMealItem {
@@ -160,8 +186,12 @@ export function AIChatPanel({
   mealPlanId,
   clientName,
   targetMacros,
+  actualMacros = { protein: 0, carbs: 0, fat: 0, kcal: 0 },
+  clientData,
+  mealSettings,
   onGenerateSchema,
   onMealPlanUpdated,
+  onEditMealSettings,
 }: AIChatPanelProps) {
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [input, setInput] = useState('');
@@ -170,11 +200,55 @@ export function AIChatPanel({
   const [attachedImages, setAttachedImages] = useState<{ file: File; preview: string }[]>([]);
   const [hasTemplateImage, setHasTemplateImage] = useState(false);
   const [uploadingTemplate, setUploadingTemplate] = useState(false);
+  const [expandedContextSections, setExpandedContextSections] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const templateInputRef = useRef<HTMLInputElement>(null);
+
+  // Label mappings for display
+  const LIFESTYLE_ACTIVITY_LABELS: Record<string, string> = {
+    sedentary: 'Stillasittande',
+    lightly_active: 'Lätt aktiv',
+    moderately_active: 'Måttligt aktiv',
+    very_active: 'Mycket aktiv',
+    extremely_active: 'Extremt aktiv',
+  };
+
+  const WORKOUT_TIME_LABELS: Record<string, string> = {
+    morning: 'Morgon',
+    lunch: 'Lunch',
+    afternoon: 'Eftermiddag',
+    evening: 'Kväll',
+  };
+
+  const NUTRITION_SYSTEM_LABELS: Record<string, string> = {
+    low_carb: 'Lågkolhydrat',
+    balanced: 'Balanserad',
+    high_carb: 'Högkolhydrat',
+    carb_cycling: 'Kolhydratcykling',
+  };
+
+  const DISTRIBUTION_METHOD_LABELS: Record<string, string> = {
+    auto: 'Automatisk',
+    percentage: 'Procent',
+    fixed: 'Exakta gram',
+  };
+
+  const getGoalLabel = (calorieGoal: string | null): string => {
+    if (!calorieGoal) return 'Balans';
+    if (calorieGoal === 'maintenance') return 'Balans';
+    if (calorieGoal === 'surplus') return 'Viktuppgång';
+    if (['aggressive', 'moderate', 'conservative'].includes(calorieGoal)) return 'Viktnedgång';
+    return 'Balans';
+  };
+
+  const toggleContextSection = (section: string) => {
+    setExpandedContextSections(prev =>
+      prev.includes(section) ? prev.filter(s => s !== section) : [...prev, section]
+    );
+  };
 
   // Ladda konversationshistorik och inställningar vid mount
   useEffect(() => {
@@ -610,8 +684,233 @@ export function AIChatPanel({
         </p>
       </CardHeader>
 
-      {/* Food Database Viewer - expandable */}
-      <FoodDatabaseViewer />
+      {/* Context Sections - Collapsible */}
+      <div className="border-b border-[#3f3f3f]">
+        {/* Client Info Section */}
+        {clientData && (
+          <div className="border-b border-[#3f3f3f]">
+            <button
+              onClick={() => toggleContextSection('client')}
+              className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-[#333] transition-colors"
+            >
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <User className="h-4 w-4" />
+                <span>Klient</span>
+              </div>
+              {expandedContextSections.includes('client') ? (
+                <ChevronUp className="h-4 w-4 text-gray-500" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-gray-500" />
+              )}
+            </button>
+            {expandedContextSections.includes('client') && (
+              <div className="px-4 pb-4 space-y-3 bg-[#2a2a2a]">
+                {/* Client name and email */}
+                <div className="flex items-center gap-3 pt-2">
+                  <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-amber-400 font-semibold">
+                      {clientData.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-medium text-white text-sm truncate">{clientData.name}</p>
+                    <p className="text-xs text-gray-500 truncate">{clientData.email}</p>
+                  </div>
+                </div>
+
+                {/* Stats grid */}
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div className="bg-[#353535] rounded-lg p-2">
+                    <span className="text-gray-500 block">Vikt</span>
+                    <span className="text-white font-medium">{clientData.weight} kg</span>
+                  </div>
+                  <div className="bg-[#353535] rounded-lg p-2">
+                    <span className="text-gray-500 block">Aktivitet</span>
+                    <span className="text-white font-medium text-[11px]">
+                      {LIFESTYLE_ACTIVITY_LABELS[clientData.lifestyleActivity] || clientData.lifestyleActivity}
+                    </span>
+                  </div>
+                  <div className="bg-[#353535] rounded-lg p-2">
+                    <span className="text-gray-500 block">Mål</span>
+                    <span className="text-white font-medium">{getGoalLabel(clientData.calorieGoal)}</span>
+                  </div>
+                </div>
+
+                {/* BMR and daily calories */}
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="bg-[#353535] rounded-lg p-2">
+                    <span className="text-gray-500 block">BMR</span>
+                    <span className="text-white font-medium">{Math.round(clientData.bmr)} kcal</span>
+                  </div>
+                  <div className="bg-[#353535] rounded-lg p-2">
+                    <span className="text-gray-500 block">Dagligt kaloriintag</span>
+                    <span className="text-white font-medium">{Math.round(clientData.dailyCalorieTarget)} kcal</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Meal Settings Section */}
+        {mealSettings && (
+          <div className="border-b border-[#3f3f3f]">
+            <button
+              onClick={() => toggleContextSection('mealSettings')}
+              className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-[#333] transition-colors"
+            >
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <Utensils className="h-4 w-4" />
+                <span>Måltidsinställningar</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {onEditMealSettings && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditMealSettings();
+                    }}
+                    className="p-1 text-gray-500 hover:text-amber-400 transition-colors"
+                    title="Redigera"
+                  >
+                    <Settings2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+                {expandedContextSections.includes('mealSettings') ? (
+                  <ChevronUp className="h-4 w-4 text-gray-500" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                )}
+              </div>
+            </button>
+            {expandedContextSections.includes('mealSettings') && (
+              <div className="px-4 pb-4 pt-2 bg-[#2a2a2a]">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="bg-[#353535] rounded-lg p-2">
+                    <span className="text-gray-500 block">Antal måltider</span>
+                    <span className="text-white font-medium">{mealSettings.mealsPerDay}</span>
+                  </div>
+                  <div className="bg-[#353535] rounded-lg p-2">
+                    <span className="text-gray-500 block">Fördelningsmetod</span>
+                    <span className="text-white font-medium">
+                      {DISTRIBUTION_METHOD_LABELS[mealSettings.distributionMethod] || mealSettings.distributionMethod}
+                    </span>
+                  </div>
+                  <div className="bg-[#353535] rounded-lg p-2">
+                    <span className="text-gray-500 block">Träningstid</span>
+                    <span className="text-white font-medium">
+                      {WORKOUT_TIME_LABELS[mealSettings.workoutTime] || mealSettings.workoutTime}
+                    </span>
+                  </div>
+                  <div className="bg-[#353535] rounded-lg p-2">
+                    <span className="text-gray-500 block">Näringssystem</span>
+                    <span className="text-white font-medium text-[11px]">
+                      {NUTRITION_SYSTEM_LABELS[mealSettings.nutritionSystem] || mealSettings.nutritionSystem}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Macro Overview Section */}
+        <div>
+          <button
+            onClick={() => toggleContextSection('macros')}
+            className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-[#333] transition-colors"
+          >
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              <Sparkles className="h-4 w-4" />
+              <span>Makroöversikt</span>
+            </div>
+            {expandedContextSections.includes('macros') ? (
+              <ChevronUp className="h-4 w-4 text-gray-500" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-gray-500" />
+            )}
+          </button>
+          {expandedContextSections.includes('macros') && (
+            <div className="px-4 pb-4 pt-2 space-y-3 bg-[#2a2a2a]">
+              {/* Protein */}
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-red-400 font-medium">Protein</span>
+                  <span className="text-gray-300">
+                    {actualMacros.protein.toFixed(1)}g / {targetMacros.protein}g{' '}
+                    <span className={actualMacros.protein >= targetMacros.protein ? 'text-green-400' : 'text-red-400'}>
+                      ({actualMacros.protein >= targetMacros.protein ? '+' : ''}{(actualMacros.protein - targetMacros.protein).toFixed(1)}g)
+                    </span>
+                  </span>
+                </div>
+                <div className="h-1.5 bg-[#404040] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-red-500 rounded-full transition-all"
+                    style={{ width: `${Math.min(100, (actualMacros.protein / targetMacros.protein) * 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Carbs */}
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-green-400 font-medium">Kolhydrater</span>
+                  <span className="text-gray-300">
+                    {actualMacros.carbs.toFixed(1)}g / {targetMacros.carbs}g{' '}
+                    <span className={actualMacros.carbs >= targetMacros.carbs ? 'text-green-400' : 'text-red-400'}>
+                      ({actualMacros.carbs >= targetMacros.carbs ? '+' : ''}{(actualMacros.carbs - targetMacros.carbs).toFixed(1)}g)
+                    </span>
+                  </span>
+                </div>
+                <div className="h-1.5 bg-[#404040] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-green-500 rounded-full transition-all"
+                    style={{ width: `${Math.min(100, (actualMacros.carbs / targetMacros.carbs) * 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Fat */}
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-amber-400 font-medium">Fett</span>
+                  <span className="text-gray-300">
+                    {actualMacros.fat.toFixed(1)}g / {targetMacros.fat}g{' '}
+                    <span className={actualMacros.fat >= targetMacros.fat ? 'text-green-400' : 'text-red-400'}>
+                      ({actualMacros.fat >= targetMacros.fat ? '+' : ''}{(actualMacros.fat - targetMacros.fat).toFixed(1)}g)
+                    </span>
+                  </span>
+                </div>
+                <div className="h-1.5 bg-[#404040] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-amber-500 rounded-full transition-all"
+                    style={{ width: `${Math.min(100, (actualMacros.fat / targetMacros.fat) * 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Calories */}
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-blue-400 font-medium">Kalorier</span>
+                  <span className="text-gray-300">
+                    {actualMacros.kcal.toFixed(0)}kcal / {targetMacros.kcal}kcal{' '}
+                    <span className={actualMacros.kcal >= targetMacros.kcal ? 'text-green-400' : 'text-red-400'}>
+                      ({actualMacros.kcal >= targetMacros.kcal ? '+' : ''}{(actualMacros.kcal - targetMacros.kcal).toFixed(0)}kcal)
+                    </span>
+                  </span>
+                </div>
+                <div className="h-1.5 bg-[#404040] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-blue-500 rounded-full transition-all"
+                    style={{ width: `${Math.min(100, (actualMacros.kcal / targetMacros.kcal) * 100)}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Messages */}
       <ScrollArea ref={scrollAreaRef} className="flex-1 bg-[#2f2f2f]">
@@ -713,6 +1012,9 @@ export function AIChatPanel({
           </button>
         </div>
       </div>
+
+      {/* Food Database Viewer - expandable, at bottom */}
+      <FoodDatabaseViewer />
     </Card>
   );
 }
