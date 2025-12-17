@@ -541,9 +541,6 @@ export function ClientStyleMealCard({
                         <div className="font-medium text-sm text-zinc-800 truncate">
                           {recipe.name}
                         </div>
-                        <div className="text-xs text-zinc-500">
-                          {recipe.kcal} kcal • P: {recipe.protein}g • F: {recipe.fat}g • K: {recipe.carbs}g
-                        </div>
                       </div>
 
                       {/* Remove button */}
