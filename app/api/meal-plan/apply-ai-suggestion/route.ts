@@ -127,10 +127,10 @@ function normalizeName(name: string): string {
 // NOTE: Alternatives should be exact SLV food names that START with these strings
 const FOOD_MAPPINGS: Record<string, string[]> = {
   'ägg': ['ägg kokt', 'ägg rått'],  // Exact SLV names
-  'havregryn': ['havregryn fullkorn', 'havregrynsgröt fullkorn'],
-  'hallon': ['hallon'],
+  'havregryn': ['havregryn fullkorn'],
+  'hallon': ['hallon frysvara', 'hallon'],
   'blåbär': ['blåbär'],
-  'kvarg': ['kvarg naturell fett 0,2%', 'kvarg färskost fett 1%'],
+  'kvarg': ['kvarg naturell fett 0,2%'],  // ALLTID 0,2% - inte 1%
   'keso': ['keso'],
   'ris': ['ris vitt', 'ris råris'],
   'kyckling': ['kycklingfilé', 'kycklingbröst'],
@@ -144,7 +144,7 @@ const FOOD_MAPPINGS: Record<string, string[]> = {
   'yoghurt': ['yoghurt naturell', 'yoghurt'],
   'ost': ['ost'],
   'bröd': ['bröd'],
-  'havre': ['havregryn fullkorn', 'havregrynsgröt fullkorn'],
+  'havre': ['havregryn fullkorn'],
   'jordnötssmör': ['jordnötssmör'],
 };
 
