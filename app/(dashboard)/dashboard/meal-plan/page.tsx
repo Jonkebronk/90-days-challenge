@@ -3,11 +3,10 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Utensils, Dumbbell, Sparkles, Lightbulb, Info, ChevronDown, ChevronUp, UtensilsCrossed, Wand2 } from 'lucide-react'
+import { Utensils, Sparkles, Lightbulb, Info, ChevronDown, ChevronUp, UtensilsCrossed, Wand2 } from 'lucide-react'
 import { MDXPreview } from '@/components/mdx-preview'
 import { WeekCalendar } from '@/components/meal-plan/week-calendar'
 import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
@@ -217,8 +216,6 @@ export default function MealPlanPage() {
     }
   }
 
-  const preWorkoutItems = mealPlan?.supplementItems.filter(item => item.timing === 'pre_workout') || []
-  const postWorkoutItems = mealPlan?.supplementItems.filter(item => item.timing === 'post_workout') || []
 
   if (loading) {
     return (
@@ -351,7 +348,7 @@ export default function MealPlanPage() {
       {/* Main Content */}
       <div>
           <Tabs defaultValue="meals" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-gray-100 border border-gray-200 rounded-xl p-1">
+            <TabsList className="grid w-full grid-cols-2 bg-gray-100 border border-gray-200 rounded-xl p-1">
               <TabsTrigger
                 value="meals"
                 className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-600 rounded-lg transition-all"
@@ -365,13 +362,6 @@ export default function MealPlanPage() {
               >
                 <UtensilsCrossed className="w-4 h-4 mr-2" />
                 Flexibel
-              </TabsTrigger>
-              <TabsTrigger
-                value="supplements"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-600 rounded-lg transition-all"
-              >
-                <Dumbbell className="w-4 h-4 mr-2" />
-                Träning
               </TabsTrigger>
             </TabsList>
 
@@ -604,135 +594,6 @@ export default function MealPlanPage() {
               )}
             </TabsContent>
 
-            <TabsContent value="supplements" className="space-y-4 mt-6">
-              {/* Pre Workout */}
-              {preWorkoutItems.length > 0 && (
-                <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-                  <div className="px-4 py-3 border-b border-gray-200 flex items-center gap-2">
-                    <Dumbbell className="w-5 h-5 text-blue-500" />
-                    <h3 className="text-base font-semibold text-gray-900">Före styrketräning</h3>
-                  </div>
-                  <div className="p-4 space-y-3">
-                    {preWorkoutItems.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                            <span className="text-sm">💊</span>
-                          </div>
-                          <p className="text-gray-700 font-medium">{item.name}</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          {item.supplementBadge && (
-                            <Badge className="bg-blue-50 text-blue-600 border border-blue-200">
-                              {item.supplementBadge}
-                            </Badge>
-                          )}
-                          <span className="text-gray-900 font-semibold">
-                            {item.amountG}{item.amountUnit || 'g'}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Pre Workout Totals */}
-                    {(mealPlan.preWorkoutProtein || mealPlan.preWorkoutCalories) && (
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
-                        <p className="text-xs text-gray-500 mb-2">Totalt före träning</p>
-                        <div className="grid grid-cols-4 gap-2 text-sm">
-                          <div>
-                            <span className="text-gray-500 text-xs">Protein:</span>
-                            <p className="font-bold text-red-500">{mealPlan.preWorkoutProtein?.toFixed(1) || 0}g</p>
-                          </div>
-                          <div>
-                            <span className="text-gray-500 text-xs">Fett:</span>
-                            <p className="font-bold text-blue-500">{mealPlan.preWorkoutFat?.toFixed(1) || 0}g</p>
-                          </div>
-                          <div>
-                            <span className="text-gray-500 text-xs">Kolhydrater:</span>
-                            <p className="font-bold text-green-500">{mealPlan.preWorkoutCarbs?.toFixed(1) || 0}g</p>
-                          </div>
-                          <div>
-                            <span className="text-gray-500 text-xs">Kcal:</span>
-                            <p className="font-bold text-amber-500">{mealPlan.preWorkoutCalories?.toFixed(0) || 0}</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Post Workout */}
-              {postWorkoutItems.length > 0 && (
-                <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-                  <div className="px-4 py-3 border-b border-gray-200 flex items-center gap-2">
-                    <Dumbbell className="w-5 h-5 text-green-500" />
-                    <h3 className="text-base font-semibold text-gray-900">Efter styrketräning</h3>
-                  </div>
-                  <div className="p-4 space-y-3">
-                    {postWorkoutItems.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
-                            <span className="text-sm">💊</span>
-                          </div>
-                          <p className="text-gray-700 font-medium">{item.name}</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          {item.supplementBadge && (
-                            <Badge className="bg-green-50 text-green-600 border border-green-200">
-                              {item.supplementBadge}
-                            </Badge>
-                          )}
-                          <span className="text-gray-900 font-semibold">
-                            {item.amountG}{item.amountUnit || 'g'}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Post Workout Totals */}
-                    {(mealPlan.postWorkoutProtein || mealPlan.postWorkoutCalories) && (
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-4">
-                        <p className="text-xs text-gray-500 mb-2">Totalt efter träning</p>
-                        <div className="grid grid-cols-4 gap-2 text-sm">
-                          <div>
-                            <span className="text-gray-500 text-xs">Protein:</span>
-                            <p className="font-bold text-red-500">{mealPlan.postWorkoutProtein?.toFixed(1) || 0}g</p>
-                          </div>
-                          <div>
-                            <span className="text-gray-500 text-xs">Fett:</span>
-                            <p className="font-bold text-blue-500">{mealPlan.postWorkoutFat?.toFixed(1) || 0}g</p>
-                          </div>
-                          <div>
-                            <span className="text-gray-500 text-xs">Kolhydrater:</span>
-                            <p className="font-bold text-green-500">{mealPlan.postWorkoutCarbs?.toFixed(1) || 0}g</p>
-                          </div>
-                          <div>
-                            <span className="text-gray-500 text-xs">Kcal:</span>
-                            <p className="font-bold text-amber-500">{mealPlan.postWorkoutCalories?.toFixed(0) || 0}</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {preWorkoutItems.length === 0 && postWorkoutItems.length === 0 && (
-                <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm">
-                  <div className="text-center">
-                    <Sparkles className="w-12 h-12 mx-auto text-gold-primary mb-4" />
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">
-                      Inga träningskosttillskott tilldelade
-                    </h3>
-                    <p className="text-gray-500 text-sm">
-                      Din coach kan lägga till pre- och post-workout kosttillskott om det behövs
-                    </p>
-                  </div>
-                </div>
-              )}
-            </TabsContent>
           </Tabs>
       </div>
     </div>
