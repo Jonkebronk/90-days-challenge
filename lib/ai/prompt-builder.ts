@@ -151,8 +151,8 @@ OBS: Alla vikter är RÅ VIKT före tillagning.
 }
 
 /**
- * Bygger SLV-sektionen med komplett livsmedelsdatabas
- * Innehåller 2575 livsmedel med makro- och mikronutrienter
+ * Bygger SLV-sektionen med råvaror från Livsmedelsverket
+ * Kategoriserar efter makronäringsämne (protein, kolhydrat, fett)
  */
 function buildSlvSection(slvFoods: SlvFoodForPrompt[]): string {
   if (slvFoods.length === 0) {
@@ -165,94 +165,125 @@ function buildSlvSection(slvFoods: SlvFoodForPrompt[]): string {
     if (f.calcium) micros.push(`Ca${f.calcium}mg`);
     if (f.vitaminD) micros.push(`D${f.vitaminD}µg`);
     if (f.vitaminB12) micros.push(`B12${f.vitaminB12}µg`);
-    if (f.folate) micros.push(`Fol${f.folate}µg`);
-    if (f.magnesium) micros.push(`Mg${f.magnesium}mg`);
-    if (f.zinc) micros.push(`Zn${f.zinc}mg`);
 
-    return `  ${f.namn}: ${f.kcal}kcal P${f.protein}g K${f.carbs}g F${f.fat}g | ${micros.slice(0, 4).join(' ')}`;
+    return `  ${f.namn}: ${f.kcal}kcal P${f.protein}g K${f.carbs}g F${f.fat}g${micros.length > 0 ? ' | ' + micros.join(' ') : ''}`;
   };
 
-  // Kategorisera livsmedel för bättre överblick
-  const highProtein = slvFoods
-    .filter(f => f.protein > 15)
+  // PROTEINKÄLLOR: Kött, fisk, fågel, skaldjur (högt protein, lågt fett)
+  // Kvarg klassas som protein pga hög proteinhalt
+  const proteinSources = slvFoods
+    .filter(f => {
+      const name = f.namn.toLowerCase();
+      const typ = (f.typ || '').toLowerCase();
+      // Kött, fisk, fågel, skaldjur
+      if (typ.includes('kött') || typ.includes('fisk') || typ.includes('fågel') ||
+          typ.includes('skaldjur') || name.includes('kvarg')) {
+        return f.protein > 10;
+      }
+      // Baljväxter (linser, bönor)
+      if (typ.includes('baljväxt')) {
+        return f.protein > 5;
+      }
+      return false;
+    })
     .sort((a, b) => b.protein - a.protein)
-    .slice(0, 40);
+    .slice(0, 50);
 
-  const carbohydrateSources = slvFoods
-    .filter(f => f.carbs > 20 && f.protein < 10)
+  // KOLHYDRATKÄLLOR: Spannmål, bröd, pasta, ris, frukt, bär, potatis
+  // Havregryn, ris, pasta, banan, bär = kolhydrater
+  const carbSources = slvFoods
+    .filter(f => {
+      const name = f.namn.toLowerCase();
+      const typ = (f.typ || '').toLowerCase();
+      // Spannmål, gryn, mjöl, bröd
+      if (typ.includes('gryn') || typ.includes('mjöl') || typ.includes('bröd') ||
+          typ.includes('pasta') || typ.includes('ris') || typ.includes('potatis') ||
+          typ.includes('flingor')) {
+        return f.carbs > 15;
+      }
+      // Frukt och bär
+      if (typ.includes('frukt') || typ.includes('bär')) {
+        return f.carbs > 5;
+      }
+      // Specifika kolhydratkällor
+      if (name.includes('havre') || name.includes('ris') || name.includes('pasta') ||
+          name.includes('banan') || name.includes('potatis') || name.includes('bröd')) {
+        return f.carbs > 10;
+      }
+      return false;
+    })
     .sort((a, b) => b.carbs - a.carbs)
-    .slice(0, 30);
+    .slice(0, 50);
 
+  // FETTKÄLLOR: Nötter, frön, oljor, ägg, ost, avokado
+  // Ägg klassas som fett pga hög fetthalt relativt
   const fatSources = slvFoods
-    .filter(f => f.fat > 15 && f.carbs < 10)
+    .filter(f => {
+      const name = f.namn.toLowerCase();
+      const typ = (f.typ || '').toLowerCase();
+      // Nötter, frön, oljor
+      if (typ.includes('nöt') || typ.includes('frö') || typ.includes('olja') ||
+          typ.includes('smör') || typ.includes('fett')) {
+        return f.fat > 10;
+      }
+      // Ägg (fettkälla)
+      if (name.includes('ägg') && !name.includes('lägg')) {
+        return true;
+      }
+      // Ost (fettkälla)
+      if (typ.includes('ost') && f.fat > 15) {
+        return true;
+      }
+      // Avokado
+      if (name.includes('avokado')) {
+        return true;
+      }
+      return false;
+    })
     .sort((a, b) => b.fat - a.fat)
-    .slice(0, 25);
-
-  const vegetables = slvFoods
-    .filter(f => f.typ?.toLowerCase().includes('grönsak') ||
-                 f.kcal < 50 && f.fiber && f.fiber > 1)
     .slice(0, 40);
 
-  const fruits = slvFoods
-    .filter(f => f.typ?.toLowerCase().includes('frukt') ||
-                 f.typ?.toLowerCase().includes('bär'))
-    .slice(0, 30);
+  // GRÖNSAKER: Låg energitäthet
+  const vegetables = slvFoods
+    .filter(f => {
+      const typ = (f.typ || '').toLowerCase();
+      return typ.includes('grönsak') || typ.includes('rotfrukt') || typ.includes('svamp');
+    })
+    .slice(0, 50);
 
+  // MEJERI: Mjölk, yoghurt (inte ost - det är fettkälla)
   const dairy = slvFoods
-    .filter(f => f.typ?.toLowerCase().includes('mjölk') ||
-                 f.typ?.toLowerCase().includes('ost') ||
-                 f.typ?.toLowerCase().includes('mejeri') ||
-                 f.namn.toLowerCase().includes('yoghurt') ||
-                 f.namn.toLowerCase().includes('kvarg'))
-    .slice(0, 30);
-
-  const highIron = slvFoods
-    .filter(f => (f.iron ?? 0) > 3)
-    .sort((a, b) => (b.iron ?? 0) - (a.iron ?? 0))
-    .slice(0, 20);
-
-  const highCalcium = slvFoods
-    .filter(f => (f.calcium ?? 0) > 100)
-    .sort((a, b) => (b.calcium ?? 0) - (a.calcium ?? 0))
-    .slice(0, 20);
-
-  const highVitaminD = slvFoods
-    .filter(f => (f.vitaminD ?? 0) > 1)
-    .sort((a, b) => (b.vitaminD ?? 0) - (a.vitaminD ?? 0))
+    .filter(f => {
+      const typ = (f.typ || '').toLowerCase();
+      const name = f.namn.toLowerCase();
+      return (typ.includes('mjölk') || typ.includes('yoghurt') || typ.includes('fil') ||
+              name.includes('yoghurt') || name.includes('mjölk')) && f.fat < 10;
+    })
     .slice(0, 20);
 
   return `<livsmedelsverket count="${slvFoods.length}">
-LIVSMEDELSVERKETS OFFICIELLA DATABAS
-Alla värden per 100g. Detta är den ENDA datakällan du ska använda.
+LIVSMEDELSVERKETS OFFICIELLA DATABAS - ENDAST RÅVAROR
+Alla värden per 100g. Använd EXAKT dessa namn och näringsvärden.
 
-[PROTEINKÄLLOR - Kött, fisk, ägg, baljväxter (>15g protein/100g)]
-${highProtein.map(formatSlvFood).join('\n')}
+KATEGORISERING FÖR KOSTSCHEMA:
+- PROTEINKÄLLOR: Kött, fisk, fågel, skaldjur, kvarg, baljväxter
+- KOLHYDRATKÄLLOR: Havregryn, ris, pasta, bröd, potatis, frukt, bär
+- FETTKÄLLOR: Ägg, nötter, frön, oljor, ost, avokado
 
-[KOLHYDRATKÄLLOR - Spannmål, bröd, pasta, ris]
-${carbohydrateSources.map(formatSlvFood).join('\n')}
+[PROTEINKÄLLOR]
+${proteinSources.map(formatSlvFood).join('\n')}
 
-[FETTKÄLLOR - Oljor, nötter, frön]
+[KOLHYDRATKÄLLOR - Spannmål, frukt, bär, potatis]
+${carbSources.map(formatSlvFood).join('\n')}
+
+[FETTKÄLLOR - Ägg, nötter, oljor, ost]
 ${fatSources.map(formatSlvFood).join('\n')}
 
-[MEJERIPRODUKTER - Mjölk, yoghurt, ost, kvarg]
-${dairy.map(formatSlvFood).join('\n')}
-
-[GRÖNSAKER - Låg energitäthet, hög fiberhalt]
+[GRÖNSAKER]
 ${vegetables.map(formatSlvFood).join('\n')}
 
-[FRUKT & BÄR]
-${fruits.map(formatSlvFood).join('\n')}
-
-[JÄRNRIKA LIVSMEDEL (>3mg/100g)]
-${highIron.map(formatSlvFood).join('\n')}
-
-[KALCIUMRIKA LIVSMEDEL (>100mg/100g)]
-${highCalcium.map(formatSlvFood).join('\n')}
-
-[VITAMIN D-RIKA LIVSMEDEL (>1µg/100g)]
-${highVitaminD.map(formatSlvFood).join('\n')}
-
-VIKTIGT: Använd EXAKT dessa namn och näringsvärden från Livsmedelsverket.
+[MEJERI - Mjölk, yoghurt]
+${dairy.map(formatSlvFood).join('\n')}
 </livsmedelsverket>`;
 }
 

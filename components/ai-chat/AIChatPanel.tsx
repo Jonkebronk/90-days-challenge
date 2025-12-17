@@ -38,6 +38,10 @@ interface ParsedMeal {
 }
 
 // Determine food category based on name
+// Kategorisering:
+// - PROTEIN: Kött, fisk, fågel, skaldjur, kvarg, baljväxter
+// - KOLHYDRAT: Havregryn, ris, pasta, bröd, potatis, frukt, bär
+// - FETT: Ägg, nötter, frön, oljor, ost, avokado
 function determineFoodCategory(name: string): 'protein' | 'carb' | 'fat' | null {
   const nameLower = name.toLowerCase();
 
@@ -49,21 +53,11 @@ function determineFoodCategory(name: string): 'protein' | 'carb' | 'fat' | null 
     return null; // Skip vegetables
   }
 
-  // Carb sources
-  if (nameLower.includes('ris') || nameLower.includes('pasta') ||
-      nameLower.includes('potatis') || nameLower.includes('bröd') ||
-      nameLower.includes('havre') || nameLower.includes('müsli') ||
-      nameLower.includes('quinoa') || nameLower.includes('bulgur') ||
-      nameLower.includes('couscous') || nameLower.includes('banan') ||
-      nameLower.includes('frukt') || nameLower.includes('äpple') ||
-      nameLower.includes('honung') || nameLower.includes('sylt') ||
-      nameLower.includes('blåbär') || nameLower.includes('hallon') ||
-      nameLower.includes('jordgubb') || nameLower.includes('lasagne') ||
-      nameLower.includes('cornflakes') || nameLower.includes('flingor')) {
-    return 'carb';
+  // FETTKÄLLOR: Ägg, nötter, frön, oljor, ost, avokado
+  // OBS: Ägg klassas som FETT (inte protein)
+  if (nameLower.includes('ägg') && !nameLower.includes('lägg')) {
+    return 'fat';
   }
-
-  // Fat sources
   if (nameLower.includes('olja') || nameLower.includes('nöt') ||
       nameLower.includes('mandel') || nameLower.includes('mandlar') ||
       nameLower.includes('avokado') || nameLower.includes('smör') ||
@@ -73,7 +67,22 @@ function determineFoodCategory(name: string): 'protein' | 'carb' | 'fat' | null 
     return 'fat';
   }
 
-  // Default to protein
+  // KOLHYDRATKÄLLOR: Havregryn, ris, pasta, bröd, potatis, frukt, bär
+  if (nameLower.includes('ris') || nameLower.includes('pasta') ||
+      nameLower.includes('potatis') || nameLower.includes('bröd') ||
+      nameLower.includes('havre') || nameLower.includes('müsli') ||
+      nameLower.includes('quinoa') || nameLower.includes('bulgur') ||
+      nameLower.includes('couscous') || nameLower.includes('banan') ||
+      nameLower.includes('frukt') || nameLower.includes('äpple') ||
+      nameLower.includes('honung') || nameLower.includes('sylt') ||
+      nameLower.includes('blåbär') || nameLower.includes('hallon') ||
+      nameLower.includes('jordgubb') || nameLower.includes('lasagne') ||
+      nameLower.includes('cornflakes') || nameLower.includes('flingor') ||
+      nameLower.includes('gryn')) {
+    return 'carb';
+  }
+
+  // PROTEINKÄLLOR: Kött, fisk, fågel, skaldjur, kvarg (default)
   return 'protein';
 }
 
