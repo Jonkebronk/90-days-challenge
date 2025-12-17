@@ -166,8 +166,8 @@ async function searchFoods(
           per100g: {
             kcal: food.kcal || 0,
             protein: food.protein || 0,
-            carbs: food.kolhydrater || 0,
-            fat: food.fett || 0,
+            carbs: food.carbs || food.kolhydrater || 0,
+            fat: food.fat || food.fett || 0,
             fiber: food.fiber || 0
           }
         });
@@ -274,8 +274,8 @@ async function calculateMacros(
       const factor = item.grams / 100;
       const macros = {
         protein: Math.round((food.protein || 0) * factor * 10) / 10,
-        carbs: Math.round((food.kolhydrater || 0) * factor * 10) / 10,
-        fat: Math.round((food.fett || 0) * factor * 10) / 10,
+        carbs: Math.round((food.carbs || food.kolhydrater || 0) * factor * 10) / 10,
+        fat: Math.round((food.fat || food.fett || 0) * factor * 10) / 10,
         kcal: Math.round((food.kcal || 0) * factor)
       };
 

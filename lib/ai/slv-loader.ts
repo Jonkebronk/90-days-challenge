@@ -18,21 +18,38 @@ export interface SlvFood {
   typ?: string;
   kcal?: number;
   protein?: number;
+  // Kan vara antingen 'carbs' (ny JSON) eller 'kolhydrater' (gammal)
+  carbs?: number;
   kolhydrater?: number;
+  // Kan vara antingen 'fat' (ny JSON) eller 'fett' (gammal)
+  fat?: number;
   fett?: number;
   fiber?: number;
+  sugar?: number;
+  salt?: number;
+  saturatedFat?: number;
   // Vitaminer
+  vitaminA?: number;
   vitamin_a?: number;
+  vitaminD?: number;
   vitamin_d?: number;
+  vitaminC?: number;
   vitamin_c?: number;
+  vitaminB12?: number;
   vitamin_b12?: number;
+  folate?: number;
   folat?: number;
   // Mineraler
+  calcium?: number;
   kalcium?: number;
+  iron?: number;
   jarn?: number;
   magnesium?: number;
+  potassium?: number;
   kalium?: number;
+  zinc?: number;
   zink?: number;
+  iodine?: number;
   jod?: number;
 }
 
