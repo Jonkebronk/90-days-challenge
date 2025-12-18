@@ -890,7 +890,7 @@ export function ClientStyleMealCard({
 
       {/* Edit Target Macros Dialog */}
       <Dialog open={editTargetOpen} onOpenChange={setEditTargetOpen}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-sm" onOpenAutoFocus={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>Redigera mål - {mealLabel}</DialogTitle>
           </DialogHeader>
@@ -981,7 +981,7 @@ export function ClientStyleMealCard({
 
       {/* Edit Meal Name Dialog */}
       <Dialog open={editNameOpen} onOpenChange={setEditNameOpen}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-sm" onOpenAutoFocus={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>Ändra måltidsnamn</DialogTitle>
           </DialogHeader>
@@ -994,7 +994,6 @@ export function ClientStyleMealCard({
                 onChange={(e) => setEditNameValue(e.target.value)}
                 placeholder={defaultLabel}
                 className="mt-1"
-                autoFocus
               />
               <p className="text-xs text-zinc-500 mt-1">
                 Lämna tomt för att använda standardnamnet ({defaultLabel})

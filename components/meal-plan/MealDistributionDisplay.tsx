@@ -205,7 +205,7 @@ export function MealDistributionDisplay({
 
       {/* Edit Dialog */}
       <Dialog open={editingIndex !== null} onOpenChange={(open) => !open && handleCancel()}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-sm" onOpenAutoFocus={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>
               Redigera makros - {editingIndex !== null ? getMealLabel(meals[editingIndex], editingIndex) : ''}
