@@ -319,50 +319,6 @@ export default function MealPlanPage() {
           {mealPlan.name}
         </h1>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
-
-        {/* Introduction Buttons */}
-        <div className="mt-6 flex flex-wrap gap-3 justify-center">
-          {mealPlanDescriptionContent && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
-                  <Info className="w-4 h-4 mr-2" />
-                  Introduktion Kost
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle className="text-gray-200 flex items-center gap-2">
-                    <Info className="w-6 h-6 text-blue-500" />
-                    Om kostschemat
-                  </DialogTitle>
-                </DialogHeader>
-                <MDXPreview content={mealPlanDescriptionContent} theme="dark" />
-              </DialogContent>
-            </Dialog>
-          )}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
-                <Lightbulb className="w-4 h-4 mr-2" />
-                Generella råd för kosten
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-gray-200 flex items-center gap-2">
-                  <Lightbulb className="w-6 h-6 text-amber-500" />
-                  Generella råd för kosten
-                </DialogTitle>
-              </DialogHeader>
-              {nutritionTipsContent ? (
-                <MDXPreview content={nutritionTipsContent} theme="dark" />
-              ) : (
-                <p className="text-gray-400">Laddar råd...</p>
-              )}
-            </DialogContent>
-          </Dialog>
-        </div>
       </div>
 
       {/* Week Calendar */}
@@ -394,6 +350,50 @@ export default function MealPlanPage() {
         }}
         onSave={handleSaveAdjustments}
       />
+
+      {/* Introduction Buttons */}
+      <div className="flex flex-wrap gap-3 justify-center">
+        {mealPlanDescriptionContent && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
+                <Info className="w-4 h-4 mr-2" />
+                Introduktion Kost
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-gray-200 flex items-center gap-2">
+                  <Info className="w-6 h-6 text-blue-500" />
+                  Om kostschemat
+                </DialogTitle>
+              </DialogHeader>
+              <MDXPreview content={mealPlanDescriptionContent} theme="dark" />
+            </DialogContent>
+          </Dialog>
+        )}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
+              <Lightbulb className="w-4 h-4 mr-2" />
+              Generella råd för kosten
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-gray-200 flex items-center gap-2">
+                <Lightbulb className="w-6 h-6 text-amber-500" />
+                Generella råd för kosten
+              </DialogTitle>
+            </DialogHeader>
+            {nutritionTipsContent ? (
+              <MDXPreview content={nutritionTipsContent} theme="dark" />
+            ) : (
+              <p className="text-gray-400">Laddar råd...</p>
+            )}
+          </DialogContent>
+        </Dialog>
+      </div>
 
       {/* Main Content */}
       <div>
