@@ -297,11 +297,20 @@ export function ProductSelectModal({
   const macroLabel = getMacroKey(category);
   const categoryTitle = MACRO_CATEGORY_LABELS[category] || category;
 
+  // Get display title based on defaultSubcategory or category
+  const getDialogTitle = () => {
+    if (defaultSubcategory && defaultSubcategory !== 'all') {
+      const sub = subcategories.find(s => s.key === defaultSubcategory);
+      if (sub) return `Välj ${sub.label.toLowerCase()}`;
+    }
+    return `Välj ${categoryTitle.toLowerCase()}`;
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>Välj {categoryTitle.toLowerCase()}</DialogTitle>
+          <DialogTitle>{getDialogTitle()}</DialogTitle>
         </DialogHeader>
 
         {/* Source tabs */}
