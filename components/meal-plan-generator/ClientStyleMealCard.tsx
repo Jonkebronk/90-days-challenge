@@ -891,46 +891,58 @@ export function ClientStyleMealCard({
                 <div>
                   <label className="text-sm font-medium text-zinc-700">Protein (g)</label>
                   <Input
-                    type="number"
-                    value={editTargetValues.protein}
-                    onChange={(e) => setEditTargetValues({
-                      ...editTargetValues,
-                      protein: Number(e.target.value),
-                      kcal: Number(e.target.value) * 4 + editTargetValues.carbs * 4 + editTargetValues.fat * 9
-                    })}
+                    type="text"
+                    inputMode="numeric"
+                    value={Math.round(editTargetValues.protein)}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value) || 0;
+                      setEditTargetValues({
+                        ...editTargetValues,
+                        protein: val,
+                        kcal: val * 4 + editTargetValues.carbs * 4 + editTargetValues.fat * 9
+                      });
+                    }}
                     className="mt-1"
                   />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-zinc-700">Kolhydrater (g)</label>
                   <Input
-                    type="number"
-                    value={editTargetValues.carbs}
-                    onChange={(e) => setEditTargetValues({
-                      ...editTargetValues,
-                      carbs: Number(e.target.value),
-                      kcal: editTargetValues.protein * 4 + Number(e.target.value) * 4 + editTargetValues.fat * 9
-                    })}
+                    type="text"
+                    inputMode="numeric"
+                    value={Math.round(editTargetValues.carbs)}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value) || 0;
+                      setEditTargetValues({
+                        ...editTargetValues,
+                        carbs: val,
+                        kcal: editTargetValues.protein * 4 + val * 4 + editTargetValues.fat * 9
+                      });
+                    }}
                     className="mt-1"
                   />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-zinc-700">Fett (g)</label>
                   <Input
-                    type="number"
-                    value={editTargetValues.fat}
-                    onChange={(e) => setEditTargetValues({
-                      ...editTargetValues,
-                      fat: Number(e.target.value),
-                      kcal: editTargetValues.protein * 4 + editTargetValues.carbs * 4 + Number(e.target.value) * 9
-                    })}
+                    type="text"
+                    inputMode="numeric"
+                    value={Math.round(editTargetValues.fat)}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value) || 0;
+                      setEditTargetValues({
+                        ...editTargetValues,
+                        fat: val,
+                        kcal: editTargetValues.protein * 4 + editTargetValues.carbs * 4 + val * 9
+                      });
+                    }}
                     className="mt-1"
                   />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-zinc-700">Kalorier</label>
                   <Input
-                    type="number"
+                    type="text"
                     value={Math.round(editTargetValues.kcal)}
                     disabled
                     className="mt-1 bg-zinc-50"
