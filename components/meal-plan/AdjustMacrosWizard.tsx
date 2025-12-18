@@ -95,7 +95,7 @@ export function AdjustMacrosWizard({ open, onOpenChange, currentSettings, onSave
   const [saving, setSaving] = useState(false)
 
   const [state, setState] = useState<WizardState>({
-    weight: currentSettings?.weight || 80,
+    weight: currentSettings?.weight || 0,
     activityLevel: 'moderate',
     bmr: 0,
     goal: 'loss_700',
@@ -220,9 +220,10 @@ export function AdjustMacrosWizard({ open, onOpenChange, currentSettings, onSave
                     <Input
                       id="weight"
                       type="number"
-                      value={state.weight}
+                      value={state.weight || ''}
                       onChange={(e) => setState(s => ({ ...s, weight: parseFloat(e.target.value) || 0 }))}
-                      className="w-24"
+                      placeholder="Ange vikt"
+                      className="w-24 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <span className="text-gray-500">kg</span>
                   </div>
