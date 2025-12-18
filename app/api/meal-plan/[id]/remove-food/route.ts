@@ -50,8 +50,12 @@ export async function POST(
       );
     }
 
-    // Check coach access
-    if (mealPlan.nutritionPlan.coachId !== (session.user as any).id) {
+    // Check access - allow both coach and assigned client
+    const userId = (session.user as any).id;
+    const isCoach = mealPlan.nutritionPlan.coachId === userId;
+    const isClient = mealPlan.nutritionPlan.clientId === userId;
+
+    if (!isCoach && !isClient) {
       return NextResponse.json(
         { error: 'You do not have access to this plan' },
         { status: 403 }

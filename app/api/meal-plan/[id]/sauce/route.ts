@@ -67,8 +67,12 @@ export async function POST(
       );
     }
 
-    // Check coach access
-    if (generatedPlan.nutritionPlan.coachId !== (session.user as any).id) {
+    // Check access - allow both coach and assigned client
+    const userId = (session.user as any).id;
+    const isCoach = generatedPlan.nutritionPlan.coachId === userId;
+    const isClient = generatedPlan.nutritionPlan.clientId === userId;
+
+    if (!isCoach && !isClient) {
       return NextResponse.json(
         { error: 'You do not have access to this plan' },
         { status: 403 }
@@ -256,8 +260,12 @@ export async function DELETE(
       );
     }
 
-    // Check coach access
-    if (generatedPlan.nutritionPlan.coachId !== (session.user as any).id) {
+    // Check access - allow both coach and assigned client
+    const userId = (session.user as any).id;
+    const isCoach = generatedPlan.nutritionPlan.coachId === userId;
+    const isClient = generatedPlan.nutritionPlan.clientId === userId;
+
+    if (!isCoach && !isClient) {
       return NextResponse.json(
         { error: 'You do not have access to this plan' },
         { status: 403 }

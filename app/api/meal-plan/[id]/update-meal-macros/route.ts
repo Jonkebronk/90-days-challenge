@@ -45,8 +45,12 @@ export async function PUT(
       return NextResponse.json({ error: 'Meal plan not found' }, { status: 404 });
     }
 
-    // Check access
-    if (generatedPlan.nutritionPlan.coachId !== (session.user as any).id) {
+    // Check access - allow both coach and assigned client
+    const userId = (session.user as any).id;
+    const isCoach = generatedPlan.nutritionPlan.coachId === userId;
+    const isClient = generatedPlan.nutritionPlan.clientId === userId;
+
+    if (!isCoach && !isClient) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
