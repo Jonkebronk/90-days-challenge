@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProductSelectModal } from './ProductSelectModal';
 import { RecipeDetailDialog } from './RecipeDetailDialog';
 import { FoodItemDetailDialog } from './FoodItemDetailDialog';
@@ -200,6 +202,7 @@ export function ClientStyleMealCard({
   onAddSauce,
   onRemoveSauce,
   onUpdateGrams,
+  onUpdateMealMacros,
   disabled = false,
   recipeSuggestions = [],
   onSelectRecipe,
@@ -228,6 +231,10 @@ export function ClientStyleMealCard({
   // Recommended foods dialog state
   const [recommendedCategory, setRecommendedCategory] = useState<string | null>(null);
 
+  // Edit target macros dialog state
+  const [editTargetOpen, setEditTargetOpen] = useState(false);
+  const [editTargetValues, setEditTargetValues] = useState<CalculatedMacros | null>(null);
+
   // Handle recipe click
   const handleRecipeClick = (recipeId: string) => {
     setSelectedRecipeId(recipeId);
@@ -245,6 +252,28 @@ export function ClientStyleMealCard({
   const mealLabel = mealNumber
     ? `${MEAL_TYPE_LABELS[meal.type]} ${mealNumber}`
     : MEAL_TYPE_LABELS[meal.type];
+
+  // Handle edit target macros
+  const handleEditTarget = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (meal.targetMacros) {
+      setEditTargetValues({ ...meal.targetMacros });
+      setEditTargetOpen(true);
+    }
+  };
+
+  // Save edited target macros
+  const handleSaveTarget = async () => {
+    if (editTargetValues && onUpdateMealMacros) {
+      await onUpdateMealMacros(mealIndex, editTargetValues);
+      setEditTargetOpen(false);
+      setEditTargetValues(null);
+    }
+  };
+
+  // Calculate progress percentage
+  const targetKcal = meal.targetMacros?.kcal || 0;
+  const progressPercent = targetKcal > 0 ? Math.round((meal.totalMacros.kcal / targetKcal) * 100) : 0;
 
   // Get items by category - separate berries from other carbs
   const proteinItems = meal.items.filter(item => item.category === 'protein');
@@ -493,8 +522,23 @@ export function ClientStyleMealCard({
             <span className="text-lg font-semibold text-zinc-900">{mealLabel}</span>
           </div>
 
-          {/* Right side: Chevron */}
-          <div className="flex items-center">
+          {/* Right side: Target + Chevron */}
+          <div className="flex items-center gap-3">
+            {/* Target macros display */}
+            {meal.targetMacros && meal.targetMacros.kcal > 0 && (
+              <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+                <span className="font-medium">Mål:</span>
+                <span>{Math.round(meal.targetMacros.kcal)} kcal</span>
+                {onUpdateMealMacros && (
+                  <button
+                    onClick={handleEditTarget}
+                    className="p-1 hover:bg-zinc-100 rounded text-zinc-400 hover:text-amber-600 transition-colors"
+                  >
+                    <Pencil className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            )}
             {isExpanded ? (
               <ChevronUp className="w-5 h-5 text-zinc-400" />
             ) : (
@@ -729,6 +773,25 @@ export function ClientStyleMealCard({
                 <span className="font-semibold text-zinc-700">{meal.totalMacros.kcal.toFixed(0)} kcal</span>
               </div>
             </div>
+            {/* Progress indicator if target exists */}
+            {meal.targetMacros && meal.targetMacros.kcal > 0 && (
+              <div className="mt-2">
+                <div className="flex items-center justify-between text-xs text-zinc-400 mb-1">
+                  <span>{progressPercent}% av mål</span>
+                  <span>{Math.round(meal.targetMacros.kcal)} kcal</span>
+                </div>
+                <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+                  <div
+                    className={cn(
+                      "h-full rounded-full transition-all",
+                      progressPercent >= 95 && progressPercent <= 105 ? "bg-green-500" :
+                      progressPercent > 105 ? "bg-amber-500" : "bg-amber-400"
+                    )}
+                    style={{ width: `${Math.min(progressPercent, 100)}%` }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -768,6 +831,85 @@ export function ClientStyleMealCard({
         onOpenChange={(open) => !open && setRecommendedCategory(null)}
         category={recommendedCategory}
       />
+
+      {/* Edit Target Macros Dialog */}
+      <Dialog open={editTargetOpen} onOpenChange={setEditTargetOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Redigera mål - {mealLabel}</DialogTitle>
+          </DialogHeader>
+          {editTargetValues && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-zinc-700">Protein (g)</label>
+                  <Input
+                    type="number"
+                    value={editTargetValues.protein}
+                    onChange={(e) => setEditTargetValues({
+                      ...editTargetValues,
+                      protein: Number(e.target.value),
+                      kcal: Number(e.target.value) * 4 + editTargetValues.carbs * 4 + editTargetValues.fat * 9
+                    })}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-zinc-700">Kolhydrater (g)</label>
+                  <Input
+                    type="number"
+                    value={editTargetValues.carbs}
+                    onChange={(e) => setEditTargetValues({
+                      ...editTargetValues,
+                      carbs: Number(e.target.value),
+                      kcal: editTargetValues.protein * 4 + Number(e.target.value) * 4 + editTargetValues.fat * 9
+                    })}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-zinc-700">Fett (g)</label>
+                  <Input
+                    type="number"
+                    value={editTargetValues.fat}
+                    onChange={(e) => setEditTargetValues({
+                      ...editTargetValues,
+                      fat: Number(e.target.value),
+                      kcal: editTargetValues.protein * 4 + editTargetValues.carbs * 4 + Number(e.target.value) * 9
+                    })}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-zinc-700">Kalorier</label>
+                  <Input
+                    type="number"
+                    value={Math.round(editTargetValues.kcal)}
+                    disabled
+                    className="mt-1 bg-zinc-50"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-zinc-500">
+                Kalorier beräknas automatiskt: P×4 + K×4 + F×9
+              </p>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" size="sm" onClick={() => setEditTargetOpen(false)}>
+                  Avbryt
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleSaveTarget}
+                  disabled={disabled}
+                  className="bg-amber-500 hover:bg-amber-600"
+                >
+                  Spara
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

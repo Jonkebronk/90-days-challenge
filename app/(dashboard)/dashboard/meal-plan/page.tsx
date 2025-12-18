@@ -112,6 +112,7 @@ export default function MealPlanPage() {
   const [flexibleMealPlanId, setFlexibleMealPlanId] = useState<string | null>(null)
   const [flexibleTargetMacros, setFlexibleTargetMacros] = useState<{ protein: number; carbs: number; fat: number; kcal: number } | null>(null)
   const [showAdjustWizard, setShowAdjustWizard] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0) // For forcing FlexibleMealPlan reload
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
@@ -230,6 +231,7 @@ export default function MealPlanPage() {
     proteinGrams: number
     fatGrams: number
     carbGrams: number
+    nutritionPlanId?: string | null
   }) => {
     const response = await fetch('/api/meal-plan/adjust', {
       method: 'POST',
@@ -245,7 +247,19 @@ export default function MealPlanPage() {
     await Promise.all([
       fetchMealPlan(),
       fetchDailyTargets(),
+      fetchNutritionPlan(),
     ])
+
+    // Trigger refresh of FlexibleMealPlan component
+    setRefreshKey(k => k + 1)
+
+    // Update target macros for display
+    setFlexibleTargetMacros({
+      protein: settings.proteinGrams,
+      carbs: settings.carbGrams,
+      fat: settings.fatGrams,
+      kcal: settings.targetCalories,
+    })
   }
 
   if (loading) {
@@ -342,6 +356,7 @@ export default function MealPlanPage() {
       <AdjustMacrosWizard
         open={showAdjustWizard}
         onOpenChange={setShowAdjustWizard}
+        nutritionPlanId={nutritionPlanId}
         currentSettings={{
           calories: currentTarget.calories,
           protein: currentTarget.protein,
@@ -619,6 +634,7 @@ export default function MealPlanPage() {
               {/* Flexibel kosthållning - MealPlanGenerator */}
               {nutritionPlanId && flexibleTargetMacros ? (
                 <MealPlanGenerator
+                  key={refreshKey} // Force remount when wizard saves
                   nutritionPlanId={nutritionPlanId}
                   targetMacros={flexibleTargetMacros}
                   onSave={() => {

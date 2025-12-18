@@ -39,6 +39,7 @@ interface WizardState {
 interface AdjustMacrosWizardProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  nutritionPlanId?: string | null // For updating GeneratedMealPlan
   currentSettings?: {
     weight?: number
     calories?: number
@@ -58,6 +59,7 @@ interface AdjustMacrosWizardProps {
     proteinGrams: number
     fatGrams: number
     carbGrams: number
+    nutritionPlanId?: string | null
   }) => Promise<void>
 }
 
@@ -90,7 +92,7 @@ const GOAL_OPTIONS = [
   { value: 'reverse' as Goal, label: 'Reverse diet', desc: 'Gradvis ökning efter diet för att undvika metabolisk anpassning', adjustment: 0, category: 'reverse' },
 ]
 
-export function AdjustMacrosWizard({ open, onOpenChange, currentSettings, onSave }: AdjustMacrosWizardProps) {
+export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, currentSettings, onSave }: AdjustMacrosWizardProps) {
   const [step, setStep] = useState(1)
   const [saving, setSaving] = useState(false)
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
@@ -160,6 +162,7 @@ export function AdjustMacrosWizard({ open, onOpenChange, currentSettings, onSave
         proteinGrams: state.proteinGrams,
         fatGrams: state.fatGrams,
         carbGrams: state.carbGrams,
+        nutritionPlanId, // Pass to API for GeneratedMealPlan update
       })
       onOpenChange(false)
     } catch (error) {
