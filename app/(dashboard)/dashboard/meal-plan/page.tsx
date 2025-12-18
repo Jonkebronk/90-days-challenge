@@ -10,6 +10,8 @@ import { Utensils, Sparkles, Lightbulb, Info, ChevronDown, ChevronUp, UtensilsCr
 import { MDXPreview } from '@/components/mdx-preview'
 import { WeekCalendar } from '@/components/meal-plan/week-calendar'
 import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
+import { MacroDisplay } from '@/components/meal-plan/MacroDisplay'
+import { AdjustMacrosWizard } from '@/components/meal-plan/AdjustMacrosWizard'
 import { MealPlanGenerator } from '@/components/meal-plan-generator'
 
 interface MealPlanItem {
@@ -109,6 +111,7 @@ export default function MealPlanPage() {
   const [nutritionPlanId, setNutritionPlanId] = useState<string | null>(null)
   const [flexibleMealPlanId, setFlexibleMealPlanId] = useState<string | null>(null)
   const [flexibleTargetMacros, setFlexibleTargetMacros] = useState<{ protein: number; carbs: number; fat: number; kcal: number } | null>(null)
+  const [showAdjustWizard, setShowAdjustWizard] = useState(false)
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
@@ -216,6 +219,34 @@ export default function MealPlanPage() {
     }
   }
 
+  const handleSaveAdjustments = async (settings: {
+    weight: number
+    activityLevel: string
+    goal: string
+    proteinPerKg: number
+    fatPerKg: number
+    mealsPerDay: number
+    targetCalories: number
+    proteinGrams: number
+    fatGrams: number
+    carbGrams: number
+  }) => {
+    const response = await fetch('/api/meal-plan/adjust', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(settings),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to save adjustments')
+    }
+
+    // Refresh the data
+    await Promise.all([
+      fetchMealPlan(),
+      fetchDailyTargets(),
+    ])
+  }
 
   if (loading) {
     return (
@@ -342,8 +373,27 @@ export default function MealPlanPage() {
         defaultCalories={totalDailyCalories}
       />
 
-      {/* Macro Summary */}
-      <MacroSummary target={currentTarget} />
+      {/* Macro Display with Adjust button */}
+      <MacroDisplay
+        calories={currentTarget.calories}
+        protein={currentTarget.protein}
+        fat={currentTarget.fat}
+        carbs={currentTarget.carbs}
+        onAdjustClick={() => setShowAdjustWizard(true)}
+      />
+
+      {/* Adjust Macros Wizard */}
+      <AdjustMacrosWizard
+        open={showAdjustWizard}
+        onOpenChange={setShowAdjustWizard}
+        currentSettings={{
+          calories: currentTarget.calories,
+          protein: currentTarget.protein,
+          fat: currentTarget.fat,
+          carbs: currentTarget.carbs,
+        }}
+        onSave={handleSaveAdjustments}
+      />
 
       {/* Main Content */}
       <div>
