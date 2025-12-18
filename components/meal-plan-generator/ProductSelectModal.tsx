@@ -360,8 +360,8 @@ export function ProductSelectModal({
           )}
         </div>
 
-        {/* Subkategori-chips */}
-        {subcategories.length > 1 && (
+        {/* Subkategori-chips - hide when a specific subcategory is pre-selected */}
+        {subcategories.length > 1 && !defaultSubcategory && (
           <div className="flex flex-wrap gap-1.5 pb-2">
             {subcategories.map((sub) => (
               <button
