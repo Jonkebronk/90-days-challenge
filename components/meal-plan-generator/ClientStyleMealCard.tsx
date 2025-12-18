@@ -534,25 +534,61 @@ export function ClientStyleMealCard({
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-zinc-200 shadow-sm">
       {/* Header */}
-      <div className="py-4 px-5">
-        <div className="flex items-center justify-between gap-3">
+      <div className="py-3 px-4">
+        <div className="flex items-center gap-3">
           {/* Left side: Icon + Name with edit */}
           <button
-            className="flex items-center gap-3 hover:opacity-70 transition-opacity cursor-pointer flex-1 min-w-0"
+            className="flex items-center gap-2 hover:opacity-70 transition-opacity cursor-pointer shrink-0"
             onClick={() => setIsExpanded(!isExpanded)}
           >
-            <Utensils className="w-5 h-5 text-amber-500 shrink-0" />
-            <span className="text-lg font-semibold text-zinc-900 truncate">{mealLabel}</span>
-            {onUpdateMealName && (
-              <button
-                onClick={handleEditName}
-                className="p-1.5 hover:bg-zinc-100 rounded-full text-zinc-400 hover:text-amber-600 transition-colors shrink-0"
-                title="Ändra namn"
-              >
-                <Pencil className="w-4 h-4" />
-              </button>
-            )}
+            <Utensils className="w-5 h-5 text-amber-500" />
+            <span className="text-base font-semibold text-zinc-900">{mealLabel}</span>
           </button>
+          {onUpdateMealName && (
+            <button
+              onClick={handleEditName}
+              className="p-1 hover:bg-zinc-100 rounded-full text-zinc-400 hover:text-amber-600 transition-colors shrink-0"
+              title="Ändra namn"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          )}
+
+          {/* Center: Target macros - inline compact */}
+          {meal.targetMacros && meal.targetMacros.kcal > 0 && (
+            <button
+              onClick={handleEditTarget}
+              disabled={!onUpdateMealMacros}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-1 sm:gap-3 px-2 sm:px-3 py-1.5 rounded-lg transition-all mx-2",
+                "bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200",
+                onUpdateMealMacros && "hover:from-amber-100 hover:to-orange-100 cursor-pointer",
+                !onUpdateMealMacros && "cursor-default"
+              )}
+            >
+              <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+                <div className="text-center">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 uppercase font-medium">Kcal</span>
+                  <div className="font-bold text-amber-700">{Math.round(meal.targetMacros.kcal)}</div>
+                </div>
+                <div className="text-center">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 uppercase font-medium">Prot</span>
+                  <div className="font-bold text-rose-600">{Math.round(meal.targetMacros.protein)}g</div>
+                </div>
+                <div className="text-center">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 uppercase font-medium">Karb</span>
+                  <div className="font-bold text-amber-600">{Math.round(meal.targetMacros.carbs)}g</div>
+                </div>
+                <div className="text-center">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 uppercase font-medium">Fett</span>
+                  <div className="font-bold text-sky-600">{Math.round(meal.targetMacros.fat)}g</div>
+                </div>
+              </div>
+              {onUpdateMealMacros && (
+                <Pencil className="w-3 h-3 text-amber-400 shrink-0" />
+              )}
+            </button>
+          )}
 
           {/* Right side: Chevron */}
           <button
@@ -566,44 +602,6 @@ export function ClientStyleMealCard({
             )}
           </button>
         </div>
-
-        {/* Target macros - clear column layout */}
-        {meal.targetMacros && meal.targetMacros.kcal > 0 && (
-          <button
-            onClick={handleEditTarget}
-            disabled={!onUpdateMealMacros}
-            className={cn(
-              "mt-3 w-full px-4 py-3 rounded-xl transition-all",
-              "bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200",
-              onUpdateMealMacros && "hover:from-amber-100 hover:to-orange-100 hover:border-amber-300 cursor-pointer",
-              !onUpdateMealMacros && "cursor-default"
-            )}
-          >
-            <div className="flex items-center justify-between">
-              <div className="grid grid-cols-4 gap-4 flex-1">
-                <div className="text-center">
-                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Kcal</div>
-                  <div className="text-lg font-bold text-amber-700">{Math.round(meal.targetMacros.kcal)}</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Protein</div>
-                  <div className="text-lg font-bold text-rose-600">{Math.round(meal.targetMacros.protein)}g</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Kolhydrat</div>
-                  <div className="text-lg font-bold text-amber-600">{Math.round(meal.targetMacros.carbs)}g</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Fett</div>
-                  <div className="text-lg font-bold text-sky-600">{Math.round(meal.targetMacros.fat)}g</div>
-                </div>
-              </div>
-              {onUpdateMealMacros && (
-                <Pencil className="w-4 h-4 text-amber-400 ml-3 shrink-0" />
-              )}
-            </div>
-          </button>
-        )}
       </div>
 
       {/* Expanded content */}
