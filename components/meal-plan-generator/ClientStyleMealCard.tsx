@@ -554,45 +554,56 @@ export function ClientStyleMealCard({
             )}
           </button>
 
-          {/* Right side: Target badge + Chevron */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Target macros - prominent badge */}
-            {meal.targetMacros && meal.targetMacros.kcal > 0 && (
-              <button
-                onClick={handleEditTarget}
-                disabled={!onUpdateMealMacros}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-full transition-all",
-                  "bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200",
-                  onUpdateMealMacros && "hover:from-amber-200 hover:to-orange-200 hover:border-amber-300 cursor-pointer",
-                  !onUpdateMealMacros && "cursor-default"
-                )}
-              >
-                <span className="text-sm font-semibold text-amber-700">
-                  {Math.round(meal.targetMacros.kcal)} kcal
-                </span>
-                <div className="hidden sm:flex items-center gap-1.5 text-xs text-amber-600/80">
-                  <span>P{Math.round(meal.targetMacros.protein)}</span>
-                  <span>K{Math.round(meal.targetMacros.carbs)}</span>
-                  <span>F{Math.round(meal.targetMacros.fat)}</span>
-                </div>
-                {onUpdateMealMacros && (
-                  <Pencil className="w-3.5 h-3.5 text-amber-500" />
-                )}
-              </button>
+          {/* Right side: Chevron */}
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="p-1 hover:bg-zinc-100 rounded transition-colors shrink-0"
+          >
+            {isExpanded ? (
+              <ChevronUp className="w-5 h-5 text-zinc-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-zinc-400" />
             )}
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1 hover:bg-zinc-100 rounded transition-colors"
-            >
-              {isExpanded ? (
-                <ChevronUp className="w-5 h-5 text-zinc-400" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-zinc-400" />
-              )}
-            </button>
-          </div>
+          </button>
         </div>
+
+        {/* Target macros - clear column layout */}
+        {meal.targetMacros && meal.targetMacros.kcal > 0 && (
+          <button
+            onClick={handleEditTarget}
+            disabled={!onUpdateMealMacros}
+            className={cn(
+              "mt-3 w-full px-4 py-3 rounded-xl transition-all",
+              "bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200",
+              onUpdateMealMacros && "hover:from-amber-100 hover:to-orange-100 hover:border-amber-300 cursor-pointer",
+              !onUpdateMealMacros && "cursor-default"
+            )}
+          >
+            <div className="flex items-center justify-between">
+              <div className="grid grid-cols-4 gap-4 flex-1">
+                <div className="text-center">
+                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Kcal</div>
+                  <div className="text-lg font-bold text-amber-700">{Math.round(meal.targetMacros.kcal)}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Protein</div>
+                  <div className="text-lg font-bold text-rose-600">{Math.round(meal.targetMacros.protein)}g</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Kolhydrat</div>
+                  <div className="text-lg font-bold text-amber-600">{Math.round(meal.targetMacros.carbs)}g</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Fett</div>
+                  <div className="text-lg font-bold text-sky-600">{Math.round(meal.targetMacros.fat)}g</div>
+                </div>
+              </div>
+              {onUpdateMealMacros && (
+                <Pencil className="w-4 h-4 text-amber-400 ml-3 shrink-0" />
+              )}
+            </div>
+          </button>
+        )}
       </div>
 
       {/* Expanded content */}
