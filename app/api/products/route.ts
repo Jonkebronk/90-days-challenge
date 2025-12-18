@@ -33,6 +33,8 @@ const getCategoryVariants = (key: string): string[] => {
 // Map category names to macroCategory for filtering
 const CATEGORY_TO_MACRO: Record<string, string> = {
   // Protein sources
+  'proteinkallor': 'protein',
+  'proteinkällor': 'protein',
   'kott': 'protein',
   'kött': 'protein',
   'fisk': 'protein',
@@ -47,6 +49,8 @@ const CATEGORY_TO_MACRO: Record<string, string> = {
   'baljvaxter': 'protein',
   'baljväxter': 'protein',
   // Carb sources
+  'kolhydratkallor': 'carb',
+  'kolhydratkällor': 'carb',
   'spannmal': 'carb',
   'spannmål': 'carb',
   'brod': 'carb',
@@ -55,9 +59,13 @@ const CATEGORY_TO_MACRO: Record<string, string> = {
   'ris': 'carb',
   'potatis': 'carb',
   'frukt': 'carb',
+  'bar': 'carb',
+  'bär': 'carb',
   'musli': 'carb',
   'flingor': 'carb',
   // Fat sources
+  'fettkallor': 'fat',
+  'fettkällor': 'fat',
   'oljor': 'fat',
   'fetter': 'fat',
   'oljor & fetter': 'fat',
