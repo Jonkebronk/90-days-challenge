@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import { ChevronLeft, ChevronRight, Check, Info } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronDown, Check, Info } from 'lucide-react'
 
 // Types
 type ActivityLevel = 'sedentary' | 'moderate' | 'very_active'
@@ -93,6 +93,7 @@ const GOAL_OPTIONS = [
 export function AdjustMacrosWizard({ open, onOpenChange, currentSettings, onSave }: AdjustMacrosWizardProps) {
   const [step, setStep] = useState(1)
   const [saving, setSaving] = useState(false)
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
   const [state, setState] = useState<WizardState>({
     weight: currentSettings?.weight || 0,
@@ -276,97 +277,172 @@ export function AdjustMacrosWizard({ open, onOpenChange, currentSettings, onSave
                 </div>
               </div>
 
-              {/* Weight Loss Options */}
-              <div>
-                <div className="text-sm font-medium text-gray-500 mb-2 flex items-center gap-1">
-                  <span className="text-lg">↘</span> VIKTMINSKNING
-                </div>
-                <div className="space-y-2">
-                  {GOAL_OPTIONS.filter(o => o.category === 'loss').map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => setState(s => ({ ...s, goal: option.value }))}
-                      className={cn(
-                        "w-full p-3 rounded-lg border text-left transition-colors",
-                        state.goal === option.value
-                          ? "border-amber-500 bg-amber-50"
-                          : "border-gray-200 hover:border-gray-300"
+              {/* Collapsible Goal Categories */}
+              <div className="space-y-2">
+                {/* Weight Loss */}
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => setExpandedCategory(expandedCategory === 'loss' ? null : 'loss')}
+                    className={cn(
+                      "w-full p-3 flex items-center justify-between transition-colors",
+                      expandedCategory === 'loss' ? "bg-gray-50" : "hover:bg-gray-50",
+                      GOAL_OPTIONS.filter(o => o.category === 'loss').some(o => o.value === state.goal) && "bg-amber-50 border-amber-200"
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">↘</span>
+                      <span className="font-medium text-gray-700">VIKTMINSKNING</span>
+                      {GOAL_OPTIONS.filter(o => o.category === 'loss').some(o => o.value === state.goal) && (
+                        <span className="text-xs bg-amber-500 text-white px-2 py-0.5 rounded-full">
+                          {GOAL_OPTIONS.find(o => o.value === state.goal)?.label}
+                        </span>
                       )}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div className="font-medium">{option.label}</div>
-                        <div className="text-sm text-gray-500">{option.adjustment} kcal/dag</div>
-                      </div>
-                      <div className="text-sm text-gray-500">{option.desc}</div>
-                    </button>
-                  ))}
+                    </div>
+                    <ChevronDown className={cn("w-5 h-5 text-gray-400 transition-transform", expandedCategory === 'loss' && "rotate-180")} />
+                  </button>
+                  {expandedCategory === 'loss' && (
+                    <div className="p-2 space-y-2 border-t border-gray-100">
+                      {GOAL_OPTIONS.filter(o => o.category === 'loss').map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => setState(s => ({ ...s, goal: option.value }))}
+                          className={cn(
+                            "w-full p-3 rounded-lg border text-left transition-colors",
+                            state.goal === option.value
+                              ? "border-amber-500 bg-amber-50"
+                              : "border-gray-200 hover:border-gray-300"
+                          )}
+                        >
+                          <div className="flex justify-between items-center">
+                            <div className="font-medium">{option.label}</div>
+                            <div className="text-sm text-gray-500">{option.adjustment} kcal/dag</div>
+                          </div>
+                          <div className="text-sm text-gray-500">{option.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
 
-              {/* Maintain */}
-              <div>
-                <div className="text-sm font-medium text-gray-500 mb-2 flex items-center gap-1">
-                  <span className="text-lg">—</span> BALANS
-                </div>
-                {GOAL_OPTIONS.filter(o => o.category === 'maintain').map((option) => (
+                {/* Maintain */}
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <button
-                    key={option.value}
-                    onClick={() => setState(s => ({ ...s, goal: option.value }))}
+                    onClick={() => setExpandedCategory(expandedCategory === 'maintain' ? null : 'maintain')}
                     className={cn(
-                      "w-full p-3 rounded-lg border text-left transition-colors",
-                      state.goal === option.value
-                        ? "border-amber-500 bg-amber-50"
-                        : "border-gray-200 hover:border-gray-300"
+                      "w-full p-3 flex items-center justify-between transition-colors",
+                      expandedCategory === 'maintain' ? "bg-gray-50" : "hover:bg-gray-50",
+                      state.goal === 'maintain' && "bg-amber-50 border-amber-200"
                     )}
                   >
-                    <div className="font-medium">{option.label}</div>
-                    <div className="text-sm text-gray-500">{option.desc}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">—</span>
+                      <span className="font-medium text-gray-700">BALANS</span>
+                      {state.goal === 'maintain' && (
+                        <span className="text-xs bg-amber-500 text-white px-2 py-0.5 rounded-full">Vald</span>
+                      )}
+                    </div>
+                    <ChevronDown className={cn("w-5 h-5 text-gray-400 transition-transform", expandedCategory === 'maintain' && "rotate-180")} />
                   </button>
-                ))}
-              </div>
-
-              {/* Weight Gain */}
-              <div>
-                <div className="text-sm font-medium text-gray-500 mb-2 flex items-center gap-1">
-                  <span className="text-lg">↗</span> VIKTUPPGÅNG
+                  {expandedCategory === 'maintain' && (
+                    <div className="p-2 border-t border-gray-100">
+                      {GOAL_OPTIONS.filter(o => o.category === 'maintain').map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => setState(s => ({ ...s, goal: option.value }))}
+                          className={cn(
+                            "w-full p-3 rounded-lg border text-left transition-colors",
+                            state.goal === option.value
+                              ? "border-amber-500 bg-amber-50"
+                              : "border-gray-200 hover:border-gray-300"
+                          )}
+                        >
+                          <div className="font-medium">{option.label}</div>
+                          <div className="text-sm text-gray-500">{option.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                {GOAL_OPTIONS.filter(o => o.category === 'gain').map((option) => (
+
+                {/* Weight Gain */}
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <button
-                    key={option.value}
-                    onClick={() => setState(s => ({ ...s, goal: option.value }))}
+                    onClick={() => setExpandedCategory(expandedCategory === 'gain' ? null : 'gain')}
                     className={cn(
-                      "w-full p-3 rounded-lg border text-left transition-colors",
-                      state.goal === option.value
-                        ? "border-amber-500 bg-amber-50"
-                        : "border-gray-200 hover:border-gray-300"
+                      "w-full p-3 flex items-center justify-between transition-colors",
+                      expandedCategory === 'gain' ? "bg-gray-50" : "hover:bg-gray-50",
+                      state.goal === 'gain' && "bg-amber-50 border-amber-200"
                     )}
                   >
-                    <div className="font-medium">{option.label}</div>
-                    <div className="text-sm text-gray-500">{option.desc}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">↗</span>
+                      <span className="font-medium text-gray-700">VIKTUPPGÅNG</span>
+                      {state.goal === 'gain' && (
+                        <span className="text-xs bg-amber-500 text-white px-2 py-0.5 rounded-full">Vald</span>
+                      )}
+                    </div>
+                    <ChevronDown className={cn("w-5 h-5 text-gray-400 transition-transform", expandedCategory === 'gain' && "rotate-180")} />
                   </button>
-                ))}
-              </div>
-
-              {/* Reverse Diet */}
-              <div>
-                <div className="text-sm font-medium text-gray-500 mb-2 flex items-center gap-1">
-                  <span className="text-lg">↺</span> REVERSE DIET
+                  {expandedCategory === 'gain' && (
+                    <div className="p-2 border-t border-gray-100">
+                      {GOAL_OPTIONS.filter(o => o.category === 'gain').map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => setState(s => ({ ...s, goal: option.value }))}
+                          className={cn(
+                            "w-full p-3 rounded-lg border text-left transition-colors",
+                            state.goal === option.value
+                              ? "border-amber-500 bg-amber-50"
+                              : "border-gray-200 hover:border-gray-300"
+                          )}
+                        >
+                          <div className="font-medium">{option.label}</div>
+                          <div className="text-sm text-gray-500">{option.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                {GOAL_OPTIONS.filter(o => o.category === 'reverse').map((option) => (
+
+                {/* Reverse Diet */}
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <button
-                    key={option.value}
-                    onClick={() => setState(s => ({ ...s, goal: option.value }))}
+                    onClick={() => setExpandedCategory(expandedCategory === 'reverse' ? null : 'reverse')}
                     className={cn(
-                      "w-full p-3 rounded-lg border text-left transition-colors",
-                      state.goal === option.value
-                        ? "border-amber-500 bg-amber-50"
-                        : "border-gray-200 hover:border-gray-300"
+                      "w-full p-3 flex items-center justify-between transition-colors",
+                      expandedCategory === 'reverse' ? "bg-gray-50" : "hover:bg-gray-50",
+                      state.goal === 'reverse' && "bg-amber-50 border-amber-200"
                     )}
                   >
-                    <div className="font-medium">{option.label}</div>
-                    <div className="text-sm text-gray-500">{option.desc}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">↺</span>
+                      <span className="font-medium text-gray-700">REVERSE DIET</span>
+                      {state.goal === 'reverse' && (
+                        <span className="text-xs bg-amber-500 text-white px-2 py-0.5 rounded-full">Vald</span>
+                      )}
+                    </div>
+                    <ChevronDown className={cn("w-5 h-5 text-gray-400 transition-transform", expandedCategory === 'reverse' && "rotate-180")} />
                   </button>
-                ))}
+                  {expandedCategory === 'reverse' && (
+                    <div className="p-2 border-t border-gray-100">
+                      {GOAL_OPTIONS.filter(o => o.category === 'reverse').map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => setState(s => ({ ...s, goal: option.value }))}
+                          className={cn(
+                            "w-full p-3 rounded-lg border text-left transition-colors",
+                            state.goal === option.value
+                              ? "border-amber-500 bg-amber-50"
+                              : "border-gray-200 hover:border-gray-300"
+                          )}
+                        >
+                          <div className="font-medium">{option.label}</div>
+                          <div className="text-sm text-gray-500">{option.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Reverse diet extra fields */}
