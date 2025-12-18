@@ -38,7 +38,7 @@ export async function POST(
       where: { id },
       include: {
         nutritionPlan: {
-          select: { coachId: true },
+          select: { coachId: true, clientId: true },
         },
       },
     });
