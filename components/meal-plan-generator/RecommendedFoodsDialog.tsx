@@ -211,9 +211,14 @@ export function RecommendedFoodsDialog({ open, onOpenChange, category }: Recomme
                   {sub.name}
                 </h3>
                 <div className={cn("rounded-lg p-2", config?.subBg)}>
-                  <div className="text-sm text-zinc-700 leading-relaxed">
-                    {sub.items.join(', ')}
-                  </div>
+                  <ul className="text-sm text-zinc-700 space-y-0.5">
+                    {sub.items.map((item, itemIndex) => (
+                      <li key={itemIndex} className="flex items-start gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-current opacity-40 mt-1.5 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             ))}
