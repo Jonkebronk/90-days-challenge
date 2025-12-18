@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ProductSelectModal } from './ProductSelectModal';
 import { RecipeDetailDialog } from './RecipeDetailDialog';
 import { FoodItemDetailDialog } from './FoodItemDetailDialog';
+import { RecommendedFoodsDialog } from './RecommendedFoodsDialog';
 import { cn } from '@/lib/utils';
 import type {
   GeneratedMeal,
@@ -224,6 +225,9 @@ export function ClientStyleMealCard({
   const [selectedFoodName, setSelectedFoodName] = useState<string>('');
   const [selectedFoodGrams, setSelectedFoodGrams] = useState<number>(100);
 
+  // Recommended foods dialog state
+  const [recommendedCategory, setRecommendedCategory] = useState<string | null>(null);
+
   // Handle recipe click
   const handleRecipeClick = (recipeId: string) => {
     setSelectedRecipeId(recipeId);
@@ -407,10 +411,13 @@ export function ClientStyleMealCard({
       <div key={configKey} className={cn("rounded-xl overflow-hidden border", config.border)}>
         {/* Section header */}
         <div className={cn("px-3 py-2 flex items-center justify-between", config.headerBg)}>
-          <div className="flex items-center gap-2">
+          <button
+            onClick={() => setRecommendedCategory(configKey)}
+            className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+          >
             <span className="text-base">{config.icon}</span>
             <span className={cn("font-semibold text-sm", config.text)}>{config.label}</span>
-          </div>
+          </button>
           {showAddButton && (
             <button
               onClick={() => !disabled && handleOpenSelectModal(category, targetMacro)}
@@ -521,12 +528,15 @@ export function ClientStyleMealCard({
               {/* Grönsaker */}
               <div className={cn("rounded-xl overflow-hidden border", CATEGORY_CONFIG.vegetable.border)}>
                 <div className={cn("px-3 py-2 flex items-center justify-between", CATEGORY_CONFIG.vegetable.headerBg)}>
-                  <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setRecommendedCategory('vegetable')}
+                    className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+                  >
                     <span className="text-base">{CATEGORY_CONFIG.vegetable.icon}</span>
                     <span className={cn("font-semibold text-sm", CATEGORY_CONFIG.vegetable.text)}>
                       {CATEGORY_CONFIG.vegetable.label}
                     </span>
-                  </div>
+                  </button>
                   <button
                     onClick={() => !disabled && handleOpenSelectModal('vegetable', 0)}
                     disabled={disabled}
@@ -557,12 +567,15 @@ export function ClientStyleMealCard({
               {/* Bär */}
               <div className={cn("rounded-xl overflow-hidden border", CATEGORY_CONFIG.berry.border)}>
                 <div className={cn("px-3 py-2 flex items-center justify-between", CATEGORY_CONFIG.berry.headerBg)}>
-                  <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setRecommendedCategory('berry')}
+                    className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+                  >
                     <span className="text-base">{CATEGORY_CONFIG.berry.icon}</span>
                     <span className={cn("font-semibold text-sm", CATEGORY_CONFIG.berry.text)}>
                       {CATEGORY_CONFIG.berry.label}
                     </span>
-                  </div>
+                  </button>
                   <button
                     onClick={() => !disabled && handleOpenSelectModal('carb', 0, 'berry')}
                     disabled={disabled}
@@ -591,12 +604,15 @@ export function ClientStyleMealCard({
           {canHaveSauce && (
             <div className={cn("rounded-xl overflow-hidden border", CATEGORY_CONFIG.sauce.border)}>
               <div className={cn("px-3 py-2 flex items-center justify-between", CATEGORY_CONFIG.sauce.headerBg)}>
-                <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setRecommendedCategory('sauce')}
+                  className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+                >
                   <span className="text-base">{CATEGORY_CONFIG.sauce.icon}</span>
                   <span className={cn("font-semibold text-sm", CATEGORY_CONFIG.sauce.text)}>
                     {CATEGORY_CONFIG.sauce.label}
                   </span>
-                </div>
+                </button>
                 {!meal.sauce && (
                   <button
                     onClick={() => onAddSauce(mealIndex)}
@@ -744,6 +760,13 @@ export function ClientStyleMealCard({
         currentGrams={selectedFoodGrams}
         open={foodDialogOpen}
         onOpenChange={setFoodDialogOpen}
+      />
+
+      {/* Recommended Foods Dialog */}
+      <RecommendedFoodsDialog
+        open={recommendedCategory !== null}
+        onOpenChange={(open) => !open && setRecommendedCategory(null)}
+        category={recommendedCategory}
       />
     </div>
   );
