@@ -576,7 +576,7 @@ export function ClientStyleMealCard({
                   <div className="font-bold text-rose-600">{Math.round(meal.targetMacros.protein)}g</div>
                 </div>
                 <div className="text-center">
-                  <span className="text-[9px] sm:text-[10px] text-zinc-400 uppercase font-medium">Karb</span>
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 uppercase font-medium">Kolh</span>
                   <div className="font-bold text-amber-600">{Math.round(meal.targetMacros.carbs)}g</div>
                 </div>
                 <div className="text-center">
@@ -818,15 +818,27 @@ export function ClientStyleMealCard({
             </div>
           )}
 
-          {/* Totals summary */}
-          <div className="pt-3 mt-2 border-t border-zinc-200">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-zinc-500 uppercase tracking-wide">Totalt</span>
-              <div className="flex items-center gap-3 text-zinc-600">
-                <span><span className="font-semibold text-rose-600">P</span> {meal.totalMacros.protein.toFixed(0)}g</span>
-                <span><span className="font-semibold text-amber-600">K</span> {meal.totalMacros.carbs.toFixed(0)}g</span>
-                <span><span className="font-semibold text-sky-600">F</span> {meal.totalMacros.fat.toFixed(0)}g</span>
-                <span className="font-semibold text-zinc-700">{meal.totalMacros.kcal.toFixed(0)} kcal</span>
+          {/* Totals summary - matching header style */}
+          <div className="mt-3 p-3 bg-white rounded-xl border border-zinc-100">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wide shrink-0">Totalt</span>
+              <div className="flex-1 flex items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm">
+                <div className="text-center">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 uppercase font-medium">Kcal</span>
+                  <div className="font-bold text-amber-700">{meal.totalMacros.kcal.toFixed(0)}</div>
+                </div>
+                <div className="text-center">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 uppercase font-medium">Prot</span>
+                  <div className="font-bold text-rose-600">{meal.totalMacros.protein.toFixed(0)}g</div>
+                </div>
+                <div className="text-center">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 uppercase font-medium">Kolh</span>
+                  <div className="font-bold text-amber-600">{meal.totalMacros.carbs.toFixed(0)}g</div>
+                </div>
+                <div className="text-center">
+                  <span className="text-[9px] sm:text-[10px] text-zinc-400 uppercase font-medium">Fett</span>
+                  <div className="font-bold text-sky-600">{meal.totalMacros.fat.toFixed(0)}g</div>
+                </div>
               </div>
             </div>
             {/* Progress indicator if target exists */}
@@ -834,7 +846,6 @@ export function ClientStyleMealCard({
               <div className="mt-2">
                 <div className="flex items-center justify-between text-xs text-zinc-400 mb-1">
                   <span>{progressPercent}% av mål</span>
-                  <span>{Math.round(meal.targetMacros.kcal)} kcal</span>
                 </div>
                 <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
                   <div
