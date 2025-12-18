@@ -212,6 +212,7 @@ export function ClientStyleMealCard({
   const [selectModalOpen, setSelectModalOpen] = useState(false);
   const [selectCategory, setSelectCategory] = useState<MacroCategory | null>(null);
   const [selectTargetMacro, setSelectTargetMacro] = useState(0);
+  const [selectDefaultSubcategory, setSelectDefaultSubcategory] = useState<string | undefined>(undefined);
 
   // Recipe detail dialog state
   const [recipeDialogOpen, setRecipeDialogOpen] = useState(false);
@@ -252,9 +253,10 @@ export function ClientStyleMealCard({
   const hasVegetables = meal.vegetableGrams > 0 || vegetableItems.length > 0;
 
   // Open product select modal
-  const handleOpenSelectModal = (category: MacroCategory, targetMacro: number) => {
+  const handleOpenSelectModal = (category: MacroCategory, targetMacro: number, defaultSubcategory?: string) => {
     setSelectCategory(category);
     setSelectTargetMacro(targetMacro);
+    setSelectDefaultSubcategory(defaultSubcategory);
     setSelectModalOpen(true);
   };
 
@@ -525,9 +527,21 @@ export function ClientStyleMealCard({
                       {CATEGORY_CONFIG.vegetable.label}
                     </span>
                   </div>
+                  <button
+                    onClick={() => !disabled && handleOpenSelectModal('vegetable', 0)}
+                    disabled={disabled}
+                    className={cn(
+                      "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors",
+                      "bg-white/60 hover:bg-white", CATEGORY_CONFIG.vegetable.text
+                    )}
+                  >
+                    <Plus className="h-3 w-3" />
+                  </button>
                 </div>
                 <div className={cn("p-2", CATEGORY_CONFIG.vegetable.bg)}>
-                  {hasVegetables ? (
+                  {vegetableItems.length > 0 ? (
+                    vegetableItems.map(item => renderFoodItem(item, 'vegetable', 'vegetable'))
+                  ) : hasVegetables ? (
                     <div className="flex items-center gap-2 p-2 rounded-lg bg-white/50">
                       <Leaf className="h-4 w-4 text-emerald-600" />
                       <span className="text-sm text-zinc-700">{VEGETABLE_GRAMS}g valfritt</span>
@@ -550,7 +564,7 @@ export function ClientStyleMealCard({
                     </span>
                   </div>
                   <button
-                    onClick={() => !disabled && handleOpenSelectModal('carb', 0)}
+                    onClick={() => !disabled && handleOpenSelectModal('carb', 0, 'berry')}
                     disabled={disabled}
                     className={cn(
                       "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors",
@@ -712,6 +726,7 @@ export function ClientStyleMealCard({
           targetMacro={selectTargetMacro}
           mealType={meal.type}
           onSelect={handleProductSelect}
+          defaultSubcategory={selectDefaultSubcategory}
         />
       )}
 

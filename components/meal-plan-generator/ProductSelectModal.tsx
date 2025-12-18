@@ -29,7 +29,8 @@ const SUBCATEGORIES: Record<MacroCategory, { key: string; label: string; keyword
     { key: 'potato', label: 'Potatis', keywords: ['potatis', 'sötpotatis', 'potatismos'] },
     { key: 'bread', label: 'Bröd', keywords: ['bröd', 'knäcke', 'fralla', 'bagel'] },
     { key: 'oats', label: 'Havre', keywords: ['havre', 'gryn', 'havrefras', 'müsli'] },
-    { key: 'fruit', label: 'Frukt', keywords: ['banan', 'äpple', 'apelsin', 'ananas', 'blåbär', 'jordgubb', 'mango', 'frukt'] },
+    { key: 'fruit', label: 'Frukt', keywords: ['banan', 'äpple', 'apelsin', 'ananas', 'mango', 'frukt', 'päron', 'kiwi', 'vindruvor'] },
+    { key: 'berry', label: 'Bär', keywords: ['bär', 'blåbär', 'hallon', 'jordgubb', 'björnbär', 'lingon', 'krusbär', 'vinbär', 'smultron'] },
     { key: 'beans', label: 'Baljväxter', keywords: ['bönor', 'linser', 'kikärter', 'ärtor'] },
     { key: 'couscous', label: 'Bulgur/Couscous', keywords: ['bulgur', 'couscous', 'quinoa'] },
   ],
@@ -99,6 +100,7 @@ interface ProductSelectModalProps {
   mealType: MealType;
   onSelect: (product: Product, grams: number, macros: CalculatedMacros, isAlternative?: boolean) => void;
   showAlternativeOption?: boolean; // Show "Lägg till som alternativ" checkbox
+  defaultSubcategory?: string; // Pre-select a subcategory filter (e.g., 'berry' for berries)
 }
 
 type SourceTab = 'products' | 'slv';
@@ -166,22 +168,23 @@ export function ProductSelectModal({
   mealType,
   onSelect,
   showAlternativeOption = true,
+  defaultSubcategory,
 }: ProductSelectModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [slvFoods, setSlvFoods] = useState<SlvFood[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<SourceTab>('products');
-  const [activeSubcategory, setActiveSubcategory] = useState('all');
+  const [activeSubcategory, setActiveSubcategory] = useState(defaultSubcategory || 'all');
   const [addAsAlternative, setAddAsAlternative] = useState(false);
 
   // Hämta subkategorier för aktuell makrokategori
   const subcategories = SUBCATEGORIES[category] || [{ key: 'all', label: 'Alla', keywords: [] }];
 
-  // Reset subkategori när kategori ändras
+  // Reset subkategori när kategori eller defaultSubcategory ändras
   useEffect(() => {
-    setActiveSubcategory('all');
-  }, [category]);
+    setActiveSubcategory(defaultSubcategory || 'all');
+  }, [category, defaultSubcategory]);
 
   // Fetch products for the category
   useEffect(() => {
