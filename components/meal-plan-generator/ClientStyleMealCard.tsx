@@ -116,6 +116,7 @@ interface ClientStyleMealCardProps {
   onRemoveSauce: (mealIndex: number) => void;
   onUpdateGrams?: (mealIndex: number, category: MacroCategory, grams: number, foodId?: string) => void;
   onUpdateMealMacros?: (mealIndex: number, targetMacros: CalculatedMacros) => void;
+  onUpdateMealName?: (mealIndex: number, customName: string) => void;
   disabled?: boolean;
   recipeSuggestions?: RecipeSuggestion[];
   onSelectRecipe?: (mealIndex: number, recipeId: string) => void;
@@ -203,6 +204,7 @@ export function ClientStyleMealCard({
   onRemoveSauce,
   onUpdateGrams,
   onUpdateMealMacros,
+  onUpdateMealName,
   disabled = false,
   recipeSuggestions = [],
   onSelectRecipe,
@@ -235,6 +237,10 @@ export function ClientStyleMealCard({
   const [editTargetOpen, setEditTargetOpen] = useState(false);
   const [editTargetValues, setEditTargetValues] = useState<CalculatedMacros | null>(null);
 
+  // Edit meal name state
+  const [editNameOpen, setEditNameOpen] = useState(false);
+  const [editNameValue, setEditNameValue] = useState('');
+
   // Handle recipe click
   const handleRecipeClick = (recipeId: string) => {
     setSelectedRecipeId(recipeId);
@@ -249,9 +255,26 @@ export function ClientStyleMealCard({
     setFoodDialogOpen(true);
   };
 
-  const mealLabel = mealNumber
+  // Calculate display name - use customName if set, otherwise default label
+  const defaultLabel = mealNumber
     ? `${MEAL_TYPE_LABELS[meal.type]} ${mealNumber}`
     : MEAL_TYPE_LABELS[meal.type];
+  const mealLabel = meal.customName || defaultLabel;
+
+  // Handle edit meal name
+  const handleEditName = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditNameValue(meal.customName || defaultLabel);
+    setEditNameOpen(true);
+  };
+
+  // Save edited meal name
+  const handleSaveName = () => {
+    if (onUpdateMealName) {
+      onUpdateMealName(mealIndex, editNameValue);
+    }
+    setEditNameOpen(false);
+  };
 
   // Handle edit target macros
   const handleEditTarget = (e: React.MouseEvent) => {
@@ -511,42 +534,66 @@ export function ClientStyleMealCard({
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-zinc-200 shadow-sm">
       {/* Header */}
-      <button
-        className="w-full cursor-pointer py-4 px-5 hover:bg-zinc-50 transition-colors"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <div className="flex items-center justify-between">
-          {/* Left side: Icon + Name */}
-          <div className="flex items-center gap-3">
-            <Utensils className="w-5 h-5 text-amber-500" />
-            <span className="text-lg font-semibold text-zinc-900">{mealLabel}</span>
-          </div>
+      <div className="py-4 px-5">
+        <div className="flex items-center justify-between gap-3">
+          {/* Left side: Icon + Name with edit */}
+          <button
+            className="flex items-center gap-3 hover:opacity-70 transition-opacity cursor-pointer flex-1 min-w-0"
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            <Utensils className="w-5 h-5 text-amber-500 shrink-0" />
+            <span className="text-lg font-semibold text-zinc-900 truncate">{mealLabel}</span>
+            {onUpdateMealName && (
+              <button
+                onClick={handleEditName}
+                className="p-1.5 hover:bg-zinc-100 rounded-full text-zinc-400 hover:text-amber-600 transition-colors shrink-0"
+                title="Ändra namn"
+              >
+                <Pencil className="w-4 h-4" />
+              </button>
+            )}
+          </button>
 
-          {/* Right side: Target + Chevron */}
-          <div className="flex items-center gap-3">
-            {/* Target macros display */}
+          {/* Right side: Target badge + Chevron */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Target macros - prominent badge */}
             {meal.targetMacros && meal.targetMacros.kcal > 0 && (
-              <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-                <span className="font-medium">Mål:</span>
-                <span>{Math.round(meal.targetMacros.kcal)} kcal</span>
-                {onUpdateMealMacros && (
-                  <button
-                    onClick={handleEditTarget}
-                    className="p-1 hover:bg-zinc-100 rounded text-zinc-400 hover:text-amber-600 transition-colors"
-                  >
-                    <Pencil className="w-3 h-3" />
-                  </button>
+              <button
+                onClick={handleEditTarget}
+                disabled={!onUpdateMealMacros}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-1.5 rounded-full transition-all",
+                  "bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200",
+                  onUpdateMealMacros && "hover:from-amber-200 hover:to-orange-200 hover:border-amber-300 cursor-pointer",
+                  !onUpdateMealMacros && "cursor-default"
                 )}
-              </div>
+              >
+                <span className="text-sm font-semibold text-amber-700">
+                  {Math.round(meal.targetMacros.kcal)} kcal
+                </span>
+                <div className="hidden sm:flex items-center gap-1.5 text-xs text-amber-600/80">
+                  <span>P{Math.round(meal.targetMacros.protein)}</span>
+                  <span>K{Math.round(meal.targetMacros.carbs)}</span>
+                  <span>F{Math.round(meal.targetMacros.fat)}</span>
+                </div>
+                {onUpdateMealMacros && (
+                  <Pencil className="w-3.5 h-3.5 text-amber-500" />
+                )}
+              </button>
             )}
-            {isExpanded ? (
-              <ChevronUp className="w-5 h-5 text-zinc-400" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-zinc-400" />
-            )}
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="p-1 hover:bg-zinc-100 rounded transition-colors"
+            >
+              {isExpanded ? (
+                <ChevronUp className="w-5 h-5 text-zinc-400" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-zinc-400" />
+              )}
+            </button>
           </div>
         </div>
-      </button>
+      </div>
 
       {/* Expanded content */}
       {isExpanded && (
@@ -908,6 +955,44 @@ export function ClientStyleMealCard({
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Meal Name Dialog */}
+      <Dialog open={editNameOpen} onOpenChange={setEditNameOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Ändra måltidsnamn</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-zinc-700">Namn</label>
+              <Input
+                type="text"
+                value={editNameValue}
+                onChange={(e) => setEditNameValue(e.target.value)}
+                placeholder={defaultLabel}
+                className="mt-1"
+                autoFocus
+              />
+              <p className="text-xs text-zinc-500 mt-1">
+                Lämna tomt för att använda standardnamnet ({defaultLabel})
+              </p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setEditNameOpen(false)}>
+                Avbryt
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleSaveName}
+                disabled={disabled}
+                className="bg-amber-500 hover:bg-amber-600"
+              >
+                Spara
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
