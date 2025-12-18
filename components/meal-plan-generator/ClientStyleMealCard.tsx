@@ -561,8 +561,8 @@ export function ClientStyleMealCard({
               disabled={!onUpdateMealMacros}
               className={cn(
                 "flex-1 flex items-center justify-center gap-1 sm:gap-3 px-2 sm:px-3 py-1.5 rounded-lg transition-all mx-2",
-                "bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200",
-                onUpdateMealMacros && "hover:from-amber-100 hover:to-orange-100 cursor-pointer",
+                "bg-white border border-zinc-200 shadow-sm",
+                onUpdateMealMacros && "hover:bg-zinc-50 cursor-pointer",
                 !onUpdateMealMacros && "cursor-default"
               )}
             >
@@ -585,7 +585,7 @@ export function ClientStyleMealCard({
                 </div>
               </div>
               {onUpdateMealMacros && (
-                <Pencil className="w-3 h-3 text-amber-400 shrink-0" />
+                <Pencil className="w-3 h-3 text-zinc-400 shrink-0" />
               )}
             </button>
           )}
