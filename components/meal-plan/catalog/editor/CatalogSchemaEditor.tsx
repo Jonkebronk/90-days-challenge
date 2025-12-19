@@ -234,10 +234,22 @@ export function CatalogSchemaEditor({
         className="w-full max-w-4xl sm:max-w-5xl p-0 flex flex-col"
       >
         <SheetHeader className="px-6 py-4 border-b shrink-0">
-          <SheetTitle>{schemaId ? 'Redigera kostschema' : 'Skapa nytt kostschema'}</SheetTitle>
-          <SheetDescription>
-            Lägg till måltider och livsmedel för att bygga ett komplett kostschema
-          </SheetDescription>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onOpenChange(false)}
+              className="shrink-0"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <div>
+              <SheetTitle>{schemaId ? 'Redigera kostschema' : 'Skapa nytt kostschema'}</SheetTitle>
+              <SheetDescription>
+                Lägg till måltider och livsmedel för att bygga ett komplett kostschema
+              </SheetDescription>
+            </div>
+          </div>
         </SheetHeader>
 
         {isLoading ? (
