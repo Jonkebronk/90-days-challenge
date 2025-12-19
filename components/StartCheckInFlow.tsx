@@ -225,13 +225,13 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
   // Step 3: Body measurements
   if (step === 3) {
     const measurements = [
-      { name: 'Bröst', field: 'chest', placeholder: 'cm' },
-      { name: 'Midja', field: 'waist', placeholder: 'cm' },
-      { name: 'Höfter', field: 'hips', placeholder: 'cm' },
-      { name: 'Rumpa', field: 'butt', placeholder: 'cm' },
-      { name: 'Armar', field: 'arms', placeholder: 'cm' },
-      { name: 'Lår', field: 'thighs', placeholder: 'cm' },
-      { name: 'Vader', field: 'calves', placeholder: 'cm' },
+      { name: 'Bröst', field: 'chest', description: 'Mät i höjd med dina bröstvårtor.', image: '/images/measurements/chest.png' },
+      { name: 'Midja', field: 'waist', description: 'Mät runt det bredaste stället på midjan, oftast precis under naveln. Dra ej in magen när du tar måttet utan var avslappnad', image: '/images/measurements/waist.png' },
+      { name: 'Höfter', field: 'hips', description: 'Mär runt det bredaste stället på dina höfter utan dra in magen.', image: '/images/measurements/hips.png' },
+      { name: 'Rumpa', field: 'butt', description: 'Mät runt det bredaste stället på din rumpa.', image: '/images/measurements/butt.png' },
+      { name: 'Armar', field: 'arms', description: 'Mät runt det bredaste stället på din arm. Mät båda armarna.', image: '/images/measurements/arms.png' },
+      { name: 'Lår', field: 'thighs', description: 'Mät på det bredaste stället på låret. Mät båda låren.', image: '/images/measurements/thighs.png' },
+      { name: 'Vader', field: 'calves', description: 'Mät på det bredaste stället runt vaderna. Mät båda vaderna.', image: '/images/measurements/calfs.png' },
     ]
 
     return (
@@ -246,25 +246,38 @@ export default function StartCheckInFlow({ userId, userName, onClose }: StartChe
                 📏
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-2 text-white">Kroppsmått</h2>
+                <h2 className="text-xl font-bold mb-2 text-white">Omkrets mätningar</h2>
                 <p className="text-sm text-[rgba(255,255,255,0.6)]">
-                  Mät dina startmått (frivilligt men rekommenderas)
+                  Mät på samma ställe varje gång. Mät det bredaste området på respektive kroppsdel och spänn inte bandet allt för hårt.
                 </p>
               </div>
             </div>
 
-            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
               {measurements.map((measurement) => (
-                <div key={measurement.field}>
-                  <Label className="text-white text-sm mb-1 block">{measurement.name}</Label>
-                  <Input
-                    type="number"
-                    step="0.1"
-                    value={(formData as any)[measurement.field]}
-                    onChange={(e) => updateFormData(measurement.field, e.target.value)}
-                    placeholder={measurement.placeholder}
-                    className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
-                  />
+                <div key={measurement.field} className="space-y-2">
+                  <div className="flex items-start gap-3">
+                    <img
+                      src={measurement.image}
+                      alt={measurement.name}
+                      className="w-16 h-16 object-cover rounded-lg border-2 border-[rgba(255,215,0,0.3)]"
+                    />
+                    <div className="flex-1">
+                      <Label className="text-white font-semibold text-base">{measurement.name}</Label>
+                      <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">{measurement.description}</p>
+                    </div>
+                  </div>
+                  <div className="relative ml-[76px]">
+                    <Input
+                      type="number"
+                      step="0.1"
+                      value={(formData as any)[measurement.field]}
+                      onChange={(e) => updateFormData(measurement.field, e.target.value)}
+                      placeholder="Valfritt"
+                      className="pr-12 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.3)] focus:border-[#FFD700]"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.5)]">cm</span>
+                  </div>
                 </div>
               ))}
             </div>
