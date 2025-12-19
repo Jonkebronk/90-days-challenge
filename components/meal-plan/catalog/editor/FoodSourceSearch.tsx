@@ -227,7 +227,7 @@ export function FoodSourceSearch({ onSelect, category = 'protein' }: FoodSourceS
   }, [sourceItems, searchQuery, activeSubcategory, subcategories])
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col h-full space-y-3">
       {/* Source tabs */}
       <div className="flex border-b border-gray-200">
         <button
@@ -293,7 +293,7 @@ export function FoodSourceSearch({ onSelect, category = 'protein' }: FoodSourceS
       )}
 
       {/* Results */}
-      <ScrollArea className="h-[300px]">
+      <ScrollArea className="flex-1 min-h-0">
         {isLoading ? (
           <div className="py-8 text-center text-gray-500">Laddar...</div>
         ) : filteredItems.length === 0 ? (

@@ -276,16 +276,18 @@ export function MealEditor({ meal, onUpdate, onDelete, isExpanded = true }: Meal
 
           {/* Food Search Dialog */}
           <Dialog open={showFoodSearch} onOpenChange={setShowFoodSearch}>
-            <DialogContent className="max-w-lg">
-              <DialogHeader>
+            <DialogContent className="max-w-lg max-h-[85vh] flex flex-col">
+              <DialogHeader className="shrink-0">
                 <DialogTitle>
                   Lägg till {FOOD_CATEGORIES.find((c) => c.value === foodSearchCategory)?.label || 'livsmedel'}
                 </DialogTitle>
               </DialogHeader>
-              <FoodSourceSearch
-                onSelect={handleAddFood}
-                category={foodSearchCategory}
-              />
+              <div className="flex-1 overflow-hidden">
+                <FoodSourceSearch
+                  onSelect={handleAddFood}
+                  category={foodSearchCategory}
+                />
+              </div>
             </DialogContent>
           </Dialog>
         </CardContent>
