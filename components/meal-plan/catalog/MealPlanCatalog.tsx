@@ -27,7 +27,7 @@ import {
   mapApiSchemaToSchema,
   mapApiCategoryToCategory
 } from '@/lib/kostschema/catalog'
-import { BookOpen, Loader2, Plus } from 'lucide-react'
+import { BookOpen, Loader2, Plus, X } from 'lucide-react'
 
 interface MealPlanCatalogProps {
   open: boolean
@@ -132,6 +132,7 @@ export function MealPlanCatalog({ open, onOpenChange, clientKcal }: MealPlanCata
         <SheetContent
           side="right"
           className="w-full max-w-5xl sm:max-w-6xl p-0 flex flex-col shadow-2xl bg-white"
+          hideCloseButton
         >
           <SheetHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 shrink-0">
             <div className="flex items-center justify-between gap-2">
@@ -146,10 +147,15 @@ export function MealPlanCatalog({ open, onOpenChange, clientKcal }: MealPlanCata
                   </SheetDescription>
                 </div>
               </div>
-              <Button onClick={handleCreateSchema} className="bg-gold-primary hover:bg-gold-primary/90 text-black shrink-0" size="sm">
-                <Plus className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Nytt schema</span>
-              </Button>
+              <div className="flex items-center gap-2 shrink-0">
+                <Button onClick={handleCreateSchema} className="bg-gold-primary hover:bg-gold-primary/90 text-black" size="sm">
+                  <Plus className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Nytt schema</span>
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="h-8 w-8">
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </SheetHeader>
 
