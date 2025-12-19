@@ -923,7 +923,8 @@ export default function MessagesPage() {
                             onEmojiClick={onEmojiClick}
                             width={280}
                             height={320}
-                            searchPlaceholder="Sök emoji..."
+                            searchDisabled
+                            skinTonesDisabled
                             previewConfig={{ showPreview: false }}
                           />
                         </div>

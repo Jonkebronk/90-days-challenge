@@ -96,12 +96,12 @@ export function MessageReactions({
               className="fixed inset-0 z-40"
               onClick={() => setShowPicker(false)}
             />
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 mb-1 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-50 flex gap-1">
+            <div className="absolute bottom-full left-0 mb-1 bg-white rounded-lg shadow-lg border border-gray-200 p-1.5 z-50 flex gap-0.5">
               {REACTION_EMOJIS.map(emoji => (
                 <button
                   key={emoji}
                   onClick={() => handleReact(emoji)}
-                  className="p-1.5 hover:bg-gray-100 rounded transition-colors text-lg"
+                  className="p-1 hover:bg-gray-100 rounded transition-colors text-base"
                 >
                   {emoji}
                 </button>
