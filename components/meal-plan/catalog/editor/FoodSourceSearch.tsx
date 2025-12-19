@@ -1,172 +1,261 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Badge } from '@/components/ui/badge'
-import { Search, Loader2, Database, BookOpen, Apple, Plus } from 'lucide-react'
+import { Search, Loader2, Database, Apple, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-// Types for different food sources
-interface SlvFood {
-  slvNummer: number
+// Subkategorier för varje makrokategori
+const SUBCATEGORIES: Record<string, { key: string; label: string; keywords: string[] }[]> = {
+  protein: [
+    { key: 'all', label: 'Alla', keywords: [] },
+    { key: 'chicken', label: 'Kyckling', keywords: ['kyckling', 'höns'] },
+    { key: 'beef', label: 'Nöt', keywords: ['nöt', 'biff', 'oxfilé', 'lövbiff', 'rostbiff', 'entrecote', 'färs'] },
+    { key: 'pork', label: 'Fläsk', keywords: ['fläsk', 'kassler', 'bacon', 'skinka'] },
+    { key: 'fish', label: 'Fisk', keywords: ['lax', 'torsk', 'sej', 'pollock', 'tonfisk', 'fisk', 'pangasius', 'makrill', 'sill'] },
+    { key: 'seafood', label: 'Skaldjur', keywords: ['räk', 'krabba', 'musslor', 'bläckfisk'] },
+    { key: 'egg', label: 'Ägg', keywords: ['ägg', 'äggvita'] },
+    { key: 'dairy', label: 'Mejeri', keywords: ['kvarg', 'cottage', 'yoghurt', 'skyr', 'ost', 'fil'] },
+    { key: 'game', label: 'Vilt', keywords: ['älg', 'vildsvin', 'rådjur', 'hjort', 'ren'] },
+    { key: 'turkey', label: 'Kalkon', keywords: ['kalkon'] },
+  ],
+  kolhydrat: [
+    { key: 'all', label: 'Alla', keywords: [] },
+    { key: 'rice', label: 'Ris', keywords: ['ris', 'jasmin', 'basmati'] },
+    { key: 'pasta', label: 'Pasta', keywords: ['pasta', 'spagetti', 'penne', 'fusilli', 'makaroner'] },
+    { key: 'potato', label: 'Potatis', keywords: ['potatis', 'sötpotatis', 'potatismos'] },
+    { key: 'bread', label: 'Bröd', keywords: ['bröd', 'knäcke', 'fralla', 'bagel'] },
+    { key: 'oats', label: 'Havre', keywords: ['havre', 'gryn', 'havrefras', 'müsli'] },
+    { key: 'fruit', label: 'Frukt', keywords: ['banan', 'äpple', 'apelsin', 'ananas', 'mango', 'frukt', 'päron', 'kiwi', 'vindruvor'] },
+    { key: 'berry', label: 'Bär', keywords: ['bär', 'blåbär', 'hallon', 'jordgubb', 'björnbär', 'lingon', 'krusbär', 'vinbär', 'smultron'] },
+    { key: 'beans', label: 'Baljväxter', keywords: ['bönor', 'linser', 'kikärter', 'ärtor'] },
+    { key: 'couscous', label: 'Bulgur/Couscous', keywords: ['bulgur', 'couscous', 'quinoa'] },
+  ],
+  fett: [
+    { key: 'all', label: 'Alla', keywords: [] },
+    { key: 'nuts', label: 'Nötter', keywords: ['mandel', 'cashew', 'valnöt', 'hasselnöt', 'pistasch', 'jordnöt', 'nötter'] },
+    { key: 'seeds', label: 'Frön', keywords: ['chia', 'lin', 'sesam', 'pumpa', 'solros', 'frö'] },
+    { key: 'oil', label: 'Oljor', keywords: ['olja', 'olivolja', 'kokosolja', 'rapsolja'] },
+    { key: 'avocado', label: 'Avokado', keywords: ['avokado'] },
+    { key: 'butter', label: 'Smör/Ost', keywords: ['smör', 'ost', 'cream cheese', 'grädde'] },
+    { key: 'nutbutter', label: 'Nötsmör', keywords: ['jordnötssmör', 'mandelsmör', 'peanut butter', 'nötsmör'] },
+  ],
+  grönsak: [
+    { key: 'all', label: 'Alla', keywords: [] },
+    { key: 'leafy', label: 'Bladgrönsaker', keywords: ['sallad', 'spenat', 'grönkål', 'ruccola'] },
+    { key: 'root', label: 'Rotfrukter', keywords: ['morot', 'rödbetor', 'palsternacka', 'selleri'] },
+    { key: 'cruciferous', label: 'Kål', keywords: ['broccoli', 'blomkål', 'vitkål', 'brysselkål'] },
+    { key: 'other', label: 'Övrigt', keywords: ['tomat', 'gurka', 'paprika', 'zucchini', 'lök'] },
+  ],
+  sås: [
+    { key: 'all', label: 'Alla', keywords: [] },
+  ],
+}
+
+// Map category to macroCategory for API
+const CATEGORY_TO_MACRO: Record<string, string> = {
+  protein: 'protein',
+  kolhydrat: 'carb',
+  fett: 'fat',
+  grönsak: 'vegetable',
+  sås: 'sauce',
+}
+
+interface Product {
+  id: string
   name: string
+  brand?: string | null
+  image?: string | null
+  kcal: number
   protein: number
   carbs: number
   fat: number
+  source?: 'product' | 'slv'
+}
+
+interface SlvFood {
+  nummer: number
+  namn: string
+  typ: string
   kcal: number
-}
-
-interface FoodItem {
-  id: string
-  name: string
-  proteinG: number | null
-  carbsG: number | null
-  fatG: number | null
-  calories: number | null
-  commonServingSize: number | null
-  foodCategory?: { name: string; color: string }
-}
-
-interface Recipe {
-  id: string
-  title: string
-  servings: number
-  calories?: number
-  protein?: number
-  carbs?: number
-  fat?: number
+  protein: number
+  carbs: number
+  fat: number
+  fiber: number | null
 }
 
 interface NormalizedFood {
   id: string
-  source: 'slv' | 'library' | 'recipe'
+  source: 'product' | 'slv'
   name: string
+  brand?: string | null
+  image?: string | null
   protein: number
   carbs: number
   fat: number
   kcal: number
   defaultAmount: number
-  sourceData?: any
 }
 
 interface FoodSourceSearchProps {
   onSelect: (food: NormalizedFood) => void
-  category?: 'protein' | 'kolhydrat' | 'fett' | 'grönsak'
+  category?: 'protein' | 'kolhydrat' | 'fett' | 'grönsak' | 'sås'
 }
 
-export function FoodSourceSearch({ onSelect, category }: FoodSourceSearchProps) {
+function matchesSubcategory(productName: string, subcategory: { key: string; keywords: string[] }): boolean {
+  if (subcategory.key === 'all') return true
+  const nameLower = productName.toLowerCase()
+  return subcategory.keywords.some(keyword => nameLower.includes(keyword))
+}
+
+export function FoodSourceSearch({ onSelect, category = 'protein' }: FoodSourceSearchProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'slv' | 'library' | 'recipe'>('library')
+  const [activeTab, setActiveTab] = useState<'products' | 'slv'>('products')
+  const [activeSubcategory, setActiveSubcategory] = useState('all')
   const [isLoading, setIsLoading] = useState(false)
-  const [results, setResults] = useState<NormalizedFood[]>([])
+  const [products, setProducts] = useState<Product[]>([])
+  const [slvFoods, setSlvFoods] = useState<SlvFood[]>([])
 
-  // Debounced search - empty query loads default results
-  const searchFoods = useCallback(async (query: string, source: string) => {
-    setIsLoading(true)
-    try {
-      let normalizedResults: NormalizedFood[] = []
+  const subcategories = SUBCATEGORIES[category] || [{ key: 'all', label: 'Alla', keywords: [] }]
+  const macroCategory = CATEGORY_TO_MACRO[category] || category
 
-      if (source === 'slv') {
-        // Search Livsmedelsverket - use category or common term if no query
-        const categoryParam = category === 'grönsak' ? '' : category || ''
-        const searchTerm = query || (category === 'protein' ? 'kyckling' : category === 'kolhydrat' ? 'ris' : category === 'fett' ? 'olja' : 'mat')
-        const res = await fetch(`/api/slv-proxy?q=${encodeURIComponent(searchTerm)}&category=${categoryParam}&limit=20`)
-        if (res.ok) {
-          const data = await res.json()
-          normalizedResults = (data.foods || []).map((f: SlvFood) => ({
-            id: `slv-${f.slvNummer}`,
-            source: 'slv' as const,
-            name: f.name,
-            protein: f.protein || 0,
-            carbs: f.carbs || 0,
-            fat: f.fat || 0,
-            kcal: f.kcal || 0,
-            defaultAmount: 100,
-            sourceData: f
-          }))
-        }
-      } else if (source === 'library') {
-        // Search Food Library - load all if no query
-        const searchParam = query ? `search=${encodeURIComponent(query)}&` : ''
-        const res = await fetch(`/api/food-items?${searchParam}limit=30`)
-        if (res.ok) {
-          const data = await res.json()
-          normalizedResults = (data.items || []).map((f: FoodItem) => ({
-            id: `lib-${f.id}`,
-            source: 'library' as const,
-            name: f.name,
-            protein: f.proteinG || 0,
-            carbs: f.carbsG || 0,
-            fat: f.fatG || 0,
-            kcal: f.calories || 0,
-            defaultAmount: f.commonServingSize || 100,
-            sourceData: f
-          }))
-        }
-      } else if (source === 'recipe') {
-        // Search Recipes - load all if no query
-        const res = await fetch(`/api/recipes?published=true`)
-        if (res.ok) {
-          const data = await res.json()
-          const recipes = data.recipes || []
-          const filtered = query
-            ? recipes.filter((r: Recipe) => r.title.toLowerCase().includes(query.toLowerCase()))
-            : recipes
-          normalizedResults = filtered.slice(0, 30).map((r: Recipe) => ({
-            id: `recipe-${r.id}`,
-            source: 'recipe' as const,
-            name: r.title,
-            protein: r.protein || 0,
-            carbs: r.carbs || 0,
-            fat: r.fat || 0,
-            kcal: r.calories || 0,
-            defaultAmount: r.servings > 0 ? Math.round(100 / r.servings) * 100 : 100,
-            sourceData: r
-          }))
-        }
-      }
-
-      setResults(normalizedResults)
-    } catch (error) {
-      console.error('Search error:', error)
-      setResults([])
-    } finally {
-      setIsLoading(false)
-    }
-  }, [category])
-
-  // Debounce search - runs on mount and when query/tab changes
+  // Fetch data on mount
   useEffect(() => {
-    const timer = setTimeout(() => {
-      searchFoods(searchQuery, activeTab)
-    }, searchQuery ? 300 : 0) // Immediate on mount, debounced when typing
+    const fetchData = async () => {
+      setIsLoading(true)
+      try {
+        const [productsRes, slvRes] = await Promise.all([
+          fetch(`/api/products?macroCategory=${macroCategory}`),
+          fetch('/data/slv-foods.json'),
+        ])
 
-    return () => clearTimeout(timer)
-  }, [searchQuery, activeTab, searchFoods])
+        if (productsRes.ok) {
+          const data = await productsRes.json()
+          setProducts(data.products || [])
+        }
 
-  const getSourceIcon = (source: string) => {
-    switch (source) {
-      case 'slv': return <Database className="w-3 h-3" />
-      case 'library': return <Apple className="w-3 h-3" />
-      case 'recipe': return <BookOpen className="w-3 h-3" />
-      default: return null
+        if (slvRes.ok) {
+          const slvData = await slvRes.json()
+          const allFoods: SlvFood[] = []
+          for (const categoryFoods of Object.values(slvData.categories || {})) {
+            allFoods.push(...(categoryFoods as SlvFood[]))
+          }
+          setSlvFoods(allFoods)
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [macroCategory])
+
+  // Filter SLV foods by category
+  const filterSlvByCategory = (foods: SlvFood[]): SlvFood[] => {
+    switch (category) {
+      case 'protein':
+        return foods.filter(f => f.protein > 10)
+      case 'kolhydrat':
+        return foods.filter(f => f.carbs > 15 && f.protein < 10)
+      case 'fett':
+        return foods.filter(f => f.fat > 10 && f.carbs < 10)
+      case 'grönsak':
+        return foods.filter(f =>
+          f.kcal < 50 && (f.fiber ?? 0) > 1 ||
+          f.typ?.toLowerCase().includes('grönsak')
+        )
+      default:
+        return foods
     }
   }
 
-  const getSourceColor = (source: string) => {
-    switch (source) {
-      case 'slv': return 'bg-blue-100 text-blue-700'
-      case 'library': return 'bg-green-100 text-green-700'
-      case 'recipe': return 'bg-purple-100 text-purple-700'
-      default: return 'bg-gray-100 text-gray-700'
-    }
-  }
+  // Convert SLV foods to normalized format
+  const slvAsProducts: NormalizedFood[] = useMemo(() => {
+    return filterSlvByCategory(slvFoods).map(f => ({
+      id: `slv-${f.nummer}`,
+      source: 'slv' as const,
+      name: f.namn,
+      brand: 'Livsmedelsverket',
+      image: null,
+      kcal: f.kcal,
+      protein: f.protein,
+      carbs: f.carbs,
+      fat: f.fat,
+      defaultAmount: 100,
+    }))
+  }, [slvFoods, category])
+
+  // Convert products to normalized format
+  const productsNormalized: NormalizedFood[] = useMemo(() => {
+    return products.map(p => ({
+      id: `product-${p.id}`,
+      source: 'product' as const,
+      name: p.name,
+      brand: p.brand,
+      image: p.image,
+      kcal: p.kcal,
+      protein: p.protein,
+      carbs: p.carbs,
+      fat: p.fat,
+      defaultAmount: 100,
+    }))
+  }, [products])
+
+  // Get active source items
+  const sourceItems = activeTab === 'products' ? productsNormalized : slvAsProducts
+
+  // Filter items
+  const filteredItems = useMemo(() => {
+    return sourceItems
+      .filter((p) => {
+        if (!searchQuery.trim()) return true
+        const query = searchQuery.toLowerCase()
+        return (
+          p.name.toLowerCase().includes(query) ||
+          (p.brand && p.brand.toLowerCase().includes(query))
+        )
+      })
+      .filter((p) => {
+        const selectedSubcategory = subcategories.find(s => s.key === activeSubcategory)
+        if (!selectedSubcategory) return true
+        return matchesSubcategory(p.name, selectedSubcategory)
+      })
+      .sort((a, b) => a.name.localeCompare(b.name, 'sv'))
+  }, [sourceItems, searchQuery, activeSubcategory, subcategories])
 
   return (
     <div className="space-y-3">
+      {/* Source tabs */}
+      <div className="flex border-b border-gray-200">
+        <button
+          onClick={() => setActiveTab('products')}
+          className={cn(
+            'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
+            activeTab === 'products'
+              ? 'border-b-2 border-amber-500 text-amber-700'
+              : 'text-gray-500 hover:text-gray-700'
+          )}
+        >
+          <Apple className="h-4 w-4" />
+          Mina produkter
+        </button>
+        <button
+          onClick={() => setActiveTab('slv')}
+          className={cn(
+            'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
+            activeTab === 'slv'
+              ? 'border-b-2 border-green-500 text-green-700'
+              : 'text-gray-500 hover:text-gray-700'
+          )}
+        >
+          <Database className="h-4 w-4" />
+          Livsmedelsverket
+        </button>
+      </div>
+
       {/* Search Input */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -181,58 +270,98 @@ export function FoodSourceSearch({ onSelect, category }: FoodSourceSearchProps) 
         )}
       </div>
 
-      {/* Source Tabs */}
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
-        <TabsList className="grid grid-cols-3 w-full">
-          <TabsTrigger value="library" className="text-xs">
-            <Apple className="w-3 h-3 mr-1" />
-            Livsmedel
-          </TabsTrigger>
-          <TabsTrigger value="slv" className="text-xs">
-            <Database className="w-3 h-3 mr-1" />
-            SLV
-          </TabsTrigger>
-          <TabsTrigger value="recipe" className="text-xs">
-            <BookOpen className="w-3 h-3 mr-1" />
-            Recept
-          </TabsTrigger>
-        </TabsList>
+      {/* Subcategory chips */}
+      {subcategories.length > 1 && (
+        <div className="flex flex-wrap gap-1.5">
+          {subcategories.map((sub) => (
+            <button
+              key={sub.key}
+              onClick={() => setActiveSubcategory(sub.key)}
+              className={cn(
+                'px-2.5 py-1 rounded-full text-xs font-medium transition-colors border',
+                activeSubcategory === sub.key
+                  ? activeTab === 'slv'
+                    ? 'bg-green-600 text-white border-green-600'
+                    : 'bg-amber-500 text-white border-amber-500'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400'
+              )}
+            >
+              {sub.label}
+            </button>
+          ))}
+        </div>
+      )}
 
-        <TabsContent value={activeTab} className="mt-2">
-          <ScrollArea className="h-[300px]">
-            {results.length === 0 && !isLoading && (
-              <div className="text-center py-8 text-gray-500 text-sm">
-                Inga resultat hittades
-              </div>
-            )}
-            <div className="space-y-1">
-              {results.map((food) => (
-                <button
-                  key={food.id}
-                  onClick={() => onSelect(food)}
-                  className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-colors text-left"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={cn('text-xs px-1.5', getSourceColor(food.source))}>
-                        {getSourceIcon(food.source)}
-                      </Badge>
-                      <span className="font-medium text-gray-900 truncate">{food.name}</span>
+      {/* Results */}
+      <ScrollArea className="h-[300px]">
+        {isLoading ? (
+          <div className="py-8 text-center text-gray-500">Laddar...</div>
+        ) : filteredItems.length === 0 ? (
+          <div className="py-8 text-center text-gray-500">
+            {searchQuery ? 'Inga livsmedel matchar sökningen' : 'Inga livsmedel i denna kategori'}
+          </div>
+        ) : (
+          <div className="space-y-1">
+            {filteredItems.map((food) => (
+              <button
+                key={food.id}
+                onClick={() => onSelect(food)}
+                className={cn(
+                  'w-full text-left p-3 rounded-lg border transition-colors group',
+                  activeTab === 'slv'
+                    ? 'border-green-100 hover:border-green-300 hover:bg-green-50/50'
+                    : 'border-gray-100 hover:border-amber-200 hover:bg-amber-50/50'
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  {/* Product image or icon */}
+                  {food.image ? (
+                    <img
+                      src={food.image}
+                      alt={food.name}
+                      className="w-12 h-12 rounded-lg object-cover bg-gray-100"
+                    />
+                  ) : (
+                    <div className={cn(
+                      'w-12 h-12 rounded-lg flex items-center justify-center',
+                      activeTab === 'slv' ? 'bg-green-100' : 'bg-gray-100'
+                    )}>
+                      {activeTab === 'slv' ? (
+                        <Database className="h-5 w-5 text-green-600" />
+                      ) : (
+                        <Apple className="h-5 w-5 text-gray-400" />
+                      )}
                     </div>
+                  )}
+
+                  {/* Product info */}
+                  <div className="flex-1 min-w-0">
+                    <div className={cn(
+                      'font-medium truncate text-gray-900',
+                      activeTab === 'slv'
+                        ? 'group-hover:text-green-700'
+                        : 'group-hover:text-amber-700'
+                    )}>
+                      {food.name}
+                    </div>
+                    {food.brand && (
+                      <div className="text-xs text-gray-500 truncate">{food.brand}</div>
+                    )}
                     <div className="flex gap-3 mt-1 text-xs text-gray-500">
-                      <span className="text-red-600">{food.protein}g P</span>
+                      <span className="text-rose-600">{food.protein}g P</span>
                       <span className="text-amber-600">{food.carbs}g K</span>
-                      <span className="text-blue-600">{food.fat}g F</span>
+                      <span className="text-sky-600">{food.fat}g F</span>
                       <span>{food.kcal} kcal</span>
                     </div>
                   </div>
-                  <Plus className="w-5 h-5 text-gray-400 shrink-0 ml-2" />
-                </button>
-              ))}
-            </div>
-          </ScrollArea>
-        </TabsContent>
-      </Tabs>
+
+                  <Plus className="w-5 h-5 text-gray-400 shrink-0" />
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </ScrollArea>
     </div>
   )
 }
