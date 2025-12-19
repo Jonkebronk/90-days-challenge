@@ -34,7 +34,6 @@ import {
   MessageSquare,
   HelpCircle,
   ShoppingCart,
-  Apple,
   Flame,
   Layers,
 } from 'lucide-react'
@@ -63,7 +62,6 @@ const navigation = [
       { name: 'Skapa Artiklar', href: '/dashboard/content/articles', icon: Library },
       { name: 'Skapa Recept Kategorier', href: '/dashboard/content/recipe-categories', icon: FolderOpen },
       { name: 'Skapa Recept', href: '/dashboard/content/recipes', icon: ChefHat },
-      { name: 'Livsmedelbanken', href: '/dashboard/content/food-items', icon: Apple },
       { name: 'SLV Livsmedel', href: '/dashboard/content/slv-livsmedel', icon: Library },
       { name: 'Näringstabeller', href: '/dashboard/content/nutrition-admin', icon: Calculator },
       { name: 'Måltidsplaner', href: '/dashboard/content/meal-plans', icon: UtensilsCrossed },
@@ -83,7 +81,6 @@ const navigation = [
   { name: 'Kunskapskartan', href: '/dashboard/articles/skill-tree', icon: Map },
   { name: 'Coach Kunskapsbank', href: '/dashboard/coach-articles', icon: GraduationCap, coachOnly: true },
   { name: 'Recept', href: '/dashboard/recipes', icon: ChefHat },
-  { name: 'Livsmedelbanken', href: '/dashboard/content/food-items', icon: Apple },
   { name: 'Kostschema', href: '/dashboard/meal-plan', icon: Utensils, clientOnly: true },
   { name: 'Livsmedelsbibliotek', href: '/dashboard/products', icon: ShoppingCart },
   { name: 'Träningsprogram', href: '/dashboard/workout', icon: Dumbbell, clientOnly: true },
