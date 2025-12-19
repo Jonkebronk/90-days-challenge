@@ -10,19 +10,22 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { Loader2 } from 'lucide-react'
 
 interface CatalogSidebarProps {
   categories: CatalogCategory[]
   schemas: CatalogSchema[]
   selectedSchemaId: string | null
   onSelectSchema: (schemaId: string) => void
+  isLoading?: boolean
 }
 
 export function CatalogSidebar({
   categories,
   schemas,
   selectedSchemaId,
-  onSelectSchema
+  onSelectSchema,
+  isLoading = false
 }: CatalogSidebarProps) {
   const getSchemasByCategory = (categoryId: string) => {
     return schemas
@@ -39,10 +42,15 @@ export function CatalogSidebar({
       <div className="p-4 border-b border-gray-200">
         <h2 className="font-semibold text-gray-900">Kategorier</h2>
         <p className="text-xs text-gray-500 mt-0.5">
-          {schemas.length} scheman tillgängliga
+          {isLoading ? 'Laddar...' : `${schemas.length} scheman tillgängliga`}
         </p>
       </div>
 
+      {isLoading ? (
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="w-6 h-6 animate-spin text-gold-primary" />
+        </div>
+      ) : (
       <ScrollArea className="flex-1">
         <Accordion
           type="single"
@@ -100,6 +108,7 @@ export function CatalogSidebar({
           })}
         </Accordion>
       </ScrollArea>
+      )}
 
       {/* Legend */}
       <div className="p-3 border-t border-gray-200 bg-white">

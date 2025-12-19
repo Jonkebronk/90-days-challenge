@@ -2870,3 +2870,102 @@ model CoachAISettings {
 
   @@map("coach_ai_settings")
 }
+
+// ========================================
+// MEAL PLAN CATALOG SYSTEM
+// ========================================
+
+// Catalog Category - Groups schemas by type (e.g., "Blandat", "Standard", "Vegetariskt")
+model CatalogCategory {
+  id          String @id @default(cuid())
+  name        String @unique // "Blandat", "Standard", etc.
+  description String?
+  icon        String? // Icon name or emoji
+  orderIndex  Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  schemas CatalogSchema[]
+
+  @@index([orderIndex])
+  @@map("catalog_categories")
+}
+
+// Catalog Schema - A complete meal plan template
+model CatalogSchema {
+  id           String  @id @default(cuid())
+  categoryId   String
+  name         String // "1800 kcal Standard"
+  description  String? @db.Text
+  calorieLevel Int // 1600, 1800, 2000, etc.
+
+  // Daily macro totals
+  totalProtein Int // grams
+  totalCarbs   Int // grams
+  totalFat     Int // grams
+  totalKcal    Int // kcal
+
+  isActive   Boolean @default(true)
+  orderIndex Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category CatalogCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  meals    CatalogMeal[]
+
+  @@index([categoryId, calorieLevel])
+  @@index([isActive])
+  @@map("catalog_schemas")
+}
+
+// Catalog Meal - A meal within a schema (e.g., "Frukost", "Lunch")
+model CatalogMeal {
+  id       String @id @default(cuid())
+  schemaId String
+  name     String // "Frukost", "Lunch", "Mellanmål", "Middag"
+  time     String // "07:00", "12:00", etc.
+
+  // Meal macro totals
+  totalProtein Int // grams
+  totalCarbs   Int // grams
+  totalFat     Int // grams
+  totalKcal    Int // kcal
+
+  orderIndex Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  schema CatalogSchema @relation(fields: [schemaId], references: [id], onDelete: Cascade)
+  foods  CatalogFood[]
+
+  @@index([schemaId, orderIndex])
+  @@map("catalog_meals")
+}
+
+// Catalog Food - Individual food items within a meal
+model CatalogFood {
+  id       String @id @default(cuid())
+  mealId   String
+  name     String // "Havregryn", "Kyckling", etc.
+  amountG  Int // Amount in grams
+  category String // "protein", "kolhydrat", "fett", "grönsak", "tillskott"
+
+  // Nutritional values for this amount
+  protein Int // grams
+  carbs   Int // grams
+  fat     Int // grams
+  kcal    Int // kcal
+
+  orderIndex Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  meal CatalogMeal @relation(fields: [mealId], references: [id], onDelete: Cascade)
+
+  @@index([mealId, orderIndex])
+  @@map("catalog_foods")
+}

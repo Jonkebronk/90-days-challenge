@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Sheet,
   SheetContent,
@@ -20,9 +20,15 @@ import { CatalogDetail } from './CatalogDetail'
 import {
   CATALOG_CATEGORIES,
   CATALOG_SCHEMAS,
-  getSchemaById
+  getSchemaById,
+  CatalogCategory,
+  CatalogSchema,
+  ApiCatalogCategory,
+  ApiCatalogSchema,
+  mapApiSchemaToSchema,
+  mapApiCategoryToCategory
 } from '@/lib/kostschema/catalog'
-import { BookOpen } from 'lucide-react'
+import { BookOpen, Loader2 } from 'lucide-react'
 
 interface MealPlanCatalogProps {
   open: boolean
@@ -32,8 +38,68 @@ interface MealPlanCatalogProps {
 
 export function MealPlanCatalog({ open, onOpenChange, clientKcal }: MealPlanCatalogProps) {
   const [selectedSchemaId, setSelectedSchemaId] = useState<string | null>(null)
+  const [categories, setCategories] = useState<CatalogCategory[]>(CATALOG_CATEGORIES)
+  const [schemas, setSchemas] = useState<CatalogSchema[]>(CATALOG_SCHEMAS)
+  const [isLoading, setIsLoading] = useState(false)
+  const [hasFetched, setHasFetched] = useState(false)
 
-  const selectedSchema = selectedSchemaId ? getSchemaById(selectedSchemaId) : null
+  // Fetch data from API
+  const fetchData = useCallback(async () => {
+    if (hasFetched) return
+
+    try {
+      setIsLoading(true)
+      const res = await fetch('/api/catalog/categories')
+
+      if (res.ok) {
+        const data = await res.json()
+        const apiCategories: ApiCatalogCategory[] = data.categories || []
+
+        if (apiCategories.length > 0) {
+          // Map API categories
+          const mappedCategories = apiCategories.map(mapApiCategoryToCategory)
+          setCategories(mappedCategories)
+
+          // Fetch full schema data for each category's schemas
+          const allSchemas: CatalogSchema[] = []
+          for (const cat of apiCategories) {
+            if (cat.schemas) {
+              for (const schema of cat.schemas) {
+                // Fetch full schema with meals and foods
+                const schemaRes = await fetch(`/api/catalog/schemas/${schema.id}`)
+                if (schemaRes.ok) {
+                  const schemaData = await schemaRes.json()
+                  const apiSchema: ApiCatalogSchema = schemaData.schema
+                  allSchemas.push(mapApiSchemaToSchema(apiSchema))
+                }
+              }
+            }
+          }
+
+          if (allSchemas.length > 0) {
+            setSchemas(allSchemas)
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching catalog data:', error)
+      // Keep using hardcoded fallback
+    } finally {
+      setIsLoading(false)
+      setHasFetched(true)
+    }
+  }, [hasFetched])
+
+  // Fetch when sheet opens
+  useEffect(() => {
+    if (open && !hasFetched) {
+      fetchData()
+    }
+  }, [open, hasFetched, fetchData])
+
+  const selectedSchema = selectedSchemaId
+    ? schemas.find(s => s.id === selectedSchemaId) || getSchemaById(selectedSchemaId)
+    : null
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange} modal={false}>
@@ -60,36 +126,43 @@ export function MealPlanCatalog({ open, onOpenChange, clientKcal }: MealPlanCata
 
         {/* Mobile: Dropdown selector */}
         <div className="lg:hidden px-4 py-3 border-b border-gray-200 bg-gray-50">
-          <Select
-            value={selectedSchemaId || ''}
-            onValueChange={(value) => setSelectedSchemaId(value)}
-          >
-            <SelectTrigger className="w-full bg-white">
-              <SelectValue placeholder="Välj ett kostschema..." />
-            </SelectTrigger>
-            <SelectContent>
-              {CATALOG_CATEGORIES.map((category) => {
-                const categorySchemas = CATALOG_SCHEMAS.filter(
-                  s => s.categoryId === category.id
-                ).sort((a, b) => a.calorieLevel - b.calorieLevel)
+          {isLoading ? (
+            <div className="flex items-center justify-center py-2">
+              <Loader2 className="w-5 h-5 animate-spin text-gold-primary" />
+              <span className="ml-2 text-sm text-gray-500">Laddar scheman...</span>
+            </div>
+          ) : (
+            <Select
+              value={selectedSchemaId || ''}
+              onValueChange={(value) => setSelectedSchemaId(value)}
+            >
+              <SelectTrigger className="w-full bg-white">
+                <SelectValue placeholder="Välj ett kostschema..." />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => {
+                  const categorySchemas = schemas.filter(
+                    s => s.categoryId === category.id
+                  ).sort((a, b) => a.calorieLevel - b.calorieLevel)
 
-                if (categorySchemas.length === 0) return null
+                  if (categorySchemas.length === 0) return null
 
-                return (
-                  <div key={category.id}>
-                    <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 bg-gray-50">
-                      {category.name}
+                  return (
+                    <div key={category.id}>
+                      <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 bg-gray-50">
+                        {category.name}
+                      </div>
+                      {categorySchemas.map((schema) => (
+                        <SelectItem key={schema.id} value={schema.id}>
+                          {schema.name}
+                        </SelectItem>
+                      ))}
                     </div>
-                    {categorySchemas.map((schema) => (
-                      <SelectItem key={schema.id} value={schema.id}>
-                        {schema.name}
-                      </SelectItem>
-                    ))}
-                  </div>
-                )
-              })}
-            </SelectContent>
-          </Select>
+                  )
+                })}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         {/* Main Content */}
@@ -97,10 +170,11 @@ export function MealPlanCatalog({ open, onOpenChange, clientKcal }: MealPlanCata
           {/* Desktop: Sidebar */}
           <div className="hidden lg:block">
             <CatalogSidebar
-              categories={CATALOG_CATEGORIES}
-              schemas={CATALOG_SCHEMAS}
+              categories={categories}
+              schemas={schemas}
               selectedSchemaId={selectedSchemaId}
               onSelectSchema={setSelectedSchemaId}
+              isLoading={isLoading}
             />
           </div>
 
