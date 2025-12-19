@@ -63,21 +63,17 @@ export function FoodSourceSearch({ onSelect, category }: FoodSourceSearchProps) 
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState<NormalizedFood[]>([])
 
-  // Debounced search
+  // Debounced search - empty query loads default results
   const searchFoods = useCallback(async (query: string, source: string) => {
-    if (!query || query.length < 1) {
-      setResults([])
-      return
-    }
-
     setIsLoading(true)
     try {
       let normalizedResults: NormalizedFood[] = []
 
       if (source === 'slv') {
-        // Search Livsmedelsverket
+        // Search Livsmedelsverket - use category or common term if no query
         const categoryParam = category === 'grönsak' ? '' : category || ''
-        const res = await fetch(`/api/slv-proxy?q=${encodeURIComponent(query)}&category=${categoryParam}&limit=20`)
+        const searchTerm = query || (category === 'protein' ? 'kyckling' : category === 'kolhydrat' ? 'ris' : category === 'fett' ? 'olja' : 'mat')
+        const res = await fetch(`/api/slv-proxy?q=${encodeURIComponent(searchTerm)}&category=${categoryParam}&limit=20`)
         if (res.ok) {
           const data = await res.json()
           normalizedResults = (data.foods || []).map((f: SlvFood) => ({
@@ -93,8 +89,9 @@ export function FoodSourceSearch({ onSelect, category }: FoodSourceSearchProps) 
           }))
         }
       } else if (source === 'library') {
-        // Search Food Library
-        const res = await fetch(`/api/food-items?search=${encodeURIComponent(query)}&limit=20`)
+        // Search Food Library - load all if no query
+        const searchParam = query ? `search=${encodeURIComponent(query)}&` : ''
+        const res = await fetch(`/api/food-items?${searchParam}limit=30`)
         if (res.ok) {
           const data = await res.json()
           normalizedResults = (data.items || []).map((f: FoodItem) => ({
@@ -110,14 +107,15 @@ export function FoodSourceSearch({ onSelect, category }: FoodSourceSearchProps) 
           }))
         }
       } else if (source === 'recipe') {
-        // Search Recipes
+        // Search Recipes - load all if no query
         const res = await fetch(`/api/recipes?published=true`)
         if (res.ok) {
           const data = await res.json()
-          const filtered = (data.recipes || []).filter((r: Recipe) =>
-            r.title.toLowerCase().includes(query.toLowerCase())
-          )
-          normalizedResults = filtered.slice(0, 20).map((r: Recipe) => ({
+          const recipes = data.recipes || []
+          const filtered = query
+            ? recipes.filter((r: Recipe) => r.title.toLowerCase().includes(query.toLowerCase()))
+            : recipes
+          normalizedResults = filtered.slice(0, 30).map((r: Recipe) => ({
             id: `recipe-${r.id}`,
             source: 'recipe' as const,
             name: r.title,
@@ -140,15 +138,11 @@ export function FoodSourceSearch({ onSelect, category }: FoodSourceSearchProps) 
     }
   }, [category])
 
-  // Debounce search
+  // Debounce search - runs on mount and when query/tab changes
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchQuery) {
-        searchFoods(searchQuery, activeTab)
-      } else {
-        setResults([])
-      }
-    }, 300)
+      searchFoods(searchQuery, activeTab)
+    }, searchQuery ? 300 : 0) // Immediate on mount, debounced when typing
 
     return () => clearTimeout(timer)
   }, [searchQuery, activeTab, searchFoods])
@@ -206,14 +200,9 @@ export function FoodSourceSearch({ onSelect, category }: FoodSourceSearchProps) 
 
         <TabsContent value={activeTab} className="mt-2">
           <ScrollArea className="h-[300px]">
-            {results.length === 0 && !isLoading && searchQuery.length >= 1 && (
+            {results.length === 0 && !isLoading && (
               <div className="text-center py-8 text-gray-500 text-sm">
                 Inga resultat hittades
-              </div>
-            )}
-            {results.length === 0 && !isLoading && searchQuery.length < 1 && (
-              <div className="text-center py-8 text-gray-400 text-sm">
-                Sök efter livsmedel, recept eller SLV-produkter
               </div>
             )}
             <div className="space-y-1">
