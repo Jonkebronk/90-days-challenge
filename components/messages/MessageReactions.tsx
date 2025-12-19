@@ -55,7 +55,7 @@ export function MessageReactions({
   }
 
   return (
-    <div className="relative flex items-center gap-1 mt-1">
+    <div className="relative flex items-center gap-1">
       {/* Existing reactions */}
       {hasReactions && (
         <div className="flex flex-wrap gap-1">
@@ -83,10 +83,10 @@ export function MessageReactions({
       <div className="relative">
         <button
           onClick={() => setShowPicker(!showPicker)}
-          className="p-1 rounded-full hover:bg-gray-100 transition-colors opacity-0 group-hover:opacity-100"
+          className="p-1.5 rounded-full hover:bg-gray-100 transition-colors opacity-60 sm:opacity-0 sm:group-hover:opacity-100"
           title="Lägg till reaktion"
         >
-          <SmilePlus className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+          <SmilePlus className="w-3.5 h-3.5 text-gray-400 hover:text-gray-600" />
         </button>
 
         {/* Emoji picker */}
@@ -96,7 +96,7 @@ export function MessageReactions({
               className="fixed inset-0 z-40"
               onClick={() => setShowPicker(false)}
             />
-            <div className="absolute bottom-full left-0 mb-1 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-50 flex gap-1">
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 sm:left-0 sm:translate-x-0 mb-1 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-50 flex gap-1">
               {REACTION_EMOJIS.map(emoji => (
                 <button
                   key={emoji}

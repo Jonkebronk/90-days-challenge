@@ -806,22 +806,24 @@ export default function MessagesPage() {
                             </div>
                           )}
 
-                          {/* Reply button */}
-                          {!message.isDeleted && (
-                            <button
-                              onClick={() => startReply(message)}
-                              className="absolute -bottom-1 left-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
-                            >
-                              <Reply className="w-3 h-3 text-gray-500" />
-                            </button>
-                          )}
-
-                          <MessageReactions
-                            messageId={message.id}
-                            reactions={message.reactions || []}
-                            currentUserId={userId}
-                            onReact={handleReact}
-                          />
+                          {/* Reactions and Reply - inline on mobile */}
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <MessageReactions
+                              messageId={message.id}
+                              reactions={message.reactions || []}
+                              currentUserId={userId}
+                              onReact={handleReact}
+                            />
+                            {!message.isDeleted && (
+                              <button
+                                onClick={() => startReply(message)}
+                                className="p-1.5 rounded-full hover:bg-gray-200 transition-colors opacity-60 sm:opacity-0 sm:group-hover:opacity-100"
+                                title="Svara"
+                              >
+                                <Reply className="w-3.5 h-3.5 text-gray-500" />
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -912,14 +914,15 @@ export default function MessagesPage() {
                     {showEmojiPicker && (
                       <>
                         <div
-                          className="fixed inset-0 z-40"
+                          className="fixed inset-0 z-40 bg-black/20 sm:bg-transparent"
                           onClick={() => setShowEmojiPicker(false)}
                         />
-                        <div className="absolute bottom-10 left-0 z-50">
+                        {/* Mobile: Fixed at bottom center. Desktop: Absolute positioned */}
+                        <div className="fixed sm:absolute bottom-16 left-1/2 -translate-x-1/2 sm:bottom-10 sm:left-auto sm:right-0 sm:translate-x-0 z-50">
                           <EmojiPicker
                             onEmojiClick={onEmojiClick}
-                            width={300}
-                            height={400}
+                            width={280}
+                            height={320}
                             searchPlaceholder="Sök emoji..."
                             previewConfig={{ showPreview: false }}
                           />
