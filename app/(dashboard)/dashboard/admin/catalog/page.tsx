@@ -6,24 +6,6 @@ import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-  DialogClose
-} from '@/components/ui/dialog'
 import {
   Accordion,
   AccordionContent,
@@ -40,10 +22,11 @@ import {
   Download,
   FolderOpen,
   ChevronRight,
-  Edit,
+  Edit2,
   Loader2,
   AlertTriangle
 } from 'lucide-react'
+import { CatalogSchemaEditor } from '@/components/meal-plan/catalog/editor'
 
 type CatalogFood = {
   id?: string
@@ -103,24 +86,15 @@ export default function CatalogAdminPage() {
   const [isSeedingDb, setIsSeedingDb] = useState(false)
   const [selectedSchema, setSelectedSchema] = useState<CatalogSchema | null>(null)
 
+  // Schema editor state
+  const [editorOpen, setEditorOpen] = useState(false)
+  const [editingSchemaId, setEditingSchemaId] = useState<string | null>(null)
+
   // New category form
   const [newCategoryName, setNewCategoryName] = useState('')
   const [newCategoryDesc, setNewCategoryDesc] = useState('')
   const [isCreatingCategory, setIsCreatingCategory] = useState(false)
 
-  // New schema form
-  const [newSchemaDialog, setNewSchemaDialog] = useState(false)
-  const [newSchema, setNewSchema] = useState({
-    categoryId: '',
-    name: '',
-    description: '',
-    calorieLevel: 2000,
-    totalProtein: 150,
-    totalCarbs: 200,
-    totalFat: 70,
-    totalKcal: 2000
-  })
-  const [isCreatingSchema, setIsCreatingSchema] = useState(false)
 
   // Redirect non-coaches
   if (status === 'authenticated' && (session?.user as any)?.role !== 'coach') {
@@ -238,47 +212,6 @@ export default function CatalogAdminPage() {
     }
   }
 
-  const handleCreateSchema = async () => {
-    if (!newSchema.categoryId || !newSchema.name.trim()) {
-      toast.error('Ange kategori och namn')
-      return
-    }
-
-    try {
-      setIsCreatingSchema(true)
-      const res = await fetch('/api/catalog/schemas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newSchema)
-      })
-
-      const data = await res.json()
-
-      if (res.ok) {
-        toast.success('Schema skapat!')
-        setNewSchemaDialog(false)
-        setNewSchema({
-          categoryId: '',
-          name: '',
-          description: '',
-          calorieLevel: 2000,
-          totalProtein: 150,
-          totalCarbs: 200,
-          totalFat: 70,
-          totalKcal: 2000
-        })
-        fetchData()
-      } else {
-        toast.error(data.error || 'Ett fel uppstod')
-      }
-    } catch (error) {
-      console.error('Error creating schema:', error)
-      toast.error('Ett fel uppstod')
-    } finally {
-      setIsCreatingSchema(false)
-    }
-  }
-
   const handleDeleteSchema = async (id: string) => {
     if (!confirm('Är du säker på att du vill radera detta schema?')) {
       return
@@ -311,6 +244,18 @@ export default function CatalogAdminPage() {
     } catch (error) {
       console.error('Error fetching schema:', error)
       toast.error('Kunde inte hämta schemat')
+    }
+  }
+
+  const handleOpenEditor = (schemaId?: string) => {
+    setEditingSchemaId(schemaId || null)
+    setEditorOpen(true)
+  }
+
+  const handleEditorSave = () => {
+    fetchData()
+    if (editingSchemaId) {
+      viewSchema(editingSchemaId)
     }
   }
 
@@ -361,102 +306,20 @@ export default function CatalogAdminPage() {
           </Button>
         )}
 
-        <Dialog open={newSchemaDialog} onOpenChange={setNewSchemaDialog}>
-          <DialogTrigger asChild>
-            <Button variant="outline">
-              <Plus className="w-4 h-4 mr-2" />
-              Nytt schema
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Skapa nytt kostschema</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div>
-                <Label>Kategori</Label>
-                <Select
-                  value={newSchema.categoryId}
-                  onValueChange={(val) => setNewSchema({ ...newSchema, categoryId: val })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Välj kategori" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Namn</Label>
-                <Input
-                  value={newSchema.name}
-                  onChange={(e) => setNewSchema({ ...newSchema, name: e.target.value })}
-                  placeholder="T.ex. Standard 2000 kcal"
-                />
-              </div>
-              <div>
-                <Label>Beskrivning (valfritt)</Label>
-                <Textarea
-                  value={newSchema.description}
-                  onChange={(e) => setNewSchema({ ...newSchema, description: e.target.value })}
-                  placeholder="Kort beskrivning av schemat"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Kalorier (kcal)</Label>
-                  <Input
-                    type="number"
-                    value={newSchema.calorieLevel}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value) || 0
-                      setNewSchema({ ...newSchema, calorieLevel: val, totalKcal: val })
-                    }}
-                  />
-                </div>
-                <div>
-                  <Label>Protein (g)</Label>
-                  <Input
-                    type="number"
-                    value={newSchema.totalProtein}
-                    onChange={(e) => setNewSchema({ ...newSchema, totalProtein: parseInt(e.target.value) || 0 })}
-                  />
-                </div>
-                <div>
-                  <Label>Kolhydrater (g)</Label>
-                  <Input
-                    type="number"
-                    value={newSchema.totalCarbs}
-                    onChange={(e) => setNewSchema({ ...newSchema, totalCarbs: parseInt(e.target.value) || 0 })}
-                  />
-                </div>
-                <div>
-                  <Label>Fett (g)</Label>
-                  <Input
-                    type="number"
-                    value={newSchema.totalFat}
-                    onChange={(e) => setNewSchema({ ...newSchema, totalFat: parseInt(e.target.value) || 0 })}
-                  />
-                </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Avbryt</Button>
-              </DialogClose>
-              <Button onClick={handleCreateSchema} disabled={isCreatingSchema}>
-                {isCreatingSchema ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                Skapa schema
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Button variant="outline" onClick={() => handleOpenEditor()}>
+          <Plus className="w-4 h-4 mr-2" />
+          Nytt schema
+        </Button>
       </div>
+
+      {/* Full Schema Editor */}
+      <CatalogSchemaEditor
+        open={editorOpen}
+        onOpenChange={setEditorOpen}
+        schemaId={editingSchemaId}
+        categories={categories.map((c) => ({ id: c.id, name: c.name }))}
+        onSave={handleEditorSave}
+      />
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Categories & Schemas List */}
@@ -572,15 +435,25 @@ export default function CatalogAdminPage() {
                   {selectedSchema ? selectedSchema.name : 'Välj ett schema'}
                 </span>
                 {selectedSchema && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    onClick={() => handleDeleteSchema(selectedSchema.id)}
-                  >
-                    <Trash2 className="w-4 h-4 mr-1" />
-                    Radera
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleOpenEditor(selectedSchema.id)}
+                    >
+                      <Edit2 className="w-4 h-4 mr-1" />
+                      Redigera
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      onClick={() => handleDeleteSchema(selectedSchema.id)}
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Radera
+                    </Button>
+                  </div>
                 )}
               </CardTitle>
             </CardHeader>
