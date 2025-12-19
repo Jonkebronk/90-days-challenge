@@ -13,6 +13,7 @@ import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
 import { MacroDisplay } from '@/components/meal-plan/MacroDisplay'
 import { AdjustMacrosWizard } from '@/components/meal-plan/AdjustMacrosWizard'
 import { MealPlanGenerator } from '@/components/meal-plan-generator'
+import { MealPlanCatalog } from '@/components/meal-plan/catalog'
 
 interface MealPlanItem {
   id: string
@@ -113,6 +114,7 @@ export default function MealPlanPage() {
   const [flexibleTargetMacros, setFlexibleTargetMacros] = useState<{ protein: number; carbs: number; fat: number; kcal: number } | null>(null)
   const [showAdjustWizard, setShowAdjustWizard] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0) // For forcing FlexibleMealPlan reload
+  const [catalogOpen, setCatalogOpen] = useState(false)
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
@@ -366,6 +368,13 @@ export default function MealPlanPage() {
         onSave={handleSaveAdjustments}
       />
 
+      {/* Meal Plan Catalog */}
+      <MealPlanCatalog
+        open={catalogOpen}
+        onOpenChange={setCatalogOpen}
+        clientKcal={flexibleTargetMacros?.kcal || currentTarget.calories}
+      />
+
       {/* Introduction Buttons */}
       <div className="flex flex-wrap gap-3 justify-center">
         {mealPlanDescriptionContent && (
@@ -499,6 +508,13 @@ export default function MealPlanPage() {
             </div>
           </DialogContent>
         </Dialog>
+        <Button
+          onClick={() => setCatalogOpen(true)}
+          className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all"
+        >
+          <Sparkles className="w-4 h-4 mr-2" />
+          Inspiration
+        </Button>
       </div>
 
       {/* Main Content */}
