@@ -71,7 +71,12 @@
       "WebFetch(domain:www.anthropic.com)",
       "Bash(node scripts/get-subcategories.js:*)",
       "Bash(git revert:*)",
-      "Bash(dir /s /b \"C:\\\\Users\\\\johnn\\\\90-days-challenge\\\\*.md\")"
+      "Bash(dir /s /b \"C:\\\\Users\\\\johnn\\\\90-days-challenge\\\\*.md\")",
+      "Bash(node scripts/check-bar2.js:*)",
+      "Bash(node scripts/check-bar4.js:*)",
+      "Bash(node scripts/test-api.js:*)",
+      "Bash(node scripts/compare-sources.js:*)",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []
