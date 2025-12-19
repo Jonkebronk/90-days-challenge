@@ -5,14 +5,16 @@ import { CatalogSchema, calculateScaleFactor, calculateMacroPercentages } from '
 import { CatalogMealCard } from './CatalogMealCard'
 import { MacroScaler } from './MacroScaler'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { BookOpen } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { BookOpen, Pencil, Plus } from 'lucide-react'
 
 interface CatalogDetailProps {
   schema: CatalogSchema | null
   clientKcal?: number
+  onEditSchema?: (schemaId: string) => void
 }
 
-export function CatalogDetail({ schema, clientKcal }: CatalogDetailProps) {
+export function CatalogDetail({ schema, clientKcal, onEditSchema }: CatalogDetailProps) {
   const [isScaled, setIsScaled] = useState(false)
 
   if (!schema) {
@@ -22,10 +24,10 @@ export function CatalogDetail({ schema, clientKcal }: CatalogDetailProps) {
           <BookOpen className="w-8 h-8 text-gray-400" />
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">
-          Välj ett kostschema
+          Inga scheman ännu
         </h3>
-        <p className="text-sm text-gray-500 max-w-xs">
-          Klicka på ett schema i listan till vänster för att se dess innehåll och få inspiration.
+        <p className="text-sm text-gray-500 max-w-xs mb-4">
+          Klicka på &quot;Nytt schema&quot; för att skapa ditt första kostschema.
         </p>
       </div>
     )
@@ -50,10 +52,22 @@ export function CatalogDetail({ schema, clientKcal }: CatalogDetailProps) {
     <ScrollArea className="flex-1 h-full">
       <div className="p-6 space-y-6">
         {/* Schema Header */}
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-1">{schema.name}</h2>
-          {schema.description && (
-            <p className="text-sm text-gray-600">{schema.description}</p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">{schema.name}</h2>
+            {schema.description && (
+              <p className="text-sm text-gray-600">{schema.description}</p>
+            )}
+          </div>
+          {onEditSchema && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onEditSchema(schema.id)}
+            >
+              <Pencil className="w-4 h-4 mr-1" />
+              Redigera
+            </Button>
           )}
         </div>
 
