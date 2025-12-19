@@ -122,13 +122,10 @@ export function MealPlanCatalog({ open, onOpenChange, clientKcal }: MealPlanCata
 
   return (
     <>
-      <Sheet open={open} onOpenChange={onOpenChange} modal={false}>
+      <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent
           side="right"
-          className="w-full max-w-5xl sm:max-w-6xl p-0 flex flex-col shadow-2xl"
-          hideOverlay
-          onInteractOutside={(e) => e.preventDefault()}
-          onPointerDownOutside={(e) => e.preventDefault()}
+          className="w-full max-w-5xl sm:max-w-6xl p-0 flex flex-col shadow-2xl bg-white"
         >
           <SheetHeader className="px-6 py-4 border-b border-gray-200 shrink-0">
             <div className="flex items-center justify-between">
