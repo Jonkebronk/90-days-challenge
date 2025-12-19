@@ -117,6 +117,12 @@ export function MealPlanCatalog({ open, onOpenChange, clientKcal }: MealPlanCata
     fetchData(true)
   }
 
+  // Handle category created - refresh data
+  const handleCategoryCreated = () => {
+    setHasFetched(false)
+    fetchData(true)
+  }
+
   // Get categories for editor (from API format)
   const editorCategories = categories.map(c => ({ id: c.id, name: c.name }))
 
@@ -202,6 +208,7 @@ export function MealPlanCatalog({ open, onOpenChange, clientKcal }: MealPlanCata
                 selectedSchemaId={selectedSchemaId}
                 onSelectSchema={setSelectedSchemaId}
                 isLoading={isLoading}
+                onCategoryCreated={handleCategoryCreated}
               />
             </div>
 

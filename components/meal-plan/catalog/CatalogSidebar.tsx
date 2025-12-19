@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { CatalogCategory, CatalogSchema } from '@/lib/kostschema/catalog'
 import {
   Accordion,
@@ -7,10 +8,21 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Plus } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface CatalogSidebarProps {
   categories: CatalogCategory[]
@@ -18,6 +30,7 @@ interface CatalogSidebarProps {
   selectedSchemaId: string | null
   onSelectSchema: (schemaId: string) => void
   isLoading?: boolean
+  onCategoryCreated?: () => void
 }
 
 export function CatalogSidebar({
@@ -25,8 +38,43 @@ export function CatalogSidebar({
   schemas,
   selectedSchemaId,
   onSelectSchema,
-  isLoading = false
+  isLoading = false,
+  onCategoryCreated
 }: CatalogSidebarProps) {
+  const [showAddCategory, setShowAddCategory] = useState(false)
+  const [newCategoryName, setNewCategoryName] = useState('')
+  const [isCreating, setIsCreating] = useState(false)
+
+  const handleCreateCategory = async () => {
+    if (!newCategoryName.trim()) {
+      toast.error('Ange ett kategorinamn')
+      return
+    }
+
+    setIsCreating(true)
+    try {
+      const res = await fetch('/api/catalog/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newCategoryName.trim() })
+      })
+
+      if (res.ok) {
+        toast.success('Kategori skapad!')
+        setNewCategoryName('')
+        setShowAddCategory(false)
+        onCategoryCreated?.()
+      } else {
+        const data = await res.json()
+        toast.error(data.error || 'Kunde inte skapa kategori')
+      }
+    } catch (error) {
+      toast.error('Ett fel uppstod')
+    } finally {
+      setIsCreating(false)
+    }
+  }
+
   const getSchemasByCategory = (categoryId: string) => {
     return schemas
       .filter(s => s.categoryId === categoryId)
@@ -40,10 +88,23 @@ export function CatalogSidebar({
   return (
     <div className="w-72 border-r border-gray-200 bg-gray-50 flex flex-col h-full">
       <div className="p-4 border-b border-gray-200">
-        <h2 className="font-semibold text-gray-900">Kategorier</h2>
-        <p className="text-xs text-gray-500 mt-0.5">
-          {isLoading ? 'Laddar...' : `${schemas.length} scheman tillgängliga`}
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-semibold text-gray-900">Kategorier</h2>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {isLoading ? 'Laddar...' : `${schemas.length} scheman tillgängliga`}
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowAddCategory(true)}
+            className="h-8 w-8"
+            title="Lägg till kategori"
+          >
+            <Plus className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -118,6 +179,40 @@ export function CatalogSidebar({
           <span><span className="text-blue-600 font-medium">F</span> = Fett</span>
         </div>
       </div>
+
+      {/* Add Category Dialog */}
+      <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Ny kategori</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="categoryName">Kategorinamn</Label>
+              <Input
+                id="categoryName"
+                placeholder="T.ex. Vegetariskt, Lågkolhydrat..."
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleCreateCategory()}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddCategory(false)}>
+              Avbryt
+            </Button>
+            <Button
+              onClick={handleCreateCategory}
+              disabled={isCreating || !newCategoryName.trim()}
+              className="bg-gold-primary hover:bg-gold-primary/90 text-black"
+            >
+              {isCreating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Skapa
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
