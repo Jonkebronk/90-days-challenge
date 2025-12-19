@@ -133,22 +133,22 @@ export function MealPlanCatalog({ open, onOpenChange, clientKcal }: MealPlanCata
           side="right"
           className="w-full max-w-5xl sm:max-w-6xl p-0 flex flex-col shadow-2xl bg-white"
         >
-          <SheetHeader className="px-6 py-4 border-b border-gray-200 shrink-0">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gold-primary/10 flex items-center justify-center">
-                  <BookOpen className="w-5 h-5 text-gold-primary" />
+          <SheetHeader className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 shrink-0">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gold-primary/10 flex items-center justify-center shrink-0">
+                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-gold-primary" />
                 </div>
-                <div>
-                  <SheetTitle className="text-xl">Kostschema-katalog</SheetTitle>
-                  <SheetDescription>
+                <div className="min-w-0">
+                  <SheetTitle className="text-base sm:text-xl truncate">Kostschema-katalog</SheetTitle>
+                  <SheetDescription className="hidden sm:block">
                     Inspirerande kostscheman för olika kalorimål och kosttyper
                   </SheetDescription>
                 </div>
               </div>
-              <Button onClick={handleCreateSchema} className="bg-gold-primary hover:bg-gold-primary/90 text-black">
-                <Plus className="w-4 h-4 mr-2" />
-                Nytt schema
+              <Button onClick={handleCreateSchema} className="bg-gold-primary hover:bg-gold-primary/90 text-black shrink-0" size="sm">
+                <Plus className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Nytt schema</span>
               </Button>
             </div>
           </SheetHeader>

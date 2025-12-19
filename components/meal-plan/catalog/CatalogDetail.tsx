@@ -50,11 +50,11 @@ export function CatalogDetail({ schema, clientKcal, onEditSchema }: CatalogDetai
 
   return (
     <ScrollArea className="flex-1 h-full">
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
         {/* Schema Header */}
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-1">{schema.name}</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">{schema.name}</h2>
             {schema.description && (
               <p className="text-sm text-gray-600">{schema.description}</p>
             )}
@@ -64,6 +64,7 @@ export function CatalogDetail({ schema, clientKcal, onEditSchema }: CatalogDetai
               variant="outline"
               size="sm"
               onClick={() => onEditSchema(schema.id)}
+              className="w-fit"
             >
               <Pencil className="w-4 h-4 mr-1" />
               Redigera
@@ -72,13 +73,13 @@ export function CatalogDetail({ schema, clientKcal, onEditSchema }: CatalogDetai
         </div>
 
         {/* Macro Summary */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-700 uppercase tracking-wider">
+        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 sm:p-5 border border-gray-200">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+            <h3 className="text-xs sm:text-sm font-medium text-gray-700 uppercase tracking-wider">
               Dagligt intag
             </h3>
-            <div className="text-2xl font-bold text-gray-900">
-              {displayTotals.kcal} <span className="text-base font-normal text-gray-500">kcal</span>
+            <div className="text-xl sm:text-2xl font-bold text-gray-900">
+              {displayTotals.kcal} <span className="text-sm sm:text-base font-normal text-gray-500">kcal</span>
             </div>
           </div>
 
