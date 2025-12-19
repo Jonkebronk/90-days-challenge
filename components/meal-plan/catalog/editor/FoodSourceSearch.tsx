@@ -65,7 +65,7 @@ export function FoodSourceSearch({ onSelect, category }: FoodSourceSearchProps) 
 
   // Debounced search
   const searchFoods = useCallback(async (query: string, source: string) => {
-    if (!query || query.length < 2) {
+    if (!query || query.length < 1) {
       setResults([])
       return
     }
@@ -206,14 +206,14 @@ export function FoodSourceSearch({ onSelect, category }: FoodSourceSearchProps) 
 
         <TabsContent value={activeTab} className="mt-2">
           <ScrollArea className="h-[300px]">
-            {results.length === 0 && !isLoading && searchQuery.length >= 2 && (
+            {results.length === 0 && !isLoading && searchQuery.length >= 1 && (
               <div className="text-center py-8 text-gray-500 text-sm">
                 Inga resultat hittades
               </div>
             )}
-            {results.length === 0 && !isLoading && searchQuery.length < 2 && (
+            {results.length === 0 && !isLoading && searchQuery.length < 1 && (
               <div className="text-center py-8 text-gray-400 text-sm">
-                Skriv minst 2 tecken för att söka
+                Sök efter livsmedel, recept eller SLV-produkter
               </div>
             )}
             <div className="space-y-1">
