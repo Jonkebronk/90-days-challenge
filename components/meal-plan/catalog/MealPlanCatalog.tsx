@@ -36,10 +36,11 @@ export function MealPlanCatalog({ open, onOpenChange, clientKcal }: MealPlanCata
   const selectedSchema = selectedSchemaId ? getSchemaById(selectedSchemaId) : null
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={onOpenChange} modal={false}>
       <SheetContent
         side="right"
-        className="w-full max-w-5xl sm:max-w-6xl p-0 flex flex-col"
+        className="w-full max-w-5xl sm:max-w-6xl p-0 flex flex-col shadow-2xl"
+        hideOverlay
       >
         <SheetHeader className="px-6 py-4 border-b border-gray-200 shrink-0">
           <div className="flex items-center gap-3">
