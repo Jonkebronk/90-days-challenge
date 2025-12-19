@@ -7,8 +7,6 @@ import {
   Database,
   RefreshCw,
   Loader2,
-  ChevronDown,
-  ChevronRight,
   Calendar,
   Package,
   Beef,
@@ -23,12 +21,12 @@ import {
   Leaf,
   Baby,
   MoreHorizontal,
-  ArrowUpDown,
   LayoutGrid,
   List,
   Flame,
   Dumbbell,
-  Zap
+  Zap,
+  ChevronDown
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -43,223 +41,127 @@ interface SLVData {
 }
 
 // Meta-categories to group 118 categories into ~12 manageable groups
-const META_CATEGORIES: Record<string, { icon: any; color: string; subCategories: string[] }> = {
+const META_CATEGORIES: Record<string, { icon: any; color: string; gradient: string; subCategories: string[] }> = {
   'Kött & Fågel': {
     icon: Beef,
     color: 'rose',
+    gradient: 'from-rose-500 to-red-600',
     subCategories: [
-      'Blodmat',
-      'Blodprodukter blodrätter',
-      'Fågel ',
-      'Fågelprodukter fågelrätter',
-      'Inälvor och organ',
-      'Inälvor organ produkter o rätter',
-      'Korv',
-      'Korvrätter',
-      'Kött färskt fryst tillagat ',
-      'Kött processat',
-      'Köttprodukter kötträtter',
-      'Sylta',
+      'Blodmat', 'Blodprodukter blodrätter', 'Fågel ', 'Fågelprodukter fågelrätter',
+      'Inälvor och organ', 'Inälvor organ produkter o rätter', 'Korv', 'Korvrätter',
+      'Kött färskt fryst tillagat ', 'Kött processat', 'Köttprodukter kötträtter', 'Sylta',
       'Övrigt animaliskt "kött", grodlår, sniglar, säl - färskt, fryst, tillagat'
     ]
   },
   'Fisk & Skaldjur': {
     icon: Fish,
     color: 'sky',
+    gradient: 'from-sky-500 to-blue-600',
     subCategories: [
-      'Fisk färsk fryst kokt',
-      'Fisk o skaldjursprodukter o rätter',
-      'Fisk rökt',
-      'Fisk stekt ej panerad',
-      'Rom, kaviar',
-      'Skaldjur bläckfisk färsk fryst kokt'
+      'Fisk färsk fryst kokt', 'Fisk o skaldjursprodukter o rätter', 'Fisk rökt',
+      'Fisk stekt ej panerad', 'Rom, kaviar', 'Skaldjur bläckfisk färsk fryst kokt'
     ]
   },
   'Mejeri & Ägg': {
     icon: Milk,
     color: 'blue',
+    gradient: 'from-blue-500 to-indigo-600',
     subCategories: [
-      'Dessertost',
-      'Färskost o kvarg',
-      'Grädde creme fraiche',
-      'Hård ost mm',
-      'Mesvaror',
-      'Mjölk',
-      'Mjölkdryck chokladdryck milkshake smothie m yoghurt',
-      'Naturell fil yoghurt',
-      'Ost med vegetabiliskt fett',
-      'Osträtter',
-      'Smaksatt fil yoghurt',
-      'Smältost',
-      'Smör',
-      'Ägg ',
-      'Äggprodukter o rätter'
+      'Dessertost', 'Färskost o kvarg', 'Grädde creme fraiche', 'Hård ost mm', 'Mesvaror',
+      'Mjölk', 'Mjölkdryck chokladdryck milkshake smothie m yoghurt', 'Naturell fil yoghurt',
+      'Ost med vegetabiliskt fett', 'Osträtter', 'Smaksatt fil yoghurt', 'Smältost', 'Smör',
+      'Ägg ', 'Äggprodukter o rätter'
     ]
   },
   'Grönsaker & Baljväxter': {
     icon: Carrot,
     color: 'green',
+    gradient: 'from-green-500 to-emerald-600',
     subCategories: [
-      'Algprodukter',
-      'Baljväxter (bönor, linser och ärter)',
-      'Grönsaker',
-      'Grönsaks- rotfrukts- baljväxträtter o produkter',
-      'Grönsaksblandningar med rotfrukter och eller baljväxter',
-      'Grönsaksjuice rotfruktsjuice',
-      'Potatis',
-      'Potatisprodukter potatisrätter',
-      'Rotfrukter',
-      'Svamp'
+      'Algprodukter', 'Baljväxter (bönor, linser och ärter)', 'Grönsaker',
+      'Grönsaks- rotfrukts- baljväxträtter o produkter', 'Grönsaksblandningar med rotfrukter och eller baljväxter',
+      'Grönsaksjuice rotfruktsjuice', 'Potatis', 'Potatisprodukter potatisrätter', 'Rotfrukter', 'Svamp'
     ]
   },
   'Frukt & Bär': {
     icon: Apple,
     color: 'red',
+    gradient: 'from-red-500 to-orange-600',
     subCategories: [
-      'Bär färska frysta',
-      'Frukt färsk fryst',
-      'Frukt o bär konserverade',
-      'Frukt o bär torkade',
-      'Frukt o nötblandningar bars',
-      'Nötter frön'
+      'Bär färska frysta', 'Frukt färsk fryst', 'Frukt o bär konserverade',
+      'Frukt o bär torkade', 'Frukt o nötblandningar bars', 'Nötter frön'
     ]
   },
   'Bröd & Spannmål': {
     icon: Wheat,
     color: 'amber',
+    gradient: 'from-amber-500 to-yellow-600',
     subCategories: [
-      'Flingor - frukostflingor',
-      'Grynrätter',
-      'Gröt',
-      'Hårt bröd ',
-      'Matgryn',
-      'Mjukt bröd ',
-      'Mjöl stärkelse kli',
-      'Pasta',
-      'Pastarätter',
-      'Ris risnudlar',
-      'Riskakor',
-      'Risrätter',
-      'Smörgåskex'
+      'Flingor - frukostflingor', 'Grynrätter', 'Gröt', 'Hårt bröd ', 'Matgryn',
+      'Mjukt bröd ', 'Mjöl stärkelse kli', 'Pasta', 'Pastarätter', 'Ris risnudlar',
+      'Riskakor', 'Risrätter', 'Smörgåskex'
     ]
   },
   'Snacks & Godis': {
     icon: Cookie,
     color: 'pink',
+    gradient: 'from-pink-500 to-rose-600',
     subCategories: [
-      'Bullar kakor tårtor mm',
-      'Chips popcorn o dyl',
-      'Choklad ',
-      'Efterrätter',
-      'Glass',
-      'Godis choklad tuggummi',
-      'Godis ej choklad',
-      'Godis som innehåller choklad',
-      'Sockerfritt godis',
-      'Sylt marmelad gelé äppelmos o dyl',
-      'Söta soppor kräm o efterrättssås'
+      'Bullar kakor tårtor mm', 'Chips popcorn o dyl', 'Choklad ', 'Efterrätter', 'Glass',
+      'Godis choklad tuggummi', 'Godis ej choklad', 'Godis som innehåller choklad',
+      'Sockerfritt godis', 'Sylt marmelad gelé äppelmos o dyl', 'Söta soppor kräm o efterrättssås'
     ]
   },
   'Drycker': {
     icon: Wine,
     color: 'purple',
+    gradient: 'from-purple-500 to-violet-600',
     subCategories: [
-      'Cider alkoläsk drink',
-      'Dryck',
-      'Fruktjuice mm',
-      'Kaffe',
-      'Lightdrycker u energi',
-      'Likör',
-      'Saft läsk cider u alkohol ',
-      'Sportdrycker energidrycker',
-      'Starksprit',
-      'Te',
-      'Vatten mineralvatten',
-      'Vin',
-      'Öl',
-      'Övriga sötade drycker vattenchoklad'
+      'Cider alkoläsk drink', 'Dryck', 'Fruktjuice mm', 'Kaffe', 'Lightdrycker u energi', 'Likör',
+      'Saft läsk cider u alkohol ', 'Sportdrycker energidrycker', 'Starksprit', 'Te',
+      'Vatten mineralvatten', 'Vin', 'Öl', 'Övriga sötade drycker vattenchoklad'
     ]
   },
   'Matlagning & Kryddor': {
     icon: Soup,
     color: 'orange',
+    gradient: 'from-orange-500 to-amber-600',
     subCategories: [
-      'Buljong',
-      'Flytande matfettsblandning',
-      'Gelatin agar agar',
-      'Hård matfettsblandning',
-      'Jäst bakpulver',
-      'Kryddor ',
-      'Majonnässallad röror',
-      'Olja',
-      'Salt',
-      'Senap ketchup HP-sås soja "smaksättare"',
-      'Socker sirap honung',
-      'Sås dressing majonnäs ',
-      'Sötningsmedel',
-      'Ättika vinäger',
-      'Övrigt fett (ister, talg, kokosfett)'
+      'Buljong', 'Flytande matfettsblandning', 'Gelatin agar agar', 'Hård matfettsblandning',
+      'Jäst bakpulver', 'Kryddor ', 'Majonnässallad röror', 'Olja', 'Salt',
+      'Senap ketchup HP-sås soja "smaksättare"', 'Socker sirap honung', 'Sås dressing majonnäs ',
+      'Sötningsmedel', 'Ättika vinäger', 'Övrigt fett (ister, talg, kokosfett)'
     ]
   },
   'Färdigrätter': {
     icon: Package,
     color: 'slate',
+    gradient: 'from-slate-500 to-gray-600',
     subCategories: [
-      'Hamburgare med  bröd (kött, fisk, fågel, vegetarisk)',
-      'Pannkakor, våfflor, crêpes',
-      'Pizza paj pirog färdig smörgås',
-      'Sallad blandad mat',
-      'Soppa mat',
-      'Tacoskal',
+      'Hamburgare med  bröd (kött, fisk, fågel, vegetarisk)', 'Pannkakor, våfflor, crêpes',
+      'Pizza paj pirog färdig smörgås', 'Sallad blandad mat', 'Soppa mat', 'Tacoskal',
       'Övriga ospecificerade blandade rätter'
     ]
   },
   'Vegetariskt': {
     icon: Leaf,
     color: 'emerald',
+    gradient: 'from-emerald-500 to-green-600',
     subCategories: [
-      'Vegetabiliska produkter och mjölkersättning',
-      'Vegetabiliskt protein produkter och rätter'
-    ]
-  },
-  'Barn & Kosttillskott': {
-    icon: Baby,
-    color: 'cyan',
-    subCategories: [
-      'Barnmatsprodukter exkl. välling o gröt',
-      'Kost- o näringspreparat',
-      'Välling'
+      'Vegetabiliska produkter och mjölkersättning', 'Vegetabiliskt protein produkter och rätter'
     ]
   },
   'Övrigt': {
     icon: MoreHorizontal,
     color: 'gray',
+    gradient: 'from-gray-500 to-slate-600',
     subCategories: [
-      'Kakaoprodukter',
-      'Tuggummi',
-      'Övrigt'
+      'Barnmatsprodukter exkl. välling o gröt', 'Kost- o näringspreparat', 'Välling',
+      'Kakaoprodukter', 'Tuggummi', 'Övrigt'
     ]
   }
 }
 
-// Color classes for each meta-category
-const COLOR_CLASSES: Record<string, { bg: string; border: string; text: string; iconBg: string }> = {
-  rose: { bg: 'bg-rose-500/5', border: 'border-rose-500/20', text: 'text-rose-400', iconBg: 'bg-rose-500/10' },
-  sky: { bg: 'bg-sky-500/5', border: 'border-sky-500/20', text: 'text-sky-400', iconBg: 'bg-sky-500/10' },
-  blue: { bg: 'bg-blue-500/5', border: 'border-blue-500/20', text: 'text-blue-400', iconBg: 'bg-blue-500/10' },
-  green: { bg: 'bg-green-500/5', border: 'border-green-500/20', text: 'text-green-400', iconBg: 'bg-green-500/10' },
-  red: { bg: 'bg-red-500/5', border: 'border-red-500/20', text: 'text-red-400', iconBg: 'bg-red-500/10' },
-  amber: { bg: 'bg-amber-500/5', border: 'border-amber-500/20', text: 'text-amber-400', iconBg: 'bg-amber-500/10' },
-  pink: { bg: 'bg-pink-500/5', border: 'border-pink-500/20', text: 'text-pink-400', iconBg: 'bg-pink-500/10' },
-  purple: { bg: 'bg-purple-500/5', border: 'border-purple-500/20', text: 'text-purple-400', iconBg: 'bg-purple-500/10' },
-  orange: { bg: 'bg-orange-500/5', border: 'border-orange-500/20', text: 'text-orange-400', iconBg: 'bg-orange-500/10' },
-  slate: { bg: 'bg-slate-500/5', border: 'border-slate-500/20', text: 'text-slate-400', iconBg: 'bg-slate-500/10' },
-  emerald: { bg: 'bg-emerald-500/5', border: 'border-emerald-500/20', text: 'text-emerald-400', iconBg: 'bg-emerald-500/10' },
-  cyan: { bg: 'bg-cyan-500/5', border: 'border-cyan-500/20', text: 'text-cyan-400', iconBg: 'bg-cyan-500/10' },
-  gray: { bg: 'bg-gray-500/5', border: 'border-gray-500/20', text: 'text-gray-400', iconBg: 'bg-gray-500/10' },
-}
-
-type SortField = 'namn' | 'kcal' | 'protein' | 'carbs' | 'fat'
 type NutritionFilter = 'all' | 'high-protein' | 'low-kcal' | 'low-carb' | 'high-fiber'
 type ViewMode = 'grid' | 'list'
 
@@ -279,11 +181,9 @@ export default function SLVLivsmedelPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isRebuilding, setIsRebuilding] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [expandedMetas, setExpandedMetas] = useState<Set<string>>(new Set())
-  const [expandedSubs, setExpandedSubs] = useState<Set<string>>(new Set())
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
   const [selectedFood, setSelectedFood] = useState<SLVFood | null>(null)
-  const [sortField, setSortField] = useState<SortField>('namn')
-  const [sortAsc, setSortAsc] = useState(true)
   const [nutritionFilter, setNutritionFilter] = useState<NutritionFilter>('all')
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
 
@@ -333,110 +233,88 @@ export default function SLVLivsmedelPage() {
     }
   }
 
-  const toggleMeta = (meta: string) => {
-    setExpandedMetas(prev => {
-      const next = new Set(prev)
-      if (next.has(meta)) {
-        next.delete(meta)
-      } else {
-        next.add(meta)
-      }
-      return next
-    })
-  }
+  // Get all foods for current filters
+  const filteredFoods = useMemo(() => {
+    if (!data) return []
 
-  const toggleSub = (sub: string) => {
-    setExpandedSubs(prev => {
-      const next = new Set(prev)
-      if (next.has(sub)) {
-        next.delete(sub)
-      } else {
-        next.add(sub)
-      }
-      return next
-    })
-  }
-
-  const expandAllMetas = () => {
-    setExpandedMetas(new Set(Object.keys(META_CATEGORIES)))
-  }
-
-  const collapseAll = () => {
-    setExpandedMetas(new Set())
-    setExpandedSubs(new Set())
-  }
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortAsc(!sortAsc)
-    } else {
-      setSortField(field)
-      setSortAsc(field === 'namn')
-    }
-  }
-
-  // Build grouped data by meta-category
-  const groupedData = useMemo(() => {
-    if (!data) return {}
-
-    const result: Record<string, { subCategories: Record<string, SLVFood[]>; totalCount: number }> = {}
     const query = searchQuery.toLowerCase().split(/\s+/).filter(w => w.length > 0)
     const filterFn = NUTRITION_FILTERS[nutritionFilter].fn
 
-    for (const [metaName, metaConfig] of Object.entries(META_CATEGORIES)) {
-      const subCategories: Record<string, SLVFood[]> = {}
-      let metaTotal = 0
+    let foods: SLVFood[] = []
 
-      for (const subCat of metaConfig.subCategories) {
-        const foods = data.categories[subCat] || []
-        let filtered = foods
-
-        // Apply search filter
-        if (query.length > 0) {
-          filtered = filtered.filter(food => {
-            const name = food.namn.toLowerCase()
-            return query.every(word => name.includes(word))
-          })
-        }
-
-        // Apply nutrition filter
-        filtered = filtered.filter(filterFn)
-
-        // Apply sorting
-        filtered = [...filtered].sort((a, b) => {
-          let cmp = 0
-          if (sortField === 'namn') {
-            cmp = a.namn.localeCompare(b.namn, 'sv')
-          } else {
-            cmp = (a[sortField] ?? 0) - (b[sortField] ?? 0)
+    // Get foods from selected category or all categories
+    if (selectedCategory) {
+      const metaConfig = META_CATEGORIES[selectedCategory]
+      if (metaConfig) {
+        if (selectedSubcategory) {
+          // Only from selected subcategory
+          foods = data.categories[selectedSubcategory] || []
+        } else {
+          // From all subcategories of the meta category
+          for (const subCat of metaConfig.subCategories) {
+            foods = [...foods, ...(data.categories[subCat] || [])]
           }
-          return sortAsc ? cmp : -cmp
-        })
-
-        if (filtered.length > 0) {
-          subCategories[subCat] = filtered
-          metaTotal += filtered.length
         }
       }
-
-      if (metaTotal > 0) {
-        result[metaName] = { subCategories, totalCount: metaTotal }
+    } else {
+      // All foods from all categories
+      for (const categoryFoods of Object.values(data.categories)) {
+        foods = [...foods, ...categoryFoods]
       }
     }
 
-    return result
-  }, [data, searchQuery, nutritionFilter, sortField, sortAsc])
+    // Apply search filter
+    if (query.length > 0) {
+      foods = foods.filter(food => {
+        const name = food.namn.toLowerCase()
+        return query.every(word => name.includes(word))
+      })
+    }
 
-  const totalFiltered = useMemo(() => {
-    return Object.values(groupedData).reduce((sum, meta) => sum + meta.totalCount, 0)
-  }, [groupedData])
+    // Apply nutrition filter
+    foods = foods.filter(filterFn)
+
+    // Sort alphabetically
+    foods = foods.sort((a, b) => a.namn.localeCompare(b.namn, 'sv'))
+
+    return foods
+  }, [data, searchQuery, selectedCategory, selectedSubcategory, nutritionFilter])
+
+  // Get category counts
+  const categoryCounts = useMemo(() => {
+    if (!data) return {}
+
+    const counts: Record<string, number> = {}
+    for (const [metaName, metaConfig] of Object.entries(META_CATEGORIES)) {
+      let count = 0
+      for (const subCat of metaConfig.subCategories) {
+        count += (data.categories[subCat] || []).length
+      }
+      counts[metaName] = count
+    }
+    return counts
+  }, [data])
+
+  // Get subcategory counts for selected category
+  const subCategoryCounts = useMemo(() => {
+    if (!data || !selectedCategory) return {}
+
+    const metaConfig = META_CATEGORIES[selectedCategory]
+    if (!metaConfig) return {}
+
+    const counts: Record<string, number> = {}
+    for (const subCat of metaConfig.subCategories) {
+      counts[subCat] = (data.categories[subCat] || []).length
+    }
+    return counts
+  }, [data, selectedCategory])
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-amber-500 mx-auto mb-4" />
-          <p className="text-gray-400">Laddar livsmedel...</p>
+          <Loader2 className="w-12 h-12 animate-spin text-emerald-500 mx-auto mb-4" />
+          <p className="text-gray-500">Laddar livsmedel...</p>
         </div>
       </div>
     )
@@ -446,8 +324,8 @@ export default function SLVLivsmedelPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Database className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-400 mb-4">Ingen data hittades</p>
+          <Database className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <p className="text-gray-500 mb-4">Ingen data hittades</p>
           {isCoach && (
             <Button onClick={handleRebuild} disabled={isRebuilding}>
               {isRebuilding ? (
@@ -471,287 +349,264 @@ export default function SLVLivsmedelPage() {
   const lastUpdated = new Date(data.lastUpdated).toLocaleDateString('sv-SE', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+    day: 'numeric'
   })
 
+  const mainCategories = Object.entries(META_CATEGORIES).slice(0, 6)
+  const secondaryCategories = Object.entries(META_CATEGORIES).slice(6)
+
   return (
-    <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
+    <div className="min-h-screen">
       {/* Header */}
-      <div className="text-center mb-4 sm:mb-6">
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-3 sm:mb-4 opacity-30" />
-        <h1 className="font-['Orbitron',sans-serif] text-xl sm:text-2xl md:text-3xl font-black tracking-[1px] sm:tracking-[2px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-2">
-          Livsmedelsverkets databas
-        </h1>
-        <div className="flex items-center justify-center gap-2 sm:gap-4 text-gray-400 text-xs sm:text-sm">
-          <span>{data.totalCount} livsmedel</span>
-          <span>•</span>
-          <span>{Object.keys(META_CATEGORIES).length} kategorier</span>
-          <span>•</span>
-          <span className="flex items-center gap-1">
-            <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-            {lastUpdated}
-          </span>
-        </div>
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-3 sm:mt-4 opacity-30" />
-
-        {isCoach && (
-          <Button
-            onClick={handleRebuild}
-            disabled={isRebuilding}
-            variant="outline"
-            className="mt-4 bg-transparent border-amber-500/50 text-amber-500 hover:bg-amber-500/10 hover:border-amber-500"
-          >
-            {isRebuilding ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Uppdaterar...
-              </>
-            ) : (
-              <>
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Uppdatera data
-              </>
-            )}
-          </Button>
-        )}
-      </div>
-
-      <div className="max-w-6xl mx-auto">
-
-        {/* Search */}
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Sök livsmedel..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-gray-900 border-gray-800 text-white placeholder:text-gray-500"
-          />
-        </div>
-
-        {/* Quick Filters */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {Object.entries(NUTRITION_FILTERS).map(([key, { label, icon: Icon }]) => (
-            <button
-              key={key}
-              onClick={() => setNutritionFilter(key as NutritionFilter)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-all ${
-                nutritionFilter === key
-                  ? 'bg-amber-500 text-gray-900 font-medium'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* Controls Row */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-          {/* Expand/Collapse */}
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={expandAllMetas}
-              className="text-gray-400 hover:text-white"
-            >
-              Expandera alla
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={collapseAll}
-              className="text-gray-400 hover:text-white"
-            >
-              Minimera alla
-            </Button>
-          </div>
-
-          {/* Sort & View */}
-          <div className="flex items-center gap-4">
-            {/* Sort */}
-            <div className="flex items-center gap-2">
-              <span className="text-gray-500 text-sm">Sortera:</span>
-              <div className="flex gap-1">
-                {(['namn', 'kcal', 'protein', 'carbs', 'fat'] as SortField[]).map((field) => (
-                  <button
-                    key={field}
-                    onClick={() => handleSort(field)}
-                    className={`px-2 py-1 rounded text-xs transition-all flex items-center gap-1 ${
-                      sortField === field
-                        ? 'bg-amber-500/20 text-amber-400'
-                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                    }`}
-                  >
-                    {field === 'namn' ? 'Namn' : field === 'kcal' ? 'Kcal' : field === 'protein' ? 'Protein' : field === 'carbs' ? 'Kolh.' : 'Fett'}
-                    {sortField === field && (
-                      <ArrowUpDown className={`w-3 h-3 ${sortAsc ? '' : 'rotate-180'}`} />
-                    )}
-                  </button>
-                ))}
-              </div>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4">
+        <div className="px-4 py-3 sm:py-4">
+          {/* Title row */}
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Livsmedelsdatabas</h1>
+              <p className="text-xs sm:text-sm text-gray-500 flex items-center gap-2">
+                <span>{data.totalCount} livsmedel</span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-3 h-3" />
+                  {lastUpdated}
+                </span>
+              </p>
             </div>
-
-            {/* View Toggle */}
-            <div className="flex gap-1 bg-gray-800 rounded-lg p-1">
-              <button
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {isCoach && (
+                <Button
+                  onClick={handleRebuild}
+                  disabled={isRebuilding}
+                  variant="outline"
+                  size="sm"
+                >
+                  {isRebuilding ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <RefreshCw className="w-4 h-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Uppdatera data</span>
+                    </>
+                  )}
+                </Button>
+              )}
+              <div className="hidden sm:block h-6 w-px bg-gray-200" />
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'outline'}
+                size="sm"
                 onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-gray-700 text-white' : 'text-gray-400'}`}
+                className={viewMode === 'grid' ? 'bg-emerald-600 text-white' : ''}
               >
                 <LayoutGrid className="w-4 h-4" />
-              </button>
-              <button
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'outline'}
+                size="sm"
                 onClick={() => setViewMode('list')}
-                className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-gray-700 text-white' : 'text-gray-400'}`}
+                className={viewMode === 'list' ? 'bg-emerald-600 text-white' : ''}
               >
                 <List className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
+          </div>
+
+          {/* Main categories - 6 items */}
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 sm:gap-2 mb-2">
+            {mainCategories.map(([name, config]) => {
+              const Icon = config.icon
+              const count = categoryCounts[name] || 0
+              const isActive = selectedCategory === name
+
+              return (
+                <button
+                  key={name}
+                  onClick={() => {
+                    if (isActive) {
+                      setSelectedCategory(null)
+                    } else {
+                      setSelectedCategory(name)
+                    }
+                    setSelectedSubcategory(null)
+                  }}
+                  className={`relative flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl transition-all ${
+                    isActive
+                      ? `bg-gradient-to-br ${config.gradient} text-white shadow-lg scale-[1.02]`
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Icon className={`w-5 h-5 sm:w-6 sm:h-6 mb-0.5 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                  <span className="text-[9px] sm:text-xs font-semibold text-center leading-tight line-clamp-1">{name.split(' ')[0]}</span>
+                  {count > 0 && (
+                    <span className={`absolute top-0.5 right-0.5 sm:top-1 sm:right-1 text-[8px] sm:text-[10px] px-1 py-0.5 rounded-full ${
+                      isActive ? 'bg-white/30 text-white' : 'bg-gray-300 text-gray-600'
+                    }`}>
+                      {count}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Secondary categories - 6 items */}
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 sm:gap-2 mb-3">
+            {secondaryCategories.map(([name, config]) => {
+              const Icon = config.icon
+              const count = categoryCounts[name] || 0
+              const isActive = selectedCategory === name
+
+              return (
+                <button
+                  key={name}
+                  onClick={() => {
+                    if (isActive) {
+                      setSelectedCategory(null)
+                    } else {
+                      setSelectedCategory(name)
+                    }
+                    setSelectedSubcategory(null)
+                  }}
+                  className={`relative flex items-center justify-center gap-1 sm:gap-2 p-2 sm:p-2.5 rounded-xl transition-all ${
+                    isActive
+                      ? `bg-gradient-to-br ${config.gradient} text-white shadow-lg scale-[1.02]`
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                  <span className="text-[9px] sm:text-xs font-semibold line-clamp-1">{name.split(' ')[0]}</span>
+                  {count > 0 && (
+                    <span className={`text-[8px] sm:text-[10px] px-1 py-0.5 rounded-full ${
+                      isActive ? 'bg-white/30 text-white' : 'bg-gray-300 text-gray-600'
+                    }`}>
+                      {count}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Nutrition filters */}
+          <div className="flex gap-1.5 mb-3 overflow-x-auto scrollbar-hide">
+            {Object.entries(NUTRITION_FILTERS).map(([key, { label, icon: Icon }]) => {
+              const isActive = nutritionFilter === key
+
+              return (
+                <button
+                  key={key}
+                  onClick={() => setNutritionFilter(key as NutritionFilter)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full whitespace-nowrap transition-all text-sm ${
+                    isActive
+                      ? 'bg-emerald-600 text-white font-medium'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{label}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              placeholder="Sök livsmedel..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 text-base"
+            />
           </div>
         </div>
 
-        {/* Results count */}
-        {(searchQuery || nutritionFilter !== 'all') && (
-          <p className="text-gray-500 text-sm mb-4">
-            {totalFiltered} träffar
-          </p>
+        {/* Subcategories when category is selected */}
+        {selectedCategory && META_CATEGORIES[selectedCategory] && (
+          <div className="px-4 pb-3 border-t border-gray-200 pt-3">
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                onClick={() => setSelectedSubcategory(null)}
+                className={`px-2.5 py-1 rounded-full text-sm transition-colors ${
+                  !selectedSubcategory
+                    ? 'bg-gray-800 text-white font-medium'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                Alla
+              </button>
+              {META_CATEGORIES[selectedCategory].subCategories.map(subCat => {
+                const count = subCategoryCounts[subCat] || 0
+                if (count === 0) return null
+                const isActive = selectedSubcategory === subCat
+
+                return (
+                  <button
+                    key={subCat}
+                    onClick={() => setSelectedSubcategory(isActive ? null : subCat)}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-sm transition-colors ${
+                      isActive
+                        ? 'bg-gray-800 text-white font-medium'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    <span className="truncate max-w-[150px]">{subCat}</span>
+                    <span className={`text-xs ${isActive ? 'text-gray-300' : 'text-gray-400'}`}>
+                      {count}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
         )}
       </div>
 
-      {/* Categories */}
-      <div className="max-w-6xl mx-auto space-y-3">
-        {Object.entries(groupedData).map(([metaName, { subCategories, totalCount }]) => {
-          const metaConfig = META_CATEGORIES[metaName]
-          const Icon = metaConfig.icon
-          const colors = COLOR_CLASSES[metaConfig.color]
-          const isMetaExpanded = expandedMetas.has(metaName)
+      {/* Results count */}
+      <div className="mb-3 px-1">
+        <p className="text-sm text-gray-500">
+          {filteredFoods.length} livsmedel
+          {selectedCategory && ` i ${selectedCategory}`}
+          {searchQuery && ` som matchar "${searchQuery}"`}
+        </p>
+      </div>
 
-          return (
-            <div
-              key={metaName}
-              className={`rounded-xl overflow-hidden border ${colors.border} ${colors.bg}`}
-            >
-              {/* Meta Category Header */}
-              <button
-                onClick={() => toggleMeta(metaName)}
-                className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colors.iconBg}`}>
-                    <Icon className={`w-5 h-5 ${colors.text}`} />
-                  </div>
-                  <div className="text-left">
-                    <span className="font-semibold text-white">{metaName}</span>
-                    <span className="text-gray-500 text-sm ml-2">
-                      ({Object.keys(subCategories).length} underkategorier)
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`text-sm font-medium ${colors.text}`}>
-                    {totalCount} st
-                  </span>
-                  {isMetaExpanded ? (
-                    <ChevronDown className={`w-5 h-5 ${colors.text}`} />
-                  ) : (
-                    <ChevronRight className="w-5 h-5 text-gray-500" />
-                  )}
-                </div>
-              </button>
-
-              {/* Sub-categories */}
-              {isMetaExpanded && (
-                <div className="border-t border-gray-800/50">
-                  {Object.entries(subCategories).map(([subName, foods]) => {
-                    const isSubExpanded = expandedSubs.has(subName)
-
-                    return (
-                      <div key={subName} className="border-b border-gray-800/30 last:border-0">
-                        {/* Sub-category header */}
-                        <button
-                          onClick={() => toggleSub(subName)}
-                          className="w-full flex items-center justify-between px-4 py-3 pl-14 hover:bg-white/5 transition-colors"
-                        >
-                          <div className="flex items-center gap-2">
-                            {isSubExpanded ? (
-                              <ChevronDown className="w-4 h-4 text-gray-400" />
-                            ) : (
-                              <ChevronRight className="w-4 h-4 text-gray-500" />
-                            )}
-                            <span className="text-gray-300 text-sm">{subName}</span>
-                          </div>
-                          <span className="text-gray-500 text-xs">
-                            {foods.length} st
-                          </span>
-                        </button>
-
-                        {/* Foods */}
-                        {isSubExpanded && (
-                          <div className="px-4 pb-4 pl-14">
-                            {viewMode === 'grid' ? (
-                              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                                {foods.map((food) => (
-                                  <button
-                                    key={food.nummer}
-                                    onClick={() => setSelectedFood(food)}
-                                    className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/30 rounded-xl p-3 text-left transition-all group"
-                                  >
-                                    <span className="text-sm font-medium text-white line-clamp-2 block mb-2">
-                                      {food.namn}
-                                    </span>
-                                    <div className="space-y-0.5">
-                                      <span className="text-amber-500 font-semibold text-sm">
-                                        {food.kcal} kcal
-                                      </span>
-                                      <div className="text-xs text-gray-500">
-                                        {food.protein}g P • {food.carbs}g K • {food.fat}g F
-                                      </div>
-                                    </div>
-                                  </button>
-                                ))}
-                              </div>
-                            ) : (
-                              <div className="space-y-1">
-                                {foods.map((food) => (
-                                  <button
-                                    key={food.nummer}
-                                    onClick={() => setSelectedFood(food)}
-                                    className="w-full flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/30 rounded-lg px-3 py-2 text-left transition-all group"
-                                  >
-                                    <span className="text-sm text-white truncate flex-1 mr-4">
-                                      {food.namn}
-                                    </span>
-                                    <div className="flex items-center gap-3 text-xs flex-shrink-0">
-                                      <span className="w-16 text-right text-amber-500 font-medium">{food.kcal} kcal</span>
-                                      <span className="w-10 text-right text-gray-500">{food.protein}g P</span>
-                                      <span className="w-10 text-right text-gray-500">{food.carbs}g K</span>
-                                      <span className="w-10 text-right text-gray-500">{food.fat}g F</span>
-                                    </div>
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          )
-        })}
-
-        {Object.keys(groupedData).length === 0 && (
-          <div className="text-center py-12">
-            <Database className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400">Inga livsmedel hittades</p>
+      {/* Content */}
+      <div>
+        {filteredFoods.length === 0 ? (
+          <div className="text-center py-12 px-4">
+            <Database className="w-10 h-10 sm:w-12 sm:h-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-500 text-sm sm:text-base">Inga livsmedel hittades</p>
+            <p className="text-xs sm:text-sm text-gray-400 mt-1">
+              Prova att ändra dina filter eller sökord
+            </p>
           </div>
+        ) : viewMode === 'grid' ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
+            {filteredFoods.slice(0, 100).map(food => (
+              <FoodCard
+                key={food.nummer}
+                food={food}
+                onClick={() => setSelectedFood(food)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {filteredFoods.slice(0, 100).map(food => (
+              <FoodRow
+                key={food.nummer}
+                food={food}
+                onClick={() => setSelectedFood(food)}
+              />
+            ))}
+          </div>
+        )}
+
+        {filteredFoods.length > 100 && (
+          <p className="text-center text-sm text-gray-500 mt-4 py-4">
+            Visar 100 av {filteredFoods.length} livsmedel. Använd sökning för att hitta specifika livsmedel.
+          </p>
         )}
       </div>
 
@@ -762,5 +617,55 @@ export default function SLVLivsmedelPage() {
         onClose={() => setSelectedFood(null)}
       />
     </div>
+  )
+}
+
+function FoodCard({ food, onClick }: { food: SLVFood; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-all text-left w-full"
+    >
+      {/* Placeholder image area */}
+      <div className="aspect-square bg-gradient-to-br from-emerald-50 to-green-100 flex items-center justify-center">
+        <Database className="w-10 h-10 text-emerald-300" />
+      </div>
+
+      {/* Info */}
+      <div className="px-2.5 py-2.5">
+        <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug mb-2">{food.namn}</h3>
+        <p className="text-[10px] text-gray-500 font-medium">Per 100g:</p>
+        <div className="text-[11px] text-gray-700 mt-0.5 space-y-px">
+          <p>• Energi: <span className="font-semibold text-emerald-600">{Math.round(food.kcal)} kcal</span></p>
+          <p>• Protein: <span className="font-semibold">{Math.round(food.protein)} g</span></p>
+          <p>• Kolhydrater: <span className="font-semibold">{Math.round(food.carbs)} g</span></p>
+          <p>• Fett: <span className="font-semibold">{Math.round(food.fat)} g</span></p>
+        </div>
+      </div>
+    </button>
+  )
+}
+
+function FoodRow({ food, onClick }: { food: SLVFood; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="bg-white rounded-lg border border-gray-200 p-2.5 sm:p-3 flex items-center gap-2 sm:gap-3 hover:shadow-md transition-all w-full text-left"
+    >
+      <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-emerald-50 to-green-100 rounded-lg flex-shrink-0 flex items-center justify-center">
+        <Database className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-300" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <h3 className="font-medium text-gray-900 text-xs sm:text-sm truncate">{food.namn}</h3>
+        <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">{food.typ}</p>
+      </div>
+      <div className="text-right flex-shrink-0">
+        <p className="text-[9px] sm:text-[10px] text-gray-500 font-medium">Per 100g:</p>
+        <div className="font-semibold text-emerald-600 text-xs sm:text-base">{Math.round(food.kcal)} kcal</div>
+        <div className="text-[9px] sm:text-[10px] text-gray-600 mt-0.5">
+          P: {Math.round(food.protein)}g • K: {Math.round(food.carbs)}g • F: {Math.round(food.fat)}g
+        </div>
+      </div>
+    </button>
   )
 }
