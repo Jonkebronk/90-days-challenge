@@ -38,12 +38,12 @@ export async function GET() {
   }
 }
 
-// POST /api/catalog/categories - Create new catalog category (coach only)
+// POST /api/catalog/categories - Create new catalog category
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user || (session.user as any).role !== 'coach') {
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
