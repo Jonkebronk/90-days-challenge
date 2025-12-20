@@ -121,7 +121,6 @@ export function CatalogSidebar({
         >
           {categories.map((category) => {
             const categorySchemas = getSchemasByCategory(category.id)
-            if (categorySchemas.length === 0) return null
 
             return (
               <AccordionItem
@@ -141,27 +140,33 @@ export function CatalogSidebar({
                 </AccordionTrigger>
                 <AccordionContent className="pb-2">
                   <div className="space-y-1 ml-2">
-                    {categorySchemas.map((schema) => (
-                      <button
-                        key={schema.id}
-                        onClick={() => onSelectSchema(schema.id)}
-                        className={cn(
-                          "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left transition-colors",
-                          selectedSchemaId === schema.id
-                            ? "bg-gold-primary/10 border border-gold-primary/30 text-gray-900"
-                            : "hover:bg-gray-100 text-gray-700"
-                        )}
-                      >
-                        <span className="text-sm font-medium truncate pr-2">
-                          {schema.calorieLevel} kcal
-                        </span>
-                        <div className="flex items-center gap-1.5 text-xs shrink-0">
-                          <span className="text-red-600">{schema.totals.protein}P</span>
-                          <span className="text-amber-600">{schema.totals.carbs}K</span>
-                          <span className="text-blue-600">{schema.totals.fat}F</span>
-                        </div>
-                      </button>
-                    ))}
+                    {categorySchemas.length === 0 ? (
+                      <p className="text-xs text-gray-400 px-3 py-2">
+                        Inga scheman i denna kategori
+                      </p>
+                    ) : (
+                      categorySchemas.map((schema) => (
+                        <button
+                          key={schema.id}
+                          onClick={() => onSelectSchema(schema.id)}
+                          className={cn(
+                            "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left transition-colors",
+                            selectedSchemaId === schema.id
+                              ? "bg-gold-primary/10 border border-gold-primary/30 text-gray-900"
+                              : "hover:bg-gray-100 text-gray-700"
+                          )}
+                        >
+                          <span className="text-sm font-medium truncate pr-2">
+                            {schema.calorieLevel} kcal
+                          </span>
+                          <div className="flex items-center gap-1.5 text-xs shrink-0">
+                            <span className="text-red-600">{schema.totals.protein}P</span>
+                            <span className="text-amber-600">{schema.totals.carbs}K</span>
+                            <span className="text-blue-600">{schema.totals.fat}F</span>
+                          </div>
+                        </button>
+                      ))
+                    )}
                   </div>
                 </AccordionContent>
               </AccordionItem>

@@ -184,18 +184,22 @@ export function MealPlanCatalog({ open, onOpenChange, clientKcal }: MealPlanCata
                       s => s.categoryId === category.id
                     ).sort((a, b) => a.calorieLevel - b.calorieLevel)
 
-                    if (categorySchemas.length === 0) return null
-
                     return (
                       <div key={category.id}>
                         <div className="px-2 py-1.5 text-xs font-semibold text-gray-500 bg-gray-50">
-                          {category.name}
+                          {category.name} ({categorySchemas.length})
                         </div>
-                        {categorySchemas.map((schema) => (
-                          <SelectItem key={schema.id} value={schema.id}>
-                            {schema.name}
-                          </SelectItem>
-                        ))}
+                        {categorySchemas.length === 0 ? (
+                          <div className="px-2 py-1.5 text-xs text-gray-400 italic">
+                            Inga scheman
+                          </div>
+                        ) : (
+                          categorySchemas.map((schema) => (
+                            <SelectItem key={schema.id} value={schema.id}>
+                              {schema.name}
+                            </SelectItem>
+                          ))
+                        )}
                       </div>
                     )
                   })}
