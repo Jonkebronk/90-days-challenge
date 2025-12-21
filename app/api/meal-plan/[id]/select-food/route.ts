@@ -166,28 +166,9 @@ export async function PUT(
       isAlternative: isAlternative || false,
     };
 
-    // If isAlternative is true, always add as a new item (don't replace)
-    // Otherwise, find existing item to update or add new
-    let updatedItems;
-    if (isAlternative) {
-      // Add as alternative (new item marked as alternative)
-      updatedItems = [...meal.items, newItem];
-    } else {
-      // Find existing item without isAlternative flag to replace
-      const itemIndex = meal.items.findIndex(
-        (item) => item.category === category && !item.isAlternative
-      );
-
-      if (itemIndex >= 0) {
-        // Update existing primary item
-        updatedItems = meal.items.map((item, idx) =>
-          idx === itemIndex ? newItem : item
-        );
-      } else {
-        // Add new primary item
-        updatedItems = [...meal.items, newItem];
-      }
-    }
+    // Always add as a new item - user can have multiple sources per category
+    // isAlternative flag is for ELLER display, not for add vs replace behavior
+    const updatedItems = [...meal.items, newItem];
 
     const updatedMeal: GeneratedMeal = {
       ...meal,
