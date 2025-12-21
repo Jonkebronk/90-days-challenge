@@ -11,7 +11,7 @@ import { MDXPreview } from '@/components/mdx-preview'
 import { WeekCalendar } from '@/components/meal-plan/week-calendar'
 import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
 import { MacroDisplay } from '@/components/meal-plan/MacroDisplay'
-import { AdjustMacrosWizard } from '@/components/meal-plan/AdjustMacrosWizard'
+import { AdjustMacrosWizard, MealMacros as WizardMealMacros } from '@/components/meal-plan/AdjustMacrosWizard'
 import { MealPlanGenerator } from '@/components/meal-plan-generator'
 import { MealPlanCatalog } from '@/components/meal-plan/catalog'
 
@@ -234,6 +234,8 @@ export default function MealPlanPage() {
     fatGrams: number
     carbGrams: number
     nutritionPlanId?: string | null
+    mealDistribution: WizardMealMacros[]
+    mealNames: string[]
   }) => {
     const response = await fetch('/api/meal-plan/adjust', {
       method: 'POST',

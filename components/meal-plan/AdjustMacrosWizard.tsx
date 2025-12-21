@@ -42,7 +42,7 @@ interface WizardState {
 }
 
 // Meal macro distribution interface
-interface MealMacros {
+export interface MealMacros {
   meal: number
   name: string
   protein: number
@@ -112,6 +112,8 @@ interface AdjustMacrosWizardProps {
     fatGrams: number
     carbGrams: number
     nutritionPlanId?: string | null
+    mealDistribution: MealMacros[]
+    mealNames: string[]
   }) => Promise<void>
 }
 
@@ -292,6 +294,8 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
         fatGrams: state.fatGrams,
         carbGrams: state.carbGrams,
         nutritionPlanId, // Pass to API for GeneratedMealPlan update
+        mealDistribution, // Pass calculated distribution per meal
+        mealNames: state.mealNames, // Pass custom meal names
       })
       onOpenChange(false)
     } catch (error) {

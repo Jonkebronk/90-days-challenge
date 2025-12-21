@@ -26,6 +26,8 @@ export async function POST(req: NextRequest) {
       fatGrams,
       carbGrams,
       nutritionPlanId, // New: to update GeneratedMealPlan
+      mealDistribution, // New: wizard's calculated per-meal distribution
+      mealNames, // New: custom meal names from wizard
     } = body
 
     // Validate required fields
@@ -110,48 +112,79 @@ export async function POST(req: NextRequest) {
         // Generate new mealConfigs based on mealsPerDay
         const newMealConfigs = generateDefaultMealConfigs(mealsPerDay)
 
-        // Distribute macros across meals
+        // Total target macros
         const targetMacros = {
           protein: proteinGrams,
           carbs: carbGrams,
           fat: fatGrams,
           kcal: targetCalories,
         }
-        const distribution = distributeMacros(targetMacros, newMealConfigs, 'auto')
 
-        // Get existing meals and update their targetMacros, or create new meals if count changed
+        // Get existing meals
         const existingMeals = generatedMealPlan.meals as any[] || []
         const newMeals: any[] = []
 
-        for (let i = 0; i < newMealConfigs.length; i++) {
-          const config = newMealConfigs[i]
-          const mealTarget = distribution.get(i) || { protein: 0, carbs: 0, fat: 0, kcal: 0 }
+        // Use wizard's distribution if provided, otherwise fall back to auto distribution
+        const hasWizardDistribution = mealDistribution && Array.isArray(mealDistribution) && mealDistribution.length === mealsPerDay
+
+        for (let i = 0; i < mealsPerDay; i++) {
+          // Get meal target from wizard distribution or fall back to auto
+          let mealTarget: { protein: number; carbs: number; fat: number; kcal: number }
+          let mealName: string
+
+          if (hasWizardDistribution) {
+            const wizardMeal = mealDistribution[i]
+            mealTarget = {
+              protein: wizardMeal.protein,
+              carbs: wizardMeal.carbs,
+              fat: wizardMeal.fat,
+              kcal: wizardMeal.protein * 4 + wizardMeal.carbs * 4 + wizardMeal.fat * 9,
+            }
+            mealName = mealNames?.[i] || wizardMeal.name || newMealConfigs[i]?.type || `meal_${i}`
+          } else {
+            // Fallback to auto distribution
+            const distribution = distributeMacros(targetMacros, newMealConfigs, 'auto')
+            mealTarget = distribution.get(i) || { protein: 0, carbs: 0, fat: 0, kcal: 0 }
+            mealName = newMealConfigs[i]?.type || `meal_${i}`
+          }
+
+          // Convert meal name to type format (lowercase, no spaces)
+          const mealType = mealName.toLowerCase().replace(/\s+/g, '_').replace(/[åä]/g, 'a').replace(/ö/g, 'o')
 
           if (i < existingMeals.length) {
-            // Update existing meal with new targetMacros
+            // Update existing meal with new targetMacros and name
             newMeals.push({
               ...existingMeals[i],
-              type: config.type,
+              type: mealType,
+              customName: mealName, // Store the custom display name
               targetMacros: mealTarget,
             })
           } else {
             // Create new empty meal
+            const isMainMeal = mealType.includes('lunch') || mealType.includes('middag')
             newMeals.push({
-              type: config.type,
+              type: mealType,
+              customName: mealName,
               index: i,
               items: [],
-              vegetableGrams: config.type === 'lunch' || config.type === 'middag' ? 200 : 0,
+              vegetableGrams: isMainMeal ? 200 : 0,
               totalMacros: { protein: 0, carbs: 0, fat: 0, kcal: 0 },
               targetMacros: mealTarget,
             })
           }
         }
 
+        // Update mealConfigs with custom names
+        const updatedMealConfigs = newMealConfigs.map((config, i) => ({
+          ...config,
+          displayName: mealNames?.[i] || config.type,
+        }))
+
         // Update GeneratedMealPlan
         await prisma.generatedMealPlan.update({
           where: { id: generatedMealPlan.id },
           data: {
-            mealConfigs: JSON.parse(JSON.stringify(newMealConfigs)),
+            mealConfigs: JSON.parse(JSON.stringify(updatedMealConfigs)),
             meals: JSON.parse(JSON.stringify(newMeals)),
             targetMacros: JSON.parse(JSON.stringify(targetMacros)),
           }
