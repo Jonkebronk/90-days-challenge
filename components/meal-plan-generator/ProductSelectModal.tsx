@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Search, X, Apple, Database } from 'lucide-react';
+import { Search, X, Apple, Database, Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { MacroCategory, MealType, CalculatedMacros } from '@/lib/types/meal-plan-generator';
 import { MACRO_CATEGORY_LABELS } from '@/lib/types/meal-plan-generator';
@@ -190,6 +191,7 @@ export function ProductSelectModal({
   const [activeTab, setActiveTab] = useState<SourceTab>('products');
   const [activeSubcategory, setActiveSubcategory] = useState(defaultSubcategory || 'all');
   const [addAsAlternative, setAddAsAlternative] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState<ProductWithCalculation[]>([]);
 
   // Hämta subkategorier för aktuell makrokategori
   const subcategories = SUBCATEGORIES[category] || [{ key: 'all', label: 'Alla', keywords: [] }];
@@ -301,9 +303,39 @@ export function ProductSelectModal({
       .sort((a, b) => a.name.localeCompare(b.name, 'sv'));
   }, [sourceItems, targetMacro, category, mealType, searchQuery, isVegetable, activeTab, activeSubcategory, subcategories]);
 
-  const handleSelect = (product: ProductWithCalculation) => {
-    onSelect(product, product.calculatedGrams, product.calculatedMacros, addAsAlternative);
-    setAddAsAlternative(false); // Reset for next selection
+  // Toggle product selection
+  const handleToggleSelect = (product: ProductWithCalculation) => {
+    setSelectedProducts(prev => {
+      const isSelected = prev.some(p => p.id === product.id);
+      if (isSelected) {
+        return prev.filter(p => p.id !== product.id);
+      } else {
+        return [...prev, product];
+      }
+    });
+  };
+
+  // Check if a product is selected
+  const isProductSelected = (productId: string) => {
+    return selectedProducts.some(p => p.id === productId);
+  };
+
+  // Confirm selection and add all selected products
+  const handleConfirmSelection = () => {
+    // Add each selected product (first one as main, rest as alternatives if checkbox is checked)
+    selectedProducts.forEach((product, index) => {
+      const isAlternative = addAsAlternative || index > 0;
+      onSelect(product, product.calculatedGrams, product.calculatedMacros, isAlternative);
+    });
+    setSelectedProducts([]);
+    setAddAsAlternative(false);
+    onClose();
+  };
+
+  // Reset selection when modal closes
+  const handleClose = () => {
+    setSelectedProducts([]);
+    setAddAsAlternative(false);
     onClose();
   };
 
@@ -320,7 +352,7 @@ export function ProductSelectModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>{getDialogTitle()}</DialogTitle>
@@ -426,18 +458,32 @@ export function ProductSelectModal({
               {searchQuery ? 'Inga livsmedel matchar sökningen' : 'Inga livsmedel i denna kategori'}
             </div>
           ) : (
-            productsWithCalculations.map((product) => (
+            productsWithCalculations.map((product) => {
+              const isSelected = isProductSelected(product.id);
+              return (
               <button
                 key={product.id}
-                onClick={() => handleSelect(product)}
+                onClick={() => handleToggleSelect(product)}
                 className={cn(
                   "w-full text-left p-3 rounded-lg border transition-colors group",
-                  activeTab === 'slv'
-                    ? 'border-green-200 hover:border-green-400 hover:bg-green-50/50'
-                    : 'border-zinc-200 hover:border-amber-300 hover:bg-amber-50/50'
+                  isSelected
+                    ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-500/20'
+                    : activeTab === 'slv'
+                      ? 'border-green-200 hover:border-green-400 hover:bg-green-50/50'
+                      : 'border-zinc-200 hover:border-amber-300 hover:bg-amber-50/50'
                 )}
               >
                 <div className="flex items-start gap-3">
+                  {/* Selection checkbox */}
+                  <div className={cn(
+                    "w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-1 transition-colors",
+                    isSelected
+                      ? 'bg-amber-500 border-amber-500'
+                      : 'border-zinc-300 group-hover:border-amber-400'
+                  )}>
+                    {isSelected && <Check className="h-3 w-3 text-white" />}
+                  </div>
+
                   {/* Product image or icon */}
                   {product.image ? (
                     <img
@@ -493,15 +539,31 @@ export function ProductSelectModal({
                 </div>
 
                 {/* Macro breakdown */}
-                <div className="mt-2 flex gap-3 text-xs text-zinc-500">
+                <div className="mt-2 flex gap-3 text-xs text-zinc-500 ml-8">
                   <span>P: {product.calculatedMacros.protein}g</span>
                   <span>K: {product.calculatedMacros.carbs}g</span>
                   <span>F: {product.calculatedMacros.fat}g</span>
                 </div>
               </button>
-            ))
+              );
+            })
           )}
         </div>
+
+        {/* Footer with confirm button */}
+        {selectedProducts.length > 0 && (
+          <div className="border-t pt-4 mt-4 space-y-3">
+            <div className="text-sm text-zinc-600">
+              {selectedProducts.length} produkt{selectedProducts.length > 1 ? 'er' : ''} vald{selectedProducts.length > 1 ? 'a' : ''}
+            </div>
+            <Button
+              onClick={handleConfirmSelection}
+              className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+            >
+              Lägg till {selectedProducts.length > 1 ? 'alla' : ''}
+            </Button>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
