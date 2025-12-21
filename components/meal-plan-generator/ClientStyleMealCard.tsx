@@ -489,35 +489,23 @@ export function ClientStyleMealCard({
         <div className={cn("p-2", config.bg)}>
           {items.length > 0 ? (
             <div className="space-y-1.5">
-              {/* Primary items */}
-              {primaryItems.map((item, index) => (
+              {/* Primary items - shown together without ELLER */}
+              {primaryItems.map((item) => (
                 <div key={item.selected.foodId}>
                   {renderFoodItem(item, category, configKey)}
-                  {/* Show ELLER between primary items if there are alternatives or more primaries */}
-                  {index < primaryItems.length - 1 && (
-                    <div className="flex items-center justify-center py-1.5">
-                      <span className="text-xs font-bold text-amber-500 tracking-wider">ELLER</span>
-                    </div>
-                  )}
                 </div>
               ))}
 
-              {/* ELLER separator before alternatives */}
-              {primaryItems.length > 0 && alternativeItems.length > 0 && (
-                <div className="flex items-center justify-center py-1.5">
-                  <span className="text-xs font-bold text-amber-500 tracking-wider">ELLER</span>
-                </div>
-              )}
-
-              {/* Alternative items */}
+              {/* Alternative items - shown with ELLER separator */}
               {alternativeItems.map((item, index) => (
                 <div key={item.selected.foodId}>
-                  {renderFoodItem(item, category, configKey)}
-                  {index < alternativeItems.length - 1 && (
+                  {/* ELLER separator before each alternative */}
+                  {(primaryItems.length > 0 || index > 0) && (
                     <div className="flex items-center justify-center py-1.5">
                       <span className="text-xs font-bold text-amber-500 tracking-wider">ELLER</span>
                     </div>
                   )}
+                  {renderFoodItem(item, category, configKey)}
                 </div>
               ))}
             </div>
