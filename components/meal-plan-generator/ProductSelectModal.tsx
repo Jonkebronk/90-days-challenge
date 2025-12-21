@@ -119,12 +119,12 @@ function getMacroKey(category: MacroCategory): 'protein' | 'carbs' | 'fat' {
   }
 }
 
-// Default grams per category when no target macro is set
+// Default grams per category when no target macro is set (100g standard for all except sauce)
 const DEFAULT_GRAMS_BY_CATEGORY: Record<MacroCategory, number> = {
-  protein: 150,
+  protein: 100,
   carb: 100,
-  fat: 30,
-  vegetable: 200,
+  fat: 100,
+  vegetable: 100,
   sauce: 30,
 };
 
