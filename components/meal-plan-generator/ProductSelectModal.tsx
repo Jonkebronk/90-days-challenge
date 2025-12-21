@@ -119,12 +119,29 @@ function getMacroKey(category: MacroCategory): 'protein' | 'carbs' | 'fat' {
   }
 }
 
-// Calculate grams needed to hit target macro
+// Default grams per category when no target macro is set
+const DEFAULT_GRAMS_BY_CATEGORY: Record<MacroCategory, number> = {
+  protein: 150,
+  carb: 100,
+  fat: 30,
+  vegetable: 200,
+  sauce: 30,
+};
+
+// Calculate grams needed to hit target macro, or use default if no target
 function calculateGramsForTarget(product: Product, targetMacro: number, category: MacroCategory): number {
+  // If no target macro, use sensible default for the category
+  if (!targetMacro || targetMacro <= 0) {
+    return DEFAULT_GRAMS_BY_CATEGORY[category] || 100;
+  }
+
   const macroKey = getMacroKey(category);
   const per100g = product[macroKey] || 0;
 
-  if (per100g <= 0) return 0;
+  // If product has no macro value for this category, use default grams
+  if (per100g <= 0) {
+    return DEFAULT_GRAMS_BY_CATEGORY[category] || 100;
+  }
 
   // grams = (targetMacro / per100gValue) * 100
   return Math.round((targetMacro / per100g) * 100);
@@ -261,9 +278,6 @@ export function ProductSelectModal({
         };
       })
       .filter((p) => {
-        // For vegetables, don't filter out based on grams
-        if (!isVegetable && p.calculatedGrams <= 0) return false;
-
         // Filter by mealType if product has mealTypes set (only for coach products)
         if (activeTab === 'products' && p.mealTypes && p.mealTypes.length > 0) {
           return p.mealTypes.includes(mealType);
