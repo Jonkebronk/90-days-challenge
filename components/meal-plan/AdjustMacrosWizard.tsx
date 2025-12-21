@@ -151,6 +151,7 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
   const [saving, setSaving] = useState(false)
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
   const [showMacroExplanation, setShowMacroExplanation] = useState(false)
+  const [showSnackExplanation, setShowSnackExplanation] = useState(false)
 
   const [state, setState] = useState<WizardState>({
     weight: currentSettings?.weight || 0,
@@ -798,6 +799,20 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
                 </div>
               </div>
 
+              {/* Carb-free snacks info */}
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2">
+                <Info className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                <div className="text-sm text-amber-700">
+                  <strong>Mellanmål:</strong> Mellanmål hålls kolhydratfria – kolhydraterna läggs istället på pre/post-workout.{' '}
+                  <button
+                    onClick={() => setShowSnackExplanation(true)}
+                    className="text-amber-600 underline hover:text-amber-800 font-medium"
+                  >
+                    Varför?
+                  </button>
+                </div>
+              </div>
+
               {/* Meal names editor */}
               <div>
                 <Label className="text-sm font-medium">Måltidsnamn</Label>
@@ -1101,38 +1116,47 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
               Strategin handlar om att tajma näringsämnen efter deras metabola effekter: proteinet sprids för maximal syntesrespons, kolhydraterna placeras där de gör mest nytta för prestation och återhämtning, och fettet flyttas bort från träningstillfällena för att inte bromsa upptaget av de andra makronäringsämnena.
             </p>
           </div>
-
-          {/* Carb-free snacks section */}
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-            <h4 className="font-semibold text-amber-800 mb-2">
-              Varför kolhydratfria mellanmål?
-            </h4>
-            <p className="text-sm text-amber-900 mb-3">
-              Ifall du har mellanmål på måltidsschemat så är det smart att försöka hålla mellanmålen fria från kolhydrater:
-            </p>
-            <div className="space-y-3 text-sm text-amber-900">
-              <div>
-                <strong>Stabil energi och mättnad</strong><br/>
-                Protein och fett ger en jämn blodsockerkurva utan de insulintoppar som kolhydrater skapar. Det håller dig mätt längre och undviker energidippar mellan huvudmålen.
-              </div>
-              <div>
-                <strong>Bättre fettoxidation</strong><br/>
-                Med låga insulinnivåer under dessa perioder kan kroppen lättare använda fett som bränsle. Du skapar i princip längre &quot;fönster&quot; av fettförbränning under dagen.
-              </div>
-              <div>
-                <strong>Koncentrerad kolhydrateffekt</strong><br/>
-                När du samlar alla kolhydrater till måltiderna närmast träningen maximerar du deras nytta: fulla glykogendepåer inför passet och snabb återfyllnad efteråt.
-              </div>
-              <div>
-                <strong>Praktiskt upplägg för mellanmål</strong><br/>
-                Bra alternativ blir exempelvis kvarg med nötter, ägg, proteinpudding med lite jordnötssmör, eller whey proteinpulver.
-              </div>
-            </div>
-          </div>
         </div>
 
         <div className="flex justify-end pt-2">
           <Button onClick={() => setShowMacroExplanation(false)}>
+            Stäng
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    {/* Carb-free Snacks Explanation Dialog */}
+    <Dialog open={showSnackExplanation} onOpenChange={setShowSnackExplanation}>
+      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl text-amber-800">Varför kolhydratfria mellanmål?</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <p className="text-sm text-gray-700">
+            Ifall du har mellanmål på måltidsschemat så är det smart att försöka hålla mellanmålen fria från kolhydrater:
+          </p>
+          <div className="space-y-4 text-sm text-gray-700">
+            <div>
+              <h4 className="font-semibold text-amber-700 mb-1">Stabil energi och mättnad</h4>
+              <p>Protein och fett ger en jämn blodsockerkurva utan de insulintoppar som kolhydrater skapar. Det håller dig mätt längre och undviker energidippar mellan huvudmålen.</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-amber-700 mb-1">Bättre fettoxidation</h4>
+              <p>Med låga insulinnivåer under dessa perioder kan kroppen lättare använda fett som bränsle. Du skapar i princip längre &quot;fönster&quot; av fettförbränning under dagen.</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-amber-700 mb-1">Koncentrerad kolhydrateffekt</h4>
+              <p>När du samlar alla kolhydrater till måltiderna närmast träningen maximerar du deras nytta: fulla glykogendepåer inför passet och snabb återfyllnad efteråt.</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-amber-700 mb-1">Praktiskt upplägg för mellanmål</h4>
+              <p>Bra alternativ blir exempelvis kvarg med nötter, ägg, proteinpudding med lite jordnötssmör, eller whey proteinpulver.</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-end pt-2">
+          <Button onClick={() => setShowSnackExplanation(false)}>
             Stäng
           </Button>
         </div>
