@@ -128,7 +128,7 @@ const DEFAULT_GRAMS_BY_CATEGORY: Record<MacroCategory, number> = {
   sauce: 30,
 };
 
-// Calculate grams needed to hit target macro, or use default if no target
+// Calculate grams - use defaults for protein/carb/fat/vegetable, target-based for sauce
 function calculateGramsForTarget(product: Product, targetMacro: number, category: MacroCategory): number {
   // For sauce, always calculate based on target (keep original behavior)
   if (category === 'sauce') {
@@ -138,21 +138,9 @@ function calculateGramsForTarget(product: Product, targetMacro: number, category
     return Math.round((targetMacro / per100g) * 100);
   }
 
-  // For other categories: if no target macro, use sensible default
-  if (!targetMacro || targetMacro <= 0) {
-    return DEFAULT_GRAMS_BY_CATEGORY[category] || 100;
-  }
-
-  const macroKey = getMacroKey(category);
-  const per100g = product[macroKey] || 0;
-
-  // If product has no macro value for this category, use default grams
-  if (per100g <= 0) {
-    return DEFAULT_GRAMS_BY_CATEGORY[category] || 100;
-  }
-
-  // grams = (targetMacro / per100gValue) * 100
-  return Math.round((targetMacro / per100g) * 100);
+  // For protein, carb, fat, vegetable: always use default grams
+  // User controls portion size manually, not based on meal target macros
+  return DEFAULT_GRAMS_BY_CATEGORY[category] || 100;
 }
 
 // Calculate all macros for a given amount of grams
