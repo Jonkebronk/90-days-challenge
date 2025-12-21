@@ -38,15 +38,27 @@ interface WizardState {
   // Step 5: Training timing
   preWorkoutMeal: number  // Which meal is pre-workout (1-indexed)
   postWorkoutMeal: number // Which meal is post-workout (1-indexed)
+  mealNames: string[]     // Custom names for each meal
 }
 
 // Meal macro distribution interface
 interface MealMacros {
   meal: number
+  name: string
   protein: number
   carbs: number
   fat: number
   type: 'pre' | 'post' | 'bedtime' | 'other'
+}
+
+// Default meal names based on meal count
+const DEFAULT_MEAL_NAMES: Record<number, string[]> = {
+  2: ['Måltid 1', 'Måltid 2'],
+  3: ['Frukost', 'Lunch', 'Middag'],
+  4: ['Frukost', 'Lunch', 'Mellanmål', 'Middag'],
+  5: ['Frukost', 'Mellanmål', 'Lunch', 'Mellanmål', 'Middag'],
+  6: ['Frukost', 'Mellanmål', 'Lunch', 'Mellanmål', 'Middag', 'Kvällsmål'],
+  7: ['Frukost', 'Mellanmål', 'Lunch', 'Mellanmål', 'Middag', 'Mellanmål', 'Kvällsmål'],
 }
 
 // Carb distribution percentages based on meal count
@@ -153,11 +165,12 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
     mealsPerDay: 5,
     preWorkoutMeal: 3,  // Default for 5 meals
     postWorkoutMeal: 4, // Default for 5 meals
+    mealNames: DEFAULT_MEAL_NAMES[5],
   })
 
   // Calculate meal macro distribution
   const calculateMealDistribution = (): MealMacros[] => {
-    const { mealsPerDay, proteinGrams, carbGrams, fatGrams, preWorkoutMeal, postWorkoutMeal } = state
+    const { mealsPerDay, proteinGrams, carbGrams, fatGrams, preWorkoutMeal, postWorkoutMeal, mealNames } = state
     const distribution = CARB_DISTRIBUTION[mealsPerDay] || CARB_DISTRIBUTION[5]
 
     // Protein: evenly distributed
@@ -205,6 +218,7 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
 
       return {
         meal: mealNum,
+        name: mealNames[i] || `Måltid ${mealNum}`,
         protein: proteinPerMeal,
         carbs,
         fat,
@@ -215,13 +229,15 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
 
   const mealDistribution = calculateMealDistribution()
 
-  // Update training placement defaults when mealsPerDay changes
+  // Update training placement defaults and meal names when mealsPerDay changes
   useEffect(() => {
     const defaults = DEFAULT_TRAINING_PLACEMENT[state.mealsPerDay] || DEFAULT_TRAINING_PLACEMENT[5]
+    const defaultNames = DEFAULT_MEAL_NAMES[state.mealsPerDay] || DEFAULT_MEAL_NAMES[5]
     setState(s => ({
       ...s,
       preWorkoutMeal: defaults.pre,
       postWorkoutMeal: defaults.post,
+      mealNames: defaultNames,
     }))
   }, [state.mealsPerDay])
 
@@ -746,7 +762,30 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-2">
                 <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
                 <div className="text-sm text-blue-700">
-                  <strong>Tips:</strong> Kolhydrater koncentreras runt träning för bättre prestanda och återhämtning. Fett minskas runt träning.
+                  <strong>Riktlinjer:</strong> Protein sprids jämnt över dagens måltider, kolhydraterna läggs främst kring träningspassen, och fettintaget hålls lågt i anslutning till träning.
+                </div>
+              </div>
+
+              {/* Meal names editor */}
+              <div>
+                <Label className="text-sm font-medium">Måltidsnamn</Label>
+                <p className="text-xs text-gray-500 mb-2">Anpassa namnen på måltiderna</p>
+                <div className="space-y-2">
+                  {state.mealNames.map((name, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <span className="text-xs text-gray-400 w-4">{i + 1}.</span>
+                      <Input
+                        value={name}
+                        onChange={(e) => {
+                          const newNames = [...state.mealNames]
+                          newNames[i] = e.target.value
+                          setState(s => ({ ...s, mealNames: newNames }))
+                        }}
+                        className="flex-1 h-9"
+                        placeholder={`Måltid ${i + 1}`}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -772,7 +811,7 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
                             : "border-gray-200 hover:border-gray-300"
                         )}
                       >
-                        <span className="font-medium">Måltid {num}</span>
+                        <span className="font-medium">{state.mealNames[num - 1] || `Måltid ${num}`}</span>
                         {state.preWorkoutMeal === num && <Check className="w-5 h-5 text-amber-600" />}
                       </button>
                     ))}
@@ -797,7 +836,7 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
                             : "border-gray-200 hover:border-gray-300"
                         )}
                       >
-                        <span className="font-medium">Måltid {num}</span>
+                        <span className="font-medium">{state.mealNames[num - 1] || `Måltid ${num}`}</span>
                         {state.postWorkoutMeal === num && <Check className="w-5 h-5 text-green-600" />}
                       </button>
                     ))}
@@ -842,7 +881,7 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
                           )}
                         >
                           <td className="py-1.5">
-                            <span className="font-medium">Måltid {meal.meal}</span>
+                            <span className="font-medium">{meal.name}</span>
                             {meal.type === 'pre' && <span className="text-xs text-amber-600 ml-1">(pre)</span>}
                             {meal.type === 'post' && <span className="text-xs text-green-600 ml-1">(post)</span>}
                             {meal.type === 'bedtime' && <span className="text-xs text-purple-600 ml-1">(kväll)</span>}
