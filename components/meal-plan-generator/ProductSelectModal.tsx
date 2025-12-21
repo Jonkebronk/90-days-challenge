@@ -322,10 +322,9 @@ export function ProductSelectModal({
 
   // Confirm selection and add all selected products
   const handleConfirmSelection = () => {
-    // Add each selected product (first one as main, rest as alternatives if checkbox is checked)
-    selectedProducts.forEach((product, index) => {
-      const isAlternative = addAsAlternative || index > 0;
-      onSelect(product, product.calculatedGrams, product.calculatedMacros, isAlternative);
+    // Add each selected product - user controls if they are alternatives via checkbox
+    selectedProducts.forEach((product) => {
+      onSelect(product, product.calculatedGrams, product.calculatedMacros, addAsAlternative);
     });
     setSelectedProducts([]);
     setAddAsAlternative(false);
