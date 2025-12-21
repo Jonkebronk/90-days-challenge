@@ -130,7 +130,15 @@ const DEFAULT_GRAMS_BY_CATEGORY: Record<MacroCategory, number> = {
 
 // Calculate grams needed to hit target macro, or use default if no target
 function calculateGramsForTarget(product: Product, targetMacro: number, category: MacroCategory): number {
-  // If no target macro, use sensible default for the category
+  // For sauce, always calculate based on target (keep original behavior)
+  if (category === 'sauce') {
+    const macroKey = getMacroKey(category);
+    const per100g = product[macroKey] || 0;
+    if (per100g <= 0 || targetMacro <= 0) return 0;
+    return Math.round((targetMacro / per100g) * 100);
+  }
+
+  // For other categories: if no target macro, use sensible default
   if (!targetMacro || targetMacro <= 0) {
     return DEFAULT_GRAMS_BY_CATEGORY[category] || 100;
   }
@@ -278,6 +286,9 @@ export function ProductSelectModal({
         };
       })
       .filter((p) => {
+        // For sauce, filter out products with 0 grams (target-based filtering)
+        if (category === 'sauce' && p.calculatedGrams <= 0) return false;
+
         // Filter by mealType if product has mealTypes set (only for coach products)
         if (activeTab === 'products' && p.mealTypes && p.mealTypes.length > 0) {
           return p.mealTypes.includes(mealType);
