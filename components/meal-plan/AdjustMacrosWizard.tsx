@@ -195,19 +195,38 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
       ? Math.round((remainingFat - bedtimeFatExtra) / (otherMealsCount + 1)) // +1 for meal 1
       : Math.round((remainingFat - bedtimeFatExtra) / 1)
 
+    // Identify snack meals (mellanmål) - they get 0 carbs, redistributed to pre/post
+    const isSnackMeal = (name: string) => name.toLowerCase().includes('mellanmål')
+
+    // Count how many "other" meals are snacks (not pre, post, or bedtime)
+    let snackCarbsTotal = 0
+    for (let i = 0; i < mealsPerDay; i++) {
+      const mealNum = i + 1
+      const isOtherMeal = mealNum !== preWorkoutMeal && mealNum !== postWorkoutMeal && mealNum !== bedtimeMeal
+      if (isOtherMeal && isSnackMeal(mealNames[i] || '')) {
+        snackCarbsTotal += Math.round(carbGrams * distribution.other)
+      }
+    }
+
+    // Extra carbs to add to pre and post workout (split evenly)
+    const extraCarbsEach = Math.round(snackCarbsTotal / 2)
+
     return Array.from({ length: mealsPerDay }, (_, i) => {
       const mealNum = i + 1
       let type: MealMacros['type'] = 'other'
       let carbs = 0
       let fat = 0
+      const mealName = mealNames[i] || `Måltid ${mealNum}`
 
       if (mealNum === preWorkoutMeal) {
         type = 'pre'
-        carbs = Math.round(carbGrams * distribution.pre)
+        // Add extra carbs from snacks to pre-workout
+        carbs = Math.round(carbGrams * distribution.pre) + extraCarbsEach
         fat = preFat
       } else if (mealNum === postWorkoutMeal) {
         type = 'post'
-        carbs = Math.round(carbGrams * distribution.post)
+        // Add extra carbs from snacks to post-workout
+        carbs = Math.round(carbGrams * distribution.post) + extraCarbsEach
         fat = postFat
       } else if (mealNum === bedtimeMeal && mealsPerDay >= 3) {
         type = 'bedtime'
@@ -215,13 +234,14 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
         fat = otherFatEach + bedtimeFatExtra
       } else {
         type = 'other'
-        carbs = Math.round(carbGrams * distribution.other)
+        // Snacks (mellanmål) get 0 carbs, other meals get normal distribution
+        carbs = isSnackMeal(mealName) ? 0 : Math.round(carbGrams * distribution.other)
         fat = otherFatEach
       }
 
       return {
         meal: mealNum,
-        name: mealNames[i] || `Måltid ${mealNum}`,
+        name: mealName,
         protein: proteinPerMeal,
         carbs,
         fat,
@@ -1080,6 +1100,34 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
             <p className="text-sm text-gray-700 leading-relaxed">
               Strategin handlar om att tajma näringsämnen efter deras metabola effekter: proteinet sprids för maximal syntesrespons, kolhydraterna placeras där de gör mest nytta för prestation och återhämtning, och fettet flyttas bort från träningstillfällena för att inte bromsa upptaget av de andra makronäringsämnena.
             </p>
+          </div>
+
+          {/* Carb-free snacks section */}
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <h4 className="font-semibold text-amber-800 mb-2">
+              Varför kolhydratfria mellanmål?
+            </h4>
+            <p className="text-sm text-amber-900 mb-3">
+              Ifall du har mellanmål på måltidsschemat så är det smart att försöka hålla mellanmålen fria från kolhydrater:
+            </p>
+            <div className="space-y-3 text-sm text-amber-900">
+              <div>
+                <strong>Stabil energi och mättnad</strong><br/>
+                Protein och fett ger en jämn blodsockerkurva utan de insulintoppar som kolhydrater skapar. Det håller dig mätt längre och undviker energidippar mellan huvudmålen.
+              </div>
+              <div>
+                <strong>Bättre fettoxidation</strong><br/>
+                Med låga insulinnivåer under dessa perioder kan kroppen lättare använda fett som bränsle. Du skapar i princip längre &quot;fönster&quot; av fettförbränning under dagen.
+              </div>
+              <div>
+                <strong>Koncentrerad kolhydrateffekt</strong><br/>
+                När du samlar alla kolhydrater till måltiderna närmast träningen maximerar du deras nytta: fulla glykogendepåer inför passet och snabb återfyllnad efteråt.
+              </div>
+              <div>
+                <strong>Praktiskt upplägg för mellanmål</strong><br/>
+                Bra alternativ blir exempelvis kvarg med nötter, ägg, proteinpudding med lite jordnötssmör, eller whey proteinpulver.
+              </div>
+            </div>
           </div>
         </div>
 
