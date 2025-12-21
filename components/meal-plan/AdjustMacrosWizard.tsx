@@ -34,6 +34,46 @@ interface WizardState {
 
   // Step 4: Meals
   mealsPerDay: number
+
+  // Step 5: Training timing
+  preWorkoutMeal: number  // Which meal is pre-workout (1-indexed)
+  postWorkoutMeal: number // Which meal is post-workout (1-indexed)
+}
+
+// Meal macro distribution interface
+interface MealMacros {
+  meal: number
+  protein: number
+  carbs: number
+  fat: number
+  type: 'pre' | 'post' | 'bedtime' | 'other'
+}
+
+// Carb distribution percentages based on meal count
+const CARB_DISTRIBUTION: Record<number, { pre: number; post: number; bedtime: number; other: number }> = {
+  2: { pre: 0.40, post: 0.60, bedtime: 0, other: 0 },
+  3: { pre: 0.30, post: 0.40, bedtime: 0.30, other: 0 },
+  4: { pre: 0.25, post: 0.35, bedtime: 0.25, other: 0.15 },
+  5: { pre: 0.20, post: 0.30, bedtime: 0.20, other: 0.15 },
+  6: { pre: 0.18, post: 0.25, bedtime: 0.18, other: 0.13 },
+  7: { pre: 0.15, post: 0.22, bedtime: 0.15, other: 0.12 },
+}
+
+// Fat distribution: less around training, more on other meals
+const FAT_DISTRIBUTION = {
+  pre: 0.10,
+  post: 0.10,
+  // Remaining 80% distributed evenly among other meals + bedtime gets extra
+}
+
+// Default training placement based on meal count
+const DEFAULT_TRAINING_PLACEMENT: Record<number, { pre: number; post: number }> = {
+  2: { pre: 1, post: 2 },
+  3: { pre: 1, post: 2 },
+  4: { pre: 2, post: 3 },
+  5: { pre: 3, post: 4 },
+  6: { pre: 3, post: 4 },
+  7: { pre: 4, post: 5 },
 }
 
 interface AdjustMacrosWizardProps {
@@ -111,7 +151,79 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
     fatGrams: 0,
     carbGrams: 0,
     mealsPerDay: 5,
+    preWorkoutMeal: 3,  // Default for 5 meals
+    postWorkoutMeal: 4, // Default for 5 meals
   })
+
+  // Calculate meal macro distribution
+  const calculateMealDistribution = (): MealMacros[] => {
+    const { mealsPerDay, proteinGrams, carbGrams, fatGrams, preWorkoutMeal, postWorkoutMeal } = state
+    const distribution = CARB_DISTRIBUTION[mealsPerDay] || CARB_DISTRIBUTION[5]
+
+    // Protein: evenly distributed
+    const proteinPerMeal = Math.round(proteinGrams / mealsPerDay)
+
+    // Calculate number of "other" meals (not pre, post, or bedtime)
+    const bedtimeMeal = mealsPerDay // Last meal is always bedtime
+    const otherMealsCount = mealsPerDay - 3 // Exclude pre, post, bedtime
+    const hasOtherMeals = otherMealsCount > 0
+
+    // Fat: 10% pre, 10% post, rest distributed (bedtime gets more)
+    const preFat = Math.round(fatGrams * FAT_DISTRIBUTION.pre)
+    const postFat = Math.round(fatGrams * FAT_DISTRIBUTION.post)
+    const remainingFat = fatGrams - preFat - postFat
+
+    // Bedtime gets 40% of remaining fat, others split the rest
+    const bedtimeFatExtra = Math.round(remainingFat * 0.4)
+    const otherFatEach = hasOtherMeals
+      ? Math.round((remainingFat - bedtimeFatExtra) / (otherMealsCount + 1)) // +1 for meal 1
+      : Math.round((remainingFat - bedtimeFatExtra) / 1)
+
+    return Array.from({ length: mealsPerDay }, (_, i) => {
+      const mealNum = i + 1
+      let type: MealMacros['type'] = 'other'
+      let carbs = 0
+      let fat = 0
+
+      if (mealNum === preWorkoutMeal) {
+        type = 'pre'
+        carbs = Math.round(carbGrams * distribution.pre)
+        fat = preFat
+      } else if (mealNum === postWorkoutMeal) {
+        type = 'post'
+        carbs = Math.round(carbGrams * distribution.post)
+        fat = postFat
+      } else if (mealNum === bedtimeMeal && mealsPerDay >= 3) {
+        type = 'bedtime'
+        carbs = Math.round(carbGrams * distribution.bedtime)
+        fat = otherFatEach + bedtimeFatExtra
+      } else {
+        type = 'other'
+        carbs = Math.round(carbGrams * distribution.other)
+        fat = otherFatEach
+      }
+
+      return {
+        meal: mealNum,
+        protein: proteinPerMeal,
+        carbs,
+        fat,
+        type,
+      }
+    })
+  }
+
+  const mealDistribution = calculateMealDistribution()
+
+  // Update training placement defaults when mealsPerDay changes
+  useEffect(() => {
+    const defaults = DEFAULT_TRAINING_PLACEMENT[state.mealsPerDay] || DEFAULT_TRAINING_PLACEMENT[5]
+    setState(s => ({
+      ...s,
+      preWorkoutMeal: defaults.pre,
+      postWorkoutMeal: defaults.post,
+    }))
+  }, [state.mealsPerDay])
 
   // Calculate BMR when weight or activity changes
   useEffect(() => {
@@ -178,6 +290,7 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
       case 2: return state.goal !== null
       case 3: return state.proteinPerKg >= 1.6 && state.fatPerKg >= 0.5
       case 4: return state.mealsPerDay >= 2 && state.mealsPerDay <= 7
+      case 5: return state.preWorkoutMeal > 0 && state.postWorkoutMeal > state.preWorkoutMeal
       default: return true
     }
   }
@@ -196,7 +309,7 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
           <DialogTitle>Justera kostplan</DialogTitle>
           {/* Progress indicator */}
           <div className="flex gap-1 mt-2">
-            {[1, 2, 3, 4, 5].map((s) => (
+            {[1, 2, 3, 4, 5, 6].map((s) => (
               <div
                 key={s}
                 className={cn(
@@ -621,8 +734,134 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
             </div>
           )}
 
-          {/* Step 5: Summary */}
+          {/* Step 5: Training placement */}
           {step === 5 && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold">Träningsplacering</h3>
+                <p className="text-sm text-gray-500">Välj vilka måltider som är före och efter träning</p>
+              </div>
+
+              {/* Info box */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-2">
+                <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
+                <div className="text-sm text-blue-700">
+                  <strong>Tips:</strong> Kolhydrater koncentreras runt träning för bättre prestanda och återhämtning. Fett minskas runt träning.
+                </div>
+              </div>
+
+              {/* Pre-workout selector */}
+              <div>
+                <Label className="text-sm font-medium">Pre-workout måltid</Label>
+                <p className="text-xs text-gray-500 mb-2">Måltiden innan träning</p>
+                <div className="space-y-2">
+                  {Array.from({ length: state.mealsPerDay }, (_, i) => i + 1)
+                    .filter(num => num < state.mealsPerDay) // Can't be the last meal
+                    .map((num) => (
+                      <button
+                        key={num}
+                        onClick={() => setState(s => ({
+                          ...s,
+                          preWorkoutMeal: num,
+                          postWorkoutMeal: Math.max(s.postWorkoutMeal, num + 1)
+                        }))}
+                        className={cn(
+                          "w-full p-3 rounded-lg border text-left transition-colors flex justify-between items-center",
+                          state.preWorkoutMeal === num
+                            ? "border-amber-500 bg-amber-50"
+                            : "border-gray-200 hover:border-gray-300"
+                        )}
+                      >
+                        <span className="font-medium">Måltid {num}</span>
+                        {state.preWorkoutMeal === num && <Check className="w-5 h-5 text-amber-600" />}
+                      </button>
+                    ))}
+                </div>
+              </div>
+
+              {/* Post-workout selector */}
+              <div>
+                <Label className="text-sm font-medium">Post-workout måltid</Label>
+                <p className="text-xs text-gray-500 mb-2">Måltiden efter träning (måste vara efter pre-workout)</p>
+                <div className="space-y-2">
+                  {Array.from({ length: state.mealsPerDay }, (_, i) => i + 1)
+                    .filter(num => num > state.preWorkoutMeal && num <= state.mealsPerDay)
+                    .map((num) => (
+                      <button
+                        key={num}
+                        onClick={() => setState(s => ({ ...s, postWorkoutMeal: num }))}
+                        className={cn(
+                          "w-full p-3 rounded-lg border text-left transition-colors flex justify-between items-center",
+                          state.postWorkoutMeal === num
+                            ? "border-green-500 bg-green-50"
+                            : "border-gray-200 hover:border-gray-300"
+                        )}
+                      >
+                        <span className="font-medium">Måltid {num}</span>
+                        {state.postWorkoutMeal === num && <Check className="w-5 h-5 text-green-600" />}
+                      </button>
+                    ))}
+                </div>
+              </div>
+
+              {/* Distribution preview */}
+              <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+                {/* Summary */}
+                <div>
+                  <div className="text-sm font-medium mb-1">Genomsnittlig fördelning per måltid:</div>
+                  <div className="text-sm text-gray-600">
+                    ~{Math.round(state.proteinGrams / state.mealsPerDay)}g P |
+                    ~{Math.round(state.carbGrams / state.mealsPerDay)}g K |
+                    ~{Math.round(state.fatGrams / state.mealsPerDay)}g F |
+                    ~{Math.round(state.targetCalories / state.mealsPerDay)} kcal
+                  </div>
+                </div>
+
+                {/* Detailed table */}
+                <div className="border-t pt-3">
+                  <div className="text-xs font-medium text-gray-500 mb-2">DETALJERAD FÖRDELNING</div>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-xs text-gray-500">
+                        <th className="text-left py-1">Måltid</th>
+                        <th className="text-right py-1">P</th>
+                        <th className="text-right py-1">K</th>
+                        <th className="text-right py-1">F</th>
+                        <th className="text-right py-1">Kcal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {mealDistribution.map((meal) => (
+                        <tr
+                          key={meal.meal}
+                          className={cn(
+                            "border-t border-gray-100",
+                            meal.type === 'pre' && "bg-amber-50",
+                            meal.type === 'post' && "bg-green-50",
+                            meal.type === 'bedtime' && "bg-purple-50"
+                          )}
+                        >
+                          <td className="py-1.5">
+                            <span className="font-medium">Måltid {meal.meal}</span>
+                            {meal.type === 'pre' && <span className="text-xs text-amber-600 ml-1">(pre)</span>}
+                            {meal.type === 'post' && <span className="text-xs text-green-600 ml-1">(post)</span>}
+                            {meal.type === 'bedtime' && <span className="text-xs text-purple-600 ml-1">(kväll)</span>}
+                          </td>
+                          <td className="text-right text-rose-600">{meal.protein}g</td>
+                          <td className="text-right text-sky-600">{meal.carbs}g</td>
+                          <td className="text-right text-amber-600">{meal.fat}g</td>
+                          <td className="text-right font-medium">{meal.protein * 4 + meal.carbs * 4 + meal.fat * 9}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 6: Summary */}
+          {step === 6 && (
             <div className="space-y-6">
               <div className="text-center">
                 <h3 className="text-lg font-semibold">Sammanställning</h3>
@@ -731,7 +970,7 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
             Tillbaka
           </Button>
 
-          {step < 5 ? (
+          {step < 6 ? (
             <Button
               onClick={() => setStep(s => s + 1)}
               disabled={!canProceed()}
