@@ -148,6 +148,7 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
   const [step, setStep] = useState(1)
   const [saving, setSaving] = useState(false)
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
+  const [showMacroExplanation, setShowMacroExplanation] = useState(false)
 
   const [state, setState] = useState<WizardState>({
     weight: currentSettings?.weight || 0,
@@ -319,6 +320,7 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
   }, [open])
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] flex flex-col">
         <DialogHeader>
@@ -762,7 +764,13 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-2">
                 <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
                 <div className="text-sm text-blue-700">
-                  <strong>Riktlinjer:</strong> Protein sprids jämnt över dagens måltider, kolhydraterna läggs främst kring träningspassen, och fettintaget hålls lågt i anslutning till träning.
+                  <strong>Riktlinjer:</strong> Protein sprids jämnt över dagens måltider, kolhydraterna läggs främst kring träningspassen, och fettintaget hålls lågt i anslutning till träning.{' '}
+                  <button
+                    onClick={() => setShowMacroExplanation(true)}
+                    className="text-blue-600 underline hover:text-blue-800 font-medium"
+                  >
+                    Läs mer
+                  </button>
                 </div>
               </div>
 
@@ -1030,5 +1038,54 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
         </div>
       </DialogContent>
     </Dialog>
+
+    {/* Macro Distribution Explanation Dialog */}
+    <Dialog open={showMacroExplanation} onOpenChange={setShowMacroExplanation}>
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl">Varför fördela makros på detta sätt?</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-6 py-4">
+          {/* Protein section */}
+          <div>
+            <h4 className="font-semibold text-rose-600 mb-2">Proteinfördelning över dagen</h4>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              Muskelproteinsyntesen (MPS) har en maximal respons per måltid – ungefär 0,4–0,55 g protein per kg kroppsvikt räcker för att maximera stimuleringen. Att äta mer än så vid ett enskilt tillfälle ger inte ytterligare MPS-ökning, utan överskottet oxideras. Genom att fördela proteinet jämnt över 4–5 måltider får du flera &quot;pulser&quot; av MPS under dygnet, vilket optimerar den totala muskeluppbyggnaden. Studier av Areta et al. (2013) visade att just denna jämna fördelning gav bättre proteinsyntesrespons än att klumpa ihop proteinet till få måltider.
+            </p>
+          </div>
+
+          {/* Carbs section */}
+          <div>
+            <h4 className="font-semibold text-sky-600 mb-2">Kolhydrater koncentrerade kring träning</h4>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              Kolhydrater höjer insulin, vilket hämmar lipolys (fettfrisättning) men främjar glukosupptag i musklerna och stödjer återhämtning. Före träning fyller kolhydrater på glykogenförråden och ger bränsle för högintensivt arbete. Efter träning är musklerna extra känsliga för insulin och glukosupptag – det så kallade &quot;metabola fönstret&quot; – vilket gör att kolhydrater effektivt återställer glykogenet och stödjer den anabola miljön. Genom att koncentrera kolhydraterna hit maximerar du deras prestations- och återhämtningsnytta, samtidigt som insulinnivåerna hålls lägre resten av dagen, vilket kan gynna fettoxidation under viloperioder.
+            </p>
+          </div>
+
+          {/* Fat section */}
+          <div>
+            <h4 className="font-semibold text-amber-600 mb-2">Lågt fettintag kring träning</h4>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              Fett fördröjer magsäckstömningen och därmed upptaget av både protein och kolhydrater. Före träning vill du ha snabbt tillgänglig energi, inte en långsam matsmältning som kan ge obehag. Efter träning prioriteras snabb leverans av aminosyror och glukos till musklerna, och då är fett i vägen. Resten av dagen spelar fett däremot en viktig roll för hormonsyntesen, mättnad och absorption av fettlösliga vitaminer.
+            </p>
+          </div>
+
+          {/* Summary */}
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-semibold text-gray-800 mb-2">Sammanfattning</h4>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              Strategin handlar om att tajma näringsämnen efter deras metabola effekter: proteinet sprids för maximal syntesrespons, kolhydraterna placeras där de gör mest nytta för prestation och återhämtning, och fettet flyttas bort från träningstillfällena för att inte bromsa upptaget av de andra makronäringsämnena.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-2">
+          <Button onClick={() => setShowMacroExplanation(false)}>
+            Stäng
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   )
 }
