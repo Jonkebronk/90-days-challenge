@@ -542,26 +542,39 @@ export function ClientStyleMealCard({
             </button>
           )}
 
-          {/* Target macros - compact inline */}
+          {/* Target macros - with labels */}
           {meal.targetMacros && meal.targetMacros.kcal > 0 && (
             <button
               onClick={handleEditTarget}
               disabled={!onUpdateMealMacros}
               className={cn(
-                "flex items-center gap-2 sm:gap-3 px-2 py-1 rounded-lg transition-all ml-auto",
+                "flex items-center gap-2 px-2 py-1 rounded-lg transition-all ml-auto",
                 "bg-zinc-50 border border-zinc-200",
                 onUpdateMealMacros && "hover:bg-zinc-100 cursor-pointer",
                 !onUpdateMealMacros && "cursor-default"
               )}
             >
-              <div className="flex items-center gap-2 sm:gap-3 text-xs">
-                <span className="font-semibold text-amber-700">{Math.round(meal.targetMacros.kcal)}</span>
-                <span className="text-rose-600">{Math.round(meal.targetMacros.protein)}p</span>
-                <span className="text-amber-600">{Math.round(meal.targetMacros.carbs)}k</span>
-                <span className="text-sky-600">{Math.round(meal.targetMacros.fat)}f</span>
+              <span className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide mr-1">Rekommenderat</span>
+              <div className="flex items-center gap-3 text-xs">
+                <div className="text-center">
+                  <div className="text-[9px] text-zinc-400 uppercase font-medium">Kcal</div>
+                  <div className="font-bold text-amber-600">{Math.round(meal.targetMacros.kcal)}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[9px] text-zinc-400 uppercase font-medium">Prot</div>
+                  <div className="font-bold text-rose-600">{Math.round(meal.targetMacros.protein)}g</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[9px] text-zinc-400 uppercase font-medium">Kolh</div>
+                  <div className="font-bold text-amber-500">{Math.round(meal.targetMacros.carbs)}g</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[9px] text-zinc-400 uppercase font-medium">Fett</div>
+                  <div className="font-bold text-sky-500">{Math.round(meal.targetMacros.fat)}g</div>
+                </div>
               </div>
               {onUpdateMealMacros && (
-                <Pencil className="w-3 h-3 text-zinc-400 shrink-0" />
+                <Pencil className="w-3 h-3 text-zinc-400 shrink-0 ml-1" />
               )}
             </button>
           )}
