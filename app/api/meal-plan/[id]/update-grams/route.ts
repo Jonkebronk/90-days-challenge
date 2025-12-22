@@ -85,33 +85,56 @@ export async function PUT(
       return NextResponse.json({ error: 'Food item not found' }, { status: 404 });
     }
 
-    // Fetch the food item to get accurate per-100g values
-    const foodItem = await prisma.foodItem.findUnique({
-      where: { id: item.selected.foodId },
-    });
+    // Get per-100g values for the food item
+    let per100g = { protein: 0, carbs: 0, fat: 0, kcal: 0 };
 
-    let newMacros: CalculatedMacros;
-
-    if (foodItem) {
-      // Calculate macros from per-100g values for accuracy
-      const factor = grams / 100;
-      newMacros = {
-        protein: Math.round(Number(foodItem.proteinG || 0) * factor * 10) / 10,
-        carbs: Math.round(Number(foodItem.carbsG || 0) * factor * 10) / 10,
-        fat: Math.round(Number(foodItem.fatG || 0) * factor * 10) / 10,
-        kcal: Math.round(Number(foodItem.calories || 0) * factor),
-      };
-    } else {
-      // Fallback: scale from existing macros (if food not found)
+    // Check if this is an SLV food (id starts with "slv-")
+    if (item.selected.foodId.startsWith('slv-')) {
+      // For SLV foods, calculate per-100g from stored macros and grams
       const oldGrams = item.selected.grams || 100;
-      const factor = oldGrams > 0 ? grams / oldGrams : 0;
-      newMacros = {
-        protein: Math.round(item.selected.macros.protein * factor * 10) / 10,
-        carbs: Math.round(item.selected.macros.carbs * factor * 10) / 10,
-        fat: Math.round(item.selected.macros.fat * factor * 10) / 10,
-        kcal: Math.round(item.selected.macros.kcal * factor),
-      };
+      if (oldGrams > 0) {
+        per100g = {
+          protein: (item.selected.macros.protein / oldGrams) * 100,
+          carbs: (item.selected.macros.carbs / oldGrams) * 100,
+          fat: (item.selected.macros.fat / oldGrams) * 100,
+          kcal: (item.selected.macros.kcal / oldGrams) * 100,
+        };
+      }
+    } else {
+      // Fetch from database for regular food items
+      const foodItem = await prisma.foodItem.findUnique({
+        where: { id: item.selected.foodId },
+      });
+
+      if (foodItem) {
+        per100g = {
+          protein: Number(foodItem.proteinG || 0),
+          carbs: Number(foodItem.carbsG || 0),
+          fat: Number(foodItem.fatG || 0),
+          kcal: Number(foodItem.calories || 0),
+        };
+      } else {
+        // Fallback: calculate from existing macros
+        const oldGrams = item.selected.grams || 100;
+        if (oldGrams > 0) {
+          per100g = {
+            protein: (item.selected.macros.protein / oldGrams) * 100,
+            carbs: (item.selected.macros.carbs / oldGrams) * 100,
+            fat: (item.selected.macros.fat / oldGrams) * 100,
+            kcal: (item.selected.macros.kcal / oldGrams) * 100,
+          };
+        }
+      }
     }
+
+    // Calculate new macros based on new grams
+    const factor = grams / 100;
+    const newMacros: CalculatedMacros = {
+      protein: Math.round(per100g.protein * factor * 10) / 10,
+      carbs: Math.round(per100g.carbs * factor * 10) / 10,
+      fat: Math.round(per100g.fat * factor * 10) / 10,
+      kcal: Math.round(per100g.kcal * factor),
+    };
 
     // Update the item
     item.selected.grams = Math.round(grams);
