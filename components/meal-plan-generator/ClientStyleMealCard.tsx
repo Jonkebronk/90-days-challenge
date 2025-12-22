@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry, Pencil } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry, Pencil, ArrowUp, ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -125,6 +125,11 @@ interface ClientStyleMealCardProps {
   mealRecipes?: MealRecipe[];
   onAddMealRecipe?: (mealIndex: number) => void;
   onRemoveMealRecipe?: (mealIndex: number, recipeId: string) => void;
+  // Reorder props
+  onMoveUp?: (mealIndex: number) => void;
+  onMoveDown?: (mealIndex: number) => void;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
 }
 
 // Category styling config with distinct colors
@@ -213,6 +218,10 @@ export function ClientStyleMealCard({
   mealRecipes = [],
   onAddMealRecipe,
   onRemoveMealRecipe,
+  onMoveUp,
+  onMoveDown,
+  canMoveUp = false,
+  canMoveDown = false,
 }: ClientStyleMealCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -511,6 +520,44 @@ export function ClientStyleMealCard({
             <Utensils className="w-5 h-5 text-amber-500" />
             <span className="text-base font-semibold text-zinc-900">{mealLabel}</span>
           </button>
+
+          {/* Move up/down buttons */}
+          {(onMoveUp || onMoveDown) && (
+            <div className="flex items-center gap-0.5 ml-1">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMoveUp?.(mealIndex);
+                }}
+                disabled={!canMoveUp || disabled}
+                className={cn(
+                  "p-1 rounded transition-colors",
+                  canMoveUp && !disabled
+                    ? "hover:bg-zinc-100 text-zinc-500 hover:text-zinc-700"
+                    : "text-zinc-300 cursor-not-allowed"
+                )}
+                title="Flytta upp"
+              >
+                <ArrowUp className="w-4 h-4" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMoveDown?.(mealIndex);
+                }}
+                disabled={!canMoveDown || disabled}
+                className={cn(
+                  "p-1 rounded transition-colors",
+                  canMoveDown && !disabled
+                    ? "hover:bg-zinc-100 text-zinc-500 hover:text-zinc-700"
+                    : "text-zinc-300 cursor-not-allowed"
+                )}
+                title="Flytta ner"
+              >
+                <ArrowDown className="w-4 h-4" />
+              </button>
+            </div>
+          )}
 
           {/* Spacer */}
           <div className="flex-1" />

@@ -658,6 +658,49 @@ export function FlexibleMealPlan({
     }));
   };
 
+  // Handle moving meal up/down
+  const handleMoveMeal = async (mealIndex: number, direction: 'up' | 'down') => {
+    if (!flexiblePlan) return;
+
+    const targetIndex = direction === 'up' ? mealIndex - 1 : mealIndex + 1;
+
+    // Validate bounds
+    if (targetIndex < 0 || targetIndex >= flexiblePlan.meals.length) return;
+
+    try {
+      const response = await fetch(`/api/meal-plan/${flexiblePlan.id}/reorder-meals`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fromIndex: mealIndex, toIndex: targetIndex }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Kunde inte flytta måltid');
+        return;
+      }
+
+      // Update local state
+      setFlexiblePlan({
+        ...flexiblePlan,
+        meals: data.meals,
+      });
+
+      // Also update meal recipes order
+      setMealRecipes(prev => {
+        const newRecipes = { ...prev };
+        const temp = newRecipes[mealIndex];
+        newRecipes[mealIndex] = newRecipes[targetIndex];
+        newRecipes[targetIndex] = temp;
+        return newRecipes;
+      });
+    } catch (err) {
+      setError('Ett fel uppstod vid flytt av måltid');
+      console.error('Move meal error:', err);
+    }
+  };
+
   // Add alternative handler
   const handleAddAlternative = async (
     mealIndex: number,
@@ -945,6 +988,10 @@ export function FlexibleMealPlan({
                 mealRecipes={mealRecipes[index] || []}
                 onAddMealRecipe={handleAddMealRecipe}
                 onRemoveMealRecipe={handleRemoveMealRecipe}
+                onMoveUp={(idx) => handleMoveMeal(idx, 'up')}
+                onMoveDown={(idx) => handleMoveMeal(idx, 'down')}
+                canMoveUp={index > 0}
+                canMoveDown={index < flexiblePlan.meals.length - 1}
               />
             ))}
           </div>
