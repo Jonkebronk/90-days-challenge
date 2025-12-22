@@ -341,7 +341,7 @@ export function ClientStyleMealCard({
     }
   };
 
-  // Render a single food item - responsive layout (stacked on mobile, row on desktop)
+  // Render a single food item - single row layout
   const renderFoodItem = (
     item: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros; image?: string | null } },
     category: MacroCategory,
@@ -352,109 +352,84 @@ export function ClientStyleMealCard({
     return (
       <div
         key={item.selected.foodId}
-        className="py-2 px-1 space-y-1.5 sm:space-y-0 sm:flex sm:items-center sm:gap-3"
+        className="py-2 px-1 flex items-center gap-2"
       >
-        {/* Row 1 on mobile: Image + Food name + actions */}
-        <div className="flex items-center gap-2 sm:flex-1 sm:min-w-0">
-          {/* Round food image */}
-          <button
-            onClick={() => handleFoodClick(item.selected.foodId, item.selected.name, item.selected.grams)}
-            className="w-10 h-10 rounded-full overflow-hidden bg-zinc-100 shrink-0 hover:ring-2 hover:ring-amber-400 transition-all"
-          >
-            {item.selected.image ? (
-              <img
-                src={item.selected.image}
-                alt={item.selected.name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-zinc-400">
-                <Utensils className="w-4 h-4" />
-              </div>
-            )}
-          </button>
-          <button
-            onClick={() => handleFoodClick(item.selected.foodId, item.selected.name, item.selected.grams)}
-            className="flex-1 text-left text-sm text-zinc-800 font-medium sm:font-normal truncate hover:text-amber-600 transition-colors"
-          >
-            {item.selected.name}
-          </button>
-          {/* Actions - visible on mobile */}
-          <div className="flex items-center gap-0.5 shrink-0 sm:hidden">
-            <button
-              onClick={() => !disabled && handleOpenSelectModal(category, getTargetMacro(category))}
-              disabled={disabled}
-              className="p-1.5 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 disabled:opacity-30 transition-colors"
-              title="Byt"
-            >
-              <RefreshCw className="h-4 w-4" />
-            </button>
-            {onRemoveFood && (
-              <button
-                onClick={() => !disabled && onRemoveFood(mealIndex, category, item.selected.foodId)}
-                disabled={disabled}
-                className="p-1.5 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 disabled:opacity-30 transition-colors"
-                title="Ta bort"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
+        {/* Food image */}
+        <button
+          onClick={() => handleFoodClick(item.selected.foodId, item.selected.name, item.selected.grams)}
+          className="w-9 h-9 rounded-full overflow-hidden bg-zinc-100 shrink-0 hover:ring-2 hover:ring-amber-400 transition-all"
+        >
+          {item.selected.image ? (
+            <img
+              src={item.selected.image}
+              alt={item.selected.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-zinc-400">
+              <Utensils className="w-4 h-4" />
+            </div>
+          )}
+        </button>
+
+        {/* Gram input */}
+        <div className="text-center shrink-0">
+          <div className="text-[8px] text-zinc-400 uppercase font-medium">Gram</div>
+          <GramInput
+            value={item.selected.grams}
+            onChange={(grams) => handleGramInputChange(category, item.selected.foodId, grams)}
+            disabled={disabled}
+          />
+        </div>
+
+        {/* Food name */}
+        <button
+          onClick={() => handleFoodClick(item.selected.foodId, item.selected.name, item.selected.grams)}
+          className="flex-1 text-left text-sm text-zinc-800 truncate hover:text-amber-600 transition-colors min-w-0"
+        >
+          {item.selected.name}
+        </button>
+
+        {/* Macros with labels */}
+        <div className="flex items-center gap-2 text-xs tabular-nums shrink-0">
+          <div className="text-center">
+            <div className="text-[8px] text-zinc-400 uppercase font-medium">Kcal</div>
+            <div className="font-bold text-amber-600">{Math.round(macros.kcal)}</div>
+          </div>
+          <div className="text-center">
+            <div className="text-[8px] text-zinc-400 uppercase font-medium">Prot</div>
+            <div className="font-bold text-rose-600">{macros.protein.toFixed(0)}g</div>
+          </div>
+          <div className="text-center">
+            <div className="text-[8px] text-zinc-400 uppercase font-medium">Kolh</div>
+            <div className="font-bold text-amber-500">{macros.carbs.toFixed(0)}g</div>
+          </div>
+          <div className="text-center">
+            <div className="text-[8px] text-zinc-400 uppercase font-medium">Fett</div>
+            <div className="font-bold text-sky-500">{macros.fat.toFixed(0)}g</div>
           </div>
         </div>
 
-        {/* Row 2 on mobile: Gram input + Macros */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Gram input with label */}
-          <div className="text-center">
-            <div className="text-[8px] text-zinc-400 uppercase font-medium mb-0.5">Gram</div>
-            <GramInput
-              value={item.selected.grams}
-              onChange={(grams) => handleGramInputChange(category, item.selected.foodId, grams)}
-              disabled={disabled}
-            />
-          </div>
-
-          {/* Macros with labels */}
-          <div className="flex items-center gap-3 sm:gap-4 text-xs tabular-nums flex-1 sm:flex-none">
-            <div className="text-center">
-              <div className="text-[8px] text-zinc-400 uppercase font-medium">Kcal</div>
-              <div className="font-bold text-amber-600">{Math.round(macros.kcal)}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-[8px] text-zinc-400 uppercase font-medium">Prot</div>
-              <div className="font-bold text-rose-600">{macros.protein.toFixed(0)}g</div>
-            </div>
-            <div className="text-center">
-              <div className="text-[8px] text-zinc-400 uppercase font-medium">Kolh</div>
-              <div className="font-bold text-amber-500">{macros.carbs.toFixed(0)}g</div>
-            </div>
-            <div className="text-center">
-              <div className="text-[8px] text-zinc-400 uppercase font-medium">Fett</div>
-              <div className="font-bold text-sky-500">{macros.fat.toFixed(0)}g</div>
-            </div>
-          </div>
-
-          {/* Actions - hidden on mobile, visible on desktop */}
-          <div className="hidden sm:flex items-center gap-0.5 shrink-0">
+        {/* Actions */}
+        <div className="flex items-center gap-0.5 shrink-0">
+          <button
+            onClick={() => !disabled && handleOpenSelectModal(category, getTargetMacro(category))}
+            disabled={disabled}
+            className="p-1 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 disabled:opacity-30 transition-colors"
+            title="Byt"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+          </button>
+          {onRemoveFood && (
             <button
-              onClick={() => !disabled && handleOpenSelectModal(category, getTargetMacro(category))}
+              onClick={() => !disabled && onRemoveFood(mealIndex, category, item.selected.foodId)}
               disabled={disabled}
-              className="p-1 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 disabled:opacity-30 transition-colors"
-              title="Byt"
+              className="p-1 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 disabled:opacity-30 transition-colors"
+              title="Ta bort"
             >
-              <RefreshCw className="h-3.5 w-3.5" />
+              <X className="h-3.5 w-3.5" />
             </button>
-            {onRemoveFood && (
-              <button
-                onClick={() => !disabled && onRemoveFood(mealIndex, category, item.selected.foodId)}
-                disabled={disabled}
-                className="p-1 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 disabled:opacity-30 transition-colors"
-                title="Ta bort"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            )}
-          </div>
+          )}
         </div>
       </div>
     );
