@@ -208,16 +208,41 @@ export function ProductSelectModal({
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Fetch both products and SLV foods in parallel
-        const [productsRes, slvRes] = await Promise.all([
+        // Fetch products, food items, and SLV foods in parallel
+        const [productsRes, foodItemsRes, slvRes] = await Promise.all([
           fetch(`/api/products?macroCategory=${category}`),
+          fetch(`/api/food-items?macroCategory=${category}&limit=200`),
           fetch('/data/slv-foods.json'),
         ]);
 
+        // Combine products from both sources
+        const allProducts: Product[] = [];
+
         if (productsRes.ok) {
           const data = await productsRes.json();
-          setProducts(data.products || []);
+          allProducts.push(...(data.products || []));
         }
+
+        // Add food items (converted to Product format)
+        if (foodItemsRes.ok) {
+          const foodData = await foodItemsRes.json();
+          const foodItemsAsProducts = (foodData.items || []).map((item: any) => ({
+            id: `fooditem-${item.id}`,
+            name: item.name,
+            brand: item.foodCategory?.name || null,
+            image: item.imageUrl || null,
+            kcal: item.calories || 0,
+            protein: item.proteinG || 0,
+            carbs: item.carbsG || 0,
+            fat: item.fatG || 0,
+            macroCategory: item.macroCategory,
+            mealTypes: item.mealTypes,
+            source: 'product' as const,
+          }));
+          allProducts.push(...foodItemsAsProducts);
+        }
+
+        setProducts(allProducts);
 
         if (slvRes.ok) {
           const slvData = await slvRes.json();

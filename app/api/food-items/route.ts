@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search') || ''
     const categoryId = searchParams.get('categoryId')
     const categorySlug = searchParams.get('categorySlug')
+    const macroCategory = searchParams.get('macroCategory')
     const isRecommended = searchParams.get('isRecommended')
     const isApproved = searchParams.get('isApproved')
     const limitParam = searchParams.get('limit')
@@ -33,6 +34,11 @@ export async function GET(req: NextRequest) {
 
     // Build where clause
     const where: any = {}
+
+    // Filter by macroCategory (for meal plan generator)
+    if (macroCategory) {
+      where.macroCategory = macroCategory
+    }
 
     // Search by name
     if (search) {
@@ -89,6 +95,8 @@ export async function GET(req: NextRequest) {
         isApproved: true,
         isVegetarian: true,
         isVegan: true,
+        macroCategory: true,
+        mealTypes: true,
         foodCategory: {
           select: {
             id: true,
