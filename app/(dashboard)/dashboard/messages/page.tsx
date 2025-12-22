@@ -13,6 +13,7 @@ import {
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
 import { toast } from 'sonner'
 import { FAQPanel } from '@/components/messages/FAQPanel'
+import { CheckInEditDialog } from '@/components/CheckInEditDialog'
 import { MessageReactions } from '@/components/messages/MessageReactions'
 import { format, formatDistanceToNow } from 'date-fns'
 import { sv } from 'date-fns/locale'
@@ -43,6 +44,7 @@ interface Message {
   senderId: string
   receiverId: string
   isCheckInSummary: boolean
+  checkInId: string | null
   images: string[]
   createdAt: string
   readAt: string | null
@@ -144,6 +146,7 @@ export default function MessagesPage() {
   const [typingUser, setTypingUser] = useState<string | null>(null)
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [editCheckInId, setEditCheckInId] = useState<string | null>(null)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -739,8 +742,17 @@ export default function MessagesPage() {
 
                           <div className={`${isCheckIn ? 'bg-blue-50 border-2 border-blue-200' : 'bg-gray-100 border border-gray-200'} rounded-2xl p-3 sm:p-4`}>
                             {isCheckIn && (
-                              <div className="mb-2 pb-2 border-b border-blue-200">
+                              <div className="mb-2 pb-2 border-b border-blue-200 flex items-center justify-between">
                                 <p className="text-xs font-bold text-blue-600">VECKORAPPORT</p>
+                                {message.checkInId && (
+                                  <button
+                                    onClick={() => setEditCheckInId(message.checkInId)}
+                                    className="text-xs text-blue-500 hover:text-blue-700 flex items-center gap-1"
+                                  >
+                                    <Pencil className="w-3 h-3" />
+                                    Redigera
+                                  </button>
+                                )}
                               </div>
                             )}
 
@@ -975,6 +987,19 @@ export default function MessagesPage() {
           </button>
           <img src={selectedImage} alt="Fullscreen" className="max-w-full max-h-full object-contain" onClick={(e) => e.stopPropagation()} />
         </div>
+      )}
+
+      {/* Check-in Edit Dialog */}
+      {editCheckInId && (
+        <CheckInEditDialog
+          checkInId={editCheckInId}
+          open={!!editCheckInId}
+          onOpenChange={(open) => !open && setEditCheckInId(null)}
+          onSuccess={() => {
+            // Refresh messages to show updated check-in
+            fetchMessages()
+          }}
+        />
       )}
     </div>
   )
