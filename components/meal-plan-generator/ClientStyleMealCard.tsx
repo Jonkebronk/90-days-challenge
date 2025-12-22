@@ -411,12 +411,24 @@ export function ClientStyleMealCard({
             disabled={disabled}
           />
 
-          {/* Macros */}
-          <div className="flex items-center gap-2 sm:gap-3 text-xs tabular-nums flex-1 sm:flex-none">
-            <span className="text-red-600 font-medium">{macros.protein.toFixed(1)}g</span>
-            <span className="text-blue-600 font-medium">{macros.fat.toFixed(1)}g</span>
-            <span className="text-green-600 font-medium">{macros.carbs.toFixed(1)}g</span>
-            <span className="text-amber-600 font-medium">{Math.round(macros.kcal)}</span>
+          {/* Macros with labels */}
+          <div className="flex items-center gap-3 sm:gap-4 text-xs tabular-nums flex-1 sm:flex-none">
+            <div className="text-center">
+              <div className="text-[8px] text-zinc-400 uppercase font-medium">Kcal</div>
+              <div className="font-bold text-amber-600">{Math.round(macros.kcal)}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[8px] text-zinc-400 uppercase font-medium">Prot</div>
+              <div className="font-bold text-rose-600">{macros.protein.toFixed(0)}g</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[8px] text-zinc-400 uppercase font-medium">Kolh</div>
+              <div className="font-bold text-amber-500">{macros.carbs.toFixed(0)}g</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[8px] text-zinc-400 uppercase font-medium">Fett</div>
+              <div className="font-bold text-sky-500">{macros.fat.toFixed(0)}g</div>
+            </div>
           </div>
 
           {/* Actions - hidden on mobile, visible on desktop */}
