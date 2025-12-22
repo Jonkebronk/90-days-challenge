@@ -88,11 +88,19 @@ export async function PUT(
     // Get per-100g values for the food item
     let per100g = { protein: 0, carbs: 0, fat: 0, kcal: 0 };
 
+    // Debug logging
+    console.log('Update grams request:', {
+      foodId: item.selected.foodId,
+      oldGrams: item.selected.grams,
+      newGrams: grams,
+      currentMacros: item.selected.macros,
+    });
+
     // Check if this is an SLV food (id starts with "slv-")
     if (item.selected.foodId.startsWith('slv-')) {
       // For SLV foods, calculate per-100g from stored macros and grams
       const oldGrams = item.selected.grams || 100;
-      if (oldGrams > 0) {
+      if (oldGrams > 0 && item.selected.macros.kcal > 0) {
         per100g = {
           protein: (item.selected.macros.protein / oldGrams) * 100,
           carbs: (item.selected.macros.carbs / oldGrams) * 100,
@@ -102,30 +110,50 @@ export async function PUT(
       }
     } else {
       // Fetch from database for regular food items
-      const foodItem = await prisma.foodItem.findUnique({
+      // Try Product table first (main product database)
+      const product = await prisma.product.findUnique({
         where: { id: item.selected.foodId },
       });
 
-      if (foodItem) {
+      if (product) {
         per100g = {
-          protein: Number(foodItem.proteinG || 0),
-          carbs: Number(foodItem.carbsG || 0),
-          fat: Number(foodItem.fatG || 0),
-          kcal: Number(foodItem.calories || 0),
+          protein: Number(product.protein || 0),
+          carbs: Number(product.carbs || 0),
+          fat: Number(product.fat || 0),
+          kcal: Number(product.kcal || 0),
         };
+        console.log('Found product:', { id: product.id, name: product.name, per100g });
       } else {
-        // Fallback: calculate from existing macros
-        const oldGrams = item.selected.grams || 100;
-        if (oldGrams > 0) {
+        // Try FoodItem table (legacy)
+        const foodItem = await prisma.foodItem.findUnique({
+          where: { id: item.selected.foodId },
+        });
+
+        if (foodItem) {
           per100g = {
-            protein: (item.selected.macros.protein / oldGrams) * 100,
-            carbs: (item.selected.macros.carbs / oldGrams) * 100,
-            fat: (item.selected.macros.fat / oldGrams) * 100,
-            kcal: (item.selected.macros.kcal / oldGrams) * 100,
+            protein: Number(foodItem.proteinG || 0),
+            carbs: Number(foodItem.carbsG || 0),
+            fat: Number(foodItem.fatG || 0),
+            kcal: Number(foodItem.calories || 0),
           };
+          console.log('Found foodItem:', { id: foodItem.id, name: foodItem.name, per100g });
+        } else {
+          // Fallback: calculate from existing macros
+          console.log('Fallback: using existing macros to calculate per100g');
+          const oldGrams = item.selected.grams || 100;
+          if (oldGrams > 0 && item.selected.macros.kcal > 0) {
+            per100g = {
+              protein: (item.selected.macros.protein / oldGrams) * 100,
+              carbs: (item.selected.macros.carbs / oldGrams) * 100,
+              fat: (item.selected.macros.fat / oldGrams) * 100,
+              kcal: (item.selected.macros.kcal / oldGrams) * 100,
+            };
+          }
         }
       }
     }
+
+    console.log('Calculated per100g:', per100g);
 
     // Calculate new macros based on new grams
     const factor = grams / 100;
