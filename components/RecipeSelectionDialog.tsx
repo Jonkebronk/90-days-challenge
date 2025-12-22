@@ -199,23 +199,23 @@ export function RecipeSelectionDialog({
               return (
                 <div
                   key={recipe.id}
-                  className="flex items-center justify-between p-4 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.2)] rounded-lg hover:border-[rgba(255,215,0,0.4)] transition-colors"
+                  className="p-4 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.2)] rounded-lg hover:border-[rgba(255,215,0,0.4)] transition-colors"
                 >
-                  <div className="flex items-center gap-4 flex-1">
+                  <div className="flex items-start gap-4">
                     {recipe.coverImage ? (
                       <img
                         src={recipe.coverImage}
                         alt={recipe.title}
-                        className="w-16 h-16 object-cover rounded-lg"
+                        className="w-16 h-16 object-cover rounded-lg shrink-0"
                       />
                     ) : (
-                      <div className="w-16 h-16 bg-[rgba(255,215,0,0.1)] rounded-lg flex items-center justify-center">
+                      <div className="w-16 h-16 bg-[rgba(255,215,0,0.1)] rounded-lg flex items-center justify-center shrink-0">
                         <ChefHat className="h-8 w-8 text-[rgba(255,215,0,0.5)]" />
                       </div>
                     )}
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <h3 className="text-white font-medium">{recipe.title}</h3>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex flex-wrap items-center gap-2 mt-1">
                         <Badge className="bg-[rgba(255,215,0,0.1)] text-[#FFD700] border border-[rgba(255,215,0,0.3)] text-xs">
                           {recipe.category.name}
                         </Badge>
@@ -225,7 +225,7 @@ export function RecipeSelectionDialog({
                           </Badge>
                         )}
                       </div>
-                      <p className="text-sm text-[rgba(255,255,255,0.6)] mt-1">
+                      <p className="text-xs text-[rgba(255,255,255,0.6)] mt-1">
                         {recipe.caloriesPerServing
                           ? `${Math.round(recipe.caloriesPerServing * multiplier)} kcal`
                           : '-'}{' '}
@@ -244,26 +244,25 @@ export function RecipeSelectionDialog({
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <Label
-                        htmlFor={`multiplier-${recipe.id}`}
-                        className="text-sm text-[rgba(255,255,255,0.6)] whitespace-nowrap"
-                      >
-                        Portioner:
-                      </Label>
-                      <Input
-                        id={`multiplier-${recipe.id}`}
-                        type="number"
-                        min="0.1"
-                        step="0.1"
-                        value={multiplier}
-                        onChange={(e) =>
-                          setServingMultiplier(recipe.id, parseFloat(e.target.value) || 1)
-                        }
-                        className="w-20 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
-                      />
-                    </div>
+                  {/* Portioner och Välj-knapp på egen rad */}
+                  <div className="flex items-center justify-end gap-3 mt-3 pt-3 border-t border-[rgba(255,215,0,0.1)]">
+                    <Label
+                      htmlFor={`multiplier-${recipe.id}`}
+                      className="text-sm text-[rgba(255,255,255,0.6)]"
+                    >
+                      Portioner:
+                    </Label>
+                    <Input
+                      id={`multiplier-${recipe.id}`}
+                      type="number"
+                      min="0.1"
+                      step="0.1"
+                      value={multiplier}
+                      onChange={(e) =>
+                        setServingMultiplier(recipe.id, parseFloat(e.target.value) || 1)
+                      }
+                      className="w-20 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                    />
                     <Button
                       onClick={() => handleSelectRecipe(recipe)}
                       className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
