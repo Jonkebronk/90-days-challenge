@@ -410,23 +410,23 @@ export function ClientStyleMealCard({
           {item.selected.name}
         </button>
 
-        {/* Macros with labels */}
-        <div className="flex items-center gap-2 text-xs tabular-nums shrink-0">
-          <div className="text-center">
-            <div className="text-[8px] text-zinc-400 uppercase font-medium">Kcal</div>
-            <div className="font-bold text-amber-600">{Math.round(macros.kcal)}</div>
+        {/* Macros with labels - compact on mobile */}
+        <div className="flex items-center gap-1 sm:gap-2 text-xs tabular-nums shrink-0">
+          <div className="text-center min-w-[28px] sm:min-w-[32px]">
+            <div className="text-[7px] sm:text-[8px] text-zinc-400 uppercase font-medium">Kcal</div>
+            <div className="font-bold text-amber-600 text-[10px] sm:text-xs">{Math.round(macros.kcal)}</div>
           </div>
-          <div className="text-center">
-            <div className="text-[8px] text-zinc-400 uppercase font-medium">Prot</div>
-            <div className="font-bold text-rose-600">{macros.protein.toFixed(0)}g</div>
+          <div className="text-center min-w-[24px] sm:min-w-[28px]">
+            <div className="text-[7px] sm:text-[8px] text-zinc-400 uppercase font-medium">P</div>
+            <div className="font-bold text-rose-600 text-[10px] sm:text-xs">{macros.protein.toFixed(0)}</div>
           </div>
-          <div className="text-center">
-            <div className="text-[8px] text-zinc-400 uppercase font-medium">Kolh</div>
-            <div className="font-bold text-amber-500">{macros.carbs.toFixed(0)}g</div>
+          <div className="text-center min-w-[24px] sm:min-w-[28px]">
+            <div className="text-[7px] sm:text-[8px] text-zinc-400 uppercase font-medium">K</div>
+            <div className="font-bold text-amber-500 text-[10px] sm:text-xs">{macros.carbs.toFixed(0)}</div>
           </div>
-          <div className="text-center">
-            <div className="text-[8px] text-zinc-400 uppercase font-medium">Fett</div>
-            <div className="font-bold text-sky-500">{macros.fat.toFixed(0)}g</div>
+          <div className="text-center min-w-[24px] sm:min-w-[28px]">
+            <div className="text-[7px] sm:text-[8px] text-zinc-400 uppercase font-medium">F</div>
+            <div className="font-bold text-sky-500 text-[10px] sm:text-xs">{macros.fat.toFixed(0)}</div>
           </div>
         </div>
 
@@ -533,7 +533,8 @@ export function ClientStyleMealCard({
     <div className="bg-white rounded-2xl overflow-hidden border border-zinc-200 shadow-sm">
       {/* Header */}
       <div className="py-3 px-4">
-        <div className="flex items-center gap-3">
+        {/* First row: Meal name + chevron */}
+        <div className="flex items-center gap-2">
           {/* Left side: Icon + Name with edit */}
           <button
             className="flex items-center gap-2 hover:opacity-70 transition-opacity cursor-pointer shrink-0"
@@ -552,42 +553,8 @@ export function ClientStyleMealCard({
             </button>
           )}
 
-          {/* Target macros - with labels */}
-          {meal.targetMacros && meal.targetMacros.kcal > 0 && (
-            <button
-              onClick={handleEditTarget}
-              disabled={!onUpdateMealMacros}
-              className={cn(
-                "flex items-center gap-2 px-2 py-1 rounded-lg transition-all ml-auto",
-                "bg-zinc-50 border border-zinc-200",
-                onUpdateMealMacros && "hover:bg-zinc-100 cursor-pointer",
-                !onUpdateMealMacros && "cursor-default"
-              )}
-            >
-              <span className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide mr-1">Rekommenderat</span>
-              <div className="flex items-center gap-3 text-xs">
-                <div className="text-center">
-                  <div className="text-[9px] text-zinc-400 uppercase font-medium">Kcal</div>
-                  <div className="font-bold text-amber-600">{Math.round(meal.targetMacros.kcal)}</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-[9px] text-zinc-400 uppercase font-medium">Prot</div>
-                  <div className="font-bold text-rose-600">{Math.round(meal.targetMacros.protein)}g</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-[9px] text-zinc-400 uppercase font-medium">Kolh</div>
-                  <div className="font-bold text-amber-500">{Math.round(meal.targetMacros.carbs)}g</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-[9px] text-zinc-400 uppercase font-medium">Fett</div>
-                  <div className="font-bold text-sky-500">{Math.round(meal.targetMacros.fat)}g</div>
-                </div>
-              </div>
-              {onUpdateMealMacros && (
-                <Pencil className="w-3 h-3 text-zinc-400 shrink-0 ml-1" />
-              )}
-            </button>
-          )}
+          {/* Spacer */}
+          <div className="flex-1" />
 
           {/* Right side: Chevron */}
           <button
@@ -601,6 +568,43 @@ export function ClientStyleMealCard({
             )}
           </button>
         </div>
+
+        {/* Second row: Target macros - now on its own row */}
+        {meal.targetMacros && meal.targetMacros.kcal > 0 && (
+          <button
+            onClick={handleEditTarget}
+            disabled={!onUpdateMealMacros}
+            className={cn(
+              "flex items-center gap-2 px-2 py-1.5 rounded-lg transition-all mt-2 w-full",
+              "bg-zinc-50 border border-zinc-200",
+              onUpdateMealMacros && "hover:bg-zinc-100 cursor-pointer",
+              !onUpdateMealMacros && "cursor-default"
+            )}
+          >
+            <span className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide shrink-0">Rek.</span>
+            <div className="flex items-center gap-2 sm:gap-3 text-xs flex-1 justify-end">
+              <div className="text-center">
+                <div className="text-[8px] sm:text-[9px] text-zinc-400 uppercase font-medium">Kcal</div>
+                <div className="font-bold text-amber-600 text-[11px] sm:text-xs">{Math.round(meal.targetMacros.kcal)}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-[8px] sm:text-[9px] text-zinc-400 uppercase font-medium">Prot</div>
+                <div className="font-bold text-rose-600 text-[11px] sm:text-xs">{Math.round(meal.targetMacros.protein)}g</div>
+              </div>
+              <div className="text-center">
+                <div className="text-[8px] sm:text-[9px] text-zinc-400 uppercase font-medium">Kolh</div>
+                <div className="font-bold text-amber-500 text-[11px] sm:text-xs">{Math.round(meal.targetMacros.carbs)}g</div>
+              </div>
+              <div className="text-center">
+                <div className="text-[8px] sm:text-[9px] text-zinc-400 uppercase font-medium">Fett</div>
+                <div className="font-bold text-sky-500 text-[11px] sm:text-xs">{Math.round(meal.targetMacros.fat)}g</div>
+              </div>
+            </div>
+            {onUpdateMealMacros && (
+              <Pencil className="w-3 h-3 text-zinc-400 shrink-0" />
+            )}
+          </button>
+        )}
       </div>
 
       {/* Notes section - info box under header */}
