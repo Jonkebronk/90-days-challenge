@@ -404,12 +404,15 @@ export function ClientStyleMealCard({
 
         {/* Row 2 on mobile: Gram input + Macros */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Gram input - debounced */}
-          <GramInput
-            value={item.selected.grams}
-            onChange={(grams) => handleGramInputChange(category, item.selected.foodId, grams)}
-            disabled={disabled}
-          />
+          {/* Gram input with label */}
+          <div className="text-center">
+            <div className="text-[8px] text-zinc-400 uppercase font-medium mb-0.5">Gram</div>
+            <GramInput
+              value={item.selected.grams}
+              onChange={(grams) => handleGramInputChange(category, item.selected.foodId, grams)}
+              disabled={disabled}
+            />
+          </div>
 
           {/* Macros with labels */}
           <div className="flex items-center gap-3 sm:gap-4 text-xs tabular-nums flex-1 sm:flex-none">
