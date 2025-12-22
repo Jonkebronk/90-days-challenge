@@ -117,6 +117,7 @@ interface ClientStyleMealCardProps {
   onUpdateGrams?: (mealIndex: number, category: MacroCategory, grams: number, foodId?: string) => void;
   onUpdateMealMacros?: (mealIndex: number, targetMacros: CalculatedMacros) => void;
   onUpdateMealName?: (mealIndex: number, customName: string) => void;
+  onUpdateMealNotes?: (mealIndex: number, notes: string) => void;
   disabled?: boolean;
   recipeSuggestions?: RecipeSuggestion[];
   onSelectRecipe?: (mealIndex: number, recipeId: string) => void;
@@ -205,6 +206,7 @@ export function ClientStyleMealCard({
   onUpdateGrams,
   onUpdateMealMacros,
   onUpdateMealName,
+  onUpdateMealNotes,
   disabled = false,
   recipeSuggestions = [],
   onSelectRecipe,
@@ -241,6 +243,10 @@ export function ClientStyleMealCard({
   const [editNameOpen, setEditNameOpen] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
 
+  // Edit meal notes state
+  const [editNotesOpen, setEditNotesOpen] = useState(false);
+  const [editNotesValue, setEditNotesValue] = useState('');
+
   // Handle recipe click
   const handleRecipeClick = (recipeId: string) => {
     setSelectedRecipeId(recipeId);
@@ -274,6 +280,20 @@ export function ClientStyleMealCard({
       onUpdateMealName(mealIndex, editNameValue);
     }
     setEditNameOpen(false);
+  };
+
+  // Handle edit meal notes
+  const handleEditNotes = () => {
+    setEditNotesValue(meal.notes || '');
+    setEditNotesOpen(true);
+  };
+
+  // Save edited meal notes
+  const handleSaveNotes = () => {
+    if (onUpdateMealNotes) {
+      onUpdateMealNotes(mealIndex, editNotesValue);
+    }
+    setEditNotesOpen(false);
   };
 
   // Handle edit target macros
@@ -582,6 +602,35 @@ export function ClientStyleMealCard({
           </button>
         </div>
       </div>
+
+      {/* Notes section - info box under header */}
+      {(meal.notes || onUpdateMealNotes) && (
+        <div className="px-4 py-2 border-b border-zinc-100">
+          {meal.notes ? (
+            <div
+              onClick={onUpdateMealNotes ? handleEditNotes : undefined}
+              className={cn(
+                "flex items-start gap-2 p-2.5 rounded-lg bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/50",
+                onUpdateMealNotes && "cursor-pointer hover:from-amber-100 hover:to-orange-100 transition-colors"
+              )}
+            >
+              <span className="text-amber-500 text-sm mt-0.5">💡</span>
+              <p className="text-sm text-amber-800 flex-1">{meal.notes}</p>
+              {onUpdateMealNotes && (
+                <Pencil className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+              )}
+            </div>
+          ) : onUpdateMealNotes && (
+            <button
+              onClick={handleEditNotes}
+              className="flex items-center gap-2 text-sm text-zinc-400 hover:text-amber-600 transition-colors"
+            >
+              <span>💡</span>
+              <span>Lägg till tips eller instruktion...</span>
+            </button>
+          )}
+        </div>
+      )}
 
       {/* TOTALT summary - always visible */}
       <div className="px-4 pb-3 border-b border-zinc-100">
@@ -995,6 +1044,43 @@ export function ClientStyleMealCard({
               <Button
                 size="sm"
                 onClick={handleSaveName}
+                disabled={disabled}
+                className="bg-amber-500 hover:bg-amber-600"
+              >
+                Spara
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Meal Notes Dialog */}
+      <Dialog open={editNotesOpen} onOpenChange={setEditNotesOpen}>
+        <DialogContent className="max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
+          <DialogHeader>
+            <DialogTitle>💡 Tips eller instruktion</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-zinc-700">Meddelande till klienten</label>
+              <textarea
+                value={editNotesValue}
+                onChange={(e) => setEditNotesValue(e.target.value)}
+                placeholder="T.ex. 'Ät detta efter träning' eller 'Byt ut kycklingen mot tofu om du vill'"
+                className="mt-1 w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none"
+                rows={3}
+              />
+              <p className="text-xs text-zinc-500 mt-1">
+                Lämna tomt för att ta bort tipset
+              </p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setEditNotesOpen(false)}>
+                Avbryt
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleSaveNotes}
                 disabled={disabled}
                 className="bg-amber-500 hover:bg-amber-600"
               >

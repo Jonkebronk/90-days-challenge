@@ -570,6 +570,44 @@ export function FlexibleMealPlan({
     }
   };
 
+  // Update meal notes handler
+  const handleUpdateMealNotes = async (
+    mealIndex: number,
+    notes: string
+  ) => {
+    if (!flexiblePlan) return;
+
+    try {
+      const response = await fetch(`/api/meal-plan/${flexiblePlan.id}/update-meal-notes`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mealIndex, notes }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Kunde inte uppdatera meddelande');
+        return;
+      }
+
+      // Update local state
+      const newMeals = [...flexiblePlan.meals];
+      newMeals[mealIndex] = {
+        ...newMeals[mealIndex],
+        notes: notes || undefined,
+      };
+
+      setFlexiblePlan({
+        ...flexiblePlan,
+        meals: newMeals,
+      });
+    } catch (err) {
+      setError('Ett fel uppstod vid uppdatering av meddelande');
+      console.error('Update meal notes error:', err);
+    }
+  };
+
   // Handle opening recipe selector for a meal
   const handleAddMealRecipe = (mealIndex: number) => {
     setRecipeMealIndex(mealIndex);
@@ -835,6 +873,7 @@ export function FlexibleMealPlan({
                 onUpdateGrams={handleUpdateGrams}
                 onUpdateMealMacros={handleUpdateMealMacros}
                 onUpdateMealName={handleUpdateMealName}
+                onUpdateMealNotes={handleUpdateMealNotes}
                 mealRecipes={mealRecipes[index] || []}
                 onAddMealRecipe={handleAddMealRecipe}
                 onRemoveMealRecipe={handleRemoveMealRecipe}

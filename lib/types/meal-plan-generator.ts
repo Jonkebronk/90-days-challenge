@@ -157,6 +157,7 @@ export interface GeneratedMeal {
   type: MealType;
   index: number; // For multiple meals of same type (e.g., 2 mellanmål)
   customName?: string; // User-defined custom name for this meal
+  notes?: string; // Coach notes/tips for this meal
   items: GeneratedMealItem[];
   sauce?: FoodWithGrams;
   vegetableGrams: number; // Usually 200g for lunch/middag
