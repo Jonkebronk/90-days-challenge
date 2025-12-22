@@ -16,6 +16,31 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // First try Product table (main product database)
+    const product = await prisma.product.findUnique({
+      where: { id },
+    })
+
+    if (product) {
+      // Return product in FoodItem format
+      return NextResponse.json({
+        item: {
+          id: product.id,
+          name: product.name,
+          brand: product.brand,
+          calories: Number(product.kcal) || 0,
+          proteinG: Number(product.protein) || 0,
+          carbsG: Number(product.carbs) || 0,
+          fatG: Number(product.fat) || 0,
+          fiberG: product.fiber ? Number(product.fiber) : null,
+          sugarG: product.sugar ? Number(product.sugar) : null,
+          image: product.image,
+          category: product.category,
+        }
+      })
+    }
+
+    // Then try FoodItem table (legacy)
     const foodItem = await prisma.foodItem.findUnique({
       where: { id },
       include: {
