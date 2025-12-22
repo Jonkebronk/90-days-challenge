@@ -303,11 +303,6 @@ export function ProductSelectModal({
       .filter((p) => {
         // For sauce, filter out products with 0 grams (target-based filtering)
         if (category === 'sauce' && p.calculatedGrams <= 0) return false;
-
-        // Filter by mealType if product has mealTypes set (only for coach products)
-        if (activeTab === 'products' && p.mealTypes && p.mealTypes.length > 0) {
-          return p.mealTypes.includes(mealType);
-        }
         return true;
       })
       .filter((p) => {
