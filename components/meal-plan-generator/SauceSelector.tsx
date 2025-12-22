@@ -302,12 +302,18 @@ export function SauceSelector({
               <div className="flex items-center gap-2">
                 <span className="text-sm text-zinc-500">Mängd:</span>
                 <Input
-                  type="number"
-                  min={1}
-                  max={200}
+                  type="text"
+                  inputMode="numeric"
                   value={grams}
-                  onChange={(e) => setGrams(Math.min(200, Math.max(1, parseInt(e.target.value) || 1)))}
-                  className="w-20 text-center"
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    const num = parseInt(val) || 0;
+                    setGrams(Math.min(200, num));
+                  }}
+                  onBlur={() => {
+                    if (grams < 1) setGrams(1);
+                  }}
+                  className="w-20 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <span className="text-sm text-zinc-500">g</span>
               </div>
