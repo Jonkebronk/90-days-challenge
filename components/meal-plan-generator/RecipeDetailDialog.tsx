@@ -8,8 +8,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Loader2, Heart, X, Clock, Users } from 'lucide-react';
+import { Loader2, Heart, X, Clock, Users, ChefHat } from 'lucide-react';
 import { toast } from 'sonner';
+import { RecipeCustomizerDialog } from '@/components/recipe-customizer';
 
 type FoodItem = {
   name: string;
@@ -65,15 +66,26 @@ interface RecipeDetailDialogProps {
   recipeId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  // Optional props for recipe customization (when viewing from meal plan context)
+  mealPlanId?: string;
+  mealIndex?: number;
+  onCustomizeSuccess?: () => void;
 }
 
 export function RecipeDetailDialog({
   recipeId,
   open,
   onOpenChange,
+  mealPlanId,
+  mealIndex,
+  onCustomizeSuccess,
 }: RecipeDetailDialogProps) {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [customizerOpen, setCustomizerOpen] = useState(false);
+
+  // Check if customization is available (has meal plan context)
+  const canCustomize = !!(mealPlanId && mealIndex !== undefined);
 
   useEffect(() => {
     if (open && recipeId) {
@@ -301,6 +313,22 @@ export function RecipeDetailDialog({
                 </div>
               </div>
             )}
+
+            {/* Customize Recipe Button - only shown when in meal plan context */}
+            {canCustomize && (
+              <div className="border-t border-zinc-200 pt-4 mt-2">
+                <Button
+                  onClick={() => setCustomizerOpen(true)}
+                  className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+                >
+                  <ChefHat className="w-4 h-4 mr-2" />
+                  Anpassa recept
+                </Button>
+                <p className="text-xs text-zinc-500 mt-2 text-center">
+                  Länka ingredienser till produkter och justera mängder för att passa din plan
+                </p>
+              </div>
+            )}
           </>
         ) : (
           <div className="py-12 text-center text-zinc-500">
@@ -308,6 +336,23 @@ export function RecipeDetailDialog({
           </div>
         )}
       </DialogContent>
+
+      {/* Recipe Customizer Dialog */}
+      {canCustomize && recipeId && (
+        <RecipeCustomizerDialog
+          recipeId={recipeId}
+          mealPlanId={mealPlanId!}
+          mealIndex={mealIndex!}
+          open={customizerOpen}
+          onOpenChange={setCustomizerOpen}
+          onSuccess={() => {
+            setCustomizerOpen(false);
+            onOpenChange(false);
+            onCustomizeSuccess?.();
+            toast.success('Recept anpassat och tillagt i måltiden');
+          }}
+        />
+      )}
     </Dialog>
   );
 }
