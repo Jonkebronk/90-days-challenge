@@ -243,9 +243,6 @@ export function ClientStyleMealCard({
   const [editNameOpen, setEditNameOpen] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
 
-  // Edit meal notes state
-  const [editNotesOpen, setEditNotesOpen] = useState(false);
-  const [editNotesValue, setEditNotesValue] = useState('');
 
   // Handle recipe click
   const handleRecipeClick = (recipeId: string) => {
@@ -280,20 +277,6 @@ export function ClientStyleMealCard({
       onUpdateMealName(mealIndex, editNameValue);
     }
     setEditNameOpen(false);
-  };
-
-  // Handle edit meal notes
-  const handleEditNotes = () => {
-    setEditNotesValue(meal.notes || '');
-    setEditNotesOpen(true);
-  };
-
-  // Save edited meal notes
-  const handleSaveNotes = () => {
-    if (onUpdateMealNotes) {
-      onUpdateMealNotes(mealIndex, editNotesValue);
-    }
-    setEditNotesOpen(false);
   };
 
   // Handle edit target macros
@@ -361,7 +344,7 @@ export function ClientStyleMealCard({
     }
   };
 
-  // Render a single food item - single row layout
+  // Render a single food item - two row layout
   const renderFoodItem = (
     item: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros; image?: string | null } },
     category: MacroCategory,
@@ -372,84 +355,76 @@ export function ClientStyleMealCard({
     return (
       <div
         key={item.selected.foodId}
-        className="py-2 px-1 flex items-center gap-2"
+        className="py-2 px-1 space-y-1.5"
       >
-        {/* Food image */}
-        <button
-          onClick={() => handleFoodClick(item.selected.foodId, item.selected.name, item.selected.grams)}
-          className="w-9 h-9 rounded-full overflow-hidden bg-zinc-100 shrink-0 hover:ring-2 hover:ring-amber-400 transition-all"
-        >
-          {item.selected.image ? (
-            <img
-              src={item.selected.image}
-              alt={item.selected.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-zinc-400">
-              <Utensils className="w-4 h-4" />
-            </div>
-          )}
-        </button>
-
-        {/* Gram input */}
-        <div className="text-center shrink-0">
-          <div className="text-[8px] text-zinc-400 uppercase font-medium">Gram</div>
-          <GramInput
-            value={item.selected.grams}
-            onChange={(grams) => handleGramInputChange(category, item.selected.foodId, grams)}
-            disabled={disabled}
-          />
-        </div>
-
-        {/* Food name */}
-        <button
-          onClick={() => handleFoodClick(item.selected.foodId, item.selected.name, item.selected.grams)}
-          className="flex-1 text-left text-sm text-zinc-800 truncate hover:text-amber-600 transition-colors min-w-0"
-        >
-          {item.selected.name}
-        </button>
-
-        {/* Macros with labels - compact on mobile */}
-        <div className="flex items-center gap-1 sm:gap-2 text-xs tabular-nums shrink-0">
-          <div className="text-center min-w-[28px] sm:min-w-[32px]">
-            <div className="text-[7px] sm:text-[8px] text-zinc-400 uppercase font-medium">Kcal</div>
-            <div className="font-bold text-amber-600 text-[10px] sm:text-xs">{Math.round(macros.kcal)}</div>
-          </div>
-          <div className="text-center min-w-[24px] sm:min-w-[28px]">
-            <div className="text-[7px] sm:text-[8px] text-zinc-400 uppercase font-medium">P</div>
-            <div className="font-bold text-rose-600 text-[10px] sm:text-xs">{macros.protein.toFixed(0)}</div>
-          </div>
-          <div className="text-center min-w-[24px] sm:min-w-[28px]">
-            <div className="text-[7px] sm:text-[8px] text-zinc-400 uppercase font-medium">K</div>
-            <div className="font-bold text-amber-500 text-[10px] sm:text-xs">{macros.carbs.toFixed(0)}</div>
-          </div>
-          <div className="text-center min-w-[24px] sm:min-w-[28px]">
-            <div className="text-[7px] sm:text-[8px] text-zinc-400 uppercase font-medium">F</div>
-            <div className="font-bold text-sky-500 text-[10px] sm:text-xs">{macros.fat.toFixed(0)}</div>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-0.5 shrink-0">
+        {/* Row 1: Image + Name */}
+        <div className="flex items-center gap-2">
           <button
-            onClick={() => !disabled && handleOpenSelectModal(category, getTargetMacro(category))}
-            disabled={disabled}
-            className="p-1 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 disabled:opacity-30 transition-colors"
-            title="Byt"
+            onClick={() => handleFoodClick(item.selected.foodId, item.selected.name, item.selected.grams)}
+            className="w-9 h-9 rounded-full overflow-hidden bg-zinc-100 shrink-0 hover:ring-2 hover:ring-amber-400 transition-all"
           >
-            <RefreshCw className="h-3.5 w-3.5" />
+            {item.selected.image ? (
+              <img
+                src={item.selected.image}
+                alt={item.selected.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-zinc-400">
+                <Utensils className="w-4 h-4" />
+              </div>
+            )}
           </button>
-          {onRemoveFood && (
-            <button
-              onClick={() => !disabled && onRemoveFood(mealIndex, category, item.selected.foodId)}
+          <button
+            onClick={() => handleFoodClick(item.selected.foodId, item.selected.name, item.selected.grams)}
+            className="flex-1 text-left text-sm font-medium text-zinc-800 hover:text-amber-600 transition-colors truncate"
+          >
+            {item.selected.name}
+          </button>
+        </div>
+
+        {/* Row 2: Gram + Macros + Actions */}
+        <div className="flex items-center gap-2 pl-11">
+          {/* Gram input */}
+          <div className="flex items-center gap-1 shrink-0">
+            <GramInput
+              value={item.selected.grams}
+              onChange={(grams) => handleGramInputChange(category, item.selected.foodId, grams)}
               disabled={disabled}
-              className="p-1 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 disabled:opacity-30 transition-colors"
-              title="Ta bort"
+            />
+            <span className="text-[10px] text-zinc-400">g</span>
+          </div>
+
+          {/* Macros - compact inline */}
+          <div className="flex items-center gap-1.5 text-[11px] tabular-nums flex-1">
+            <span className="text-amber-600 font-semibold">{Math.round(macros.kcal)}</span>
+            <span className="text-zinc-300">|</span>
+            <span className="text-rose-600 font-medium">{macros.protein.toFixed(0)}p</span>
+            <span className="text-amber-500 font-medium">{macros.carbs.toFixed(0)}k</span>
+            <span className="text-sky-500 font-medium">{macros.fat.toFixed(0)}f</span>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-0.5 shrink-0">
+            <button
+              onClick={() => !disabled && handleOpenSelectModal(category, getTargetMacro(category))}
+              disabled={disabled}
+              className="p-1 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 disabled:opacity-30 transition-colors"
+              title="Byt"
             >
-              <X className="h-3.5 w-3.5" />
+              <RefreshCw className="h-3.5 w-3.5" />
             </button>
-          )}
+            {onRemoveFood && (
+              <button
+                onClick={() => !disabled && onRemoveFood(mealIndex, category, item.selected.foodId)}
+                disabled={disabled}
+                className="p-1 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 disabled:opacity-30 transition-colors"
+                title="Ta bort"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -606,35 +581,6 @@ export function ClientStyleMealCard({
           </button>
         )}
       </div>
-
-      {/* Notes section - info box under header */}
-      {(meal.notes || onUpdateMealNotes) && (
-        <div className="px-4 py-2 border-b border-zinc-100">
-          {meal.notes ? (
-            <div
-              onClick={onUpdateMealNotes ? handleEditNotes : undefined}
-              className={cn(
-                "flex items-start gap-2 p-2.5 rounded-lg bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/50",
-                onUpdateMealNotes && "cursor-pointer hover:from-amber-100 hover:to-orange-100 transition-colors"
-              )}
-            >
-              <span className="text-amber-500 text-sm mt-0.5">💡</span>
-              <p className="text-sm text-amber-800 flex-1">{meal.notes}</p>
-              {onUpdateMealNotes && (
-                <Pencil className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
-              )}
-            </div>
-          ) : onUpdateMealNotes && (
-            <button
-              onClick={handleEditNotes}
-              className="flex items-center gap-2 text-sm text-zinc-400 hover:text-amber-600 transition-colors"
-            >
-              <span>💡</span>
-              <span>Lägg till tips eller instruktion...</span>
-            </button>
-          )}
-        </div>
-      )}
 
       {/* TOTALT summary - always visible */}
       <div className="px-4 pb-3 border-b border-zinc-100">
@@ -1058,42 +1004,6 @@ export function ClientStyleMealCard({
         </DialogContent>
       </Dialog>
 
-      {/* Edit Meal Notes Dialog */}
-      <Dialog open={editNotesOpen} onOpenChange={setEditNotesOpen}>
-        <DialogContent className="max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
-          <DialogHeader>
-            <DialogTitle>💡 Tips eller instruktion</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-zinc-700">Meddelande till klienten</label>
-              <textarea
-                value={editNotesValue}
-                onChange={(e) => setEditNotesValue(e.target.value)}
-                placeholder="T.ex. 'Ät detta efter träning' eller 'Byt ut kycklingen mot tofu om du vill'"
-                className="mt-1 w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent resize-none"
-                rows={3}
-              />
-              <p className="text-xs text-zinc-500 mt-1">
-                Lämna tomt för att ta bort tipset
-              </p>
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" size="sm" onClick={() => setEditNotesOpen(false)}>
-                Avbryt
-              </Button>
-              <Button
-                size="sm"
-                onClick={handleSaveNotes}
-                disabled={disabled}
-                className="bg-amber-500 hover:bg-amber-600"
-              >
-                Spara
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
