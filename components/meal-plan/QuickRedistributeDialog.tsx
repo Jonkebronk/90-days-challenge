@@ -32,6 +32,7 @@ interface QuickRedistributeDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentMealsPerDay?: number
+  targetKcal?: number
   onSave: (settings: {
     mealsPerDay: number
     preWorkoutMeal: number
@@ -44,12 +45,17 @@ export function QuickRedistributeDialog({
   open,
   onOpenChange,
   currentMealsPerDay = 5,
+  targetKcal = 0,
   onSave,
 }: QuickRedistributeDialogProps) {
   const [step, setStep] = useState(1)
   const [saving, setSaving] = useState(false)
 
   const [mealsPerDay, setMealsPerDay] = useState(currentMealsPerDay)
+
+  // Explanation dialog states
+  const [showMacroExplanation, setShowMacroExplanation] = useState(false)
+  const [showSnackExplanation, setShowSnackExplanation] = useState(false)
   const [preWorkoutMeal, setPreWorkoutMeal] = useState(DEFAULT_TRAINING_PLACEMENT[currentMealsPerDay]?.pre || 3)
   const [postWorkoutMeal, setPostWorkoutMeal] = useState(DEFAULT_TRAINING_PLACEMENT[currentMealsPerDay]?.post || 4)
   const [mealNames, setMealNames] = useState(DEFAULT_MEAL_NAMES[currentMealsPerDay] || DEFAULT_MEAL_NAMES[5])
@@ -97,9 +103,12 @@ export function QuickRedistributeDialog({
   }
 
   // Estimated calories per meal
-  const estimatedKcalPerMeal = '~300-500'
+  const estimatedKcalPerMeal = targetKcal > 0
+    ? `~${Math.round(targetKcal / mealsPerDay)}`
+    : '~300-500'
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] flex flex-col">
         <DialogHeader>
@@ -167,7 +176,13 @@ export function QuickRedistributeDialog({
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-2">
                 <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
                 <div className="text-sm text-blue-700">
-                  <strong>Riktlinjer:</strong> Protein sprids jämnt över dagens måltider, kolhydraterna läggs främst kring träningspassen, och fettintaget hålls lågt i anslutning till träning.
+                  <strong>Riktlinjer:</strong> Protein sprids jämnt över dagens måltider, kolhydraterna läggs främst kring träningspassen, och fettintaget hålls lågt i anslutning till träning.{' '}
+                  <button
+                    onClick={() => setShowMacroExplanation(true)}
+                    className="text-blue-600 underline hover:text-blue-800 font-medium"
+                  >
+                    Läs mer
+                  </button>
                 </div>
               </div>
 
@@ -175,7 +190,13 @@ export function QuickRedistributeDialog({
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2">
                 <Info className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                 <div className="text-sm text-amber-700">
-                  <strong>Mellanmål:</strong> Mellanmål hålls kolhydratfria – kolhydraterna läggs istället på pre/post-workout.
+                  <strong>Mellanmål:</strong> Mellanmål hålls kolhydratfria – kolhydraterna läggs istället på pre/post-workout.{' '}
+                  <button
+                    onClick={() => setShowSnackExplanation(true)}
+                    className="text-amber-600 underline hover:text-amber-800 font-medium"
+                  >
+                    Varför?
+                  </button>
                 </div>
               </div>
 
@@ -292,5 +313,83 @@ export function QuickRedistributeDialog({
         </div>
       </DialogContent>
     </Dialog>
+
+    {/* Macro Distribution Explanation Dialog */}
+    <Dialog open={showMacroExplanation} onOpenChange={setShowMacroExplanation}>
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl">Varför fördela makros på detta sätt?</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-6 py-4">
+          <div>
+            <h4 className="font-semibold text-rose-600 mb-2">Proteinfördelning över dagen</h4>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              Muskelproteinsyntesen (MPS) har en maximal respons per måltid – ungefär 0,4–0,55 g protein per kg kroppsvikt räcker för att maximera stimuleringen. Att äta mer än så vid ett enskilt tillfälle ger inte ytterligare MPS-ökning, utan överskottet oxideras. Genom att fördela proteinet jämnt över 4–5 måltider får du flera &quot;pulser&quot; av MPS under dygnet, vilket optimerar den totala muskeluppbyggnaden.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold text-sky-600 mb-2">Kolhydrater koncentrerade kring träning</h4>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              Kolhydrater höjer insulin, vilket hämmar lipolys (fettfrisättning) men främjar glukosupptag i musklerna och stödjer återhämtning. Före träning fyller kolhydrater på glykogenförråden och ger bränsle för högintensivt arbete. Efter träning är musklerna extra känsliga för insulin och glukosupptag – det så kallade &quot;metabola fönstret&quot; – vilket gör att kolhydrater effektivt återställer glykogenet och stödjer den anabola miljön.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold text-amber-600 mb-2">Lågt fettintag kring träning</h4>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              Fett fördröjer magsäckstömningen och därmed upptaget av både protein och kolhydrater. Före träning vill du ha snabbt tillgänglig energi, inte en långsam matsmältning som kan ge obehag. Efter träning prioriteras snabb leverans av aminosyror och glukos till musklerna.
+            </p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-semibold text-gray-800 mb-2">Sammanfattning</h4>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              Strategin handlar om att tajma näringsämnen efter deras metabola effekter: proteinet sprids för maximal syntesrespons, kolhydraterna placeras där de gör mest nytta för prestation och återhämtning, och fettet flyttas bort från träningstillfällena.
+            </p>
+          </div>
+        </div>
+        <div className="flex justify-end pt-2">
+          <Button onClick={() => setShowMacroExplanation(false)}>
+            Stäng
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    {/* Carb-free Snacks Explanation Dialog */}
+    <Dialog open={showSnackExplanation} onOpenChange={setShowSnackExplanation}>
+      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl text-amber-800">Varför kolhydratfria mellanmål?</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <p className="text-sm text-gray-700">
+            Ifall du har mellanmål på måltidsschemat så är det smart att försöka hålla mellanmålen fria från kolhydrater:
+          </p>
+          <div className="space-y-4 text-sm text-gray-700">
+            <div>
+              <h4 className="font-semibold text-amber-700 mb-1">Stabil energi och mättnad</h4>
+              <p>Protein och fett ger en jämn blodsockerkurva utan de insulintoppar som kolhydrater skapar. Det håller dig mätt längre och undviker energidippar mellan huvudmålen.</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-amber-700 mb-1">Bättre fettoxidation</h4>
+              <p>Med låga insulinnivåer under dessa perioder kan kroppen lättare använda fett som bränsle.</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-amber-700 mb-1">Koncentrerad kolhydrateffekt</h4>
+              <p>När du samlar alla kolhydrater till måltiderna närmast träningen maximerar du deras nytta: fulla glykogendepåer inför passet och snabb återfyllnad efteråt.</p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-amber-700 mb-1">Praktiskt upplägg</h4>
+              <p>Bra alternativ blir exempelvis kvarg med nötter, ägg, proteinpudding med lite jordnötssmör, eller whey proteinpulver.</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-end pt-2">
+          <Button onClick={() => setShowSnackExplanation(false)}>
+            Stäng
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   )
 }

@@ -1051,6 +1051,7 @@ export function FlexibleMealPlan({
         open={redistributeOpen}
         onOpenChange={setRedistributeOpen}
         currentMealsPerDay={flexiblePlan?.meals.length || 5}
+        targetKcal={targetMacros.kcal}
         onSave={handleRedistribute}
       />
     </div>
