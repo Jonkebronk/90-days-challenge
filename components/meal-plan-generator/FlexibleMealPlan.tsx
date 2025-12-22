@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Save, AlertTriangle } from 'lucide-react';
+import { Loader2, Save, AlertTriangle, RefreshCw } from 'lucide-react';
 import { ClientStyleMealCard } from './ClientStyleMealCard';
 import { SauceSelector } from './SauceSelector';
 import { FoodSwapModal } from './FoodSwapModal';
 import { RecipeSelectionDialog } from '@/components/RecipeSelectionDialog';
+import { QuickRedistributeDialog } from '@/components/meal-plan/QuickRedistributeDialog';
 import type {
   MealConfig,
   MacroCategory,
@@ -87,6 +88,9 @@ export function FlexibleMealPlan({
   // Recipe selector modal state
   const [recipeModalOpen, setRecipeModalOpen] = useState(false);
   const [recipeMealIndex, setRecipeMealIndex] = useState<number | null>(null);
+
+  // Redistribute dialog state
+  const [redistributeOpen, setRedistributeOpen] = useState(false);
 
   // Load existing meal plan or create new one on mount
   useEffect(() => {
@@ -833,6 +837,70 @@ export function FlexibleMealPlan({
     }
   };
 
+  // Redistribute handler - adjusts meal count and training placement
+  const handleRedistribute = async (settings: {
+    mealsPerDay: number;
+    preWorkoutMeal: number;
+    postWorkoutMeal: number;
+    mealNames: string[];
+  }) => {
+    if (!flexiblePlan) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Build meal distribution based on settings
+      const proteinPerMeal = Math.round(targetMacros.protein / settings.mealsPerDay);
+      const carbsPerMeal = Math.round(targetMacros.carbs / settings.mealsPerDay);
+      const fatPerMeal = Math.round(targetMacros.fat / settings.mealsPerDay);
+
+      // Create meal distribution array for API
+      const mealDistribution = settings.mealNames.map((name, i) => {
+        const mealNum = i + 1;
+        let type: 'pre' | 'post' | 'bedtime' | 'other' = 'other';
+        if (mealNum === settings.preWorkoutMeal) type = 'pre';
+        else if (mealNum === settings.postWorkoutMeal) type = 'post';
+        else if (mealNum === settings.mealsPerDay) type = 'bedtime';
+
+        return {
+          meal: mealNum,
+          name,
+          protein: proteinPerMeal,
+          carbs: carbsPerMeal,
+          fat: fatPerMeal,
+          type,
+        };
+      });
+
+      const response = await fetch('/api/meal-plan/adjust', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mealsPerDay: settings.mealsPerDay,
+          targetCalories: targetMacros.kcal,
+          proteinGrams: targetMacros.protein,
+          fatGrams: targetMacros.fat,
+          carbGrams: targetMacros.carbs,
+          nutritionPlanId,
+          mealDistribution,
+          mealNames: settings.mealNames,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to redistribute meals');
+      }
+
+      // Reload the plan to get new meals
+      setHasLoaded(false);
+    } catch (err) {
+      setError('Ett fel uppstod vid redistribution');
+      console.error('Redistribute error:', err);
+      setIsLoading(false);
+    }
+  };
+
   // Count meals by type for numbering
   const getMealNumber = (meals: GeneratedMeal[], index: number): number | undefined => {
     const type = meals[index].type;
@@ -898,23 +966,34 @@ export function FlexibleMealPlan({
             >
               Rensa allt
             </Button>
-            <Button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="bg-amber-500 hover:bg-amber-600"
-            >
-              {isSaving ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Sparar...
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4 mr-2" />
-                  Spara
-                </>
-              )}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setRedistributeOpen(true)}
+                disabled={isLoading}
+                className="text-zinc-600"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Fördela om
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="bg-amber-500 hover:bg-amber-600"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Sparar...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Spara
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </>
       )}
@@ -965,6 +1044,14 @@ export function FlexibleMealPlan({
             fat: Math.round((recipe.fatPerServing || 0) * multiplier),
           });
         }}
+      />
+
+      {/* Quick Redistribute Dialog */}
+      <QuickRedistributeDialog
+        open={redistributeOpen}
+        onOpenChange={setRedistributeOpen}
+        currentMealsPerDay={flexiblePlan?.meals.length || 5}
+        onSave={handleRedistribute}
       />
     </div>
   );

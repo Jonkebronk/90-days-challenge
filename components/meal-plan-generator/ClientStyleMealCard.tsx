@@ -239,9 +239,6 @@ export function ClientStyleMealCard({
   const [editTargetOpen, setEditTargetOpen] = useState(false);
   const [editTargetValues, setEditTargetValues] = useState<CalculatedMacros | null>(null);
 
-  // Edit meal name state
-  const [editNameOpen, setEditNameOpen] = useState(false);
-  const [editNameValue, setEditNameValue] = useState('');
 
 
   // Handle recipe click
@@ -263,21 +260,6 @@ export function ClientStyleMealCard({
     ? `${MEAL_TYPE_LABELS[meal.type]} ${mealNumber}`
     : MEAL_TYPE_LABELS[meal.type];
   const mealLabel = meal.customName || defaultLabel;
-
-  // Handle edit meal name
-  const handleEditName = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setEditNameValue(meal.customName || defaultLabel);
-    setEditNameOpen(true);
-  };
-
-  // Save edited meal name
-  const handleSaveName = () => {
-    if (onUpdateMealName) {
-      onUpdateMealName(mealIndex, editNameValue);
-    }
-    setEditNameOpen(false);
-  };
 
   // Handle edit target macros
   const handleEditTarget = (e: React.MouseEvent) => {
@@ -521,7 +503,7 @@ export function ClientStyleMealCard({
       <div className="py-3 px-4">
         {/* First row: Meal name + chevron */}
         <div className="flex items-center gap-2">
-          {/* Left side: Icon + Name with edit */}
+          {/* Left side: Icon + Name */}
           <button
             className="flex items-center gap-2 hover:opacity-70 transition-opacity cursor-pointer shrink-0"
             onClick={() => setIsExpanded(!isExpanded)}
@@ -529,15 +511,6 @@ export function ClientStyleMealCard({
             <Utensils className="w-5 h-5 text-amber-500" />
             <span className="text-base font-semibold text-zinc-900">{mealLabel}</span>
           </button>
-          {onUpdateMealName && (
-            <button
-              onClick={handleEditName}
-              className="p-1 hover:bg-zinc-100 rounded-full text-zinc-400 hover:text-amber-600 transition-colors shrink-0"
-              title="Ändra namn"
-            >
-              <Pencil className="w-3.5 h-3.5" />
-            </button>
-          )}
 
           {/* Spacer */}
           <div className="flex-1" />
@@ -975,43 +948,6 @@ export function ClientStyleMealCard({
               </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Meal Name Dialog */}
-      <Dialog open={editNameOpen} onOpenChange={setEditNameOpen}>
-        <DialogContent className="max-w-sm" onOpenAutoFocus={(e) => e.preventDefault()}>
-          <DialogHeader>
-            <DialogTitle>Ändra måltidsnamn</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-zinc-700">Namn</label>
-              <Input
-                type="text"
-                value={editNameValue}
-                onChange={(e) => setEditNameValue(e.target.value)}
-                placeholder={defaultLabel}
-                className="mt-1"
-              />
-              <p className="text-xs text-zinc-500 mt-1">
-                Lämna tomt för att använda standardnamnet ({defaultLabel})
-              </p>
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" size="sm" onClick={() => setEditNameOpen(false)}>
-                Avbryt
-              </Button>
-              <Button
-                size="sm"
-                onClick={handleSaveName}
-                disabled={disabled}
-                className="bg-amber-500 hover:bg-amber-600"
-              >
-                Spara
-              </Button>
-            </div>
-          </div>
         </DialogContent>
       </Dialog>
 
