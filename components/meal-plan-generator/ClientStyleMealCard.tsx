@@ -395,13 +395,24 @@ export function ClientStyleMealCard({
             <span className="text-[10px] text-zinc-400">g</span>
           </div>
 
-          {/* Macros - compact inline */}
-          <div className="flex items-center gap-1.5 text-[11px] tabular-nums flex-1">
-            <span className="text-amber-600 font-semibold">{Math.round(macros.kcal)}</span>
-            <span className="text-zinc-300">|</span>
-            <span className="text-rose-600 font-medium">{macros.protein.toFixed(0)}p</span>
-            <span className="text-amber-500 font-medium">{macros.carbs.toFixed(0)}k</span>
-            <span className="text-sky-500 font-medium">{macros.fat.toFixed(0)}f</span>
+          {/* Macros with labels on top */}
+          <div className="flex items-center gap-2 sm:gap-3 text-xs tabular-nums flex-1">
+            <div className="text-center">
+              <div className="text-[8px] text-zinc-400 uppercase font-medium">Kcal</div>
+              <div className="font-bold text-amber-600">{Math.round(macros.kcal)}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[8px] text-zinc-400 uppercase font-medium">P</div>
+              <div className="font-bold text-rose-600">{macros.protein.toFixed(0)}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[8px] text-zinc-400 uppercase font-medium">K</div>
+              <div className="font-bold text-amber-500">{macros.carbs.toFixed(0)}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[8px] text-zinc-400 uppercase font-medium">F</div>
+              <div className="font-bold text-sky-500">{macros.fat.toFixed(0)}</div>
+            </div>
           </div>
 
           {/* Actions */}
