@@ -580,6 +580,47 @@ export function ClientStyleMealCard({
         </div>
       </div>
 
+      {/* TOTALT summary - always visible */}
+      <div className="px-4 pb-3 border-b border-zinc-100">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">Totalt</span>
+          <div className="flex items-center gap-4 text-xs">
+            <div className="text-center">
+              <div className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide">Kcal</div>
+              <div className="font-bold text-amber-600">{meal.totalMacros.kcal.toFixed(0)}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide">Prot</div>
+              <div className="font-bold text-rose-600">{meal.totalMacros.protein.toFixed(0)}g</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide">Kolh</div>
+              <div className="font-bold text-amber-500">{meal.totalMacros.carbs.toFixed(0)}g</div>
+            </div>
+            <div className="text-center">
+              <div className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide">Fett</div>
+              <div className="font-bold text-sky-500">{meal.totalMacros.fat.toFixed(0)}g</div>
+            </div>
+          </div>
+        </div>
+        {/* Progress bar */}
+        {meal.targetMacros && meal.targetMacros.kcal > 0 && (
+          <div className="mt-2">
+            <div className="text-[10px] text-zinc-400 mb-1">{progressPercent}% av mål</div>
+            <div className="h-1 bg-zinc-100 rounded-full overflow-hidden">
+              <div
+                className={cn(
+                  "h-full rounded-full transition-all",
+                  progressPercent >= 95 && progressPercent <= 105 ? "bg-green-500" :
+                  progressPercent > 105 ? "bg-amber-500" : "bg-amber-400"
+                )}
+                style={{ width: `${Math.min(progressPercent, 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Expanded content */}
       {isExpanded && (
         <div className="px-5 pb-5 space-y-3">
