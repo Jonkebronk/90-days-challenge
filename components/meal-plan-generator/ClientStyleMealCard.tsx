@@ -15,7 +15,7 @@ import type {
   MacroCategory,
   CalculatedMacros,
 } from '@/lib/types/meal-plan-generator';
-import { MEAL_TYPE_LABELS, VEGETABLE_GRAMS } from '@/lib/types/meal-plan-generator';
+import { MEAL_TYPE_LABELS } from '@/lib/types/meal-plan-generator';
 
 // Gram input component - updates on blur or Enter
 function GramInput({
@@ -300,8 +300,7 @@ export function ClientStyleMealCard({
   const vegetableItems = meal.items.filter(item => item.category === 'vegetable');
 
   const canHaveSauce = meal.type === 'lunch' || meal.type === 'middag';
-  const hasVegetables = meal.vegetableGrams > 0 || vegetableItems.length > 0;
-
+  
   // Open product select modal
   const handleOpenSelectModal = (category: MacroCategory, targetMacro: number, defaultSubcategory?: string) => {
     setSelectCategory(category);
@@ -701,11 +700,6 @@ export function ClientStyleMealCard({
                 <div className={cn("p-2", CATEGORY_CONFIG.vegetable.bg)}>
                   {vegetableItems.length > 0 ? (
                     vegetableItems.map(item => renderFoodItem(item, 'vegetable', 'vegetable'))
-                  ) : hasVegetables ? (
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-white/50">
-                      <Leaf className="h-4 w-4 text-emerald-600" />
-                      <span className="text-sm text-zinc-700">{VEGETABLE_GRAMS}g valfritt</span>
-                    </div>
                   ) : (
                     <div className="text-center py-2 text-sm text-zinc-400 italic">
                       Valfritt
