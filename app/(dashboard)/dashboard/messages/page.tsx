@@ -926,11 +926,11 @@ export default function MessagesPage() {
                     {showEmojiPicker && (
                       <>
                         <div
-                          className="fixed inset-0 z-40 bg-black/20 sm:bg-transparent"
+                          className="fixed inset-0 z-40"
                           onClick={() => setShowEmojiPicker(false)}
                         />
-                        {/* Mobile: Fixed at bottom center. Desktop: Absolute positioned */}
-                        <div className="fixed sm:absolute bottom-16 left-1/2 -translate-x-1/2 sm:bottom-10 sm:left-auto sm:right-0 sm:translate-x-0 z-50">
+                        {/* Position from right side to prevent left cutoff */}
+                        <div className="fixed bottom-20 right-4 sm:absolute sm:bottom-10 sm:right-0 z-50">
                           <EmojiPicker
                             onEmojiClick={onEmojiClick}
                             width={280}
