@@ -111,12 +111,12 @@ export function WeeklyNutritionBars({
 
       {/* Chart */}
       <div className="p-4">
-        <div className="relative h-40">
-          {/* Target line */}
+        <div className="relative">
+          {/* Target line - positioned absolute within chart area */}
           {avgPlannedKcal > 0 && (
             <div
-              className="absolute left-0 right-0 border-t-2 border-dashed border-gray-300"
-              style={{ bottom: `${(avgPlannedKcal / maxKcal) * 100}%` }}
+              className="absolute left-0 right-0 border-t-2 border-dashed border-gray-300 z-10"
+              style={{ bottom: `calc(${(avgPlannedKcal / maxKcal) * 100}% + 32px)` }}
             >
               <span className="absolute right-0 -top-5 text-xs text-gray-400">
                 Mål: {avgPlannedKcal}
@@ -125,25 +125,29 @@ export function WeeklyNutritionBars({
           )}
 
           {/* Bars */}
-          <div className="flex items-end justify-between h-full gap-1 sm:gap-2">
+          <div className="flex items-end justify-between gap-1 sm:gap-2">
             {days.map((day) => {
-              const heightPercent = day.hasData ? (day.actualKcal / maxKcal) * 100 : 0;
+              // Calculate height in pixels (max 120px for bars)
+              const maxBarHeight = 120;
+              const barHeight = day.hasData
+                ? Math.max(4, (day.actualKcal / maxKcal) * maxBarHeight)
+                : 4;
 
               return (
                 <div key={day.date} className="flex-1 flex flex-col items-center">
-                  {/* Bar container */}
-                  <div className="relative w-full h-full flex items-end justify-center">
+                  {/* Bar container with fixed height */}
+                  <div className="relative w-full flex items-end justify-center" style={{ height: `${maxBarHeight}px` }}>
                     {/* Bar */}
                     <div
                       className={cn(
                         'w-full max-w-[40px] rounded-t transition-all duration-300',
-                        !day.hasData && 'bg-gray-100 min-h-[4px]',
-                        day.status === 'green' && 'bg-green-400',
-                        day.status === 'yellow' && 'bg-yellow-400',
-                        day.status === 'red' && 'bg-red-400',
-                        day.status === 'none' && 'bg-gray-200'
+                        !day.hasData && 'bg-gray-200',
+                        day.hasData && day.status === 'green' && 'bg-green-400',
+                        day.hasData && day.status === 'yellow' && 'bg-yellow-400',
+                        day.hasData && day.status === 'red' && 'bg-red-400',
+                        day.hasData && day.status === 'none' && 'bg-blue-300'
                       )}
-                      style={{ height: day.hasData ? `${heightPercent}%` : '4px' }}
+                      style={{ height: `${barHeight}px` }}
                     >
                       {/* Deviation indicator */}
                       {day.hasDeviation && (
