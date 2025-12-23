@@ -338,30 +338,36 @@ export function DeviationModal({
 
   // Format date for display
   const formatDate = (date: Date) => {
+    const dayNames = ['Sön', 'Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör'];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
 
-    if (date.getTime() === today.getTime()) return 'Idag';
-    if (date.getTime() === yesterday.getTime()) return 'Igår';
+    const dayName = dayNames[date.getDay()];
+    const dayNum = date.getDate();
 
-    return date.toLocaleDateString('sv-SE', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-    });
+    if (date.getTime() === today.getTime()) {
+      return `${dayName} ${dayNum} (idag)`;
+    }
+
+    return `${dayName} ${dayNum}`;
   };
 
-  // Get date options (today + last 6 days)
+  // Get date options for current week (Monday to Sunday)
   const getDateOptions = () => {
     const options = [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    // Find Monday of current week
+    const dayOfWeek = today.getDay();
+    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diffToMonday);
+
+    // Generate Monday to Sunday
     for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
       options.push(date);
     }
     return options;
