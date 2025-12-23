@@ -889,23 +889,6 @@ export default function MealPlanPage() {
                 )
               })}
 
-              {/* Social Meal Card - shown after regular meals */}
-              {selectedDaySocialMeal && (
-                <SocialMealCard
-                  timestamp={selectedDaySocialMeal.timestamp}
-                  components={selectedDaySocialMeal.components}
-                  totalNutrition={selectedDaySocialMeal.totalNutrition}
-                />
-              )}
-
-              {/* Deviation Card - shown after all meals */}
-              {todaysDeviation && (
-                <DeviationMealCard
-                  deviationDate={todaysDeviation.deviationDate}
-                  components={todaysDeviation.components}
-                  totalNutrition={todaysDeviation.totalNutrition}
-                />
-              )}
             </TabsContent>
 
             <TabsContent value="flexible" className="space-y-4 mt-6">
@@ -935,6 +918,24 @@ export default function MealPlanPage() {
                     </p>
                   </div>
                 </div>
+              )}
+
+              {/* Social Meal Card - shown after flexible meals */}
+              {selectedDaySocialMeal && (
+                <SocialMealCard
+                  timestamp={selectedDaySocialMeal.timestamp}
+                  components={selectedDaySocialMeal.components}
+                  totalNutrition={selectedDaySocialMeal.totalNutrition}
+                />
+              )}
+
+              {/* Deviation Card - shown after all meals */}
+              {todaysDeviation && (
+                <DeviationMealCard
+                  deviationDate={todaysDeviation.deviationDate}
+                  components={todaysDeviation.components}
+                  totalNutrition={todaysDeviation.totalNutrition}
+                />
               )}
             </TabsContent>
 
