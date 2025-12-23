@@ -230,6 +230,67 @@ export default function MealPlanPage() {
     fetchSelectedDayDeviation()
   }
 
+  // Delete social meal
+  const handleDeleteSocialMeal = async () => {
+    if (!selectedDaySocialMeal) return
+    if (!confirm('Är du säker på att du vill ta bort denna måltid?')) return
+
+    try {
+      const response = await fetch(`/api/social-meals/${selectedDaySocialMeal.id}`, {
+        method: 'DELETE',
+      })
+      if (response.ok) {
+        setSelectedDaySocialMeal(null)
+      }
+    } catch (error) {
+      console.error('Error deleting social meal:', error)
+    }
+  }
+
+  // Delete deviation
+  const handleDeleteDeviation = async () => {
+    if (!todaysDeviation) return
+    if (!confirm('Är du säker på att du vill ta bort denna avvikelse?')) return
+
+    try {
+      // Delete the social meal (deviation)
+      const response = await fetch(`/api/social-meals/${todaysDeviation.id}`, {
+        method: 'DELETE',
+      })
+      if (response.ok) {
+        setTodaysDeviation(null)
+        // Also refresh to update the daily nutrition log
+        fetchSelectedDayDeviation()
+      }
+    } catch (error) {
+      console.error('Error deleting deviation:', error)
+    }
+  }
+
+  // Edit social meal (delete and re-open modal - for now, just opens Quick Track)
+  const handleEditSocialMeal = () => {
+    // For now, just alert that editing is coming soon
+    // A full implementation would pre-populate the modal with existing data
+    alert('Redigering kommer snart! Ta bort måltiden och logga en ny för tillfället.')
+  }
+
+  // Edit deviation (delete and re-open modal)
+  const handleEditDeviation = async () => {
+    if (!todaysDeviation) return
+
+    // Delete the existing deviation
+    try {
+      await fetch(`/api/social-meals/${todaysDeviation.id}`, {
+        method: 'DELETE',
+      })
+      setTodaysDeviation(null)
+      // Open the deviation modal to create a new one
+      setDeviationModalOpen(true)
+    } catch (error) {
+      console.error('Error editing deviation:', error)
+    }
+  }
+
   const fetchSelectedDaySocialMeal = async () => {
     try {
       // Calculate the date for the selected day
@@ -926,6 +987,8 @@ export default function MealPlanPage() {
                   timestamp={selectedDaySocialMeal.timestamp}
                   components={selectedDaySocialMeal.components}
                   totalNutrition={selectedDaySocialMeal.totalNutrition}
+                  onEdit={handleEditSocialMeal}
+                  onDelete={handleDeleteSocialMeal}
                 />
               )}
 
@@ -935,6 +998,8 @@ export default function MealPlanPage() {
                   deviationDate={todaysDeviation.deviationDate}
                   components={todaysDeviation.components}
                   totalNutrition={todaysDeviation.totalNutrition}
+                  onEdit={handleEditDeviation}
+                  onDelete={handleDeleteDeviation}
                 />
               )}
             </TabsContent>

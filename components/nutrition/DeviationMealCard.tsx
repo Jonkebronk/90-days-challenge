@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertTriangle, Trash2 } from 'lucide-react';
+import { AlertTriangle, Trash2, Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface DeviationMealCardProps {
@@ -21,6 +21,7 @@ interface DeviationMealCardProps {
     carbs: number;
     fat: number;
   };
+  onEdit?: () => void;
   onDelete?: () => void;
 }
 
@@ -36,20 +37,11 @@ export function DeviationMealCard({
   deviationDate,
   components,
   totalNutrition,
+  onEdit,
   onDelete,
 }: DeviationMealCardProps) {
   const formatDate = (date: Date) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
     const targetDate = new Date(date);
-    targetDate.setHours(0, 0, 0, 0);
-
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    if (targetDate.getTime() === today.getTime()) return 'Idag';
-    if (targetDate.getTime() === yesterday.getTime()) return 'Igår';
-
     return targetDate.toLocaleDateString('sv-SE', {
       weekday: 'short',
       day: 'numeric',
@@ -70,10 +62,18 @@ export function DeviationMealCard({
             <p className="text-sm text-amber-600">{formatDate(deviationDate)}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="text-right">
+        <div className="flex items-center gap-2">
+          <div className="text-right mr-2">
             <p className="text-lg font-bold text-amber-700">+{totalNutrition.kcal} kcal</p>
           </div>
+          {onEdit && (
+            <button
+              onClick={onEdit}
+              className="p-2 text-amber-500 hover:text-amber-700 hover:bg-white/50 rounded-lg transition-colors"
+            >
+              <Pencil className="h-5 w-5" />
+            </button>
+          )}
           {onDelete && (
             <button
               onClick={onDelete}
