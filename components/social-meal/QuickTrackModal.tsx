@@ -327,7 +327,7 @@ export function QuickTrackModal({
   return (
     <>
       <Dialog open={isOpen && !showFeedback} onOpenChange={handleClose}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-hidden flex flex-col p-0">
+        <DialogContent className="w-full h-full max-w-full max-h-full sm:max-w-lg sm:max-h-[90vh] sm:h-auto overflow-hidden flex flex-col p-0 rounded-none sm:rounded-lg">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b bg-gradient-to-r from-green-50 to-emerald-50">
             <div className="flex items-center gap-3">
