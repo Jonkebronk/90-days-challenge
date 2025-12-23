@@ -241,7 +241,10 @@ export function DeviationModal({
         body: JSON.stringify({
           mealType: 'snack',
           components,
-          nutrition: totals,
+          kcal: totals.kcal,
+          protein: totals.protein,
+          carbs: totals.carbs,
+          fat: totals.fat,
           inputMethod,
           confidence: aiResult?.confidence,
           dataSource: aiResult?.dataSource,

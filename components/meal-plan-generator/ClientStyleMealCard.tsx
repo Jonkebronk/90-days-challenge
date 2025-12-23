@@ -351,7 +351,7 @@ export function ClientStyleMealCard({
 
       const result = await response.json();
       // Return the meal ID so feedback modal can be shown
-      return { id: result.id };
+      return { id: result.meal.id };
     } catch (error) {
       console.error('Error saving quick track meal:', error);
       throw error;
