@@ -158,23 +158,23 @@ const CATEGORY_CONFIG: Record<string, {
     headerBg: 'bg-amber-100',
     text: 'text-amber-700',
     label: 'Kolhydrater',
-    icon: '🌾'
+    icon: '🍚'
   },
   fat: {
-    bg: 'bg-sky-50',
-    border: 'border-sky-200',
-    headerBg: 'bg-sky-100',
-    text: 'text-sky-700',
+    bg: 'bg-yellow-50',
+    border: 'border-yellow-200',
+    headerBg: 'bg-yellow-100',
+    text: 'text-yellow-700',
     label: 'Fettkällor',
-    icon: '🥑'
+    icon: '🧈'
   },
   vegetable: {
-    bg: 'bg-emerald-50',
-    border: 'border-emerald-200',
-    headerBg: 'bg-emerald-100',
-    text: 'text-emerald-700',
+    bg: 'bg-green-50',
+    border: 'border-green-200',
+    headerBg: 'bg-green-100',
+    text: 'text-green-700',
     label: 'Grönsaker',
-    icon: '🥬'
+    icon: '🥗'
   },
   berry: {
     bg: 'bg-purple-50',
@@ -190,7 +190,7 @@ const CATEGORY_CONFIG: Record<string, {
     headerBg: 'bg-orange-100',
     text: 'text-orange-700',
     label: 'Sås',
-    icon: '🥫'
+    icon: '🫗'
   },
 };
 
