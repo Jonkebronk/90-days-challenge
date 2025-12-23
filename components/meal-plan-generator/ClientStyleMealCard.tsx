@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry, Pencil, ArrowUp, ArrowDown } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry, Pencil, ArrowUp, ArrowDown, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ProductSelectModal } from './ProductSelectModal';
 import { RecipeDetailDialog } from './RecipeDetailDialog';
 import { FoodItemDetailDialog } from './FoodItemDetailDialog';
@@ -511,7 +512,7 @@ export function ClientStyleMealCard({
       <div className="py-3 px-4">
         {/* First row: Meal name + chevron */}
         <div className="flex items-center gap-2">
-          {/* Left side: Icon + Name */}
+          {/* Left side: Icon + Name + Info */}
           <button
             className="flex items-center gap-2 hover:opacity-70 transition-opacity cursor-pointer shrink-0"
             onClick={() => setIsExpanded(!isExpanded)}
@@ -519,6 +520,54 @@ export function ClientStyleMealCard({
             <Utensils className="w-5 h-5 text-amber-500" />
             <span className="text-base font-semibold text-zinc-900">{mealLabel}</span>
           </button>
+
+          {/* Info icon with recommended macros popover */}
+          {meal.targetMacros && meal.targetMacros.kcal > 0 && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className="p-1 hover:bg-zinc-100 rounded-full transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Info className="w-4 h-4 text-zinc-400 hover:text-zinc-600" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-3" align="start">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-medium text-zinc-500">Rekommenderat för måltiden</span>
+                    {onUpdateMealMacros && (
+                      <button
+                        onClick={handleEditTarget}
+                        className="p-1 hover:bg-zinc-100 rounded transition-colors"
+                        title="Redigera"
+                      >
+                        <Pencil className="w-3 h-3 text-zinc-400" />
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3 text-xs">
+                    <div className="text-center">
+                      <div className="text-[9px] text-zinc-400 uppercase font-medium">Kcal</div>
+                      <div className="font-bold text-amber-600">{Math.round(meal.targetMacros.kcal)}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-[9px] text-zinc-400 uppercase font-medium">Prot</div>
+                      <div className="font-bold text-rose-600">{Math.round(meal.targetMacros.protein)}g</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-[9px] text-zinc-400 uppercase font-medium">Kolh</div>
+                      <div className="font-bold text-amber-500">{Math.round(meal.targetMacros.carbs)}g</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-[9px] text-zinc-400 uppercase font-medium">Fett</div>
+                      <div className="font-bold text-sky-500">{Math.round(meal.targetMacros.fat)}g</div>
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
 
           {/* Move up/down buttons */}
           {(onMoveUp || onMoveDown) && (
@@ -573,49 +622,12 @@ export function ClientStyleMealCard({
             )}
           </button>
         </div>
-
-        {/* Second row: Target macros - now on its own row */}
-        {meal.targetMacros && meal.targetMacros.kcal > 0 && (
-          <button
-            onClick={handleEditTarget}
-            disabled={!onUpdateMealMacros}
-            className={cn(
-              "flex items-center gap-2 px-2 py-1.5 rounded-lg transition-all mt-2 w-full",
-              "bg-zinc-50 border border-zinc-200",
-              onUpdateMealMacros && "hover:bg-zinc-100 cursor-pointer",
-              !onUpdateMealMacros && "cursor-default"
-            )}
-          >
-            <span className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide shrink-0">Rek.</span>
-            <div className="flex items-center gap-2 sm:gap-3 text-xs flex-1 justify-end">
-              <div className="text-center">
-                <div className="text-[8px] sm:text-[9px] text-zinc-400 uppercase font-medium">Kcal</div>
-                <div className="font-bold text-amber-600 text-[11px] sm:text-xs">{Math.round(meal.targetMacros.kcal)}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-[8px] sm:text-[9px] text-zinc-400 uppercase font-medium">Prot</div>
-                <div className="font-bold text-rose-600 text-[11px] sm:text-xs">{Math.round(meal.targetMacros.protein)}g</div>
-              </div>
-              <div className="text-center">
-                <div className="text-[8px] sm:text-[9px] text-zinc-400 uppercase font-medium">Kolh</div>
-                <div className="font-bold text-amber-500 text-[11px] sm:text-xs">{Math.round(meal.targetMacros.carbs)}g</div>
-              </div>
-              <div className="text-center">
-                <div className="text-[8px] sm:text-[9px] text-zinc-400 uppercase font-medium">Fett</div>
-                <div className="font-bold text-sky-500 text-[11px] sm:text-xs">{Math.round(meal.targetMacros.fat)}g</div>
-              </div>
-            </div>
-            {onUpdateMealMacros && (
-              <Pencil className="w-3 h-3 text-zinc-400 shrink-0" />
-            )}
-          </button>
-        )}
       </div>
 
       {/* TOTALT summary - always visible */}
       <div className="px-4 pb-3 border-b border-zinc-100">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">Totalt</span>
+          <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">Totalt för måltiden</span>
           <div className="flex items-center gap-4 text-xs">
             <div className="text-center">
               <div className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide">Kcal</div>
