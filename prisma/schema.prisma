@@ -194,6 +194,10 @@ model User {
   clientAIMemory  ClientAIMemory?  @relation("ClientAIMemory")
   coachAISettings CoachAISettings? @relation("CoachAISettings")
 
+  // Social Meal (Quick Track)
+  socialMeals     SocialMeal[]
+  savedMeals      SavedMeal[]
+
   @@map("users")
 }
 
@@ -2968,4 +2972,100 @@ model CatalogFood {
 
   @@index([mealId, orderIndex])
   @@map("catalog_foods")
+}
+
+// ============================================
+// Social Meal (Quick Track) System
+// ============================================
+
+// Social Meal - Main table for quick meal registrations
+model SocialMeal {
+  id            String   @id @default(cuid())
+  userId        String
+  timestamp     DateTime @default(now())
+  mealType      String   // breakfast, lunch, dinner, snack
+  socialContext String?  // family, friends, restaurant, work, etc.
+  inputMethod   String   @default("quick_track") // quick_track, text, image, both
+
+  // Nutrition values
+  kcal       Int
+  kcalMin    Int?
+  kcalMax    Int?
+  protein    Decimal  @db.Decimal(5, 1)
+  carbs      Decimal  @db.Decimal(5, 1)
+  fat        Decimal  @db.Decimal(5, 1)
+  fiber      Decimal? @db.Decimal(5, 1)
+
+  // Metadata
+  confidence   String? // low, medium, high
+  dataSource   String  @default("quick_track") // database_match, ai_only, hybrid, quick_track
+  aiRawResponse Json?
+  userAdjusted  Boolean @default(false)
+
+  // Optional: reference to preset dinner used
+  presetDinnerId String?
+  presetDinnerName String?
+
+  // Notes
+  notes String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  components QuickTrackComponent[]
+
+  @@index([userId, timestamp])
+  @@index([userId, mealType])
+  @@map("social_meals")
+}
+
+// Quick Track Component - Individual food items within a social meal
+model QuickTrackComponent {
+  id           String @id @default(cuid())
+  socialMealId String
+
+  category     String // protein, carb, fat, vegetable, sauce
+  foodItemId   String // Reference to predefined item (e.g., "kottbullar")
+  foodItemName String // Display name (e.g., "Köttbullar")
+  portionSize  String // small, normal, large, extra, custom
+  grams        Int
+
+  // Nutrition values for this component
+  kcal    Int
+  protein Decimal @db.Decimal(5, 1)
+  carbs   Decimal @db.Decimal(5, 1)
+  fat     Decimal @db.Decimal(5, 1)
+
+  createdAt DateTime @default(now())
+
+  socialMeal SocialMeal @relation(fields: [socialMealId], references: [id], onDelete: Cascade)
+
+  @@index([socialMealId])
+  @@map("quick_track_components")
+}
+
+// Saved Meal - User's favorite/recurring meals
+model SavedMeal {
+  id          String @id @default(cuid())
+  userId      String
+  name        String // "Mormors köttbullar", "Fredagstacos"
+  description String? @db.Text
+
+  // Stored as JSON for flexibility
+  components     Json // Array of QuickTrackComponent data
+  totalNutrition Json // { kcal, protein, carbs, fat, fiber }
+
+  // Usage tracking
+  useCount   Int       @default(0)
+  lastUsedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, useCount])
+  @@index([userId, lastUsedAt])
+  @@map("saved_meals")
 }
