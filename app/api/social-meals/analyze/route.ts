@@ -22,6 +22,34 @@ function getKnownFoodsPrompt(): string {
 const MEAL_ANALYSIS_PROMPT = `Du är en svensk näringsexpert som analyserar måltider.
 Din uppgift är att identifiera matvaror och uppskatta näringsinnehåll.
 
+## VIKTIG PRIORITERINGSORDNING:
+1. **TEXT ÄR SANNING** - Om användaren beskriver vad de åt i text, använd EXAKT dessa ingredienser
+2. **BILD FÖR PORTION** - Använd bilden endast för att uppskatta mängder/portioner, INTE för att identifiera maten
+3. **INKLUDERA ALLT** - Missa ALDRIG drycker, tillbehör eller såser som nämns i texten
+
+## OM KONFLIKT MELLAN TEXT OCH BILD:
+- Om text säger "korv" men bilden ser ut som "skinka" → Använd "korv" från texten
+- Om text säger "makaroner" men bilden visar fusilli → Använd "makaroner" från texten
+- Bilden hjälper endast att uppskatta MÄNGD, inte att identifiera VAD maten är
+
+## VANLIGA SVENSKA RÄTTER OCH HUR DE SKA TOLKAS:
+- "Korv och makaroner" = Falukorv/varmkorv + kokta makaroner (INTE fusilli, INTE skinka)
+- "Köttbullar och potatismos" = Svenska köttbullar + potatismos + lingonsylt
+- "Pyttipanna" = Stekt potatis, lök, kött, stekt ägg
+- "Pannkakor" = Svenska pannkakor + sylt/grädde
+- "Husmanskost" = Klassisk svensk mat, normal portion
+- "Tacos" = Köttfärs, tortilla, grönsaker, sås, ost
+- "Pizza" = Hel pizza om ej annat anges (ca 800-1200 kcal)
+
+## DRYCKER - LETA ALLTID EFTER DESSA I TEXTEN:
+- "Mjölk" / "ett glas mjölk" = 2 dl mjölk (90 kcal, 7g protein)
+- "Läsk" / "Coca-Cola" / "Fanta" = 33 cl (140 kcal)
+- "Juice" / "apelsinjuice" = 2 dl (90 kcal)
+- "Öl" = 33 cl (130 kcal)
+- "Vin" = 15 cl (120 kcal)
+- "Kaffe med mjölk" = 50 kcal
+- "Vatten" = 0 kcal (nämn ej i output)
+
 VIKTIGT - SVENSKA PORTIONSSTORLEKAR:
 - Normal portion protein (kött/fisk): 120-150g tillagat
 - Normal portion kolhydrat (potatis/ris/pasta): 150-200g tillagat
@@ -163,10 +191,16 @@ export async function POST(req: NextRequest) {
       userPrompt += `KONTEXT: ${contextInfo}\n\n`;
     }
     if (text) {
-      userPrompt += `BESKRIVNING AV MÅLTIDEN:\n${text}\n\n`;
+      userPrompt += `ANVÄNDARENS BESKRIVNING (PRIMÄRKÄLLA - LITA PÅ DENNA):\n"${text}"\n\n`;
+      userPrompt += `VIKTIGT: Användaren har explicit skrivit vad de åt. Använd EXAKT dessa ingredienser.\n`;
+      userPrompt += `Glöm inte eventuella drycker som nämnts (mjölk, läsk, juice etc.).\n\n`;
     }
     if (imageBase64) {
-      userPrompt += 'ANALYSERA BILDEN OVAN och uppskatta näringsinnehållet.\n';
+      if (text) {
+        userPrompt += 'BILDEN hjälper dig uppskatta PORTIONSSTORLEK, men TEXTEN avgör vilka ingredienser.\n';
+      } else {
+        userPrompt += 'ANALYSERA BILDEN OVAN och identifiera maten samt uppskatta näringsinnehållet.\n';
+      }
     }
 
     content.push({

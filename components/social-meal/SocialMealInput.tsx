@@ -106,7 +106,7 @@ export function SocialMealInput({
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Beskriv vad du åt..."
+            placeholder="T.ex. 'korv, makaroner, ketchup och ett glas mjölk'"
             disabled={disabled || isAnalyzing}
             rows={1}
             className="w-full resize-none border-0 bg-transparent text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-0 text-base"
@@ -176,6 +176,14 @@ export function SocialMealInput({
           className="hidden"
         />
       </div>
+
+      {/* Help text */}
+      {!isAnalyzing && !imagePreview && !text && (
+        <div className="text-xs text-gray-400 px-1">
+          <span className="font-medium text-gray-500">Tips:</span> Skriv alla ingredienser och drycker.{' '}
+          <span className="text-gray-400">Ex: "2 korvar, pasta, ketchup, 2 dl mjölk"</span>
+        </div>
+      )}
 
       {/* Analyzing indicator */}
       {isAnalyzing && (
