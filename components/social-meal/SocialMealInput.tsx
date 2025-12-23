@@ -181,7 +181,7 @@ export function SocialMealInput({
       {!isAnalyzing && !imagePreview && !text && (
         <div className="text-xs text-gray-400 px-1">
           <span className="font-medium text-gray-500">Tips:</span> Skriv alla ingredienser och drycker.{' '}
-          <span className="text-gray-400">Ex: "2 korvar, pasta, ketchup, 2 dl mjölk"</span>
+          <span className="text-gray-400">Ex: &quot;2 korvar, pasta, ketchup, 2 dl mjölk&quot;</span>
         </div>
       )}
 
