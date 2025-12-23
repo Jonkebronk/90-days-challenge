@@ -208,10 +208,10 @@ export function ProductSelectModal({
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Fetch products, food items, and SLV foods in parallel
+        // Fetch products, food items, and SLV foods in parallel (no limits)
         const [productsRes, foodItemsRes, slvRes] = await Promise.all([
-          fetch(`/api/products?macroCategory=${category}`),
-          fetch(`/api/food-items?macroCategory=${category}&limit=200`),
+          fetch(`/api/products?macroCategory=${category}&limit=1000`),
+          fetch(`/api/food-items?macroCategory=${category}&limit=1000`),
           fetch('/data/slv-foods.json'),
         ]);
 
