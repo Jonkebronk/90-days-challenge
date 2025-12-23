@@ -10,6 +10,7 @@ interface MealItem {
   id: string;
   name: string;
   brand?: string | null;
+  image?: string | null;
   grams: number;
   kcal: number;
   protein: number;
@@ -65,7 +66,7 @@ export function SocialMealBuilder({
   };
 
   const handleProductSelect = (
-    product: { id: string; name: string; brand?: string | null; kcal: number; protein: number; carbs: number; fat: number },
+    product: { id: string; name: string; brand?: string | null; image?: string | null; kcal: number; protein: number; carbs: number; fat: number },
     grams: number,
     macros: CalculatedMacros
   ) => {
@@ -75,6 +76,7 @@ export function SocialMealBuilder({
       id: `${product.id}-${Date.now()}`,
       name: product.name,
       brand: product.brand,
+      image: product.image,
       grams,
       kcal: macros.kcal,
       protein: macros.protein,
@@ -136,8 +138,22 @@ export function SocialMealBuilder({
                 {categoryItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between bg-white/60 rounded-lg px-3 py-2"
+                    className="flex items-center gap-3 bg-white/60 rounded-lg px-3 py-2"
                   >
+                    {/* Product image */}
+                    <div className="w-9 h-9 rounded-full overflow-hidden bg-gray-100 shrink-0">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                          {cat.icon}
+                        </div>
+                      )}
+                    </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm text-gray-800 truncate">
                         {item.name}

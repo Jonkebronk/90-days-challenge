@@ -14,6 +14,7 @@ interface MealItem {
   id: string;
   name: string;
   brand?: string | null;
+  image?: string | null;
   grams: number;
   kcal: number;
   protein: number;
