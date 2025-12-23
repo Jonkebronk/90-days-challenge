@@ -9,58 +9,19 @@ import { cn } from '@/lib/utils';
 import type { MacroCategory, MealType, CalculatedMacros } from '@/lib/types/meal-plan-generator';
 import { MACRO_CATEGORY_LABELS } from '@/lib/types/meal-plan-generator';
 
-// Subkategorier för varje makrokategori
-const SUBCATEGORIES: Record<MacroCategory, { key: string; label: string; keywords: string[] }[]> = {
-  protein: [
-    { key: 'all', label: 'Alla', keywords: [] },
-    { key: 'chicken', label: 'Kyckling', keywords: ['kyckling', 'höns'] },
-    { key: 'beef', label: 'Nöt', keywords: ['nöt', 'biff', 'oxfilé', 'lövbiff', 'rostbiff', 'entrecote', 'färs'] },
-    { key: 'pork', label: 'Fläsk', keywords: ['fläsk', 'kassler', 'bacon', 'skinka'] },
-    { key: 'fish', label: 'Fisk', keywords: ['lax', 'torsk', 'sej', 'pollock', 'tonfisk', 'fisk', 'pangasius', 'makrill', 'sill'] },
-    { key: 'seafood', label: 'Skaldjur', keywords: ['räk', 'krabba', 'musslor', 'bläckfisk'] },
-    { key: 'egg', label: 'Ägg', keywords: ['ägg', 'äggvita'] },
-    { key: 'dairy', label: 'Mejeri', keywords: ['kvarg', 'cottage', 'yoghurt', 'skyr', 'ost', 'fil'] },
-    { key: 'game', label: 'Vilt', keywords: ['älg', 'vildsvin', 'rådjur', 'hjort', 'ren'] },
-    { key: 'turkey', label: 'Kalkon', keywords: ['kalkon'] },
-  ],
-  carb: [
-    { key: 'all', label: 'Alla', keywords: [] },
-    { key: 'rice', label: 'Ris', keywords: ['ris', 'jasmin', 'basmati'] },
-    { key: 'pasta', label: 'Pasta', keywords: ['pasta', 'spagetti', 'penne', 'fusilli', 'makaroner'] },
-    { key: 'potato', label: 'Potatis', keywords: ['potatis', 'sötpotatis', 'potatismos'] },
-    { key: 'bread', label: 'Bröd', keywords: ['bröd', 'knäcke', 'fralla', 'bagel'] },
-    { key: 'oats', label: 'Havre', keywords: ['havre', 'gryn', 'havrefras', 'müsli'] },
-    { key: 'fruit', label: 'Frukt', keywords: ['banan', 'äpple', 'apelsin', 'ananas', 'mango', 'frukt', 'päron', 'kiwi', 'vindruvor'] },
-    { key: 'berry', label: 'Bär', keywords: ['bär', 'blåbär', 'hallon', 'jordgubb', 'björnbär', 'lingon', 'krusbär', 'vinbär', 'smultron'] },
-    { key: 'beans', label: 'Baljväxter', keywords: ['bönor', 'linser', 'kikärter', 'ärtor'] },
-    { key: 'couscous', label: 'Bulgur/Couscous', keywords: ['bulgur', 'couscous', 'quinoa'] },
-  ],
-  fat: [
-    { key: 'all', label: 'Alla', keywords: [] },
-    { key: 'nuts', label: 'Nötter', keywords: ['mandel', 'cashew', 'valnöt', 'hasselnöt', 'pistasch', 'jordnöt', 'nötter'] },
-    { key: 'seeds', label: 'Frön', keywords: ['chia', 'lin', 'sesam', 'pumpa', 'solros', 'frö'] },
-    { key: 'oil', label: 'Oljor', keywords: ['olja', 'olivolja', 'kokosolja', 'rapsolja'] },
-    { key: 'avocado', label: 'Avokado', keywords: ['avokado'] },
-    { key: 'butter', label: 'Smör/Ost', keywords: ['smör', 'ost', 'cream cheese', 'grädde'] },
-    { key: 'nutbutter', label: 'Nötsmör', keywords: ['jordnötssmör', 'mandelsmör', 'peanut butter', 'nötsmör'] },
-  ],
-  vegetable: [
-    { key: 'all', label: 'Alla', keywords: [] },
-    { key: 'leafy', label: 'Bladgrönsaker', keywords: ['sallad', 'spenat', 'grönkål', 'ruccola'] },
-    { key: 'root', label: 'Rotfrukter', keywords: ['morot', 'rödbetor', 'palsternacka', 'selleri'] },
-    { key: 'cruciferous', label: 'Kål', keywords: ['broccoli', 'blomkål', 'vitkål', 'brysselkål'] },
-    { key: 'other', label: 'Övrigt', keywords: ['tomat', 'gurka', 'paprika', 'zucchini', 'lök'] },
-  ],
-  sauce: [
-    { key: 'all', label: 'Alla', keywords: [] },
-  ],
+// Mappning från MacroCategory till databas-kategori
+const MACRO_TO_DB_CATEGORY: Record<MacroCategory, string> = {
+  protein: 'Proteinkällor',
+  carb: 'Kolhydratskällor',
+  fat: 'Fettkällor',
+  vegetable: 'Grönsaker',
+  sauce: 'Såser',
 };
 
-// Funktion för att matcha produkt mot subkategori
-function matchesSubcategory(productName: string, subcategory: { key: string; keywords: string[] }): boolean {
-  if (subcategory.key === 'all') return true;
-  const nameLower = productName.toLowerCase();
-  return subcategory.keywords.some(keyword => nameLower.includes(keyword));
+interface Subcategory {
+  key: string;
+  label: string;
+  count: number;
 }
 
 interface Product {
@@ -73,6 +34,7 @@ interface Product {
   carbs: number;
   fat: number;
   macroCategory?: string | null;
+  subCategory?: string | null;
   mealTypes?: string[];
   source?: 'product' | 'slv';
 }
@@ -193,13 +155,50 @@ export function ProductSelectModal({
   const [addAsAlternative, setAddAsAlternative] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<ProductWithCalculation[]>([]);
 
-  // Hämta subkategorier för aktuell makrokategori
-  const subcategories = SUBCATEGORIES[category] || [{ key: 'all', label: 'Alla', keywords: [] }];
+  // Dynamiska subkategorier från databasen
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([{ key: 'all', label: 'Alla', count: 0 }]);
+  const [subcategoriesLoading, setSubcategoriesLoading] = useState(false);
 
   // Reset subkategori när kategori eller defaultSubcategory ändras
   useEffect(() => {
     setActiveSubcategory(defaultSubcategory || 'all');
   }, [category, defaultSubcategory]);
+
+  // Hämta dynamiska subkategorier från databasen
+  useEffect(() => {
+    if (!isOpen || !category) return;
+
+    const fetchSubcategories = async () => {
+      setSubcategoriesLoading(true);
+      try {
+        const dbCategory = MACRO_TO_DB_CATEGORY[category];
+        const res = await fetch(`/api/products/subcategories?category=${encodeURIComponent(dbCategory)}`);
+
+        if (res.ok) {
+          const data = await res.json();
+
+          // Formatera till array med "Alla" först
+          const subs: Subcategory[] = [
+            { key: 'all', label: 'Alla', count: data.total || 0 },
+            ...Object.entries(data.subcategories || {})
+              .map(([key, count]) => ({
+                key,
+                label: key,
+                count: count as number,
+              }))
+              .sort((a, b) => b.count - a.count) // Sortera efter antal (flest först)
+          ];
+          setSubcategories(subs);
+        }
+      } catch (err) {
+        console.error('Error fetching subcategories:', err);
+      } finally {
+        setSubcategoriesLoading(false);
+      }
+    };
+
+    fetchSubcategories();
+  }, [isOpen, category]);
 
   // Fetch products for the category
   useEffect(() => {
@@ -315,10 +314,10 @@ export function ProductSelectModal({
         );
       })
       .filter((p) => {
-        // Subkategori-filter
-        const selectedSubcategory = subcategories.find(s => s.key === activeSubcategory);
-        if (!selectedSubcategory) return true;
-        return matchesSubcategory(p.name, selectedSubcategory);
+        // Subkategori-filter - matcha på produktens subCategory-fält
+        if (activeSubcategory === 'all') return true;
+        // Matcha subCategory (case-insensitive)
+        return p.subCategory?.toLowerCase() === activeSubcategory.toLowerCase();
       })
       .sort((a, b) => a.name.localeCompare(b.name, 'sv'));
   }, [sourceItems, targetMacro, category, mealType, searchQuery, isVegetable, activeTab, activeSubcategory, subcategories]);
