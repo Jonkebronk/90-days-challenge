@@ -28,22 +28,24 @@ export async function GET(request: Request) {
       }
     }
 
-    // Calculate week start and end
+    // Calculate week start and end using UTC to avoid timezone issues with @db.Date
     let startDate: Date;
     if (weekStart) {
-      startDate = new Date(weekStart);
+      // Parse as UTC date
+      const [year, month, day] = weekStart.split('-').map(Number);
+      startDate = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
     } else {
-      // Default to current week (Monday start)
-      startDate = new Date();
-      const day = startDate.getDay();
-      const diff = startDate.getDate() - day + (day === 0 ? -6 : 1);
-      startDate.setDate(diff);
+      // Default to current week (Monday start) in UTC
+      const now = new Date();
+      startDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0));
+      const day = startDate.getUTCDay();
+      const diff = startDate.getUTCDate() - day + (day === 0 ? -6 : 1);
+      startDate.setUTCDate(diff);
     }
-    startDate.setHours(0, 0, 0, 0);
 
     const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 6);
-    endDate.setHours(23, 59, 59, 999);
+    endDate.setUTCDate(endDate.getUTCDate() + 6);
+    endDate.setUTCHours(23, 59, 59, 999);
 
     // Auto-generate logs for past days that don't have entries
     await autoGenerateMissingLogs(userId, startDate, endDate);
@@ -78,11 +80,15 @@ export async function GET(request: Request) {
 
     for (let i = 0; i < 7; i++) {
       const currentDate = new Date(startDate);
-      currentDate.setDate(currentDate.getDate() + i);
+      currentDate.setUTCDate(currentDate.getUTCDate() + i);
+
+      // Format as YYYY-MM-DD for comparison (avoids timezone issues)
+      const currentDateStr = currentDate.toISOString().split('T')[0];
 
       const dayLog = logs.find(log => {
         const logDate = new Date(log.date);
-        return logDate.toDateString() === currentDate.toDateString();
+        const logDateStr = logDate.toISOString().split('T')[0];
+        return logDateStr === currentDateStr;
       });
 
       weekData.push({
@@ -155,8 +161,9 @@ function calculateCompliancePercent(days: Array<{ actualKcal: number; plannedKca
 
 // Auto-generate daily logs for past days based on meal plan
 async function autoGenerateMissingLogs(userId: string, startDate: Date, endDate: Date) {
-  const today = new Date();
-  today.setHours(23, 59, 59, 999); // Include today
+  // Use UTC for today to match the UTC dates we're working with
+  const now = new Date();
+  const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999));
 
   // Get existing logs for the date range
   const existingLogs = await prisma.dailyNutritionLog.findMany({
@@ -170,8 +177,9 @@ async function autoGenerateMissingLogs(userId: string, startDate: Date, endDate:
     select: { date: true },
   });
 
+  // Use ISO date strings for comparison (YYYY-MM-DD) to avoid timezone issues
   const existingDates = new Set(
-    existingLogs.map(log => new Date(log.date).toDateString())
+    existingLogs.map(log => new Date(log.date).toISOString().split('T')[0])
   );
 
   // Get user's active meal plan
@@ -214,11 +222,13 @@ async function autoGenerateMissingLogs(userId: string, startDate: Date, endDate:
   // Generate logs for each missing day (up to today)
   const logsToCreate = [];
 
-  for (let d = new Date(startDate); d <= endDate && d <= today; d.setDate(d.getDate() + 1)) {
+  for (let d = new Date(startDate); d <= endDate && d <= today; d.setUTCDate(d.getUTCDate() + 1)) {
     const currentDate = new Date(d);
-    currentDate.setHours(0, 0, 0, 0);
+    currentDate.setUTCHours(0, 0, 0, 0);
 
-    if (existingDates.has(currentDate.toDateString())) {
+    const currentDateStr = currentDate.toISOString().split('T')[0];
+
+    if (existingDates.has(currentDateStr)) {
       continue; // Skip if log already exists
     }
 
@@ -229,7 +239,7 @@ async function autoGenerateMissingLogs(userId: string, startDate: Date, endDate:
     let plannedFat = defaultFat;
 
     if (mealPlan) {
-      const dayOfWeek = currentDate.getDay();
+      const dayOfWeek = currentDate.getUTCDay();
       const adjustedDay = dayOfWeek === 0 ? 7 : dayOfWeek; // 1=Mon, 7=Sun
       const dayPlan = mealPlan.days.find(day => day.dayNumber === adjustedDay);
 
