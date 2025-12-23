@@ -76,7 +76,8 @@
       "Bash(node scripts/check-bar4.js:*)",
       "Bash(node scripts/test-api.js:*)",
       "Bash(node scripts/compare-sources.js:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "WebFetch(domain:coachcatalyst.com)"
     ],
     "deny": [],
     "ask": []

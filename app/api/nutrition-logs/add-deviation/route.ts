@@ -46,17 +46,72 @@ export async function PATCH(request: Request) {
     });
 
     if (!log) {
-      // Generate the daily log first
-      const generateResponse = await fetch(
-        new URL('/api/nutrition-logs/generate-daily', request.url).toString(),
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: targetUserId, date: targetDate.toISOString() }),
+      // Get planned nutrition from meal plan or nutrition plan
+      let plannedKcal = 2000;
+      let plannedProtein = 150;
+      let plannedCarbs = 200;
+      let plannedFat = 70;
+
+      // Try to get from active meal plan
+      const mealPlan = await prisma.smartMealPlan.findFirst({
+        where: {
+          userId: targetUserId,
+          isActive: true,
+          type: 'week',
+        },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          days: {
+            include: { meals: true },
+          },
+        },
+      });
+
+      if (mealPlan) {
+        const dayOfWeek = targetDate.getDay();
+        const adjustedDay = dayOfWeek === 0 ? 7 : dayOfWeek;
+        const todaysMeals = mealPlan.days.find(d => d.dayNumber === adjustedDay);
+
+        if (todaysMeals?.totalCalories) {
+          plannedKcal = Math.round(todaysMeals.totalCalories);
+          plannedProtein = todaysMeals.totalProtein || 0;
+          plannedCarbs = todaysMeals.totalCarbs || 0;
+          plannedFat = todaysMeals.totalFat || 0;
         }
-      );
-      const generateData = await generateResponse.json();
-      log = generateData.log;
+      } else {
+        // Try nutrition plan
+        const nutritionPlan = await prisma.clientNutritionPlan.findFirst({
+          where: {
+            clientId: targetUserId,
+            status: 'ACTIVE',
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+
+        if (nutritionPlan) {
+          plannedKcal = Number(nutritionPlan.dailyCalorieTarget) || 2000;
+          plannedProtein = Number(nutritionPlan.proteinGrams) || 150;
+          plannedCarbs = Number(nutritionPlan.carbGrams) || 200;
+          plannedFat = Number(nutritionPlan.fatGrams) || 70;
+        }
+      }
+
+      // Create the daily log
+      log = await prisma.dailyNutritionLog.create({
+        data: {
+          userId: targetUserId,
+          date: targetDate,
+          plannedKcal,
+          plannedProtein,
+          plannedCarbs,
+          plannedFat,
+          actualKcal: plannedKcal,
+          actualProtein: plannedProtein,
+          actualCarbs: plannedCarbs,
+          actualFat: plannedFat,
+          hasDeviation: false,
+        },
+      });
     }
 
     if (!log) {

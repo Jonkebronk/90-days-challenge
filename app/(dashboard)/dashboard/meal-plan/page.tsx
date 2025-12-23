@@ -151,22 +151,34 @@ export default function MealPlanPage() {
     fetchMealPlanDescription()
     fetchDailyTargets()
     fetchNutritionPlan()
-    fetchTodaysDeviation()
   }, [])
 
-  const fetchTodaysDeviation = async () => {
+  // Fetch deviation when selected day changes
+  useEffect(() => {
+    fetchSelectedDayDeviation()
+  }, [selectedDay])
+
+  const fetchSelectedDayDeviation = async () => {
     try {
+      // Calculate the date for the selected day
       const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      const response = await fetch(`/api/nutrition-logs?startDate=${today.toISOString()}&endDate=${today.toISOString()}`)
+      const currentDayOfWeek = today.getDay()
+      const adjustedCurrentDay = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1 // Convert to Mon=0
+      const diffDays = selectedDay - adjustedCurrentDay
+
+      const targetDate = new Date(today)
+      targetDate.setDate(today.getDate() + diffDays)
+      targetDate.setHours(0, 0, 0, 0)
+
+      const response = await fetch(`/api/nutrition-logs?startDate=${targetDate.toISOString()}&endDate=${targetDate.toISOString()}`)
       if (response.ok) {
         const data = await response.json()
-        const todayLog = data.logs?.[0]
-        if (todayLog?.hasDeviation && todayLog?.deviationMeal) {
+        const dayLog = data.logs?.[0]
+        if (dayLog?.hasDeviation && dayLog?.deviationMeal) {
           setTodaysDeviation({
-            id: todayLog.deviationMeal.id,
-            deviationDate: new Date(todayLog.date),
-            components: todayLog.deviationMeal.components.map((c: { id: string; category: string; foodItemName: string; grams: number; kcal: number; protein: number; carbs: number; fat: number }) => ({
+            id: dayLog.deviationMeal.id,
+            deviationDate: new Date(dayLog.date),
+            components: dayLog.deviationMeal.components.map((c: { id: string; category: string; foodItemName: string; grams: number; kcal: number; protein: number; carbs: number; fat: number }) => ({
               id: c.id,
               category: c.category,
               foodItemName: c.foodItemName,
@@ -177,16 +189,19 @@ export default function MealPlanPage() {
               fat: Number(c.fat),
             })),
             totalNutrition: {
-              kcal: todayLog.deviationKcal || 0,
-              protein: Number(todayLog.deviationProtein) || 0,
-              carbs: Number(todayLog.deviationCarbs) || 0,
-              fat: Number(todayLog.deviationFat) || 0,
+              kcal: dayLog.deviationKcal || 0,
+              protein: Number(dayLog.deviationProtein) || 0,
+              carbs: Number(dayLog.deviationCarbs) || 0,
+              fat: Number(dayLog.deviationFat) || 0,
             },
           })
+        } else {
+          setTodaysDeviation(null)
         }
       }
     } catch (error) {
-      console.error('Error fetching today\'s deviation:', error)
+      console.error('Error fetching deviation:', error)
+      setTodaysDeviation(null)
     }
   }
 
@@ -195,8 +210,8 @@ export default function MealPlanPage() {
     deviationDate: Date;
     nutrition: { kcal: number; protein: number; carbs: number; fat: number };
   }) => {
-    // Refresh today's deviation after save
-    fetchTodaysDeviation()
+    // Refresh the deviation for the current view
+    fetchSelectedDayDeviation()
   }
 
   const fetchNutritionPlan = async () => {
@@ -805,6 +820,15 @@ export default function MealPlanPage() {
                 </div>
                 )
               })}
+
+              {/* Deviation Card - shown after all meals */}
+              {todaysDeviation && (
+                <DeviationMealCard
+                  deviationDate={todaysDeviation.deviationDate}
+                  components={todaysDeviation.components}
+                  totalNutrition={todaysDeviation.totalNutrition}
+                />
+              )}
             </TabsContent>
 
             <TabsContent value="flexible" className="space-y-4 mt-6">
@@ -839,17 +863,6 @@ export default function MealPlanPage() {
 
           </Tabs>
       </div>
-
-      {/* Today's Deviation Card */}
-      {todaysDeviation && (
-        <div className="mt-6">
-          <DeviationMealCard
-            deviationDate={todaysDeviation.deviationDate}
-            components={todaysDeviation.components}
-            totalNutrition={todaysDeviation.totalNutrition}
-          />
-        </div>
-      )}
 
       {/* Deviation Modal */}
       <DeviationModal
