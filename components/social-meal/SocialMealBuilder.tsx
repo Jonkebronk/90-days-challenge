@@ -31,10 +31,10 @@ interface SocialMealBuilderProps {
 
 const CATEGORIES: { key: MacroCategory; label: string; color: string; bgColor: string; icon: string }[] = [
   { key: 'protein', label: 'Proteinkällor', color: 'text-rose-600', bgColor: 'bg-rose-50 border-rose-100', icon: '🥩' },
-  { key: 'carb', label: 'Kolhydrater', color: 'text-amber-600', bgColor: 'bg-amber-50 border-amber-100', icon: '🍚' },
-  { key: 'fat', label: 'Fettkällor', color: 'text-yellow-600', bgColor: 'bg-yellow-50 border-yellow-100', icon: '🧈' },
-  { key: 'vegetable', label: 'Grönsaker', color: 'text-green-600', bgColor: 'bg-green-50 border-green-100', icon: '🥗' },
-  { key: 'sauce', label: 'Sås', color: 'text-orange-600', bgColor: 'bg-orange-50 border-orange-100', icon: '🫗' },
+  { key: 'carb', label: 'Kolhydrater', color: 'text-amber-600', bgColor: 'bg-amber-50 border-amber-100', icon: '🌾' },
+  { key: 'fat', label: 'Fettkällor', color: 'text-sky-600', bgColor: 'bg-sky-50 border-sky-100', icon: '🥑' },
+  { key: 'vegetable', label: 'Grönsaker', color: 'text-emerald-600', bgColor: 'bg-emerald-50 border-emerald-100', icon: '🥬' },
+  { key: 'sauce', label: 'Sås', color: 'text-orange-600', bgColor: 'bg-orange-50 border-orange-100', icon: '🥫' },
 ];
 
 export function SocialMealBuilder({
