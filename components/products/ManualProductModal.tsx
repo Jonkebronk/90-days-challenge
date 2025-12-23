@@ -12,8 +12,7 @@ import {
   ChevronDown,
   ChevronUp,
   Pill,
-  Atom,
-  Target
+  Atom
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -132,7 +131,6 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
     salt: '',
     category: '',
     subCategory: '',
-    macroCategory: '' as '' | 'protein' | 'carb' | 'fat' | 'vegetable' | 'sauce',
     source: 'ica',
     // Micronutrients - Vitamins
     vitaminA: '',
@@ -326,7 +324,6 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
       salt: '',
       category: '',
       subCategory: '',
-      macroCategory: '',
       source: 'ica',
       vitaminA: '',
       vitaminD: '',
@@ -477,7 +474,6 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
           iodine: formData.iodine ? parseFloat(formData.iodine) : null,
           slvNummer: formData.slvNummer || null,
           servingUnit: formData.servingUnit,
-          macroCategory: formData.macroCategory || null,
         })
       })
 
@@ -1181,45 +1177,6 @@ export function ManualProductModal({ isOpen, onClose, onProductAdded, initialDat
               </div>
             </div>
           )}
-
-          {/* Macro Category for meal plan generator */}
-          <div className="border-t pt-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Target className="w-4 h-4 text-purple-500" />
-              <Label className="text-sm font-medium">Makrokategori (för kostschema)</Label>
-            </div>
-            <p className="text-xs text-gray-500 mb-3">
-              Välj vilken makrokategori livsmedlet tillhör för automatisk kostschema-generering
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {[
-                { id: 'protein', label: 'Proteinkälla', color: 'pink' },
-                { id: 'carb', label: 'Kolhydratkälla', color: 'teal' },
-                { id: 'fat', label: 'Fettkälla', color: 'amber' },
-                { id: 'vegetable', label: 'Grönsaker', color: 'green' },
-                { id: 'sauce', label: 'Sås', color: 'orange' },
-              ].map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => setFormData(prev => ({
-                    ...prev,
-                    macroCategory: prev.macroCategory === cat.id ? '' : cat.id as any
-                  }))}
-                  className={`px-3 py-1.5 text-xs rounded-full transition-colors ${
-                    formData.macroCategory === cat.id
-                      ? cat.color === 'pink' ? 'bg-pink-500 text-white'
-                      : cat.color === 'teal' ? 'bg-teal-500 text-white'
-                      : cat.color === 'amber' ? 'bg-amber-500 text-white'
-                      : cat.color === 'green' ? 'bg-green-500 text-white'
-                      : 'bg-orange-500 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* Error/Success messages */}
           {error && (

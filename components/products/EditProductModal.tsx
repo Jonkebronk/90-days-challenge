@@ -16,7 +16,6 @@ import {
   Atom,
   Trash2,
   AlertTriangle,
-  Target,
   Plus
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -107,8 +106,6 @@ interface Product {
   // SLV reference
   slvNummer?: number | null
   source: string
-  // Meal plan generator
-  macroCategory?: string | null
 }
 
 interface EditProductModalProps {
@@ -208,7 +205,6 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
     subCategory: '',
     source: '',
     servingUnit: 'g' as 'g' | 'ml',
-    macroCategory: '' as '' | 'protein' | 'carb' | 'fat' | 'vegetable' | 'sauce',
   })
 
   // Fetch subcategories from database when modal opens
@@ -409,7 +405,6 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
         subCategory: product.subCategory || '',
         source: product.source || '',
         servingUnit: (product.servingUnit as 'g' | 'ml') || 'g',
-        macroCategory: (product.macroCategory as '' | 'protein' | 'carb' | 'fat' | 'vegetable' | 'sauce') || '',
       })
       setImagePreview(product.image || null)
       setNewImageBase64(null)
@@ -594,7 +589,6 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
           iodine: formData.iodine ? parseFloat(formData.iodine) : null,
           slvNummer: formData.slvNummer || null,
           servingUnit: formData.servingUnit,
-          macroCategory: formData.macroCategory || null,
         })
       })
 
@@ -1276,45 +1270,6 @@ export function EditProductModal({ isOpen, product, onClose, onProductUpdated }:
               >
                 ICA
               </button>
-            </div>
-          </div>
-
-          {/* Macro Category for meal plan generator */}
-          <div className="border-t pt-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Target className="w-4 h-4 text-purple-500" />
-              <Label className="text-sm font-medium">Makrokategori (för kostschema)</Label>
-            </div>
-            <p className="text-xs text-gray-500 mb-3">
-              Välj vilken makrokategori livsmedlet tillhör för automatisk kostschema-generering
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {[
-                { id: 'protein', label: 'Proteinkälla', color: 'pink' },
-                { id: 'carb', label: 'Kolhydratkälla', color: 'teal' },
-                { id: 'fat', label: 'Fettkälla', color: 'amber' },
-                { id: 'vegetable', label: 'Grönsaker', color: 'green' },
-                { id: 'sauce', label: 'Sås', color: 'orange' },
-              ].map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => setFormData(prev => ({
-                    ...prev,
-                    macroCategory: prev.macroCategory === cat.id ? '' : cat.id as any
-                  }))}
-                  className={`px-3 py-1.5 text-xs rounded-full transition-colors ${
-                    formData.macroCategory === cat.id
-                      ? cat.color === 'pink' ? 'bg-pink-500 text-white'
-                      : cat.color === 'teal' ? 'bg-teal-500 text-white'
-                      : cat.color === 'amber' ? 'bg-amber-500 text-white'
-                      : cat.color === 'green' ? 'bg-green-500 text-white'
-                      : 'bg-orange-500 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
             </div>
           </div>
 
