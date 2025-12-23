@@ -14,7 +14,7 @@ import { MacroDisplay } from '@/components/meal-plan/MacroDisplay'
 import { AdjustMacrosWizard, MealMacros as WizardMealMacros } from '@/components/meal-plan/AdjustMacrosWizard'
 import { MealPlanGenerator } from '@/components/meal-plan-generator'
 import { MealPlanCatalog } from '@/components/meal-plan/catalog'
-import { DeviationModal, DeviationButton, DeviationMealCard } from '@/components/nutrition'
+import { DeviationModal, DeviationButton, DeviationMealCard, SocialMealCard } from '@/components/nutrition'
 
 interface MealPlanItem {
   id: string
@@ -132,6 +132,21 @@ export default function MealPlanPage() {
     }>;
     totalNutrition: { kcal: number; protein: number; carbs: number; fat: number };
   } | null>(null)
+  const [selectedDaySocialMeal, setSelectedDaySocialMeal] = useState<{
+    id: string;
+    timestamp: Date;
+    components: Array<{
+      id: string;
+      category: string;
+      foodItemName: string;
+      grams: number;
+      kcal: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+    }>;
+    totalNutrition: { kcal: number; protein: number; carbs: number; fat: number };
+  } | null>(null)
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
@@ -153,9 +168,10 @@ export default function MealPlanPage() {
     fetchNutritionPlan()
   }, [])
 
-  // Fetch deviation when selected day changes
+  // Fetch deviation and social meal when selected day changes
   useEffect(() => {
     fetchSelectedDayDeviation()
+    fetchSelectedDaySocialMeal()
   }, [selectedDay])
 
   const fetchSelectedDayDeviation = async () => {
@@ -212,6 +228,58 @@ export default function MealPlanPage() {
   }) => {
     // Refresh the deviation for the current view
     fetchSelectedDayDeviation()
+  }
+
+  const fetchSelectedDaySocialMeal = async () => {
+    try {
+      // Calculate the date for the selected day
+      const today = new Date()
+      const currentDayOfWeek = today.getDay()
+      const adjustedCurrentDay = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1
+      const diffDays = selectedDay - adjustedCurrentDay
+
+      const targetDate = new Date(today)
+      targetDate.setDate(today.getDate() + diffDays)
+      targetDate.setHours(0, 0, 0, 0)
+
+      const endOfDay = new Date(targetDate)
+      endOfDay.setHours(23, 59, 59, 999)
+
+      // Fetch social meals for the selected day (dinner only, not deviations)
+      const response = await fetch(`/api/social-meals?dateFrom=${targetDate.toISOString()}&dateTo=${endOfDay.toISOString()}&mealType=dinner`)
+      if (response.ok) {
+        const data = await response.json()
+        // Find the most recent dinner that is NOT a deviation
+        const dinnerMeal = data.meals?.find((m: { isDeviation: boolean }) => !m.isDeviation)
+        if (dinnerMeal) {
+          setSelectedDaySocialMeal({
+            id: dinnerMeal.id,
+            timestamp: new Date(dinnerMeal.timestamp),
+            components: dinnerMeal.components?.map((c: { id: string; category: string; foodItemName: string; grams: number; kcal: number; protein: number; carbs: number; fat: number }) => ({
+              id: c.id,
+              category: c.category,
+              foodItemName: c.foodItemName,
+              grams: c.grams,
+              kcal: c.kcal,
+              protein: Number(c.protein),
+              carbs: Number(c.carbs),
+              fat: Number(c.fat),
+            })) || [],
+            totalNutrition: {
+              kcal: dinnerMeal.kcal || 0,
+              protein: Number(dinnerMeal.protein) || 0,
+              carbs: Number(dinnerMeal.carbs) || 0,
+              fat: Number(dinnerMeal.fat) || 0,
+            },
+          })
+        } else {
+          setSelectedDaySocialMeal(null)
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching social meal:', error)
+      setSelectedDaySocialMeal(null)
+    }
   }
 
   const fetchNutritionPlan = async () => {
@@ -820,6 +888,15 @@ export default function MealPlanPage() {
                 </div>
                 )
               })}
+
+              {/* Social Meal Card - shown after regular meals */}
+              {selectedDaySocialMeal && (
+                <SocialMealCard
+                  timestamp={selectedDaySocialMeal.timestamp}
+                  components={selectedDaySocialMeal.components}
+                  totalNutrition={selectedDaySocialMeal.totalNutrition}
+                />
+              )}
 
               {/* Deviation Card - shown after all meals */}
               {todaysDeviation && (
