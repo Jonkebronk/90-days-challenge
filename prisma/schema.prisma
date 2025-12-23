@@ -200,6 +200,9 @@ model User {
   mealFeedback    MealFeedback[]
   userCalibration UserCalibration?
 
+  // Daily Nutrition Logs (auto-logged + deviations)
+  dailyNutritionLogs DailyNutritionLog[]
+
   @@map("users")
 }
 
@@ -3011,15 +3014,21 @@ model SocialMeal {
   // Notes
   notes String? @db.Text
 
+  // Deviation tracking (Kostavvikelse)
+  isDeviation   Boolean   @default(false) // Marks this as a diet deviation
+  deviationDate DateTime? @db.Date        // Which day the deviation applies to
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   user       User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   components QuickTrackComponent[]
   feedback   MealFeedback?
+  dailyNutritionLog DailyNutritionLog? @relation("DeviationMeal")
 
   @@index([userId, timestamp])
   @@index([userId, mealType])
+  @@index([userId, isDeviation])
   @@map("social_meals")
 }
 
@@ -3103,6 +3112,46 @@ model MealFeedback {
   @@unique([socialMealId]) // One feedback per meal
   @@index([userId])
   @@map("meal_feedback")
+}
+
+// Daily Nutrition Log - Auto-generated daily log from meal plan + deviations
+model DailyNutritionLog {
+  id     String   @id @default(cuid())
+  userId String
+  date   DateTime @db.Date
+
+  // Planned intake (from meal plan)
+  plannedKcal    Int
+  plannedProtein Decimal @db.Decimal(5, 1)
+  plannedCarbs   Decimal @db.Decimal(5, 1)
+  plannedFat     Decimal @db.Decimal(5, 1)
+
+  // Actual intake (plan + deviations)
+  actualKcal    Int
+  actualProtein Decimal @db.Decimal(5, 1)
+  actualCarbs   Decimal @db.Decimal(5, 1)
+  actualFat     Decimal @db.Decimal(5, 1)
+
+  // Deviation values (only if deviation logged)
+  deviationKcal    Int?
+  deviationProtein Decimal? @db.Decimal(5, 1)
+  deviationCarbs   Decimal? @db.Decimal(5, 1)
+  deviationFat     Decimal? @db.Decimal(5, 1)
+
+  // Metadata
+  hasDeviation    Boolean @default(false)
+  deviationMealId String? @unique // Reference to SocialMeal if logged
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviationMeal SocialMeal? @relation("DeviationMeal", fields: [deviationMealId], references: [id])
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@index([userId, hasDeviation])
+  @@map("daily_nutrition_logs")
 }
 
 // User Calibration - Personal calibration factors based on feedback

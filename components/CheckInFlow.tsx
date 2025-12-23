@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { CheckCircle2 } from 'lucide-react'
+import { WeeklyNutritionBars } from '@/components/nutrition'
 
 interface CheckInFlowProps {
   userId: string
@@ -888,6 +889,11 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
               <div>
                 <h2 className="text-xl font-bold mb-2 text-gray-900">Avsteg i kosten?</h2>
               </div>
+            </div>
+
+            {/* Weekly Nutrition Bars */}
+            <div className="mb-6">
+              <WeeklyNutritionBars showSummary={true} />
             </div>
 
             <div className="flex gap-4">

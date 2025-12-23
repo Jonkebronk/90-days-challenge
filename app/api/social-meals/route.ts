@@ -92,6 +92,8 @@ export async function POST(request: NextRequest) {
       notes,
       components,
       timestamp,
+      isDeviation = false,
+      deviationDate,
     } = body as {
       mealType: MealType;
       socialContext?: SocialContext;
@@ -120,6 +122,8 @@ export async function POST(request: NextRequest) {
         fat: number;
       }>;
       timestamp?: string;
+      isDeviation?: boolean;
+      deviationDate?: string;
     };
 
     // Validate required fields
@@ -150,6 +154,8 @@ export async function POST(request: NextRequest) {
         presetDinnerId,
         presetDinnerName,
         notes,
+        isDeviation,
+        deviationDate: deviationDate ? new Date(deviationDate) : null,
         components: {
           create: components?.map((comp) => ({
             category: comp.category,
@@ -169,7 +175,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(socialMeal, { status: 201 });
+    return NextResponse.json({ meal: socialMeal }, { status: 201 });
   } catch (error) {
     console.error('Error creating social meal:', error);
     return NextResponse.json(

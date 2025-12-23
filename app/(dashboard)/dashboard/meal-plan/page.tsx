@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Utensils, Sparkles, Lightbulb, Info, ChevronDown, ChevronUp, UtensilsCrossed, Wand2, BookOpen } from 'lucide-react'
+import { Utensils, Sparkles, Lightbulb, Info, ChevronDown, ChevronUp, UtensilsCrossed, Wand2, BookOpen, AlertTriangle } from 'lucide-react'
 import { MDXPreview } from '@/components/mdx-preview'
 import { WeekCalendar } from '@/components/meal-plan/week-calendar'
 import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
@@ -14,6 +14,7 @@ import { MacroDisplay } from '@/components/meal-plan/MacroDisplay'
 import { AdjustMacrosWizard, MealMacros as WizardMealMacros } from '@/components/meal-plan/AdjustMacrosWizard'
 import { MealPlanGenerator } from '@/components/meal-plan-generator'
 import { MealPlanCatalog } from '@/components/meal-plan/catalog'
+import { DeviationModal, DeviationButton, DeviationMealCard } from '@/components/nutrition'
 
 interface MealPlanItem {
   id: string
@@ -115,6 +116,22 @@ export default function MealPlanPage() {
   const [showAdjustWizard, setShowAdjustWizard] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0) // For forcing FlexibleMealPlan reload
   const [catalogOpen, setCatalogOpen] = useState(false)
+  const [deviationModalOpen, setDeviationModalOpen] = useState(false)
+  const [todaysDeviation, setTodaysDeviation] = useState<{
+    id: string;
+    deviationDate: Date;
+    components: Array<{
+      id: string;
+      category: string;
+      foodItemName: string;
+      grams: number;
+      kcal: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+    }>;
+    totalNutrition: { kcal: number; protein: number; carbs: number; fat: number };
+  } | null>(null)
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
@@ -134,7 +151,53 @@ export default function MealPlanPage() {
     fetchMealPlanDescription()
     fetchDailyTargets()
     fetchNutritionPlan()
+    fetchTodaysDeviation()
   }, [])
+
+  const fetchTodaysDeviation = async () => {
+    try {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const response = await fetch(`/api/nutrition-logs?startDate=${today.toISOString()}&endDate=${today.toISOString()}`)
+      if (response.ok) {
+        const data = await response.json()
+        const todayLog = data.logs?.[0]
+        if (todayLog?.hasDeviation && todayLog?.deviationMeal) {
+          setTodaysDeviation({
+            id: todayLog.deviationMeal.id,
+            deviationDate: new Date(todayLog.date),
+            components: todayLog.deviationMeal.components.map((c: { id: string; category: string; foodItemName: string; grams: number; kcal: number; protein: number; carbs: number; fat: number }) => ({
+              id: c.id,
+              category: c.category,
+              foodItemName: c.foodItemName,
+              grams: c.grams,
+              kcal: c.kcal,
+              protein: Number(c.protein),
+              carbs: Number(c.carbs),
+              fat: Number(c.fat),
+            })),
+            totalNutrition: {
+              kcal: todayLog.deviationKcal || 0,
+              protein: Number(todayLog.deviationProtein) || 0,
+              carbs: Number(todayLog.deviationCarbs) || 0,
+              fat: Number(todayLog.deviationFat) || 0,
+            },
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching today\'s deviation:', error)
+    }
+  }
+
+  const handleDeviationSave = (data: {
+    mealId: string;
+    deviationDate: Date;
+    nutrition: { kcal: number; protein: number; carbs: number; fat: number };
+  }) => {
+    // Refresh today's deviation after save
+    fetchTodaysDeviation()
+  }
 
   const fetchNutritionPlan = async () => {
     try {
@@ -346,6 +409,11 @@ export default function MealPlanPage() {
         onDaySelect={setSelectedDay}
         defaultCalories={totalDailyCalories}
       />
+
+      {/* Deviation Button */}
+      <div className="flex justify-center">
+        <DeviationButton onClick={() => setDeviationModalOpen(true)} />
+      </div>
 
       {/* Macro Display with Adjust button */}
       <MacroDisplay
@@ -771,6 +839,24 @@ export default function MealPlanPage() {
 
           </Tabs>
       </div>
+
+      {/* Today's Deviation Card */}
+      {todaysDeviation && (
+        <div className="mt-6">
+          <DeviationMealCard
+            deviationDate={todaysDeviation.deviationDate}
+            components={todaysDeviation.components}
+            totalNutrition={todaysDeviation.totalNutrition}
+          />
+        </div>
+      )}
+
+      {/* Deviation Modal */}
+      <DeviationModal
+        isOpen={deviationModalOpen}
+        onClose={() => setDeviationModalOpen(false)}
+        onSave={handleDeviationSave}
+      />
     </div>
   )
 }
