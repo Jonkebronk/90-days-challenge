@@ -272,7 +272,7 @@ export function ProductSelectModal({
     return filterSlvByCategory(slvFoods, category).map(f => ({
       id: `slv-${f.nummer}`,
       name: f.namn,
-      brand: 'Livsmedelsverket',
+      brand: 'SLV',
       image: null,
       kcal: f.kcal,
       protein: f.protein,
@@ -403,7 +403,7 @@ export function ProductSelectModal({
             )}
           >
             <Database className="h-4 w-4" />
-            Livsmedelsverket
+            SLV-databas
           </button>
         </div>
 
@@ -411,7 +411,7 @@ export function ProductSelectModal({
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
           <Input
-            placeholder={activeTab === 'slv' ? 'Sök i Livsmedelsverkets databas...' : 'Sök livsmedel...'}
+            placeholder={activeTab === 'slv' ? 'Sök i SLV-databasen...' : 'Sök livsmedel...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
