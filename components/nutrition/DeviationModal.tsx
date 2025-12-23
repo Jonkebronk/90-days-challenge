@@ -30,6 +30,10 @@ interface DeviationModalProps {
     deviationDate: Date;
     nutrition: { kcal: number; protein: number; carbs: number; fat: number };
   }) => void;
+  // Edit mode props
+  editMealId?: string | null;
+  initialItems?: MealItem[];
+  initialDate?: Date;
 }
 
 type ViewMode = 'input' | 'build' | 'ai-result' | 'favorites';
@@ -38,7 +42,11 @@ export function DeviationModal({
   isOpen,
   onClose,
   onSave,
+  editMealId,
+  initialItems,
+  initialDate,
 }: DeviationModalProps) {
+  const isEditMode = !!editMealId;
   const [viewMode, setViewMode] = useState<ViewMode>('input');
   const [items, setItems] = useState<MealItem[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -65,20 +73,30 @@ export function DeviationModal({
   }>>([]);
   const [loadingFavorites, setLoadingFavorites] = useState(false);
 
-  // Reset when modal opens
+  // Reset when modal opens, or load initial items for edit mode
   useEffect(() => {
     if (isOpen) {
-      setViewMode('input');
-      setItems([]);
+      if (initialItems && initialItems.length > 0) {
+        // Edit mode - pre-populate items and go to build view
+        setItems(initialItems);
+        setViewMode('build');
+        if (initialDate) {
+          setDeviationDate(initialDate);
+        }
+      } else {
+        // New mode - start fresh
+        setViewMode('input');
+        setItems([]);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        setDeviationDate(today);
+      }
       setAiResult(null);
       setAiError(null);
       setTextInput('');
       setImageInput(null);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      setDeviationDate(today);
     }
-  }, [isOpen]);
+  }, [isOpen, initialItems, initialDate]);
 
   // Load favorites when viewing favorites
   useEffect(() => {
@@ -213,6 +231,13 @@ export function DeviationModal({
 
     setIsSaving(true);
     try {
+      // If editing, delete old meal first
+      if (editMealId) {
+        await fetch(`/api/social-meals/${editMealId}`, {
+          method: 'DELETE',
+        });
+      }
+
       const inputMethod = aiResult
         ? imageInput && textInput
           ? 'both'
@@ -393,7 +418,7 @@ export function DeviationModal({
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-amber-600" />
               <DialogTitle className="text-lg font-semibold text-gray-800">
-                Registrera Kostavvikelse
+                {isEditMode ? 'Redigera Kostavvikelse' : 'Registrera Kostavvikelse'}
               </DialogTitle>
             </div>
           </div>

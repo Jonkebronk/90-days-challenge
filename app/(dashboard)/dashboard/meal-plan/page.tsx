@@ -15,6 +15,8 @@ import { AdjustMacrosWizard, MealMacros as WizardMealMacros } from '@/components
 import { MealPlanGenerator } from '@/components/meal-plan-generator'
 import { MealPlanCatalog } from '@/components/meal-plan/catalog'
 import { DeviationModal, DeviationButton, DeviationMealCard, SocialMealCard } from '@/components/nutrition'
+import { QuickTrackModal } from '@/components/social-meal'
+import type { MacroCategory } from '@/lib/types/meal-plan-generator'
 
 interface MealPlanItem {
   id: string
@@ -148,6 +150,11 @@ export default function MealPlanPage() {
     totalNutrition: { kcal: number; protein: number; carbs: number; fat: number };
   } | null>(null)
 
+  // Edit mode states
+  const [socialMealModalOpen, setSocialMealModalOpen] = useState(false)
+  const [editingSocialMealId, setEditingSocialMealId] = useState<string | null>(null)
+  const [editingDeviationId, setEditingDeviationId] = useState<string | null>(null)
+
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
       const newSet = new Set(prev)
@@ -267,27 +274,90 @@ export default function MealPlanPage() {
     }
   }
 
-  // Edit social meal (delete and re-open modal - for now, just opens Quick Track)
+  // Edit social meal - open modal with existing data
   const handleEditSocialMeal = () => {
-    // For now, just alert that editing is coming soon
-    // A full implementation would pre-populate the modal with existing data
-    alert('Redigering kommer snart! Ta bort måltiden och logga en ny för tillfället.')
+    if (!selectedDaySocialMeal) return
+    setEditingSocialMealId(selectedDaySocialMeal.id)
+    setSocialMealModalOpen(true)
   }
 
-  // Edit deviation (delete and re-open modal)
-  const handleEditDeviation = async () => {
+  // Edit deviation - open modal with existing data
+  const handleEditDeviation = () => {
     if (!todaysDeviation) return
+    setEditingDeviationId(todaysDeviation.id)
+    setDeviationModalOpen(true)
+  }
 
-    // Delete the existing deviation
+  // Convert components to MealItems for editing
+  const getEditItems = (components: Array<{
+    id: string;
+    category: string;
+    foodItemName: string;
+    grams: number;
+    kcal: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }>) => {
+    return components.map(c => ({
+      id: c.id,
+      name: c.foodItemName,
+      grams: c.grams,
+      kcal: c.kcal,
+      protein: c.protein,
+      carbs: c.carbs,
+      fat: c.fat,
+      category: c.category as MacroCategory,
+    }))
+  }
+
+  // Handle saving social meal (new or edit)
+  const handleSaveSocialMeal = async (data: {
+    mealType: string;
+    components: Array<{
+      category: string;
+      foodItemId: string;
+      foodItemName: string;
+      portionSize: string;
+      grams: number;
+      kcal: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+    }>;
+    nutrition: { kcal: number; protein: number; carbs: number; fat: number };
+    inputMethod?: string;
+    confidence?: string;
+    dataSource?: string;
+  }) => {
     try {
-      await fetch(`/api/social-meals/${todaysDeviation.id}`, {
-        method: 'DELETE',
+      // If editing, delete old meal first
+      if (editingSocialMealId) {
+        await fetch(`/api/social-meals/${editingSocialMealId}`, {
+          method: 'DELETE',
+        })
+      }
+
+      // Create new meal
+      const response = await fetch('/api/social-meals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...data,
+          isDeviation: false,
+        }),
       })
-      setTodaysDeviation(null)
-      // Open the deviation modal to create a new one
-      setDeviationModalOpen(true)
+
+      if (response.ok) {
+        const result = await response.json()
+        // Refresh the social meal display
+        fetchSelectedDaySocialMeal()
+        setSocialMealModalOpen(false)
+        setEditingSocialMealId(null)
+        return { id: result.meal.id }
+      }
     } catch (error) {
-      console.error('Error editing deviation:', error)
+      console.error('Error saving social meal:', error)
     }
   }
 
@@ -556,7 +626,10 @@ export default function MealPlanPage() {
 
       {/* Deviation Button */}
       <div className="flex justify-center">
-        <DeviationButton onClick={() => setDeviationModalOpen(true)} />
+        <DeviationButton onClick={() => {
+          setEditingDeviationId(null)
+          setDeviationModalOpen(true)
+        }} />
       </div>
 
       {/* Macro Display with Adjust button */}
@@ -1010,8 +1083,26 @@ export default function MealPlanPage() {
       {/* Deviation Modal */}
       <DeviationModal
         isOpen={deviationModalOpen}
-        onClose={() => setDeviationModalOpen(false)}
+        onClose={() => {
+          setDeviationModalOpen(false)
+          setEditingDeviationId(null)
+        }}
         onSave={handleDeviationSave}
+        editMealId={editingDeviationId}
+        initialItems={editingDeviationId && todaysDeviation ? getEditItems(todaysDeviation.components) : undefined}
+        initialDate={editingDeviationId && todaysDeviation ? todaysDeviation.deviationDate : undefined}
+      />
+
+      {/* Social Meal Edit Modal */}
+      <QuickTrackModal
+        isOpen={socialMealModalOpen}
+        onClose={() => {
+          setSocialMealModalOpen(false)
+          setEditingSocialMealId(null)
+        }}
+        onSave={handleSaveSocialMeal}
+        editMealId={editingSocialMealId}
+        initialItems={editingSocialMealId && selectedDaySocialMeal ? getEditItems(selectedDaySocialMeal.components) : undefined}
       />
     </div>
   )

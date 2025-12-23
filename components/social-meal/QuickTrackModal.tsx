@@ -10,7 +10,7 @@ import type { MacroCategory, CalculatedMacros } from '@/lib/types/meal-plan-gene
 import type { AIAnalysisResult, NutritionEstimate, MealType, SelectedComponent, QuickTrackCategory, PortionSize } from '@/lib/social-meal/types';
 import { cn } from '@/lib/utils';
 
-interface MealItem {
+export interface MealItem {
   id: string;
   name: string;
   brand?: string | null;
@@ -37,6 +37,9 @@ interface QuickTrackModalProps {
     dataSource?: string;
   }) => Promise<{ id: string } | void>;
   initialMealType?: MealType; // Ignored - always uses 'dinner'
+  // Edit mode props
+  editMealId?: string | null;
+  initialItems?: MealItem[];
 }
 
 type ViewMode = 'input' | 'build' | 'ai-result' | 'favorites';
@@ -46,7 +49,10 @@ export function QuickTrackModal({
   onClose,
   onSave,
   initialMealType, // Ignored - always uses 'dinner'
+  editMealId,
+  initialItems,
 }: QuickTrackModalProps) {
+  const isEditMode = !!editMealId;
   const [viewMode, setViewMode] = useState<ViewMode>('input');
   const [items, setItems] = useState<MealItem[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -71,17 +77,24 @@ export function QuickTrackModal({
   }>>([]);
   const [loadingFavorites, setLoadingFavorites] = useState(false);
 
-  // Reset when modal opens
+  // Reset when modal opens, or load initial items for edit mode
   useEffect(() => {
     if (isOpen) {
-      setViewMode('input');
-      setItems([]);
+      if (initialItems && initialItems.length > 0) {
+        // Edit mode - pre-populate items and go to build view
+        setItems(initialItems);
+        setViewMode('build');
+      } else {
+        // New mode - start fresh
+        setViewMode('input');
+        setItems([]);
+      }
       setAiResult(null);
       setAiError(null);
       setTextInput('');
       setImageInput(null);
     }
-  }, [isOpen]);
+  }, [isOpen, initialItems]);
 
   // Load favorites when viewing favorites
   useEffect(() => {
@@ -342,7 +355,7 @@ export function QuickTrackModal({
               <div className="flex items-center gap-2">
                 <Utensils className="h-5 w-5 text-green-600" />
                 <DialogTitle className="text-lg font-semibold text-gray-800">
-                  Social Middag
+                  {isEditMode ? 'Redigera Social Middag' : 'Social Middag'}
                 </DialogTitle>
               </div>
             </div>
