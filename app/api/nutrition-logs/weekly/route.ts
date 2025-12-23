@@ -45,6 +45,9 @@ export async function GET(request: Request) {
     endDate.setDate(endDate.getDate() + 6);
     endDate.setHours(23, 59, 59, 999);
 
+    // Auto-generate logs for past days that don't have entries
+    await autoGenerateMissingLogs(userId, startDate, endDate);
+
     // Get logs for the week
     const logs = await prisma.dailyNutritionLog.findMany({
       where: {
@@ -148,4 +151,124 @@ function calculateCompliancePercent(days: Array<{ actualKcal: number; plannedKca
   });
 
   return Math.round((compliantDays.length / daysWithPlan.length) * 100);
+}
+
+// Auto-generate daily logs for past days based on meal plan
+async function autoGenerateMissingLogs(userId: string, startDate: Date, endDate: Date) {
+  const today = new Date();
+  today.setHours(23, 59, 59, 999); // Include today
+
+  // Get existing logs for the date range
+  const existingLogs = await prisma.dailyNutritionLog.findMany({
+    where: {
+      userId,
+      date: {
+        gte: startDate,
+        lte: endDate,
+      },
+    },
+    select: { date: true },
+  });
+
+  const existingDates = new Set(
+    existingLogs.map(log => new Date(log.date).toDateString())
+  );
+
+  // Get user's active meal plan
+  const mealPlan = await prisma.smartMealPlan.findFirst({
+    where: {
+      userId,
+      isActive: true,
+      type: 'week',
+    },
+    orderBy: { createdAt: 'desc' },
+    include: {
+      days: {
+        include: { meals: true },
+      },
+    },
+  });
+
+  // Get nutrition plan as fallback
+  const nutritionPlan = await prisma.clientNutritionPlan.findFirst({
+    where: {
+      clientId: userId,
+      status: 'ACTIVE',
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  // Calculate default values
+  let defaultKcal = 2000;
+  let defaultProtein = 150;
+  let defaultCarbs = 200;
+  let defaultFat = 70;
+
+  if (nutritionPlan) {
+    defaultKcal = Number(nutritionPlan.dailyCalorieTarget) || 2000;
+    defaultProtein = Number(nutritionPlan.proteinGrams) || 150;
+    defaultCarbs = Number(nutritionPlan.carbGrams) || 200;
+    defaultFat = Number(nutritionPlan.fatGrams) || 70;
+  }
+
+  // Generate logs for each missing day (up to today)
+  const logsToCreate = [];
+
+  for (let d = new Date(startDate); d <= endDate && d <= today; d.setDate(d.getDate() + 1)) {
+    const currentDate = new Date(d);
+    currentDate.setHours(0, 0, 0, 0);
+
+    if (existingDates.has(currentDate.toDateString())) {
+      continue; // Skip if log already exists
+    }
+
+    // Get planned values for this day from meal plan
+    let plannedKcal = defaultKcal;
+    let plannedProtein = defaultProtein;
+    let plannedCarbs = defaultCarbs;
+    let plannedFat = defaultFat;
+
+    if (mealPlan) {
+      const dayOfWeek = currentDate.getDay();
+      const adjustedDay = dayOfWeek === 0 ? 7 : dayOfWeek; // 1=Mon, 7=Sun
+      const dayPlan = mealPlan.days.find(day => day.dayNumber === adjustedDay);
+
+      if (dayPlan) {
+        if (dayPlan.totalCalories) {
+          plannedKcal = Math.round(dayPlan.totalCalories);
+          plannedProtein = dayPlan.totalProtein || defaultProtein;
+          plannedCarbs = dayPlan.totalCarbs || defaultCarbs;
+          plannedFat = dayPlan.totalFat || defaultFat;
+        } else if (dayPlan.meals.length > 0) {
+          // Sum from individual meals
+          plannedKcal = Math.round(dayPlan.meals.reduce((sum, m) => sum + m.calories, 0));
+          plannedProtein = dayPlan.meals.reduce((sum, m) => sum + m.protein, 0);
+          plannedCarbs = dayPlan.meals.reduce((sum, m) => sum + m.carbs, 0);
+          plannedFat = dayPlan.meals.reduce((sum, m) => sum + m.fat, 0);
+        }
+      }
+    }
+
+    logsToCreate.push({
+      userId,
+      date: new Date(currentDate),
+      plannedKcal,
+      plannedProtein,
+      plannedCarbs,
+      plannedFat,
+      actualKcal: plannedKcal, // Assume followed plan
+      actualProtein: plannedProtein,
+      actualCarbs: plannedCarbs,
+      actualFat: plannedFat,
+      hasDeviation: false,
+    });
+  }
+
+  // Bulk create missing logs
+  if (logsToCreate.length > 0) {
+    await prisma.dailyNutritionLog.createMany({
+      data: logsToCreate,
+      skipDuplicates: true,
+    });
+  }
 }
