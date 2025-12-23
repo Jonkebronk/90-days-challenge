@@ -311,7 +311,10 @@ export function ClientStyleMealCard({
     nutrition: { kcal: number; protein: number; carbs: number; fat: number };
     presetId?: string;
     presetName?: string;
-  }) => {
+    inputMethod?: 'quick_track' | 'text' | 'image' | 'both';
+    confidence?: 'low' | 'medium' | 'high';
+    dataSource?: string;
+  }): Promise<{ id: string } | void> => {
     setQuickTrackSaving(true);
     try {
       const response = await fetch('/api/social-meals', {
@@ -319,12 +322,13 @@ export function ClientStyleMealCard({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           mealType: data.mealType,
-          inputMethod: 'quick_track',
+          inputMethod: data.inputMethod || 'quick_track',
           kcal: data.nutrition.kcal,
           protein: data.nutrition.protein,
           carbs: data.nutrition.carbs,
           fat: data.nutrition.fat,
-          dataSource: 'quick_track',
+          dataSource: data.dataSource || 'quick_track',
+          confidence: data.confidence,
           presetDinnerId: data.presetId,
           presetDinnerName: data.presetName,
           components: data.components.map((c) => ({
@@ -345,7 +349,9 @@ export function ClientStyleMealCard({
         throw new Error('Failed to save meal');
       }
 
-      setQuickTrackOpen(false);
+      const result = await response.json();
+      // Return the meal ID so feedback modal can be shown
+      return { id: result.id };
     } catch (error) {
       console.error('Error saving quick track meal:', error);
       throw error;

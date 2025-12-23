@@ -1,19 +1,22 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import type { NutritionEstimate } from '@/lib/social-meal/types';
+import { Sparkles } from 'lucide-react';
+import type { NutritionEstimate, ConfidenceLevel } from '@/lib/social-meal/types';
 import { getMacroBreakdown } from '@/lib/social-meal/nutrition-calculator';
 
 interface NutritionSummaryProps {
   nutrition: NutritionEstimate;
   showRange?: boolean;
   compact?: boolean;
+  confidence?: ConfidenceLevel;
 }
 
 export function NutritionSummary({
   nutrition,
   showRange = false,
   compact = false,
+  confidence,
 }: NutritionSummaryProps) {
   const breakdown = getMacroBreakdown(nutrition);
 
@@ -33,8 +36,33 @@ export function NutritionSummary({
     );
   }
 
+  const confidenceColors: Record<ConfidenceLevel, string> = {
+    low: 'bg-red-100 text-red-700',
+    medium: 'bg-yellow-100 text-yellow-700',
+    high: 'bg-green-100 text-green-700',
+  };
+
+  const confidenceLabels: Record<ConfidenceLevel, string> = {
+    low: 'Uppskattning',
+    medium: 'Bra uppskattning',
+    high: 'Säker uppskattning',
+  };
+
   return (
     <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 space-y-3">
+      {/* Confidence badge */}
+      {confidence && (
+        <div className="flex justify-center">
+          <span className={cn(
+            'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium',
+            confidenceColors[confidence]
+          )}>
+            <Sparkles className="h-3 w-3" />
+            {confidenceLabels[confidence]}
+          </span>
+        </div>
+      )}
+
       {/* Calories */}
       <div className="text-center">
         <p className="text-3xl font-bold text-gray-900">

@@ -197,6 +197,8 @@ model User {
   // Social Meal (Quick Track)
   socialMeals     SocialMeal[]
   savedMeals      SavedMeal[]
+  mealFeedback    MealFeedback[]
+  userCalibration UserCalibration?
 
   @@map("users")
 }
@@ -3014,6 +3016,7 @@ model SocialMeal {
 
   user       User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   components QuickTrackComponent[]
+  feedback   MealFeedback?
 
   @@index([userId, timestamp])
   @@index([userId, mealType])
@@ -3068,4 +3071,66 @@ model SavedMeal {
   @@index([userId, useCount])
   @@index([userId, lastUsedAt])
   @@map("saved_meals")
+}
+
+// Meal Feedback - User feedback on meal accuracy for calibration
+model MealFeedback {
+  id           String @id @default(cuid())
+  userId       String
+  socialMealId String
+
+  // Feedback type
+  accuracy     String // too_low, about_right, too_high
+
+  // Optional adjusted values (if user corrected the estimate)
+  adjustedKcal    Int?
+  adjustedProtein Decimal? @db.Decimal(5, 1)
+  adjustedCarbs   Decimal? @db.Decimal(5, 1)
+  adjustedFat     Decimal? @db.Decimal(5, 1)
+
+  // Original values for comparison
+  originalKcal    Int
+  originalProtein Decimal @db.Decimal(5, 1)
+  originalCarbs   Decimal @db.Decimal(5, 1)
+  originalFat     Decimal @db.Decimal(5, 1)
+
+  notes     String? @db.Text
+  createdAt DateTime @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  socialMeal SocialMeal @relation(fields: [socialMealId], references: [id], onDelete: Cascade)
+
+  @@unique([socialMealId]) // One feedback per meal
+  @@index([userId])
+  @@map("meal_feedback")
+}
+
+// User Calibration - Personal calibration factors based on feedback
+model UserCalibration {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // Multipliers for adjusting estimates (1.0 = no adjustment)
+  kcalMultiplier    Decimal @default(1.0) @db.Decimal(4, 3)
+  proteinMultiplier Decimal @default(1.0) @db.Decimal(4, 3)
+  carbsMultiplier   Decimal @default(1.0) @db.Decimal(4, 3)
+  fatMultiplier     Decimal @default(1.0) @db.Decimal(4, 3)
+
+  // Per-category adjustments (JSON for flexibility)
+  categoryAdjustments Json? // { protein: 1.1, carb: 0.95, ... }
+
+  // Portion size preferences
+  defaultPortionSize String @default("normal") // small, normal, large
+
+  // Stats for transparency
+  feedbackCount      Int @default(0)
+  lastCalibratedAt   DateTime?
+  confidenceScore    Decimal? @db.Decimal(3, 2) // 0.00-1.00
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_calibrations")
 }

@@ -143,11 +143,74 @@ export interface UserMealPatterns {
   };
 }
 
+// Feedback accuracy options
+export type FeedbackAccuracy = 'too_low' | 'about_right' | 'too_high';
+
 // Meal feedback for AI calibration
 export interface MealFeedback {
   mealId: string;
-  accuracy: 'too_low' | 'about_right' | 'too_high';
+  accuracy: FeedbackAccuracy;
   adjustedValues?: Partial<NutritionEstimate>;
+}
+
+// Extended feedback with original values
+export interface MealFeedbackCreate {
+  socialMealId: string;
+  accuracy: FeedbackAccuracy;
+  adjustedKcal?: number;
+  adjustedProtein?: number;
+  adjustedCarbs?: number;
+  adjustedFat?: number;
+  originalKcal: number;
+  originalProtein: number;
+  originalCarbs: number;
+  originalFat: number;
+  notes?: string;
+}
+
+// User calibration data
+export interface UserCalibration {
+  kcalMultiplier: number;
+  proteinMultiplier: number;
+  carbsMultiplier: number;
+  fatMultiplier: number;
+  categoryAdjustments?: Record<QuickTrackCategory, number>;
+  defaultPortionSize: PortionSize;
+  feedbackCount: number;
+  lastCalibratedAt?: string;
+  confidenceScore?: number;
+}
+
+// AI Analysis Types
+export interface AIAnalysisRequest {
+  text?: string;
+  imageBase64?: string;
+  mealType?: MealType;
+  socialContext?: SocialContext;
+}
+
+export interface AIFoodItem {
+  name: string;
+  estimatedGrams: number;
+  confidence: ConfidenceLevel;
+  nutrition: {
+    kcal: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+  matchedCategory?: QuickTrackCategory;
+  matchedItemId?: string;
+}
+
+export interface AIAnalysisResult {
+  success: boolean;
+  items: AIFoodItem[];
+  totalNutrition: NutritionEstimate;
+  confidence: ConfidenceLevel;
+  dataSource: DataSource;
+  reasoning?: string;
+  suggestions?: string[];
 }
 
 // API response types
