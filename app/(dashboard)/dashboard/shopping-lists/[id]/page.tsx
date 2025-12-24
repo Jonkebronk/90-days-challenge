@@ -25,10 +25,14 @@ import {
   Package,
   ChefHat,
   ExternalLink,
+  CalendarDays,
+  Heart,
+  ShoppingCart,
 } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { ProductDetailModal } from '@/components/products/ProductDetailModal'
+import { FavoriteProductList, MealPlanToListWizard } from '@/components/shopping-list'
 
 type ProductData = {
   id: string
@@ -119,6 +123,10 @@ export default function ClientShoppingListDetailPage({
   // Product detail modal state
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null)
   const [isProductDetailOpen, setIsProductDetailOpen] = useState(false)
+
+  // Tab and wizard state
+  const [activeTab, setActiveTab] = useState<'list' | 'favorites'>('list')
+  const [showMealPlanWizard, setShowMealPlanWizard] = useState(false)
 
   useEffect(() => {
     params.then((p) => setListId(p.id))
@@ -406,67 +414,107 @@ export default function ClientShoppingListDetailPage({
 
   return (
     <div className="min-h-screen bg-gray-900">
-      {/* Sticky Header */}
-      <div
-        className="sticky top-0 z-20 border-b border-gold-primary/20 backdrop-blur-lg"
-        style={{ backgroundColor: `${shoppingList.color}15` }}
-      >
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => router.push('/dashboard/shopping-lists')}
-              className="text-white"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="flex items-center gap-2">
-              {canEdit && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsAddDialogOpen(true)}
-                  className="text-white"
-                >
-                  <Plus className="h-5 w-5" />
-                </Button>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsMenuOpen(true)}
-                className="text-white"
-              >
-                <MoreVertical className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-          <h1 className="text-2xl font-bold text-white mb-1">{shoppingList.name}</h1>
-          {shoppingList.description && (
-            <p className="text-sm text-gray-300 mb-3">
-              {shoppingList.description}
-            </p>
-          )}
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-200">
-              {checkedItems} av {totalItems} klara
-            </p>
-            <Badge className="bg-[rgba(255,255,255,0.2)] text-white border-0">
-              {progress}%
-            </Badge>
-          </div>
-          <div className="w-full bg-[rgba(255,255,255,0.1)] h-1.5 rounded-full mt-2 overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-gold-light to-orange-500 transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+      {/* Header with Tabs */}
+      <div className="sticky top-0 z-20 bg-white border-b border-gray-200">
+        {/* Title row */}
+        <div className="relative text-center py-6 bg-gradient-to-br from-gold-primary/5 to-transparent">
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-br from-gold-primary to-gold-secondary bg-clip-text text-transparent tracking-[1px]">
+            INKÖPSLISTA
+          </h1>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex border-b border-gray-200">
+          <button
+            onClick={() => setActiveTab('list')}
+            className={`flex-1 py-3 px-4 text-center font-medium transition-colors flex items-center justify-center gap-2 ${
+              activeTab === 'list'
+                ? 'text-gold-primary border-b-2 border-gold-primary'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <ShoppingCart className="h-4 w-4" />
+            Inköpslista
+            {totalItems > 0 && (
+              <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                activeTab === 'list' ? 'bg-gold-primary/20' : 'bg-gray-200'
+              }`}>
+                {totalItems}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('favorites')}
+            className={`flex-1 py-3 px-4 text-center font-medium transition-colors flex items-center justify-center gap-2 ${
+              activeTab === 'favorites'
+                ? 'text-gold-primary border-b-2 border-gold-primary'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <Heart className="h-4 w-4" />
+            Favoriter
+          </button>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-4 pb-24">
+      {/* Content based on active tab */}
+      {activeTab === 'list' ? (
+        <>
+          {/* Progress header */}
+          <div
+            className="border-b border-gold-primary/20"
+            style={{ backgroundColor: `${shoppingList.color}15` }}
+          >
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  {canEdit && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setIsAddDialogOpen(true)}
+                      className="text-white hover:bg-white/10"
+                    >
+                      <Plus className="h-5 w-5" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsMenuOpen(true)}
+                    className="text-white hover:bg-white/10"
+                  >
+                    <MoreVertical className="h-5 w-5" />
+                  </Button>
+                </div>
+                <Button
+                  onClick={() => setShowMealPlanWizard(true)}
+                  size="sm"
+                  className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-bold"
+                >
+                  <CalendarDays className="h-4 w-4 mr-2" />
+                  Från måltidsplan
+                </Button>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-200">
+                  {checkedItems} av {totalItems} klara
+                </p>
+                <Badge className="bg-[rgba(255,255,255,0.2)] text-white border-0">
+                  {progress}%
+                </Badge>
+              </div>
+              <div className="w-full bg-[rgba(255,255,255,0.1)] h-1.5 rounded-full mt-2 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-gold-light to-orange-500 transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Shopping list content */}
+          <div className="p-4 pb-24">
         {totalItems === 0 ? (
           <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] mt-8">
             <CardContent className="text-center py-16">
@@ -696,7 +744,24 @@ export default function ClientShoppingListDetailPage({
             ))}
           </div>
         )}
-      </div>
+          </div>
+        </>
+      ) : (
+        /* Favorites Tab */
+        <div className="p-4 pb-24 bg-white min-h-[60vh]">
+          <FavoriteProductList />
+        </div>
+      )}
+
+      {/* Meal Plan Wizard Dialog */}
+      <MealPlanToListWizard
+        isOpen={showMealPlanWizard}
+        onClose={() => setShowMealPlanWizard(false)}
+        onSuccess={(newListId) => {
+          setShowMealPlanWizard(false)
+          router.push(`/dashboard/shopping-lists/${newListId}`)
+        }}
+      />
 
       {/* Add Item Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
