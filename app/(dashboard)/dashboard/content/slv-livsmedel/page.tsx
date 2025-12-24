@@ -8,25 +8,18 @@ import {
   RefreshCw,
   Loader2,
   Calendar,
-  Package,
   Beef,
-  Fish,
-  Milk,
-  Carrot,
-  Apple,
   Wheat,
-  Cookie,
-  Wine,
-  Soup,
+  Droplets,
+  Carrot,
+  UtensilsCrossed,
   Leaf,
-  Baby,
+  Flame,
   MoreHorizontal,
   LayoutGrid,
   List,
-  Flame,
   Dumbbell,
-  Zap,
-  ChevronDown
+  Zap
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -40,126 +33,74 @@ interface SLVData {
   categories: Record<string, SLVFood[]>
 }
 
-// Meta-categories to group 118 categories into ~12 manageable groups
-const META_CATEGORIES: Record<string, { icon: any; color: string; gradient: string; subCategories: string[] }> = {
-  'Kött & Fågel': {
-    icon: Beef,
-    color: 'rose',
-    gradient: 'from-rose-500 to-red-600',
-    subCategories: [
-      'Blodmat', 'Blodprodukter blodrätter', 'Fågel ', 'Fågelprodukter fågelrätter',
-      'Inälvor och organ', 'Inälvor organ produkter o rätter', 'Korv', 'Korvrätter',
-      'Kött färskt fryst tillagat ', 'Kött processat', 'Köttprodukter kötträtter', 'Sylta',
-      'Övrigt animaliskt "kött", grodlår, sniglar, säl - färskt, fryst, tillagat'
-    ]
-  },
-  'Fisk & Skaldjur': {
-    icon: Fish,
-    color: 'sky',
-    gradient: 'from-sky-500 to-blue-600',
-    subCategories: [
-      'Fisk färsk fryst kokt', 'Fisk o skaldjursprodukter o rätter', 'Fisk rökt',
-      'Fisk stekt ej panerad', 'Rom, kaviar', 'Skaldjur bläckfisk färsk fryst kokt'
-    ]
-  },
-  'Mejeri & Ägg': {
-    icon: Milk,
-    color: 'blue',
-    gradient: 'from-blue-500 to-indigo-600',
-    subCategories: [
-      'Dessertost', 'Färskost o kvarg', 'Grädde creme fraiche', 'Hård ost mm', 'Mesvaror',
-      'Mjölk', 'Mjölkdryck chokladdryck milkshake smothie m yoghurt', 'Naturell fil yoghurt',
-      'Ost med vegetabiliskt fett', 'Osträtter', 'Smaksatt fil yoghurt', 'Smältost', 'Smör',
-      'Ägg ', 'Äggprodukter o rätter'
-    ]
-  },
-  'Grönsaker & Baljväxter': {
-    icon: Carrot,
-    color: 'green',
-    gradient: 'from-green-500 to-emerald-600',
-    subCategories: [
-      'Algprodukter', 'Baljväxter (bönor, linser och ärter)', 'Grönsaker',
-      'Grönsaks- rotfrukts- baljväxträtter o produkter', 'Grönsaksblandningar med rotfrukter och eller baljväxter',
-      'Grönsaksjuice rotfruktsjuice', 'Potatis', 'Potatisprodukter potatisrätter', 'Rotfrukter', 'Svamp'
-    ]
-  },
-  'Frukt & Bär': {
-    icon: Apple,
-    color: 'red',
-    gradient: 'from-red-500 to-orange-600',
-    subCategories: [
-      'Bär färska frysta', 'Frukt färsk fryst', 'Frukt o bär konserverade',
-      'Frukt o bär torkade', 'Frukt o nötblandningar bars', 'Nötter frön'
-    ]
-  },
-  'Bröd & Spannmål': {
-    icon: Wheat,
-    color: 'amber',
-    gradient: 'from-amber-500 to-yellow-600',
-    subCategories: [
-      'Flingor - frukostflingor', 'Grynrätter', 'Gröt', 'Hårt bröd ', 'Matgryn',
-      'Mjukt bröd ', 'Mjöl stärkelse kli', 'Pasta', 'Pastarätter', 'Ris risnudlar',
-      'Riskakor', 'Risrätter', 'Smörgåskex'
-    ]
-  },
-  'Snacks & Godis': {
-    icon: Cookie,
-    color: 'pink',
-    gradient: 'from-pink-500 to-rose-600',
-    subCategories: [
-      'Bullar kakor tårtor mm', 'Chips popcorn o dyl', 'Choklad ', 'Efterrätter', 'Glass',
-      'Godis choklad tuggummi', 'Godis ej choklad', 'Godis som innehåller choklad',
-      'Sockerfritt godis', 'Sylt marmelad gelé äppelmos o dyl', 'Söta soppor kräm o efterrättssås'
-    ]
-  },
-  'Drycker': {
-    icon: Wine,
-    color: 'purple',
-    gradient: 'from-purple-500 to-violet-600',
-    subCategories: [
-      'Cider alkoläsk drink', 'Dryck', 'Fruktjuice mm', 'Kaffe', 'Lightdrycker u energi', 'Likör',
-      'Saft läsk cider u alkohol ', 'Sportdrycker energidrycker', 'Starksprit', 'Te',
-      'Vatten mineralvatten', 'Vin', 'Öl', 'Övriga sötade drycker vattenchoklad'
-    ]
-  },
-  'Matlagning & Kryddor': {
-    icon: Soup,
-    color: 'orange',
-    gradient: 'from-orange-500 to-amber-600',
-    subCategories: [
-      'Buljong', 'Flytande matfettsblandning', 'Gelatin agar agar', 'Hård matfettsblandning',
-      'Jäst bakpulver', 'Kryddor ', 'Majonnässallad röror', 'Olja', 'Salt',
-      'Senap ketchup HP-sås soja "smaksättare"', 'Socker sirap honung', 'Sås dressing majonnäs ',
-      'Sötningsmedel', 'Ättika vinäger', 'Övrigt fett (ister, talg, kokosfett)'
-    ]
-  },
-  'Färdigrätter': {
-    icon: Package,
-    color: 'slate',
-    gradient: 'from-slate-500 to-gray-600',
-    subCategories: [
-      'Hamburgare med  bröd (kött, fisk, fågel, vegetarisk)', 'Pannkakor, våfflor, crêpes',
-      'Pizza paj pirog färdig smörgås', 'Sallad blandad mat', 'Soppa mat', 'Tacoskal',
-      'Övriga ospecificerade blandade rätter'
-    ]
-  },
-  'Vegetariskt': {
-    icon: Leaf,
-    color: 'emerald',
-    gradient: 'from-emerald-500 to-green-600',
-    subCategories: [
-      'Vegetabiliska produkter och mjölkersättning', 'Vegetabiliskt protein produkter och rätter'
-    ]
-  },
-  'Övrigt': {
-    icon: MoreHorizontal,
-    color: 'gray',
-    gradient: 'from-gray-500 to-slate-600',
-    subCategories: [
-      'Barnmatsprodukter exkl. välling o gröt', 'Kost- o näringspreparat', 'Välling',
-      'Kakaoprodukter', 'Tuggummi', 'Övrigt'
-    ]
+// Extended SLV food with slvCategory for filtering
+interface SLVFoodWithCategory extends SLVFood {
+  slvCategory?: string
+}
+
+// Macro-based categories (same as Livsmedel/Products page)
+const MACRO_CATEGORIES = [
+  { id: 'proteinkallor', label: 'Proteinkällor', icon: Beef, color: 'rose', gradient: 'from-rose-500 to-red-600' },
+  { id: 'kolhydratkallor', label: 'Kolhydratskällor', icon: Wheat, color: 'amber', gradient: 'from-amber-500 to-yellow-600' },
+  { id: 'fettkallor', label: 'Fettkällor', icon: Droplets, color: 'blue', gradient: 'from-blue-500 to-indigo-600' },
+  { id: 'gronsaker', label: 'Grönsaker', icon: Carrot, color: 'green', gradient: 'from-green-500 to-emerald-600' },
+  { id: 'sasar', label: 'Såser', icon: UtensilsCrossed, color: 'orange', gradient: 'from-orange-500 to-amber-600' },
+  { id: 'kryddor', label: 'Kryddor', icon: Leaf, color: 'emerald', gradient: 'from-emerald-500 to-green-600' },
+  { id: 'matlagningsfett', label: 'Matlagningsfett', icon: Flame, color: 'yellow', gradient: 'from-yellow-500 to-orange-600' },
+  { id: 'ovrigt', label: 'Övrigt', icon: MoreHorizontal, color: 'gray', gradient: 'from-gray-500 to-slate-600' },
+]
+
+// SLV categories that map to specific macro categories
+const SLV_CATEGORY_MAPPINGS: Record<string, string> = {
+  // Såser
+  'Sås dressing majonnäs ': 'sasar',
+  'Majonnässallad röror': 'sasar',
+  'Senap ketchup HP-sås soja "smaksättare"': 'sasar',
+  // Kryddor
+  'Kryddor ': 'kryddor',
+  'Salt': 'kryddor',
+  'Buljong': 'kryddor',
+  // Matlagningsfett
+  'Olja': 'matlagningsfett',
+  'Smör': 'matlagningsfett',
+  'Flytande matfettsblandning': 'matlagningsfett',
+  'Hård matfettsblandning': 'matlagningsfett',
+  'Övrigt fett (ister, talg, kokosfett)': 'matlagningsfett',
+  // Grönsaker (explicit)
+  'Grönsaker': 'gronsaker',
+  'Rotfrukter': 'gronsaker',
+  'Svamp': 'gronsaker',
+  'Algprodukter': 'gronsaker',
+}
+
+// Categorize food by macro content
+function categorizeByMacro(food: SLVFoodWithCategory): string {
+  const slvCat = food.slvCategory || ''
+
+  // First check explicit SLV category mappings
+  for (const [slvName, macroId] of Object.entries(SLV_CATEGORY_MAPPINGS)) {
+    if (slvCat === slvName || slvCat.includes(slvName.replace(' ', ''))) {
+      return macroId
+    }
   }
+
+  // Then use nutritional values
+  const { protein, carbs, fat, kcal, fiber } = food
+
+  // Proteinkällor: protein > 15g per 100g
+  if (protein > 15) return 'proteinkallor'
+
+  // Kolhydratskällor: carbs > 20g && protein < 15g
+  if (carbs > 20 && protein < 15) return 'kolhydratkallor'
+
+  // Fettkällor: fat > 15g && carbs < 10g && protein < 15g
+  if (fat > 15 && carbs < 10 && protein < 15) return 'fettkallor'
+
+  // Grönsaker: kcal < 50 && fiber > 1
+  if (kcal < 50 && (fiber ?? 0) > 1) return 'gronsaker'
+
+  // Övrigt: allt annat
+  return 'ovrigt'
 }
 
 type NutritionFilter = 'all' | 'high-protein' | 'low-kcal' | 'low-carb' | 'high-fiber'
@@ -182,7 +123,6 @@ export default function SLVLivsmedelPage() {
   const [isRebuilding, setIsRebuilding] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
   const [selectedFood, setSelectedFood] = useState<SLVFood | null>(null)
   const [nutritionFilter, setNutritionFilter] = useState<NutritionFilter>('all')
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
@@ -233,34 +173,42 @@ export default function SLVLivsmedelPage() {
     }
   }
 
-  // Get all foods for current filters
-  const filteredFoods = useMemo(() => {
+  // Flatten all foods with their SLV category attached
+  const allFoodsWithCategory = useMemo(() => {
     if (!data) return []
 
+    const foods: SLVFoodWithCategory[] = []
+    for (const [slvCategory, categoryFoods] of Object.entries(data.categories)) {
+      for (const food of categoryFoods) {
+        foods.push({ ...food, slvCategory })
+      }
+    }
+    return foods
+  }, [data])
+
+  // Get category counts
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {}
+    for (const cat of MACRO_CATEGORIES) {
+      counts[cat.id] = 0
+    }
+    for (const food of allFoodsWithCategory) {
+      const macroCategory = categorizeByMacro(food)
+      counts[macroCategory] = (counts[macroCategory] || 0) + 1
+    }
+    return counts
+  }, [allFoodsWithCategory])
+
+  // Get filtered foods
+  const filteredFoods = useMemo(() => {
     const query = searchQuery.toLowerCase().split(/\s+/).filter(w => w.length > 0)
-    const filterFn = NUTRITION_FILTERS[nutritionFilter].fn
+    const nutritionFilterFn = NUTRITION_FILTERS[nutritionFilter].fn
 
-    let foods: SLVFood[] = []
+    let foods = allFoodsWithCategory
 
-    // Get foods from selected category or all categories
+    // Apply macro category filter
     if (selectedCategory) {
-      const metaConfig = META_CATEGORIES[selectedCategory]
-      if (metaConfig) {
-        if (selectedSubcategory) {
-          // Only from selected subcategory
-          foods = data.categories[selectedSubcategory] || []
-        } else {
-          // From all subcategories of the meta category
-          for (const subCat of metaConfig.subCategories) {
-            foods = [...foods, ...(data.categories[subCat] || [])]
-          }
-        }
-      }
-    } else {
-      // All foods from all categories
-      for (const categoryFoods of Object.values(data.categories)) {
-        foods = [...foods, ...categoryFoods]
-      }
+      foods = foods.filter(food => categorizeByMacro(food) === selectedCategory)
     }
 
     // Apply search filter
@@ -272,42 +220,13 @@ export default function SLVLivsmedelPage() {
     }
 
     // Apply nutrition filter
-    foods = foods.filter(filterFn)
+    foods = foods.filter(nutritionFilterFn)
 
     // Sort alphabetically
     foods = foods.sort((a, b) => a.namn.localeCompare(b.namn, 'sv'))
 
     return foods
-  }, [data, searchQuery, selectedCategory, selectedSubcategory, nutritionFilter])
-
-  // Get category counts
-  const categoryCounts = useMemo(() => {
-    if (!data) return {}
-
-    const counts: Record<string, number> = {}
-    for (const [metaName, metaConfig] of Object.entries(META_CATEGORIES)) {
-      let count = 0
-      for (const subCat of metaConfig.subCategories) {
-        count += (data.categories[subCat] || []).length
-      }
-      counts[metaName] = count
-    }
-    return counts
-  }, [data])
-
-  // Get subcategory counts for selected category
-  const subCategoryCounts = useMemo(() => {
-    if (!data || !selectedCategory) return {}
-
-    const metaConfig = META_CATEGORIES[selectedCategory]
-    if (!metaConfig) return {}
-
-    const counts: Record<string, number> = {}
-    for (const subCat of metaConfig.subCategories) {
-      counts[subCat] = (data.categories[subCat] || []).length
-    }
-    return counts
-  }, [data, selectedCategory])
+  }, [allFoodsWithCategory, searchQuery, selectedCategory, nutritionFilter])
 
   if (isLoading) {
     return (
@@ -352,8 +271,9 @@ export default function SLVLivsmedelPage() {
     day: 'numeric'
   })
 
-  const mainCategories = Object.entries(META_CATEGORIES).slice(0, 6)
-  const secondaryCategories = Object.entries(META_CATEGORIES).slice(6)
+  // Split categories into main (first 4) and secondary (rest)
+  const mainCategories = MACRO_CATEGORIES.slice(0, 4)
+  const secondaryCategories = MACRO_CATEGORIES.slice(4)
 
   return (
     <div className="min-h-screen">
@@ -363,9 +283,9 @@ export default function SLVLivsmedelPage() {
           {/* Title row */}
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Livsmedelsdatabas</h1>
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">SLV-databas</h1>
               <p className="text-xs sm:text-sm text-gray-500 flex items-center gap-2">
-                <span>{data.totalCount} livsmedel</span>
+                <span>{allFoodsWithCategory.length} livsmedel</span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
@@ -411,32 +331,29 @@ export default function SLVLivsmedelPage() {
             </div>
           </div>
 
-          {/* Main categories - 6 items */}
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 sm:gap-2 mb-2">
-            {mainCategories.map(([name, config]) => {
-              const Icon = config.icon
-              const count = categoryCounts[name] || 0
-              const isActive = selectedCategory === name
+          {/* Main categories - 4 items */}
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mb-2">
+            {mainCategories.map((cat) => {
+              const Icon = cat.icon
+              const count = categoryCounts[cat.id] || 0
+              const isActive = selectedCategory === cat.id
 
               return (
                 <button
-                  key={name}
+                  key={cat.id}
                   onClick={() => {
-                    if (isActive) {
-                      setSelectedCategory(null)
-                    } else {
-                      setSelectedCategory(name)
-                    }
-                    setSelectedSubcategory(null)
+                    setSelectedCategory(isActive ? null : cat.id)
                   }}
                   className={`relative flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl transition-all ${
                     isActive
-                      ? `bg-gradient-to-br ${config.gradient} text-white shadow-lg scale-[1.02]`
+                      ? `bg-gradient-to-br ${cat.gradient} text-white shadow-lg scale-[1.02]`
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   <Icon className={`w-5 h-5 sm:w-6 sm:h-6 mb-0.5 ${isActive ? 'text-white' : 'text-gray-500'}`} />
-                  <span className="text-[9px] sm:text-xs font-semibold text-center leading-tight line-clamp-1">{name.split(' ')[0]}</span>
+                  <span className="text-[9px] sm:text-xs font-semibold text-center leading-tight line-clamp-1">
+                    {cat.label.split('källor')[0]}
+                  </span>
                   {count > 0 && (
                     <span className={`absolute top-0.5 right-0.5 sm:top-1 sm:right-1 text-[8px] sm:text-[10px] px-1 py-0.5 rounded-full ${
                       isActive ? 'bg-white/30 text-white' : 'bg-gray-300 text-gray-600'
@@ -449,32 +366,27 @@ export default function SLVLivsmedelPage() {
             })}
           </div>
 
-          {/* Secondary categories - 6 items */}
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 sm:gap-2 mb-3">
-            {secondaryCategories.map(([name, config]) => {
-              const Icon = config.icon
-              const count = categoryCounts[name] || 0
-              const isActive = selectedCategory === name
+          {/* Secondary categories - 4 items */}
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mb-3">
+            {secondaryCategories.map((cat) => {
+              const Icon = cat.icon
+              const count = categoryCounts[cat.id] || 0
+              const isActive = selectedCategory === cat.id
 
               return (
                 <button
-                  key={name}
+                  key={cat.id}
                   onClick={() => {
-                    if (isActive) {
-                      setSelectedCategory(null)
-                    } else {
-                      setSelectedCategory(name)
-                    }
-                    setSelectedSubcategory(null)
+                    setSelectedCategory(isActive ? null : cat.id)
                   }}
                   className={`relative flex items-center justify-center gap-1 sm:gap-2 p-2 sm:p-2.5 rounded-xl transition-all ${
                     isActive
-                      ? `bg-gradient-to-br ${config.gradient} text-white shadow-lg scale-[1.02]`
+                      ? `bg-gradient-to-br ${cat.gradient} text-white shadow-lg scale-[1.02]`
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-500'}`} />
-                  <span className="text-[9px] sm:text-xs font-semibold line-clamp-1">{name.split(' ')[0]}</span>
+                  <span className="text-[9px] sm:text-xs font-semibold line-clamp-1">{cat.label}</span>
                   {count > 0 && (
                     <span className={`text-[8px] sm:text-[10px] px-1 py-0.5 rounded-full ${
                       isActive ? 'bg-white/30 text-white' : 'bg-gray-300 text-gray-600'
@@ -520,53 +432,13 @@ export default function SLVLivsmedelPage() {
             />
           </div>
         </div>
-
-        {/* Subcategories when category is selected */}
-        {selectedCategory && META_CATEGORIES[selectedCategory] && (
-          <div className="px-4 pb-3 border-t border-gray-200 pt-3">
-            <div className="flex flex-wrap gap-1.5">
-              <button
-                onClick={() => setSelectedSubcategory(null)}
-                className={`px-2.5 py-1 rounded-full text-sm transition-colors ${
-                  !selectedSubcategory
-                    ? 'bg-gray-800 text-white font-medium'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                Alla
-              </button>
-              {META_CATEGORIES[selectedCategory].subCategories.map(subCat => {
-                const count = subCategoryCounts[subCat] || 0
-                if (count === 0) return null
-                const isActive = selectedSubcategory === subCat
-
-                return (
-                  <button
-                    key={subCat}
-                    onClick={() => setSelectedSubcategory(isActive ? null : subCat)}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-sm transition-colors ${
-                      isActive
-                        ? 'bg-gray-800 text-white font-medium'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    <span className="truncate max-w-[150px]">{subCat}</span>
-                    <span className={`text-xs ${isActive ? 'text-gray-300' : 'text-gray-400'}`}>
-                      {count}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Results count */}
       <div className="mb-3 px-1">
         <p className="text-sm text-gray-500">
           {filteredFoods.length} livsmedel
-          {selectedCategory && ` i ${selectedCategory}`}
+          {selectedCategory && ` i ${MACRO_CATEGORIES.find(c => c.id === selectedCategory)?.label}`}
           {searchQuery && ` som matchar "${searchQuery}"`}
         </p>
       </div>
