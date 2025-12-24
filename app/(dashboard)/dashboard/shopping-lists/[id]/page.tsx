@@ -23,10 +23,8 @@ import {
   Trash2,
   Search,
   X,
-  Store,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { ICAProductSearch, type ICAProduct } from '@/components/shopping-list'
 
 type ShoppingListItem = {
   id: string
@@ -61,8 +59,12 @@ type ShoppingList = {
 type FoodItem = {
   id: string
   name: string
-  unit: string
-  category: {
+  imageUrl?: string | null
+  calories?: number | null
+  proteinG?: number | null
+  carbsG?: number | null
+  fatG?: number | null
+  foodCategory?: {
     name: string
   } | null
 }
@@ -88,8 +90,8 @@ export default function ClientShoppingListDetailPage({
   const [customItemName, setCustomItemName] = useState('')
   const [quantity, setQuantity] = useState('1')
   const [unit, setUnit] = useState('st')
-  const [activeTab, setActiveTab] = useState<'ica' | 'search' | 'custom'>('ica')
-  const [addedIcaIds, setAddedIcaIds] = useState<Set<string>>(new Set())
+  const [activeTab, setActiveTab] = useState<'search' | 'custom'>('search')
+  const [addedFoodIds, setAddedFoodIds] = useState<Set<string>>(new Set())
 
   // Share state
   const [shareUserId, setShareUserId] = useState('')
@@ -139,7 +141,7 @@ export default function ClientShoppingListDetailPage({
   const searchFoodItems = async () => {
     try {
       const response = await fetch(
-        `/api/food-items?search=${encodeURIComponent(searchTerm)}&limit=10`
+        `/api/food-items?search=${encodeURIComponent(searchTerm)}&limit=20`
       )
       if (response.ok) {
         const data = await response.json()
@@ -186,60 +188,21 @@ export default function ClientShoppingListDetailPage({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           foodItemId: foodItem.id,
-          quantity: parseFloat(quantity) || 1,
-          unit: foodItem.unit || 'st',
+          quantity: 1,
+          unit: 'st',
+          category: foodItem.foodCategory?.name || 'Övrigt',
         }),
       })
 
       if (response.ok) {
         toast.success(`${foodItem.name} tillagd`)
-        setIsAddDialogOpen(false)
-        setSearchTerm('')
-        setQuantity('1')
+        setAddedFoodIds((prev) => new Set([...prev, foodItem.id]))
         fetchShoppingList()
       } else {
         toast.error('Kunde inte lägga till vara')
       }
     } catch (error) {
       console.error('Error adding item:', error)
-      toast.error('Ett fel uppstod')
-    }
-  }
-
-  const handleAddIcaProduct = async (product: ICAProduct) => {
-    try {
-      const response = await fetch(`/api/shopping-lists/${listId}/items`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customName: product.name,
-          icaProductId: product.id,
-          icaProductData: {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            comparePrice: product.comparePrice,
-            imageUrl: product.imageUrl,
-            categoryPath: product.categoryPath,
-            offer: product.offer,
-          },
-          quantity: 1,
-          unit: 'st',
-          category: product.categoryPath?.split('/')[0] || 'Övrigt',
-          source: 'ica',
-          estimatedPrice: product.offer?.price || product.price,
-        }),
-      })
-
-      if (response.ok) {
-        toast.success(`${product.name} tillagd`)
-        setAddedIcaIds((prev) => new Set([...prev, product.id]))
-        fetchShoppingList()
-      } else {
-        toast.error('Kunde inte lägga till vara')
-      }
-    } catch (error) {
-      console.error('Error adding ICA product:', error)
       toast.error('Ett fel uppstod')
     }
   }
@@ -574,17 +537,6 @@ export default function ClientShoppingListDetailPage({
 
           <div className="flex gap-2 mb-4">
             <Button
-              onClick={() => setActiveTab('ica')}
-              className={`flex-1 ${
-                activeTab === 'ica'
-                  ? 'bg-gradient-to-br from-red-500 to-red-700 text-white'
-                  : 'bg-transparent border border-red-500/30 text-gray-200'
-              }`}
-            >
-              <Store className="h-4 w-4 mr-1" />
-              ICA
-            </Button>
-            <Button
               onClick={() => setActiveTab('search')}
               className={`flex-1 ${
                 activeTab === 'search'
@@ -592,7 +544,8 @@ export default function ClientShoppingListDetailPage({
                   : 'bg-transparent border border-gold-primary/30 text-gray-200'
               }`}
             >
-              Livsmedel
+              <Search className="h-4 w-4 mr-1" />
+              Sök livsmedel
             </Button>
             <Button
               onClick={() => setActiveTab('custom')}
@@ -602,55 +555,101 @@ export default function ClientShoppingListDetailPage({
                   : 'bg-transparent border border-gold-primary/30 text-gray-200'
               }`}
             >
-              Egen
+              Egen vara
             </Button>
           </div>
 
-          {activeTab === 'ica' ? (
-            <div className="flex-1 overflow-auto -mx-6 px-6">
-              <ICAProductSearch
-                onAddProduct={handleAddIcaProduct}
-                addedIds={addedIcaIds}
-                compact
-              />
-            </div>
-          ) : activeTab === 'search' ? (
+          {activeTab === 'search' ? (
             <div className="flex-1 overflow-auto">
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                 <Input
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Sök i livsmedelbanken..."
+                  placeholder="Sök livsmedel..."
                   className="pl-10 bg-black/30 border-gold-primary/30 text-white"
+                  autoFocus
                 />
               </div>
 
-              <div className="space-y-2 max-h-96 overflow-auto">
-                {searchResults.map((foodItem) => (
-                  <Card
-                    key={foodItem.id}
-                    className="bg-white/5 border border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)] cursor-pointer transition-all"
-                    onClick={() => handleAddFromFoodBank(foodItem)}
-                  >
-                    <CardContent className="p-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-white">{foodItem.name}</p>
-                          {foodItem.category && (
-                            <p className="text-xs text-gray-500">
-                              {foodItem.category.name}
-                            </p>
-                          )}
+              <div className="space-y-2 max-h-[400px] overflow-auto">
+                {searchResults.map((foodItem) => {
+                  const isAdded = addedFoodIds.has(foodItem.id)
+                  return (
+                    <Card
+                      key={foodItem.id}
+                      className={`border transition-all cursor-pointer ${
+                        isAdded
+                          ? 'bg-green-500/20 border-green-500/50'
+                          : 'bg-white/5 border-gold-primary/20 hover:border-[rgba(255,215,0,0.4)]'
+                      }`}
+                      onClick={() => !isAdded && handleAddFromFoodBank(foodItem)}
+                    >
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-3">
+                          {/* Product image */}
+                          <div className="w-12 h-12 rounded-lg bg-zinc-800 overflow-hidden shrink-0">
+                            {foodItem.imageUrl ? (
+                              <img
+                                src={foodItem.imageUrl}
+                                alt={foodItem.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-zinc-600 text-xs">
+                                Bild
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Product info */}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-white truncate">{foodItem.name}</p>
+                            {foodItem.foodCategory && (
+                              <p className="text-xs text-gray-500">
+                                {foodItem.foodCategory.name}
+                              </p>
+                            )}
+                            {/* Macros */}
+                            <div className="flex items-center gap-2 mt-1 text-xs">
+                              {foodItem.calories && (
+                                <span className="text-orange-400">{Math.round(Number(foodItem.calories))} kcal</span>
+                              )}
+                              {foodItem.proteinG && (
+                                <span className="text-blue-400">{Math.round(Number(foodItem.proteinG))}g P</span>
+                              )}
+                              {foodItem.carbsG && (
+                                <span className="text-yellow-400">{Math.round(Number(foodItem.carbsG))}g K</span>
+                              )}
+                              {foodItem.fatG && (
+                                <span className="text-red-400">{Math.round(Number(foodItem.fatG))}g F</span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Add button */}
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                            isAdded ? 'bg-green-500' : 'bg-gold-primary/20'
+                          }`}>
+                            {isAdded ? (
+                              <Check className="h-4 w-4 text-white" />
+                            ) : (
+                              <Plus className="h-4 w-4 text-[rgba(255,215,0,0.8)]" />
+                            )}
+                          </div>
                         </div>
-                        <Plus className="h-4 w-4 text-[rgba(255,215,0,0.8)]" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  )
+                })}
                 {searchTerm.length >= 2 && searchResults.length === 0 && (
                   <p className="text-center text-gray-500 py-8">
-                    Inga resultat
+                    Inga resultat hittades
+                  </p>
+                )}
+                {searchTerm.length < 2 && (
+                  <p className="text-center text-gray-500 py-8">
+                    Skriv minst 2 tecken för att söka
                   </p>
                 )}
               </div>
