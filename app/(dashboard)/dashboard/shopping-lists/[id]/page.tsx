@@ -533,105 +533,14 @@ export default function ClientShoppingListDetailPage({
           </Card>
         ) : (
           <div className="space-y-4">
-            {/* Recipe sections */}
-            {Object.entries(groupedByRecipe).map(([recipeId, { recipe, items }]) => {
-              const allChecked = items.every((item) => item.checked)
-              const someChecked = items.some((item) => item.checked)
-
-              return (
-                <div key={recipeId} className="bg-white rounded-xl border border-emerald-200 shadow-sm overflow-hidden">
-                  {/* Recipe header card */}
-                  <Link
-                    href={`/dashboard/recipes/${recipeId}`}
-                    className="flex items-center gap-3 p-3 bg-emerald-50 hover:bg-emerald-100 transition-colors border-b border-emerald-200"
-                  >
-                    {recipe?.coverImage ? (
-                      <img
-                        src={recipe.coverImage}
-                        alt={recipe.title}
-                        className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
-                      />
-                    ) : (
-                      <div className="w-14 h-14 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                        <ChefHat className="w-7 h-7 text-emerald-600" />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <ChefHat className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                        <span className="text-xs uppercase tracking-wide text-emerald-600 font-medium">
-                          Recept
-                        </span>
-                      </div>
-                      <h3 className="font-bold text-gray-900 truncate">{recipe?.title}</h3>
-                      <p className="text-xs text-gray-500">
-                        {items.length} ingredienser • {items.filter(i => i.checked).length} klara
-                      </p>
-                    </div>
-                    <ExternalLink className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  </Link>
-
-                  {/* Recipe ingredients */}
-                  <div>
-                    {items.map((item, idx) => {
-                      const name = item.customName || item.foodItem?.name || 'Okänd vara'
-                      return (
-                        <div
-                          key={item.id}
-                          className={`flex items-center gap-3 px-4 py-2.5 ${
-                            idx !== items.length - 1 ? 'border-b border-gray-100' : ''
-                          } ${item.checked ? 'bg-gray-50' : ''}`}
-                        >
-                          {/* Checkbox */}
-                          <button
-                            onClick={() => handleToggleChecked(item.id, item.checked)}
-                            className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
-                              item.checked
-                                ? 'bg-emerald-500'
-                                : 'border-2 border-gray-300 hover:border-emerald-400'
-                            }`}
-                            disabled={!canEdit}
-                          >
-                            {item.checked && <Check className="h-4 w-4 text-white" />}
-                          </button>
-
-                          {/* Item name */}
-                          <span className={`flex-1 text-sm ${
-                            item.checked ? 'line-through text-gray-400' : 'text-gray-900'
-                          }`}>
-                            {name}
-                          </span>
-
-                          {/* Quantity */}
-                          <span className="text-xs text-gray-500">
-                            {item.quantity} {item.unit}
-                          </span>
-
-                          {/* Delete button */}
-                          {canEdit && (
-                            <button
-                              onClick={() => handleDeleteItem(item.id)}
-                              className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              )
-            })}
-
-            {/* Regular category sections */}
-            {Object.entries(grouped).map(([category, items]) => (
-              <div key={category}>
+            {/* Regular items section - always first */}
+            {Object.keys(grouped).length > 0 && (
+              <div>
                 <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide px-1 mb-2">
-                  {category}
+                  Inköpslista
                 </h2>
                 <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                  {items.map((item, idx) => {
+                  {Object.values(grouped).flat().map((item, idx, allItems) => {
                     const name = item.foodItem?.name || item.customName || 'Okänd vara'
                     const imageUrl = item.foodItem?.imageUrl || item.customImageUrl
                     return (
@@ -639,7 +548,7 @@ export default function ClientShoppingListDetailPage({
                         key={item.id}
                         className={`transition-all ${
                           item.checked ? 'bg-gray-50' : ''
-                        } ${idx !== items.length - 1 ? 'border-b border-gray-100' : ''}`}
+                        } ${idx !== allItems.length - 1 ? 'border-b border-gray-100' : ''}`}
                       >
                         <div className="flex items-stretch">
                           {/* Checkbox */}
@@ -737,6 +646,92 @@ export default function ClientShoppingListDetailPage({
                             </button>
                           )}
                         </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Recipe sections - below regular items */}
+            {Object.entries(groupedByRecipe).map(([recipeId, { recipe, items }]) => (
+              <div key={recipeId} className="bg-white rounded-xl border border-emerald-200 shadow-sm overflow-hidden">
+                {/* Recipe header card */}
+                <Link
+                  href={`/dashboard/recipes/${recipeId}`}
+                  className="flex items-center gap-3 p-3 bg-emerald-50 hover:bg-emerald-100 transition-colors border-b border-emerald-200"
+                >
+                  {recipe?.coverImage ? (
+                    <img
+                      src={recipe.coverImage}
+                      alt={recipe.title}
+                      className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                      <ChefHat className="w-7 h-7 text-emerald-600" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <ChefHat className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <span className="text-xs uppercase tracking-wide text-emerald-600 font-medium">
+                        Recept
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-gray-900 truncate">{recipe?.title}</h3>
+                    <p className="text-xs text-gray-500">
+                      {items.length} ingredienser • {items.filter(i => i.checked).length} klara
+                    </p>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                </Link>
+
+                {/* Recipe ingredients */}
+                <div>
+                  {items.map((item, idx) => {
+                    const name = item.customName || item.foodItem?.name || 'Okänd vara'
+                    return (
+                      <div
+                        key={item.id}
+                        className={`flex items-center gap-3 px-4 py-2.5 ${
+                          idx !== items.length - 1 ? 'border-b border-gray-100' : ''
+                        } ${item.checked ? 'bg-gray-50' : ''}`}
+                      >
+                        {/* Checkbox */}
+                        <button
+                          onClick={() => handleToggleChecked(item.id, item.checked)}
+                          className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                            item.checked
+                              ? 'bg-emerald-500'
+                              : 'border-2 border-gray-300 hover:border-emerald-400'
+                          }`}
+                          disabled={!canEdit}
+                        >
+                          {item.checked && <Check className="h-4 w-4 text-white" />}
+                        </button>
+
+                        {/* Item name */}
+                        <span className={`flex-1 text-sm ${
+                          item.checked ? 'line-through text-gray-400' : 'text-gray-900'
+                        }`}>
+                          {name}
+                        </span>
+
+                        {/* Quantity */}
+                        <span className="text-xs text-gray-500">
+                          {item.quantity} {item.unit}
+                        </span>
+
+                        {/* Delete button */}
+                        {canEdit && (
+                          <button
+                            onClick={() => handleDeleteItem(item.id)}
+                            className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
                     )
                   })}
