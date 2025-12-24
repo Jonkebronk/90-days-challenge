@@ -379,11 +379,12 @@ export default function ProductsPage() {
   // Add to shopping list
   const handleAddToShoppingList = async (product: Product, listId: string) => {
     try {
-      // Product items use customName (not foodItemId) since Product and FoodItem are separate tables
+      // Send productId so we can show nutrition info when clicking on the item
       const res = await fetch(`/api/shopping-lists/${listId}/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          productId: product.id,
           customName: product.name,
           customImageUrl: product.image,
           quantity: 1,

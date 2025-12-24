@@ -106,12 +106,12 @@ export async function POST(
     }
 
     const body = await req.json()
-    const { foodItemId, customName, customImageUrl, quantity, unit, category, notes } = body
+    const { foodItemId, productId, customName, customImageUrl, quantity, unit, category, notes } = body
 
     // Validate
-    if (!foodItemId && !customName) {
+    if (!foodItemId && !productId && !customName) {
       return NextResponse.json(
-        { error: 'Either foodItemId or customName is required' },
+        { error: 'Either foodItemId, productId, or customName is required' },
         { status: 400 }
       )
     }
@@ -157,6 +157,7 @@ export async function POST(
       data: {
         listId,
         foodItemId: foodItemId || null,
+        productId: productId || null,
         customName: customName || null,
         customImageUrl: customImageUrl || null,
         quantity: quantity || 1,
@@ -180,6 +181,7 @@ export async function POST(
             },
           },
         },
+        product: true,
       },
     })
 

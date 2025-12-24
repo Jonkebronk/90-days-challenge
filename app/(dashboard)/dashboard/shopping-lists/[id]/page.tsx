@@ -28,6 +28,28 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import { ProductDetailModal } from '@/components/products/ProductDetailModal'
+
+type ProductData = {
+  id: string
+  ean: string
+  name: string
+  brand: string | null
+  description?: string | null
+  url?: string | null
+  category: string | null
+  image: string | null
+  kcal: number
+  protein: number
+  carbs: number
+  fat: number
+  fiber?: number | null
+  sugar?: number | null
+  salt?: number | null
+  saturatedFat?: number | null
+  source: string
+  servingUnit?: string
+}
 
 type ShoppingListItem = {
   id: string
@@ -37,6 +59,8 @@ type ShoppingListItem = {
     name: string
     imageUrl?: string | null
   } | null
+  productId: string | null
+  product: ProductData | null
   recipeId: string | null
   recipe: {
     id: string
@@ -91,6 +115,10 @@ export default function ClientShoppingListDetailPage({
   // Share state
   const [shareUserId, setShareUserId] = useState('')
   const [shareRole, setShareRole] = useState<'viewer' | 'editor'>('editor')
+
+  // Product detail modal state
+  const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null)
+  const [isProductDetailOpen, setIsProductDetailOpen] = useState(false)
 
   useEffect(() => {
     params.then((p) => setListId(p.id))
@@ -582,34 +610,51 @@ export default function ClientShoppingListDetailPage({
                             )}
                           </button>
 
-                          {/* Product image */}
-                          <div className="w-20 h-20 bg-gray-50 flex-shrink-0">
-                            {imageUrl ? (
-                              <img
-                                src={imageUrl}
-                                alt={name}
-                                className="w-full h-full object-contain p-1"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <Package className="w-8 h-8 text-gray-300" />
-                              </div>
-                            )}
-                          </div>
+                          {/* Product image + info (clickable for nutrition details) */}
+                          <button
+                            onClick={() => {
+                              if (item.product) {
+                                setSelectedProduct(item.product)
+                                setIsProductDetailOpen(true)
+                              }
+                            }}
+                            className={`flex flex-1 items-stretch text-left ${item.product ? 'cursor-pointer hover:bg-gray-50' : 'cursor-default'}`}
+                            disabled={!item.product}
+                          >
+                            {/* Product image */}
+                            <div className="w-20 h-20 bg-gray-50 flex-shrink-0">
+                              {imageUrl ? (
+                                <img
+                                  src={imageUrl}
+                                  alt={name}
+                                  className="w-full h-full object-contain p-1"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <Package className="w-8 h-8 text-gray-300" />
+                                </div>
+                              )}
+                            </div>
 
-                          {/* Product info */}
-                          <div className="flex-1 p-3 flex flex-col justify-center min-w-0">
-                            <p className={`font-semibold text-gray-900 truncate ${
-                              item.checked ? 'line-through text-gray-500' : ''
-                            }`}>
-                              {name}
-                            </p>
-                            {item.notes && (
-                              <p className="text-xs text-gray-500 truncate mt-0.5">
-                                {item.notes}
+                            {/* Product info */}
+                            <div className="flex-1 p-3 flex flex-col justify-center min-w-0">
+                              <p className={`font-semibold text-gray-900 truncate ${
+                                item.checked ? 'line-through text-gray-500' : ''
+                              }`}>
+                                {name}
                               </p>
-                            )}
-                          </div>
+                              {item.notes && (
+                                <p className="text-xs text-gray-500 truncate mt-0.5">
+                                  {item.notes}
+                                </p>
+                              )}
+                              {item.product && (
+                                <p className="text-xs text-amber-600 mt-0.5">
+                                  Tryck för näringsinformation
+                                </p>
+                              )}
+                            </div>
+                          </button>
 
                           {/* Quantity controls */}
                           <div className="flex items-center gap-1 px-2 bg-gray-50">
@@ -820,6 +865,16 @@ export default function ClientShoppingListDetailPage({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        isOpen={isProductDetailOpen}
+        product={selectedProduct}
+        onClose={() => {
+          setIsProductDetailOpen(false)
+          setSelectedProduct(null)
+        }}
+      />
     </div>
   )
 }

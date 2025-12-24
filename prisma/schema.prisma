@@ -2026,6 +2026,8 @@ model ShoppingListItem {
   // Food item from database OR custom item
   foodItemId String?
   foodItem   FoodItem? @relation(fields: [foodItemId], references: [id])
+  productId  String?
+  product    Product?  @relation("ShoppingListProduct", fields: [productId], references: [id])
   customName String? // If not from food bank
   customImageUrl String? // Image URL for custom items (from Product table etc)
 
@@ -2054,6 +2056,7 @@ model ShoppingListItem {
   @@index([listId, category])
   @@index([icaProductId])
   @@index([recipeId])
+  @@index([productId])
   @@map("shopping_list_items")
 }
 
@@ -2608,8 +2611,9 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  foodLogItems FoodLogItem[]
-  favorites    FavoriteProduct[] @relation("FavoriteProduct")
+  foodLogItems      FoodLogItem[]
+  favorites         FavoriteProduct[] @relation("FavoriteProduct")
+  shoppingListItems ShoppingListItem[] @relation("ShoppingListProduct")
 
   @@index([ean])
   @@index([name])

@@ -39,6 +39,7 @@ export async function GET(
                 },
               },
             },
+            product: true,
             recipe: {
               select: {
                 id: true,
