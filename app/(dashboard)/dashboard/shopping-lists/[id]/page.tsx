@@ -372,11 +372,8 @@ export default function ClientShoppingListDetailPage({
   const grouped = groupItemsByCategory()
   const groupedByRecipe = groupItemsByRecipe()
   const isOwner = shoppingList.userId === session.user.id
-  const canEdit =
-    isOwner ||
-    shoppingList.shares.some(
-      (s) => s.sharedWith === session.user.id && s.role === 'editor'
-    )
+  // Alla som har tillgång till listan kan redigera
+  const canEdit = true
 
   return (
     <div className="min-h-screen bg-gray-900">
