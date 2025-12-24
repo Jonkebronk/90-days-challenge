@@ -324,14 +324,17 @@ export default function ProductsPage() {
 
   // Toggle favorite
   const handleToggleFavorite = async (product: Product) => {
+    console.log('handleToggleFavorite called', product.id)
     const isFavorite = favoriteIds.has(product.id)
 
     if (isFavorite) {
       // Remove favorite
       try {
+        console.log('Removing favorite...')
         const res = await fetch(`/api/favorites?foodItemId=${product.id}`, {
           method: 'DELETE',
         })
+        console.log('Remove favorite response:', res.status)
         if (res.ok) {
           setFavoriteIds(prev => {
             const next = new Set(prev)
@@ -341,11 +344,13 @@ export default function ProductsPage() {
           toast.success('Borttagen från favoriter')
         }
       } catch (error) {
+        console.error('Remove favorite error:', error)
         toast.error('Kunde inte ta bort favorit')
       }
     } else {
       // Add favorite
       try {
+        console.log('Adding favorite...')
         const res = await fetch('/api/favorites', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -356,14 +361,19 @@ export default function ProductsPage() {
             category: product.category || 'Övrigt',
           }),
         })
+        console.log('Add favorite response:', res.status)
         if (res.ok) {
           setFavoriteIds(prev => new Set([...prev, product.id]))
           toast.success('Tillagd som favorit')
         } else if (res.status === 409) {
           // Already favorite
           setFavoriteIds(prev => new Set([...prev, product.id]))
+        } else {
+          console.error('Add favorite failed:', res.status)
+          toast.error('Kunde inte lägga till favorit')
         }
       } catch (error) {
+        console.error('Add favorite error:', error)
         toast.error('Kunde inte lägga till favorit')
       }
     }
@@ -371,6 +381,7 @@ export default function ProductsPage() {
 
   // Add to shopping list
   const handleAddToShoppingList = async (product: Product, listId: string) => {
+    console.log('handleAddToShoppingList called', product.id, listId)
     try {
       const res = await fetch(`/api/shopping-lists/${listId}/items`, {
         method: 'POST',
@@ -382,15 +393,18 @@ export default function ProductsPage() {
           category: product.category || 'Övrigt',
         }),
       })
+      console.log('Add to list response:', res.status)
 
       if (res.ok) {
         const list = shoppingLists.find(l => l.id === listId)
         toast.success(`${product.name} tillagd i ${list?.name || 'inköpslistan'}`)
         setShowListPicker(null)
       } else {
+        console.error('Add to list failed:', res.status)
         toast.error('Kunde inte lägga till vara')
       }
     } catch (error) {
+      console.error('Add to list error:', error)
       toast.error('Ett fel uppstod')
     }
   }
