@@ -9,39 +9,11 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string; itemId: string }> }
 ) {
   try {
-    const { id: listId, itemId } = await params
+    const { itemId } = await params
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const userId = session.user.id
-
-    // Check if user has edit access
-    const list = await prisma.shoppingList.findFirst({
-      where: {
-        id: listId,
-        OR: [
-          { userId },
-          {
-            shares: {
-              some: {
-                sharedWith: userId,
-                accepted: true,
-                role: 'editor',
-              },
-            },
-          },
-        ],
-      },
-    })
-
-    if (!list) {
-      return NextResponse.json(
-        { error: 'Shopping list not found or you do not have permission' },
-        { status: 404 }
-      )
     }
 
     const body = await req.json()
@@ -86,39 +58,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string; itemId: string }> }
 ) {
   try {
-    const { id: listId, itemId } = await params
+    const { itemId } = await params
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const userId = session.user.id
-
-    // Check if user has edit access
-    const list = await prisma.shoppingList.findFirst({
-      where: {
-        id: listId,
-        OR: [
-          { userId },
-          {
-            shares: {
-              some: {
-                sharedWith: userId,
-                accepted: true,
-                role: 'editor',
-              },
-            },
-          },
-        ],
-      },
-    })
-
-    if (!list) {
-      return NextResponse.json(
-        { error: 'Shopping list not found or you do not have permission' },
-        { status: 404 }
-      )
     }
 
     await prisma.shoppingListItem.delete({

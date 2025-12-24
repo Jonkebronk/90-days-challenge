@@ -93,30 +93,14 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const userId = session.user.id
-
-    // Check if user has edit access
-    const list = await prisma.shoppingList.findFirst({
-      where: {
-        id: listId,
-        OR: [
-          { userId }, // Owner
-          {
-            shares: {
-              some: {
-                sharedWith: userId,
-                accepted: true,
-                role: 'editor',
-              },
-            },
-          },
-        ],
-      },
+    // Check if list exists
+    const list = await prisma.shoppingList.findUnique({
+      where: { id: listId },
     })
 
     if (!list) {
       return NextResponse.json(
-        { error: 'Shopping list not found or you do not have permission' },
+        { error: 'Shopping list not found' },
         { status: 404 }
       )
     }
