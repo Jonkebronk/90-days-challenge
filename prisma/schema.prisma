@@ -357,6 +357,8 @@ model FoodItem {
   recipeIngredients  RecipeIngredient[]
   mealPlanItems      MealPlanItem[]
   shoppingListItems  ShoppingListItem[]
+  favoriteProducts   FavoriteProduct[]   @relation("FavoriteFoodItem")
+  recurringItems     RecurringItem[]     @relation("RecurringFoodItem")
 
   @@index([slvNummer])
   @@index([macroCategory])
@@ -1997,6 +1999,11 @@ model ShoppingList {
   description String?
   color       String   @default("#FFD700") // Visual categorization color
 
+  // Koppling till måltidsplan (för genererade listor)
+  smartMealPlanId String?
+  weekStartDate   DateTime?
+  weekEndDate     DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -2005,6 +2012,7 @@ model ShoppingList {
 
   @@index([userId])
   @@index([createdAt])
+  @@index([smartMealPlanId])
   @@map("shopping_lists")
 }
 
@@ -2019,6 +2027,12 @@ model ShoppingListItem {
   foodItem   FoodItem? @relation(fields: [foodItemId], references: [id])
   customName String? // If not from food bank
 
+  // ICA produkt-integration
+  icaProductId   String?           // ICA produkt-ID
+  icaProductData Json?             // Cachad data (pris, bild, kategori)
+  source         String  @default("manual") // "manual" | "ica" | "meal_plan" | "recurring"
+  estimatedPrice Decimal? @db.Decimal(8, 2) // Uppskattat pris från ICA
+
   quantity   Float   @default(1)
   unit       String  @default("st") // st, kg, g, l, dl, msk, tsk, etc.
   category   String  @default("Övrigt") // Frukt & Grönt, Mejeri, Kött, etc.
@@ -2032,6 +2046,7 @@ model ShoppingListItem {
 
   @@index([listId, checked])
   @@index([listId, category])
+  @@index([icaProductId])
   @@map("shopping_list_items")
 }
 
@@ -2049,6 +2064,98 @@ model ShoppingListShare {
   @@unique([listId, sharedWith])
   @@index([sharedWith])
   @@map("shopping_list_shares")
+}
+
+// ========================================
+// ICA Integration
+// ========================================
+
+// ICA Product Cache - Cacha ICA-produkter för snabbare sökning
+model ICAProductCache {
+  id            String   @id @default(cuid())
+  icaProductId  String   @unique  // ICA:s produkt-ID
+  ean           String?            // EAN streckkod
+  name          String
+  brand         String?
+  price         Decimal  @db.Decimal(8, 2)
+  comparePrice  String?            // "15.90 kr/l"
+  imageUrl      String?
+  categoryPath  String?            // "Mejeri/Mjölk"
+  offer         Json?              // Erbjudandedata
+  storeId       String             // Vilken butik priset gäller för
+
+  cachedAt      DateTime @default(now())
+  expiresAt     DateTime           // Cache TTL
+
+  @@index([storeId, name])
+  @@index([ean])
+  @@map("ica_product_cache")
+}
+
+// Favorite Product - Användarens favoritprodukter
+model FavoriteProduct {
+  id             String   @id @default(cuid())
+  userId         String
+
+  // Referens till ICA-produkt ELLER intern FoodItem
+  icaProductId   String?
+  foodItemId     String?
+  foodItem       FoodItem? @relation("FavoriteFoodItem", fields: [foodItemId], references: [id])
+
+  // Denormaliserad data för snabb visning
+  name           String
+  brand          String?
+  imageUrl       String?
+  category       String?
+  icaProductData Json?    // Cachad ICA-produktdata (pris, bild, etc)
+
+  createdAt      DateTime @default(now())
+
+  @@unique([userId, icaProductId])
+  @@unique([userId, foodItemId])
+  @@index([userId])
+  @@map("favorite_products")
+}
+
+// Recurring Item - Återkommande varor som auto-läggs till
+model RecurringItem {
+  id             String   @id @default(cuid())
+  userId         String
+
+  // Produktreferens
+  icaProductId   String?
+  foodItemId     String?
+  foodItem       FoodItem? @relation("RecurringFoodItem", fields: [foodItemId], references: [id])
+  customName     String?            // Om manuellt tillagd
+
+  // Inställningar
+  quantity       Float    @default(1)
+  unit           String   @default("st")
+  category       String   @default("Övrigt")
+  frequency      String   @default("weekly") // "weekly" | "biweekly" | "monthly"
+  dayOfWeek      Int?               // 0-6, vilken dag att lägga till (null = alla)
+  icaProductData Json?              // Cachad ICA-produktdata
+
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId, isActive])
+  @@map("recurring_items")
+}
+
+// User Store Preference - Användarens valda ICA-butik
+model UserStorePreference {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  storeId       String             // ICA butiks-ID
+  storeName     String             // "Maxi ICA Stormarknad Luleå"
+  categoryOrder String[]           // Anpassad sorteringsordning
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("user_store_preferences")
 }
 
 // Nutrition Reference Tables (Admin-managed)

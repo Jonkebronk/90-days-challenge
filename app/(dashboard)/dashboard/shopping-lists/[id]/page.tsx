@@ -23,8 +23,10 @@ import {
   Trash2,
   Search,
   X,
+  Store,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { ICAProductSearch, type ICAProduct } from '@/components/shopping-list'
 
 type ShoppingListItem = {
   id: string
@@ -86,7 +88,8 @@ export default function ClientShoppingListDetailPage({
   const [customItemName, setCustomItemName] = useState('')
   const [quantity, setQuantity] = useState('1')
   const [unit, setUnit] = useState('st')
-  const [activeTab, setActiveTab] = useState<'search' | 'custom'>('search')
+  const [activeTab, setActiveTab] = useState<'ica' | 'search' | 'custom'>('ica')
+  const [addedIcaIds, setAddedIcaIds] = useState<Set<string>>(new Set())
 
   // Share state
   const [shareUserId, setShareUserId] = useState('')
@@ -199,6 +202,44 @@ export default function ClientShoppingListDetailPage({
       }
     } catch (error) {
       console.error('Error adding item:', error)
+      toast.error('Ett fel uppstod')
+    }
+  }
+
+  const handleAddIcaProduct = async (product: ICAProduct) => {
+    try {
+      const response = await fetch(`/api/shopping-lists/${listId}/items`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customName: product.name,
+          icaProductId: product.id,
+          icaProductData: {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            comparePrice: product.comparePrice,
+            imageUrl: product.imageUrl,
+            categoryPath: product.categoryPath,
+            offer: product.offer,
+          },
+          quantity: 1,
+          unit: 'st',
+          category: product.categoryPath?.split('/')[0] || 'Övrigt',
+          source: 'ica',
+          estimatedPrice: product.offer?.price || product.price,
+        }),
+      })
+
+      if (response.ok) {
+        toast.success(`${product.name} tillagd`)
+        setAddedIcaIds((prev) => new Set([...prev, product.id]))
+        fetchShoppingList()
+      } else {
+        toast.error('Kunde inte lägga till vara')
+      }
+    } catch (error) {
+      console.error('Error adding ICA product:', error)
       toast.error('Ett fel uppstod')
     }
   }
@@ -533,6 +574,17 @@ export default function ClientShoppingListDetailPage({
 
           <div className="flex gap-2 mb-4">
             <Button
+              onClick={() => setActiveTab('ica')}
+              className={`flex-1 ${
+                activeTab === 'ica'
+                  ? 'bg-gradient-to-br from-red-500 to-red-700 text-white'
+                  : 'bg-transparent border border-red-500/30 text-gray-200'
+              }`}
+            >
+              <Store className="h-4 w-4 mr-1" />
+              ICA
+            </Button>
+            <Button
               onClick={() => setActiveTab('search')}
               className={`flex-1 ${
                 activeTab === 'search'
@@ -540,7 +592,7 @@ export default function ClientShoppingListDetailPage({
                   : 'bg-transparent border border-gold-primary/30 text-gray-200'
               }`}
             >
-              Sök livsmedel
+              Livsmedel
             </Button>
             <Button
               onClick={() => setActiveTab('custom')}
@@ -550,11 +602,19 @@ export default function ClientShoppingListDetailPage({
                   : 'bg-transparent border border-gold-primary/30 text-gray-200'
               }`}
             >
-              Egen vara
+              Egen
             </Button>
           </div>
 
-          {activeTab === 'search' ? (
+          {activeTab === 'ica' ? (
+            <div className="flex-1 overflow-auto -mx-6 px-6">
+              <ICAProductSearch
+                onAddProduct={handleAddIcaProduct}
+                addedIds={addedIcaIds}
+                compact
+              />
+            </div>
+          ) : activeTab === 'search' ? (
             <div className="flex-1 overflow-auto">
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
