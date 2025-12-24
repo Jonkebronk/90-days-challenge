@@ -21,10 +21,8 @@ import {
   Share2,
   MoreVertical,
   Trash2,
-  ShoppingBag,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { ProductBrowser } from '@/components/shopping-list'
 
 type ShoppingListItem = {
   id: string
@@ -56,17 +54,6 @@ type ShoppingList = {
   }>
 }
 
-type Product = {
-  id: string
-  name: string
-  image: string | null
-  kcal: number
-  protein: number
-  carbs: number
-  fat: number
-  category: string | null
-}
-
 export default function ClientShoppingListDetailPage({
   params,
 }: {
@@ -86,8 +73,6 @@ export default function ClientShoppingListDetailPage({
   const [customItemName, setCustomItemName] = useState('')
   const [quantity, setQuantity] = useState('1')
   const [unit, setUnit] = useState('st')
-  const [activeTab, setActiveTab] = useState<'browse' | 'custom'>('browse')
-  const [addedProductIds, setAddedProductIds] = useState<Set<string>>(new Set())
 
   // Share state
   const [shareUserId, setShareUserId] = useState('')
@@ -148,32 +133,6 @@ export default function ClientShoppingListDetailPage({
       console.error('Error toggling item:', error)
       toast.error('Ett fel uppstod')
       fetchShoppingList()
-    }
-  }
-
-  const handleAddProduct = async (product: Product) => {
-    try {
-      const response = await fetch(`/api/shopping-lists/${listId}/items`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customName: product.name,
-          quantity: 1,
-          unit: 'st',
-          category: product.category || 'Övrigt',
-        }),
-      })
-
-      if (response.ok) {
-        toast.success(`${product.name} tillagd`)
-        setAddedProductIds((prev) => new Set([...prev, product.id]))
-        fetchShoppingList()
-      } else {
-        toast.error('Kunde inte lägga till vara')
-      }
-    } catch (error) {
-      console.error('Error adding product:', error)
-      toast.error('Ett fel uppstod')
     }
   }
 
@@ -498,45 +457,18 @@ export default function ClientShoppingListDetailPage({
 
       {/* Add Item Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.98)] border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-lg max-h-[85vh] flex flex-col">
+        <DialogContent className="bg-[rgba(10,10,10,0.98)] border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
               Lägg till vara
             </DialogTitle>
           </DialogHeader>
 
-          <div className="flex gap-2 mb-4">
-            <Button
-              onClick={() => setActiveTab('browse')}
-              className={`flex-1 ${
-                activeTab === 'browse'
-                  ? 'bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a]'
-                  : 'bg-transparent border border-gold-primary/30 text-gray-200'
-              }`}
-            >
-              <ShoppingBag className="h-4 w-4 mr-1" />
-              Livsmedel
-            </Button>
-            <Button
-              onClick={() => setActiveTab('custom')}
-              className={`flex-1 ${
-                activeTab === 'custom'
-                  ? 'bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a]'
-                  : 'bg-transparent border border-gold-primary/30 text-gray-200'
-              }`}
-            >
-              Egen vara
-            </Button>
-          </div>
+          <p className="text-sm text-gray-400 mb-4">
+            Tips: Du kan också lägga till varor direkt från Livsmedel-sidan eller dina Favoriter.
+          </p>
 
-          {activeTab === 'browse' ? (
-            <ProductBrowser
-              onAddProduct={handleAddProduct}
-              addedIds={addedProductIds}
-              className="flex-1 min-h-[400px]"
-            />
-          ) : (
-            <div className="space-y-4">
+          <div className="space-y-4">
               <div>
                 <label className="text-sm text-gray-200 mb-1.5 block">
                   Varunamn *
@@ -572,14 +504,13 @@ export default function ClientShoppingListDetailPage({
                   />
                 </div>
               </div>
-              <Button
-                onClick={handleAddCustomItem}
-                className="w-full bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
-              >
-                Lägg till
-              </Button>
-            </div>
-          )}
+            <Button
+              onClick={handleAddCustomItem}
+              className="w-full bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
+            >
+              Lägg till
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
