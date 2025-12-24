@@ -101,10 +101,11 @@ export async function DELETE(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
     const icaProductId = searchParams.get('icaProductId')
+    const foodItemId = searchParams.get('foodItemId')
 
-    if (!id && !icaProductId) {
+    if (!id && !icaProductId && !foodItemId) {
       return NextResponse.json(
-        { error: 'id or icaProductId is required' },
+        { error: 'id, icaProductId, or foodItemId is required' },
         { status: 400 }
       )
     }
@@ -116,6 +117,7 @@ export async function DELETE(req: NextRequest) {
         OR: [
           id ? { id } : {},
           icaProductId ? { icaProductId } : {},
+          foodItemId ? { foodItemId } : {},
         ].filter((o) => Object.keys(o).length > 0),
       },
     })

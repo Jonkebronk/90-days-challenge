@@ -329,7 +329,7 @@ export default function ProductsPage() {
     if (isFavorite) {
       // Remove favorite
       try {
-        const res = await fetch(`/api/favorites?id=${product.id}`, {
+        const res = await fetch(`/api/favorites?foodItemId=${product.id}`, {
           method: 'DELETE',
         })
         if (res.ok) {
