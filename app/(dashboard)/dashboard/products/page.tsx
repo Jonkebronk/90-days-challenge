@@ -387,8 +387,8 @@ export default function ProductsPage() {
           productId: product.id,
           customName: product.name,
           customImageUrl: product.image,
-          quantity: 1,
-          unit: 'st',
+          quantity: 100,
+          unit: 'g',
           category: product.category || 'Övrigt',
         }),
       })

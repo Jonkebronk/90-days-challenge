@@ -5,8 +5,8 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,6 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import {
-  ArrowLeft,
   Check,
   Plus,
   Share2,
@@ -107,14 +106,8 @@ export default function ClientShoppingListDetailPage({
   const [listId, setListId] = useState<string>('')
   const [shoppingList, setShoppingList] = useState<ShoppingList | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-
-  // Add item state
-  const [customItemName, setCustomItemName] = useState('')
-  const [quantity, setQuantity] = useState('1')
-  const [unit, setUnit] = useState('st')
 
   // Share state
   const [shareUserId, setShareUserId] = useState('')
@@ -183,39 +176,6 @@ export default function ClientShoppingListDetailPage({
       console.error('Error toggling item:', error)
       toast.error('Ett fel uppstod')
       fetchShoppingList()
-    }
-  }
-
-  const handleAddCustomItem = async () => {
-    if (!customItemName.trim()) {
-      toast.error('Ange varunamn')
-      return
-    }
-
-    try {
-      const response = await fetch(`/api/shopping-lists/${listId}/items`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customName: customItemName,
-          quantity: parseFloat(quantity) || 1,
-          unit: unit || 'st',
-        }),
-      })
-
-      if (response.ok) {
-        toast.success('Vara tillagd')
-        setIsAddDialogOpen(false)
-        setCustomItemName('')
-        setQuantity('1')
-        setUnit('st')
-        fetchShoppingList()
-      } else {
-        toast.error('Kunde inte lägga till vara')
-      }
-    } catch (error) {
-      console.error('Error adding custom item:', error)
-      toast.error('Ett fel uppstod')
     }
   }
 
@@ -464,17 +424,9 @@ export default function ClientShoppingListDetailPage({
           <div className="bg-white border-b border-gray-200 p-3">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                {canEdit && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsAddDialogOpen(true)}
-                    className="border-gray-300"
-                  >
-                    <Plus className="h-4 w-4 mr-1" />
-                    Lägg till
-                  </Button>
-                )}
+                <p className="text-sm text-gray-500">
+                  Lägg till produkter från <Link href="/dashboard/products" className="text-gold-primary font-medium hover:underline">Livsmedel</Link>
+                </p>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -519,16 +471,13 @@ export default function ClientShoppingListDetailPage({
           <Card className="bg-white border border-gray-200 shadow-sm">
             <CardContent className="text-center py-16">
               <ShoppingCart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 mb-4">Listan är tom</p>
-              {canEdit && (
-                <Button
-                  onClick={() => setIsAddDialogOpen(true)}
-                  className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-bold"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Lägg till vara
-                </Button>
-              )}
+              <p className="text-gray-500 mb-2">Listan är tom</p>
+              <p className="text-sm text-gray-400">
+                Lägg till produkter från{' '}
+                <Link href="/dashboard/products" className="text-gold-primary font-medium hover:underline">
+                  Livsmedel
+                </Link>
+              </p>
             </CardContent>
           </Card>
         ) : (
@@ -758,65 +707,6 @@ export default function ClientShoppingListDetailPage({
           router.push(`/dashboard/shopping-lists/${newListId}`)
         }}
       />
-
-      {/* Add Item Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="bg-white border border-gray-200 shadow-xl max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-gray-900">
-              Lägg till vara
-            </DialogTitle>
-          </DialogHeader>
-
-          <p className="text-sm text-gray-500 mb-4">
-            Tips: Du kan också lägga till varor direkt från Livsmedel-sidan eller dina Favoriter.
-          </p>
-
-          <div className="space-y-4">
-              <div>
-                <label className="text-sm text-gray-700 font-medium mb-1.5 block">
-                  Varunamn *
-                </label>
-                <Input
-                  value={customItemName}
-                  onChange={(e) => setCustomItemName(e.target.value)}
-                  placeholder="t.ex. Äpplen"
-                  className="border-gray-300"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm text-gray-700 font-medium mb-1.5 block">
-                    Antal
-                  </label>
-                  <Input
-                    type="number"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    className="border-gray-300"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm text-gray-700 font-medium mb-1.5 block">
-                    Enhet
-                  </label>
-                  <Input
-                    value={unit}
-                    onChange={(e) => setUnit(e.target.value)}
-                    placeholder="st, kg, l"
-                    className="border-gray-300"
-                  />
-                </div>
-              </div>
-            <Button
-              onClick={handleAddCustomItem}
-              className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-bold"
-            >
-              Lägg till
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Menu Dialog */}
       <Dialog open={isMenuOpen} onOpenChange={setIsMenuOpen}>
