@@ -21,6 +21,8 @@ import {
   Share2,
   MoreVertical,
   Trash2,
+  Minus,
+  Package,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -30,6 +32,7 @@ type ShoppingListItem = {
   foodItem: {
     id: string
     name: string
+    imageUrl?: string | null
   } | null
   customName: string | null
   quantity: number
@@ -184,6 +187,36 @@ export default function ClientShoppingListDetailPage({
     } catch (error) {
       console.error('Error deleting item:', error)
       toast.error('Ett fel uppstod')
+    }
+  }
+
+  const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
+    if (newQuantity < 1) return
+
+    // Optimistic update
+    setShoppingList(prev => {
+      if (!prev) return prev
+      return {
+        ...prev,
+        items: prev.items.map(item =>
+          item.id === itemId ? { ...item, quantity: newQuantity } : item
+        ),
+      }
+    })
+
+    try {
+      const response = await fetch(`/api/shopping-lists/${listId}/items/${itemId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: newQuantity }),
+      })
+
+      if (!response.ok) {
+        fetchShoppingList() // Revert on error
+      }
+    } catch (error) {
+      console.error('Error updating quantity:', error)
+      fetchShoppingList()
     }
   }
 
@@ -394,58 +427,97 @@ export default function ClientShoppingListDetailPage({
                 <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide px-1 mb-2">
                   {category}
                 </h2>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {items.map((item) => {
                     const name = item.foodItem?.name || item.customName || 'Okänd vara'
+                    const imageUrl = item.foodItem?.imageUrl
                     return (
-                      <Card
+                      <div
                         key={item.id}
-                        className={`transition-all ${
-                          item.checked
-                            ? 'bg-[rgba(34,197,94,0.1)] border-[rgba(34,197,94,0.3)] opacity-70'
-                            : 'bg-white/5 border-gold-primary/20'
+                        className={`bg-white rounded-xl overflow-hidden shadow-sm transition-all ${
+                          item.checked ? 'opacity-60' : ''
                         }`}
                       >
-                        <CardContent className="p-4">
-                          <div className="flex items-center gap-3">
-                            <button
-                              onClick={() => handleToggleChecked(item.id, item.checked)}
-                              className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
-                                item.checked
-                                  ? 'bg-green-500'
-                                  : 'border-2 border-[rgba(255,255,255,0.3)]'
-                              }`}
-                              disabled={!canEdit}
-                            >
-                              {item.checked && <Check className="h-4 w-4 text-white" />}
-                            </button>
-                            <div className="flex-1 min-w-0">
-                              <p
-                                className={`font-medium text-white ${
-                                  item.checked ? 'line-through' : ''
-                                }`}
-                              >
-                                {item.quantity} {item.unit} {name}
-                              </p>
-                              {item.notes && (
-                                <p className="text-sm text-gray-500 mt-0.5">
-                                  {item.notes}
-                                </p>
-                              )}
-                            </div>
-                            {canEdit && (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDeleteItem(item.id)}
-                                className="text-gray-500 hover:text-red-400 flex-shrink-0"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                        <div className="flex items-stretch">
+                          {/* Checkbox */}
+                          <button
+                            onClick={() => handleToggleChecked(item.id, item.checked)}
+                            className={`w-12 flex items-center justify-center transition-all ${
+                              item.checked
+                                ? 'bg-green-500'
+                                : 'bg-gray-100 hover:bg-gray-200'
+                            }`}
+                            disabled={!canEdit}
+                          >
+                            {item.checked ? (
+                              <Check className="h-5 w-5 text-white" />
+                            ) : (
+                              <div className="w-5 h-5 rounded-full border-2 border-gray-300" />
+                            )}
+                          </button>
+
+                          {/* Product image */}
+                          <div className="w-20 h-20 bg-gray-50 flex-shrink-0">
+                            {imageUrl ? (
+                              <img
+                                src={imageUrl}
+                                alt={name}
+                                className="w-full h-full object-contain p-1"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <Package className="w-8 h-8 text-gray-300" />
+                              </div>
                             )}
                           </div>
-                        </CardContent>
-                      </Card>
+
+                          {/* Product info */}
+                          <div className="flex-1 p-3 flex flex-col justify-center min-w-0">
+                            <p className={`font-semibold text-gray-900 truncate ${
+                              item.checked ? 'line-through text-gray-500' : ''
+                            }`}>
+                              {name}
+                            </p>
+                            {item.notes && (
+                              <p className="text-xs text-gray-500 truncate mt-0.5">
+                                {item.notes}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Quantity controls */}
+                          <div className="flex items-center gap-1 px-2 bg-gray-50">
+                            <button
+                              onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                              disabled={!canEdit || item.quantity <= 1}
+                              className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                            >
+                              <Minus className="h-4 w-4" />
+                            </button>
+                            <div className="w-12 text-center">
+                              <span className="font-bold text-gray-900">{item.quantity}</span>
+                              <span className="text-xs text-gray-500 ml-0.5">{item.unit}</span>
+                            </div>
+                            <button
+                              onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                              disabled={!canEdit}
+                              className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+                            >
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          </div>
+
+                          {/* Delete button */}
+                          {canEdit && (
+                            <button
+                              onClick={() => handleDeleteItem(item.id)}
+                              className="w-12 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     )
                   })}
                 </div>
