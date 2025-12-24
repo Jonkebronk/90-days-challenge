@@ -2067,30 +2067,8 @@ model ShoppingListShare {
 }
 
 // ========================================
-// ICA Integration
+// Shopping List Integration
 // ========================================
-
-// ICA Product Cache - Cacha ICA-produkter för snabbare sökning
-model ICAProductCache {
-  id            String   @id @default(cuid())
-  icaProductId  String   @unique  // ICA:s produkt-ID
-  ean           String?            // EAN streckkod
-  name          String
-  brand         String?
-  price         Decimal  @db.Decimal(8, 2)
-  comparePrice  String?            // "15.90 kr/l"
-  imageUrl      String?
-  categoryPath  String?            // "Mejeri/Mjölk"
-  offer         Json?              // Erbjudandedata
-  storeId       String             // Vilken butik priset gäller för
-
-  cachedAt      DateTime @default(now())
-  expiresAt     DateTime           // Cache TTL
-
-  @@index([storeId, name])
-  @@index([ean])
-  @@map("ica_product_cache")
-}
 
 // Favorite Product - Användarens favoritprodukter
 model FavoriteProduct {
@@ -2142,20 +2120,6 @@ model RecurringItem {
 
   @@index([userId, isActive])
   @@map("recurring_items")
-}
-
-// User Store Preference - Användarens valda ICA-butik
-model UserStorePreference {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  storeId       String             // ICA butiks-ID
-  storeName     String             // "Maxi ICA Stormarknad Luleå"
-  categoryOrder String[]           // Anpassad sorteringsordning
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@map("user_store_preferences")
 }
 
 // Nutrition Reference Tables (Admin-managed)
