@@ -2027,6 +2027,7 @@ model ShoppingListItem {
   foodItemId String?
   foodItem   FoodItem? @relation(fields: [foodItemId], references: [id])
   customName String? // If not from food bank
+  customImageUrl String? // Image URL for custom items (from Product table etc)
 
   // Recipe reference - for items added from recipes
   recipeId String?

@@ -555,7 +555,7 @@ export default function ClientShoppingListDetailPage({
                 <div className="space-y-3">
                   {items.map((item) => {
                     const name = item.foodItem?.name || item.customName || 'Okänd vara'
-                    const imageUrl = item.foodItem?.imageUrl
+                    const imageUrl = item.foodItem?.imageUrl || item.customImageUrl
                     return (
                       <div
                         key={item.id}

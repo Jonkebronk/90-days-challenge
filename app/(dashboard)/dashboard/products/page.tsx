@@ -385,6 +385,7 @@ export default function ProductsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           customName: product.name,
+          customImageUrl: product.image,
           quantity: 1,
           unit: 'st',
           category: product.category || 'Övrigt',
