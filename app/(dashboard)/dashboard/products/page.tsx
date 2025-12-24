@@ -376,7 +376,7 @@ export default function ProductsPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          customName: product.name,
+          foodItemId: product.id,
           quantity: 1,
           unit: 'st',
           category: product.category || 'Övrigt',

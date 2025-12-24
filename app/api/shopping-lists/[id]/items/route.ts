@@ -185,6 +185,7 @@ export async function POST(
           select: {
             id: true,
             name: true,
+            imageUrl: true,
             foodCategory: {
               select: {
                 name: true,
