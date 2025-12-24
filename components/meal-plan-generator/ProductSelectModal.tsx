@@ -390,7 +390,12 @@ export function ProductSelectModal({
             )}
           >
             <Apple className="h-4 w-4" />
-            Mina produkter
+            Livsmedel
+            {products.length > 0 && (
+              <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
+                {products.length}
+              </span>
+            )}
           </button>
           <button
             onClick={() => setActiveTab('slv')}
@@ -403,6 +408,11 @@ export function ProductSelectModal({
           >
             <Database className="h-4 w-4" />
             SLV-databas
+            {slvAsProducts.length > 0 && (
+              <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">
+                {slvAsProducts.length}
+              </span>
+            )}
           </button>
         </div>
 
@@ -425,8 +435,8 @@ export function ProductSelectModal({
           )}
         </div>
 
-        {/* Subkategori-chips - hide when a specific subcategory is pre-selected */}
-        {subcategories.length > 1 && !defaultSubcategory && (
+        {/* Subkategori-chips - always show for filtering */}
+        {subcategories.length > 1 && (
           <div className="flex flex-wrap gap-1.5 pb-2">
             {subcategories.map((sub) => (
               <button
