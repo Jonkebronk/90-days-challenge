@@ -44,6 +44,7 @@ type ShoppingListItem = {
     coverImage: string | null
   } | null
   customName: string | null
+  customImageUrl: string | null
   quantity: number
   unit: string
   category: string
