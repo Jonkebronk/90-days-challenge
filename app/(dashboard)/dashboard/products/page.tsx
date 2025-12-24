@@ -1050,7 +1050,11 @@ function ProductCard({
       {/* Action buttons */}
       <div className="px-2 pb-2 flex gap-1">
         <button
-          onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
+          onClick={(e) => {
+            console.log('Favorit button clicked')
+            e.stopPropagation();
+            onToggleFavorite();
+          }}
           className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded text-xs font-medium transition-colors ${
             isFavorite
               ? 'bg-red-50 text-red-600 hover:bg-red-100'
@@ -1084,7 +1088,11 @@ function ProductCard({
               {shoppingLists.map(list => (
                 <button
                   key={list.id}
-                  onClick={(e) => { e.stopPropagation(); onAddToList(list.id); }}
+                  onClick={(e) => {
+                    console.log('List button clicked:', list.id, list.name)
+                    e.stopPropagation();
+                    onAddToList(list.id);
+                  }}
                   className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-left"
                 >
                   <div
