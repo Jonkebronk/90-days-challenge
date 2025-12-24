@@ -413,7 +413,7 @@ export default function ClientShoppingListDetailPage({
   const canEdit = true
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-gray-100">
       {/* Header with Tabs */}
       <div className="sticky top-0 z-20 bg-white border-b border-gray-200">
         {/* Title row */}
@@ -424,20 +424,20 @@ export default function ClientShoppingListDetailPage({
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-200">
+        <div className="flex">
           <button
             onClick={() => setActiveTab('list')}
             className={`flex-1 py-3 px-4 text-center font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'list'
-                ? 'text-gold-primary border-b-2 border-gold-primary'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'text-gold-primary border-b-2 border-gold-primary bg-gold-primary/5'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
             }`}
           >
-            <ShoppingCart className="h-4 w-4" />
+            <ShoppingCart className="h-5 w-5" />
             Inköpslista
             {totalItems > 0 && (
-              <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                activeTab === 'list' ? 'bg-gold-primary/20' : 'bg-gray-200'
+              <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                activeTab === 'list' ? 'bg-gold-primary text-white' : 'bg-gray-200 text-gray-600'
               }`}>
                 {totalItems}
               </span>
@@ -447,11 +447,11 @@ export default function ClientShoppingListDetailPage({
             onClick={() => setActiveTab('favorites')}
             className={`flex-1 py-3 px-4 text-center font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'favorites'
-                ? 'text-gold-primary border-b-2 border-gold-primary'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'text-gold-primary border-b-2 border-gold-primary bg-gold-primary/5'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
             }`}
           >
-            <Heart className="h-4 w-4" />
+            <Heart className="h-5 w-5" />
             Favoriter
           </button>
         </div>
@@ -460,69 +460,70 @@ export default function ClientShoppingListDetailPage({
       {/* Content based on active tab */}
       {activeTab === 'list' ? (
         <>
-          {/* Progress header */}
-          <div
-            className="border-b border-gold-primary/20"
-            style={{ backgroundColor: `${shoppingList.color}15` }}
-          >
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  {canEdit && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setIsAddDialogOpen(true)}
-                      className="text-white hover:bg-white/10"
-                    >
-                      <Plus className="h-5 w-5" />
-                    </Button>
-                  )}
+          {/* Action bar */}
+          <div className="bg-white border-b border-gray-200 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                {canEdit && (
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsMenuOpen(true)}
-                    className="text-white hover:bg-white/10"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsAddDialogOpen(true)}
+                    className="border-gray-300"
                   >
-                    <MoreVertical className="h-5 w-5" />
+                    <Plus className="h-4 w-4 mr-1" />
+                    Lägg till
                   </Button>
-                </div>
+                )}
                 <Button
-                  onClick={() => setShowMealPlanWizard(true)}
-                  size="sm"
-                  className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-bold"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsMenuOpen(true)}
+                  className="text-gray-500"
                 >
-                  <CalendarDays className="h-4 w-4 mr-2" />
-                  Från måltidsplan
+                  <MoreVertical className="h-5 w-5" />
                 </Button>
               </div>
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-200">
-                  {checkedItems} av {totalItems} klara
-                </p>
-                <Badge className="bg-[rgba(255,255,255,0.2)] text-white border-0">
-                  {progress}%
-                </Badge>
-              </div>
-              <div className="w-full bg-[rgba(255,255,255,0.1)] h-1.5 rounded-full mt-2 overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-gold-light to-orange-500 transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
+              <Button
+                onClick={() => setShowMealPlanWizard(true)}
+                size="sm"
+                className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-bold"
+              >
+                <CalendarDays className="h-4 w-4 mr-2" />
+                Från måltidsplan
+              </Button>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          <div className="bg-white border-b border-gray-200 px-4 py-3">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm text-gray-600 font-medium">
+                {checkedItems} av {totalItems} klara
+              </p>
+              <Badge className="bg-gold-primary/10 text-gold-primary border-0 font-bold">
+                {progress}%
+              </Badge>
+            </div>
+            <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-gold-primary to-gold-secondary transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              />
             </div>
           </div>
 
           {/* Shopping list content */}
           <div className="p-4 pb-24">
         {totalItems === 0 ? (
-          <Card className="bg-white/5 border-2 border-gold-primary/20 backdrop-blur-[10px] mt-8">
+          <Card className="bg-white border border-gray-200 shadow-sm">
             <CardContent className="text-center py-16">
-              <p className="text-gray-400 mb-4">Listan är tom</p>
+              <ShoppingCart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+              <p className="text-gray-500 mb-4">Listan är tom</p>
               {canEdit && (
                 <Button
                   onClick={() => setIsAddDialogOpen(true)}
-                  className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
+                  className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white font-bold"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Lägg till vara
@@ -531,55 +532,55 @@ export default function ClientShoppingListDetailPage({
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Recipe sections */}
             {Object.entries(groupedByRecipe).map(([recipeId, { recipe, items }]) => {
               const allChecked = items.every((item) => item.checked)
               const someChecked = items.some((item) => item.checked)
 
               return (
-                <div key={recipeId} className="bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 rounded-xl border border-emerald-500/30 overflow-hidden">
+                <div key={recipeId} className="bg-white rounded-xl border border-emerald-200 shadow-sm overflow-hidden">
                   {/* Recipe header card */}
                   <Link
                     href={`/dashboard/recipes/${recipeId}`}
-                    className="flex items-center gap-3 p-3 hover:bg-emerald-500/10 transition-colors"
+                    className="flex items-center gap-3 p-3 bg-emerald-50 hover:bg-emerald-100 transition-colors border-b border-emerald-200"
                   >
                     {recipe?.coverImage ? (
                       <img
                         src={recipe.coverImage}
                         alt={recipe.title}
-                        className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                        className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
                       />
                     ) : (
-                      <div className="w-16 h-16 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                        <ChefHat className="w-8 h-8 text-emerald-400" />
+                      <div className="w-14 h-14 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                        <ChefHat className="w-7 h-7 text-emerald-600" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <ChefHat className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                        <span className="text-xs uppercase tracking-wide text-emerald-400 font-medium">
+                        <ChefHat className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                        <span className="text-xs uppercase tracking-wide text-emerald-600 font-medium">
                           Recept
                         </span>
                       </div>
-                      <h3 className="font-bold text-white truncate">{recipe?.title}</h3>
-                      <p className="text-xs text-gray-400">
+                      <h3 className="font-bold text-gray-900 truncate">{recipe?.title}</h3>
+                      <p className="text-xs text-gray-500">
                         {items.length} ingredienser • {items.filter(i => i.checked).length} klara
                       </p>
                     </div>
-                    <ExternalLink className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    <ExternalLink className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   </Link>
 
                   {/* Recipe ingredients */}
-                  <div className="border-t border-emerald-500/20">
+                  <div>
                     {items.map((item, idx) => {
                       const name = item.customName || item.foodItem?.name || 'Okänd vara'
                       return (
                         <div
                           key={item.id}
                           className={`flex items-center gap-3 px-4 py-2.5 ${
-                            idx !== items.length - 1 ? 'border-b border-emerald-500/10' : ''
-                          } ${item.checked ? 'opacity-50' : ''}`}
+                            idx !== items.length - 1 ? 'border-b border-gray-100' : ''
+                          } ${item.checked ? 'bg-gray-50' : ''}`}
                         >
                           {/* Checkbox */}
                           <button
@@ -587,7 +588,7 @@ export default function ClientShoppingListDetailPage({
                             className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
                               item.checked
                                 ? 'bg-emerald-500'
-                                : 'border-2 border-gray-500 hover:border-emerald-400'
+                                : 'border-2 border-gray-300 hover:border-emerald-400'
                             }`}
                             disabled={!canEdit}
                           >
@@ -596,13 +597,13 @@ export default function ClientShoppingListDetailPage({
 
                           {/* Item name */}
                           <span className={`flex-1 text-sm ${
-                            item.checked ? 'line-through text-gray-500' : 'text-white'
+                            item.checked ? 'line-through text-gray-400' : 'text-gray-900'
                           }`}>
                             {name}
                           </span>
 
                           {/* Quantity */}
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-gray-500">
                             {item.quantity} {item.unit}
                           </span>
 
@@ -610,7 +611,7 @@ export default function ClientShoppingListDetailPage({
                           {canEdit && (
                             <button
                               onClick={() => handleDeleteItem(item.id)}
-                              className="text-gray-500 hover:text-red-400 transition-colors p-1"
+                              className="text-gray-400 hover:text-red-500 transition-colors p-1"
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -626,19 +627,19 @@ export default function ClientShoppingListDetailPage({
             {/* Regular category sections */}
             {Object.entries(grouped).map(([category, items]) => (
               <div key={category}>
-                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide px-1 mb-2">
+                <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide px-1 mb-2">
                   {category}
                 </h2>
-                <div className="space-y-3">
-                  {items.map((item) => {
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                  {items.map((item, idx) => {
                     const name = item.foodItem?.name || item.customName || 'Okänd vara'
                     const imageUrl = item.foodItem?.imageUrl || item.customImageUrl
                     return (
                       <div
                         key={item.id}
-                        className={`bg-white rounded-xl overflow-hidden shadow-sm transition-all ${
-                          item.checked ? 'opacity-60' : ''
-                        }`}
+                        className={`transition-all ${
+                          item.checked ? 'bg-gray-50' : ''
+                        } ${idx !== items.length - 1 ? 'border-b border-gray-100' : ''}`}
                       >
                         <div className="flex items-stretch">
                           {/* Checkbox */}
@@ -765,56 +766,56 @@ export default function ClientShoppingListDetailPage({
 
       {/* Add Item Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.98)] border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-md">
+        <DialogContent className="bg-white border border-gray-200 shadow-xl max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
+            <DialogTitle className="text-xl font-bold text-gray-900">
               Lägg till vara
             </DialogTitle>
           </DialogHeader>
 
-          <p className="text-sm text-gray-400 mb-4">
+          <p className="text-sm text-gray-500 mb-4">
             Tips: Du kan också lägga till varor direkt från Livsmedel-sidan eller dina Favoriter.
           </p>
 
           <div className="space-y-4">
               <div>
-                <label className="text-sm text-gray-200 mb-1.5 block">
+                <label className="text-sm text-gray-700 font-medium mb-1.5 block">
                   Varunamn *
                 </label>
                 <Input
                   value={customItemName}
                   onChange={(e) => setCustomItemName(e.target.value)}
                   placeholder="t.ex. Äpplen"
-                  className="bg-black/30 border-gold-primary/30 text-white"
+                  className="border-gray-300"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm text-gray-200 mb-1.5 block">
+                  <label className="text-sm text-gray-700 font-medium mb-1.5 block">
                     Antal
                   </label>
                   <Input
                     type="number"
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
-                    className="bg-black/30 border-gold-primary/30 text-white"
+                    className="border-gray-300"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-gray-200 mb-1.5 block">
+                  <label className="text-sm text-gray-700 font-medium mb-1.5 block">
                     Enhet
                   </label>
                   <Input
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
                     placeholder="st, kg, l"
-                    className="bg-black/30 border-gold-primary/30 text-white"
+                    className="border-gray-300"
                   />
                 </div>
               </div>
             <Button
               onClick={handleAddCustomItem}
-              className="w-full bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
+              className="w-full bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-bold"
             >
               Lägg till
             </Button>
@@ -824,9 +825,9 @@ export default function ClientShoppingListDetailPage({
 
       {/* Menu Dialog */}
       <Dialog open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.98)] border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-sm">
+        <DialogContent className="bg-white border border-gray-200 shadow-xl max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-white">Meny</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-gray-900">Meny</DialogTitle>
           </DialogHeader>
           <div className="space-y-2">
             {isOwner && (
@@ -835,7 +836,8 @@ export default function ClientShoppingListDetailPage({
                   setIsMenuOpen(false)
                   setIsShareDialogOpen(true)
                 }}
-                className="w-full justify-start bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] text-white border border-gold-primary/20"
+                variant="outline"
+                className="w-full justify-start border-gray-300 text-gray-700 hover:bg-gray-50"
               >
                 <Share2 className="h-4 w-4 mr-2" />
                 Dela lista
@@ -846,7 +848,8 @@ export default function ClientShoppingListDetailPage({
                 setIsMenuOpen(false)
                 handleExport()
               }}
-              className="w-full justify-start bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] text-white border border-gold-primary/20"
+              variant="outline"
+              className="w-full justify-start border-gray-300 text-gray-700 hover:bg-gray-50"
             >
               Exportera
             </Button>
@@ -856,7 +859,8 @@ export default function ClientShoppingListDetailPage({
                   setIsMenuOpen(false)
                   handleClearChecked()
                 }}
-                className="w-full justify-start bg-[rgba(255,0,0,0.1)] hover:bg-[rgba(255,0,0,0.2)] text-red-400 border border-red-500/30"
+                variant="outline"
+                className="w-full justify-start border-red-200 text-red-600 hover:bg-red-50"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Radera checkade ({checkedItems})
@@ -868,45 +872,47 @@ export default function ClientShoppingListDetailPage({
 
       {/* Share Dialog */}
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-        <DialogContent className="bg-[rgba(10,10,10,0.98)] border-2 border-gold-primary/30 backdrop-blur-[10px] max-w-md">
+        <DialogContent className="bg-white border border-gray-200 shadow-xl max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
+            <DialogTitle className="text-xl font-bold text-gray-900">
               Dela lista
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm text-gray-200 mb-1.5 block">
+              <label className="text-sm text-gray-700 font-medium mb-1.5 block">
                 Användar-ID
               </label>
               <Input
                 value={shareUserId}
                 onChange={(e) => setShareUserId(e.target.value)}
                 placeholder="Mottagarens användar-ID"
-                className="bg-black/30 border-gold-primary/30 text-white"
+                className="border-gray-300"
               />
             </div>
             <div>
-              <label className="text-sm text-gray-200 mb-1.5 block">
+              <label className="text-sm text-gray-700 font-medium mb-1.5 block">
                 Behörighet
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <Button
                   onClick={() => setShareRole('viewer')}
+                  variant="outline"
                   className={`${
                     shareRole === 'viewer'
-                      ? 'bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a]'
-                      : 'bg-transparent border border-gold-primary/30 text-gray-200'
+                      ? 'bg-gold-primary/10 border-gold-primary text-gold-primary'
+                      : 'border-gray-300 text-gray-600'
                   }`}
                 >
                   Läsa
                 </Button>
                 <Button
                   onClick={() => setShareRole('editor')}
+                  variant="outline"
                   className={`${
                     shareRole === 'editor'
-                      ? 'bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a]'
-                      : 'bg-transparent border border-gold-primary/30 text-gray-200'
+                      ? 'bg-gold-primary/10 border-gold-primary text-gold-primary'
+                      : 'border-gray-300 text-gray-600'
                   }`}
                 >
                   Redigera
@@ -917,13 +923,14 @@ export default function ClientShoppingListDetailPage({
           <DialogFooter>
             <Button
               onClick={() => setIsShareDialogOpen(false)}
-              className="bg-transparent border border-gold-primary/30 text-gray-200"
+              variant="outline"
+              className="border-gray-300 text-gray-600"
             >
               Avbryt
             </Button>
             <Button
               onClick={handleShare}
-              className="bg-gradient-to-br from-gold-light to-orange-500 text-[#0a0a0a] font-bold"
+              className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-bold"
             >
               Dela
             </Button>
