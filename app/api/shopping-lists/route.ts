@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-// GET /api/shopping-lists - Get all shopping lists for user (including shared)
+// GET /api/shopping-lists - Get all shopping lists
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -12,46 +12,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const userId = session.user.id
-
-    // Get own lists + shared lists
-    const [ownLists, sharedListIds] = await Promise.all([
-      // Own lists
-      prisma.shoppingList.findMany({
-        where: { userId },
-        include: {
-          _count: {
-            select: {
-              items: true,
-            },
-          },
-          shares: {
-            where: { accepted: true },
-            select: {
-              sharedWith: true,
-              role: true,
-            },
-          },
-        },
-        orderBy: { createdAt: 'desc' },
-      }),
-      // Shared lists
-      prisma.shoppingListShare.findMany({
-        where: {
-          sharedWith: userId,
-          accepted: true,
-        },
-        select: { listId: true },
-      }),
-    ])
-
-    // Fetch shared list details
-    const sharedLists = await prisma.shoppingList.findMany({
-      where: {
-        id: {
-          in: sharedListIds.map((s) => s.listId),
-        },
-      },
+    // Get all lists - all users have access to all lists
+    const ownLists = await prisma.shoppingList.findMany({
       include: {
         _count: {
           select: {
@@ -59,8 +21,9 @@ export async function GET(req: NextRequest) {
           },
         },
         shares: {
-          where: { sharedWith: userId },
+          where: { accepted: true },
           select: {
+            sharedWith: true,
             role: true,
           },
         },
@@ -70,7 +33,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       ownLists,
-      sharedLists,
+      sharedLists: [],
     })
   } catch (error) {
     console.error('Error fetching shopping lists:', error)

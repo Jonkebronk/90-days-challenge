@@ -18,22 +18,9 @@ export async function GET(
 
     const userId = session.user.id
 
-    // Check if user owns the list or has access via share
-    const shoppingList = await prisma.shoppingList.findFirst({
-      where: {
-        id,
-        OR: [
-          { userId }, // Owner
-          {
-            shares: {
-              some: {
-                sharedWith: userId,
-                accepted: true,
-              },
-            },
-          }, // Shared with user
-        ],
-      },
+    // Get the list - all users have access to all lists
+    const shoppingList = await prisma.shoppingList.findUnique({
+      where: { id },
       include: {
         items: {
           include: {
@@ -77,14 +64,12 @@ export async function GET(
       return NextResponse.json({ error: 'Shopping list not found' }, { status: 404 })
     }
 
-    // Check user's role
+    // All users have full access
     const isOwner = shoppingList.userId === userId
-    const shareRecord = shoppingList.shares.find((s) => s.sharedWith === userId)
-    const userRole = isOwner ? 'owner' : shareRecord?.role || 'viewer'
 
     return NextResponse.json({
       list: shoppingList,
-      userRole,
+      userRole: 'editor',
       isOwner,
     })
   } catch (error) {
@@ -104,34 +89,6 @@ export async function PATCH(
 
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const userId = session.user.id
-
-    // Check if user is owner or has editor access
-    const existing = await prisma.shoppingList.findFirst({
-      where: {
-        id,
-        OR: [
-          { userId }, // Owner
-          {
-            shares: {
-              some: {
-                sharedWith: userId,
-                accepted: true,
-                role: 'editor',
-              },
-            },
-          }, // Editor
-        ],
-      },
-    })
-
-    if (!existing) {
-      return NextResponse.json(
-        { error: 'Shopping list not found or you do not have permission to edit it' },
-        { status: 404 }
-      )
     }
 
     const body = await req.json()
@@ -171,23 +128,6 @@ export async function DELETE(
 
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const userId = session.user.id
-
-    // Check if user is owner
-    const existing = await prisma.shoppingList.findFirst({
-      where: {
-        id,
-        userId, // Only owner can delete
-      },
-    })
-
-    if (!existing) {
-      return NextResponse.json(
-        { error: 'Shopping list not found or you do not have permission to delete it' },
-        { status: 404 }
-      )
     }
 
     await prisma.shoppingList.delete({
