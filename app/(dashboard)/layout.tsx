@@ -34,6 +34,7 @@ import {
   MessageSquare,
   HelpCircle,
   ShoppingCart,
+  ListChecks,
   Flame,
   Layers,
 } from 'lucide-react'
@@ -82,6 +83,7 @@ const navigation = [
   { name: 'Recept', href: '/dashboard/recipes', icon: ChefHat },
   { name: 'Kostschema', href: '/dashboard/meal-plan', icon: Utensils, clientOnly: true },
   { name: 'Livsmedel', href: '/dashboard/products', icon: ShoppingCart },
+  { name: 'Inköpslistor', href: '/dashboard/shopping-lists', icon: ListChecks },
   { name: 'Livsmedelsdatabas', href: '/dashboard/content/slv-livsmedel', icon: Library },
   { name: 'Träningsprogram', href: '/dashboard/workout', icon: Dumbbell, clientOnly: true },
   { name: 'Check-in', href: '/dashboard/check-in', icon: Calendar, clientOnly: true },
