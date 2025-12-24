@@ -1446,6 +1446,7 @@ model Recipe {
   favorites           RecipeFavorite[]
   templateMealOptions TemplateMealOption[] // NEW: Meal plan templates using this recipe
   smartMealPlanMeals  SmartMealPlanMeal[]  // Smart meal planner meals
+  shoppingListItems   ShoppingListItem[]   // Shopping list items added from this recipe
 
   @@map("recipes")
 }
@@ -2027,10 +2028,14 @@ model ShoppingListItem {
   foodItem   FoodItem? @relation(fields: [foodItemId], references: [id])
   customName String? // If not from food bank
 
+  // Recipe reference - for items added from recipes
+  recipeId String?
+  recipe   Recipe? @relation(fields: [recipeId], references: [id])
+
   // ICA produkt-integration
   icaProductId   String?           // ICA produkt-ID
   icaProductData Json?             // Cachad data (pris, bild, kategori)
-  source         String  @default("manual") // "manual" | "ica" | "meal_plan" | "recurring"
+  source         String  @default("manual") // "manual" | "ica" | "meal_plan" | "recurring" | "recipe"
   estimatedPrice Decimal? @db.Decimal(8, 2) // Uppskattat pris från ICA
 
   quantity   Float   @default(1)
@@ -2047,6 +2052,7 @@ model ShoppingListItem {
   @@index([listId, checked])
   @@index([listId, category])
   @@index([icaProductId])
+  @@index([recipeId])
   @@map("shopping_list_items")
 }
 

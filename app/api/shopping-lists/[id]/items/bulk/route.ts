@@ -121,7 +121,7 @@ export async function POST(
     }
 
     const body = await req.json()
-    const { items } = body
+    const { items, recipeId } = body
 
     if (!Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: 'Items array is required' }, { status: 400 })
@@ -164,6 +164,8 @@ export async function POST(
         unit: unit || 'st',
         category: finalCategory,
         notes: notes || null,
+        recipeId: recipeId || null,
+        source: recipeId ? 'recipe' : 'manual',
       })
     }
 
@@ -205,6 +207,7 @@ export async function POST(
               select: {
                 id: true,
                 name: true,
+                imageUrl: true,
                 foodCategory: {
                   select: {
                     name: true,
@@ -212,6 +215,13 @@ export async function POST(
                     icon: true,
                   },
                 },
+              },
+            },
+            recipe: {
+              select: {
+                id: true,
+                title: true,
+                coverImage: true,
               },
             },
           },

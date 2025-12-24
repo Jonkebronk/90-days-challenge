@@ -23,7 +23,10 @@ import {
   Trash2,
   Minus,
   Package,
+  ChefHat,
+  ExternalLink,
 } from 'lucide-react'
+import Link from 'next/link'
 import { toast } from 'sonner'
 
 type ShoppingListItem = {
@@ -34,6 +37,12 @@ type ShoppingListItem = {
     name: string
     imageUrl?: string | null
   } | null
+  recipeId: string | null
+  recipe: {
+    id: string
+    title: string
+    coverImage: string | null
+  } | null
   customName: string | null
   quantity: number
   unit: string
@@ -41,6 +50,7 @@ type ShoppingListItem = {
   checked: boolean
   notes: string | null
   orderIndex: number
+  source: string
 }
 
 type ShoppingList = {
@@ -296,13 +306,38 @@ export default function ClientShoppingListDetailPage({
 
     const grouped: Record<string, ShoppingListItem[]> = {}
 
-    shoppingList.items.forEach((item) => {
-      const category = item.category || 'Övrigt'
-      if (!grouped[category]) {
-        grouped[category] = []
-      }
-      grouped[category].push(item)
-    })
+    // Only include items without a recipe in category grouping
+    shoppingList.items
+      .filter((item) => !item.recipeId)
+      .forEach((item) => {
+        const category = item.category || 'Övrigt'
+        if (!grouped[category]) {
+          grouped[category] = []
+        }
+        grouped[category].push(item)
+      })
+
+    return grouped
+  }
+
+  // Group items by recipe
+  const groupItemsByRecipe = () => {
+    if (!shoppingList) return {}
+
+    const grouped: Record<string, { recipe: ShoppingListItem['recipe']; items: ShoppingListItem[] }> = {}
+
+    shoppingList.items
+      .filter((item) => item.recipeId && item.recipe)
+      .forEach((item) => {
+        const recipeId = item.recipeId!
+        if (!grouped[recipeId]) {
+          grouped[recipeId] = {
+            recipe: item.recipe,
+            items: [],
+          }
+        }
+        grouped[recipeId].items.push(item)
+      })
 
     return grouped
   }
@@ -335,6 +370,7 @@ export default function ClientShoppingListDetailPage({
   const checkedItems = shoppingList.items.filter((item) => item.checked).length
   const progress = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0
   const grouped = groupItemsByCategory()
+  const groupedByRecipe = groupItemsByRecipe()
   const isOwner = shoppingList.userId === session.user.id
   const canEdit =
     isOwner ||
@@ -422,6 +458,98 @@ export default function ClientShoppingListDetailPage({
           </Card>
         ) : (
           <div className="space-y-6">
+            {/* Recipe sections */}
+            {Object.entries(groupedByRecipe).map(([recipeId, { recipe, items }]) => {
+              const allChecked = items.every((item) => item.checked)
+              const someChecked = items.some((item) => item.checked)
+
+              return (
+                <div key={recipeId} className="bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 rounded-xl border border-emerald-500/30 overflow-hidden">
+                  {/* Recipe header card */}
+                  <Link
+                    href={`/dashboard/recipes/${recipeId}`}
+                    className="flex items-center gap-3 p-3 hover:bg-emerald-500/10 transition-colors"
+                  >
+                    {recipe?.coverImage ? (
+                      <img
+                        src={recipe.coverImage}
+                        alt={recipe.title}
+                        className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                        <ChefHat className="w-8 h-8 text-emerald-400" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <ChefHat className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                        <span className="text-xs uppercase tracking-wide text-emerald-400 font-medium">
+                          Recept
+                        </span>
+                      </div>
+                      <h3 className="font-bold text-white truncate">{recipe?.title}</h3>
+                      <p className="text-xs text-gray-400">
+                        {items.length} ingredienser • {items.filter(i => i.checked).length} klara
+                      </p>
+                    </div>
+                    <ExternalLink className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  </Link>
+
+                  {/* Recipe ingredients */}
+                  <div className="border-t border-emerald-500/20">
+                    {items.map((item, idx) => {
+                      const name = item.customName || item.foodItem?.name || 'Okänd vara'
+                      return (
+                        <div
+                          key={item.id}
+                          className={`flex items-center gap-3 px-4 py-2.5 ${
+                            idx !== items.length - 1 ? 'border-b border-emerald-500/10' : ''
+                          } ${item.checked ? 'opacity-50' : ''}`}
+                        >
+                          {/* Checkbox */}
+                          <button
+                            onClick={() => handleToggleChecked(item.id, item.checked)}
+                            className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                              item.checked
+                                ? 'bg-emerald-500'
+                                : 'border-2 border-gray-500 hover:border-emerald-400'
+                            }`}
+                            disabled={!canEdit}
+                          >
+                            {item.checked && <Check className="h-4 w-4 text-white" />}
+                          </button>
+
+                          {/* Item name */}
+                          <span className={`flex-1 text-sm ${
+                            item.checked ? 'line-through text-gray-500' : 'text-white'
+                          }`}>
+                            {name}
+                          </span>
+
+                          {/* Quantity */}
+                          <span className="text-xs text-gray-400">
+                            {item.quantity} {item.unit}
+                          </span>
+
+                          {/* Delete button */}
+                          {canEdit && (
+                            <button
+                              onClick={() => handleDeleteItem(item.id)}
+                              className="text-gray-500 hover:text-red-400 transition-colors p-1"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+
+            {/* Regular category sections */}
             {Object.entries(grouped).map(([category, items]) => (
               <div key={category}>
                 <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide px-1 mb-2">

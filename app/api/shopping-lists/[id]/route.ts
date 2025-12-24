@@ -52,6 +52,13 @@ export async function GET(
                 },
               },
             },
+            recipe: {
+              select: {
+                id: true,
+                title: true,
+                coverImage: true,
+              },
+            },
           },
           orderBy: [{ category: 'asc' }, { orderIndex: 'asc' }],
         },

@@ -261,21 +261,21 @@ export default function RecipeDetailPage() {
         selectedIngredients.has(ing.id)
       )
 
-      // Add all ingredients as a bulk operation
+      // Add all ingredients as a bulk operation with recipeId
       const items = ingredientsToAdd.map(ing => ({
         customName: `${ing.displayAmount && ing.displayUnit
           ? `${ing.displayAmount} ${ing.displayUnit}`
           : `${Math.round(ing.amount)} g`} ${ing.foodItem.name}`,
         quantity: 1,
         unit: 'st',
-        category: 'Recept: ' + recipe.title,
+        category: 'Recept',
         notes: ing.notes || undefined,
       }))
 
       const res = await fetch(`/api/shopping-lists/${selectedListId}/items/bulk`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items }),
+        body: JSON.stringify({ items, recipeId: recipe.id }),
       })
 
       if (res.ok) {
