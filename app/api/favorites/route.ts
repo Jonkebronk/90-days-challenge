@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
       where: { userId: session.user.id },
       include: {
         foodItem: true,
+        product: true,
       },
       orderBy: { createdAt: 'desc' },
     })
@@ -38,45 +39,51 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { icaProductId, foodItemId, name, imageUrl, category, icaProductData } = body
+    const { icaProductId, foodItemId, productId, name, imageUrl, category, icaProductData } = body
 
-    if (!name && !icaProductId && !foodItemId) {
+    if (!name && !icaProductId && !foodItemId && !productId) {
       return NextResponse.json(
-        { error: 'Name, icaProductId, or foodItemId is required' },
+        { error: 'Name, icaProductId, foodItemId, or productId is required' },
         { status: 400 }
       )
     }
 
-    // Kolla om favorit redan finns
-    const existing = await prisma.favoriteProduct.findFirst({
-      where: {
-        userId: session.user.id,
-        OR: [
-          icaProductId ? { icaProductId } : {},
-          foodItemId ? { foodItemId } : {},
-        ].filter((o) => Object.keys(o).length > 0),
-      },
-    })
+    // Kolla om favorit redan finns (check for each type of ID)
+    const existingQuery = productId
+      ? { userId: session.user.id, productId }
+      : foodItemId
+        ? { userId: session.user.id, foodItemId }
+        : icaProductId
+          ? { userId: session.user.id, icaProductId }
+          : null
 
-    if (existing) {
-      return NextResponse.json(
-        { error: 'Product is already a favorite', favorite: existing },
-        { status: 409 }
-      )
+    if (existingQuery) {
+      const existing = await prisma.favoriteProduct.findFirst({
+        where: existingQuery,
+      })
+
+      if (existing) {
+        return NextResponse.json(
+          { error: 'Product is already a favorite', favorite: existing },
+          { status: 409 }
+        )
+      }
     }
 
     const favorite = await prisma.favoriteProduct.create({
       data: {
         userId: session.user.id,
-        icaProductId,
-        foodItemId,
+        icaProductId: icaProductId || null,
+        foodItemId: foodItemId || null,
+        productId: productId || null,
         name: name || 'Unnamed product',
-        imageUrl,
+        imageUrl: imageUrl || null,
         category: category || 'Övrigt',
         icaProductData: icaProductData || null,
       },
       include: {
         foodItem: true,
+        product: true,
       },
     })
 
@@ -102,10 +109,11 @@ export async function DELETE(req: NextRequest) {
     const id = searchParams.get('id')
     const icaProductId = searchParams.get('icaProductId')
     const foodItemId = searchParams.get('foodItemId')
+    const productId = searchParams.get('productId')
 
-    if (!id && !icaProductId && !foodItemId) {
+    if (!id && !icaProductId && !foodItemId && !productId) {
       return NextResponse.json(
-        { error: 'id, icaProductId, or foodItemId is required' },
+        { error: 'id, icaProductId, foodItemId, or productId is required' },
         { status: 400 }
       )
     }
@@ -118,6 +126,7 @@ export async function DELETE(req: NextRequest) {
           id ? { id } : {},
           icaProductId ? { icaProductId } : {},
           foodItemId ? { foodItemId } : {},
+          productId ? { productId } : {},
         ].filter((o) => Object.keys(o).length > 0),
       },
     })

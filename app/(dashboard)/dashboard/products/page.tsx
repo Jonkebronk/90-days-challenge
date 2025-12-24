@@ -293,8 +293,9 @@ export default function ProductsPage() {
       if (res.ok) {
         const data = await res.json()
         const ids = new Set<string>()
-        // FavoriteProduct can have foodItemId - we use Product.id which maps to that
+        // FavoriteProduct can have productId (for Product) or foodItemId (for FoodItem)
         for (const fav of data.favorites || []) {
+          if (fav.productId) ids.add(fav.productId)
           if (fav.foodItemId) ids.add(fav.foodItemId)
         }
         setFavoriteIds(ids)
@@ -324,17 +325,14 @@ export default function ProductsPage() {
 
   // Toggle favorite
   const handleToggleFavorite = async (product: Product) => {
-    console.log('handleToggleFavorite called', product.id)
     const isFavorite = favoriteIds.has(product.id)
 
     if (isFavorite) {
-      // Remove favorite
+      // Remove favorite - use productId for Product items
       try {
-        console.log('Removing favorite...')
-        const res = await fetch(`/api/favorites?foodItemId=${product.id}`, {
+        const res = await fetch(`/api/favorites?productId=${product.id}`, {
           method: 'DELETE',
         })
-        console.log('Remove favorite response:', res.status)
         if (res.ok) {
           setFavoriteIds(prev => {
             const next = new Set(prev)
@@ -350,18 +348,17 @@ export default function ProductsPage() {
     } else {
       // Add favorite
       try {
-        console.log('Adding favorite...')
+        // Product items use productId (not foodItemId) since Product and FoodItem are separate tables
         const res = await fetch('/api/favorites', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            foodItemId: product.id,
+            productId: product.id,
             name: product.name,
             imageUrl: product.image,
             category: product.category || 'Övrigt',
           }),
         })
-        console.log('Add favorite response:', res.status)
         if (res.ok) {
           setFavoriteIds(prev => new Set([...prev, product.id]))
           toast.success('Tillagd som favorit')
@@ -381,26 +378,24 @@ export default function ProductsPage() {
 
   // Add to shopping list
   const handleAddToShoppingList = async (product: Product, listId: string) => {
-    console.log('handleAddToShoppingList called', product.id, listId)
     try {
+      // Product items use customName (not foodItemId) since Product and FoodItem are separate tables
       const res = await fetch(`/api/shopping-lists/${listId}/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          foodItemId: product.id,
+          customName: product.name,
           quantity: 1,
           unit: 'st',
           category: product.category || 'Övrigt',
         }),
       })
-      console.log('Add to list response:', res.status)
 
       if (res.ok) {
         const list = shoppingLists.find(l => l.id === listId)
         toast.success(`${product.name} tillagd i ${list?.name || 'inköpslistan'}`)
         setShowListPicker(null)
       } else {
-        console.error('Add to list failed:', res.status)
         toast.error('Kunde inte lägga till vara')
       }
     } catch (error) {
@@ -1051,7 +1046,6 @@ function ProductCard({
       <div className="px-2 pb-2 flex gap-1">
         <button
           onClick={(e) => {
-            console.log('Favorit button clicked')
             e.stopPropagation();
             onToggleFavorite();
           }}
@@ -1089,7 +1083,6 @@ function ProductCard({
                 <button
                   key={list.id}
                   onClick={(e) => {
-                    console.log('List button clicked:', list.id, list.name)
                     e.stopPropagation();
                     onAddToList(list.id);
                   }}

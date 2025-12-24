@@ -2081,10 +2081,12 @@ model FavoriteProduct {
   id             String   @id @default(cuid())
   userId         String
 
-  // Referens till ICA-produkt ELLER intern FoodItem
+  // Referens till ICA-produkt, intern FoodItem, ELLER Product
   icaProductId   String?
   foodItemId     String?
   foodItem       FoodItem? @relation("FavoriteFoodItem", fields: [foodItemId], references: [id])
+  productId      String?
+  product        Product?  @relation("FavoriteProduct", fields: [productId], references: [id])
 
   // Denormaliserad data för snabb visning
   name           String
@@ -2097,6 +2099,7 @@ model FavoriteProduct {
 
   @@unique([userId, icaProductId])
   @@unique([userId, foodItemId])
+  @@unique([userId, productId])
   @@index([userId])
   @@map("favorite_products")
 }
@@ -2605,6 +2608,7 @@ model Product {
   updatedAt DateTime @updatedAt
 
   foodLogItems FoodLogItem[]
+  favorites    FavoriteProduct[] @relation("FavoriteProduct")
 
   @@index([ean])
   @@index([name])
