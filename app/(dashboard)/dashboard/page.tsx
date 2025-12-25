@@ -37,6 +37,7 @@ import {
   User
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { FitbitConnectCard } from '@/components/fitness/FitbitConnectCard'
 
 // Separate component for handling search params (requires Suspense boundary)
 function FitbitCallbackHandler({ userId, onSync }: { userId: string | undefined; onSync: () => void }) {
@@ -107,7 +108,6 @@ export default function DashboardPage() {
   // Fitbit / Steps state
   const [fitbitConnected, setFitbitConnected] = useState(false)
   const [dailySteps, setDailySteps] = useState<Record<string, { steps: number; goal: number }>>({})
-  const [syncingSteps, setSyncingSteps] = useState(false)
 
   const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
   const userId = (session?.user as any)?.id
@@ -197,21 +197,6 @@ export default function DashboardPage() {
   const handleHideGetStarted = () => {
     setHideGetStarted(true)
     localStorage.setItem('hideGetStarted', 'true')
-  }
-
-  // Manual sync of Fitbit steps
-  const handleSyncSteps = async () => {
-    if (syncingSteps) return
-    setSyncingSteps(true)
-    try {
-      await fetch('/api/fitbit/sync', { method: 'POST' })
-      // Refetch calendar data to update step indicators
-      fetchClientCalendarData()
-    } catch (error) {
-      console.error('Error syncing steps:', error)
-    } finally {
-      setSyncingSteps(false)
-    }
   }
 
   // Determine if "Get Started" section should be shown (only manual hide)
@@ -815,30 +800,15 @@ export default function DashboardPage() {
               </p>
 
               {/* Fitbit Connection */}
-              <div className="mb-2">
-                {fitbitConnected ? (
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-green-600 flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" />
-                      Fitbit kopplad
-                    </span>
-                    <button
-                      onClick={handleSyncSteps}
-                      disabled={syncingSteps}
-                      className="text-xs text-green-500 hover:text-green-700 underline disabled:opacity-50"
-                    >
-                      {syncingSteps ? 'Synkar...' : 'Synka nu'}
-                    </button>
-                  </div>
-                ) : (
-                  <a
-                    href="/api/fitbit/auth"
-                    className="text-xs text-green-500 hover:text-green-700 underline flex items-center gap-1"
-                  >
-                    <Smartphone className="w-3 h-3" />
-                    Koppla Fitbit för att synka steg automatiskt
-                  </a>
-                )}
+              <div className="mt-3">
+                <FitbitConnectCard
+                  onConnectionChange={(connected) => {
+                    setFitbitConnected(connected)
+                    if (connected) {
+                      fetchClientCalendarData()
+                    }
+                  }}
+                />
               </div>
 
               <button
