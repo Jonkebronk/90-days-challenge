@@ -5,15 +5,20 @@ import { exchangeCodeForTokens } from '@/lib/fitbit/oauth'
 import { prisma } from '@/lib/prisma'
 import { cookies } from 'next/headers'
 
+// Get base URL for redirects
+function getBaseUrl() {
+  return process.env.NEXTAUTH_URL || 'https://friskvardskompassen.com'
+}
+
 // GET /api/fitbit/callback - Handle OAuth callback
 export async function GET(req: NextRequest) {
+  const baseUrl = getBaseUrl()
+
   try {
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
-      return NextResponse.redirect(
-        new URL('/dashboard/profile?error=not_authenticated', req.url)
-      )
+      return NextResponse.redirect(`${baseUrl}/dashboard/profile?error=not_authenticated`)
     }
 
     const userId = session.user.id as string
@@ -23,15 +28,11 @@ export async function GET(req: NextRequest) {
 
     if (error) {
       console.error('Fitbit OAuth error:', error)
-      return NextResponse.redirect(
-        new URL(`/dashboard/profile?error=fitbit_${error}`, req.url)
-      )
+      return NextResponse.redirect(`${baseUrl}/dashboard/profile?error=fitbit_${error}`)
     }
 
     if (!code) {
-      return NextResponse.redirect(
-        new URL('/dashboard/profile?error=no_code', req.url)
-      )
+      return NextResponse.redirect(`${baseUrl}/dashboard/profile?error=no_code`)
     }
 
     // Get code verifier from cookie
@@ -39,9 +40,7 @@ export async function GET(req: NextRequest) {
     const codeVerifier = cookieStore.get('fitbit_code_verifier')?.value
 
     if (!codeVerifier) {
-      return NextResponse.redirect(
-        new URL('/dashboard/profile?error=no_verifier', req.url)
-      )
+      return NextResponse.redirect(`${baseUrl}/dashboard/profile?error=no_verifier`)
     }
 
     // Exchange code for tokens
@@ -70,14 +69,10 @@ export async function GET(req: NextRequest) {
     // Clear the code verifier cookie
     cookieStore.delete('fitbit_code_verifier')
 
-    // Redirect back to profile with success message
-    return NextResponse.redirect(
-      new URL('/dashboard/profile?fitbit=connected', req.url)
-    )
+    // Redirect back to workout page with success message
+    return NextResponse.redirect(`${baseUrl}/dashboard/workout?fitbit=connected`)
   } catch (error) {
     console.error('Error in Fitbit callback:', error)
-    return NextResponse.redirect(
-      new URL('/dashboard/profile?error=token_exchange_failed', req.url)
-    )
+    return NextResponse.redirect(`${baseUrl}/dashboard/profile?error=token_exchange_failed`)
   }
 }
