@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { exchangeCodeForTokens } from '@/lib/fitbit/oauth'
+import { exchangeCodeForTokens, retrieveOAuthState } from '@/lib/fitbit/oauth'
 import { prisma } from '@/lib/prisma'
-import { cookies } from 'next/headers'
 
 // Get base URL for redirects
 function getBaseUrl() {
@@ -16,19 +13,11 @@ export async function GET(req: NextRequest) {
   console.log('[Fitbit Callback] Starting, baseUrl:', baseUrl)
 
   try {
-    const session = await getServerSession(authOptions)
-    console.log('[Fitbit Callback] Session:', session?.user?.email || 'none')
-
-    if (!session?.user) {
-      console.log('[Fitbit Callback] No session found')
-      return NextResponse.redirect(`${baseUrl}/dashboard/profile?error=not_authenticated`)
-    }
-
-    const userId = session.user.id as string
     const searchParams = req.nextUrl.searchParams
     const code = searchParams.get('code')
+    const state = searchParams.get('state')
     const error = searchParams.get('error')
-    console.log('[Fitbit Callback] Code:', code ? 'present' : 'missing', 'Error:', error)
+    console.log('[Fitbit Callback] Code:', code ? 'present' : 'missing', 'State:', state ? 'present' : 'missing', 'Error:', error)
 
     if (error) {
       console.error('[Fitbit Callback] OAuth error:', error)
@@ -40,15 +29,21 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(`${baseUrl}/dashboard/profile?error=no_code`)
     }
 
-    // Get code verifier from cookie
-    const cookieStore = await cookies()
-    const codeVerifier = cookieStore.get('fitbit_code_verifier')?.value
-    console.log('[Fitbit Callback] Code verifier:', codeVerifier ? 'present' : 'MISSING')
-
-    if (!codeVerifier) {
-      console.log('[Fitbit Callback] No code verifier cookie found')
-      return NextResponse.redirect(`${baseUrl}/dashboard/profile?error=no_verifier`)
+    if (!state) {
+      console.log('[Fitbit Callback] No state in params')
+      return NextResponse.redirect(`${baseUrl}/dashboard/profile?error=no_state`)
     }
+
+    // Retrieve code verifier and userId from database using state
+    const oauthState = await retrieveOAuthState(state)
+    console.log('[Fitbit Callback] OAuth state from DB:', oauthState ? 'found' : 'NOT FOUND')
+
+    if (!oauthState) {
+      console.log('[Fitbit Callback] No OAuth state found for state:', state)
+      return NextResponse.redirect(`${baseUrl}/dashboard/profile?error=invalid_state`)
+    }
+
+    const { codeVerifier, userId } = oauthState
 
     // Exchange code for tokens
     console.log('[Fitbit Callback] Exchanging code for tokens...')
@@ -74,9 +69,6 @@ export async function GET(req: NextRequest) {
         scope: tokens.scope,
       },
     })
-
-    // Clear the code verifier cookie
-    cookieStore.delete('fitbit_code_verifier')
 
     console.log('[Fitbit Callback] SUCCESS - Fitbit connected for user:', userId)
     // Redirect back to workout page with success message

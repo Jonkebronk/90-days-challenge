@@ -17,8 +17,13 @@ export function generateCodeChallenge(verifier: string): string {
     .digest('base64url')
 }
 
-// Build Fitbit authorization URL
-export function buildAuthUrl(codeChallenge: string): string {
+// Generate random state parameter
+export function generateState(): string {
+  return crypto.randomBytes(16).toString('base64url')
+}
+
+// Build Fitbit authorization URL with state
+export function buildAuthUrl(codeChallenge: string, state: string): string {
   const params = new URLSearchParams({
     client_id: process.env.FITBIT_CLIENT_ID!,
     response_type: 'code',
@@ -26,9 +31,66 @@ export function buildAuthUrl(codeChallenge: string): string {
     code_challenge_method: 'S256',
     scope: 'activity',
     redirect_uri: process.env.FITBIT_REDIRECT_URI!,
+    state: state,
   })
 
   return `${FITBIT_AUTH_URL}?${params.toString()}`
+}
+
+// Store OAuth state in database (PWA compatible)
+export async function storeOAuthState(
+  state: string,
+  codeVerifier: string,
+  userId: string
+): Promise<void> {
+  // Delete any existing states for this user (cleanup)
+  await prisma.oAuthState.deleteMany({
+    where: { userId },
+  })
+
+  // Also delete expired states
+  await prisma.oAuthState.deleteMany({
+    where: {
+      expiresAt: { lt: new Date() },
+    },
+  })
+
+  // Create new state
+  await prisma.oAuthState.create({
+    data: {
+      state,
+      codeVerifier,
+      userId,
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+    },
+  })
+}
+
+// Retrieve and delete OAuth state from database
+export async function retrieveOAuthState(
+  state: string
+): Promise<{ codeVerifier: string; userId: string } | null> {
+  const oauthState = await prisma.oAuthState.findUnique({
+    where: { state },
+  })
+
+  if (!oauthState) {
+    return null
+  }
+
+  // Check if expired
+  if (oauthState.expiresAt < new Date()) {
+    await prisma.oAuthState.delete({ where: { state } })
+    return null
+  }
+
+  // Delete the state (one-time use)
+  await prisma.oAuthState.delete({ where: { state } })
+
+  return {
+    codeVerifier: oauthState.codeVerifier,
+    userId: oauthState.userId,
+  }
 }
 
 // Exchange authorization code for tokens

@@ -3307,3 +3307,17 @@ model DailySteps {
   @@index([userId, date])
   @@map("daily_steps")
 }
+
+// Temporary OAuth state storage (for PWA compatibility)
+model OAuthState {
+  id           String   @id @default(cuid())
+  state        String   @unique // Random state parameter
+  codeVerifier String   @db.Text
+  userId       String
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([state])
+  @@index([expiresAt])
+  @@map("oauth_states")
+}
