@@ -243,17 +243,27 @@ export default function ClientShoppingListDetailPage({
   const handleExport = () => {
     if (!shoppingList) return
 
-    const grouped = groupItemsByCategory()
-    let exportText = `${shoppingList.name}\n\n`
+    let exportText = `INKÖPSLISTA\n\n`
 
-    Object.entries(grouped).forEach(([category, items]) => {
-      exportText += `${category}\n`
-      items.forEach((item) => {
+    // Regular items (not from recipes)
+    const regularItems = shoppingList.items.filter(item => !item.recipeId)
+    if (regularItems.length > 0) {
+      regularItems.forEach((item) => {
         const name = item.foodItem?.name || item.customName || 'Okänd vara'
         const checkMark = item.checked ? '✓' : '○'
-        exportText += `${checkMark} ${item.quantity} ${item.unit} ${name}\n`
+        exportText += `${checkMark} ${item.quantity}${item.unit} ${name}\n`
       })
-      exportText += '\n'
+    }
+
+    // Recipe items grouped by recipe
+    const groupedByRecipe = groupItemsByRecipe()
+    Object.entries(groupedByRecipe).forEach(([recipeId, { recipe, items }]) => {
+      exportText += `\n📖 ${recipe?.title || 'Recept'}\n`
+      items.forEach((item) => {
+        const name = item.customName || item.foodItem?.name || 'Okänd vara'
+        const checkMark = item.checked ? '✓' : '○'
+        exportText += `${checkMark} ${item.quantity}${item.unit} ${name}\n`
+      })
     })
 
     navigator.clipboard.writeText(exportText)
