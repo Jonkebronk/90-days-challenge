@@ -749,10 +749,10 @@ export default function DashboardPage() {
                   <button
                     key={index}
                     onClick={() => openWeightModal(date)}
-                    className={`flex flex-col items-center py-2 px-1 transition-all cursor-pointer border-l border-gray-200 first:border-l-0 ${
+                    className={`flex flex-col items-center py-2 px-1 transition-all cursor-pointer border-l border-gray-200 first:border-l-0 border-t-2 ${
                       isToday
-                        ? 'bg-amber-50 border-t-2 border-t-amber-400'
-                        : ''
+                        ? 'bg-amber-50 border-t-amber-400'
+                        : 'border-t-transparent'
                     }`}
                   >
                     <span className={`text-[10px] sm:text-xs font-medium ${isToday ? 'text-amber-600' : 'text-gray-500'}`}>
