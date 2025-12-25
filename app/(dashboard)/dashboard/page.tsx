@@ -1033,16 +1033,16 @@ export default function DashboardPage() {
                   <button
                     key={index}
                     onClick={() => openWeightModal(date)}
-                    className={`flex flex-col items-center py-2 px-1 transition-all cursor-pointer ${
+                    className={`flex flex-col items-center py-2 px-1 transition-all cursor-pointer border-l border-gray-200 first:border-l-0 ${
                       isToday
-                        ? 'bg-gray-900 text-white rounded-t-lg'
-                        : index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                        ? 'bg-amber-50 border-t-2 border-t-amber-400'
+                        : ''
                     }`}
                   >
-                    <span className={`text-[10px] sm:text-xs font-medium ${isToday ? 'text-gray-300' : 'text-gray-500'}`}>
+                    <span className={`text-[10px] sm:text-xs font-medium ${isToday ? 'text-amber-600' : 'text-gray-500'}`}>
                       {WEEKDAY_NAMES[index]}
                     </span>
-                    <span className={`text-base sm:text-lg font-bold ${isToday ? 'text-white' : 'text-gray-900'}`}>
+                    <span className={`text-base sm:text-lg font-bold ${isToday ? 'text-amber-700' : 'text-gray-900'}`}>
                       {date.getDate()}
                     </span>
                   </button>
@@ -1061,13 +1061,13 @@ export default function DashboardPage() {
                 const weight = dailyWeights[dateStr]
                 const isToday = isSameDay(date, new Date())
                 return (
-                  <div key={index} className={`flex items-center justify-center py-2.5 text-xs sm:text-sm ${
-                    isToday ? 'bg-gray-900 text-white font-semibold' : index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                  <div key={index} className={`flex items-center justify-center py-2.5 text-xs sm:text-sm border-l border-gray-200 first:border-l-0 ${
+                    isToday ? 'bg-amber-50' : ''
                   }`}>
                     {weight !== undefined ? (
-                      <span className={`font-medium ${isToday ? 'text-purple-300' : 'text-purple-600'}`}>{weight.toFixed(1)}</span>
+                      <span className="font-medium text-purple-600">{weight.toFixed(1)}</span>
                     ) : (
-                      <span className={isToday ? 'text-gray-400' : 'text-gray-300'}>-</span>
+                      <span className="text-gray-300">-</span>
                     )}
                   </div>
                 )
@@ -1086,17 +1086,17 @@ export default function DashboardPage() {
                 const completedWorkout = hasCompletedWorkout(date)
                 const isToday = isSameDay(date, new Date())
                 return (
-                  <div key={index} className={`flex items-center justify-center py-2.5 ${
-                    isToday ? 'bg-gray-900' : index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                  <div key={index} className={`flex items-center justify-center py-2.5 border-l border-gray-200 first:border-l-0 ${
+                    isToday ? 'bg-amber-50' : ''
                   }`}>
                     {isTrainingDay ? (
                       completedWorkout ? (
                         <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
                       ) : (
-                        <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 ${isToday ? 'border-amber-300' : 'border-amber-400'}`}></div>
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-amber-400"></div>
                       )
                     ) : (
-                      <span className={isToday ? 'text-gray-400' : 'text-gray-300'}>-</span>
+                      <span className="text-gray-300">-</span>
                     )}
                   </div>
                 )
@@ -1115,17 +1115,17 @@ export default function DashboardPage() {
                 const completedCheckIn = hasCheckIn(date)
                 const isToday = isSameDay(date, new Date())
                 return (
-                  <div key={index} className={`flex items-center justify-center py-2.5 ${
-                    isToday ? 'bg-gray-900' : index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                  <div key={index} className={`flex items-center justify-center py-2.5 border-l border-gray-200 first:border-l-0 ${
+                    isToday ? 'bg-amber-50' : ''
                   }`}>
                     {isSunday ? (
                       completedCheckIn ? (
                         <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
                       ) : (
-                        <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 ${isToday ? 'border-blue-300' : 'border-blue-400'}`}></div>
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-blue-400"></div>
                       )
                     ) : (
-                      <span className={isToday ? 'text-gray-400' : 'text-gray-300'}>-</span>
+                      <span className="text-gray-300">-</span>
                     )}
                   </div>
                 )
@@ -1145,15 +1145,15 @@ export default function DashboardPage() {
                   const metStepGoal = stepsData && stepsData.steps >= stepsData.goal
                   const isToday = isSameDay(date, new Date())
                   return (
-                    <div key={index} className={`flex items-center justify-center py-2.5 text-xs sm:text-sm ${
-                      isToday ? 'bg-gray-900 rounded-b-lg' : index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                    <div key={index} className={`flex items-center justify-center py-2.5 text-xs sm:text-sm border-l border-gray-200 first:border-l-0 ${
+                      isToday ? 'bg-amber-50' : ''
                     }`}>
                       {stepsData ? (
-                        <span className={`font-medium ${metStepGoal ? 'text-green-500' : isToday ? 'text-emerald-300' : 'text-emerald-500'}`}>
+                        <span className={`font-medium ${metStepGoal ? 'text-green-500' : 'text-emerald-500'}`}>
                           {stepsData.steps >= 1000 ? `${(stepsData.steps / 1000).toFixed(1)}k` : stepsData.steps}
                         </span>
                       ) : (
-                        <span className={isToday ? 'text-gray-400' : 'text-gray-300'}>-</span>
+                        <span className="text-gray-300">-</span>
                       )}
                     </div>
                   )
