@@ -6,18 +6,15 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import {
   Check,
   Plus,
-  Share2,
   MoreVertical,
   Trash2,
   Minus,
@@ -106,12 +103,8 @@ export default function ClientShoppingListDetailPage({
   const [listId, setListId] = useState<string>('')
   const [shoppingList, setShoppingList] = useState<ShoppingList | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  // Share state
-  const [shareUserId, setShareUserId] = useState('')
-  const [shareRole, setShareRole] = useState<'viewer' | 'editor'>('editor')
 
   // Product detail modal state
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null)
@@ -247,37 +240,6 @@ export default function ClientShoppingListDetailPage({
     }
   }
 
-  const handleShare = async () => {
-    if (!shareUserId.trim()) {
-      toast.error('Ange användar-ID')
-      return
-    }
-
-    try {
-      const response = await fetch(`/api/shopping-lists/${listId}/share`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sharedWith: shareUserId,
-          role: shareRole,
-        }),
-      })
-
-      if (response.ok) {
-        toast.success('Listan delad')
-        setIsShareDialogOpen(false)
-        setShareUserId('')
-        fetchShoppingList()
-      } else {
-        const data = await response.json()
-        toast.error(data.error || 'Kunde inte dela lista')
-      }
-    } catch (error) {
-      console.error('Error sharing list:', error)
-      toast.error('Ett fel uppstod')
-    }
-  }
-
   const handleExport = () => {
     if (!shoppingList) return
 
@@ -368,7 +330,6 @@ export default function ClientShoppingListDetailPage({
   const progress = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0
   const grouped = groupItemsByCategory()
   const groupedByRecipe = groupItemsByRecipe()
-  const isOwner = shoppingList.userId === session.user.id
   // Alla som har tillgång till listan kan redigera
   const canEdit = true
 
@@ -715,19 +676,6 @@ export default function ClientShoppingListDetailPage({
             <DialogTitle className="text-xl font-bold text-gray-900">Meny</DialogTitle>
           </DialogHeader>
           <div className="space-y-2">
-            {isOwner && (
-              <Button
-                onClick={() => {
-                  setIsMenuOpen(false)
-                  setIsShareDialogOpen(true)
-                }}
-                variant="outline"
-                className="w-full justify-start border-gray-300 text-gray-700 hover:bg-gray-50"
-              >
-                <Share2 className="h-4 w-4 mr-2" />
-                Dela lista
-              </Button>
-            )}
             <Button
               onClick={() => {
                 setIsMenuOpen(false)
@@ -736,7 +684,7 @@ export default function ClientShoppingListDetailPage({
               variant="outline"
               className="w-full justify-start border-gray-300 text-gray-700 hover:bg-gray-50"
             >
-              Exportera
+              Kopiera till urklipp
             </Button>
             {canEdit && checkedItems > 0 && (
               <Button
@@ -752,74 +700,6 @@ export default function ClientShoppingListDetailPage({
               </Button>
             )}
           </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Share Dialog */}
-      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-        <DialogContent className="bg-white border border-gray-200 shadow-xl max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-gray-900">
-              Dela lista
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm text-gray-700 font-medium mb-1.5 block">
-                Användar-ID
-              </label>
-              <Input
-                value={shareUserId}
-                onChange={(e) => setShareUserId(e.target.value)}
-                placeholder="Mottagarens användar-ID"
-                className="border-gray-300"
-              />
-            </div>
-            <div>
-              <label className="text-sm text-gray-700 font-medium mb-1.5 block">
-                Behörighet
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  onClick={() => setShareRole('viewer')}
-                  variant="outline"
-                  className={`${
-                    shareRole === 'viewer'
-                      ? 'bg-gold-primary/10 border-gold-primary text-gold-primary'
-                      : 'border-gray-300 text-gray-600'
-                  }`}
-                >
-                  Läsa
-                </Button>
-                <Button
-                  onClick={() => setShareRole('editor')}
-                  variant="outline"
-                  className={`${
-                    shareRole === 'editor'
-                      ? 'bg-gold-primary/10 border-gold-primary text-gold-primary'
-                      : 'border-gray-300 text-gray-600'
-                  }`}
-                >
-                  Redigera
-                </Button>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              onClick={() => setIsShareDialogOpen(false)}
-              variant="outline"
-              className="border-gray-300 text-gray-600"
-            >
-              Avbryt
-            </Button>
-            <Button
-              onClick={handleShare}
-              className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-bold"
-            >
-              Dela
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
