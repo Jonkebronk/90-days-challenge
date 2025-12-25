@@ -182,17 +182,19 @@ export default function ClientShoppingListDetailPage({
     try {
       // Add each ingredient to the shopping list
       for (const ing of ingredients) {
-        const unit = ing.displayUnit || 'g'
-        const quantity = ing.displayAmount ? parseFloat(ing.displayAmount) || ing.amount : ing.amount
+        // Format: "1 tesked (tsk) Dill" or "200 gram (g) Broccolistam"
+        const displayAmt = ing.displayAmount || String(ing.amount)
+        const displayUnitText = ing.displayUnit || 'g'
+        const customName = `${displayAmt} ${displayUnitText} ${ing.foodItem.name}`
+
         await fetch(`/api/shopping-lists/${listId}/items`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             recipeId,
-            foodItemId: ing.foodItem.id,
-            customName: null,
-            quantity: quantity,
-            unit: unit,
+            customName: customName,
+            quantity: 1,
+            unit: 'st',
           }),
         })
       }
