@@ -8,12 +8,21 @@ export async function GET(req: NextRequest) {
   const verify = req.nextUrl.searchParams.get('verify')
 
   if (verify) {
-    // Fitbit verification request - echo back the code
+    // Fitbit verification request
+    // Check if it matches our configured verification code
+    const expectedCode = process.env.FITBIT_SUBSCRIBER_VERIFY_CODE
     console.log('[Fitbit Webhook] Verification request received:', verify)
-    return new NextResponse(verify, {
-      status: 200,
-      headers: { 'Content-Type': 'text/plain' },
-    })
+
+    if (expectedCode && verify === expectedCode) {
+      // Correct code - respond with 204
+      return new NextResponse(null, { status: 204 })
+    } else if (!expectedCode) {
+      // No code configured - accept any (for testing)
+      return new NextResponse(null, { status: 204 })
+    } else {
+      // Wrong code - respond with 404
+      return new NextResponse(null, { status: 404 })
+    }
   }
 
   return NextResponse.json({ status: 'Fitbit webhook endpoint active' })

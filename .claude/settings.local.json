@@ -77,7 +77,9 @@
       "Bash(node scripts/test-api.js:*)",
       "Bash(node scripts/compare-sources.js:*)",
       "Bash(git restore:*)",
-      "WebFetch(domain:coachcatalyst.com)"
+      "WebFetch(domain:coachcatalyst.com)",
+      "WebFetch(domain:dev.fitbit.com)",
+      "Bash(xargs cat:*)"
     ],
     "deny": [],
     "ask": []
