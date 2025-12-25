@@ -1021,97 +1021,134 @@ export default function DashboardPage() {
         </div>
 
         {/* Week Calendar Grid - Inside card */}
-        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4">
-        <div className="grid grid-cols-7 gap-2">
-          {weekDays.map((date, index) => {
-            const isToday = isSameDay(date, new Date())
-            const weekdayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1 // Convert to 0=Mon
-            const isTrainingDay = trainingDays.includes(weekdayIndex)
-            const isSunday = weekdayIndex === 6
-            const completedWorkout = hasCompletedWorkout(date)
-            const completedCheckIn = hasCheckIn(date)
-            const dateStr = date.toISOString().split('T')[0]
-            const hasWeight = dailyWeights[dateStr] !== undefined
-            const stepsData = dailySteps[dateStr]
-            const metStepGoal = stepsData && stepsData.steps >= stepsData.goal
+        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-x-auto">
+          {/* Header row - Days */}
+          <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-1 min-w-[320px]">
+            {/* Empty cell for row labels */}
+            <div className="w-16 sm:w-20"></div>
+            {/* Day headers */}
+            {weekDays.map((date, index) => {
+              const isToday = isSameDay(date, new Date())
+              return (
+                <button
+                  key={index}
+                  onClick={() => openWeightModal(date)}
+                  className={`flex flex-col items-center py-2 px-1 rounded-lg transition-all cursor-pointer ${
+                    isToday
+                      ? 'bg-gray-900 text-white'
+                      : 'hover:bg-gray-50'
+                  }`}
+                >
+                  <span className={`text-[10px] sm:text-xs font-medium ${isToday ? 'text-gray-300' : 'text-gray-500'}`}>
+                    {WEEKDAY_NAMES[index]}
+                  </span>
+                  <span className={`text-base sm:text-lg font-bold ${isToday ? 'text-white' : 'text-gray-900'}`}>
+                    {date.getDate()}
+                  </span>
+                </button>
+              )
+            })}
 
-            return (
-              <button
-                key={index}
-                onClick={() => openWeightModal(date)}
-                className={`flex flex-col items-center p-2 sm:p-3 rounded-xl transition-all cursor-pointer ${
-                  isToday
-                    ? 'bg-gray-900 text-white hover:bg-gray-800'
-                    : 'bg-gray-50 hover:bg-gray-100'
-                } hover:scale-105`}
-              >
-                <span className={`text-xs font-medium mb-1 ${isToday ? 'text-gray-300' : 'text-gray-500'}`}>
-                  {WEEKDAY_NAMES[index]}
-                </span>
-                <span className={`text-lg sm:text-xl font-bold ${isToday ? 'text-white' : 'text-gray-900'}`}>
-                  {date.getDate()}
-                </span>
-
-                {/* Indicators */}
-                <div className="flex gap-1 mt-1 h-4">
-                  {hasWeight && (
-                    <Scale className={`w-4 h-4 ${isToday ? 'text-purple-300' : 'text-purple-500'}`} />
-                  )}
-                  {isTrainingDay && (
-                    completedWorkout ? (
-                      <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <Dumbbell className={`w-4 h-4 ${isToday ? 'text-amber-400' : 'text-amber-500'}`} />
-                    )
-                  )}
-                  {isSunday && (
-                    completedCheckIn ? (
-                      <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <Calendar className={`w-4 h-4 ${isToday ? 'text-blue-300' : 'text-blue-500'}`} />
-                    )
+            {/* Weight row */}
+            <div className="flex items-center gap-1.5 text-purple-600 py-2">
+              <Scale className="w-4 h-4" />
+              <span className="text-xs font-medium hidden sm:inline">Vikt</span>
+            </div>
+            {weekDays.map((date, index) => {
+              const dateStr = date.toISOString().split('T')[0]
+              const weight = dailyWeights[dateStr]
+              const isToday = isSameDay(date, new Date())
+              return (
+                <div key={index} className={`flex items-center justify-center py-2 text-xs sm:text-sm ${isToday ? 'font-semibold' : ''}`}>
+                  {weight !== undefined ? (
+                    <span className="text-purple-600 font-medium">{weight.toFixed(1)}</span>
+                  ) : (
+                    <span className="text-gray-300">-</span>
                   )}
                 </div>
-                {/* Step count */}
-                {stepsData && (
-                  <div className={`text-[10px] font-medium mt-0.5 flex items-center gap-0.5 ${
-                    metStepGoal
-                      ? 'text-green-500'
-                      : isToday ? 'text-emerald-300' : 'text-emerald-500'
-                  }`}>
-                    <Footprints className="w-3 h-3" />
-                    <span>{stepsData.steps >= 1000 ? `${(stepsData.steps / 1000).toFixed(1)}k` : stepsData.steps}</span>
-                  </div>
-                )}
-              </button>
-            )
-          })}
-        </div>
+              )
+            })}
 
-          {/* Legend */}
-          <div className="flex flex-wrap justify-center gap-4 mt-3 text-xs text-gray-500">
-            <div className="flex items-center gap-1">
-              <Scale className="w-3 h-3 text-purple-500" />
-              <span>Vikt</span>
+            {/* Training row */}
+            <div className="flex items-center gap-1.5 text-amber-500 py-2">
+              <Dumbbell className="w-4 h-4" />
+              <span className="text-xs font-medium hidden sm:inline">Träning</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Dumbbell className="w-3 h-3 text-amber-500" />
-              <span>Träning</span>
+            {weekDays.map((date, index) => {
+              const weekdayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1
+              const isTrainingDay = trainingDays.includes(weekdayIndex)
+              const completedWorkout = hasCompletedWorkout(date)
+              const isToday = isSameDay(date, new Date())
+              return (
+                <div key={index} className={`flex items-center justify-center py-2 ${isToday ? 'font-semibold' : ''}`}>
+                  {isTrainingDay ? (
+                    completedWorkout ? (
+                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+                    ) : (
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-amber-400"></div>
+                    )
+                  ) : (
+                    <span className="text-gray-300">-</span>
+                  )}
+                </div>
+              )
+            })}
+
+            {/* Check-in row (only show if there's a Sunday in view) */}
+            <div className="flex items-center gap-1.5 text-blue-500 py-2">
+              <Calendar className="w-4 h-4" />
+              <span className="text-xs font-medium hidden sm:inline">Check-in</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Calendar className="w-3 h-3 text-blue-500" />
-              <span>Check-in</span>
-            </div>
+            {weekDays.map((date, index) => {
+              const weekdayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1
+              const isSunday = weekdayIndex === 6
+              const completedCheckIn = hasCheckIn(date)
+              const isToday = isSameDay(date, new Date())
+              return (
+                <div key={index} className={`flex items-center justify-center py-2 ${isToday ? 'font-semibold' : ''}`}>
+                  {isSunday ? (
+                    completedCheckIn ? (
+                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+                    ) : (
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-blue-400"></div>
+                    )
+                  ) : (
+                    <span className="text-gray-300">-</span>
+                  )}
+                </div>
+              )
+            })}
+
+            {/* Steps row - only show if Fitbit connected */}
             {fitbitConnected && (
-              <div className="flex items-center gap-1">
-                <Footprints className="w-3 h-3 text-emerald-500" />
-                <span>Steg</span>
-              </div>
+              <>
+                <div className="flex items-center gap-1.5 text-emerald-500 py-2">
+                  <Footprints className="w-4 h-4" />
+                  <span className="text-xs font-medium hidden sm:inline">Steg</span>
+                </div>
+                {weekDays.map((date, index) => {
+                  const dateStr = date.toISOString().split('T')[0]
+                  const stepsData = dailySteps[dateStr]
+                  const metStepGoal = stepsData && stepsData.steps >= stepsData.goal
+                  const isToday = isSameDay(date, new Date())
+                  return (
+                    <div key={index} className={`flex items-center justify-center py-2 text-xs sm:text-sm ${isToday ? 'font-semibold' : ''}`}>
+                      {stepsData ? (
+                        <span className={`font-medium ${metStepGoal ? 'text-green-500' : 'text-emerald-500'}`}>
+                          {stepsData.steps >= 1000 ? `${(stepsData.steps / 1000).toFixed(1)}k` : stepsData.steps}
+                        </span>
+                      ) : (
+                        <span className="text-gray-300">-</span>
+                      )}
+                    </div>
+                  )
+                })}
+              </>
             )}
           </div>
 
           {/* Tip text */}
-          <p className="text-xs text-gray-400 mt-3 text-center">
+          <p className="text-xs text-gray-400 mt-4 text-center">
             Tryck på en dag för att registrera din vikt
           </p>
 
