@@ -101,6 +101,113 @@ export async function fetchActivityRange(
   return activities
 }
 
+// Sleep data interfaces
+interface FitbitSleepResponse {
+  sleep: Array<{
+    dateOfSleep: string
+    duration: number // in milliseconds
+    efficiency: number
+    minutesAsleep: number
+    minutesAwake: number
+    startTime: string
+    endTime: string
+    isMainSleep: boolean
+  }>
+  summary: {
+    totalMinutesAsleep: number
+    totalTimeInBed: number
+  }
+}
+
+export interface DailySleepData {
+  date: string
+  minutesAsleep: number
+  minutesAwake: number
+  efficiency: number
+  startTime: string | null
+  endTime: string | null
+}
+
+// Fetch sleep data for a specific date
+export async function fetchDailySleep(
+  userId: string,
+  date: Date
+): Promise<DailySleepData | null> {
+  const accessToken = await getValidAccessToken(userId)
+
+  if (!accessToken) {
+    return null
+  }
+
+  const dateStr = formatDate(date)
+
+  try {
+    const response = await fetch(
+      `${FITBIT_API_BASE}/1.2/user/-/sleep/date/${dateStr}.json`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    )
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        console.error('Fitbit token unauthorized for sleep')
+        return null
+      }
+      if (response.status === 403) {
+        // User hasn't granted sleep permission
+        console.error('Fitbit sleep permission not granted')
+        return null
+      }
+      throw new Error(`Fitbit Sleep API error: ${response.status}`)
+    }
+
+    const data: FitbitSleepResponse = await response.json()
+
+    // Find the main sleep record (longest sleep period)
+    const mainSleep = data.sleep.find(s => s.isMainSleep) || data.sleep[0]
+
+    if (!mainSleep) {
+      // No sleep data for this date
+      return null
+    }
+
+    return {
+      date: dateStr,
+      minutesAsleep: mainSleep.minutesAsleep,
+      minutesAwake: mainSleep.minutesAwake,
+      efficiency: mainSleep.efficiency,
+      startTime: mainSleep.startTime,
+      endTime: mainSleep.endTime,
+    }
+  } catch (error) {
+    console.error(`Failed to fetch sleep for ${dateStr}:`, error)
+    return null
+  }
+}
+
+// Fetch sleep data for multiple dates
+export async function fetchSleepRange(
+  userId: string,
+  startDate: Date,
+  endDate: Date
+): Promise<DailySleepData[]> {
+  const sleepData: DailySleepData[] = []
+  const currentDate = new Date(startDate)
+
+  while (currentDate <= endDate) {
+    const sleep = await fetchDailySleep(userId, currentDate)
+    if (sleep) {
+      sleepData.push(sleep)
+    }
+    currentDate.setDate(currentDate.getDate() + 1)
+  }
+
+  return sleepData
+}
+
 // Get user's Fitbit profile (for display purposes)
 export async function fetchUserProfile(userId: string): Promise<{
   displayName: string

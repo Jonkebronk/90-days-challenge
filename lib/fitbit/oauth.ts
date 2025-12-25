@@ -29,7 +29,7 @@ export function buildAuthUrl(codeChallenge: string, state: string): string {
     response_type: 'code',
     code_challenge: codeChallenge,
     code_challenge_method: 'S256',
-    scope: 'activity',
+    scope: 'activity sleep',
     redirect_uri: process.env.FITBIT_REDIRECT_URI!,
     state: state,
   })

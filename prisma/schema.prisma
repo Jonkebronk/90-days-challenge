@@ -207,6 +207,7 @@ model User {
   stepGoal       Int?             // Daily step goal (saved across sessions)
   fitbitAccount  FitbitAccount?
   dailySteps     DailySteps[]
+  dailySleep     DailySleep[]
 
   // Withings Integration
   withingsAccount WithingsAccount?
@@ -3331,6 +3332,25 @@ model DailySteps {
   @@unique([userId, date])
   @@index([userId, date])
   @@map("daily_steps")
+}
+
+// Daily sleep data from Fitbit
+model DailySleep {
+  id            String   @id @default(cuid())
+  userId        String
+  date          DateTime @db.Date
+  minutesAsleep Int      // Total minutes asleep
+  minutesAwake  Int?     // Minutes awake during sleep
+  efficiency    Int?     // Sleep efficiency percentage (0-100)
+  startTime     DateTime? // When sleep started
+  endTime       DateTime? // When sleep ended
+  syncedAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("daily_sleep")
 }
 
 // Temporary OAuth state storage (for PWA compatibility)
