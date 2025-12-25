@@ -208,6 +208,9 @@ model User {
   fitbitAccount  FitbitAccount?
   dailySteps     DailySteps[]
 
+  // Withings Integration
+  withingsAccount WithingsAccount?
+
   @@map("users")
 }
 
@@ -2233,18 +2236,40 @@ model PushSubscription {
 // ========================================
 
 model DailyWeight {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
-  date      DateTime @db.Date
-  weight    Decimal  @db.Decimal(5, 2)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  date      DateTime  @db.Date
+  weight    Decimal   @db.Decimal(5, 2)
+  source    String    @default("manual") // "manual" | "withings"
+  syncedAt  DateTime? // When synced from Withings
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])
   @@index([userId])
   @@map("daily_weights")
+}
+
+// ========================================
+// WITHINGS INTEGRATION
+// ========================================
+
+model WithingsAccount {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  withingsUserId String   // Withings user ID
+  accessToken    String   @db.Text
+  refreshToken   String   @db.Text
+  expiresAt      DateTime
+  scope          String   @default("user.metrics")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("withings_accounts")
 }
 
 // ========================================

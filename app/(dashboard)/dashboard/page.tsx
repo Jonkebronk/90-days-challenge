@@ -38,6 +38,7 @@ import {
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { FitbitConnectCard } from '@/components/fitness/FitbitConnectCard'
+import { WithingsConnectCard } from '@/components/fitness/WithingsConnectCard'
 
 // Separate component for handling search params (requires Suspense boundary)
 function FitbitCallbackHandler({ userId, onSync }: { userId: string | undefined; onSync: () => void }) {
@@ -53,6 +54,32 @@ function FitbitCallbackHandler({ userId, onSync }: { userId: string | undefined;
           onSync()
         } catch (error) {
           console.error('Error syncing Fitbit:', error)
+        }
+      }
+      // Wait 2 seconds for initial background sync, then do another sync to be sure
+      setTimeout(syncAndRefetch, 2000)
+      // Clear the URL parameter
+      router.replace('/dashboard', { scroll: false })
+    }
+  }, [searchParams, userId, router, onSync])
+
+  return null
+}
+
+// Handler for Withings OAuth callback
+function WithingsCallbackHandler({ userId, onSync }: { userId: string | undefined; onSync: () => void }) {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (searchParams.get('withings') === 'connected' && userId) {
+      // Trigger sync and wait a moment for initial sync to complete
+      const syncAndRefetch = async () => {
+        try {
+          await fetch('/api/withings/sync', { method: 'POST' })
+          onSync()
+        } catch (error) {
+          console.error('Error syncing Withings:', error)
         }
       }
       // Wait 2 seconds for initial background sync, then do another sync to be sure
@@ -108,6 +135,9 @@ export default function DashboardPage() {
   // Fitbit / Steps state
   const [fitbitConnected, setFitbitConnected] = useState(false)
   const [dailySteps, setDailySteps] = useState<Record<string, { steps: number; goal: number }>>({})
+
+  // Withings state
+  const [withingsConnected, setWithingsConnected] = useState(false)
 
   const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
   const userId = (session?.user as any)?.id
@@ -645,6 +675,7 @@ export default function DashboardPage() {
       {/* Fitbit callback handler - wrapped in Suspense for useSearchParams */}
       <Suspense fallback={null}>
         <FitbitCallbackHandler userId={userId} onSync={fetchClientCalendarData} />
+        <WithingsCallbackHandler userId={userId} onSync={fetchClientCalendarData} />
       </Suspense>
 
       {/* Welcome Header */}
@@ -1152,6 +1183,19 @@ export default function DashboardPage() {
           <p className="text-xs text-gray-500 mt-2 text-center">
             Läs mer om <Link href="/dashboard/articles/category/mat-dina-resultat" className="text-purple-500 hover:text-purple-700 underline">hur vi mäter dina resultat</Link> i kunskapsbanken
           </p>
+
+          {/* Withings Connection */}
+          <div className="mt-4">
+            <WithingsConnectCard
+              onConnectionChange={(connected) => {
+                setWithingsConnected(connected)
+                if (connected) {
+                  fetchClientCalendarData()
+                }
+              }}
+              onSync={() => fetchClientCalendarData()}
+            />
+          </div>
         </div>
       </div>
 
