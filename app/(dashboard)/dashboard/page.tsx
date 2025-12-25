@@ -131,6 +131,18 @@ export default function DashboardPage() {
   const [dailyWeights, setDailyWeights] = useState<Record<string, number>>({})
   const [savingWeight, setSavingWeight] = useState(false)
 
+  // Manual steps modal state
+  const [stepsModalOpen, setStepsModalOpen] = useState(false)
+  const [stepsModalDate, setStepsModalDate] = useState<Date | null>(null)
+  const [manualStepsInput, setManualStepsInput] = useState('')
+  const [savingSteps, setSavingSteps] = useState(false)
+
+  // Manual sleep modal state
+  const [sleepModalOpen, setSleepModalOpen] = useState(false)
+  const [sleepModalDate, setSleepModalDate] = useState<Date | null>(null)
+  const [manualSleepInput, setManualSleepInput] = useState('')
+  const [savingSleep, setSavingSleep] = useState(false)
+
   // Get started section visibility
   const [hideGetStarted, setHideGetStarted] = useState(false)
 
@@ -461,12 +473,90 @@ export default function DashboardPage() {
     }
   }
 
+  const handleSaveManualSteps = async () => {
+    if (!stepsModalDate || !manualStepsInput) return
+
+    setSavingSteps(true)
+    try {
+      const dateStr = stepsModalDate.toISOString().split('T')[0]
+      const response = await fetch('/api/manual-steps', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: dateStr,
+          steps: parseInt(manualStepsInput)
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setDailySteps(prev => ({
+          ...prev,
+          [dateStr]: { steps: data.steps, goal: prev[dateStr]?.goal || 10000 }
+        }))
+        setStepsModalOpen(false)
+        setManualStepsInput('')
+        setStepsModalDate(null)
+      }
+    } catch (error) {
+      console.error('Error saving manual steps:', error)
+    } finally {
+      setSavingSteps(false)
+    }
+  }
+
+  const handleSaveManualSleep = async () => {
+    if (!sleepModalDate || !manualSleepInput) return
+
+    setSavingSleep(true)
+    try {
+      const dateStr = sleepModalDate.toISOString().split('T')[0]
+      const response = await fetch('/api/manual-sleep', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: dateStr,
+          hours: parseFloat(manualSleepInput)
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setDailySleep(prev => ({
+          ...prev,
+          [dateStr]: { hours: data.hours, efficiency: data.efficiency || 0 }
+        }))
+        setSleepModalOpen(false)
+        setManualSleepInput('')
+        setSleepModalDate(null)
+      }
+    } catch (error) {
+      console.error('Error saving manual sleep:', error)
+    } finally {
+      setSavingSleep(false)
+    }
+  }
+
   // Open weight modal for a specific date
   const openWeightModal = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0]
     setSelectedDate(date)
     setDailyWeightInput(dailyWeights[dateStr]?.toString() || '')
     setWeightModalOpen(true)
+  }
+
+  const openStepsModal = (date: Date) => {
+    const dateStr = date.toISOString().split('T')[0]
+    setStepsModalDate(date)
+    setManualStepsInput(dailySteps[dateStr]?.steps?.toString() || '')
+    setStepsModalOpen(true)
+  }
+
+  const openSleepModal = (date: Date) => {
+    const dateStr = date.toISOString().split('T')[0]
+    setSleepModalDate(date)
+    setManualSleepInput(dailySleep[dateStr]?.hours?.toString() || '')
+    setSleepModalOpen(true)
   }
 
   const fetchCoachStats = async () => {
@@ -776,13 +866,17 @@ export default function DashboardPage() {
                 const dateStr = date.toISOString().split('T')[0]
                 const weight = dailyWeights[dateStr]
                 return (
-                  <div key={index} className="flex items-center justify-center py-2.5 text-xs sm:text-sm">
+                  <button
+                    key={index}
+                    onClick={() => openWeightModal(date)}
+                    className="flex items-center justify-center py-2.5 text-xs sm:text-sm hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
                     {weight !== undefined ? (
                       <span className="font-medium text-purple-500">{weight.toFixed(1)}</span>
                     ) : (
                       <span className="text-gray-300">-</span>
                     )}
-                  </div>
+                  </button>
                 )
               })}
             </div>
@@ -798,7 +892,11 @@ export default function DashboardPage() {
                 const stepsData = dailySteps[dateStr]
                 const metStepGoal = stepsData && stepsData.steps >= stepsData.goal
                 return (
-                  <div key={index} className="flex items-center justify-center py-2.5 text-xs sm:text-sm">
+                  <button
+                    key={index}
+                    onClick={() => openStepsModal(date)}
+                    className="flex items-center justify-center py-2.5 text-xs sm:text-sm hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
                     {stepsData ? (
                       <span className={`font-medium ${metStepGoal ? 'text-green-500' : 'text-emerald-500'}`}>
                         {stepsData.steps >= 1000 ? `${(stepsData.steps / 1000).toFixed(1)}k` : stepsData.steps}
@@ -806,7 +904,7 @@ export default function DashboardPage() {
                     ) : (
                       <span className="text-gray-300">-</span>
                     )}
-                  </div>
+                  </button>
                 )
               })}
             </div>
@@ -822,7 +920,11 @@ export default function DashboardPage() {
                 const sleepData = dailySleep[dateStr]
                 const goodSleep = sleepData && sleepData.hours >= 7
                 return (
-                  <div key={index} className="flex items-center justify-center py-2.5 text-xs sm:text-sm">
+                  <button
+                    key={index}
+                    onClick={() => openSleepModal(date)}
+                    className="flex items-center justify-center py-2.5 text-xs sm:text-sm hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
                     {sleepData ? (
                       <span className={`font-medium ${goodSleep ? 'text-green-500' : 'text-indigo-500'}`}>
                         {sleepData.hours}h
@@ -830,7 +932,7 @@ export default function DashboardPage() {
                     ) : (
                       <span className="text-gray-300">-</span>
                     )}
-                  </div>
+                  </button>
                 )
               })}
             </div>
@@ -1277,6 +1379,107 @@ export default function DashboardPage() {
                 className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
               >
                 {savingWeight ? 'Sparar...' : 'Spara'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Manual Steps Modal */}
+      <Dialog open={stepsModalOpen} onOpenChange={setStepsModalOpen}>
+        <DialogContent className="sm:max-w-[340px] bg-white" onOpenAutoFocus={(e) => e.preventDefault()}>
+          <DialogHeader>
+            <DialogTitle className="text-gray-900 flex items-center gap-2">
+              <Footprints className="w-5 h-5 text-emerald-500" />
+              Registrera steg
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <p className="text-sm text-gray-600">
+              {stepsModalDate && stepsModalDate.toLocaleDateString('sv-SE', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+              })}
+            </p>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Antal steg
+              </label>
+              <Input
+                type="number"
+                placeholder=""
+                value={manualStepsInput}
+                onChange={(e) => setManualStepsInput(e.target.value)}
+                autoFocus={false}
+                className="bg-gray-50 border-gray-200 text-gray-900 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setStepsModalOpen(false)}
+                className="flex-1 border-gray-200 text-gray-700"
+              >
+                Avbryt
+              </Button>
+              <Button
+                onClick={handleSaveManualSteps}
+                disabled={!manualStepsInput || savingSteps}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                {savingSteps ? 'Sparar...' : 'Spara'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Manual Sleep Modal */}
+      <Dialog open={sleepModalOpen} onOpenChange={setSleepModalOpen}>
+        <DialogContent className="sm:max-w-[340px] bg-white" onOpenAutoFocus={(e) => e.preventDefault()}>
+          <DialogHeader>
+            <DialogTitle className="text-gray-900 flex items-center gap-2">
+              <Moon className="w-5 h-5 text-indigo-500" />
+              Registrera sömn
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <p className="text-sm text-gray-600">
+              {sleepModalDate && sleepModalDate.toLocaleDateString('sv-SE', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+              })}
+            </p>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Antal timmar sömn
+              </label>
+              <Input
+                type="number"
+                step="0.5"
+                placeholder=""
+                value={manualSleepInput}
+                onChange={(e) => setManualSleepInput(e.target.value)}
+                autoFocus={false}
+                className="bg-gray-50 border-gray-200 text-gray-900 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setSleepModalOpen(false)}
+                className="flex-1 border-gray-200 text-gray-700"
+              >
+                Avbryt
+              </Button>
+              <Button
+                onClick={handleSaveManualSleep}
+                disabled={!manualSleepInput || savingSleep}
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
+              >
+                {savingSleep ? 'Sparar...' : 'Spara'}
               </Button>
             </div>
           </div>
