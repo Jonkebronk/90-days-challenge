@@ -24,6 +24,8 @@ import {
   CalendarDays,
   Heart,
   ShoppingCart,
+  BookOpen,
+  Loader2,
 } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
@@ -105,14 +107,32 @@ export default function ClientShoppingListDetailPage({
   const [isLoading, setIsLoading] = useState(true)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-
   // Product detail modal state
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null)
   const [isProductDetailOpen, setIsProductDetailOpen] = useState(false)
 
   // Tab and wizard state
-  const [activeTab, setActiveTab] = useState<'list' | 'favorites'>('list')
+  const [activeTab, setActiveTab] = useState<'list' | 'favorites' | 'recipes'>('list')
   const [showMealPlanWizard, setShowMealPlanWizard] = useState(false)
+
+  // Counts for tabs
+  const [favoriteCount, setFavoriteCount] = useState(0)
+  const [favoriteRecipes, setFavoriteRecipes] = useState<Array<{
+    id: string
+    recipe: {
+      id: string
+      title: string
+      coverImage: string | null
+      ingredients: Array<{
+        id: string
+        amount: number
+        displayUnit: string | null
+        displayAmount: string | null
+        foodItem: { id: string; name: string }
+      }>
+    }
+  }>>([])
+  const [isAddingRecipe, setIsAddingRecipe] = useState<string | null>(null)
 
   useEffect(() => {
     params.then((p) => setListId(p.id))
@@ -121,8 +141,71 @@ export default function ClientShoppingListDetailPage({
   useEffect(() => {
     if (listId && session?.user) {
       fetchShoppingList()
+      fetchFavorites()
+      fetchFavoriteRecipes()
     }
   }, [listId, session])
+
+  const fetchFavorites = async () => {
+    try {
+      const response = await fetch('/api/favorites')
+      if (response.ok) {
+        const data = await response.json()
+        setFavoriteCount(data.favorites?.length || 0)
+      }
+    } catch (error) {
+      console.error('Error fetching favorites:', error)
+    }
+  }
+
+  const fetchFavoriteRecipes = async () => {
+    try {
+      const response = await fetch('/api/recipes/favorites')
+      if (response.ok) {
+        const data = await response.json()
+        setFavoriteRecipes(data.favorites || [])
+      }
+    } catch (error) {
+      console.error('Error fetching favorite recipes:', error)
+    }
+  }
+
+  const handleAddRecipeToList = async (recipeId: string, ingredients: Array<{
+    amount: number
+    displayUnit: string | null
+    displayAmount: string | null
+    foodItem: { id: string; name: string }
+  }>) => {
+    if (!listId) return
+
+    setIsAddingRecipe(recipeId)
+    try {
+      // Add each ingredient to the shopping list
+      for (const ing of ingredients) {
+        const unit = ing.displayUnit || 'g'
+        const quantity = ing.displayAmount ? parseFloat(ing.displayAmount) || ing.amount : ing.amount
+        await fetch(`/api/shopping-lists/${listId}/items`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            recipeId,
+            foodItemId: ing.foodItem.id,
+            customName: null,
+            quantity: quantity,
+            unit: unit,
+          }),
+        })
+      }
+      toast.success('Recept tillagt i inköpslistan')
+      fetchShoppingList()
+      setActiveTab('list')
+    } catch (error) {
+      console.error('Error adding recipe to list:', error)
+      toast.error('Kunde inte lägga till recept')
+    } finally {
+      setIsAddingRecipe(null)
+    }
+  }
 
   const fetchShoppingList = async () => {
     try {
@@ -384,6 +467,31 @@ export default function ClientShoppingListDetailPage({
           >
             <Heart className="h-5 w-5" />
             Favoriter
+            {favoriteCount > 0 && (
+              <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                activeTab === 'favorites' ? 'bg-gold-primary text-white' : 'bg-gray-200 text-gray-600'
+              }`}>
+                {favoriteCount}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('recipes')}
+            className={`flex-1 py-3 px-4 text-center font-medium transition-colors flex items-center justify-center gap-2 ${
+              activeTab === 'recipes'
+                ? 'text-gold-primary border-b-2 border-gold-primary bg-gold-primary/5'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            <BookOpen className="h-5 w-5" />
+            Recept
+            {favoriteRecipes.length > 0 && (
+              <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                activeTab === 'recipes' ? 'bg-gold-primary text-white' : 'bg-gray-200 text-gray-600'
+              }`}>
+                {favoriteRecipes.length}
+              </span>
+            )}
           </button>
         </div>
       </div>
@@ -662,10 +770,72 @@ export default function ClientShoppingListDetailPage({
         )}
           </div>
         </>
-      ) : (
+      ) : activeTab === 'favorites' ? (
         /* Favorites Tab */
         <div className="p-4 pb-24 bg-white min-h-[60vh]">
           <FavoriteProductList />
+        </div>
+      ) : (
+        /* Recipes Tab */
+        <div className="p-4 pb-24 bg-gray-100 min-h-[60vh]">
+          {favoriteRecipes.length === 0 ? (
+            <Card className="bg-white border border-gray-200 shadow-sm">
+              <CardContent className="text-center py-16">
+                <BookOpen className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+                <p className="text-gray-500 mb-2">Inga favoritrecept</p>
+                <p className="text-sm text-gray-400">
+                  Spara recept som favoriter från{' '}
+                  <Link href="/dashboard/recipes" className="text-gold-primary font-medium hover:underline">
+                    Recept-sidan
+                  </Link>
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {favoriteRecipes.map((fav) => (
+                <div
+                  key={fav.id}
+                  className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+                >
+                  <div className="flex items-center gap-3 p-3">
+                    {fav.recipe.coverImage ? (
+                      <img
+                        src={fav.recipe.coverImage}
+                        alt={fav.recipe.title}
+                        className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                        <ChefHat className="w-8 h-8 text-emerald-600" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-gray-900 truncate">{fav.recipe.title}</h3>
+                      <p className="text-sm text-gray-500">
+                        {fav.recipe.ingredients.length} ingredienser
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => handleAddRecipeToList(fav.recipe.id, fav.recipe.ingredients)}
+                      disabled={isAddingRecipe === fav.recipe.id}
+                      size="sm"
+                      className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-bold"
+                    >
+                      {isAddingRecipe === fav.recipe.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Plus className="h-4 w-4 mr-1" />
+                          Lägg till
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
