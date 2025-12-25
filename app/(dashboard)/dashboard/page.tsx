@@ -749,16 +749,16 @@ export default function DashboardPage() {
                   <button
                     key={index}
                     onClick={() => openWeightModal(date)}
-                    className={`flex flex-col items-center py-2 px-1 transition-all cursor-pointer border-l border-gray-200 first:border-l-0 border-t-2 ${
+                    className={`flex flex-col items-center py-2 px-1 transition-all cursor-pointer border-t-2 ${
                       isToday
-                        ? 'bg-amber-50 border-t-amber-400'
+                        ? 'border-t-amber-400'
                         : 'border-t-transparent'
                     }`}
                   >
-                    <span className={`text-[10px] sm:text-xs font-medium ${isToday ? 'text-amber-600' : 'text-gray-500'}`}>
+                    <span className="text-[10px] sm:text-xs font-medium bg-gradient-to-r from-[#FFD700] to-orange-400 bg-clip-text text-transparent">
                       {WEEKDAY_NAMES[index]}
                     </span>
-                    <span className={`text-base sm:text-lg font-bold ${isToday ? 'text-amber-700' : 'text-gray-900'}`}>
+                    <span className={`text-base sm:text-lg font-bold ${isToday ? 'text-amber-500' : 'text-gray-700'}`}>
                       {date.getDate()}
                     </span>
                   </button>
@@ -768,20 +768,17 @@ export default function DashboardPage() {
 
             {/* Weight row */}
             <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-purple-600 py-2.5 px-2 bg-purple-50/50">
+              <div className="flex items-center gap-1.5 text-purple-500 py-2.5 px-2">
                 <Scale className="w-4 h-4" />
                 <span className="text-xs font-medium hidden sm:inline">Vikt</span>
               </div>
               {weekDays.map((date, index) => {
                 const dateStr = date.toISOString().split('T')[0]
                 const weight = dailyWeights[dateStr]
-                const isToday = isSameDay(date, new Date())
                 return (
-                  <div key={index} className={`flex items-center justify-center py-2.5 text-xs sm:text-sm border-l border-gray-200 first:border-l-0 ${
-                    isToday ? 'bg-amber-50' : ''
-                  }`}>
+                  <div key={index} className="flex items-center justify-center py-2.5 text-xs sm:text-sm">
                     {weight !== undefined ? (
-                      <span className="font-medium text-purple-600">{weight.toFixed(1)}</span>
+                      <span className="font-medium text-purple-500">{weight.toFixed(1)}</span>
                     ) : (
                       <span className="text-gray-300">-</span>
                     )}
@@ -792,7 +789,7 @@ export default function DashboardPage() {
 
             {/* Steps row */}
             <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-emerald-500 py-2.5 px-2 bg-emerald-50/50">
+              <div className="flex items-center gap-1.5 text-emerald-500 py-2.5 px-2">
                 <Footprints className="w-4 h-4" />
                 <span className="text-xs font-medium hidden sm:inline">Steg</span>
               </div>
@@ -800,11 +797,8 @@ export default function DashboardPage() {
                 const dateStr = date.toISOString().split('T')[0]
                 const stepsData = dailySteps[dateStr]
                 const metStepGoal = stepsData && stepsData.steps >= stepsData.goal
-                const isToday = isSameDay(date, new Date())
                 return (
-                  <div key={index} className={`flex items-center justify-center py-2.5 text-xs sm:text-sm border-l border-gray-200 first:border-l-0 ${
-                    isToday ? 'bg-amber-50' : ''
-                  }`}>
+                  <div key={index} className="flex items-center justify-center py-2.5 text-xs sm:text-sm">
                     {stepsData ? (
                       <span className={`font-medium ${metStepGoal ? 'text-green-500' : 'text-emerald-500'}`}>
                         {stepsData.steps >= 1000 ? `${(stepsData.steps / 1000).toFixed(1)}k` : stepsData.steps}
@@ -819,7 +813,7 @@ export default function DashboardPage() {
 
             {/* Sleep row */}
             <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-indigo-500 py-2.5 px-2 bg-indigo-50/50">
+              <div className="flex items-center gap-1.5 text-indigo-500 py-2.5 px-2">
                 <Moon className="w-4 h-4" />
                 <span className="text-xs font-medium hidden sm:inline">Sömn</span>
               </div>
@@ -827,11 +821,8 @@ export default function DashboardPage() {
                 const dateStr = date.toISOString().split('T')[0]
                 const sleepData = dailySleep[dateStr]
                 const goodSleep = sleepData && sleepData.hours >= 7
-                const isToday = isSameDay(date, new Date())
                 return (
-                  <div key={index} className={`flex items-center justify-center py-2.5 text-xs sm:text-sm border-l border-gray-200 first:border-l-0 ${
-                    isToday ? 'bg-amber-50' : ''
-                  }`}>
+                  <div key={index} className="flex items-center justify-center py-2.5 text-xs sm:text-sm">
                     {sleepData ? (
                       <span className={`font-medium ${goodSleep ? 'text-green-500' : 'text-indigo-500'}`}>
                         {sleepData.hours}h
@@ -846,7 +837,7 @@ export default function DashboardPage() {
 
             {/* Training row */}
             <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-amber-500 py-2.5 px-2 bg-amber-50/50">
+              <div className="flex items-center gap-1.5 text-orange-500 py-2.5 px-2">
                 <Dumbbell className="w-4 h-4" />
                 <span className="text-xs font-medium hidden sm:inline">Träning</span>
               </div>
@@ -854,16 +845,13 @@ export default function DashboardPage() {
                 const weekdayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1
                 const isTrainingDay = trainingDays.includes(weekdayIndex)
                 const completedWorkout = hasCompletedWorkout(date)
-                const isToday = isSameDay(date, new Date())
                 return (
-                  <div key={index} className={`flex items-center justify-center py-2.5 border-l border-gray-200 first:border-l-0 ${
-                    isToday ? 'bg-amber-50' : ''
-                  }`}>
+                  <div key={index} className="flex items-center justify-center py-2.5">
                     {isTrainingDay ? (
                       completedWorkout ? (
                         <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
                       ) : (
-                        <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-amber-400"></div>
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-orange-400"></div>
                       )
                     ) : (
                       <span className="text-gray-300">-</span>
@@ -875,7 +863,7 @@ export default function DashboardPage() {
 
             {/* Check-in row */}
             <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-blue-500 py-2.5 px-2 bg-blue-50/50">
+              <div className="flex items-center gap-1.5 text-blue-500 py-2.5 px-2">
                 <Calendar className="w-4 h-4" />
                 <span className="text-xs font-medium hidden sm:inline">Check-in</span>
               </div>
@@ -883,11 +871,8 @@ export default function DashboardPage() {
                 const weekdayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1
                 const isSunday = weekdayIndex === 6
                 const completedCheckIn = hasCheckIn(date)
-                const isToday = isSameDay(date, new Date())
                 return (
-                  <div key={index} className={`flex items-center justify-center py-2.5 border-l border-gray-200 first:border-l-0 ${
-                    isToday ? 'bg-amber-50' : ''
-                  }`}>
+                  <div key={index} className="flex items-center justify-center py-2.5">
                     {isSunday ? (
                       completedCheckIn ? (
                         <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
