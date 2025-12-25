@@ -830,18 +830,6 @@ export default function DashboardPage() {
                 Läs mer om <Link href="/dashboard/articles/cmij19vz00001k30qmlodc7k0" className="text-green-500 hover:text-green-700 underline">daglig aktivitetsnivå (steg)</Link> i kunskapsbanken
               </p>
 
-              {/* Fitbit Connection */}
-              <div className="mt-3">
-                <FitbitConnectCard
-                  onConnectionChange={(connected) => {
-                    setFitbitConnected(connected)
-                    if (connected) {
-                      fetchClientCalendarData()
-                    }
-                  }}
-                />
-              </div>
-
               <button
                 onClick={() => setIsStepTipsOpen(!isStepTipsOpen)}
                 className="flex items-center gap-2 text-xs text-green-600 hover:text-green-800 transition-colors"
@@ -1079,7 +1067,7 @@ export default function DashboardPage() {
                     {weight !== undefined ? (
                       <span className={`font-medium ${isToday ? 'text-purple-300' : 'text-purple-600'}`}>{weight.toFixed(1)}</span>
                     ) : (
-                      <span className={isToday ? 'text-gray-600' : 'text-gray-300'}>-</span>
+                      <span className={isToday ? 'text-gray-400' : 'text-gray-300'}>-</span>
                     )}
                   </div>
                 )
@@ -1108,7 +1096,7 @@ export default function DashboardPage() {
                         <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 ${isToday ? 'border-amber-300' : 'border-amber-400'}`}></div>
                       )
                     ) : (
-                      <span className={isToday ? 'text-gray-600' : 'text-gray-300'}>-</span>
+                      <span className={isToday ? 'text-gray-400' : 'text-gray-300'}>-</span>
                     )}
                   </div>
                 )
@@ -1137,7 +1125,7 @@ export default function DashboardPage() {
                         <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 ${isToday ? 'border-blue-300' : 'border-blue-400'}`}></div>
                       )
                     ) : (
-                      <span className={isToday ? 'text-gray-600' : 'text-gray-300'}>-</span>
+                      <span className={isToday ? 'text-gray-400' : 'text-gray-300'}>-</span>
                     )}
                   </div>
                 )
@@ -1165,7 +1153,7 @@ export default function DashboardPage() {
                           {stepsData.steps >= 1000 ? `${(stepsData.steps / 1000).toFixed(1)}k` : stepsData.steps}
                         </span>
                       ) : (
-                        <span className={isToday ? 'text-gray-600' : 'text-gray-300'}>-</span>
+                        <span className={isToday ? 'text-gray-400' : 'text-gray-300'}>-</span>
                       )}
                     </div>
                   )
@@ -1194,6 +1182,18 @@ export default function DashboardPage() {
                 }
               }}
               onSync={() => fetchClientCalendarData()}
+            />
+          </div>
+
+          {/* Fitbit Connection */}
+          <div className="mt-3">
+            <FitbitConnectCard
+              onConnectionChange={(connected) => {
+                setFitbitConnected(connected)
+                if (connected) {
+                  fetchClientCalendarData()
+                }
+              }}
             />
           </div>
         </div>
