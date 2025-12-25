@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { deleteActivitySubscription } from '@/lib/fitbit/subscriptions'
 
 // POST /api/fitbit/disconnect - Disconnect Fitbit account
 export async function POST() {
@@ -13,6 +14,14 @@ export async function POST() {
     }
 
     const userId = session.user.id as string
+
+    // Delete webhook subscription first (while we still have tokens)
+    try {
+      await deleteActivitySubscription(userId)
+    } catch (subError) {
+      console.error('Error deleting Fitbit subscription:', subError)
+      // Continue anyway - we still want to disconnect
+    }
 
     // Delete Fitbit account (this also deletes related data due to cascade)
     await prisma.fitbitAccount.delete({

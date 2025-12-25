@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { exchangeCodeForTokens, retrieveOAuthState } from '@/lib/fitbit/oauth'
 import { prisma } from '@/lib/prisma'
 import { syncUserSteps } from '@/lib/fitbit/sync-steps'
+import { createActivitySubscription } from '@/lib/fitbit/subscriptions'
 
 // Get base URL for redirects
 function getBaseUrl() {
@@ -78,6 +79,13 @@ export async function GET(req: NextRequest) {
       console.log('[Fitbit Callback] Initial sync complete:', result)
     }).catch(err => {
       console.error('[Fitbit Callback] Initial sync failed:', err)
+    })
+
+    // Create webhook subscription for real-time updates (don't await)
+    createActivitySubscription(userId).then(success => {
+      console.log('[Fitbit Callback] Subscription created:', success)
+    }).catch(err => {
+      console.error('[Fitbit Callback] Subscription creation failed:', err)
     })
 
     // Redirect back to dashboard with success message
