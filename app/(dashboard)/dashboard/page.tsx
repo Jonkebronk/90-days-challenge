@@ -116,6 +116,7 @@ export default function DashboardPage() {
   // Habits state
   const [isHabitsOpen, setIsHabitsOpen] = useState(true)
   const [isMealPrepExpanded, setIsMealPrepExpanded] = useState(false)
+  const [isConnectionsExpanded, setIsConnectionsExpanded] = useState(false)
   const [selectedMealPrepStep, setSelectedMealPrepStep] = useState<number | null>(null)
 
   // Calendar state
@@ -912,29 +913,40 @@ export default function DashboardPage() {
             Läs mer om <Link href="/dashboard/articles/category/mat-dina-resultat" className="text-purple-500 hover:text-purple-700 underline">hur vi mäter dina resultat</Link> i kunskapsbanken
           </p>
 
-          {/* Withings Connection */}
+          {/* Connections Section - Collapsible */}
           <div className="mt-4">
-            <WithingsConnectCard
-              onConnectionChange={(connected) => {
-                setWithingsConnected(connected)
-                if (connected) {
-                  fetchClientCalendarData()
-                }
-              }}
-              onSync={() => fetchClientCalendarData()}
-            />
-          </div>
+            <button
+              onClick={() => setIsConnectionsExpanded(!isConnectionsExpanded)}
+              className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <span className="text-sm font-medium text-gray-600">Kopplingar</span>
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isConnectionsExpanded ? 'rotate-180' : ''}`} />
+            </button>
 
-          {/* Fitbit Connection */}
-          <div className="mt-3">
-            <FitbitConnectCard
-              onConnectionChange={(connected) => {
-                setFitbitConnected(connected)
-                if (connected) {
-                  fetchClientCalendarData()
-                }
-              }}
-            />
+            {isConnectionsExpanded && (
+              <div className="mt-3 space-y-3">
+                {/* Withings Connection */}
+                <WithingsConnectCard
+                  onConnectionChange={(connected) => {
+                    setWithingsConnected(connected)
+                    if (connected) {
+                      fetchClientCalendarData()
+                    }
+                  }}
+                  onSync={() => fetchClientCalendarData()}
+                />
+
+                {/* Fitbit Connection */}
+                <FitbitConnectCard
+                  onConnectionChange={(connected) => {
+                    setFitbitConnected(connected)
+                    if (connected) {
+                      fetchClientCalendarData()
+                    }
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
