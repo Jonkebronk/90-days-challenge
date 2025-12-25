@@ -327,14 +327,16 @@ export default function DashboardPage() {
         const stepsRes = await fetch('/api/fitbit/steps/weekly')
         if (stepsRes.ok) {
           const stepsData = await stepsRes.json()
-          setFitbitConnected(true)
-          const stepsMap: Record<string, { steps: number; goal: number }> = {}
-          stepsData.days?.forEach((day: { date: string; steps: number | null; goal: number | null }) => {
-            if (day.steps !== null) {
-              stepsMap[day.date] = { steps: day.steps, goal: day.goal || 10000 }
-            }
-          })
-          setDailySteps(stepsMap)
+          setFitbitConnected(stepsData.connected === true)
+          if (stepsData.connected) {
+            const stepsMap: Record<string, { steps: number; goal: number }> = {}
+            stepsData.days?.forEach((day: { date: string; steps: number | null; goal: number | null }) => {
+              if (day.steps !== null) {
+                stepsMap[day.date] = { steps: day.steps, goal: day.goal || 10000 }
+              }
+            })
+            setDailySteps(stepsMap)
+          }
         } else {
           setFitbitConnected(false)
         }

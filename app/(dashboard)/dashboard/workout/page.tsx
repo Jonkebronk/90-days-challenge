@@ -7,12 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, Plus, Info, ChevronUp, ChevronDown, RotateCcw, Flame, X, Heart, Clock, Zap, Footprints } from 'lucide-react'
+import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, Plus, Info, ChevronUp, ChevronDown, RotateCcw, Flame, X, Heart, Clock, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { MDXPreview } from '@/components/mdx-preview'
 import { VideoPlayer } from '@/components/ui/video-player'
-import { WeeklyStepsBars } from '@/components/fitness/WeeklyStepsBars'
-import { FitbitConnectCard } from '@/components/fitness/FitbitConnectCard'
 
 // Helper to render text with markdown links [text](url)
 function renderTextWithLinks(text: string) {
@@ -135,7 +133,6 @@ export default function WorkoutPage() {
   const [incompleteSessions, setIncompleteSessions] = useState<Record<string, boolean>>({}) // dayId -> has incomplete session
   const [activeTab, setActiveTab] = useState<'strength' | 'cardio'>('strength')
   const [cardioProgram, setCardioProgram] = useState<CardioProgram | null>(null)
-  const [fitbitConnected, setFitbitConnected] = useState(false)
 
   const toggleDay = (dayId: string) => {
     setExpandedDays(prev => {
@@ -696,16 +693,6 @@ export default function WorkoutPage() {
       {/* Cardio Tab Content */}
       {activeTab === 'cardio' && (
         <div className="space-y-6">
-          {/* Daily Activity / Step Tracking */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <Footprints className="w-5 h-5 text-blue-500" />
-              Daglig aktivitet (steg)
-            </h2>
-            <FitbitConnectCard onConnectionChange={setFitbitConnected} />
-            {fitbitConnected && <WeeklyStepsBars showSummary={true} />}
-          </div>
-
           {/* Cardio Program */}
           <div className="space-y-4">
             <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
