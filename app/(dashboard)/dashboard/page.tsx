@@ -1004,106 +1004,119 @@ export default function DashboardPage() {
         {/* Week Calendar Grid - Inside card */}
         <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-x-auto">
           {/* Header row - Days */}
-          <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-1 min-w-[320px]">
-            {/* Empty cell for row labels */}
-            <div className="w-16 sm:w-20"></div>
+          <div className="min-w-[320px]">
             {/* Day headers */}
-            {weekDays.map((date, index) => {
-              const isToday = isSameDay(date, new Date())
-              return (
-                <button
-                  key={index}
-                  onClick={() => openWeightModal(date)}
-                  className={`flex flex-col items-center py-2 px-1 rounded-lg transition-all cursor-pointer ${
-                    isToday
-                      ? 'bg-gray-900 text-white'
-                      : 'hover:bg-gray-50'
-                  }`}
-                >
-                  <span className={`text-[10px] sm:text-xs font-medium ${isToday ? 'text-gray-300' : 'text-gray-500'}`}>
-                    {WEEKDAY_NAMES[index]}
-                  </span>
-                  <span className={`text-base sm:text-lg font-bold ${isToday ? 'text-white' : 'text-gray-900'}`}>
-                    {date.getDate()}
-                  </span>
-                </button>
-              )
-            })}
+            <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)]">
+              <div></div>
+              {weekDays.map((date, index) => {
+                const isToday = isSameDay(date, new Date())
+                return (
+                  <button
+                    key={index}
+                    onClick={() => openWeightModal(date)}
+                    className={`flex flex-col items-center py-2 px-1 transition-all cursor-pointer ${
+                      isToday
+                        ? 'bg-gray-900 text-white rounded-t-lg'
+                        : index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                    }`}
+                  >
+                    <span className={`text-[10px] sm:text-xs font-medium ${isToday ? 'text-gray-300' : 'text-gray-500'}`}>
+                      {WEEKDAY_NAMES[index]}
+                    </span>
+                    <span className={`text-base sm:text-lg font-bold ${isToday ? 'text-white' : 'text-gray-900'}`}>
+                      {date.getDate()}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
 
             {/* Weight row */}
-            <div className="flex items-center gap-1.5 text-purple-600 py-2">
-              <Scale className="w-4 h-4" />
-              <span className="text-xs font-medium hidden sm:inline">Vikt</span>
+            <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
+              <div className="flex items-center gap-1.5 text-purple-600 py-2.5 px-2 bg-purple-50/50">
+                <Scale className="w-4 h-4" />
+                <span className="text-xs font-medium hidden sm:inline">Vikt</span>
+              </div>
+              {weekDays.map((date, index) => {
+                const dateStr = date.toISOString().split('T')[0]
+                const weight = dailyWeights[dateStr]
+                const isToday = isSameDay(date, new Date())
+                return (
+                  <div key={index} className={`flex items-center justify-center py-2.5 text-xs sm:text-sm ${
+                    isToday ? 'bg-gray-900 text-white font-semibold' : index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                  }`}>
+                    {weight !== undefined ? (
+                      <span className={`font-medium ${isToday ? 'text-purple-300' : 'text-purple-600'}`}>{weight.toFixed(1)}</span>
+                    ) : (
+                      <span className={isToday ? 'text-gray-600' : 'text-gray-300'}>-</span>
+                    )}
+                  </div>
+                )
+              })}
             </div>
-            {weekDays.map((date, index) => {
-              const dateStr = date.toISOString().split('T')[0]
-              const weight = dailyWeights[dateStr]
-              const isToday = isSameDay(date, new Date())
-              return (
-                <div key={index} className={`flex items-center justify-center py-2 text-xs sm:text-sm ${isToday ? 'font-semibold' : ''}`}>
-                  {weight !== undefined ? (
-                    <span className="text-purple-600 font-medium">{weight.toFixed(1)}</span>
-                  ) : (
-                    <span className="text-gray-300">-</span>
-                  )}
-                </div>
-              )
-            })}
 
             {/* Training row */}
-            <div className="flex items-center gap-1.5 text-amber-500 py-2">
-              <Dumbbell className="w-4 h-4" />
-              <span className="text-xs font-medium hidden sm:inline">Träning</span>
-            </div>
-            {weekDays.map((date, index) => {
-              const weekdayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1
-              const isTrainingDay = trainingDays.includes(weekdayIndex)
-              const completedWorkout = hasCompletedWorkout(date)
-              const isToday = isSameDay(date, new Date())
-              return (
-                <div key={index} className={`flex items-center justify-center py-2 ${isToday ? 'font-semibold' : ''}`}>
-                  {isTrainingDay ? (
-                    completedWorkout ? (
-                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+            <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
+              <div className="flex items-center gap-1.5 text-amber-500 py-2.5 px-2 bg-amber-50/50">
+                <Dumbbell className="w-4 h-4" />
+                <span className="text-xs font-medium hidden sm:inline">Träning</span>
+              </div>
+              {weekDays.map((date, index) => {
+                const weekdayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1
+                const isTrainingDay = trainingDays.includes(weekdayIndex)
+                const completedWorkout = hasCompletedWorkout(date)
+                const isToday = isSameDay(date, new Date())
+                return (
+                  <div key={index} className={`flex items-center justify-center py-2.5 ${
+                    isToday ? 'bg-gray-900' : index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                  }`}>
+                    {isTrainingDay ? (
+                      completedWorkout ? (
+                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+                      ) : (
+                        <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 ${isToday ? 'border-amber-300' : 'border-amber-400'}`}></div>
+                      )
                     ) : (
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-amber-400"></div>
-                    )
-                  ) : (
-                    <span className="text-gray-300">-</span>
-                  )}
-                </div>
-              )
-            })}
+                      <span className={isToday ? 'text-gray-600' : 'text-gray-300'}>-</span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
 
-            {/* Check-in row (only show if there's a Sunday in view) */}
-            <div className="flex items-center gap-1.5 text-blue-500 py-2">
-              <Calendar className="w-4 h-4" />
-              <span className="text-xs font-medium hidden sm:inline">Check-in</span>
-            </div>
-            {weekDays.map((date, index) => {
-              const weekdayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1
-              const isSunday = weekdayIndex === 6
-              const completedCheckIn = hasCheckIn(date)
-              const isToday = isSameDay(date, new Date())
-              return (
-                <div key={index} className={`flex items-center justify-center py-2 ${isToday ? 'font-semibold' : ''}`}>
-                  {isSunday ? (
-                    completedCheckIn ? (
-                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+            {/* Check-in row */}
+            <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
+              <div className="flex items-center gap-1.5 text-blue-500 py-2.5 px-2 bg-blue-50/50">
+                <Calendar className="w-4 h-4" />
+                <span className="text-xs font-medium hidden sm:inline">Check-in</span>
+              </div>
+              {weekDays.map((date, index) => {
+                const weekdayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1
+                const isSunday = weekdayIndex === 6
+                const completedCheckIn = hasCheckIn(date)
+                const isToday = isSameDay(date, new Date())
+                return (
+                  <div key={index} className={`flex items-center justify-center py-2.5 ${
+                    isToday ? 'bg-gray-900' : index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                  }`}>
+                    {isSunday ? (
+                      completedCheckIn ? (
+                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+                      ) : (
+                        <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 ${isToday ? 'border-blue-300' : 'border-blue-400'}`}></div>
+                      )
                     ) : (
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-blue-400"></div>
-                    )
-                  ) : (
-                    <span className="text-gray-300">-</span>
-                  )}
-                </div>
-              )
-            })}
+                      <span className={isToday ? 'text-gray-600' : 'text-gray-300'}>-</span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
 
             {/* Steps row - only show if Fitbit connected */}
             {fitbitConnected && (
-              <>
-                <div className="flex items-center gap-1.5 text-emerald-500 py-2">
+              <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
+                <div className="flex items-center gap-1.5 text-emerald-500 py-2.5 px-2 bg-emerald-50/50">
                   <Footprints className="w-4 h-4" />
                   <span className="text-xs font-medium hidden sm:inline">Steg</span>
                 </div>
@@ -1113,18 +1126,20 @@ export default function DashboardPage() {
                   const metStepGoal = stepsData && stepsData.steps >= stepsData.goal
                   const isToday = isSameDay(date, new Date())
                   return (
-                    <div key={index} className={`flex items-center justify-center py-2 text-xs sm:text-sm ${isToday ? 'font-semibold' : ''}`}>
+                    <div key={index} className={`flex items-center justify-center py-2.5 text-xs sm:text-sm ${
+                      isToday ? 'bg-gray-900 rounded-b-lg' : index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
+                    }`}>
                       {stepsData ? (
-                        <span className={`font-medium ${metStepGoal ? 'text-green-500' : 'text-emerald-500'}`}>
+                        <span className={`font-medium ${metStepGoal ? 'text-green-500' : isToday ? 'text-emerald-300' : 'text-emerald-500'}`}>
                           {stepsData.steps >= 1000 ? `${(stepsData.steps / 1000).toFixed(1)}k` : stepsData.steps}
                         </span>
                       ) : (
-                        <span className="text-gray-300">-</span>
+                        <span className={isToday ? 'text-gray-600' : 'text-gray-300'}>-</span>
                       )}
                     </div>
                   )
                 })}
-              </>
+              </div>
             )}
           </div>
 
