@@ -103,7 +103,7 @@ export default function DashboardPage() {
   })
   const [onboardingGuideContent, setOnboardingGuideContent] = useState<string>('')
   const [isGettingStartedOpen, setIsGettingStartedOpen] = useState(false)
-  const [isDailyGoalsOpen, setIsDailyGoalsOpen] = useState(false)
+  const [isDailyGoalsOpen, setIsDailyGoalsOpen] = useState(true)
   const [isWaterTipsOpen, setIsWaterTipsOpen] = useState(false)
   const [isStepTipsOpen, setIsStepTipsOpen] = useState(false)
   const [userWeight, setUserWeight] = useState<string>('')
@@ -114,7 +114,8 @@ export default function DashboardPage() {
   const [hasStepGoal, setHasStepGoal] = useState(false)
 
   // Habits state
-  const [isHabitsOpen, setIsHabitsOpen] = useState(false)
+  const [isHabitsOpen, setIsHabitsOpen] = useState(true)
+  const [isMealPrepExpanded, setIsMealPrepExpanded] = useState(false)
   const [selectedMealPrepStep, setSelectedMealPrepStep] = useState<number | null>(null)
 
   // Calendar state
@@ -707,312 +708,6 @@ export default function DashboardPage() {
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
 
-      {/* Daily Goals Widget - Collapsible */}
-      <div className="max-w-6xl mx-auto">
-        <button
-          onClick={() => setIsDailyGoalsOpen(!isDailyGoalsOpen)}
-          className="w-full flex items-center justify-between mb-3 px-1"
-        >
-          <h2 className="text-sm font-medium bg-gradient-to-r from-[#FFD700] to-orange-400 bg-clip-text text-transparent">Dagliga mål</h2>
-          <ChevronDown className={`w-4 h-4 text-[#B8860B] transition-transform ${isDailyGoalsOpen ? 'rotate-180' : ''}`} />
-        </button>
-        {isDailyGoalsOpen && (
-        <div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Water Section */}
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md">
-                  <Droplets className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Vatten</h3>
-                  {waterLiters ? (
-                    <div className="flex items-center gap-2">
-                      <p className="text-xl sm:text-2xl font-bold text-blue-600">{waterLiters} liter</p>
-                      <button
-                        onClick={handleResetWeight}
-                        className="px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-                      >
-                        Ändra
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 mt-1">
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        placeholder="Vikt"
-                        value={weightInput}
-                        onChange={(e) => setWeightInput(e.target.value.replace(/[^0-9]/g, ''))}
-                        onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
-                        className="w-16 sm:w-20 px-2 py-1 text-sm border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
-                      />
-                      <span className="text-gray-600 text-sm">kg</span>
-                      <button
-                        onClick={handleCalculate}
-                        className="px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-                      >
-                        Beräkna
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <p className="text-xs text-gray-600 mb-2">
-                Läs mer om <Link href="/dashboard/articles/cmhsa0czw000uqf0qke1b3quq" className="text-blue-500 hover:text-blue-700 underline">vatten</Link> i kunskapsbanken
-              </p>
-
-              <button
-                onClick={() => setIsWaterTipsOpen(!isWaterTipsOpen)}
-                className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 transition-colors"
-              >
-                <span className="font-medium">Tips för att nå ditt mål</span>
-                <ChevronDown className={`w-3 h-3 transition-transform ${isWaterTipsOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {isWaterTipsOpen && (
-                <div className="mt-3 p-3 bg-white/70 rounded-lg border border-blue-100">
-                  <p className="font-semibold text-gray-800 mb-2 text-sm">Ett smart knep - Drick på detta sätt så når du enkelt ditt mål:</p>
-
-                  <div className="space-y-3 text-sm text-gray-700">
-                    <div>
-                      <p className="font-semibold text-gray-800">På morgonen:</p>
-                      <p className="ml-3 text-gray-600">• Direkt när du vaknar: 1 stort glas vatten (2-3 dl)</p>
-                    </div>
-
-                    <div>
-                      <p className="font-semibold text-gray-800">I samband med måltider:</p>
-                      <p className="ml-3 text-gray-600">• Vid varje måltid (4-5 st/dag): 2-3 dl vatten</p>
-                    </div>
-
-                    <div className="pt-3 border-t border-blue-100">
-                      <p className="text-gray-600">
-                        <span className="font-semibold text-gray-800">Resultat:</span> Du kommer upp i ca 1.5 liter bara genom detta! Lägg till vatten före/under/efter träning så är du i mål.
-                      </p>
-                    </div>
-
-                    <div className="bg-blue-50 rounded-lg p-3">
-                      <p className="text-blue-700">
-                        <span className="font-semibold">Tips:</span> Blanda vattnet med Fun Light eller Zeroh för att göra det enklare att dricka tillräckligt. Du kan även blanda ner kreatin i det!
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Steps Section */}
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0 shadow-md">
-                  <Footprints className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Steg</h3>
-                  {hasStepGoal ? (
-                    <div className="flex items-center gap-2">
-                      <p className="text-xl sm:text-2xl font-bold text-green-600">{parseInt(stepGoal).toLocaleString('sv-SE')} steg</p>
-                      <button
-                        onClick={handleResetStepGoal}
-                        className="px-3 py-1 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
-                      >
-                        Ändra
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 mt-1">
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        placeholder="Mål"
-                        value={stepInput}
-                        onChange={(e) => setStepInput(e.target.value.replace(/[^0-9]/g, ''))}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSaveStepGoal()}
-                        className="w-20 sm:w-24 px-2 py-1 text-sm border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"
-                      />
-                      <span className="text-gray-600 text-sm">steg</span>
-                      <button
-                        onClick={handleSaveStepGoal}
-                        className="px-3 py-1 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
-                      >
-                        Spara
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <p className="text-xs text-gray-600 mb-2">
-                Läs mer om <Link href="/dashboard/articles/cmij19vz00001k30qmlodc7k0" className="text-green-500 hover:text-green-700 underline">daglig aktivitetsnivå (steg)</Link> i kunskapsbanken
-              </p>
-
-              <button
-                onClick={() => setIsStepTipsOpen(!isStepTipsOpen)}
-                className="flex items-center gap-2 text-xs text-green-600 hover:text-green-800 transition-colors"
-              >
-                <span className="font-medium">Tips för att lyckas med ditt stegmål</span>
-                <ChevronDown className={`w-3 h-3 transition-transform ${isStepTipsOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {isStepTipsOpen && (
-                <div className="mt-3 p-3 bg-white/70 rounded-lg border border-green-100">
-                  <p className="font-semibold text-gray-800 mb-2 text-sm">Tips för att lyckas med ditt stegmål:</p>
-
-                  <div className="space-y-2 text-xs text-gray-700">
-                    <p>• Spåra dina steg via Apple Watch, Fitbit eller liknande. Du kan använda telefonen, men den är ofta opålitlig och måste alltid vara på dig.</p>
-                    <p>• Välj en mer aktiv väg i vardagen – gå av bussen en hållplats tidigare eller ta trapporna istället för hissen.</p>
-                    <p>• Stå upp och rör dig lite mellan seten på gymmet. Det är ett underskattat sätt att samla extra steg.</p>
-                    <p>• Ta 10 minuters promenader efter måltider. Det hjälper dig samla steg, motverkar trötthet efter maten och underlättar matsmältningen.</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-        )}
-      </div>
-
-      {/* Vanor Widget - Collapsible */}
-      <div className="max-w-6xl mx-auto">
-        <button
-          onClick={() => setIsHabitsOpen(!isHabitsOpen)}
-          className="w-full flex items-center justify-between mb-3 px-1"
-        >
-          <h2 className="text-sm font-medium bg-gradient-to-r from-[#FFD700] to-orange-400 bg-clip-text text-transparent">Vanor</h2>
-          <ChevronDown className={`w-4 h-4 text-[#B8860B] transition-transform ${isHabitsOpen ? 'rotate-180' : ''}`} />
-        </button>
-        {isHabitsOpen && (
-        <div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Meal Prep Section */}
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-md">
-                  <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Meal Prep</h3>
-                  <p className="text-sm text-gray-700">Förbered mat för veckan</p>
-                </div>
-              </div>
-
-              {/* Meal Prep Guide */}
-              <div className="mt-2 pt-2 border-t border-amber-200 space-y-3">
-                {/* Motivational Quote */}
-                <div className="bg-white/70 rounded-lg p-3">
-                  <p className="text-sm font-medium text-amber-800 italic text-center mb-2">
-                    &ldquo;Att misslyckas med sin planering är att planera för att misslyckas&rdquo;
-                  </p>
-                  <p className="text-xs text-gray-700 leading-relaxed">
-                    Planering, det är nyckeln till en lyckad vecka med kost och träning. Jag brukar citera Ernst Kirchsteiger <span className="italic">&ldquo;I det enkla bor det vackra&rdquo;</span>. Smaken? Den löser du i köket. Med kryddor, örter, smaksättningar och lite kreativitet kommer du att kunna laga mat som både gör gott och smakar gott - det kräver bara att du anstränger dig lite.
-                  </p>
-                  <p className="text-xs text-gray-700 leading-relaxed mt-3 font-medium">
-                    Men kom ihåg, det är inte maten som ska vara underhållningen. Belöningen är resultatet.
-                  </p>
-                </div>
-
-                {/* 3 Step Images */}
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { step: 1, title: 'Kolhydrat', image: '/images/mealprep/step1-kolhydrat.png' },
-                    { step: 2, title: 'Protein', image: '/images/mealprep/step2-protein.png' },
-                    { step: 3, title: 'Grönsaker', image: '/images/mealprep/step3-gronsaker.png' },
-                  ].map((item) => (
-                    <button
-                      key={item.step}
-                      onClick={() => setSelectedMealPrepStep(selectedMealPrepStep === item.step ? null : item.step)}
-                      className={`text-center transition-all ${selectedMealPrepStep === item.step ? 'ring-2 ring-amber-500 rounded-lg' : ''}`}
-                    >
-                      <div className="aspect-square rounded-lg overflow-hidden bg-amber-100 mb-1">
-                        <img
-                          src={item.image}
-                          alt={`Steg ${item.step}`}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <p className="text-xs font-semibold text-gray-800">Steg {item.step}</p>
-                      <p className="text-[10px] text-gray-600">{item.title}</p>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Step Details */}
-                {selectedMealPrepStep === 1 && (
-                  <div className="bg-white/70 rounded-lg p-3 text-xs text-gray-700">
-                    <h4 className="font-semibold text-gray-900 mb-1">Steg 1: Tillaga Kolhydratskälla</h4>
-                    <p>Beräkna totalmängden baserat på antal matlådor och önskad portionsstorlek i råvikt. Exempel: 10 matlådor × 70g ris = 700g. Koka hela mängden och fördela sedan jämnt i matlådorna.</p>
-                  </div>
-                )}
-
-                {selectedMealPrepStep === 2 && (
-                  <div className="bg-white/70 rounded-lg p-3 text-xs text-gray-700">
-                    <h4 className="font-semibold text-gray-900 mb-1">Steg 2: Tillaga Proteinkälla</h4>
-                    <p className="mb-2">Skär eller klipp upp proteinkällan (kyckling, köttfärs eller fisk) och väg upp i portioner baserat på råvikt. Placera varje portion i en liten hög på plåt med bakplåtspapper – så slipper du väga igen efter tillagning. Krydda efter smak.</p>
-                    <p className="font-medium">Tillagning i ugn på 200°C:</p>
-                    <ul className="list-disc list-inside ml-1">
-                      <li>Kyckling/köttfärs: ca 20 minuter</li>
-                      <li>Fisk: ca 15 minuter</li>
-                    </ul>
-                    <p className="mt-2">Lägg direkt i matlådorna när det är klart.</p>
-                  </div>
-                )}
-
-                {selectedMealPrepStep === 3 && (
-                  <div className="bg-white/70 rounded-lg p-3 text-xs text-gray-700">
-                    <h4 className="font-semibold text-gray-900 mb-1">Steg 3: Tillaga önskade grönsaker</h4>
-                    <p>Välj grönsaker du gillar och tillaga dem på valfritt sätt – ångkoka, ugnsrosta eller steka. Fördela jämnt i matlådorna.</p>
-                  </div>
-                )}
-
-                {/* Link to knowledge bank - moved to bottom */}
-                <p className="text-xs text-gray-600 pt-2 border-t border-amber-200">
-                  Läs mer om <Link href="/dashboard/articles/cmhv5hzfo0002mj0qzja6ns04" className="text-amber-500 hover:text-amber-700 underline">meal prep</Link> i kunskapsbanken
-                </p>
-              </div>
-            </div>
-
-            {/* Sleep Section */}
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center flex-shrink-0 shadow-md">
-                  <Moon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Sömn</h3>
-                  <p className="text-sm text-gray-700">Skapa en kvällsrutin</p>
-                </div>
-              </div>
-
-              <p className="text-xs text-gray-600">
-                Läs mer om <span className="text-indigo-500">sömn</span> i kunskapsbanken
-              </p>
-            </div>
-
-            {/* Stress Section */}
-            <div className="bg-gradient-to-br from-teal-50 to-cyan-50 border border-teal-200 rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md">
-                  <Brain className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Stress</h3>
-                  <p className="text-sm text-gray-700">Hitta sätt för ditt sinne och din kropp att hantera stress</p>
-                </div>
-              </div>
-
-              <p className="text-xs text-gray-600">
-                Läs mer om <span className="text-teal-500">stress</span> i kunskapsbanken
-              </p>
-            </div>
-          </div>
-        </div>
-        )}
-      </div>
-
       {/* Week Calendar Widget */}
       <div className="max-w-6xl mx-auto">
         {/* Header with Day Counter and Phase Info - Outside card */}
@@ -1240,6 +935,302 @@ export default function DashboardPage() {
                 }
               }}
             />
+          </div>
+        </div>
+      </div>
+
+      {/* Daily Goals Widget */}
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-sm font-medium bg-gradient-to-r from-[#FFD700] to-orange-400 bg-clip-text text-transparent mb-3 px-1">Dagliga mål</h2>
+        <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Water Section */}
+            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <Droplets className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Vatten</h3>
+                  {waterLiters ? (
+                    <div className="flex items-center gap-2">
+                      <p className="text-xl sm:text-2xl font-bold text-blue-600">{waterLiters} liter</p>
+                      <button
+                        onClick={handleResetWeight}
+                        className="px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                      >
+                        Ändra
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 mt-1">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        placeholder="Vikt"
+                        value={weightInput}
+                        onChange={(e) => setWeightInput(e.target.value.replace(/[^0-9]/g, ''))}
+                        onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
+                        className="w-16 sm:w-20 px-2 py-1 text-sm border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+                      />
+                      <span className="text-gray-600 text-sm">kg</span>
+                      <button
+                        onClick={handleCalculate}
+                        className="px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                      >
+                        Beräkna
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-600 mb-2">
+                Läs mer om <Link href="/dashboard/articles/cmhsa0czw000uqf0qke1b3quq" className="text-blue-500 hover:text-blue-700 underline">vatten</Link> i kunskapsbanken
+              </p>
+
+              <button
+                onClick={() => setIsWaterTipsOpen(!isWaterTipsOpen)}
+                className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 transition-colors"
+              >
+                <span className="font-medium">Tips för att nå ditt mål</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${isWaterTipsOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isWaterTipsOpen && (
+                <div className="mt-3 p-3 bg-white/70 rounded-lg border border-blue-100">
+                  <p className="font-semibold text-gray-800 mb-2 text-sm">Ett smart knep - Drick på detta sätt så når du enkelt ditt mål:</p>
+
+                  <div className="space-y-3 text-sm text-gray-700">
+                    <div>
+                      <p className="font-semibold text-gray-800">På morgonen:</p>
+                      <p className="ml-3 text-gray-600">• Direkt när du vaknar: 1 stort glas vatten (2-3 dl)</p>
+                    </div>
+
+                    <div>
+                      <p className="font-semibold text-gray-800">I samband med måltider:</p>
+                      <p className="ml-3 text-gray-600">• Vid varje måltid (4-5 st/dag): 2-3 dl vatten</p>
+                    </div>
+
+                    <div className="pt-3 border-t border-blue-100">
+                      <p className="text-gray-600">
+                        <span className="font-semibold text-gray-800">Resultat:</span> Du kommer upp i ca 1.5 liter bara genom detta! Lägg till vatten före/under/efter träning så är du i mål.
+                      </p>
+                    </div>
+
+                    <div className="bg-blue-50 rounded-lg p-3">
+                      <p className="text-blue-700">
+                        <span className="font-semibold">Tips:</span> Blanda vattnet med Fun Light eller Zeroh för att göra det enklare att dricka tillräckligt. Du kan även blanda ner kreatin i det!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Steps Section */}
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <Footprints className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Steg</h3>
+                  {hasStepGoal ? (
+                    <div className="flex items-center gap-2">
+                      <p className="text-xl sm:text-2xl font-bold text-green-600">{parseInt(stepGoal).toLocaleString('sv-SE')} steg</p>
+                      <button
+                        onClick={handleResetStepGoal}
+                        className="px-3 py-1 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+                      >
+                        Ändra
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 mt-1">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        placeholder="Mål"
+                        value={stepInput}
+                        onChange={(e) => setStepInput(e.target.value.replace(/[^0-9]/g, ''))}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSaveStepGoal()}
+                        className="w-20 sm:w-24 px-2 py-1 text-sm border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"
+                      />
+                      <span className="text-gray-600 text-sm">steg</span>
+                      <button
+                        onClick={handleSaveStepGoal}
+                        className="px-3 py-1 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+                      >
+                        Spara
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-600 mb-2">
+                Läs mer om <Link href="/dashboard/articles/cmij19vz00001k30qmlodc7k0" className="text-green-500 hover:text-green-700 underline">daglig aktivitetsnivå (steg)</Link> i kunskapsbanken
+              </p>
+
+              <button
+                onClick={() => setIsStepTipsOpen(!isStepTipsOpen)}
+                className="flex items-center gap-2 text-xs text-green-600 hover:text-green-800 transition-colors"
+              >
+                <span className="font-medium">Tips för att lyckas med ditt stegmål</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${isStepTipsOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isStepTipsOpen && (
+                <div className="mt-3 p-3 bg-white/70 rounded-lg border border-green-100">
+                  <p className="font-semibold text-gray-800 mb-2 text-sm">Tips för att lyckas med ditt stegmål:</p>
+
+                  <div className="space-y-2 text-xs text-gray-700">
+                    <p>• Spåra dina steg via Apple Watch, Fitbit eller liknande. Du kan använda telefonen, men den är ofta opålitlig och måste alltid vara på dig.</p>
+                    <p>• Välj en mer aktiv väg i vardagen – gå av bussen en hållplats tidigare eller ta trapporna istället för hissen.</p>
+                    <p>• Stå upp och rör dig lite mellan seten på gymmet. Det är ett underskattat sätt att samla extra steg.</p>
+                    <p>• Ta 10 minuters promenader efter måltider. Det hjälper dig samla steg, motverkar trötthet efter maten och underlättar matsmältningen.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Vanor Widget */}
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-sm font-medium bg-gradient-to-r from-[#FFD700] to-orange-400 bg-clip-text text-transparent mb-3 px-1">Vanor</h2>
+        <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Meal Prep Section */}
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4">
+              <button
+                onClick={() => setIsMealPrepExpanded(!isMealPrepExpanded)}
+                className="w-full flex items-center gap-3"
+              >
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+                <div className="flex-1 text-left">
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Meal Prep</h3>
+                  <p className="text-sm text-gray-700">Förbered mat för veckan</p>
+                </div>
+                <ChevronDown className={`w-5 h-5 text-amber-600 transition-transform ${isMealPrepExpanded ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Meal Prep Guide - Collapsible */}
+              {isMealPrepExpanded && (
+              <div className="mt-3 pt-3 border-t border-amber-200 space-y-3">
+                {/* Motivational Quote */}
+                <div className="bg-white/70 rounded-lg p-3">
+                  <p className="text-sm font-medium text-amber-800 italic text-center mb-2">
+                    &ldquo;Att misslyckas med sin planering är att planera för att misslyckas&rdquo;
+                  </p>
+                  <p className="text-xs text-gray-700 leading-relaxed">
+                    Planering, det är nyckeln till en lyckad vecka med kost och träning. Jag brukar citera Ernst Kirchsteiger <span className="italic">&ldquo;I det enkla bor det vackra&rdquo;</span>. Smaken? Den löser du i köket. Med kryddor, örter, smaksättningar och lite kreativitet kommer du att kunna laga mat som både gör gott och smakar gott - det kräver bara att du anstränger dig lite.
+                  </p>
+                  <p className="text-xs text-gray-700 leading-relaxed mt-3 font-medium">
+                    Men kom ihåg, det är inte maten som ska vara underhållningen. Belöningen är resultatet.
+                  </p>
+                </div>
+
+                {/* 3 Step Images */}
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { step: 1, title: 'Kolhydrat', image: '/images/mealprep/step1-kolhydrat.png' },
+                    { step: 2, title: 'Protein', image: '/images/mealprep/step2-protein.png' },
+                    { step: 3, title: 'Grönsaker', image: '/images/mealprep/step3-gronsaker.png' },
+                  ].map((item) => (
+                    <button
+                      key={item.step}
+                      onClick={() => setSelectedMealPrepStep(selectedMealPrepStep === item.step ? null : item.step)}
+                      className={`text-center transition-all ${selectedMealPrepStep === item.step ? 'ring-2 ring-amber-500 rounded-lg' : ''}`}
+                    >
+                      <div className="aspect-square rounded-lg overflow-hidden bg-amber-100 mb-1">
+                        <img
+                          src={item.image}
+                          alt={`Steg ${item.step}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <p className="text-xs font-semibold text-gray-800">Steg {item.step}</p>
+                      <p className="text-[10px] text-gray-600">{item.title}</p>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Step Details */}
+                {selectedMealPrepStep === 1 && (
+                  <div className="bg-white/70 rounded-lg p-3 text-xs text-gray-700">
+                    <h4 className="font-semibold text-gray-900 mb-1">Steg 1: Tillaga Kolhydratskälla</h4>
+                    <p>Beräkna totalmängden baserat på antal matlådor och önskad portionsstorlek i råvikt. Exempel: 10 matlådor × 70g ris = 700g. Koka hela mängden och fördela sedan jämnt i matlådorna.</p>
+                  </div>
+                )}
+
+                {selectedMealPrepStep === 2 && (
+                  <div className="bg-white/70 rounded-lg p-3 text-xs text-gray-700">
+                    <h4 className="font-semibold text-gray-900 mb-1">Steg 2: Tillaga Proteinkälla</h4>
+                    <p className="mb-2">Skär eller klipp upp proteinkällan (kyckling, köttfärs eller fisk) och väg upp i portioner baserat på råvikt. Placera varje portion i en liten hög på plåt med bakplåtspapper – så slipper du väga igen efter tillagning. Krydda efter smak.</p>
+                    <p className="font-medium">Tillagning i ugn på 200°C:</p>
+                    <ul className="list-disc list-inside ml-1">
+                      <li>Kyckling/köttfärs: ca 20 minuter</li>
+                      <li>Fisk: ca 15 minuter</li>
+                    </ul>
+                    <p className="mt-2">Lägg direkt i matlådorna när det är klart.</p>
+                  </div>
+                )}
+
+                {selectedMealPrepStep === 3 && (
+                  <div className="bg-white/70 rounded-lg p-3 text-xs text-gray-700">
+                    <h4 className="font-semibold text-gray-900 mb-1">Steg 3: Tillaga önskade grönsaker</h4>
+                    <p>Välj grönsaker du gillar och tillaga dem på valfritt sätt – ångkoka, ugnsrosta eller steka. Fördela jämnt i matlådorna.</p>
+                  </div>
+                )}
+
+                {/* Link to knowledge bank - moved to bottom */}
+                <p className="text-xs text-gray-600 pt-2 border-t border-amber-200">
+                  Läs mer om <Link href="/dashboard/articles/cmhv5hzfo0002mj0qzja6ns04" className="text-amber-500 hover:text-amber-700 underline">meal prep</Link> i kunskapsbanken
+                </p>
+              </div>
+              )}
+            </div>
+
+            {/* Sleep Section */}
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <Moon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Sömn</h3>
+                  <p className="text-sm text-gray-700">Skapa en kvällsrutin</p>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-600">
+                Läs mer om <span className="text-indigo-500">sömn</span> i kunskapsbanken
+              </p>
+            </div>
+
+            {/* Stress Section */}
+            <div className="bg-gradient-to-br from-teal-50 to-cyan-50 border border-teal-200 rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                  <Brain className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-base">Stress</h3>
+                  <p className="text-sm text-gray-700">Hitta sätt för ditt sinne och din kropp att hantera stress</p>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-600">
+                Läs mer om <span className="text-teal-500">stress</span> i kunskapsbanken
+              </p>
+            </div>
           </div>
         </div>
       </div>
