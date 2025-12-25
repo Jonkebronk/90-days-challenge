@@ -905,7 +905,7 @@ export default function DashboardPage() {
 
           {/* Tip text */}
           <p className="text-xs text-gray-400 mt-4 text-center">
-            Tryck på en dag för att registrera din vikt
+            Tryck på en dag för att registrera din vikt manuellt
           </p>
 
           {/* Link to knowledge base */}
