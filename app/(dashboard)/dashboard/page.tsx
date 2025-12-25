@@ -1152,63 +1152,59 @@ export default function DashboardPage() {
               })}
             </div>
 
-            {/* Steps row - only show if Fitbit connected */}
-            {fitbitConnected && (
-              <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
-                <div className="flex items-center gap-1.5 text-emerald-500 py-2.5 px-2 bg-emerald-50/50">
-                  <Footprints className="w-4 h-4" />
-                  <span className="text-xs font-medium hidden sm:inline">Steg</span>
-                </div>
-                {weekDays.map((date, index) => {
-                  const dateStr = date.toISOString().split('T')[0]
-                  const stepsData = dailySteps[dateStr]
-                  const metStepGoal = stepsData && stepsData.steps >= stepsData.goal
-                  const isToday = isSameDay(date, new Date())
-                  return (
-                    <div key={index} className={`flex items-center justify-center py-2.5 text-xs sm:text-sm border-l border-gray-200 first:border-l-0 ${
-                      isToday ? 'bg-amber-50' : ''
-                    }`}>
-                      {stepsData ? (
-                        <span className={`font-medium ${metStepGoal ? 'text-green-500' : 'text-emerald-500'}`}>
-                          {stepsData.steps >= 1000 ? `${(stepsData.steps / 1000).toFixed(1)}k` : stepsData.steps}
-                        </span>
-                      ) : (
-                        <span className="text-gray-300">-</span>
-                      )}
-                    </div>
-                  )
-                })}
+            {/* Steps row - always show */}
+            <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
+              <div className="flex items-center gap-1.5 text-emerald-500 py-2.5 px-2 bg-emerald-50/50">
+                <Footprints className="w-4 h-4" />
+                <span className="text-xs font-medium hidden sm:inline">Steg</span>
               </div>
-            )}
+              {weekDays.map((date, index) => {
+                const dateStr = date.toISOString().split('T')[0]
+                const stepsData = dailySteps[dateStr]
+                const metStepGoal = stepsData && stepsData.steps >= stepsData.goal
+                const isToday = isSameDay(date, new Date())
+                return (
+                  <div key={index} className={`flex items-center justify-center py-2.5 text-xs sm:text-sm border-l border-gray-200 first:border-l-0 ${
+                    isToday ? 'bg-amber-50' : ''
+                  }`}>
+                    {stepsData ? (
+                      <span className={`font-medium ${metStepGoal ? 'text-green-500' : 'text-emerald-500'}`}>
+                        {stepsData.steps >= 1000 ? `${(stepsData.steps / 1000).toFixed(1)}k` : stepsData.steps}
+                      </span>
+                    ) : (
+                      <span className="text-gray-300">-</span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
 
-            {/* Sleep row - only show if Fitbit connected and has sleep data */}
-            {fitbitConnected && Object.keys(dailySleep).length > 0 && (
-              <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
-                <div className="flex items-center gap-1.5 text-indigo-500 py-2.5 px-2 bg-indigo-50/50">
-                  <Moon className="w-4 h-4" />
-                  <span className="text-xs font-medium hidden sm:inline">Sömn</span>
-                </div>
-                {weekDays.map((date, index) => {
-                  const dateStr = date.toISOString().split('T')[0]
-                  const sleepData = dailySleep[dateStr]
-                  const goodSleep = sleepData && sleepData.hours >= 7
-                  const isToday = isSameDay(date, new Date())
-                  return (
-                    <div key={index} className={`flex items-center justify-center py-2.5 text-xs sm:text-sm border-l border-gray-200 first:border-l-0 ${
-                      isToday ? 'bg-amber-50' : ''
-                    }`}>
-                      {sleepData ? (
-                        <span className={`font-medium ${goodSleep ? 'text-green-500' : 'text-indigo-500'}`}>
-                          {sleepData.hours}h
-                        </span>
-                      ) : (
-                        <span className="text-gray-300">-</span>
-                      )}
-                    </div>
-                  )
-                })}
+            {/* Sleep row - always show */}
+            <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
+              <div className="flex items-center gap-1.5 text-indigo-500 py-2.5 px-2 bg-indigo-50/50">
+                <Moon className="w-4 h-4" />
+                <span className="text-xs font-medium hidden sm:inline">Sömn</span>
               </div>
-            )}
+              {weekDays.map((date, index) => {
+                const dateStr = date.toISOString().split('T')[0]
+                const sleepData = dailySleep[dateStr]
+                const goodSleep = sleepData && sleepData.hours >= 7
+                const isToday = isSameDay(date, new Date())
+                return (
+                  <div key={index} className={`flex items-center justify-center py-2.5 text-xs sm:text-sm border-l border-gray-200 first:border-l-0 ${
+                    isToday ? 'bg-amber-50' : ''
+                  }`}>
+                    {sleepData ? (
+                      <span className={`font-medium ${goodSleep ? 'text-green-500' : 'text-indigo-500'}`}>
+                        {sleepData.hours}h
+                      </span>
+                    ) : (
+                      <span className="text-gray-300">-</span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </div>
 
           {/* Tip text */}
