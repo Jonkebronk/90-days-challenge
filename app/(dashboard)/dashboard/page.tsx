@@ -762,14 +762,33 @@ export default function DashboardPage() {
                 <div className="flex-1">
                   <h3 className="font-bold text-gray-900 text-sm sm:text-base">Steg</h3>
                   {hasStepGoal ? (
-                    <div className="flex items-center gap-2">
-                      <p className="text-xl sm:text-2xl font-bold text-green-600">{parseInt(stepGoal).toLocaleString('sv-SE')} steg</p>
-                      <button
-                        onClick={handleResetStepGoal}
-                        className="px-3 py-1 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
-                      >
-                        Ändra
-                      </button>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-xl sm:text-2xl font-bold text-green-600">{parseInt(stepGoal).toLocaleString('sv-SE')} steg</p>
+                        <button
+                          onClick={handleResetStepGoal}
+                          className="px-3 py-1 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+                        >
+                          Ändra
+                        </button>
+                      </div>
+                      {/* Today's steps from Fitbit */}
+                      {(() => {
+                        const todayStr = new Date().toISOString().split('T')[0]
+                        const todaySteps = dailySteps[todayStr]
+                        if (todaySteps) {
+                          const percentage = Math.round((todaySteps.steps / todaySteps.goal) * 100)
+                          const goalMet = percentage >= 100
+                          return (
+                            <p className={`text-sm mt-1 ${goalMet ? 'text-green-600' : 'text-gray-600'}`}>
+                              Idag: <span className="font-semibold">{todaySteps.steps.toLocaleString('sv-SE')}</span> steg
+                              <span className="text-xs ml-1">({percentage}%)</span>
+                              {goalMet && <span className="ml-1">✓</span>}
+                            </p>
+                          )
+                        }
+                        return null
+                      })()}
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 mt-1">
