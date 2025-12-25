@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { CheckCircle2 } from 'lucide-react'
 import { WeeklyNutritionBars } from '@/components/nutrition'
+import { WeeklyStepsBars } from '@/components/fitness/WeeklyStepsBars'
 
 interface CheckInFlowProps {
   userId: string
@@ -894,6 +895,12 @@ export default function CheckInFlow({ userId, userName, onClose }: CheckInFlowPr
             {/* Weekly Nutrition Bars */}
             <div className="mb-6">
               <WeeklyNutritionBars showSummary={true} />
+            </div>
+
+            {/* Weekly Steps Bars */}
+            <div className="mb-6">
+              <h4 className="text-lg font-semibold mb-3 text-gray-900">Daglig aktivitet</h4>
+              <WeeklyStepsBars showSummary={true} compact={true} />
             </div>
 
             <div className="flex gap-4">
