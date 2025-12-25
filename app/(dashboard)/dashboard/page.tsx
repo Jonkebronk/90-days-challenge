@@ -88,11 +88,31 @@ export default function DashboardPage() {
       setUserWeight(savedWeight)
       setHasCalculated(true)
     }
-    const savedStepGoal = localStorage.getItem('stepGoal')
-    if (savedStepGoal) {
-      setStepGoal(savedStepGoal)
-      setHasStepGoal(true)
+
+    // Load step goal from database first, fallback to localStorage
+    const loadStepGoal = async () => {
+      try {
+        const response = await fetch('/api/user/step-goal')
+        if (response.ok) {
+          const data = await response.json()
+          if (data.stepGoal && data.stepGoal !== 10000) {
+            setStepGoal(String(data.stepGoal))
+            setHasStepGoal(true)
+            return
+          }
+        }
+      } catch (error) {
+        console.error('Error loading step goal:', error)
+      }
+      // Fallback to localStorage
+      const savedStepGoal = localStorage.getItem('stepGoal')
+      if (savedStepGoal) {
+        setStepGoal(savedStepGoal)
+        setHasStepGoal(true)
+      }
     }
+    loadStepGoal()
+
     const hiddenGetStarted = localStorage.getItem('hideGetStarted') === 'true'
     setHideGetStarted(hiddenGetStarted)
   }, [])
@@ -117,11 +137,22 @@ export default function DashboardPage() {
   }
 
   // Save step goal
-  const handleSaveStepGoal = () => {
+  const handleSaveStepGoal = async () => {
     if (stepInput && parseInt(stepInput) > 0) {
       setStepGoal(stepInput)
       setHasStepGoal(true)
       localStorage.setItem('stepGoal', stepInput)
+
+      // Also save to database for Fitbit integration
+      try {
+        await fetch('/api/user/step-goal', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stepGoal: parseInt(stepInput) }),
+        })
+      } catch (error) {
+        console.error('Error saving step goal to database:', error)
+      }
     }
   }
 
