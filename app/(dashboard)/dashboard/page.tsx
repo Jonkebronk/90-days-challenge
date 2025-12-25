@@ -309,11 +309,22 @@ export default function DashboardPage() {
 
   // Check if a day has a completed workout
   const hasCompletedWorkout = (date: Date) => {
-    return workoutSessions.some((session: any) => {
+    const found = workoutSessions.some((session: any) => {
       if (!session.startedAt || !session.completed) return false
       const sessionDate = new Date(session.startedAt)
-      return isSameDay(sessionDate, date)
+      const match = isSameDay(sessionDate, date)
+      if (date.getDate() === 22) {
+        console.log('[DEBUG] Checking date 22:', {
+          sessionStartedAt: session.startedAt,
+          sessionDate: sessionDate.toISOString(),
+          calendarDate: date.toISOString(),
+          sessionCompleted: session.completed,
+          match
+        })
+      }
+      return match
     })
+    return found
   }
 
   // Check if a day has a check-in
@@ -363,6 +374,12 @@ export default function DashboardPage() {
       const sessionsRes = await fetch('/api/workout-sessions?limit=100')
       if (sessionsRes.ok) {
         const data = await sessionsRes.json()
+        console.log('[DEBUG] Fetched workout sessions:', data.sessions?.map((s: any) => ({
+          id: s.id,
+          startedAt: s.startedAt,
+          completed: s.completed,
+          dayName: s.workoutProgramDay?.name
+        })))
         setWorkoutSessions(data.sessions || [])
       }
 
