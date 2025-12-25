@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -38,10 +38,35 @@ import {
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 
+// Separate component for handling search params (requires Suspense boundary)
+function FitbitCallbackHandler({ userId, onSync }: { userId: string | undefined; onSync: () => void }) {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (searchParams.get('fitbit') === 'connected' && userId) {
+      // Trigger sync and wait a moment for initial sync to complete
+      const syncAndRefetch = async () => {
+        try {
+          await fetch('/api/fitbit/sync', { method: 'POST' })
+          onSync()
+        } catch (error) {
+          console.error('Error syncing Fitbit:', error)
+        }
+      }
+      // Wait 2 seconds for initial background sync, then do another sync to be sure
+      setTimeout(syncAndRefetch, 2000)
+      // Clear the URL parameter
+      router.replace('/dashboard', { scroll: false })
+    }
+  }, [searchParams, userId, router, onSync])
+
+  return null
+}
+
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [stats, setStats] = useState({
     clients: 0,
     leads: 0,
@@ -277,26 +302,6 @@ export default function DashboardPage() {
     }
     fetchOnboardingGuide()
   }, [isCoach, userId])
-
-  // Handle Fitbit connection callback - sync and refetch data
-  useEffect(() => {
-    if (searchParams.get('fitbit') === 'connected' && userId) {
-      // Trigger sync and wait a moment for initial sync to complete
-      const syncAndRefetch = async () => {
-        try {
-          await fetch('/api/fitbit/sync', { method: 'POST' })
-          // Refetch calendar data to get step data
-          fetchClientCalendarData()
-        } catch (error) {
-          console.error('Error syncing Fitbit:', error)
-        }
-      }
-      // Wait 2 seconds for initial background sync, then do another sync to be sure
-      setTimeout(syncAndRefetch, 2000)
-      // Clear the URL parameter
-      router.replace('/dashboard', { scroll: false })
-    }
-  }, [searchParams, userId])
 
   // Fetch workout program and sessions for client calendar
   const fetchClientCalendarData = async () => {
@@ -636,6 +641,11 @@ export default function DashboardPage() {
   // Client Dashboard
   return (
     <div className="space-y-8">
+      {/* Fitbit callback handler - wrapped in Suspense for useSearchParams */}
+      <Suspense fallback={null}>
+        <FitbitCallbackHandler userId={userId} onSync={fetchClientCalendarData} />
+      </Suspense>
+
       {/* Welcome Header */}
       <div className="text-center mb-6 sm:mb-8">
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
