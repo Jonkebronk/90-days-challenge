@@ -78,6 +78,10 @@ export default function DashboardPage() {
   // Get started section visibility
   const [hideGetStarted, setHideGetStarted] = useState(false)
 
+  // Fitbit / Steps state
+  const [fitbitConnected, setFitbitConnected] = useState(false)
+  const [dailySteps, setDailySteps] = useState<Record<string, { steps: number; goal: number }>>({})
+
   const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
   const userId = (session?.user as any)?.id
 
@@ -316,6 +320,26 @@ export default function DashboardPage() {
           weightsMap[w.date] = w.weight
         })
         setDailyWeights(weightsMap)
+      }
+
+      // Fetch Fitbit connection status and weekly steps
+      try {
+        const stepsRes = await fetch('/api/fitbit/steps/weekly')
+        if (stepsRes.ok) {
+          const stepsData = await stepsRes.json()
+          setFitbitConnected(true)
+          const stepsMap: Record<string, { steps: number; goal: number }> = {}
+          stepsData.days?.forEach((day: { date: string; steps: number | null; goal: number | null }) => {
+            if (day.steps !== null) {
+              stepsMap[day.date] = { steps: day.steps, goal: day.goal || 10000 }
+            }
+          })
+          setDailySteps(stepsMap)
+        } else {
+          setFitbitConnected(false)
+        }
+      } catch {
+        setFitbitConnected(false)
       }
 
     } catch (error) {
@@ -741,6 +765,24 @@ export default function DashboardPage() {
                 Läs mer om <Link href="/dashboard/articles/cmij19vz00001k30qmlodc7k0" className="text-green-500 hover:text-green-700 underline">daglig aktivitetsnivå (steg)</Link> i kunskapsbanken
               </p>
 
+              {/* Fitbit Connection */}
+              <div className="mb-2">
+                {fitbitConnected ? (
+                  <span className="text-xs text-green-600 flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    Fitbit kopplad
+                  </span>
+                ) : (
+                  <a
+                    href="/api/fitbit/auth"
+                    className="text-xs text-green-500 hover:text-green-700 underline flex items-center gap-1"
+                  >
+                    <Smartphone className="w-3 h-3" />
+                    Koppla Fitbit för att synka steg automatiskt
+                  </a>
+                )}
+              </div>
+
               <button
                 onClick={() => setIsStepTipsOpen(!isStepTipsOpen)}
                 className="flex items-center gap-2 text-xs text-green-600 hover:text-green-800 transition-colors"
@@ -943,6 +985,8 @@ export default function DashboardPage() {
             const completedCheckIn = hasCheckIn(date)
             const dateStr = date.toISOString().split('T')[0]
             const hasWeight = dailyWeights[dateStr] !== undefined
+            const stepsData = dailySteps[dateStr]
+            const metStepGoal = stepsData && stepsData.steps >= stepsData.goal
 
             return (
               <button
@@ -980,6 +1024,13 @@ export default function DashboardPage() {
                       <Calendar className={`w-4 h-4 ${isToday ? 'text-blue-300' : 'text-blue-500'}`} />
                     )
                   )}
+                  {stepsData && (
+                    metStepGoal ? (
+                      <Footprints className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <Footprints className={`w-4 h-4 ${isToday ? 'text-emerald-300' : 'text-emerald-400'}`} />
+                    )
+                  )}
                 </div>
               </button>
             )
@@ -1000,6 +1051,12 @@ export default function DashboardPage() {
               <Calendar className="w-3 h-3 text-blue-500" />
               <span>Check-in</span>
             </div>
+            {fitbitConnected && (
+              <div className="flex items-center gap-1">
+                <Footprints className="w-3 h-3 text-emerald-500" />
+                <span>Steg</span>
+              </div>
+            )}
           </div>
 
           {/* Tip text */}
