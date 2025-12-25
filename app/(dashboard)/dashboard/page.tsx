@@ -1071,14 +1071,18 @@ export default function DashboardPage() {
                       <Calendar className={`w-4 h-4 ${isToday ? 'text-blue-300' : 'text-blue-500'}`} />
                     )
                   )}
-                  {stepsData && (
-                    metStepGoal ? (
-                      <Footprints className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <Footprints className={`w-4 h-4 ${isToday ? 'text-emerald-300' : 'text-emerald-400'}`} />
-                    )
-                  )}
                 </div>
+                {/* Step count */}
+                {stepsData && (
+                  <div className={`text-[10px] font-medium mt-0.5 flex items-center gap-0.5 ${
+                    metStepGoal
+                      ? 'text-green-500'
+                      : isToday ? 'text-emerald-300' : 'text-emerald-500'
+                  }`}>
+                    <Footprints className="w-3 h-3" />
+                    <span>{stepsData.steps >= 1000 ? `${(stepsData.steps / 1000).toFixed(1)}k` : stepsData.steps}</span>
+                  </div>
+                )}
               </button>
             )
           })}
