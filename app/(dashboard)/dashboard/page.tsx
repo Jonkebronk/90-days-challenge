@@ -281,6 +281,14 @@ export default function DashboardPage() {
            date1.getDate() === date2.getDate()
   }
 
+  // Get local date string (YYYY-MM-DD) - fixes timezone issues
+  const getLocalDateString = (date: Date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
   // Calculate program day, week, and phase from start date
   const getProgramInfo = () => {
     if (!workoutProgram?.startDate) return null
@@ -309,22 +317,11 @@ export default function DashboardPage() {
 
   // Check if a day has a completed workout
   const hasCompletedWorkout = (date: Date) => {
-    const found = workoutSessions.some((session: any) => {
+    return workoutSessions.some((session: any) => {
       if (!session.startedAt || !session.completed) return false
       const sessionDate = new Date(session.startedAt)
-      const match = isSameDay(sessionDate, date)
-      if (date.getDate() === 22) {
-        console.log('[DEBUG] Checking date 22:', {
-          sessionStartedAt: session.startedAt,
-          sessionDate: sessionDate.toISOString(),
-          calendarDate: date.toISOString(),
-          sessionCompleted: session.completed,
-          match
-        })
-      }
-      return match
+      return isSameDay(sessionDate, date)
     })
-    return found
   }
 
   // Check if a day has a check-in
@@ -374,12 +371,6 @@ export default function DashboardPage() {
       const sessionsRes = await fetch('/api/workout-sessions?limit=100')
       if (sessionsRes.ok) {
         const data = await sessionsRes.json()
-        console.log('[DEBUG] Fetched workout sessions:', data.sessions?.map((s: any) => ({
-          id: s.id,
-          startedAt: s.startedAt,
-          completed: s.completed,
-          dayName: s.workoutProgramDay?.name
-        })))
         setWorkoutSessions(data.sessions || [])
       }
 
@@ -400,7 +391,7 @@ export default function DashboardPage() {
       endOfWeek.setDate(startOfWeek.getDate() + 6)
 
       const weightsRes = await fetch(
-        `/api/daily-weight?startDate=${startOfWeek.toISOString().split('T')[0]}&endDate=${endOfWeek.toISOString().split('T')[0]}`
+        `/api/daily-weight?startDate=${getLocalDateString(startOfWeek)}&endDate=${getLocalDateString(endOfWeek)}`
       )
       if (weightsRes.ok) {
         const data = await weightsRes.json()
@@ -463,7 +454,7 @@ export default function DashboardPage() {
 
     setSavingWeight(true)
     try {
-      const dateStr = selectedDate.toISOString().split('T')[0]
+      const dateStr = getLocalDateString(selectedDate)
       const response = await fetch('/api/daily-weight', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -495,7 +486,7 @@ export default function DashboardPage() {
 
     setSavingSteps(true)
     try {
-      const dateStr = stepsModalDate.toISOString().split('T')[0]
+      const dateStr = getLocalDateString(stepsModalDate)
       const response = await fetch('/api/manual-steps', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -527,7 +518,7 @@ export default function DashboardPage() {
 
     setSavingSleep(true)
     try {
-      const dateStr = sleepModalDate.toISOString().split('T')[0]
+      const dateStr = getLocalDateString(sleepModalDate)
       const response = await fetch('/api/manual-sleep', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -556,21 +547,21 @@ export default function DashboardPage() {
 
   // Open weight modal for a specific date
   const openWeightModal = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0]
+    const dateStr = getLocalDateString(date)
     setSelectedDate(date)
     setDailyWeightInput(dailyWeights[dateStr]?.toString() || '')
     setWeightModalOpen(true)
   }
 
   const openStepsModal = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0]
+    const dateStr = getLocalDateString(date)
     setStepsModalDate(date)
     setManualStepsInput(dailySteps[dateStr]?.steps?.toString() || '')
     setStepsModalOpen(true)
   }
 
   const openSleepModal = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0]
+    const dateStr = getLocalDateString(date)
     setSleepModalDate(date)
     setManualSleepInput(dailySleep[dateStr]?.hours?.toString() || '')
     setSleepModalOpen(true)
@@ -880,7 +871,7 @@ export default function DashboardPage() {
                 <span className="text-xs font-medium hidden sm:inline">Vikt</span>
               </div>
               {weekDays.map((date, index) => {
-                const dateStr = date.toISOString().split('T')[0]
+                const dateStr = getLocalDateString(date)
                 const weight = dailyWeights[dateStr]
                 return (
                   <button
@@ -905,7 +896,7 @@ export default function DashboardPage() {
                 <span className="text-xs font-medium hidden sm:inline">Steg</span>
               </div>
               {weekDays.map((date, index) => {
-                const dateStr = date.toISOString().split('T')[0]
+                const dateStr = getLocalDateString(date)
                 const stepsData = dailySteps[dateStr]
                 const metStepGoal = stepsData && stepsData.steps >= stepsData.goal
                 return (
@@ -933,7 +924,7 @@ export default function DashboardPage() {
                 <span className="text-xs font-medium hidden sm:inline">Sömn</span>
               </div>
               {weekDays.map((date, index) => {
-                const dateStr = date.toISOString().split('T')[0]
+                const dateStr = getLocalDateString(date)
                 const sleepData = dailySleep[dateStr]
                 const goodSleep = sleepData && sleepData.hours >= 7
                 return (
@@ -966,12 +957,10 @@ export default function DashboardPage() {
                 const completedWorkout = hasCompletedWorkout(date)
                 return (
                   <div key={index} className="flex items-center justify-center py-2.5">
-                    {isTrainingDay ? (
-                      completedWorkout ? (
-                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
-                      ) : (
-                        <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-orange-400"></div>
-                      )
+                    {completedWorkout ? (
+                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+                    ) : isTrainingDay ? (
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-orange-400"></div>
                     ) : (
                       <span className="text-gray-300">-</span>
                     )}
