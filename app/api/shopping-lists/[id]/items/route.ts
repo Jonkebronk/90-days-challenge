@@ -106,7 +106,7 @@ export async function POST(
     }
 
     const body = await req.json()
-    const { foodItemId, productId, customName, customImageUrl, quantity, unit, category, notes } = body
+    const { foodItemId, productId, recipeId, customName, customImageUrl, quantity, unit, category, notes } = body
 
     // Validate
     if (!foodItemId && !productId && !customName) {
@@ -158,6 +158,7 @@ export async function POST(
         listId,
         foodItemId: foodItemId || null,
         productId: productId || null,
+        recipeId: recipeId || null,
         customName: customName || null,
         customImageUrl: customImageUrl || null,
         quantity: quantity || 1,
@@ -182,6 +183,13 @@ export async function POST(
           },
         },
         product: true,
+        recipe: {
+          select: {
+            id: true,
+            title: true,
+            coverImage: true,
+          },
+        },
       },
     })
 
