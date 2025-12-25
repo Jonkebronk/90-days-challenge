@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { exchangeCodeForTokens, retrieveOAuthState } from '@/lib/fitbit/oauth'
 import { prisma } from '@/lib/prisma'
+import { syncUserSteps } from '@/lib/fitbit/sync-steps'
 
 // Get base URL for redirects
 function getBaseUrl() {
@@ -71,8 +72,16 @@ export async function GET(req: NextRequest) {
     })
 
     console.log('[Fitbit Callback] SUCCESS - Fitbit connected for user:', userId)
-    // Redirect back to workout page with success message
-    return NextResponse.redirect(`${baseUrl}/dashboard/workout?fitbit=connected`)
+
+    // Trigger initial sync of step data (don't await, let it run in background)
+    syncUserSteps(userId, 7).then(result => {
+      console.log('[Fitbit Callback] Initial sync complete:', result)
+    }).catch(err => {
+      console.error('[Fitbit Callback] Initial sync failed:', err)
+    })
+
+    // Redirect back to dashboard with success message
+    return NextResponse.redirect(`${baseUrl}/dashboard?fitbit=connected`)
   } catch (error) {
     console.error('[Fitbit Callback] ERROR:', error)
     return NextResponse.redirect(`${baseUrl}/dashboard/profile?error=token_exchange_failed`)
