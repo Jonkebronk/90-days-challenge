@@ -140,8 +140,8 @@ export function FitbitConnectCard({
               </div>
               <p className="text-sm text-gray-500">
                 {connected
-                  ? 'Stegdata synkroniseras automatiskt'
-                  : 'Koppla for att spara stegdata'}
+                  ? 'Steg- och sömndata synkroniseras automatiskt'
+                  : 'Koppla för att synka steg och sömn'}
               </p>
             </div>
           </div>
