@@ -28,6 +28,7 @@ interface MealBuilderProps {
   onSaveAsFavorite?: () => void;
   isSaving?: boolean;
   showFavoriteButton?: boolean;
+  showAddButton?: boolean;
 }
 
 const CATEGORIES: { key: MacroCategory; label: string; color: string; bgColor: string; icon: string }[] = [
@@ -47,6 +48,7 @@ export function MealBuilder({
   onSaveAsFavorite,
   isSaving = false,
   showFavoriteButton = true,
+  showAddButton = true,
 }: MealBuilderProps) {
   const [selectModalOpen, setSelectModalOpen] = useState(false);
   const [selectCategory, setSelectCategory] = useState<MacroCategory | null>(null);
@@ -117,17 +119,19 @@ export function MealBuilder({
                   {cat.label}
                 </span>
               </div>
-              <button
-                onClick={() => handleOpenSelect(cat.key)}
-                className={cn(
-                  'flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors',
-                  cat.color,
-                  'hover:bg-white/50'
-                )}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Lägg till
-              </button>
+              {showAddButton && (
+                <button
+                  onClick={() => handleOpenSelect(cat.key)}
+                  className={cn(
+                    'flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors',
+                    cat.color,
+                    'hover:bg-white/50'
+                  )}
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Lägg till
+                </button>
+              )}
             </div>
 
             {/* Items */}

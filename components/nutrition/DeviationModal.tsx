@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AlertTriangle, ArrowLeft, Calendar } from 'lucide-react';
+import { AlertTriangle, Calendar, Sparkles, Wrench } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { MealBuilder } from './MealBuilder';
+import { MealInput } from './MealInput';
 import type { MacroCategory } from '@/lib/types/meal-plan-generator';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface MealItem {
   id: string;
@@ -34,6 +36,8 @@ interface DeviationModalProps {
   initialDate?: Date;
 }
 
+type InputMode = 'ai' | 'manual';
+
 export function DeviationModal({
   isOpen,
   onClose,
@@ -45,6 +49,10 @@ export function DeviationModal({
   const isEditMode = !!editMealId;
   const [items, setItems] = useState<MealItem[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [inputMode, setInputMode] = useState<InputMode>('ai');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [pendingText, setPendingText] = useState<string | null>(null);
+  const [pendingImage, setPendingImage] = useState<string | null>(null);
 
   // Deviation date selection
   const [deviationDate, setDeviationDate] = useState<Date>(() => {
@@ -58,17 +66,88 @@ export function DeviationModal({
     if (isOpen) {
       if (initialItems && initialItems.length > 0) {
         setItems(initialItems);
+        setInputMode('manual'); // Switch to manual when editing
         if (initialDate) {
           setDeviationDate(initialDate);
         }
       } else {
         setItems([]);
+        setInputMode('ai');
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         setDeviationDate(today);
       }
+      setPendingText(null);
+      setPendingImage(null);
     }
   }, [isOpen, initialItems, initialDate]);
+
+  // Analyze when we have pending input
+  useEffect(() => {
+    if ((pendingText || pendingImage) && !isAnalyzing) {
+      analyzeWithAI();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingText, pendingImage]);
+
+  const analyzeWithAI = async () => {
+    if (!pendingText && !pendingImage) return;
+
+    setIsAnalyzing(true);
+    try {
+      const response = await fetch('/api/deviation/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: pendingText,
+          imageBase64: pendingImage,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to analyze');
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.items) {
+        // Convert AI items to MealItems
+        const newItems: MealItem[] = result.items.map((item: {
+          name: string;
+          estimatedGrams: number;
+          nutrition: { kcal: number; protein: number; carbs: number; fat: number };
+          category?: string;
+        }, index: number) => ({
+          id: `ai-${Date.now()}-${index}`,
+          name: item.name,
+          brand: null,
+          image: null,
+          grams: item.estimatedGrams,
+          kcal: item.nutrition.kcal,
+          protein: item.nutrition.protein,
+          carbs: item.nutrition.carbs,
+          fat: item.nutrition.fat,
+          category: (item.category as MacroCategory) || 'mixed',
+        }));
+
+        setItems((prev) => [...prev, ...newItems]);
+        toast.success(`Lade till ${newItems.length} ingredienser`);
+
+        // Show reasoning if available
+        if (result.reasoning) {
+          console.log('AI reasoning:', result.reasoning);
+        }
+      }
+    } catch (error) {
+      console.error('Error analyzing meal:', error);
+      toast.error('Kunde inte analysera måltiden. Försök igen eller lägg till manuellt.');
+    } finally {
+      setIsAnalyzing(false);
+      setPendingText(null);
+      setPendingImage(null);
+    }
+  };
 
   // Item management
   const handleAddItem = (item: MealItem) => {
@@ -129,6 +208,8 @@ export function DeviationModal({
 
   const handleClose = () => {
     setItems([]);
+    setPendingText(null);
+    setPendingImage(null);
     onClose();
   };
 
@@ -211,23 +292,72 @@ export function DeviationModal({
               </div>
             </div>
 
-            {/* Intro text */}
-            <div className="text-center py-2">
-              <p className="text-sm text-gray-500">
-                Lägg till vad du åt genom att välja kategori och produkt
-              </p>
+            {/* Input mode toggle */}
+            <div className="flex items-center justify-center gap-2 p-1 bg-gray-100 rounded-xl">
+              <button
+                onClick={() => setInputMode('ai')}
+                className={cn(
+                  'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 justify-center',
+                  inputMode === 'ai'
+                    ? 'bg-white text-green-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800'
+                )}
+              >
+                <Sparkles className="h-4 w-4" />
+                AI-analys
+              </button>
+              <button
+                onClick={() => setInputMode('manual')}
+                className={cn(
+                  'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 justify-center',
+                  inputMode === 'manual'
+                    ? 'bg-white text-blue-700 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800'
+                )}
+              >
+                <Wrench className="h-4 w-4" />
+                Manuell
+              </button>
             </div>
 
-            {/* Meal builder */}
-            <MealBuilder
-              items={items}
-              onAddItem={handleAddItem}
-              onRemoveItem={handleRemoveItem}
-              onUpdateGrams={handleUpdateGrams}
-              onSave={handleSave}
-              isSaving={isSaving}
-              showFavoriteButton={false}
-            />
+            {/* AI Input mode */}
+            {inputMode === 'ai' && (
+              <div className="space-y-4">
+                <MealInput
+                  onTextSubmit={(text) => setPendingText(text)}
+                  onImageUpload={(image) => setPendingImage(image)}
+                  onBuildMeal={() => setInputMode('manual')}
+                  isAnalyzing={isAnalyzing}
+                />
+
+                {/* Show items if any added */}
+                {items.length > 0 && (
+                  <MealBuilder
+                    items={items}
+                    onAddItem={handleAddItem}
+                    onRemoveItem={handleRemoveItem}
+                    onUpdateGrams={handleUpdateGrams}
+                    onSave={handleSave}
+                    isSaving={isSaving}
+                    showFavoriteButton={false}
+                    showAddButton={false}
+                  />
+                )}
+              </div>
+            )}
+
+            {/* Manual input mode */}
+            {inputMode === 'manual' && (
+              <MealBuilder
+                items={items}
+                onAddItem={handleAddItem}
+                onRemoveItem={handleRemoveItem}
+                onUpdateGrams={handleUpdateGrams}
+                onSave={handleSave}
+                isSaving={isSaving}
+                showFavoriteButton={false}
+              />
+            )}
           </div>
         </div>
       </DialogContent>
