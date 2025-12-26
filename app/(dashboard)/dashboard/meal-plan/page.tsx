@@ -14,8 +14,7 @@ import { MacroDisplay } from '@/components/meal-plan/MacroDisplay'
 import { AdjustMacrosWizard, MealMacros as WizardMealMacros } from '@/components/meal-plan/AdjustMacrosWizard'
 import { MealPlanGenerator } from '@/components/meal-plan-generator'
 import { MealPlanCatalog } from '@/components/meal-plan/catalog'
-import { DeviationModal, DeviationButton, DeviationMealCard, SocialMealCard } from '@/components/nutrition'
-import { QuickTrackModal } from '@/components/social-meal'
+import { DeviationModal, DeviationButton, DeviationMealCard } from '@/components/nutrition'
 import type { MacroCategory } from '@/lib/types/meal-plan-generator'
 
 interface MealPlanItem {
@@ -134,25 +133,8 @@ export default function MealPlanPage() {
     }>;
     totalNutrition: { kcal: number; protein: number; carbs: number; fat: number };
   } | null>(null)
-  const [selectedDaySocialMeal, setSelectedDaySocialMeal] = useState<{
-    id: string;
-    timestamp: Date;
-    components: Array<{
-      id: string;
-      category: string;
-      foodItemName: string;
-      grams: number;
-      kcal: number;
-      protein: number;
-      carbs: number;
-      fat: number;
-    }>;
-    totalNutrition: { kcal: number; protein: number; carbs: number; fat: number };
-  } | null>(null)
 
   // Edit mode states
-  const [socialMealModalOpen, setSocialMealModalOpen] = useState(false)
-  const [editingSocialMealId, setEditingSocialMealId] = useState<string | null>(null)
   const [editingDeviationId, setEditingDeviationId] = useState<string | null>(null)
 
   const toggleMeal = (mealNumber: number) => {
@@ -175,10 +157,9 @@ export default function MealPlanPage() {
     fetchNutritionPlan()
   }, [])
 
-  // Fetch deviation and social meal when selected day changes
+  // Fetch deviation when selected day changes
   useEffect(() => {
     fetchSelectedDayDeviation()
-    fetchSelectedDaySocialMeal()
   }, [selectedDay])
 
   const fetchSelectedDayDeviation = async () => {
@@ -229,56 +210,45 @@ export default function MealPlanPage() {
   }
 
   const handleDeviationSave = (data: {
-    mealId: string;
     deviationDate: Date;
     nutrition: { kcal: number; protein: number; carbs: number; fat: number };
+    items: Array<{
+      id: string;
+      name: string;
+      brand?: string | null;
+      image?: string | null;
+      grams: number;
+      kcal: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      category: string;
+    }>;
   }) => {
-    // Refresh the deviation for the current view
-    fetchSelectedDayDeviation()
-  }
-
-  // Delete social meal
-  const handleDeleteSocialMeal = async () => {
-    if (!selectedDaySocialMeal) return
-    if (!confirm('Är du säker på att du vill ta bort denna måltid?')) return
-
-    try {
-      const response = await fetch(`/api/social-meals/${selectedDaySocialMeal.id}`, {
-        method: 'DELETE',
-      })
-      if (response.ok) {
-        setSelectedDaySocialMeal(null)
-      }
-    } catch (error) {
-      console.error('Error deleting social meal:', error)
-    }
+    // Update the local deviation state with the new data
+    setTodaysDeviation({
+      id: editingDeviationId || `local-${Date.now()}`,
+      deviationDate: data.deviationDate,
+      components: data.items.map(item => ({
+        id: item.id,
+        category: item.category,
+        foodItemName: item.name,
+        grams: item.grams,
+        kcal: item.kcal,
+        protein: item.protein,
+        carbs: item.carbs,
+        fat: item.fat,
+      })),
+      totalNutrition: data.nutrition,
+    })
   }
 
   // Delete deviation
   const handleDeleteDeviation = async () => {
     if (!todaysDeviation) return
     if (!confirm('Är du säker på att du vill ta bort denna avvikelse?')) return
-
-    try {
-      // Delete the social meal (deviation)
-      const response = await fetch(`/api/social-meals/${todaysDeviation.id}`, {
-        method: 'DELETE',
-      })
-      if (response.ok) {
-        setTodaysDeviation(null)
-        // Also refresh to update the daily nutrition log
-        fetchSelectedDayDeviation()
-      }
-    } catch (error) {
-      console.error('Error deleting deviation:', error)
-    }
-  }
-
-  // Edit social meal - open modal with existing data
-  const handleEditSocialMeal = () => {
-    if (!selectedDaySocialMeal) return
-    setEditingSocialMealId(selectedDaySocialMeal.id)
-    setSocialMealModalOpen(true)
+    // Clear the deviation state
+    setTodaysDeviation(null)
   }
 
   // Edit deviation - open modal with existing data
@@ -309,108 +279,6 @@ export default function MealPlanPage() {
       fat: c.fat,
       category: c.category as MacroCategory,
     }))
-  }
-
-  // Handle saving social meal (new or edit)
-  const handleSaveSocialMeal = async (data: {
-    mealType: string;
-    components: Array<{
-      category: string;
-      foodItemId: string;
-      foodItemName: string;
-      portionSize: string;
-      grams: number;
-      kcal: number;
-      protein: number;
-      carbs: number;
-      fat: number;
-    }>;
-    nutrition: { kcal: number; protein: number; carbs: number; fat: number };
-    inputMethod?: string;
-    confidence?: string;
-    dataSource?: string;
-  }) => {
-    try {
-      // If editing, delete old meal first
-      if (editingSocialMealId) {
-        await fetch(`/api/social-meals/${editingSocialMealId}`, {
-          method: 'DELETE',
-        })
-      }
-
-      // Create new meal
-      const response = await fetch('/api/social-meals', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...data,
-          isDeviation: false,
-        }),
-      })
-
-      if (response.ok) {
-        const result = await response.json()
-        // Refresh the social meal display
-        fetchSelectedDaySocialMeal()
-        setSocialMealModalOpen(false)
-        setEditingSocialMealId(null)
-        return { id: result.meal.id }
-      }
-    } catch (error) {
-      console.error('Error saving social meal:', error)
-    }
-  }
-
-  const fetchSelectedDaySocialMeal = async () => {
-    try {
-      // Calculate the date for the selected day
-      const today = new Date()
-      const currentDayOfWeek = today.getDay()
-      const adjustedCurrentDay = currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1
-      const diffDays = selectedDay - adjustedCurrentDay
-
-      const targetDate = new Date(today)
-      targetDate.setDate(today.getDate() + diffDays)
-      targetDate.setHours(0, 0, 0, 0)
-
-      const endOfDay = new Date(targetDate)
-      endOfDay.setHours(23, 59, 59, 999)
-
-      // Fetch social meals for the selected day (dinner only, not deviations)
-      const response = await fetch(`/api/social-meals?dateFrom=${targetDate.toISOString()}&dateTo=${endOfDay.toISOString()}&mealType=dinner`)
-      if (response.ok) {
-        const data = await response.json()
-        // Find the most recent dinner that is NOT a deviation
-        const dinnerMeal = data.meals?.find((m: { isDeviation: boolean }) => !m.isDeviation)
-        if (dinnerMeal) {
-          setSelectedDaySocialMeal({
-            id: dinnerMeal.id,
-            timestamp: new Date(dinnerMeal.timestamp),
-            components: dinnerMeal.components?.map((c: { id: string; category: string; foodItemName: string; grams: number; kcal: number; protein: number; carbs: number; fat: number }) => ({
-              id: c.id,
-              category: c.category,
-              foodItemName: c.foodItemName,
-              grams: c.grams,
-              kcal: c.kcal,
-              protein: Number(c.protein),
-              carbs: Number(c.carbs),
-              fat: Number(c.fat),
-            })) || [],
-            totalNutrition: {
-              kcal: dinnerMeal.kcal || 0,
-              protein: Number(dinnerMeal.protein) || 0,
-              carbs: Number(dinnerMeal.carbs) || 0,
-              fat: Number(dinnerMeal.fat) || 0,
-            },
-          })
-        } else {
-          setSelectedDaySocialMeal(null)
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching social meal:', error)
-      setSelectedDaySocialMeal(null)
-    }
   }
 
   const fetchNutritionPlan = async () => {
@@ -1054,17 +922,6 @@ export default function MealPlanPage() {
                 </div>
               )}
 
-              {/* Social Meal Card - shown after flexible meals */}
-              {selectedDaySocialMeal && (
-                <SocialMealCard
-                  timestamp={selectedDaySocialMeal.timestamp}
-                  components={selectedDaySocialMeal.components}
-                  totalNutrition={selectedDaySocialMeal.totalNutrition}
-                  onEdit={handleEditSocialMeal}
-                  onDelete={handleDeleteSocialMeal}
-                />
-              )}
-
               {/* Deviation Card - shown after all meals */}
               {todaysDeviation && (
                 <DeviationMealCard
@@ -1091,18 +948,6 @@ export default function MealPlanPage() {
         editMealId={editingDeviationId}
         initialItems={editingDeviationId && todaysDeviation ? getEditItems(todaysDeviation.components) : undefined}
         initialDate={editingDeviationId && todaysDeviation ? todaysDeviation.deviationDate : undefined}
-      />
-
-      {/* Social Meal Edit Modal */}
-      <QuickTrackModal
-        isOpen={socialMealModalOpen}
-        onClose={() => {
-          setSocialMealModalOpen(false)
-          setEditingSocialMealId(null)
-        }}
-        onSave={handleSaveSocialMeal}
-        editMealId={editingSocialMealId}
-        initialItems={editingSocialMealId && selectedDaySocialMeal ? getEditItems(selectedDaySocialMeal.components) : undefined}
       />
     </div>
   )

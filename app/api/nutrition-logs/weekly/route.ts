@@ -60,18 +60,6 @@ export async function GET(request: Request) {
         },
       },
       orderBy: { date: 'asc' },
-      include: {
-        deviationMeal: {
-          select: {
-            id: true,
-            mealType: true,
-            kcal: true,
-            protein: true,
-            carbs: true,
-            fat: true,
-          },
-        },
-      },
     });
 
     // Generate array for all 7 days

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Camera, Plus, Send, Loader2, X, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface SocialMealInputProps {
+interface MealInputProps {
   onTextSubmit: (text: string) => void;
   onImageUpload: (imageBase64: string) => void;
   onBuildMeal: () => void;
@@ -12,13 +12,13 @@ interface SocialMealInputProps {
   disabled?: boolean;
 }
 
-export function SocialMealInput({
+export function MealInput({
   onTextSubmit,
   onImageUpload,
   onBuildMeal,
   isAnalyzing = false,
   disabled = false,
-}: SocialMealInputProps) {
+}: MealInputProps) {
   const [text, setText] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);

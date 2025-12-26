@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry, Pencil, ArrowUp, ArrowDown, Info, Zap } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry, Pencil, ArrowUp, ArrowDown, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -10,8 +10,7 @@ import { ProductSelectModal } from './ProductSelectModal';
 import { RecipeDetailDialog } from './RecipeDetailDialog';
 import { FoodItemDetailDialog } from './FoodItemDetailDialog';
 import { RecommendedFoodsDialog } from './RecommendedFoodsDialog';
-import { QuickTrackModal } from '@/components/social-meal';
-import type { MealType as QuickTrackMealType, SelectedComponent } from '@/lib/social-meal/types';
+import { DinnerTipsDialog } from '@/components/meal-plan/DinnerTipsDialog';
 import { cn } from '@/lib/utils';
 import type {
   GeneratedMeal,
@@ -194,15 +193,6 @@ const CATEGORY_CONFIG: Record<string, {
   },
 };
 
-// Map meal plan type to QuickTrack type
-const MEAL_TYPE_TO_QUICK_TRACK: Record<string, QuickTrackMealType> = {
-  frukost: 'breakfast',
-  lunch: 'lunch',
-  middag: 'dinner',
-  mellanmål: 'snack',
-  kvällsmål: 'snack',
-};
-
 // Helper to check if a food is a berry
 function isBerry(name: string): boolean {
   const nameLower = name.toLowerCase();
@@ -260,12 +250,6 @@ export function ClientStyleMealCard({
   const [editTargetOpen, setEditTargetOpen] = useState(false);
   const [editTargetValues, setEditTargetValues] = useState<CalculatedMacros | null>(null);
 
-  // Quick Track modal state
-  const [quickTrackOpen, setQuickTrackOpen] = useState(false);
-  const [quickTrackSaving, setQuickTrackSaving] = useState(false);
-
-
-
   // Handle recipe click
   const handleRecipeClick = (recipeId: string) => {
     setSelectedRecipeId(recipeId);
@@ -301,62 +285,6 @@ export function ClientStyleMealCard({
       await onUpdateMealMacros(mealIndex, editTargetValues);
       setEditTargetOpen(false);
       setEditTargetValues(null);
-    }
-  };
-
-  // Handle Quick Track save
-  const handleQuickTrackSave = async (data: {
-    mealType: QuickTrackMealType;
-    components: SelectedComponent[];
-    nutrition: { kcal: number; protein: number; carbs: number; fat: number };
-    presetId?: string;
-    presetName?: string;
-    inputMethod?: 'quick_track' | 'text' | 'image' | 'both';
-    confidence?: 'low' | 'medium' | 'high';
-    dataSource?: string;
-  }): Promise<{ id: string } | void> => {
-    setQuickTrackSaving(true);
-    try {
-      const response = await fetch('/api/social-meals', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          mealType: data.mealType,
-          inputMethod: data.inputMethod || 'quick_track',
-          kcal: data.nutrition.kcal,
-          protein: data.nutrition.protein,
-          carbs: data.nutrition.carbs,
-          fat: data.nutrition.fat,
-          dataSource: data.dataSource || 'quick_track',
-          confidence: data.confidence,
-          presetDinnerId: data.presetId,
-          presetDinnerName: data.presetName,
-          components: data.components.map((c) => ({
-            category: c.category,
-            foodItemId: c.foodItemId,
-            foodItemName: c.foodItemName,
-            portionSize: c.portionSize,
-            grams: c.grams,
-            kcal: c.kcal,
-            protein: c.protein,
-            carbs: c.carbs,
-            fat: c.fat,
-          })),
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save meal');
-      }
-
-      const result = await response.json();
-      // Return the meal ID so feedback modal can be shown
-      return { id: result.meal.id };
-    } catch (error) {
-      console.error('Error saving quick track meal:', error);
-      throw error;
-    } finally {
-      setQuickTrackSaving(false);
     }
   };
 
@@ -592,6 +520,9 @@ export function ClientStyleMealCard({
             <span className="text-base font-semibold text-zinc-900">{mealLabel}</span>
           </button>
 
+          {/* Dinner tips dialog - only for middag */}
+          {meal.type === 'middag' && <DinnerTipsDialog />}
+
           {/* Info icon with recommended macros popover */}
           {meal.targetMacros && meal.targetMacros.kcal > 0 && (
             <Popover>
@@ -639,18 +570,6 @@ export function ClientStyleMealCard({
               </PopoverContent>
             </Popover>
           )}
-
-          {/* Quick Track button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setQuickTrackOpen(true);
-            }}
-            className="p-1.5 rounded-lg bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white shadow-sm transition-all hover:shadow-md"
-            title="Quick Track - Logga måltid"
-          >
-            <Zap className="w-4 h-4" />
-          </button>
 
           {/* Move up/down buttons */}
           {(onMoveUp || onMoveDown) && (
@@ -1069,14 +988,6 @@ export function ClientStyleMealCard({
           )}
         </DialogContent>
       </Dialog>
-
-      {/* Quick Track Modal */}
-      <QuickTrackModal
-        isOpen={quickTrackOpen}
-        onClose={() => setQuickTrackOpen(false)}
-        onSave={handleQuickTrackSave}
-        initialMealType={MEAL_TYPE_TO_QUICK_TRACK[meal.type] || 'dinner'}
-      />
 
     </div>
   );

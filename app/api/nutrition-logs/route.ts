@@ -43,13 +43,6 @@ export async function GET(request: Request) {
           : {}),
       },
       orderBy: { date: 'asc' },
-      include: {
-        deviationMeal: {
-          include: {
-            components: true,
-          },
-        },
-      },
     });
 
     return NextResponse.json({ logs });

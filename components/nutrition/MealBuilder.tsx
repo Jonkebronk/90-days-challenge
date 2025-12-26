@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, X, Trash2, Save, Star } from 'lucide-react';
+import { Plus, Trash2, Save, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProductSelectModal } from '@/components/meal-plan-generator/ProductSelectModal';
 import type { MacroCategory, CalculatedMacros } from '@/lib/types/meal-plan-generator';
@@ -19,14 +19,15 @@ interface MealItem {
   category: MacroCategory;
 }
 
-interface SocialMealBuilderProps {
+interface MealBuilderProps {
   items: MealItem[];
   onAddItem: (item: MealItem) => void;
   onRemoveItem: (id: string) => void;
   onUpdateGrams: (id: string, grams: number) => void;
   onSave: () => void;
-  onSaveAsFavorite: () => void;
+  onSaveAsFavorite?: () => void;
   isSaving?: boolean;
+  showFavoriteButton?: boolean;
 }
 
 const CATEGORIES: { key: MacroCategory; label: string; color: string; bgColor: string; icon: string }[] = [
@@ -37,7 +38,7 @@ const CATEGORIES: { key: MacroCategory; label: string; color: string; bgColor: s
   { key: 'sauce', label: 'Sås', color: 'text-orange-600', bgColor: 'bg-orange-50 border-orange-100', icon: '🫗' },
 ];
 
-export function SocialMealBuilder({
+export function MealBuilder({
   items,
   onAddItem,
   onRemoveItem,
@@ -45,7 +46,8 @@ export function SocialMealBuilder({
   onSave,
   onSaveAsFavorite,
   isSaving = false,
-}: SocialMealBuilderProps) {
+  showFavoriteButton = true,
+}: MealBuilderProps) {
   const [selectModalOpen, setSelectModalOpen] = useState(false);
   const [selectCategory, setSelectCategory] = useState<MacroCategory | null>(null);
 
@@ -218,14 +220,16 @@ export function SocialMealBuilder({
 
           {/* Action buttons */}
           <div className="flex gap-3">
-            <button
-              onClick={onSaveAsFavorite}
-              disabled={isSaving}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-amber-300 bg-amber-50 text-amber-700 rounded-xl font-medium hover:bg-amber-100 transition-colors"
-            >
-              <Star className="h-4 w-4" />
-              Spara som favorit
-            </button>
+            {showFavoriteButton && onSaveAsFavorite && (
+              <button
+                onClick={onSaveAsFavorite}
+                disabled={isSaving}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-amber-300 bg-amber-50 text-amber-700 rounded-xl font-medium hover:bg-amber-100 transition-colors"
+              >
+                <Star className="h-4 w-4" />
+                Spara som favorit
+              </button>
+            )}
             <button
               onClick={onSave}
               disabled={isSaving}
