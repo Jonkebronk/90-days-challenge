@@ -283,7 +283,7 @@ export default function ShoppingListDetailPage() {
 
       if (response.ok) {
         const data = await response.json()
-        toast.success(`${data.count} varor borttagna`)
+        toast.success(`${data.count || 0} varor borttagna`)
         fetchList()
       }
     } catch (error) {

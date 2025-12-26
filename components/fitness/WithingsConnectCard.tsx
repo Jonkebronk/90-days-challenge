@@ -89,7 +89,7 @@ export function WithingsConnectCard({
       if (response.ok) {
         const data = await response.json()
         setLastSync(new Date().toLocaleTimeString('sv-SE'))
-        toast.success(`Synkade ${data.synced} viktmätningar`)
+        toast.success(`Synkade ${data.synced || 0} viktmätningar`)
         // Trigger a refresh of weight data
         window.dispatchEvent(new CustomEvent('withings-sync-complete'))
         onSync?.()

@@ -93,7 +93,7 @@ export function MealPlanToListWizard({
       }
 
       const data = await res.json()
-      toast.success(`Inköpslista skapad med ${data.ingredientCount} ingredienser!`)
+      toast.success(`Inköpslista skapad med ${data.ingredientCount || 0} ingredienser!`)
       onSuccess(data.list.id)
       onClose()
     } catch (err) {

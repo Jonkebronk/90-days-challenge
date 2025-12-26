@@ -160,7 +160,7 @@ export default function SLVLivsmedelPage() {
       const result = await response.json()
 
       if (response.ok) {
-        toast.success(`Uppdaterat! ${result.totalCount} livsmedel i ${result.categoryCount} kategorier.`)
+        toast.success(`Uppdaterat! ${result.totalCount || 0} livsmedel i ${result.categoryCount || 0} kategorier.`)
         await fetchData()
       } else {
         toast.error(result.error || 'Kunde inte uppdatera data')

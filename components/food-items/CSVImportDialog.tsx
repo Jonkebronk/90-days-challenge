@@ -91,14 +91,14 @@ export function CSVImportDialog({ open, onOpenChange, onImportComplete }: CSVImp
         const data = await response.json()
         setResults(data.results)
 
-        if (data.results.failed === 0) {
-          toast.success(`${data.results.success} livsmedel importerade`)
+        if (data.results?.failed === 0) {
+          toast.success(`${data.results?.success || 0} livsmedel importerade`)
           setTimeout(() => {
             handleClose()
             onImportComplete()
           }, 2000)
         } else {
-          toast.warning(`${data.results.success} lyckades, ${data.results.failed} misslyckades`)
+          toast.warning(`${data.results?.success || 0} lyckades, ${data.results?.failed || 0} misslyckades`)
         }
       } else {
         const data = await response.json()
