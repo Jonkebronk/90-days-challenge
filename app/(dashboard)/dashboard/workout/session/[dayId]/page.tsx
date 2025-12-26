@@ -929,33 +929,38 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   onClick={() => toggleExercise(index)}
                 >
                   <div className="flex items-center gap-3 flex-1">
-                    {/* Video thumbnail on left */}
-                    {exercise.exercise.thumbnailUrl || exercise.exercise.videoUrl ? (
+                    {/* Video preview on left - shows actual video */}
+                    {exercise.exercise.videoUrl ? (
                       <div
-                        className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0 cursor-pointer"
+                        className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-gray-900 flex-shrink-0 cursor-pointer"
                         onClick={(e) => {
-                          if (exercise.exercise.videoUrl) {
-                            e.stopPropagation()
-                            setActiveVideoIndex(activeVideoIndex === index ? null : index)
-                          }
+                          e.stopPropagation()
+                          setActiveVideoIndex(activeVideoIndex === index ? null : index)
                         }}
                       >
-                        {exercise.exercise.thumbnailUrl ? (
-                          <img
-                            src={exercise.exercise.thumbnailUrl}
-                            alt=""
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                            <Dumbbell className="w-6 h-6 text-gray-400" />
+                        {/* Small video preview - muted, looping */}
+                        <video
+                          src={exercise.exercise.videoUrl}
+                          className="w-full h-full object-cover"
+                          muted
+                          loop
+                          playsInline
+                          autoPlay
+                        />
+                        {/* Click overlay */}
+                        <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-colors flex items-center justify-center">
+                          <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center">
+                            <Play className="w-3 h-3 text-gray-800 fill-gray-800 ml-0.5" />
                           </div>
-                        )}
-                        {exercise.exercise.videoUrl && (
-                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                            <Play className="w-5 h-5 text-white fill-white" />
-                          </div>
-                        )}
+                        </div>
+                      </div>
+                    ) : exercise.exercise.thumbnailUrl ? (
+                      <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0">
+                        <img
+                          src={exercise.exercise.thumbnailUrl}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     ) : null}
 
