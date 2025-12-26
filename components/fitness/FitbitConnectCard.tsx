@@ -83,7 +83,7 @@ export function FitbitConnectCard({
       if (response.ok) {
         const data = await response.json()
         setLastSync(new Date().toLocaleTimeString('sv-SE'))
-        toast.success(`Synkade ${data.synced} dagar med stegdata`)
+        toast.success(`Synkade ${data.steps?.synced || 0} dagar med steg- och sömndata`)
         // Trigger a refresh of step data
         window.dispatchEvent(new CustomEvent('fitbit-sync-complete'))
       } else {

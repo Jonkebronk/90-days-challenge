@@ -79,7 +79,8 @@
       "Bash(git restore:*)",
       "WebFetch(domain:coachcatalyst.com)",
       "WebFetch(domain:dev.fitbit.com)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(dir /b *.md)"
     ],
     "deny": [],
     "ask": []
