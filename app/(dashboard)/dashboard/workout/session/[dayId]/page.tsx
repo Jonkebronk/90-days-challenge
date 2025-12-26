@@ -979,9 +979,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         )}
                       </div>
 
-                      {/* TEMPO in teal if present */}
+                      {/* TEMPO in teal - prominent display */}
                       {exercise.tempo && (
-                        <p className="text-teal-500 text-sm font-medium mt-0.5">
+                        <p className="text-teal-500 text-sm font-semibold tracking-wide">
                           TEMPO: {exercise.tempo}
                         </p>
                       )}
