@@ -1215,34 +1215,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                               </div>
                             )}
 
-                            {/* Inline REST indicator between sets */}
-                            {setIdx < exerciseSets.length - 1 && exercise.restSeconds > 0 && (
-                              <div className="text-center py-1.5">
-                                <span className="text-xs text-gray-400 font-medium">
-                                  REST {Math.floor(exercise.restSeconds / 60)}:{String(exercise.restSeconds % 60).padStart(2, '0')}
-                                </span>
-                              </div>
-                            )}
-
-                            {/* Active REST timer bar - after last logged set */}
-                            {setIdx === exerciseSets.length - 1 && isResting && exercise.exercise.id === workoutDay.exercises[currentExerciseIndex]?.exercise.id && (
-                              <button
-                                onClick={() => setShowRestDialog(true)}
-                                className="w-full mt-2 relative overflow-hidden rounded-lg bg-blue-100 h-10 cursor-pointer hover:bg-blue-200 transition-colors"
-                              >
-                                {/* Progress bar background */}
-                                <div
-                                  className="absolute inset-y-0 left-0 bg-blue-500 transition-all duration-1000"
-                                  style={{ width: `${(restTimerSeconds / originalRestTime) * 100}%` }}
-                                />
-                                {/* Timer text */}
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                  <span className="text-white font-bold text-sm drop-shadow-sm">
-                                    {formatTime(restTimerSeconds)}
-                                  </span>
-                                </div>
-                              </button>
-                            )}
                           </div>
                         )
                       })}
@@ -1560,76 +1532,115 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       {viewMode === 'slider' && !isWorkoutComplete && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
           <div className="max-w-4xl mx-auto p-3 sm:p-4">
-            <div className="flex items-center justify-between">
-              {/* Previous button */}
-              <button
-                onClick={() => {
-                  if (currentExerciseIndex > 0) {
-                    setCurrentExerciseIndex(currentExerciseIndex - 1)
-                    setExpandedExercises(new Set([currentExerciseIndex - 1]))
-                  }
-                }}
-                disabled={currentExerciseIndex === 0}
-                className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-30 disabled:hover:bg-gray-100 transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-
-              {/* Next exercise preview */}
-              <div className="flex-1 mx-3">
-                {currentExerciseIndex < workoutDay.exercises.length - 1 ? (
-                  <div className="flex items-center gap-3">
-                    {/* Thumbnail */}
-                    {workoutDay.exercises[currentExerciseIndex + 1].exercise.thumbnailUrl ? (
-                      <img
-                        src={workoutDay.exercises[currentExerciseIndex + 1].exercise.thumbnailUrl || ''}
-                        alt=""
-                        className="w-12 h-12 rounded-lg object-cover bg-gray-200"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center">
-                        <Dumbbell className="w-5 h-5 text-gray-400" />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-400 uppercase tracking-wide">Nästa</p>
-                      <p className="font-semibold text-gray-900 truncate">
-                        {workoutDay.exercises[currentExerciseIndex + 1].exercise.name}
-                      </p>
-                      {isResting && (
-                        <p className="text-sm text-blue-500 font-medium">
-                          Vila: {formatTime(restTimerSeconds)}
-                        </p>
-                      )}
-                    </div>
+            {/* REST Timer Display - Show when resting */}
+            {isResting ? (
+              <div className="flex items-center justify-between">
+                {/* Timer display */}
+                <div className="flex-1">
+                  {/* Overtime indicator (negative time) */}
+                  {restTimerSeconds <= 0 && (
+                    <p className="text-xs text-pink-500 font-medium">
+                      {restTimerSeconds < 0 ? `-${formatTimeHMS(Math.abs(restTimerSeconds))}` : '00:00:00'}
+                    </p>
+                  )}
+                  {/* Main timer */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-3xl sm:text-4xl font-bold text-blue-500 tabular-nums tracking-tight">
+                      {formatTimeHMS(Math.max(0, restTimerSeconds))}
+                    </span>
+                    <button
+                      onClick={() => {
+                        const currentExercise = workoutDay.exercises[currentExerciseIndex]
+                        if (currentExercise) {
+                          setRestTimerSeconds(currentExercise.restSeconds)
+                          setOriginalRestTime(currentExercise.restSeconds)
+                        }
+                      }}
+                      className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </button>
                   </div>
-                ) : (
-                  <div className="text-center">
-                    <p className="text-sm text-gray-500">Sista övningen!</p>
-                  </div>
-                )}
-              </div>
+                </div>
 
-              {/* Next/Pause button */}
-              {currentExerciseIndex < workoutDay.exercises.length - 1 ? (
+                {/* Pause button */}
                 <button
                   onClick={() => {
-                    setCurrentExerciseIndex(currentExerciseIndex + 1)
-                    setExpandedExercises(new Set([currentExerciseIndex + 1]))
+                    setIsResting(false)
+                    setRestTimerSeconds(0)
                   }}
-                  className="p-3 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-lg"
+                  className="p-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
                 >
-                  <ArrowLeft className="w-5 h-5 rotate-180" />
+                  <Pause className="w-6 h-6" />
                 </button>
-              ) : (
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                {/* Previous button */}
                 <button
-                  onClick={togglePause}
-                  className="p-3 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                  onClick={() => {
+                    if (currentExerciseIndex > 0) {
+                      setCurrentExerciseIndex(currentExerciseIndex - 1)
+                      setExpandedExercises(new Set([currentExerciseIndex - 1]))
+                    }
+                  }}
+                  disabled={currentExerciseIndex === 0}
+                  className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-30 disabled:hover:bg-gray-100 transition-colors"
                 >
-                  {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                  <ArrowLeft className="w-5 h-5" />
                 </button>
-              )}
-            </div>
+
+                {/* Next exercise preview */}
+                <div className="flex-1 mx-3">
+                  {currentExerciseIndex < workoutDay.exercises.length - 1 ? (
+                    <div className="flex items-center gap-3">
+                      {/* Thumbnail */}
+                      {workoutDay.exercises[currentExerciseIndex + 1].exercise.thumbnailUrl ? (
+                        <img
+                          src={workoutDay.exercises[currentExerciseIndex + 1].exercise.thumbnailUrl || ''}
+                          alt=""
+                          className="w-12 h-12 rounded-lg object-cover bg-gray-200"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center">
+                          <Dumbbell className="w-5 h-5 text-gray-400" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-gray-400 uppercase tracking-wide">Nästa</p>
+                        <p className="font-semibold text-gray-900 truncate">
+                          {workoutDay.exercises[currentExerciseIndex + 1].exercise.name}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <p className="text-sm text-gray-500">Sista övningen!</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Next/Pause button */}
+                {currentExerciseIndex < workoutDay.exercises.length - 1 ? (
+                  <button
+                    onClick={() => {
+                      setCurrentExerciseIndex(currentExerciseIndex + 1)
+                      setExpandedExercises(new Set([currentExerciseIndex + 1]))
+                    }}
+                    className="p-3 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-lg"
+                  >
+                    <ArrowLeft className="w-5 h-5 rotate-180" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={togglePause}
+                    className="p-3 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                  >
+                    {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
