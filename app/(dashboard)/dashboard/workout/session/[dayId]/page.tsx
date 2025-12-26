@@ -28,7 +28,10 @@ import {
   Pencil,
   Trash2,
   Timer,
-  StickyNote
+  StickyNote,
+  MoreHorizontal,
+  List,
+  Layers
 } from 'lucide-react'
 import { RestTimerDialog, MinimizedRestBar } from '@/components/workout/rest-timer-dialog'
 import Link from 'next/link'
@@ -129,6 +132,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
   // Video visibility per exercise
   const [activeVideoIndex, setActiveVideoIndex] = useState<number | null>(null)
+
+  // View mode: 'list' (accordion) or 'slider' (one exercise at a time)
+  const [viewMode, setViewMode] = useState<'list' | 'slider'>('list')
 
   // User exercise notes (personal memory notes)
   const [userExerciseNotes, setUserExerciseNotes] = useState<Record<string, string>>({})
@@ -692,6 +698,28 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
+  // Format time as HH:MM:SS for header display
+  const formatTimeHMS = (seconds: number) => {
+    const hrs = Math.floor(seconds / 3600)
+    const mins = Math.floor((seconds % 3600) / 60)
+    const secs = seconds % 60
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
+
+  // Get Swedish day abbreviation and week number
+  const getDayInfo = () => {
+    const now = new Date()
+    const days = ['SÖN', 'MÅN', 'TIS', 'ONS', 'TOR', 'FRE', 'LÖR']
+    const dayAbbr = days[now.getDay()]
+
+    // Get week number (ISO week)
+    const startOfYear = new Date(now.getFullYear(), 0, 1)
+    const pastDaysOfYear = (now.getTime() - startOfYear.getTime()) / 86400000
+    const weekNum = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7)
+
+    return { dayAbbr, weekNum }
+  }
+
   const togglePause = () => {
     setIsRunning(!isRunning)
   }
@@ -728,39 +756,129 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const totalSets = workoutDay.exercises.reduce((sum, ex) => sum + ex.sets, 0)
   const isWorkoutComplete = totalSetsCompleted >= totalSets
 
+  const { dayAbbr, weekNum } = getDayInfo()
+
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="bg-white border-2 border-dashed border-pink-400 rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-lg">
+    <div className="space-y-4 max-w-4xl mx-auto pb-24">
+      {/* Compact Header */}
+      <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4">
         <div className="flex items-center justify-between">
+          {/* Left: Back + Day box + Info */}
           <div className="flex items-center gap-2 sm:gap-3">
             <Link href="/dashboard/workout">
-              <Button variant="ghost" size="icon" className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 h-10 w-10">
+              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 h-9 w-9">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
+
+            {/* Day indicator box */}
+            <div className="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg text-center min-w-[44px]">
+              <span className="text-[10px] font-medium block leading-none">{dayAbbr}</span>
+              <span className="text-lg font-bold block leading-tight">{weekNum}</span>
+            </div>
+
+            {/* Workout name + timer */}
             <div>
-              <h1 className="text-lg sm:text-xl font-bold text-gray-900">
+              <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">
                 {workoutDay.name}
               </h1>
+              <div className="flex items-center gap-1 text-gray-400 text-sm">
+                <Clock className="w-3.5 h-3.5" />
+                <span className="font-mono">{formatTimeHMS(elapsedSeconds)}</span>
+              </div>
             </div>
           </div>
-          {sessionId && (
-            <Button
-              onClick={() => setShowCancelModal(true)}
-              size="sm"
-              className="bg-red-50 hover:bg-red-100 text-red-500 border border-red-200 h-10 px-3"
-            >
-              <X className="w-4 h-4 sm:mr-1" />
-              <span className="hidden sm:inline">Avbryt</span>
-            </Button>
-          )}
+
+          {/* Right: View toggle + Cancel */}
+          <div className="flex items-center gap-2">
+            {/* List/Slider toggle */}
+            <div className="hidden sm:flex bg-gray-100 rounded-lg p-0.5">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <List className="w-4 h-4" />
+                List
+              </button>
+              <button
+                onClick={() => setViewMode('slider')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  viewMode === 'slider'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <Layers className="w-4 h-4" />
+                Slider
+              </button>
+            </div>
+
+            {/* Mobile view toggle */}
+            <div className="flex sm:hidden bg-gray-100 rounded-lg p-0.5">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500'
+                }`}
+              >
+                <List className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('slider')}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === 'slider'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500'
+                }`}
+              >
+                <Layers className="w-4 h-4" />
+              </button>
+            </div>
+
+            {sessionId && (
+              <Button
+                onClick={() => setShowCancelModal(true)}
+                size="sm"
+                variant="ghost"
+                className="text-gray-400 hover:text-red-500 hover:bg-red-50 h-9 w-9 p-0"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
+      {/* Slider mode: BACK button */}
+      {viewMode === 'slider' && (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setViewMode('list')}
+            className="flex items-center gap-1.5 text-gray-500 hover:text-gray-700 text-sm font-medium"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            BACK
+          </button>
+          <span className="text-gray-300">|</span>
+          <span className="text-sm text-gray-500">
+            Övning {currentExerciseIndex + 1} av {workoutDay.exercises.length}
+          </span>
+        </div>
+      )}
+
       {/* Exercises List */}
       <div className="space-y-3">
-          {workoutDay.exercises.map((exercise, index) => {
+          {workoutDay.exercises
+            .filter((_, index) => viewMode === 'list' || index === currentExerciseIndex)
+            .map((exercise, filteredIndex) => {
+            // Get the actual index in the full array
+            const index = viewMode === 'slider' ? currentExerciseIndex : filteredIndex
             const isExpanded = expandedExercises.has(index)
             const isCurrent = index === currentExerciseIndex
             const exerciseSets = setLogs[exercise.exercise.id] || []
@@ -811,6 +929,36 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   onClick={() => toggleExercise(index)}
                 >
                   <div className="flex items-center gap-3 flex-1">
+                    {/* Video thumbnail on left */}
+                    {exercise.exercise.thumbnailUrl || exercise.exercise.videoUrl ? (
+                      <div
+                        className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0 cursor-pointer"
+                        onClick={(e) => {
+                          if (exercise.exercise.videoUrl) {
+                            e.stopPropagation()
+                            setActiveVideoIndex(activeVideoIndex === index ? null : index)
+                          }
+                        }}
+                      >
+                        {exercise.exercise.thumbnailUrl ? (
+                          <img
+                            src={exercise.exercise.thumbnailUrl}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <Dumbbell className="w-6 h-6 text-gray-400" />
+                          </div>
+                        )}
+                        {exercise.exercise.videoUrl && (
+                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                            <Play className="w-5 h-5 text-white fill-white" />
+                          </div>
+                        )}
+                      </div>
+                    ) : null}
+
                     <div className="flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <CardTitle className={`${isExerciseComplete && !isExpanded ? 'text-base' : 'text-lg'} text-gray-900 transition-all font-bold`}>
@@ -827,23 +975,26 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           </Badge>
                         )}
                       </div>
-                      <div className="text-sm text-gray-500 space-y-0.5 mt-2">
-                        <p>
+
+                      {/* TEMPO in teal if present */}
+                      {exercise.tempo && (
+                        <p className="text-teal-500 text-sm font-medium mt-0.5">
+                          TEMPO: {exercise.tempo}
+                        </p>
+                      )}
+
+                      <div className="text-sm text-gray-500 flex flex-wrap gap-x-4 gap-y-0.5 mt-1">
+                        <span>
                           <span className="font-medium text-gray-700">Sets:</span> {exercise.sets}
-                        </p>
-                        <p>
-                          <span className="font-medium text-gray-700">Repetitioner:</span>{' '}
+                        </span>
+                        <span>
+                          <span className="font-medium text-gray-700">Reps:</span>{' '}
                           {exercise.reps || '-'}
-                        </p>
+                        </span>
                         {exercise.restSeconds > 0 && (
-                          <p>
+                          <span>
                             <span className="font-medium text-gray-700">Vila:</span> {exercise.restSeconds}s
-                          </p>
-                        )}
-                        {exercise.tempo && (
-                          <p>
-                            <span className="font-medium text-gray-700">Tempo:</span> {exercise.tempo}
-                          </p>
+                          </span>
                         )}
                       </div>
 
@@ -1150,6 +1301,35 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                 </div>
                               </div>
                             )}
+
+                            {/* Inline REST indicator between sets */}
+                            {setIdx < exerciseSets.length - 1 && exercise.restSeconds > 0 && (
+                              <div className="text-center py-1.5">
+                                <span className="text-xs text-gray-400 font-medium">
+                                  REST {Math.floor(exercise.restSeconds / 60)}:{String(exercise.restSeconds % 60).padStart(2, '0')}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Active REST timer bar - after last logged set */}
+                            {setIdx === exerciseSets.length - 1 && isResting && exercise.exercise.id === workoutDay.exercises[currentExerciseIndex]?.exercise.id && (
+                              <button
+                                onClick={() => setShowRestDialog(true)}
+                                className="w-full mt-2 relative overflow-hidden rounded-lg bg-blue-100 h-10 cursor-pointer hover:bg-blue-200 transition-colors"
+                              >
+                                {/* Progress bar background */}
+                                <div
+                                  className="absolute inset-y-0 left-0 bg-blue-500 transition-all duration-1000"
+                                  style={{ width: `${(restTimerSeconds / originalRestTime) * 100}%` }}
+                                />
+                                {/* Timer text */}
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <span className="text-white font-bold text-sm drop-shadow-sm">
+                                    {formatTime(restTimerSeconds)}
+                                  </span>
+                                </div>
+                              </button>
+                            )}
                           </div>
                         )
                       })}
@@ -1393,6 +1573,84 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           onAddTime={addRestTime}
           onExpand={expandRestTimer}
         />
+      )}
+
+      {/* Slider mode: Bottom bar with next exercise */}
+      {viewMode === 'slider' && !isWorkoutComplete && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+          <div className="max-w-4xl mx-auto p-3 sm:p-4">
+            <div className="flex items-center justify-between">
+              {/* Previous button */}
+              <button
+                onClick={() => {
+                  if (currentExerciseIndex > 0) {
+                    setCurrentExerciseIndex(currentExerciseIndex - 1)
+                    setExpandedExercises(new Set([currentExerciseIndex - 1]))
+                  }
+                }}
+                disabled={currentExerciseIndex === 0}
+                className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-30 disabled:hover:bg-gray-100 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+
+              {/* Next exercise preview */}
+              <div className="flex-1 mx-3">
+                {currentExerciseIndex < workoutDay.exercises.length - 1 ? (
+                  <div className="flex items-center gap-3">
+                    {/* Thumbnail */}
+                    {workoutDay.exercises[currentExerciseIndex + 1].exercise.thumbnailUrl ? (
+                      <img
+                        src={workoutDay.exercises[currentExerciseIndex + 1].exercise.thumbnailUrl || ''}
+                        alt=""
+                        className="w-12 h-12 rounded-lg object-cover bg-gray-200"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center">
+                        <Dumbbell className="w-5 h-5 text-gray-400" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-400 uppercase tracking-wide">Nästa</p>
+                      <p className="font-semibold text-gray-900 truncate">
+                        {workoutDay.exercises[currentExerciseIndex + 1].exercise.name}
+                      </p>
+                      {isResting && (
+                        <p className="text-sm text-blue-500 font-medium">
+                          Vila: {formatTime(restTimerSeconds)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-sm text-gray-500">Sista övningen!</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Next/Pause button */}
+              {currentExerciseIndex < workoutDay.exercises.length - 1 ? (
+                <button
+                  onClick={() => {
+                    setCurrentExerciseIndex(currentExerciseIndex + 1)
+                    setExpandedExercises(new Set([currentExerciseIndex + 1]))
+                  }}
+                  className="p-3 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-lg"
+                >
+                  <ArrowLeft className="w-5 h-5 rotate-180" />
+                </button>
+              ) : (
+                <button
+                  onClick={togglePause}
+                  className="p-3 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                >
+                  {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
