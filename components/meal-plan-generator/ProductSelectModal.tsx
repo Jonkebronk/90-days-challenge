@@ -117,6 +117,15 @@ function calculateMacrosForGrams(product: Product, grams: number): CalculatedMac
   };
 }
 
+// Helper to check if a food name is a berry
+function isBerry(name: string): boolean {
+  const nameLower = name.toLowerCase();
+  return nameLower.includes('bär') || nameLower.includes('hallon') ||
+         nameLower.includes('blåbär') || nameLower.includes('jordgubb') ||
+         nameLower.includes('björnbär') || nameLower.includes('lingon') ||
+         nameLower.includes('krusbär') || nameLower.includes('vinbär');
+}
+
 // Filter SLV foods by category
 function filterSlvByCategory(foods: SlvFood[], category: MacroCategory): SlvFood[] {
   switch (category) {
@@ -316,6 +325,10 @@ export function ProductSelectModal({
       .filter((p) => {
         // Subkategori-filter - matcha på produktens subCategory-fält
         if (activeSubcategory === 'all') return true;
+        // Special case for berries - match by name since products may not have subCategory set
+        if (activeSubcategory.toLowerCase() === 'bär') {
+          return isBerry(p.name);
+        }
         // Matcha subCategory (case-insensitive)
         return p.subCategory?.toLowerCase() === activeSubcategory.toLowerCase();
       })
@@ -365,8 +378,8 @@ export function ProductSelectModal({
   // Get display title based on defaultSubcategory or category
   const getDialogTitle = () => {
     if (defaultSubcategory && defaultSubcategory !== 'all') {
-      const sub = subcategories.find(s => s.key === defaultSubcategory);
-      if (sub) return `Välj ${sub.label.toLowerCase()}`;
+      // Use defaultSubcategory directly for title - don't wait for API
+      return `Välj ${defaultSubcategory.toLowerCase()}`;
     }
     return `Välj ${categoryTitle.toLowerCase()}`;
   };
