@@ -705,23 +705,14 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
-  // Get Swedish day abbreviation and week number (ISO 8601)
+  // Get Swedish day abbreviation and day of month
   const getDayInfo = () => {
     const now = new Date()
     const days = ['SÖN', 'MÅN', 'TIS', 'ONS', 'TOR', 'FRE', 'LÖR']
     const dayAbbr = days[now.getDay()]
+    const dayOfMonth = now.getDate()
 
-    // Get ISO week number (week 1 = week with first Thursday)
-    const date = new Date(now.getTime())
-    date.setHours(0, 0, 0, 0)
-    // Set to nearest Thursday: current date + 4 - current day (Sunday = 0, so Thursday = 4)
-    date.setDate(date.getDate() + 4 - (date.getDay() || 7))
-    // Get first day of year
-    const yearStart = new Date(date.getFullYear(), 0, 1)
-    // Calculate full weeks between dates
-    const weekNum = Math.ceil((((date.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
-
-    return { dayAbbr, weekNum }
+    return { dayAbbr, dayOfMonth }
   }
 
   const togglePause = () => {
@@ -760,7 +751,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const totalSets = workoutDay.exercises.reduce((sum, ex) => sum + ex.sets, 0)
   const isWorkoutComplete = totalSetsCompleted >= totalSets
 
-  const { dayAbbr, weekNum } = getDayInfo()
+  const { dayAbbr, dayOfMonth } = getDayInfo()
 
   return (
     <div className="space-y-4 max-w-4xl mx-auto pb-24">
@@ -778,7 +769,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             {/* Day indicator box - dark navy */}
             <div className="bg-slate-800 text-white px-3 py-2 rounded-xl text-center min-w-[48px]">
               <span className="text-[11px] font-semibold block leading-none tracking-wide">{dayAbbr}</span>
-              <span className="text-xl font-bold block leading-tight">{weekNum}</span>
+              <span className="text-xl font-bold block leading-tight">{dayOfMonth}</span>
             </div>
 
             {/* Workout name + timer */}

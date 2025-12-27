@@ -96,7 +96,7 @@ export function RestTimerDialog({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: '#000',
+        backgroundColor: '#f8fafc',
         zIndex: 99999,
         display: 'flex',
         flexDirection: 'column',
@@ -122,19 +122,20 @@ export function RestTimerDialog({
           <button
             onClick={onMinimize}
             style={{
-              color: '#fff',
-              background: 'rgba(255,255,255,0.1)',
-              border: 'none',
+              color: '#64748b',
+              background: '#fff',
+              border: '1px solid #e2e8f0',
               cursor: 'pointer',
-              padding: '0.75rem',
-              borderRadius: '0.5rem',
+              padding: '0.75rem 1rem',
+              borderRadius: '0.75rem',
               display: 'flex',
               alignItems: 'center',
               gap: '0.5rem',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
             }}
           >
-            <Minimize2 style={{ width: 24, height: 24 }} />
-            <span style={{ fontSize: '0.875rem' }}>Minimera</span>
+            <Minimize2 style={{ width: 20, height: 20 }} />
+            <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>Minimera</span>
           </button>
         )}
 
@@ -142,34 +143,37 @@ export function RestTimerDialog({
         <button
           onClick={onStop}
           style={{
-            color: '#fff',
-            background: 'none',
-            border: 'none',
+            color: '#64748b',
+            background: '#fff',
+            border: '1px solid #e2e8f0',
             cursor: 'pointer',
+            padding: '0.75rem',
+            borderRadius: '0.75rem',
             marginLeft: 'auto',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
           }}
         >
-          <X style={{ width: 40, height: 40 }} />
+          <X style={{ width: 24, height: 24 }} />
         </button>
       </div>
 
       {/* Titel */}
-      <h2 style={{ fontSize: '1.5rem', color: '#fff', marginBottom: '2rem' }}>Vila</h2>
+      <h2 style={{ fontSize: '1.25rem', color: '#64748b', marginBottom: '1.5rem', fontWeight: 500 }}>Vila</h2>
 
       {/* Timer cirkel */}
-      <div style={{ position: 'relative', width: 260, height: 260, marginBottom: '2rem' }}>
-        <svg width={260} height={260} style={{ transform: 'rotate(-90deg)' }}>
-          <circle cx={130} cy={130} r={120} fill="none" stroke="#333" strokeWidth={8} />
+      <div style={{ position: 'relative', width: 240, height: 240, marginBottom: '2rem' }}>
+        <svg width={240} height={240} style={{ transform: 'rotate(-90deg)' }}>
+          <circle cx={120} cy={120} r={110} fill="none" stroke="#e2e8f0" strokeWidth={8} />
           <circle
-            cx={130}
-            cy={130}
-            r={120}
+            cx={120}
+            cy={120}
+            r={110}
             fill="none"
-            stroke={color}
+            stroke={progress > 0.5 ? '#10b981' : progress > 0.25 ? '#f59e0b' : '#ef4444'}
             strokeWidth={8}
             strokeLinecap="round"
-            strokeDasharray={2 * Math.PI * 120}
-            strokeDashoffset={2 * Math.PI * 120 * (1 - progress)}
+            strokeDasharray={2 * Math.PI * 110}
+            strokeDashoffset={2 * Math.PI * 110 * (1 - progress)}
             style={{ transition: 'stroke-dashoffset 0.1s linear' }}
           />
         </svg>
@@ -187,10 +191,11 @@ export function RestTimerDialog({
         >
           <span
             style={{
-              fontFamily: 'monospace',
-              fontSize: minutes > 0 ? '4rem' : '5rem',
-              fontWeight: 300,
-              color: '#fff',
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              fontSize: '3.5rem',
+              fontWeight: 600,
+              color: '#0f172a',
+              fontVariantNumeric: 'tabular-nums',
             }}
           >
             {timeDisplay}
@@ -199,39 +204,41 @@ export function RestTimerDialog({
       </div>
 
       {/* Knappar */}
-      <div style={{ display: 'flex', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', gap: '1rem' }}>
         <button
           onClick={() => onAddTime(30)}
           style={{
-            width: 80,
-            height: 80,
-            borderRadius: '50%',
-            border: '2px solid #666',
-            background: '#333',
-            color: '#fff',
+            width: 72,
+            height: 72,
+            borderRadius: '1rem',
+            border: '2px solid #e2e8f0',
+            background: '#fff',
+            color: '#64748b',
             cursor: 'pointer',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
           }}
         >
           <Plus style={{ width: 24, height: 24 }} />
-          <span style={{ fontSize: '0.75rem', marginTop: 4 }}>+30s</span>
+          <span style={{ fontSize: '0.75rem', marginTop: 2, fontWeight: 500 }}>+30s</span>
         </button>
 
         <button
           onClick={onStop}
           style={{
-            width: 80,
-            height: 80,
-            borderRadius: '50%',
+            width: 72,
+            height: 72,
+            borderRadius: '1rem',
             border: 'none',
-            background: '#dc2626',
+            background: '#ef4444',
             color: '#fff',
             cursor: 'pointer',
             fontWeight: 600,
             fontSize: '0.875rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
           }}
         >
           Stoppa
