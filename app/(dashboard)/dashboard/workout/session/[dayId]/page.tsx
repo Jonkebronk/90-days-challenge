@@ -1044,7 +1044,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       <ol className="space-y-2">
                         {exercise.exercise.instructions.map((instruction, idx) => (
                           <li key={idx} className="flex items-start gap-2.5 text-sm text-gray-600 leading-relaxed">
-                            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-pink-500 text-white font-bold text-xs flex items-center justify-center mt-0.5">
+                            <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-500 text-white font-bold text-xs flex items-center justify-center mt-0.5">
                               {idx + 1}
                             </span>
                             <span className="flex-1">{instruction}</span>
