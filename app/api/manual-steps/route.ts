@@ -55,3 +55,42 @@ export async function POST(request: Request) {
     )
   }
 }
+
+// DELETE /api/manual-steps - Delete a manual step entry
+export async function DELETE(request: Request) {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const userId = session.user.id as string
+    const { searchParams } = new URL(request.url)
+    const date = searchParams.get('date')
+
+    if (!date) {
+      return NextResponse.json({ error: 'Date is required' }, { status: 400 })
+    }
+
+    const parsedDate = new Date(date)
+    parsedDate.setHours(0, 0, 0, 0)
+
+    await prisma.dailySteps.delete({
+      where: {
+        userId_date: {
+          userId,
+          date: parsedDate,
+        },
+      },
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting manual steps:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete steps' },
+      { status: 500 }
+    )
+  }
+}

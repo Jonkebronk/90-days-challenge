@@ -130,18 +130,21 @@ export default function DashboardPage() {
   const [dailyWeightInput, setDailyWeightInput] = useState('')
   const [dailyWeights, setDailyWeights] = useState<Record<string, number>>({})
   const [savingWeight, setSavingWeight] = useState(false)
+  const [deletingWeight, setDeletingWeight] = useState(false)
 
   // Manual steps modal state
   const [stepsModalOpen, setStepsModalOpen] = useState(false)
   const [stepsModalDate, setStepsModalDate] = useState<Date | null>(null)
   const [manualStepsInput, setManualStepsInput] = useState('')
   const [savingSteps, setSavingSteps] = useState(false)
+  const [deletingSteps, setDeletingSteps] = useState(false)
 
   // Manual sleep modal state
   const [sleepModalOpen, setSleepModalOpen] = useState(false)
   const [sleepModalDate, setSleepModalDate] = useState<Date | null>(null)
   const [manualSleepInput, setManualSleepInput] = useState('')
   const [savingSleep, setSavingSleep] = useState(false)
+  const [deletingSleep, setDeletingSleep] = useState(false)
 
   // Get started section visibility
   const [hideGetStarted, setHideGetStarted] = useState(false)
@@ -542,6 +545,88 @@ export default function DashboardPage() {
       console.error('Error saving manual sleep:', error)
     } finally {
       setSavingSleep(false)
+    }
+  }
+
+  // Delete handlers
+  const handleDeleteWeight = async () => {
+    if (!selectedDate) return
+
+    setDeletingWeight(true)
+    try {
+      const dateStr = getLocalDateString(selectedDate)
+      const response = await fetch(`/api/daily-weight?date=${dateStr}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        setDailyWeights(prev => {
+          const updated = { ...prev }
+          delete updated[dateStr]
+          return updated
+        })
+        setWeightModalOpen(false)
+        setDailyWeightInput('')
+        setSelectedDate(null)
+      }
+    } catch (error) {
+      console.error('Error deleting weight:', error)
+    } finally {
+      setDeletingWeight(false)
+    }
+  }
+
+  const handleDeleteSteps = async () => {
+    if (!stepsModalDate) return
+
+    setDeletingSteps(true)
+    try {
+      const dateStr = getLocalDateString(stepsModalDate)
+      const response = await fetch(`/api/manual-steps?date=${dateStr}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        setDailySteps(prev => {
+          const updated = { ...prev }
+          delete updated[dateStr]
+          return updated
+        })
+        setStepsModalOpen(false)
+        setManualStepsInput('')
+        setStepsModalDate(null)
+      }
+    } catch (error) {
+      console.error('Error deleting steps:', error)
+    } finally {
+      setDeletingSteps(false)
+    }
+  }
+
+  const handleDeleteSleep = async () => {
+    if (!sleepModalDate) return
+
+    setDeletingSleep(true)
+    try {
+      const dateStr = getLocalDateString(sleepModalDate)
+      const response = await fetch(`/api/manual-sleep?date=${dateStr}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        setDailySleep(prev => {
+          const updated = { ...prev }
+          delete updated[dateStr]
+          return updated
+        })
+        setSleepModalOpen(false)
+        setManualSleepInput('')
+        setSleepModalDate(null)
+      }
+    } catch (error) {
+      console.error('Error deleting sleep:', error)
+    } finally {
+      setDeletingSleep(false)
     }
   }
 
@@ -1387,6 +1472,17 @@ export default function DashboardPage() {
                 {savingWeight ? 'Sparar...' : 'Spara'}
               </Button>
             </div>
+            {/* Delete button - only show if there's existing data */}
+            {selectedDate && dailyWeights[getLocalDateString(selectedDate)] !== undefined && (
+              <Button
+                variant="ghost"
+                onClick={handleDeleteWeight}
+                disabled={deletingWeight}
+                className="w-full text-red-500 hover:text-red-600 hover:bg-red-50"
+              >
+                {deletingWeight ? 'Tar bort...' : 'Ta bort registrering'}
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -1437,6 +1533,17 @@ export default function DashboardPage() {
                 {savingSteps ? 'Sparar...' : 'Spara'}
               </Button>
             </div>
+            {/* Delete button - only show if there's existing data */}
+            {stepsModalDate && dailySteps[getLocalDateString(stepsModalDate)]?.steps !== undefined && (
+              <Button
+                variant="ghost"
+                onClick={handleDeleteSteps}
+                disabled={deletingSteps}
+                className="w-full text-red-500 hover:text-red-600 hover:bg-red-50"
+              >
+                {deletingSteps ? 'Tar bort...' : 'Ta bort registrering'}
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -1488,6 +1595,17 @@ export default function DashboardPage() {
                 {savingSleep ? 'Sparar...' : 'Spara'}
               </Button>
             </div>
+            {/* Delete button - only show if there's existing data */}
+            {sleepModalDate && dailySleep[getLocalDateString(sleepModalDate)]?.hours !== undefined && (
+              <Button
+                variant="ghost"
+                onClick={handleDeleteSleep}
+                disabled={deletingSleep}
+                className="w-full text-red-500 hover:text-red-600 hover:bg-red-50"
+              >
+                {deletingSleep ? 'Tar bort...' : 'Ta bort registrering'}
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
