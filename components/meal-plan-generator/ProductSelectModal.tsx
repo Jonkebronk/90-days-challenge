@@ -184,9 +184,15 @@ export function ProductSelectModal({
     setSelectedTargetCategory(category);
   }, [category, defaultSubcategory]);
 
-  // Hämta dynamiska subkategorier från databasen
+  // Hämta dynamiska subkategorier från databasen (skip when showing all products)
   useEffect(() => {
-    if (!isOpen || !category) return;
+    if (!isOpen || !category || showCategorySelector) {
+      // Reset subcategories when showing all products
+      if (showCategorySelector) {
+        setSubcategories([{ key: 'all', label: 'Alla', count: 0 }]);
+      }
+      return;
+    }
 
     const fetchSubcategories = async () => {
       setSubcategoriesLoading(true);
@@ -218,19 +224,23 @@ export function ProductSelectModal({
     };
 
     fetchSubcategories();
-  }, [isOpen, category]);
+  }, [isOpen, category, showCategorySelector]);
 
-  // Fetch products for the category
+  // Fetch products for the category (or all products when showCategorySelector is true)
   useEffect(() => {
     if (!isOpen) return;
 
     const fetchData = async () => {
       setLoading(true);
       try {
+        // When showCategorySelector is true, fetch ALL products (no category filter)
+        // Otherwise filter by the specified category
+        const categoryParam = showCategorySelector ? '' : `macroCategory=${category}&`;
+
         // Fetch products, food items, and SLV foods in parallel (no limits)
         const [productsRes, foodItemsRes, slvRes] = await Promise.all([
-          fetch(`/api/products?macroCategory=${category}&limit=1000`),
-          fetch(`/api/food-items?macroCategory=${category}&limit=1000`),
+          fetch(`/api/products?${categoryParam}limit=1000`),
+          fetch(`/api/food-items?${categoryParam}limit=1000`),
           fetch('/data/slv-foods.json'),
         ]);
 
@@ -280,7 +290,7 @@ export function ProductSelectModal({
     };
 
     fetchData();
-  }, [isOpen, category]);
+  }, [isOpen, category, showCategorySelector]);
 
   // Check if this is vegetable category (free, no macro calculation)
   const isVegetable = category === 'vegetable';
@@ -288,7 +298,9 @@ export function ProductSelectModal({
 
   // Convert SLV foods to Product format
   const slvAsProducts: Product[] = useMemo(() => {
-    return filterSlvByCategory(slvFoods, category).map(f => ({
+    // When showCategorySelector is true, don't filter SLV foods by category
+    const filteredFoods = showCategorySelector ? slvFoods : filterSlvByCategory(slvFoods, category);
+    return filteredFoods.map(f => ({
       id: `slv-${f.nummer}`,
       name: f.namn,
       brand: 'SLV',
@@ -299,7 +311,7 @@ export function ProductSelectModal({
       fat: f.fat,
       source: 'slv' as const,
     }));
-  }, [slvFoods, category]);
+  }, [slvFoods, category, showCategorySelector]);
 
   // Get active source items
   const sourceItems = activeTab === 'products' ? products : slvAsProducts;
@@ -466,8 +478,8 @@ export function ProductSelectModal({
           )}
         </div>
 
-        {/* Subkategori-chips - always show for filtering */}
-        {subcategories.length > 1 && (
+        {/* Subkategori-chips - show for filtering (hide when showing all products) */}
+        {subcategories.length > 1 && !showCategorySelector && (
           <div className="flex flex-wrap gap-1.5 pb-2">
             {subcategories.map((sub) => (
               <button
