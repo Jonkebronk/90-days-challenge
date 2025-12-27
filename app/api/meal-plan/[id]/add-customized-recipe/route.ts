@@ -39,6 +39,7 @@ interface CustomizedIngredient {
   macros: CalculatedMacros;
   source: 'product' | 'slv';
   image?: string | null;
+  targetCategory?: MacroCategory; // User-specified category, if provided
 }
 
 interface RequestBody {
@@ -115,7 +116,8 @@ export async function POST(
 
     // Create GeneratedMealItem for each customized ingredient
     const newItems: GeneratedMealItem[] = customizedIngredients.map((ing) => {
-      const category = determineMacroCategory(ing.macros, ing.grams);
+      // Use user-specified targetCategory if provided, otherwise auto-calculate
+      const category = ing.targetCategory || determineMacroCategory(ing.macros, ing.grams);
 
       return {
         category,

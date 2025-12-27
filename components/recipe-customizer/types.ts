@@ -27,6 +27,7 @@ export interface LinkedProduct {
   macros: CalculatedMacros;
   image?: string | null;
   source: 'product' | 'slv';
+  targetCategory?: MacroCategory; // Which macro category this should be placed in
 }
 
 // State for a single ingredient in the customizer
@@ -78,6 +79,7 @@ export interface AddCustomizedRecipeRequest {
     macros: CalculatedMacros;
     source: 'product' | 'slv';
     image?: string | null;
+    targetCategory?: MacroCategory; // Which macro category to place this ingredient in
   }>;
 }
 

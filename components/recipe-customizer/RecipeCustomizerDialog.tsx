@@ -124,7 +124,9 @@ export function RecipeCustomizerDialog({
   const handleProductSelect = (
     product: { id: string; name: string; image?: string | null; kcal: number; protein: number; carbs: number; fat: number; source?: 'product' | 'slv' },
     grams: number,
-    macros: CalculatedMacros
+    macros: CalculatedMacros,
+    _isAlternative?: boolean, // Not used in customizer
+    targetCategory?: MacroCategory
   ) => {
     if (activeIngredientIndex === null) return;
 
@@ -135,6 +137,7 @@ export function RecipeCustomizerDialog({
       macros,
       image: product.image,
       source: product.source || 'product',
+      targetCategory, // Store the user-selected macro category
     };
 
     setCustomizedIngredients((prev) =>
@@ -229,6 +232,7 @@ export function RecipeCustomizerDialog({
             macros: ing.linkedProduct!.macros,
             source: ing.linkedProduct!.source,
             image: ing.linkedProduct!.image,
+            targetCategory: ing.linkedProduct!.targetCategory,
           })),
       };
 
@@ -352,6 +356,7 @@ export function RecipeCustomizerDialog({
         mealType="lunch" // Default meal type
         onSelect={handleProductSelect}
         showAlternativeOption={false}
+        showCategorySelector={true}
       />
 
       {/* Warning dialog for unlinked ingredients */}
