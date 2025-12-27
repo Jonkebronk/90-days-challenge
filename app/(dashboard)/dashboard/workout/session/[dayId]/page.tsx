@@ -968,24 +968,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         )}
                       </div>
 
-                      {/* Sets/Reps/Vila + TEMPO inline - only show when expanded */}
-                      {isExpanded && (
-                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-600">
-                          <span className="font-medium">{exercise.sets} sets</span>
-                          <span className="text-gray-300">•</span>
-                          <span className="font-medium">{exercise.reps || '-'} reps</span>
-                          {exercise.restSeconds > 0 && (
-                            <>
-                              <span className="text-gray-300">•</span>
-                              <span className="font-medium">{exercise.restSeconds}s vila</span>
-                            </>
-                          )}
-                          {exercise.tempo && (
-                            <>
-                              <span className="text-gray-300">•</span>
-                              <span className="text-teal-600 font-semibold">TEMPO {exercise.tempo}</span>
-                            </>
-                          )}
+                      {/* TEMPO - only show when expanded and has tempo */}
+                      {isExpanded && exercise.tempo && (
+                        <div className="mt-1">
+                          <span className="text-xs text-teal-600 font-semibold">TEMPO {exercise.tempo}</span>
                         </div>
                       )}
                     </div>
