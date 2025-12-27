@@ -860,22 +860,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Slider mode: Navigation bar */}
-      {viewMode === 'slider' && (
-        <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3 shadow-sm border border-gray-100">
-          <button
-            onClick={() => setViewMode('list')}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Tillbaka
-          </button>
-          <span className="text-sm font-medium text-gray-600">
-            Övning {currentExerciseIndex + 1} av {workoutDay.exercises.length}
-          </span>
-        </div>
-      )}
-
       {/* Exercises List */}
       <div className="space-y-3">
           {workoutDay.exercises
@@ -921,6 +905,22 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   : 'rounded-xl shadow-md hover:shadow-lg border border-gray-200'
               } ${isExerciseComplete && !isExpanded ? 'opacity-70 scale-[0.98]' : ''}`}
             >
+              {/* Slider mode: Navigation inside card */}
+              {viewMode === 'slider' && (
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                    Tillbaka
+                  </button>
+                  <span className="text-sm font-medium text-gray-500">
+                    Övning {currentExerciseIndex + 1} av {workoutDay.exercises.length}
+                  </span>
+                </div>
+              )}
+
               <CardHeader className={isExerciseComplete && !isExpanded ? 'py-3' : ''}>
                 <div
                   className="flex items-center justify-between cursor-pointer"
