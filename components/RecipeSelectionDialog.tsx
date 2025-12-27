@@ -161,12 +161,10 @@ export function RecipeSelectionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px] max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-            Välj recept
-          </DialogTitle>
-          <DialogDescription className="text-[rgba(255,255,255,0.6)]">
+          <DialogTitle>Välj recept</DialogTitle>
+          <DialogDescription className="text-zinc-500">
             Sök och välj ett recept från receptbanken
           </DialogDescription>
         </DialogHeader>
@@ -174,41 +172,34 @@ export function RecipeSelectionDialog({
         {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="search" className="text-[rgba(255,255,255,0.8)]">
+            <Label htmlFor="search" className="text-zinc-700">
               Sök recept
             </Label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(255,255,255,0.4)]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
               <Input
                 id="search"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Sök efter recept..."
-                className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white pl-10"
+                className="pl-10"
               />
             </div>
           </div>
           <div>
-            <Label htmlFor="category" className="text-[rgba(255,255,255,0.8)]">
+            <Label htmlFor="category" className="text-zinc-700">
               Kategori
             </Label>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[rgba(10,10,10,0.95)] border-[rgba(255,215,0,0.3)]">
-                <SelectItem
-                  value="all"
-                  className="text-white hover:bg-[rgba(255,215,0,0.1)]"
-                >
+              <SelectContent>
+                <SelectItem value="all">
                   Alla kategorier
                 </SelectItem>
                 {categories.map((cat) => (
-                  <SelectItem
-                    key={cat.id}
-                    value={cat.id}
-                    className="text-white hover:bg-[rgba(255,215,0,0.1)]"
-                  >
+                  <SelectItem key={cat.id} value={cat.id}>
                     {cat.name}
                   </SelectItem>
                 ))}
@@ -220,11 +211,11 @@ export function RecipeSelectionDialog({
         {/* Recipe List */}
         <div className="flex-1 overflow-y-auto space-y-2 pr-2">
           {isLoading ? (
-            <p className="text-[rgba(255,255,255,0.6)] text-center py-8">Laddar...</p>
+            <p className="text-zinc-500 text-center py-8">Laddar...</p>
           ) : filteredRecipes.length === 0 ? (
             <div className="text-center py-8">
-              <ChefHat className="h-12 w-12 mx-auto text-[rgba(255,215,0,0.5)] mb-4" />
-              <p className="text-[rgba(255,255,255,0.6)]">Inga recept hittades.</p>
+              <ChefHat className="h-12 w-12 mx-auto text-zinc-300 mb-4" />
+              <p className="text-zinc-500">Inga recept hittades.</p>
             </div>
           ) : (
             filteredRecipes.map((recipe) => {
@@ -232,33 +223,33 @@ export function RecipeSelectionDialog({
               return (
                 <div
                   key={recipe.id}
-                  className="p-4 bg-[rgba(0,0,0,0.3)] border border-[rgba(255,215,0,0.2)] rounded-lg hover:border-[rgba(255,215,0,0.4)] transition-colors"
+                  className="p-4 bg-white border border-zinc-200 rounded-lg hover:border-amber-300 hover:bg-amber-50/50 transition-colors"
                 >
                   <div className="flex items-start gap-4">
                     {recipe.coverImage ? (
                       <img
                         src={recipe.coverImage}
                         alt={recipe.title}
-                        className="w-16 h-16 object-cover rounded-lg shrink-0"
+                        className="w-16 h-16 object-cover rounded-lg shrink-0 bg-zinc-100"
                       />
                     ) : (
-                      <div className="w-16 h-16 bg-[rgba(255,215,0,0.1)] rounded-lg flex items-center justify-center shrink-0">
-                        <ChefHat className="h-8 w-8 text-[rgba(255,215,0,0.5)]" />
+                      <div className="w-16 h-16 bg-zinc-100 rounded-lg flex items-center justify-center shrink-0">
+                        <ChefHat className="h-8 w-8 text-zinc-400" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-white font-medium">{recipe.title}</h3>
+                      <h3 className="text-zinc-900 font-medium">{recipe.title}</h3>
                       <div className="flex flex-wrap items-center gap-2 mt-1">
-                        <Badge className="bg-[rgba(255,215,0,0.1)] text-[#FFD700] border border-[rgba(255,215,0,0.3)] text-xs">
+                        <Badge className="bg-amber-100 text-amber-700 border border-amber-200 text-xs">
                           {recipe.category.name}
                         </Badge>
                         {recipe.mealType && (
-                          <Badge className="bg-[rgba(100,100,255,0.1)] text-blue-300 border border-[rgba(100,100,255,0.3)] text-xs">
+                          <Badge className="bg-blue-100 text-blue-700 border border-blue-200 text-xs">
                             {recipe.mealType}
                           </Badge>
                         )}
                       </div>
-                      <p className="text-xs text-[rgba(255,255,255,0.6)] mt-1">
+                      <p className="text-xs text-zinc-500 mt-1">
                         {recipe.caloriesPerServing
                           ? `${Math.round(recipe.caloriesPerServing * multiplier)} kcal`
                           : '-'}{' '}
@@ -278,10 +269,10 @@ export function RecipeSelectionDialog({
                     </div>
                   </div>
                   {/* Portioner och knappar på egen rad */}
-                  <div className="flex items-center justify-end gap-3 mt-3 pt-3 border-t border-[rgba(255,215,0,0.1)]">
+                  <div className="flex items-center justify-end gap-3 mt-3 pt-3 border-t border-zinc-100">
                     <Label
                       htmlFor={`multiplier-${recipe.id}`}
-                      className="text-sm text-[rgba(255,255,255,0.6)]"
+                      className="text-sm text-zinc-500"
                     >
                       Portioner:
                     </Label>
@@ -294,13 +285,13 @@ export function RecipeSelectionDialog({
                       onChange={(e) =>
                         setServingMultiplier(recipe.id, parseFloat(e.target.value) || 1)
                       }
-                      className="w-20 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
+                      className="w-20"
                     />
                     {canCustomize && (
                       <Button
                         onClick={() => handleCustomizeRecipe(recipe.id)}
                         variant="outline"
-                        className="border-[rgba(255,215,0,0.5)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+                        className="border-amber-300 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
                       >
                         <Settings2 className="h-4 w-4 mr-1" />
                         Anpassa
@@ -308,7 +299,7 @@ export function RecipeSelectionDialog({
                     )}
                     <Button
                       onClick={() => handleSelectRecipe(recipe)}
-                      className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
+                      className="bg-amber-500 hover:bg-amber-600 text-white"
                     >
                       Välj
                     </Button>
