@@ -855,18 +855,17 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Slider mode: BACK button */}
+      {/* Slider mode: Navigation bar */}
       {viewMode === 'slider' && (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between bg-white rounded-xl px-4 py-3 shadow-sm border border-gray-100">
           <button
             onClick={() => setViewMode('list')}
-            className="flex items-center gap-1.5 text-gray-500 hover:text-gray-700 text-sm font-medium"
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
-            BACK
+            <ArrowLeft className="w-5 h-5" />
+            Tillbaka
           </button>
-          <span className="text-gray-300">|</span>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm font-medium text-gray-600">
             Övning {currentExerciseIndex + 1} av {workoutDay.exercises.length}
           </span>
         </div>
