@@ -520,9 +520,6 @@ export function ClientStyleMealCard({
             <span className="text-base font-semibold text-zinc-900">{mealLabel}</span>
           </button>
 
-          {/* Dinner tips dialog - only for middag */}
-          {meal.type === 'middag' && <DinnerTipsDialog />}
-
           {/* Info icon with recommended macros popover */}
           {meal.targetMacros && meal.targetMacros.kcal > 0 && (
             <Popover>
@@ -570,6 +567,9 @@ export function ClientStyleMealCard({
               </PopoverContent>
             </Popover>
           )}
+
+          {/* Dinner tips dialog - only for middag */}
+          {meal.type === 'middag' && <DinnerTipsDialog />}
 
           {/* Move up/down buttons */}
           {(onMoveUp || onMoveDown) && (
