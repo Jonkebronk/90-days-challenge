@@ -718,7 +718,7 @@ export function ClientStyleMealCard({
                     </span>
                   </button>
                   <button
-                    onClick={() => !disabled && handleOpenSelectModal('carb', getTargetMacro('carb'), 'berry')}
+                    onClick={() => !disabled && handleOpenSelectModal('carb', getTargetMacro('carb'), 'Bär')}
                     disabled={disabled}
                     className={cn(
                       "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors",
