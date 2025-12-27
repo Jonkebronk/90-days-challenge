@@ -968,17 +968,19 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         )}
                       </div>
 
-                      {/* Sets/Reps/Vila + TEMPO inline */}
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-500">
-                        <span><span className="font-medium text-gray-600">Sets:</span> {exercise.sets}</span>
-                        <span><span className="font-medium text-gray-600">Reps:</span> {exercise.reps || '-'}</span>
-                        {exercise.restSeconds > 0 && (
-                          <span><span className="font-medium text-gray-600">Vila:</span> {exercise.restSeconds}s</span>
-                        )}
-                        {exercise.tempo && (
-                          <span className="text-teal-600 font-semibold">TEMPO: {exercise.tempo}</span>
-                        )}
-                      </div>
+                      {/* Sets/Reps/Vila + TEMPO inline - only show when expanded */}
+                      {isExpanded && (
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-500">
+                          <span><span className="font-medium text-gray-600">Sets:</span> {exercise.sets}</span>
+                          <span><span className="font-medium text-gray-600">Reps:</span> {exercise.reps || '-'}</span>
+                          {exercise.restSeconds > 0 && (
+                            <span><span className="font-medium text-gray-600">Vila:</span> {exercise.restSeconds}s</span>
+                          )}
+                          {exercise.tempo && (
+                            <span className="text-teal-600 font-semibold">TEMPO: {exercise.tempo}</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
