@@ -1,6 +1,5 @@
 'use client';
 
-import { Info, X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -22,9 +21,9 @@ export function DinnerTipsDialog({ trigger }: DinnerTipsDialogProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="h-6 w-6 p-0 text-gray-400 hover:text-purple-500"
+            className="h-6 w-6 p-0 hover:bg-purple-50"
           >
-            <Info className="h-4 w-4" />
+            <span className="text-sm">👪</span>
           </Button>
         )}
       </DialogTrigger>
