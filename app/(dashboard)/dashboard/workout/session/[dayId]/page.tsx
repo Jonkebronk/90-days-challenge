@@ -990,40 +990,19 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         )}
                       </div>
 
-                      {/* Video + Rest buttons - compact */}
-                      <div className="flex flex-wrap items-center gap-2 mt-2">
-                        {exercise.exercise.videoUrl && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setActiveVideoIndex(activeVideoIndex === index ? null : index)
-                            }}
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors ${
-                              activeVideoIndex === index
-                                ? 'bg-gray-700 text-white'
-                                : 'bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200'
-                            }`}
-                          >
-                            {activeVideoIndex === index ? (
-                              <><X className="w-3 h-3" /> STÄNG</>
-                            ) : (
-                              <><Play className="w-3 h-3 fill-current" /> VIDEO</>
-                            )}
-                          </button>
-                        )}
-                        {exercise.restSeconds > 0 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              startRestTimer(exercise.restSeconds)
-                            }}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors"
-                          >
-                            <Timer className="w-3 h-3" />
-                            VILA {exercise.restSeconds}s
-                          </button>
-                        )}
-                      </div>
+                      {/* Rest button - compact */}
+                      {exercise.restSeconds > 0 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            startRestTimer(exercise.restSeconds)
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors mt-2"
+                        >
+                          <Timer className="w-3 h-3" />
+                          VILA {exercise.restSeconds}s
+                        </button>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
