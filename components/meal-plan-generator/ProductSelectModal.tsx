@@ -393,8 +393,12 @@ export function ProductSelectModal({
   const macroLabel = getMacroKey(category);
   const categoryTitle = MACRO_CATEGORY_LABELS[category] || category;
 
-  // Get display title based on defaultSubcategory or category
+  // Get display title based on context
   const getDialogTitle = () => {
+    // When category selector is shown, use generic title
+    if (showCategorySelector) {
+      return 'Välj livsmedel';
+    }
     if (defaultSubcategory && defaultSubcategory !== 'all') {
       // Use defaultSubcategory directly for title - don't wait for API
       return `Välj ${defaultSubcategory.toLowerCase()}`;
