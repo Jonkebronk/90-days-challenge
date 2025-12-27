@@ -970,14 +970,21 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                       {/* Sets/Reps/Vila + TEMPO inline - only show when expanded */}
                       {isExpanded && (
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-500">
-                          <span><span className="font-medium text-gray-600">Sets:</span> {exercise.sets}</span>
-                          <span><span className="font-medium text-gray-600">Reps:</span> {exercise.reps || '-'}</span>
+                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-600">
+                          <span className="font-medium">{exercise.sets} sets</span>
+                          <span className="text-gray-300">•</span>
+                          <span className="font-medium">{exercise.reps || '-'} reps</span>
                           {exercise.restSeconds > 0 && (
-                            <span><span className="font-medium text-gray-600">Vila:</span> {exercise.restSeconds}s</span>
+                            <>
+                              <span className="text-gray-300">•</span>
+                              <span className="font-medium">{exercise.restSeconds}s vila</span>
+                            </>
                           )}
                           {exercise.tempo && (
-                            <span className="text-teal-600 font-semibold">TEMPO: {exercise.tempo}</span>
+                            <>
+                              <span className="text-gray-300">•</span>
+                              <span className="text-teal-600 font-semibold">TEMPO {exercise.tempo}</span>
+                            </>
                           )}
                         </div>
                       )}
@@ -1123,7 +1130,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                 onClick={() => set.id && openEditModal(set)}
                               >
                                 <span className="text-center text-sm font-bold text-gray-700">{set.setNumber}</span>
-                                <span className="text-center text-[10px] sm:text-xs text-gray-400 truncate">
+                                <span className="text-center text-xs sm:text-sm text-gray-600 font-medium truncate">
                                   {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
                                 </span>
                                 <span className="text-center text-sm font-semibold text-gray-800">
@@ -1179,7 +1186,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       {/* Current set input row */}
                       <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border-2 border-blue-200 rounded-xl items-center">
                         <span className="text-center text-sm font-bold text-blue-600">{exerciseSets.length + 1}</span>
-                        <span className="text-center text-[10px] sm:text-xs text-gray-400 truncate">
+                        <span className="text-center text-xs sm:text-sm text-gray-600 font-medium truncate">
                           {(() => {
                             const prevSets = previousSessionData?.sets?.filter(
                               (s: any) => s.exerciseId === exercise.exercise.id
@@ -1248,7 +1255,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         return (
                           <div key={idx} className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl items-center">
                             <span className="text-center text-sm font-bold text-gray-400">{setNum}</span>
-                            <span className="text-center text-[10px] sm:text-xs text-gray-300 truncate">
+                            <span className="text-center text-xs sm:text-sm text-gray-500 font-medium truncate">
                               {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
                             </span>
                             <span className="text-center text-sm text-gray-300">-</span>
