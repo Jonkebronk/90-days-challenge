@@ -1259,7 +1259,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                               {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
                             </span>
                             <span className="text-center text-sm text-gray-300">-</span>
-                            <span className="text-center text-sm text-gray-400 font-medium">{exercise.reps || '-'}</span>
+                            <span className="text-center text-xs sm:text-sm text-gray-400 font-medium">{exercise.reps || '-'}</span>
                             <span className="text-center text-sm text-gray-300">-</span>
                             <div className="flex justify-center">
                               <div className="w-10 h-10 aspect-square rounded-xl border-2 border-gray-200 bg-gray-50 flex-shrink-0"></div>
