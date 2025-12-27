@@ -905,7 +905,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     <ArrowLeft className="w-4 h-4" />
                     Tillbaka
                   </button>
-                  <span className="text-xs font-medium text-gray-400">
+                  <span className="text-sm font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
                     Övning {currentExerciseIndex + 1} av {workoutDay.exercises.length}
                   </span>
                 </div>
@@ -1058,8 +1058,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         <span className="text-center">SET</span>
                         <span className="text-center">FÖREG</span>
-                        <span className="text-center">KG</span>
                         <span className="text-center">REPS</span>
+                        <span className="text-center">KG</span>
                         <span className="text-center">VILA</span>
                         <span className="text-center"></span>
                       </div>
@@ -1120,10 +1120,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                   {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
                                 </span>
                                 <span className="text-center text-sm font-semibold text-gray-800">
-                                  {set.setType === 'WEIGHT' ? (set.notes || `${set.weightKg || 0}`) : '-'}
+                                  {set.setType === 'TIME' ? `${set.timeSeconds}s` : (set.reps || 0)}
                                 </span>
                                 <span className="text-center text-sm font-semibold text-gray-800">
-                                  {set.setType === 'TIME' ? `${set.timeSeconds}s` : (set.reps || 0)}
+                                  {set.setType === 'WEIGHT' ? (set.notes || `${set.weightKg || 0}`) : '-'}
                                 </span>
                                 <div className="flex items-center justify-center">
                                   {exercise.restSeconds > 0 ? (
@@ -1162,8 +1162,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 rounded-t-lg text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wide">
                           <span className="text-center">SET</span>
                           <span className="text-center">FÖREG</span>
-                          <span className="text-center">KG</span>
                           <span className="text-center">REPS</span>
+                          <span className="text-center">KG</span>
                           <span className="text-center">VILA</span>
                           <span className="text-center"></span>
                         </div>
@@ -1183,6 +1183,19 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         </span>
                         <div>
                           <Input
+                            type="number"
+                            inputMode="numeric"
+                            value={currentReps}
+                            onChange={(e) => setCurrentReps(e.target.value)}
+                            placeholder={exercise.reps || '12'}
+                            autoComplete="off"
+                            autoCorrect="off"
+                            spellCheck={false}
+                            className="h-10 px-1 text-center text-sm font-semibold bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 placeholder:text-[10px] placeholder:whitespace-nowrap focus:border-pink-500 focus:ring-1 focus:ring-pink-500/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                        </div>
+                        <div>
+                          <Input
                             type="text"
                             inputMode="decimal"
                             value={currentWeight}
@@ -1192,19 +1205,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             autoCorrect="off"
                             spellCheck={false}
                             className="h-10 text-center text-sm font-semibold bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-pink-500 focus:ring-1 focus:ring-pink-500/20"
-                          />
-                        </div>
-                        <div>
-                          <Input
-                            type="number"
-                            inputMode="numeric"
-                            value={currentReps}
-                            onChange={(e) => setCurrentReps(e.target.value)}
-                            placeholder={exercise.reps || '12'}
-                            autoComplete="off"
-                            autoCorrect="off"
-                            spellCheck={false}
-                            className="h-10 text-center text-sm font-semibold bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 focus:border-pink-500 focus:ring-1 focus:ring-pink-500/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>
                         <div className="flex justify-center">
@@ -1245,7 +1245,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                               {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
                             </span>
                             <span className="text-center text-sm text-gray-300">-</span>
-                            <span className="text-center text-xs text-gray-400 font-medium whitespace-nowrap">{exercise.reps || '-'}</span>
+                            <span className="text-center text-sm text-gray-300">-</span>
                             <span className="text-center text-sm text-gray-300">-</span>
                             <div className="flex justify-center">
                               <div className="w-10 h-10 aspect-square rounded-xl border-2 border-gray-200 bg-gray-50 flex-shrink-0"></div>
