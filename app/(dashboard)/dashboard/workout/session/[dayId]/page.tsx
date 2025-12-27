@@ -1089,13 +1089,13 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         openNoteEditor(exercise.id)
                       }}
                     >
-                      <StickyNote className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                      <StickyNote className="w-4 h-4 text-gray-500 flex-shrink-0" />
                       <p className="flex-1 text-sm text-gray-700 leading-snug">
                         {userExerciseNotes[exercise.id] || (
-                          <span className="text-amber-400 italic">Lägg till en anteckning...</span>
+                          <span className="text-gray-400 italic">Lägg till en anteckning...</span>
                         )}
                       </p>
-                      <Pin className="w-4 h-4 text-amber-300 flex-shrink-0" />
+                      <Pin className="w-4 h-4 text-gray-400 flex-shrink-0" />
                     </div>
                   )}
 
