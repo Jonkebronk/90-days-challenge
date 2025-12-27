@@ -1137,8 +1137,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                 </div>
                               </div>
                             ) : (
-                              /* Display mode - table row */
-                              <div className="grid grid-cols-[36px_60px_1fr_1fr_44px] sm:grid-cols-[50px_80px_1fr_1fr_56px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-xl group items-center">
+                              /* Display mode - table row - click to edit */
+                              <div
+                                className="grid grid-cols-[36px_60px_1fr_1fr_44px] sm:grid-cols-[50px_80px_1fr_1fr_56px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-xl items-center cursor-pointer hover:bg-gray-50 transition-colors"
+                                onClick={() => set.id && openEditModal(set)}
+                              >
                                 <span className="text-center text-sm font-bold text-gray-700">{set.setNumber}</span>
                                 <span className="text-center text-[10px] sm:text-sm text-gray-400 truncate">
                                   {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
@@ -1149,29 +1152,12 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                 <span className="text-center text-sm font-semibold text-gray-800">
                                   {set.setType === 'TIME' ? `${set.timeSeconds}s` : (set.reps || 0)}
                                 </span>
-                                <div className="flex items-center justify-center">
-                                  <div className="w-10 h-10 aspect-square rounded-xl bg-green-500 flex items-center justify-center shadow-sm flex-shrink-0">
-                                    <Check className="w-5 h-5 text-white" />
+                                <div className="flex items-center justify-center gap-1">
+                                  <div className="w-9 h-9 aspect-square rounded-xl bg-green-500 flex items-center justify-center shadow-sm flex-shrink-0">
+                                    <Check className="w-4 h-4 text-white" />
                                   </div>
-                                  {/* Edit/Delete - visible on hover */}
-                                  {set.id && (
-                                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                      <button
-                                        onClick={() => openEditModal(set)}
-                                        className="p-1 rounded hover:bg-gray-200 transition-colors"
-                                        title="Redigera"
-                                      >
-                                        <Pencil className="w-3 h-3 text-gray-400 hover:text-gray-600" />
-                                      </button>
-                                      <button
-                                        onClick={() => deleteSetDirectly(set)}
-                                        className="p-1 rounded hover:bg-red-100 transition-colors"
-                                        title="Ta bort"
-                                      >
-                                        <Trash2 className="w-3 h-3 text-gray-400 hover:text-red-500" />
-                                      </button>
-                                    </div>
-                                  )}
+                                  {/* Small edit indicator */}
+                                  <Pencil className="w-3 h-3 text-gray-300" />
                                 </div>
                               </div>
                             )}
