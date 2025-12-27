@@ -1130,12 +1130,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                 <span className="text-center text-sm font-semibold text-gray-800">
                                   {set.setType === 'TIME' ? `${set.timeSeconds}s` : (set.reps || 0)}
                                 </span>
-                                <div className="flex items-center justify-center gap-1">
+                                <div className="flex items-center justify-center">
                                   <div className="w-9 h-9 aspect-square rounded-xl bg-green-500 flex items-center justify-center shadow-sm flex-shrink-0">
                                     <Check className="w-4 h-4 text-white" />
                                   </div>
-                                  {/* Small edit indicator */}
-                                  <Pencil className="w-3 h-3 text-gray-300" />
                                 </div>
                               </div>
                             )}
