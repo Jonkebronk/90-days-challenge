@@ -1050,12 +1050,12 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* User Exercise Notes - Pinned note style (above sets) */}
                   {editingNoteExerciseId === exercise.id ? (
-                    <div className="p-3 bg-amber-50 rounded-lg space-y-3" onClick={(e) => e.stopPropagation()}>
+                    <div className="p-3 bg-amber-50/80 rounded-lg space-y-3" onClick={(e) => e.stopPropagation()}>
                       <textarea
                         value={noteText}
                         onChange={(e) => setNoteText(e.target.value)}
                         placeholder="Skriv ner det du vill komma ihåg – som maskininställning, eller något att tänka på nästa gång."
-                        className="w-full p-3 bg-white border border-amber-200 rounded-lg text-sm text-amber-900 placeholder:text-amber-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400/20 focus:outline-none resize-none"
+                        className="w-full p-3 bg-white border border-amber-200 rounded-lg text-sm text-gray-700 placeholder:text-amber-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400/20 focus:outline-none resize-none"
                         rows={3}
                         autoFocus
                       />
@@ -1083,19 +1083,19 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     </div>
                   ) : (
                     <div
-                      className="flex items-center gap-3 px-3 py-2.5 bg-amber-100 rounded-lg cursor-pointer hover:bg-amber-200/70 transition-colors"
+                      className="flex items-center gap-3 px-4 py-2.5 bg-amber-50/80 rounded-lg cursor-pointer hover:bg-amber-100/80 transition-colors"
                       onClick={(e) => {
                         e.stopPropagation()
                         openNoteEditor(exercise.id)
                       }}
                     >
-                      <Pencil className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                      <p className="flex-1 text-sm text-amber-900 leading-snug">
+                      <StickyNote className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                      <p className="flex-1 text-sm text-gray-700 leading-snug">
                         {userExerciseNotes[exercise.id] || (
-                          <span className="text-amber-500 italic">Lägg till en anteckning...</span>
+                          <span className="text-amber-400 italic">Lägg till en anteckning...</span>
                         )}
                       </p>
-                      <Pin className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                      <Pin className="w-4 h-4 text-amber-300 flex-shrink-0" />
                     </div>
                   )}
 
