@@ -319,43 +319,34 @@ export function MinimizedRestBar({
   onAddTime,
   onExpand
 }: MinimizedRestBarProps) {
-  // Formatera tid
-  const minutes = Math.floor(remainingSeconds / 60)
-  const seconds = remainingSeconds % 60
-  const timeDisplay = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+  // Format time as HH:MM:SS
+  const formatTime = (secs: number) => {
+    const abs = Math.abs(secs)
+    const hrs = Math.floor(abs / 3600)
+    const mins = Math.floor((abs % 3600) / 60)
+    const s = abs % 60
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+  }
 
-  // Progress
-  const progress = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0
-  const progressColor = progress > 0.5 ? '#22c55e' : progress > 0.25 ? '#f59e0b' : '#ef4444'
+  // Calculate overtime (negative time)
+  const isOvertime = remainingSeconds < 0
+  const overtimeSeconds = isOvertime ? Math.abs(remainingSeconds) : 0
 
   const barContent = (
     <div
       style={{
         position: 'fixed',
-        top: 0,
+        bottom: 0,
         left: 0,
         right: 0,
         zIndex: 9999,
-        backgroundColor: '#18181b',
-        borderBottom: '1px solid #3f3f46',
-        padding: '0.75rem 1rem',
-        paddingTop: 'calc(0.75rem + env(safe-area-inset-top, 0px))',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+        backgroundColor: '#fff',
+        borderTop: '1px solid #e5e7eb',
+        padding: '1rem 1.5rem',
+        paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
+        boxShadow: '0 -4px 20px rgba(0,0,0,0.1)',
       }}
     >
-      {/* Progress bar */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          height: '3px',
-          width: `${progress * 100}%`,
-          backgroundColor: progressColor,
-          transition: 'width 0.1s linear, background-color 0.3s',
-        }}
-      />
-
       <div
         style={{
           display: 'flex',
@@ -366,97 +357,77 @@ export function MinimizedRestBar({
         }}
       >
         {/* Timer display */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.75rem', color: '#a1a1aa', fontWeight: 500 }}>VILA</span>
+        <div style={{ flex: 1 }}>
+          {/* Overtime indicator */}
+          {isOvertime && (
             <span
               style={{
-                fontFamily: 'monospace',
-                fontSize: '1.5rem',
-                fontWeight: 700,
-                color: '#fff',
+                fontSize: '0.75rem',
+                color: '#ec4899',
+                fontWeight: 500,
               }}
             >
-              {timeDisplay}
+              -{formatTime(overtimeSeconds)}
             </span>
+          )}
+          {/* Main timer */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span
+              style={{
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+                fontSize: '2rem',
+                fontWeight: 700,
+                color: '#3b82f6',
+                fontVariantNumeric: 'tabular-nums',
+                letterSpacing: '-0.02em',
+              }}
+            >
+              {formatTime(Math.max(0, remainingSeconds))}
+            </span>
+            {/* Reset button */}
+            <button
+              onClick={() => onAddTime(totalSeconds - remainingSeconds)}
+              style={{
+                padding: '0.375rem',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#9ca3af',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              title="Återställ timer"
+            >
+              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+            </button>
           </div>
+        </div>
 
-          {/* Mini progress circle */}
-          <svg width={32} height={32} style={{ transform: 'rotate(-90deg)' }}>
-            <circle cx={16} cy={16} r={14} fill="none" stroke="#3f3f46" strokeWidth={3} />
-            <circle
-              cx={16}
-              cy={16}
-              r={14}
-              fill="none"
-              stroke={progressColor}
-              strokeWidth={3}
-              strokeLinecap="round"
-              strokeDasharray={2 * Math.PI * 14}
-              strokeDashoffset={2 * Math.PI * 14 * (1 - progress)}
-              style={{ transition: 'stroke-dashoffset 0.1s linear' }}
-            />
+        {/* Pause/Stop button */}
+        <button
+          onClick={onStop}
+          style={{
+            width: '3rem',
+            height: '3rem',
+            borderRadius: '0.75rem',
+            border: '2px solid #e5e7eb',
+            background: '#fff',
+            color: '#6b7280',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <svg width={24} height={24} viewBox="0 0 24 24" fill="currentColor">
+            <rect x="6" y="4" width="4" height="16" rx="1" />
+            <rect x="14" y="4" width="4" height="16" rx="1" />
           </svg>
-        </div>
-
-        {/* Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <button
-            onClick={() => onAddTime(30)}
-            style={{
-              padding: '0.5rem 0.75rem',
-              borderRadius: '0.5rem',
-              border: '1px solid #3f3f46',
-              background: '#27272a',
-              color: '#fff',
-              cursor: 'pointer',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.25rem',
-            }}
-          >
-            <Plus style={{ width: 16, height: 16 }} />
-            30s
-          </button>
-
-          <button
-            onClick={onExpand}
-            style={{
-              padding: '0.5rem 0.75rem',
-              borderRadius: '0.5rem',
-              border: '1px solid #3f3f46',
-              background: '#27272a',
-              color: '#fff',
-              cursor: 'pointer',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.25rem',
-            }}
-          >
-            <Maximize2 style={{ width: 16, height: 16 }} />
-            <span className="hidden sm:inline">Expandera</span>
-          </button>
-
-          <button
-            onClick={onStop}
-            style={{
-              padding: '0.5rem 0.75rem',
-              borderRadius: '0.5rem',
-              border: 'none',
-              background: '#dc2626',
-              color: '#fff',
-              cursor: 'pointer',
-              fontSize: '0.875rem',
-              fontWeight: 600,
-            }}
-          >
-            Stoppa
-          </button>
-        </div>
+        </button>
       </div>
     </div>
   )
