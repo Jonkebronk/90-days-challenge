@@ -41,6 +41,7 @@ const categoryLabels: Record<MacroCategory, string> = {
   fat: 'fettkälla',
   vegetable: 'grönsak',
   sauce: 'sås',
+  berry: 'bär',
 };
 
 export function FoodSwapModal({

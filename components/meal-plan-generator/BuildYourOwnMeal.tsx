@@ -38,6 +38,7 @@ export function BuildYourOwnMeal({ targetMacros, mealType, onApply, disabled = f
     fat: null,
     vegetable: null,
     sauce: null,
+    berry: null,
   });
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -86,6 +87,7 @@ export function BuildYourOwnMeal({ targetMacros, mealType, onApply, disabled = f
         fat: null,
         vegetable: null,
         sauce: null,
+        berry: null,
       });
     }
   };

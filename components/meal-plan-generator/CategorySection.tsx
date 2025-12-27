@@ -29,6 +29,7 @@ const categoryColors: Record<MacroCategory, {
   fat: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badge: 'bg-blue-100 text-blue-700', selectedBg: 'bg-blue-100', selectedBorder: 'border-blue-400' },
   vegetable: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', badge: 'bg-green-100 text-green-700', selectedBg: 'bg-green-100', selectedBorder: 'border-green-400' },
   sauce: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', badge: 'bg-orange-100 text-orange-700', selectedBg: 'bg-orange-100', selectedBorder: 'border-orange-400' },
+  berry: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700', badge: 'bg-purple-100 text-purple-700', selectedBg: 'bg-purple-100', selectedBorder: 'border-purple-400' },
 };
 
 const categoryTitles: Record<MacroCategory, string> = {
@@ -37,6 +38,7 @@ const categoryTitles: Record<MacroCategory, string> = {
   fat: 'Fett',
   vegetable: 'Grönsaker',
   sauce: 'Sås',
+  berry: 'Bär',
 };
 
 // Get target macro based on category

@@ -5,7 +5,7 @@
 // ENUMS & CONSTANTS
 // ===================
 
-export type MacroCategory = 'protein' | 'carb' | 'fat' | 'vegetable' | 'sauce';
+export type MacroCategory = 'protein' | 'carb' | 'fat' | 'vegetable' | 'sauce' | 'berry';
 
 export type MealType = 'frukost' | 'mellanmål' | 'lunch' | 'middag' | 'kvällsmål';
 
@@ -23,6 +23,7 @@ export const MACRO_CATEGORY_LABELS: Record<MacroCategory, string> = {
   fat: 'Fettkälla',
   vegetable: 'Grönsaker',
   sauce: 'Sås',
+  berry: 'Bär',
 };
 
 // Calorie constants per gram

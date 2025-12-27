@@ -23,6 +23,7 @@ const MACRO_TO_DB_CATEGORY: Record<MacroCategory, string> = {
   fat: 'Fettkällor',
   vegetable: 'Grönsaker',
   sauce: 'Såser',
+  berry: 'Bär',
 };
 
 interface Subcategory {
@@ -97,6 +98,7 @@ const DEFAULT_GRAMS_BY_CATEGORY: Record<MacroCategory, number> = {
   fat: 100,
   vegetable: 100,
   sauce: 30,
+  berry: 100,
 };
 
 // Calculate grams - use defaults for protein/carb/fat/vegetable, target-based for sauce
@@ -531,6 +533,7 @@ export function ProductSelectModal({
                 <SelectItem value="carb">Kolhydrat</SelectItem>
                 <SelectItem value="fat">Fett</SelectItem>
                 <SelectItem value="vegetable">Grönsaker</SelectItem>
+                <SelectItem value="berry">Bär</SelectItem>
                 <SelectItem value="sauce">Sås</SelectItem>
               </SelectContent>
             </Select>

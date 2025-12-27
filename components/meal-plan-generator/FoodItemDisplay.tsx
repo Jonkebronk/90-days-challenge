@@ -5,7 +5,7 @@ import type { FoodWithGrams } from '@/lib/types/meal-plan-generator';
 
 interface FoodItemDisplayProps {
   food: FoodWithGrams;
-  category: 'protein' | 'carb' | 'fat' | 'vegetable' | 'sauce';
+  category: 'protein' | 'carb' | 'fat' | 'vegetable' | 'sauce' | 'berry';
   isSelected?: boolean;
   onClick?: () => void;
   showMacros?: boolean;
@@ -47,6 +47,13 @@ const categoryColors = {
     selectedBorder: 'border-orange-500',
     text: 'text-orange-700',
     label: 'Sås',
+  },
+  berry: {
+    bg: 'bg-purple-50',
+    border: 'border-purple-200',
+    selectedBorder: 'border-purple-500',
+    text: 'text-purple-700',
+    label: 'Bär',
   },
 };
 
