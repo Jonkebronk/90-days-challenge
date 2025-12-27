@@ -34,6 +34,7 @@ export interface CustomizedIngredient {
   originalIngredient: RecipeIngredientInfo;
   linkedProduct: LinkedProduct | null;
   isLinked: boolean;
+  isIncluded: boolean; // Toggle for include/skip ingredient
 }
 
 // Full customized recipe state
@@ -50,6 +51,7 @@ export interface RecipeCustomizerDialogProps {
   recipeId: string;
   mealPlanId: string;
   mealIndex: number;
+  targetMacros?: CalculatedMacros; // For comparison with meal target
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
@@ -61,6 +63,7 @@ export interface IngredientMatchRowProps {
   onLinkClick: () => void;
   onUnlink: () => void;
   onUpdateGrams: (grams: number) => void;
+  onToggleInclude: () => void; // Toggle include/skip
 }
 
 // API request body for adding customized recipe

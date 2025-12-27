@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Heart, X, Clock, Users, ChefHat } from 'lucide-react';
 import { toast } from 'sonner';
 import { RecipeCustomizerDialog } from '@/components/recipe-customizer';
+import type { CalculatedMacros } from '@/lib/types/meal-plan-generator';
 
 type FoodItem = {
   name: string;
@@ -69,6 +70,7 @@ interface RecipeDetailDialogProps {
   // Optional props for recipe customization (when viewing from meal plan context)
   mealPlanId?: string;
   mealIndex?: number;
+  targetMacros?: CalculatedMacros;
   onCustomizeSuccess?: () => void;
 }
 
@@ -78,6 +80,7 @@ export function RecipeDetailDialog({
   onOpenChange,
   mealPlanId,
   mealIndex,
+  targetMacros,
   onCustomizeSuccess,
 }: RecipeDetailDialogProps) {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
@@ -343,6 +346,7 @@ export function RecipeDetailDialog({
           recipeId={recipeId}
           mealPlanId={mealPlanId!}
           mealIndex={mealIndex!}
+          targetMacros={targetMacros}
           open={customizerOpen}
           onOpenChange={setCustomizerOpen}
           onSuccess={() => {

@@ -818,6 +818,31 @@ export function FlexibleMealPlan({
     }
   };
 
+  // Refresh meal plan data (used after recipe customization)
+  const handleRefreshMealData = async () => {
+    if (!flexiblePlan) return;
+
+    try {
+      const response = await fetch(`/api/meal-plan/by-nutrition-plan/${nutritionPlanId}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data) {
+          setFlexiblePlan({
+            id: data.id,
+            meals: data.meals,
+            targetMacros: data.targetMacros,
+            actualMacros: data.actualMacros,
+          });
+          if (data.mealRecipes) {
+            setMealRecipes(data.mealRecipes);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error refreshing meal data:', err);
+    }
+  };
+
   // Clear recipe handler
   const handleClearRecipe = async (mealIndex: number) => {
     if (!flexiblePlan) return;
@@ -974,6 +999,7 @@ export function FlexibleMealPlan({
                 meal={meal}
                 mealIndex={index}
                 mealNumber={getMealNumber(flexiblePlan.meals, index)}
+                mealPlanId={flexiblePlan.id}
                 onSwapFood={handleSwapFood}
                 onSelectFood={handleSelectFood}
                 onRemoveFood={handleRemoveFood}
@@ -988,6 +1014,7 @@ export function FlexibleMealPlan({
                 mealRecipes={mealRecipes[index] || []}
                 onAddMealRecipe={handleAddMealRecipe}
                 onRemoveMealRecipe={handleRemoveMealRecipe}
+                onRefreshMealData={handleRefreshMealData}
                 onMoveUp={(idx) => handleMoveMeal(idx, 'up')}
                 onMoveDown={(idx) => handleMoveMeal(idx, 'down')}
                 canMoveUp={index > 0}

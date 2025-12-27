@@ -10,8 +10,9 @@ export function IngredientMatchRow({
   onLinkClick,
   onUnlink,
   onUpdateGrams,
+  onToggleInclude,
 }: IngredientMatchRowProps) {
-  const { originalIngredient, linkedProduct, isLinked } = ingredient;
+  const { originalIngredient, linkedProduct, isLinked, isIncluded } = ingredient;
   const [localGrams, setLocalGrams] = useState(
     linkedProduct?.grams.toString() || Math.round(originalIngredient.amount).toString()
   );
@@ -49,30 +50,43 @@ export function IngredientMatchRow({
     <div
       className={cn(
         'rounded-xl border-2 p-3 transition-all',
+        !isIncluded && 'opacity-50',
         isLinked
           ? 'border-emerald-300 bg-emerald-50/50'
           : 'border-dashed border-zinc-300 bg-zinc-50/50'
       )}
     >
-      {/* Original ingredient reference */}
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-xs text-zinc-400 uppercase font-medium">Original:</span>
-        <span className="text-sm text-zinc-600">
-          {originalIngredient.foodItem.name}
-          {originalIngredient.displayAmount && originalIngredient.displayUnit && (
-            <span className="text-zinc-400 ml-1">
-              ({originalIngredient.displayAmount} {originalIngredient.displayUnit})
+      {/* Checkbox + Original ingredient reference */}
+      <div className="flex items-start gap-3 mb-2">
+        {/* Include checkbox */}
+        <input
+          type="checkbox"
+          checked={isIncluded}
+          onChange={onToggleInclude}
+          className="mt-1 w-5 h-5 rounded border-zinc-300 text-emerald-500 focus:ring-emerald-500 cursor-pointer"
+        />
+
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-zinc-400 uppercase font-medium">Original:</span>
+            <span className="text-sm text-zinc-600">
+              {originalIngredient.foodItem.name}
+              {originalIngredient.displayAmount && originalIngredient.displayUnit && (
+                <span className="text-zinc-400 ml-1">
+                  ({originalIngredient.displayAmount} {originalIngredient.displayUnit})
+                </span>
+              )}
+              <span className="text-zinc-400 ml-1">
+                ({Math.round(originalIngredient.amount)}g)
+              </span>
             </span>
-          )}
-          <span className="text-zinc-400 ml-1">
-            ({Math.round(originalIngredient.amount)}g)
-          </span>
-        </span>
-        {originalIngredient.optional && (
-          <span className="text-[10px] bg-zinc-200 text-zinc-600 px-1.5 py-0.5 rounded">
-            Valfri
-          </span>
-        )}
+            {originalIngredient.optional && (
+              <span className="text-[10px] bg-zinc-200 text-zinc-600 px-1.5 py-0.5 rounded">
+                Valfri
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Linked product or search button */}

@@ -109,6 +109,7 @@ interface ClientStyleMealCardProps {
   meal: GeneratedMeal;
   mealIndex: number;
   mealNumber?: number;
+  mealPlanId?: string;
   onSwapFood: (mealIndex: number, category: MacroCategory, foodId: string) => void;
   onSelectFood?: (mealIndex: number, category: MacroCategory, product: ProductForSelect, grams: number, macros: CalculatedMacros, isAlternative?: boolean) => void;
   onRemoveFood?: (mealIndex: number, category: MacroCategory, foodId?: string) => void;
@@ -127,6 +128,7 @@ interface ClientStyleMealCardProps {
   mealRecipes?: MealRecipe[];
   onAddMealRecipe?: (mealIndex: number) => void;
   onRemoveMealRecipe?: (mealIndex: number, recipeId: string) => void;
+  onRefreshMealData?: () => void;
   // Reorder props
   onMoveUp?: (mealIndex: number) => void;
   onMoveDown?: (mealIndex: number) => void;
@@ -206,6 +208,7 @@ export function ClientStyleMealCard({
   meal,
   mealIndex,
   mealNumber,
+  mealPlanId,
   onSelectFood,
   onRemoveFood,
   onAddSauce,
@@ -220,6 +223,7 @@ export function ClientStyleMealCard({
   mealRecipes = [],
   onAddMealRecipe,
   onRemoveMealRecipe,
+  onRefreshMealData,
   onMoveUp,
   onMoveDown,
   canMoveUp = false,
@@ -880,6 +884,10 @@ export function ClientStyleMealCard({
         recipeId={selectedRecipeId}
         open={recipeDialogOpen}
         onOpenChange={setRecipeDialogOpen}
+        mealPlanId={mealPlanId}
+        mealIndex={mealIndex}
+        targetMacros={meal.targetMacros}
+        onCustomizeSuccess={onRefreshMealData}
       />
 
       {/* Food Item Detail Dialog */}

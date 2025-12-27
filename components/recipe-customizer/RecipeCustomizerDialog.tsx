@@ -1,8 +1,18 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { X, Loader2, ChefHat } from 'lucide-react';
+import { Loader2, ChefHat, AlertTriangle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { ProductSelectModal } from '@/components/meal-plan-generator/ProductSelectModal';
 import { IngredientMatchRow } from './IngredientMatchRow';
@@ -29,6 +39,7 @@ export function RecipeCustomizerDialog({
   recipeId,
   mealPlanId,
   mealIndex,
+  targetMacros,
   open,
   onOpenChange,
   onSuccess,
@@ -43,6 +54,9 @@ export function RecipeCustomizerDialog({
   // Product modal state
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [activeIngredientIndex, setActiveIngredientIndex] = useState<number | null>(null);
+
+  // Warning dialog state
+  const [warningOpen, setWarningOpen] = useState(false);
 
   // Fetch recipe on open
   useEffect(() => {
@@ -67,6 +81,7 @@ export function RecipeCustomizerDialog({
           originalIngredient: ing,
           linkedProduct: null,
           isLinked: false,
+          isIncluded: true, // All ingredients included by default
         })
       );
       setCustomizedIngredients(ingredients);
@@ -78,11 +93,12 @@ export function RecipeCustomizerDialog({
     }
   };
 
-  // Calculate total macros from linked products
+  // Calculate total macros from included and linked products only
   const totalMacros = useMemo<CalculatedMacros>(() => {
     const total = { kcal: 0, protein: 0, carbs: 0, fat: 0 };
     for (const ing of customizedIngredients) {
-      if (ing.linkedProduct) {
+      // Only count if included AND linked
+      if (ing.isIncluded && ing.linkedProduct) {
         total.kcal += ing.linkedProduct.macros.kcal;
         total.protein += ing.linkedProduct.macros.protein;
         total.carbs += ing.linkedProduct.macros.carbs;
@@ -92,8 +108,10 @@ export function RecipeCustomizerDialog({
     return total;
   }, [customizedIngredients]);
 
-  // Count linked ingredients
-  const linkedCount = customizedIngredients.filter((ing) => ing.isLinked).length;
+  // Count ingredients
+  const includedCount = customizedIngredients.filter((ing) => ing.isIncluded).length;
+  const linkedCount = customizedIngredients.filter((ing) => ing.isIncluded && ing.isLinked).length;
+  const unlinkedIncludedCount = customizedIngredients.filter((ing) => ing.isIncluded && !ing.isLinked).length;
   const hasLinkedProducts = linkedCount > 0;
 
   // Open product modal for an ingredient
@@ -140,6 +158,15 @@ export function RecipeCustomizerDialog({
     );
   };
 
+  // Toggle include/skip for an ingredient
+  const handleToggleInclude = (index: number) => {
+    setCustomizedIngredients((prev) =>
+      prev.map((ing, i) =>
+        i === index ? { ...ing, isIncluded: !ing.isIncluded } : ing
+      )
+    );
+  };
+
   // Update grams for a linked product
   const handleUpdateGrams = (index: number, grams: number) => {
     setCustomizedIngredients((prev) =>
@@ -170,10 +197,20 @@ export function RecipeCustomizerDialog({
     );
   };
 
+  // Check for unlinked ingredients and show warning if needed
+  const handleSubmitClick = () => {
+    if (unlinkedIncludedCount > 0) {
+      setWarningOpen(true);
+    } else {
+      handleSubmit();
+    }
+  };
+
   // Submit customized recipe to meal plan
   const handleSubmit = async () => {
     if (!hasLinkedProducts || !recipe) return;
 
+    setWarningOpen(false);
     setIsSaving(true);
     setError(null);
 
@@ -183,7 +220,8 @@ export function RecipeCustomizerDialog({
         recipeId: recipe.id,
         recipeTitle: recipe.title,
         customizedIngredients: customizedIngredients
-          .filter((ing) => ing.isLinked && ing.linkedProduct)
+          // Only include ingredients that are included AND linked
+          .filter((ing) => ing.isIncluded && ing.isLinked && ing.linkedProduct)
           .map((ing) => ({
             productId: ing.linkedProduct!.productId,
             productName: ing.linkedProduct!.productName,
@@ -257,6 +295,7 @@ export function RecipeCustomizerDialog({
                     onLinkClick={() => handleLinkClick(index)}
                     onUnlink={() => handleUnlink(index)}
                     onUpdateGrams={(grams) => handleUpdateGrams(index, grams)}
+                    onToggleInclude={() => handleToggleInclude(index)}
                   />
                 ))}
               </div>
@@ -265,8 +304,10 @@ export function RecipeCustomizerDialog({
               <div className="shrink-0 pt-3 border-t border-zinc-200">
                 <CustomizedMacrosSummary
                   macros={totalMacros}
+                  targetMacros={targetMacros}
                   linkedCount={linkedCount}
                   totalCount={customizedIngredients.length}
+                  includedCount={includedCount}
                 />
 
                 {/* Action buttons */}
@@ -279,7 +320,7 @@ export function RecipeCustomizerDialog({
                     Avbryt
                   </Button>
                   <Button
-                    onClick={handleSubmit}
+                    onClick={handleSubmitClick}
                     disabled={!hasLinkedProducts || isSaving}
                     className="flex-1 bg-amber-500 hover:bg-amber-600"
                   >
@@ -312,6 +353,32 @@ export function RecipeCustomizerDialog({
         onSelect={handleProductSelect}
         showAlternativeOption={false}
       />
+
+      {/* Warning dialog for unlinked ingredients */}
+      <AlertDialog open={warningOpen} onOpenChange={setWarningOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+              Olänkade ingredienser
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {unlinkedIncludedCount} ingrediens{unlinkedIncludedCount > 1 ? 'er' : ''} är inte länkade till produkter och kommer att hoppas över.
+              <br /><br />
+              Vill du fortsätta och lägga till de länkade ingredienserna?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Avbryt</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleSubmit}
+              className="bg-amber-500 hover:bg-amber-600"
+            >
+              Hoppa över och fortsätt
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
