@@ -74,7 +74,7 @@ interface ProductSelectModalProps {
   showCategorySelector?: boolean; // Show dropdown to select target macro category
 }
 
-type SourceTab = 'all' | 'products' | 'slv';
+type SourceTab = 'products' | 'slv';
 
 // Get the macro field key for each category
 function getMacroKey(category: MacroCategory): 'protein' | 'carbs' | 'fat' {
@@ -168,7 +168,7 @@ export function ProductSelectModal({
   const [products, setProducts] = useState<Product[]>([]);
   const [slvFoods, setSlvFoods] = useState<SlvFood[]>([]);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<SourceTab>('all');
+  const [activeTab, setActiveTab] = useState<SourceTab>('products');
   const [activeSubcategory, setActiveSubcategory] = useState(defaultSubcategory || 'all');
   const [addAsAlternative, setAddAsAlternative] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<ProductWithCalculation[]>([]);
@@ -302,11 +302,7 @@ export function ProductSelectModal({
   }, [slvFoods, category]);
 
   // Get active source items
-  const sourceItems = activeTab === 'all'
-    ? [...products, ...slvAsProducts]
-    : activeTab === 'products'
-      ? products
-      : slvAsProducts;
+  const sourceItems = activeTab === 'products' ? products : slvAsProducts;
 
   // Calculate products with grams and filter
   const productsWithCalculations: ProductWithCalculation[] = useMemo(() => {
@@ -415,22 +411,6 @@ export function ProductSelectModal({
 
         {/* Source tabs */}
         <div className="flex border-b border-zinc-200">
-          <button
-            onClick={() => setActiveTab('all')}
-            className={cn(
-              'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
-              activeTab === 'all'
-                ? 'border-b-2 border-amber-500 text-amber-700'
-                : 'text-zinc-500 hover:text-zinc-700'
-            )}
-          >
-            Alla
-            {(products.length + slvAsProducts.length) > 0 && (
-              <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
-                {products.length + slvAsProducts.length}
-              </span>
-            )}
-          </button>
           <button
             onClick={() => setActiveTab('products')}
             className={cn(
@@ -617,16 +597,6 @@ export function ProductSelectModal({
                       )}>
                         {product.name}
                       </span>
-                      {activeTab === 'all' && (
-                        <span className={cn(
-                          "text-[10px] px-1.5 py-0.5 rounded-full shrink-0",
-                          isSlvProduct
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-amber-100 text-amber-700'
-                        )}>
-                          {isSlvProduct ? 'SLV' : 'Livsmedel'}
-                        </span>
-                      )}
                     </div>
                     {product.brand && (
                       <div className="text-xs text-zinc-500 truncate">{product.brand}</div>
