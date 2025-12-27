@@ -910,16 +910,14 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                 )}
 
                 <Card
-              className={`bg-white border-2 border-dashed transition-all shadow-lg ${
+              className={`bg-white transition-all ${
                 isSuperset
-                  ? `border-l-4 border-l-pink-500 ${isFirstInSuperset ? 'rounded-t-none rounded-b-lg sm:rounded-b-xl mt-0' : ''} ${!isFirstInSuperset && !isLastInSuperset ? 'rounded-none' : ''} ${isLastInSuperset && !isFirstInSuperset ? 'rounded-t-none rounded-b-lg sm:rounded-b-xl' : ''}`
-                  : 'rounded-lg sm:rounded-xl'
+                  ? `border-l-4 border-l-pink-500 shadow-lg ${isFirstInSuperset ? 'rounded-t-none rounded-b-xl mt-0' : ''} ${!isFirstInSuperset && !isLastInSuperset ? 'rounded-none border-t-0' : ''} ${isLastInSuperset && !isFirstInSuperset ? 'rounded-t-none rounded-b-xl border-t-0' : ''}`
+                  : 'rounded-xl shadow-md hover:shadow-lg border border-gray-200'
               } ${
-                isCurrent && sessionId
-                  ? 'border-pink-500'
-                  : isExerciseComplete && !isExpanded
-                    ? 'border-green-400'
-                    : isSuperset ? 'border-pink-400' : 'border-pink-400'
+                isCurrent && sessionId && !isSuperset
+                  ? 'ring-2 ring-pink-400 ring-offset-2'
+                  : ''
               } ${isExerciseComplete && !isExpanded ? 'opacity-70 scale-[0.98]' : ''}`}
             >
               <CardHeader className={isExerciseComplete && !isExpanded ? 'py-3' : ''}>
@@ -980,9 +978,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                       {/* TEMPO in teal - prominent display */}
                       {exercise.tempo && (
-                        <p className="text-teal-500 text-sm font-semibold tracking-wide">
-                          TEMPO: {exercise.tempo}
-                        </p>
+                        <div className="inline-flex items-center gap-1.5 mt-1 px-2 py-0.5 bg-teal-50 border border-teal-200 rounded-md">
+                          <span className="text-teal-600 text-xs font-bold uppercase">Tempo:</span>
+                          <span className="text-teal-700 text-sm font-bold">{exercise.tempo}</span>
+                        </div>
                       )}
 
                       <div className="text-sm text-gray-500 flex flex-wrap gap-x-4 gap-y-0.5 mt-1">
@@ -1119,9 +1118,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Logged Sets - with table layout */}
                   {exerciseSets.length > 0 && (
-                    <div className="space-y-2">
+                    <div className="border border-gray-200 rounded-xl overflow-hidden">
                       {/* Table header */}
-                      <div className="grid grid-cols-[36px_60px_1fr_1fr_36px] sm:grid-cols-[50px_80px_1fr_1fr_50px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 rounded-t-lg text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      <div className="grid grid-cols-[36px_60px_1fr_1fr_36px] sm:grid-cols-[50px_80px_1fr_1fr_50px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         <span className="text-center">SET</span>
                         <span className="text-center text-[10px] sm:text-xs">FÖREG</span>
                         <span className="text-center">KG</span>
