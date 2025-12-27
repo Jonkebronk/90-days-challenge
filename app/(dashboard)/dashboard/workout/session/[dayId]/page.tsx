@@ -1200,7 +1200,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             inputMode="numeric"
                             value={currentReps}
                             onChange={(e) => setCurrentReps(e.target.value)}
-                            placeholder={exercise.reps?.split('-')[0] || '12'}
+                            placeholder={exercise.reps || '12'}
                             autoComplete="off"
                             autoCorrect="off"
                             spellCheck={false}
