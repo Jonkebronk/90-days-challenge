@@ -19,8 +19,10 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Search, ChefHat } from 'lucide-react'
+import { Search, ChefHat, Settings2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { RecipeCustomizerDialog } from '@/components/recipe-customizer'
+import type { CalculatedMacros } from '@/lib/types/meal-plan-generator'
 
 type Recipe = {
   id: string
@@ -49,12 +51,21 @@ type RecipeSelectionDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSelect: (recipe: Recipe, servingMultiplier: number) => void
+  // Optional props for recipe customization
+  mealPlanId?: string
+  mealIndex?: number
+  targetMacros?: CalculatedMacros
+  onCustomizeSuccess?: () => void
 }
 
 export function RecipeSelectionDialog({
   open,
   onOpenChange,
   onSelect,
+  mealPlanId,
+  mealIndex,
+  targetMacros,
+  onCustomizeSuccess,
 }: RecipeSelectionDialogProps) {
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [categories, setCategories] = useState<RecipeCategory[]>([])
@@ -62,6 +73,13 @@ export function RecipeSelectionDialog({
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [servingMultipliers, setServingMultipliers] = useState<Record<string, number>>({})
+
+  // Customizer state
+  const [customizerOpen, setCustomizerOpen] = useState(false)
+  const [selectedRecipeForCustomize, setSelectedRecipeForCustomize] = useState<string | null>(null)
+
+  // Check if customization is available
+  const canCustomize = !!(mealPlanId && mealIndex !== undefined)
 
   useEffect(() => {
     if (open) {
@@ -124,6 +142,21 @@ export function RecipeSelectionDialog({
 
   const setServingMultiplier = (recipeId: string, value: number) => {
     setServingMultipliers((prev) => ({ ...prev, [recipeId]: value }))
+  }
+
+  // Handle clicking "Anpassa" button
+  const handleCustomizeRecipe = (recipeId: string) => {
+    setSelectedRecipeForCustomize(recipeId)
+    setCustomizerOpen(true)
+  }
+
+  // Handle successful customization
+  const handleCustomizeSuccess = () => {
+    setCustomizerOpen(false)
+    setSelectedRecipeForCustomize(null)
+    onOpenChange(false)
+    onCustomizeSuccess?.()
+    toast.success('Recept anpassat och tillagt i måltiden')
   }
 
   return (
@@ -244,7 +277,7 @@ export function RecipeSelectionDialog({
                       </p>
                     </div>
                   </div>
-                  {/* Portioner och Välj-knapp på egen rad */}
+                  {/* Portioner och knappar på egen rad */}
                   <div className="flex items-center justify-end gap-3 mt-3 pt-3 border-t border-[rgba(255,215,0,0.1)]">
                     <Label
                       htmlFor={`multiplier-${recipe.id}`}
@@ -263,6 +296,16 @@ export function RecipeSelectionDialog({
                       }
                       className="w-20 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white"
                     />
+                    {canCustomize && (
+                      <Button
+                        onClick={() => handleCustomizeRecipe(recipe.id)}
+                        variant="outline"
+                        className="border-[rgba(255,215,0,0.5)] text-[#FFD700] hover:bg-[rgba(255,215,0,0.1)] hover:text-[#FFD700]"
+                      >
+                        <Settings2 className="h-4 w-4 mr-1" />
+                        Anpassa
+                      </Button>
+                    )}
                     <Button
                       onClick={() => handleSelectRecipe(recipe)}
                       className="bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-105 transition-transform"
@@ -276,6 +319,19 @@ export function RecipeSelectionDialog({
           )}
         </div>
       </DialogContent>
+
+      {/* Recipe Customizer Dialog */}
+      {canCustomize && selectedRecipeForCustomize && (
+        <RecipeCustomizerDialog
+          recipeId={selectedRecipeForCustomize}
+          mealPlanId={mealPlanId!}
+          mealIndex={mealIndex!}
+          targetMacros={targetMacros}
+          open={customizerOpen}
+          onOpenChange={setCustomizerOpen}
+          onSuccess={handleCustomizeSuccess}
+        />
+      )}
     </Dialog>
   )
 }

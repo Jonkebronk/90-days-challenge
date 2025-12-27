@@ -1155,6 +1155,10 @@ export function FlexibleMealPlan({
             fat: Math.round((recipe.fatPerServing || 0) * multiplier),
           });
         }}
+        mealPlanId={flexiblePlan?.id}
+        mealIndex={recipeMealIndex ?? undefined}
+        targetMacros={recipeMealIndex !== null && flexiblePlan?.meals[recipeMealIndex]?.targetMacros || undefined}
+        onCustomizeSuccess={handleRefreshMealData}
       />
 
       {/* Quick Redistribute Dialog */}
