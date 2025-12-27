@@ -912,12 +912,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                 <Card
               className={`bg-white transition-all ${
                 isSuperset
-                  ? `border-l-4 border-l-pink-500 shadow-lg ${isFirstInSuperset ? 'rounded-t-none rounded-b-xl mt-0' : ''} ${!isFirstInSuperset && !isLastInSuperset ? 'rounded-none border-t-0' : ''} ${isLastInSuperset && !isFirstInSuperset ? 'rounded-t-none rounded-b-xl border-t-0' : ''}`
+                  ? `border-l-4 border-l-blue-400 shadow-lg ${isFirstInSuperset ? 'rounded-t-none rounded-b-xl mt-0' : ''} ${!isFirstInSuperset && !isLastInSuperset ? 'rounded-none border-t-0' : ''} ${isLastInSuperset && !isFirstInSuperset ? 'rounded-t-none rounded-b-xl border-t-0' : ''}`
                   : 'rounded-xl shadow-md hover:shadow-lg border border-gray-200'
-              } ${
-                isCurrent && sessionId && !isSuperset
-                  ? 'ring-2 ring-pink-400 ring-offset-2'
-                  : ''
               } ${isExerciseComplete && !isExpanded ? 'opacity-70 scale-[0.98]' : ''}`}
             >
               <CardHeader className={isExerciseComplete && !isExpanded ? 'py-3' : ''}>
