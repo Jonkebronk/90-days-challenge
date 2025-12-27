@@ -774,17 +774,85 @@ export function ClientStyleMealCard({
               </div>
               <div className={cn("p-2", CATEGORY_CONFIG.sauce.bg)}>
                 {meal.sauce ? (
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-white/50">
-                    <span className="flex-1 text-sm text-zinc-700">
-                      {meal.sauce.name} <span className="text-zinc-500">{Math.round(meal.sauce.grams)}g</span>
-                    </span>
-                    <button
-                      onClick={() => onRemoveSauce(mealIndex)}
-                      disabled={disabled}
-                      className="p-1 rounded hover:bg-red-100 text-zinc-400 hover:text-red-600 transition-colors"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
+                  <div className="py-2 px-1 space-y-1.5">
+                    {/* Row 1: Image + Name */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleFoodClick(meal.sauce!.foodId, meal.sauce!.name, meal.sauce!.grams)}
+                        className="w-9 h-9 rounded-full overflow-hidden bg-zinc-100 shrink-0 hover:ring-2 hover:ring-orange-400 transition-all"
+                      >
+                        {meal.sauce.image ? (
+                          <img
+                            src={meal.sauce.image}
+                            alt={meal.sauce.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-zinc-400">
+                            <Utensils className="w-4 h-4" />
+                          </div>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleFoodClick(meal.sauce!.foodId, meal.sauce!.name, meal.sauce!.grams)}
+                        className="flex-1 text-left text-sm font-medium text-zinc-800 hover:text-orange-600 transition-colors truncate"
+                      >
+                        {meal.sauce.name}
+                      </button>
+                    </div>
+
+                    {/* Row 2: Gram + Macros + Actions */}
+                    <div className="flex items-center gap-2 pl-11">
+                      {/* Gram input */}
+                      <div className="flex items-center gap-1 shrink-0">
+                        <GramInput
+                          value={meal.sauce.grams}
+                          onChange={(grams) => onUpdateGrams && onUpdateGrams(mealIndex, 'sauce', grams, meal.sauce!.foodId)}
+                          disabled={disabled}
+                        />
+                        <span className="text-[10px] text-zinc-400">g</span>
+                      </div>
+
+                      {/* Macros with labels on top */}
+                      <div className="flex items-center gap-2 sm:gap-3 text-xs tabular-nums flex-1">
+                        <div className="text-center">
+                          <div className="text-[8px] text-zinc-400 uppercase font-medium">Kcal</div>
+                          <div className="font-bold text-amber-600">{Math.round(meal.sauce.macros.kcal)}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-[8px] text-zinc-400 uppercase font-medium">P</div>
+                          <div className="font-bold text-rose-600">{meal.sauce.macros.protein.toFixed(0)}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-[8px] text-zinc-400 uppercase font-medium">K</div>
+                          <div className="font-bold text-amber-500">{meal.sauce.macros.carbs.toFixed(0)}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-[8px] text-zinc-400 uppercase font-medium">F</div>
+                          <div className="font-bold text-sky-500">{meal.sauce.macros.fat.toFixed(0)}</div>
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        <button
+                          onClick={() => !disabled && handleOpenSelectModal('sauce', 0)}
+                          disabled={disabled}
+                          className="p-1 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 disabled:opacity-30 transition-colors"
+                          title="Byt"
+                        >
+                          <RefreshCw className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => onRemoveSauce(mealIndex)}
+                          disabled={disabled}
+                          className="p-1 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 disabled:opacity-30 transition-colors"
+                          title="Ta bort"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-2 text-sm text-zinc-400 italic">
