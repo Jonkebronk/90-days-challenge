@@ -85,6 +85,7 @@ export async function POST(
       select: {
         id: true,
         name: true,
+        image: true,
         kcal: true,
         protein: true,
         carbs: true,
@@ -156,6 +157,7 @@ export async function POST(
       name: sauce.name,
       grams,
       macros: sauceMacros,
+      image: sauce.image,
     };
 
     // Update meal with sauce
