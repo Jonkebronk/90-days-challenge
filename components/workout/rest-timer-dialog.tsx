@@ -251,33 +251,35 @@ export function RestTimerDialog({
           style={{
             marginTop: '2rem',
             padding: '1rem',
-            backgroundColor: 'rgba(255,255,255,0.05)',
-            borderRadius: '0.5rem',
+            backgroundColor: '#fff',
+            borderRadius: '0.75rem',
             maxWidth: '320px',
             textAlign: 'left',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
           }}
         >
-          <h3 style={{ fontSize: '0.875rem', color: '#fff', marginBottom: '0.5rem', fontWeight: 600 }}>
+          <h3 style={{ fontSize: '0.875rem', color: '#0f172a', marginBottom: '0.5rem', fontWeight: 600 }}>
             Hur du vilar mellan set
           </h3>
-          <p style={{ fontSize: '0.75rem', color: '#aaa', marginBottom: '0.5rem' }}>
+          <p style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.5rem' }}>
             Efter varje set, vila tills du:
           </p>
-          <ul style={{ fontSize: '0.75rem', color: '#888', paddingLeft: '0', margin: 0, lineHeight: 1.6, listStyle: 'none' }}>
+          <ul style={{ fontSize: '0.75rem', color: '#475569', paddingLeft: '0', margin: 0, lineHeight: 1.6, listStyle: 'none' }}>
             <li style={{ marginBottom: '0.35rem', paddingLeft: '1rem', position: 'relative' }}>
-              <span style={{ position: 'absolute', left: 0 }}>•</span>
+              <span style={{ position: 'absolute', left: 0, color: '#10b981' }}>•</span>
               Inte längre andas tungt
             </li>
             <li style={{ marginBottom: '0.35rem', paddingLeft: '1rem', position: 'relative' }}>
-              <span style={{ position: 'absolute', left: 0 }}>•</span>
+              <span style={{ position: 'absolute', left: 0, color: '#10b981' }}>•</span>
               Känner dig mentalt redo för nästa set
             </li>
             <li style={{ paddingLeft: '1rem', position: 'relative' }}>
-              <span style={{ position: 'absolute', left: 0 }}>•</span>
+              <span style={{ position: 'absolute', left: 0, color: '#10b981' }}>•</span>
               Inte har kramp i stödmuskulaturen (t.ex. trött i ländryggen innan nästa knäböj)
             </li>
           </ul>
-          <p style={{ fontSize: '0.75rem', color: '#22c55e', marginTop: '0.75rem', fontStyle: 'italic' }}>
+          <p style={{ fontSize: '0.75rem', color: '#10b981', marginTop: '0.75rem', fontWeight: 500 }}>
             Det är helt OK att lägga till 30 sekunder om du behöver mer vila!
           </p>
         </div>
@@ -291,7 +293,7 @@ export function RestTimerDialog({
           gap: '0.5rem',
           marginTop: '1.5rem',
           fontSize: '0.75rem',
-          color: '#666',
+          color: '#64748b',
           cursor: 'pointer',
         }}
       >
