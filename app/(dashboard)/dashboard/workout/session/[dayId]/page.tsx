@@ -26,7 +26,6 @@ import {
   RotateCcw,
   UserCircle,
   Pencil,
-  Trash2,
   Timer,
   StickyNote,
   MoreHorizontal,
