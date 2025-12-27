@@ -28,6 +28,7 @@ import {
   Pencil,
   Timer,
   StickyNote,
+  Pin,
   MoreHorizontal,
   List,
   Layers
@@ -1036,18 +1037,14 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     </div>
                   )}
 
-                  {/* Coach Notes */}
+                  {/* Coach Notes - Pinned note style */}
                   {exercise.coachNotes && (
-                    <div className="p-3 sm:p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                      <div className="w-full space-y-2">
-                        <div className="flex items-center gap-2">
-                          <UserCircle className="w-5 h-5 text-amber-600" />
-                          <Label className="text-sm font-bold text-amber-700 block">Coach Notes</Label>
-                        </div>
-                        <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                          {exercise.coachNotes}
-                        </p>
-                      </div>
+                    <div className="flex items-center gap-3 px-3 py-2.5 bg-amber-100 rounded-lg">
+                      <Pencil className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                      <p className="flex-1 text-sm text-amber-900 leading-snug">
+                        {exercise.coachNotes}
+                      </p>
+                      <Pin className="w-4 h-4 text-amber-600 flex-shrink-0" />
                     </div>
                   )}
 
@@ -1256,70 +1253,56 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     </div>
                   )}
 
-                  {/* User Exercise Notes - Personal memory notes (moved to after sets) */}
-                  <div className="p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                    <div className="flex items-center justify-between mb-3">
-                      <Label className="text-sm font-bold text-gray-800">Anteckning</Label>
-                      {editingNoteExerciseId !== exercise.id && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            openNoteEditor(exercise.id)
-                          }}
-                          className="p-1.5 rounded hover:bg-gray-200 transition-colors"
-                          title="Redigera anteckning"
+                  {/* User Exercise Notes - Pinned note style */}
+                  {editingNoteExerciseId === exercise.id ? (
+                    <div className="p-3 bg-amber-50 rounded-lg space-y-3" onClick={(e) => e.stopPropagation()}>
+                      <textarea
+                        value={noteText}
+                        onChange={(e) => setNoteText(e.target.value)}
+                        placeholder="Skriv ner det du vill komma ihåg – som maskininställning, eller något att tänka på nästa gång."
+                        className="w-full p-3 bg-white border border-amber-200 rounded-lg text-sm text-amber-900 placeholder:text-amber-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400/20 focus:outline-none resize-none"
+                        rows={3}
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => saveExerciseNote(exercise.id)}
+                          disabled={isSavingNote}
+                          className="bg-amber-500 hover:bg-amber-600 text-white"
                         >
-                          <Pencil className="w-4 h-4 text-gray-500 hover:text-gray-700" />
-                        </button>
-                      )}
-                    </div>
-
-                    {editingNoteExerciseId === exercise.id ? (
-                      <div className="space-y-3" onClick={(e) => e.stopPropagation()}>
-                        <textarea
-                          value={noteText}
-                          onChange={(e) => setNoteText(e.target.value)}
-                          placeholder="Skriv ner det du vill komma ihåg – som maskininställning, eller något att tänka på nästa gång."
-                          className="w-full p-3 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 focus:outline-none resize-none"
-                          rows={3}
-                          autoFocus
-                        />
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => saveExerciseNote(exercise.id)}
-                            disabled={isSavingNote}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
-                          >
-                            {isSavingNote ? 'Sparar...' : 'Spara'}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => {
-                              setEditingNoteExerciseId(null)
-                              setNoteText('')
-                            }}
-                            className="text-gray-500 hover:text-gray-700"
-                          >
-                            Avbryt
-                          </Button>
-                        </div>
+                          {isSavingNote ? 'Sparar...' : 'Spara'}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setEditingNoteExerciseId(null)
+                            setNoteText('')
+                          }}
+                          className="text-amber-700 hover:text-amber-900 hover:bg-amber-100"
+                        >
+                          Avbryt
+                        </Button>
                       </div>
-                    ) : (
-                      <p
-                        className="text-sm text-gray-600 leading-relaxed cursor-pointer hover:text-gray-800"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          openNoteEditor(exercise.id)
-                        }}
-                      >
+                    </div>
+                  ) : (
+                    <div
+                      className="flex items-center gap-3 px-3 py-2.5 bg-amber-100 rounded-lg cursor-pointer hover:bg-amber-200/70 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        openNoteEditor(exercise.id)
+                      }}
+                    >
+                      <Pencil className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                      <p className="flex-1 text-sm text-amber-900 leading-snug">
                         {userExerciseNotes[exercise.id] || (
-                          <span className="text-gray-400 italic">Klicka för att lägga till en anteckning...</span>
+                          <span className="text-amber-500 italic">Lägg till en anteckning...</span>
                         )}
                       </p>
-                    )}
-                  </div>
+                      <Pin className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                    </div>
+                  )}
                 </CardContent>
               )}
             </Card>
