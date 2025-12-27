@@ -340,11 +340,10 @@ export function MinimizedRestBar({
         left: 0,
         right: 0,
         zIndex: 9999,
-        backgroundColor: '#fff',
-        borderTop: '1px solid #e5e7eb',
-        padding: '1rem 1.5rem',
-        paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
-        boxShadow: '0 -4px 20px rgba(0,0,0,0.1)',
+        backgroundColor: '#f8fafc',
+        borderTop: '1px solid #e2e8f0',
+        padding: '0.875rem 1.5rem',
+        paddingBottom: 'calc(0.875rem + env(safe-area-inset-bottom, 0px))',
       }}
     >
       <div
@@ -363,23 +362,25 @@ export function MinimizedRestBar({
             <span
               style={{
                 fontSize: '0.75rem',
-                color: '#ec4899',
+                color: '#f43f5e',
                 fontWeight: 500,
+                display: 'block',
+                marginBottom: '-0.125rem',
               }}
             >
               -{formatTime(overtimeSeconds)}
             </span>
           )}
           {/* Main timer */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
             <span
               style={{
                 fontFamily: 'system-ui, -apple-system, sans-serif',
-                fontSize: '2rem',
-                fontWeight: 700,
-                color: '#3b82f6',
+                fontSize: '1.875rem',
+                fontWeight: 600,
+                color: '#0f172a',
                 fontVariantNumeric: 'tabular-nums',
-                letterSpacing: '-0.02em',
+                letterSpacing: '-0.025em',
               }}
             >
               {formatTime(Math.max(0, remainingSeconds))}
@@ -388,18 +389,18 @@ export function MinimizedRestBar({
             <button
               onClick={() => onAddTime(totalSeconds - remainingSeconds)}
               style={{
-                padding: '0.375rem',
+                padding: '0.25rem',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                color: '#9ca3af',
+                color: '#0ea5e9',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
               title="Återställ timer"
             >
-              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
                 <path d="M3 3v5h5"/>
               </svg>
@@ -411,21 +412,21 @@ export function MinimizedRestBar({
         <button
           onClick={onStop}
           style={{
-            width: '3rem',
-            height: '3rem',
-            borderRadius: '0.75rem',
-            border: '2px solid #e5e7eb',
+            width: '2.75rem',
+            height: '2.75rem',
+            borderRadius: '0.625rem',
+            border: '2px solid #cbd5e1',
             background: '#fff',
-            color: '#6b7280',
+            color: '#64748b',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <svg width={24} height={24} viewBox="0 0 24 24" fill="currentColor">
-            <rect x="6" y="4" width="4" height="16" rx="1" />
-            <rect x="14" y="4" width="4" height="16" rx="1" />
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="currentColor">
+            <rect x="6" y="5" width="4" height="14" rx="1" />
+            <rect x="14" y="5" width="4" height="14" rx="1" />
           </svg>
         </button>
       </div>
