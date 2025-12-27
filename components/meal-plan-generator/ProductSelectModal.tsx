@@ -530,6 +530,8 @@ export function ProductSelectModal({
                 <SelectItem value="protein">Protein</SelectItem>
                 <SelectItem value="carb">Kolhydrat</SelectItem>
                 <SelectItem value="fat">Fett</SelectItem>
+                <SelectItem value="vegetable">Grönsaker</SelectItem>
+                <SelectItem value="sauce">Sås</SelectItem>
               </SelectContent>
             </Select>
           </div>
