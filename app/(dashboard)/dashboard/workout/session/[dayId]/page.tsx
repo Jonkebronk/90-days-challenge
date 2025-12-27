@@ -706,16 +706,21 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
-  // Get Swedish day abbreviation and week number
+  // Get Swedish day abbreviation and week number (ISO 8601)
   const getDayInfo = () => {
     const now = new Date()
     const days = ['SÖN', 'MÅN', 'TIS', 'ONS', 'TOR', 'FRE', 'LÖR']
     const dayAbbr = days[now.getDay()]
 
-    // Get week number (ISO week)
-    const startOfYear = new Date(now.getFullYear(), 0, 1)
-    const pastDaysOfYear = (now.getTime() - startOfYear.getTime()) / 86400000
-    const weekNum = Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7)
+    // Get ISO week number (week 1 = week with first Thursday)
+    const date = new Date(now.getTime())
+    date.setHours(0, 0, 0, 0)
+    // Set to nearest Thursday: current date + 4 - current day (Sunday = 0, so Thursday = 4)
+    date.setDate(date.getDate() + 4 - (date.getDay() || 7))
+    // Get first day of year
+    const yearStart = new Date(date.getFullYear(), 0, 1)
+    // Calculate full weeks between dates
+    const weekNum = Math.ceil((((date.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
 
     return { dayAbbr, weekNum }
   }
