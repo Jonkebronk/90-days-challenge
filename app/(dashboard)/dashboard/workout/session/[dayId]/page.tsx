@@ -1116,7 +1116,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   {exerciseSets.length > 0 && (
                     <div className="border border-gray-200 rounded-xl overflow-hidden">
                       {/* Table header */}
-                      <div className="grid grid-cols-[36px_60px_1fr_1fr_36px] sm:grid-cols-[50px_80px_1fr_1fr_50px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      <div className="grid grid-cols-[36px_60px_1fr_1fr_44px] sm:grid-cols-[50px_80px_1fr_1fr_56px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         <span className="text-center">SET</span>
                         <span className="text-center text-[10px] sm:text-xs">FÖREG</span>
                         <span className="text-center">KG</span>
@@ -1171,7 +1171,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                               </div>
                             ) : (
                               /* Display mode - table row */
-                              <div className="grid grid-cols-[36px_60px_1fr_1fr_36px] sm:grid-cols-[50px_80px_1fr_1fr_50px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-green-50 border border-green-200 rounded-lg group items-center">
+                              <div className="grid grid-cols-[36px_60px_1fr_1fr_44px] sm:grid-cols-[50px_80px_1fr_1fr_56px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-xl group items-center">
                                 <span className="text-center text-sm font-bold text-gray-700">{set.setNumber}</span>
                                 <span className="text-center text-[10px] sm:text-sm text-gray-400 truncate">
                                   {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
@@ -1220,7 +1220,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     <div className="space-y-3">
                       {/* Table header if no sets logged yet */}
                       {exerciseSets.length === 0 && (
-                        <div className="grid grid-cols-[36px_60px_1fr_1fr_36px] sm:grid-cols-[50px_80px_1fr_1fr_50px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 rounded-t-lg text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                        <div className="grid grid-cols-[36px_60px_1fr_1fr_44px] sm:grid-cols-[50px_80px_1fr_1fr_56px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 rounded-t-lg text-xs font-semibold text-gray-500 uppercase tracking-wide">
                           <span className="text-center">SET</span>
                           <span className="text-center text-[10px] sm:text-xs">FÖREG</span>
                           <span className="text-center">KG</span>
@@ -1230,8 +1230,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       )}
 
                       {/* Current set input row */}
-                      <div className="grid grid-cols-[36px_60px_1fr_1fr_36px] sm:grid-cols-[50px_80px_1fr_1fr_50px] gap-1 sm:gap-2 px-2 sm:px-3 py-3 bg-pink-50 border-2 border-pink-300 rounded-lg items-center">
-                        <span className="text-center text-sm font-bold text-pink-600">{exerciseSets.length + 1}</span>
+                      <div className="grid grid-cols-[36px_60px_1fr_1fr_44px] sm:grid-cols-[50px_80px_1fr_1fr_56px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border-2 border-blue-200 rounded-xl items-center">
+                        <span className="text-center text-sm font-bold text-blue-600">{exerciseSets.length + 1}</span>
                         <span className="text-center text-[10px] sm:text-sm text-gray-400 truncate">
                           {(() => {
                             const prevSets = previousSessionData?.sets?.filter(
@@ -1286,7 +1286,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         ) || []
                         const prevSet = prevSets[exerciseSets.length + 1 + idx]
                         return (
-                          <div key={idx} className="grid grid-cols-[36px_60px_1fr_1fr_36px] sm:grid-cols-[50px_80px_1fr_1fr_50px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg items-center">
+                          <div key={idx} className="grid grid-cols-[36px_60px_1fr_1fr_44px] sm:grid-cols-[50px_80px_1fr_1fr_56px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl items-center">
                             <span className="text-center text-sm font-bold text-gray-400">{setNum}</span>
                             <span className="text-center text-[10px] sm:text-sm text-gray-300 truncate">
                               {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
