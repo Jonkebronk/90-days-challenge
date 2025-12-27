@@ -761,30 +761,30 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   return (
     <div className="space-y-4 max-w-4xl mx-auto pb-24">
       {/* Compact Header */}
-      <div className="bg-white rounded-xl shadow-lg p-3 sm:p-4">
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-3 sm:p-4">
         <div className="flex items-center justify-between">
           {/* Left: Back + Day box + Info */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Link href="/dashboard/workout">
               <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 h-9 w-9">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
 
-            {/* Day indicator box */}
-            <div className="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg text-center min-w-[44px]">
-              <span className="text-[10px] font-medium block leading-none">{dayAbbr}</span>
-              <span className="text-lg font-bold block leading-tight">{weekNum}</span>
+            {/* Day indicator box - dark navy */}
+            <div className="bg-slate-800 text-white px-3 py-2 rounded-xl text-center min-w-[48px]">
+              <span className="text-[11px] font-semibold block leading-none tracking-wide">{dayAbbr}</span>
+              <span className="text-xl font-bold block leading-tight">{weekNum}</span>
             </div>
 
             {/* Workout name + timer */}
             <div>
-              <h1 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight tracking-tight">
                 {workoutDay.name}
               </h1>
-              <div className="flex items-center gap-1 text-gray-400 text-sm">
+              <div className="flex items-center gap-1.5 text-gray-500 text-sm mt-0.5">
                 <Clock className="w-3.5 h-3.5" />
-                <span className="font-mono">{formatTimeHMS(elapsedSeconds)}</span>
+                <span className="font-medium tabular-nums">{formatTimeHMS(elapsedSeconds)}</span>
               </div>
             </div>
           </div>
@@ -1183,8 +1183,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                   {set.setType === 'TIME' ? `${set.timeSeconds}s` : (set.reps || 0)}
                                 </span>
                                 <div className="flex items-center justify-center gap-1">
-                                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-                                    <Check className="w-3.5 h-3.5 text-white" />
+                                  <div className="w-9 h-9 rounded-xl bg-green-500 flex items-center justify-center shadow-sm">
+                                    <Check className="w-5 h-5 text-white" />
                                   </div>
                                   {/* Edit/Delete - visible on hover */}
                                   {set.id && (
@@ -1271,9 +1271,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           <button
                             onClick={() => logSet(exercise.exercise.id, exercise.id, exerciseSets.length + 1)}
                             disabled={!currentReps}
-                            className="w-8 h-8 rounded-full bg-pink-500 hover:bg-pink-600 text-white disabled:opacity-40 disabled:bg-gray-300 flex items-center justify-center transition-all active:scale-95"
+                            className="w-10 h-10 rounded-xl bg-green-500 hover:bg-green-600 text-white disabled:opacity-40 disabled:bg-gray-200 flex items-center justify-center transition-all active:scale-95 shadow-sm"
                           >
-                            <Check className="w-4 h-4" />
+                            <Check className="w-5 h-5" />
                           </button>
                         </div>
                       </div>
@@ -1294,7 +1294,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             <span className="text-center text-sm text-gray-300">-</span>
                             <span className="text-center text-sm text-gray-300">-</span>
                             <div className="flex justify-center">
-                              <div className="w-6 h-6 rounded-full border-2 border-gray-300"></div>
+                              <div className="w-9 h-9 rounded-xl border-2 border-gray-200 bg-gray-50"></div>
                             </div>
                           </div>
                         )
