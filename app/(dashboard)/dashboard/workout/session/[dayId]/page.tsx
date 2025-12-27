@@ -939,11 +939,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             <Dumbbell className="w-5 h-5 text-gray-400" />
                           </div>
                         )}
-                        {/* Play button overlay if video exists */}
+                        {/* Play button overlay - YouTube style */}
                         {exercise.exercise.videoUrl && (
-                          <div className="absolute inset-0 bg-black/30 hover:bg-black/20 transition-colors flex items-center justify-center">
-                            <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-                              <Play className="w-3 h-3 text-gray-800 fill-gray-800 ml-0.5" />
+                          <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-colors flex items-center justify-center">
+                            <div className="w-8 h-5 rounded-sm bg-red-600 hover:bg-red-700 flex items-center justify-center shadow-lg transition-colors">
+                              <Play className="w-3 h-3 text-white fill-white ml-0.5" />
                             </div>
                           </div>
                         )}

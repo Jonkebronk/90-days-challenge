@@ -41,13 +41,13 @@ export function VideoPlayer({ videoUrl, thumbnailUrl, title, className = '', aut
             alt={title || 'Exercise video'}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-all flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-all flex items-center justify-center">
             <Button
               onClick={() => setIsPlaying(true)}
               size="lg"
-              className="bg-[#FFD700] hover:bg-[#FFA500] text-black rounded-full w-16 h-16 p-0"
+              className="bg-red-600 hover:bg-red-700 text-white rounded-lg w-16 h-11 p-0"
             >
-              <Play className="w-8 h-8 ml-1" />
+              <Play className="w-7 h-7 ml-1 fill-white" />
             </Button>
           </div>
         </div>
