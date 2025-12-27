@@ -386,28 +386,26 @@ export function ProductSelectModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-lg max-h-[80vh] flex flex-col bg-[rgba(10,10,10,0.95)] border-2 border-[rgba(255,215,0,0.3)] backdrop-blur-[10px]">
+      <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold bg-gradient-to-br from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-            {getDialogTitle()}
-          </DialogTitle>
+          <DialogTitle>{getDialogTitle()}</DialogTitle>
         </DialogHeader>
 
         {/* Source tabs */}
-        <div className="flex border-b border-[rgba(255,215,0,0.2)]">
+        <div className="flex border-b border-zinc-200">
           <button
             onClick={() => setActiveTab('products')}
             className={cn(
               'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
               activeTab === 'products'
-                ? 'border-b-2 border-[#FFD700] text-[#FFD700]'
-                : 'text-[rgba(255,255,255,0.5)] hover:text-[rgba(255,255,255,0.8)]'
+                ? 'border-b-2 border-amber-500 text-amber-700'
+                : 'text-zinc-500 hover:text-zinc-700'
             )}
           >
             <Apple className="h-4 w-4" />
             Livsmedel
             {products.length > 0 && (
-              <span className="text-xs bg-[rgba(255,215,0,0.2)] text-[#FFD700] px-1.5 py-0.5 rounded-full">
+              <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
                 {products.length}
               </span>
             )}
@@ -417,14 +415,14 @@ export function ProductSelectModal({
             className={cn(
               'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
               activeTab === 'slv'
-                ? 'border-b-2 border-green-500 text-green-400'
-                : 'text-[rgba(255,255,255,0.5)] hover:text-[rgba(255,255,255,0.8)]'
+                ? 'border-b-2 border-green-500 text-green-700'
+                : 'text-zinc-500 hover:text-zinc-700'
             )}
           >
             <Database className="h-4 w-4" />
             SLV-databas
             {slvAsProducts.length > 0 && (
-              <span className="text-xs bg-green-900/50 text-green-400 px-1.5 py-0.5 rounded-full">
+              <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">
                 {slvAsProducts.length}
               </span>
             )}
@@ -433,19 +431,19 @@ export function ProductSelectModal({
 
         {/* Search input */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(255,255,255,0.4)]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
           <Input
             placeholder={activeTab === 'slv' ? 'Sök i SLV-databasen...' : 'Sök livsmedel...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-[rgba(0,0,0,0.3)] border-[rgba(255,215,0,0.3)] text-white placeholder:text-[rgba(255,255,255,0.4)]"
+            className="pl-10"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-[rgba(255,255,255,0.1)] rounded"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-zinc-100 rounded"
             >
-              <X className="h-4 w-4 text-[rgba(255,255,255,0.4)]" />
+              <X className="h-4 w-4 text-zinc-400" />
             </button>
           )}
         </div>
@@ -462,8 +460,8 @@ export function ProductSelectModal({
                   activeSubcategory === sub.key
                     ? activeTab === 'slv'
                       ? 'bg-green-600 text-white border-green-600'
-                      : 'bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] border-[#FFD700]'
-                    : 'bg-[rgba(0,0,0,0.3)] text-[rgba(255,255,255,0.7)] border-[rgba(255,215,0,0.3)] hover:bg-[rgba(255,215,0,0.1)] hover:border-[rgba(255,215,0,0.5)]'
+                      : 'bg-amber-500 text-white border-amber-500'
+                    : 'bg-white text-zinc-700 border-zinc-300 hover:bg-zinc-50 hover:border-zinc-400'
                 )}
               >
                 {sub.label}
@@ -474,14 +472,14 @@ export function ProductSelectModal({
 
         {/* Add as alternative checkbox */}
         {showAlternativeOption && (
-          <label className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[rgba(255,215,0,0.1)] border border-[rgba(255,215,0,0.3)] cursor-pointer hover:bg-[rgba(255,215,0,0.15)] transition-colors">
+          <label className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 cursor-pointer hover:bg-amber-100 transition-colors">
             <input
               type="checkbox"
               checked={addAsAlternative}
               onChange={(e) => setAddAsAlternative(e.target.checked)}
-              className="w-4 h-4 rounded border-[rgba(255,215,0,0.5)] text-[#FFD700] focus:ring-[#FFD700] bg-[rgba(0,0,0,0.3)]"
+              className="w-4 h-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500"
             />
-            <span className="text-sm text-[#FFD700] font-medium">
+            <span className="text-sm text-amber-800 font-medium">
               Lägg till som alternativ (visar ELLER)
             </span>
           </label>
@@ -489,7 +487,7 @@ export function ProductSelectModal({
 
         {/* Target info - only show for vegetables */}
         {isVegetable && (
-          <div className="text-sm text-green-400 bg-green-900/30 px-3 py-2 rounded-lg border border-green-800/50">
+          <div className="text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg">
             Grönsaker räknas inte i makros - ät fritt!
           </div>
         )}
@@ -497,9 +495,9 @@ export function ProductSelectModal({
         {/* Products list */}
         <div className="flex-1 overflow-y-auto space-y-2 pr-1">
           {loading ? (
-            <div className="py-8 text-center text-[rgba(255,255,255,0.5)]">Laddar...</div>
+            <div className="py-8 text-center text-zinc-500">Laddar...</div>
           ) : productsWithCalculations.length === 0 ? (
-            <div className="py-8 text-center text-[rgba(255,255,255,0.5)]">
+            <div className="py-8 text-center text-zinc-500">
               {searchQuery ? 'Inga livsmedel matchar sökningen' : 'Inga livsmedel i denna kategori'}
             </div>
           ) : (
@@ -512,10 +510,10 @@ export function ProductSelectModal({
                 className={cn(
                   "w-full text-left p-3 rounded-lg border transition-colors group",
                   isSelected
-                    ? 'border-[#FFD700] bg-[rgba(255,215,0,0.1)] ring-2 ring-[rgba(255,215,0,0.3)]'
+                    ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-500/20'
                     : activeTab === 'slv'
-                      ? 'border-[rgba(74,222,128,0.3)] bg-[rgba(0,0,0,0.3)] hover:border-green-500 hover:bg-[rgba(74,222,128,0.1)]'
-                      : 'border-[rgba(255,215,0,0.2)] bg-[rgba(0,0,0,0.3)] hover:border-[rgba(255,215,0,0.4)] hover:bg-[rgba(255,215,0,0.05)]'
+                      ? 'border-green-200 hover:border-green-400 hover:bg-green-50/50'
+                      : 'border-zinc-200 hover:border-amber-300 hover:bg-amber-50/50'
                 )}
               >
                 <div className="flex items-start gap-3">
@@ -523,10 +521,10 @@ export function ProductSelectModal({
                   <div className={cn(
                     "w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-1 transition-colors",
                     isSelected
-                      ? 'bg-[#FFD700] border-[#FFD700]'
-                      : 'border-[rgba(255,255,255,0.3)] group-hover:border-[#FFD700]'
+                      ? 'bg-amber-500 border-amber-500'
+                      : 'border-zinc-300 group-hover:border-amber-400'
                   )}>
-                    {isSelected && <Check className="h-3 w-3 text-[#0a0a0a]" />}
+                    {isSelected && <Check className="h-3 w-3 text-white" />}
                   </div>
 
                   {/* Product image or icon */}
@@ -534,17 +532,17 @@ export function ProductSelectModal({
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-12 h-12 rounded-lg object-cover bg-[rgba(255,255,255,0.1)]"
+                      className="w-12 h-12 rounded-lg object-cover bg-zinc-100"
                     />
                   ) : (
                     <div className={cn(
                       "w-12 h-12 rounded-lg flex items-center justify-center",
-                      activeTab === 'slv' ? 'bg-green-900/30' : 'bg-[rgba(255,255,255,0.1)]'
+                      activeTab === 'slv' ? 'bg-green-100' : 'bg-zinc-100'
                     )}>
                       {activeTab === 'slv' ? (
-                        <Database className="h-5 w-5 text-green-400" />
+                        <Database className="h-5 w-5 text-green-600" />
                       ) : (
-                        <span className="text-[rgba(255,255,255,0.4)] text-xs">Bild</span>
+                        <span className="text-zinc-400 text-xs">Bild</span>
                       )}
                     </div>
                   )}
@@ -553,19 +551,17 @@ export function ProductSelectModal({
                   <div className="flex-1 min-w-0">
                     <div className={cn(
                       "font-medium truncate",
-                      isSelected
-                        ? 'text-[#FFD700]'
-                        : activeTab === 'slv'
-                          ? 'text-white group-hover:text-green-400'
-                          : 'text-white group-hover:text-[#FFD700]'
+                      activeTab === 'slv'
+                        ? 'text-zinc-900 group-hover:text-green-700'
+                        : 'text-zinc-900 group-hover:text-amber-700'
                     )}>
                       {product.name}
                     </div>
                     {product.brand && (
-                      <div className="text-xs text-[rgba(255,255,255,0.5)] truncate">{product.brand}</div>
+                      <div className="text-xs text-zinc-500 truncate">{product.brand}</div>
                     )}
                     {!isVegetable && (
-                      <div className="text-xs text-[rgba(255,255,255,0.4)] mt-1">
+                      <div className="text-xs text-zinc-400 mt-1">
                         {product[getMacroKey(category)]}g {macroLabel}/100g
                       </div>
                     )}
@@ -575,18 +571,18 @@ export function ProductSelectModal({
                   <div className="text-right shrink-0">
                     <div className={cn(
                       "text-lg font-semibold",
-                      isVegetable ? 'text-green-400' : activeTab === 'slv' ? 'text-green-400' : 'text-[#FFD700]'
+                      isVegetable ? 'text-green-600' : activeTab === 'slv' ? 'text-green-600' : 'text-amber-600'
                     )}>
                       {product.calculatedGrams}g
                     </div>
-                    <div className="text-xs text-[rgba(255,255,255,0.5)]">
+                    <div className="text-xs text-zinc-500">
                       {product.calculatedMacros.kcal} kcal
                     </div>
                   </div>
                 </div>
 
                 {/* Macro breakdown */}
-                <div className="mt-2 flex gap-3 text-xs text-[rgba(255,255,255,0.5)] ml-8">
+                <div className="mt-2 flex gap-3 text-xs text-zinc-500 ml-8">
                   <span>P: {product.calculatedMacros.protein}g</span>
                   <span>K: {product.calculatedMacros.carbs}g</span>
                   <span>F: {product.calculatedMacros.fat}g</span>
@@ -599,13 +595,13 @@ export function ProductSelectModal({
 
         {/* Footer with confirm button */}
         {selectedProducts.length > 0 && (
-          <div className="border-t border-[rgba(255,215,0,0.2)] pt-4 mt-4 space-y-3">
-            <div className="text-sm text-[rgba(255,255,255,0.6)]">
+          <div className="border-t pt-4 mt-4 space-y-3">
+            <div className="text-sm text-zinc-600">
               {selectedProducts.length} produkt{selectedProducts.length > 1 ? 'er' : ''} vald{selectedProducts.length > 1 ? 'a' : ''}
             </div>
             <Button
               onClick={handleConfirmSelection}
-              className="w-full bg-gradient-to-br from-[#FFD700] to-[#FFA500] text-[#0a0a0a] font-bold hover:scale-[1.02] transition-transform"
+              className="w-full bg-amber-500 hover:bg-amber-600 text-white"
             >
               Lägg till {selectedProducts.length > 1 ? 'alla' : ''}
             </Button>
