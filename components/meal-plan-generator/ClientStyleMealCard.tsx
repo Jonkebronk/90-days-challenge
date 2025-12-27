@@ -703,7 +703,7 @@ export function ClientStyleMealCard({
                     vegetableItems.map(item => renderFoodItem(item, 'vegetable', 'vegetable'))
                   ) : (
                     <div className="text-center py-2 text-sm text-zinc-400 italic">
-                      Valfritt
+                      Inga grönsaker tillagda
                     </div>
                   )}
                 </div>
