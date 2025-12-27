@@ -1182,8 +1182,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                 <span className="text-center text-sm font-semibold text-gray-800">
                                   {set.setType === 'TIME' ? `${set.timeSeconds}s` : (set.reps || 0)}
                                 </span>
-                                <div className="flex items-center justify-center gap-1">
-                                  <div className="w-9 h-9 rounded-xl bg-green-500 flex items-center justify-center shadow-sm">
+                                <div className="flex items-center justify-center">
+                                  <div className="w-10 h-10 aspect-square rounded-xl bg-green-500 flex items-center justify-center shadow-sm flex-shrink-0">
                                     <Check className="w-5 h-5 text-white" />
                                   </div>
                                   {/* Edit/Delete - visible on hover */}
@@ -1271,7 +1271,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           <button
                             onClick={() => logSet(exercise.exercise.id, exercise.id, exerciseSets.length + 1)}
                             disabled={!currentReps}
-                            className="w-10 h-10 rounded-xl bg-green-500 hover:bg-green-600 text-white disabled:opacity-40 disabled:bg-gray-200 flex items-center justify-center transition-all active:scale-95 shadow-sm"
+                            className="w-10 h-10 aspect-square rounded-xl bg-green-500 hover:bg-green-600 text-white disabled:opacity-40 disabled:bg-gray-200 flex items-center justify-center transition-all active:scale-95 shadow-sm flex-shrink-0"
                           >
                             <Check className="w-5 h-5" />
                           </button>
@@ -1294,7 +1294,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             <span className="text-center text-sm text-gray-300">-</span>
                             <span className="text-center text-sm text-gray-300">-</span>
                             <div className="flex justify-center">
-                              <div className="w-9 h-9 rounded-xl border-2 border-gray-200 bg-gray-50"></div>
+                              <div className="w-10 h-10 aspect-square rounded-xl border-2 border-gray-200 bg-gray-50 flex-shrink-0"></div>
                             </div>
                           </div>
                         )
