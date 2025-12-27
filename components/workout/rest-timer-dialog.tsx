@@ -417,27 +417,55 @@ export function MinimizedRestBar({
           </div>
         </div>
 
-        {/* Pause/Stop button */}
-        <button
-          onClick={onStop}
-          style={{
-            width: '2.75rem',
-            height: '2.75rem',
-            borderRadius: '0.625rem',
-            border: '2px solid #cbd5e1',
-            background: '#fff',
-            color: '#64748b',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <svg width={20} height={20} viewBox="0 0 24 24" fill="currentColor">
-            <rect x="6" y="5" width="4" height="14" rx="1" />
-            <rect x="14" y="5" width="4" height="14" rx="1" />
-          </svg>
-        </button>
+        {/* Action buttons */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {/* +30s button */}
+          <button
+            onClick={() => onAddTime(30)}
+            style={{
+              height: '2.75rem',
+              padding: '0 0.875rem',
+              borderRadius: '0.625rem',
+              border: '2px solid #10b981',
+              background: '#ecfdf5',
+              color: '#10b981',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.25rem',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+            }}
+          >
+            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            30s
+          </button>
+
+          {/* Pause/Stop button */}
+          <button
+            onClick={onStop}
+            style={{
+              width: '2.75rem',
+              height: '2.75rem',
+              borderRadius: '0.625rem',
+              border: '2px solid #cbd5e1',
+              background: '#fff',
+              color: '#64748b',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <svg width={20} height={20} viewBox="0 0 24 24" fill="currentColor">
+              <rect x="6" y="5" width="4" height="14" rx="1" />
+              <rect x="14" y="5" width="4" height="14" rx="1" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   )
