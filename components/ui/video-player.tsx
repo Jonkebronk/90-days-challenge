@@ -10,9 +10,10 @@ interface VideoPlayerProps {
   title?: string
   className?: string
   autoPlay?: boolean
+  onClose?: () => void
 }
 
-export function VideoPlayer({ videoUrl, thumbnailUrl, title, className = '', autoPlay = false }: VideoPlayerProps) {
+export function VideoPlayer({ videoUrl, thumbnailUrl, title, className = '', autoPlay = false, onClose }: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(autoPlay)
 
   if (!videoUrl) return null
@@ -65,7 +66,13 @@ export function VideoPlayer({ videoUrl, thumbnailUrl, title, className = '', aut
         />
       </div>
       <Button
-        onClick={() => setIsPlaying(false)}
+        onClick={() => {
+          if (onClose) {
+            onClose()
+          } else {
+            setIsPlaying(false)
+          }
+        }}
         variant="ghost"
         size="sm"
         className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white rounded-full"

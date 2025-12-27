@@ -1018,6 +1018,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     title={exercise.exercise.name}
                     className="w-full rounded-lg overflow-hidden"
                     autoPlay={true}
+                    onClose={() => setActiveVideoIndex(null)}
                   />
                 </div>
               )}
