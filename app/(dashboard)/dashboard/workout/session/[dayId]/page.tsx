@@ -1271,33 +1271,30 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   )}
 
                   {/* User Exercise Notes - Personal memory notes (moved to after sets) */}
-                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <StickyNote className="w-4 h-4 text-blue-500" />
-                        <span className="text-sm font-semibold text-blue-700">Min anteckning</span>
-                      </div>
+                  <div className="p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div className="flex items-center justify-between mb-3">
+                      <Label className="text-sm font-bold text-gray-800">Anteckning</Label>
                       {editingNoteExerciseId !== exercise.id && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
                             openNoteEditor(exercise.id)
                           }}
-                          className="p-1 rounded hover:bg-blue-100 transition-colors"
+                          className="p-1.5 rounded hover:bg-gray-200 transition-colors"
                           title="Redigera anteckning"
                         >
-                          <Pencil className="w-3.5 h-3.5 text-gray-400 hover:text-blue-600" />
+                          <Pencil className="w-4 h-4 text-gray-500 hover:text-gray-700" />
                         </button>
                       )}
                     </div>
 
                     {editingNoteExerciseId === exercise.id ? (
-                      <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+                      <div className="space-y-3" onClick={(e) => e.stopPropagation()}>
                         <textarea
                           value={noteText}
                           onChange={(e) => setNoteText(e.target.value)}
                           placeholder="Skriv ner det du vill komma ihåg – som maskininställning, eller något att tänka på nästa gång."
-                          className="w-full p-2 bg-white border border-blue-300 rounded text-sm text-gray-800 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none resize-none"
+                          className="w-full p-3 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 placeholder:text-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 focus:outline-none resize-none"
                           rows={3}
                           autoFocus
                         />
@@ -1325,7 +1322,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       </div>
                     ) : (
                       <p
-                        className="text-sm text-gray-600 cursor-pointer hover:text-gray-800"
+                        className="text-sm text-gray-600 leading-relaxed cursor-pointer hover:text-gray-800"
                         onClick={(e) => {
                           e.stopPropagation()
                           openNoteEditor(exercise.id)
