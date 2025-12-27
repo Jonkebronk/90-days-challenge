@@ -1062,12 +1062,12 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   {exerciseSets.length > 0 && (
                     <div className="border border-gray-200 rounded-xl overflow-hidden">
                       {/* Table header */}
-                      <div className="grid grid-cols-[36px_50px_1fr_1fr_40px_44px] sm:grid-cols-[50px_70px_1fr_1fr_44px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         <span className="text-center">SET</span>
-                        <span className="text-center text-[10px] sm:text-xs">FÖREG</span>
+                        <span className="text-center">FÖREG</span>
                         <span className="text-center">KG</span>
                         <span className="text-center">REPS</span>
-                        <span className="text-center text-[9px] sm:text-[10px]">VILA</span>
+                        <span className="text-center">VILA</span>
                         <span className="text-center"></span>
                       </div>
                       {exerciseSets.map((set, setIdx) => {
@@ -1119,11 +1119,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             ) : (
                               /* Display mode - table row - click to edit */
                               <div
-                                className="grid grid-cols-[36px_50px_1fr_1fr_40px_44px] sm:grid-cols-[50px_70px_1fr_1fr_44px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-xl items-center cursor-pointer hover:bg-gray-50 transition-colors"
+                                className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-xl items-center cursor-pointer hover:bg-gray-50 transition-colors"
                                 onClick={() => set.id && openEditModal(set)}
                               >
                                 <span className="text-center text-sm font-bold text-gray-700">{set.setNumber}</span>
-                                <span className="text-center text-[10px] sm:text-sm text-gray-400 truncate">
+                                <span className="text-center text-[10px] sm:text-xs text-gray-400 truncate">
                                   {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
                                 </span>
                                 <span className="text-center text-sm font-semibold text-gray-800">
@@ -1139,17 +1139,17 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                         e.stopPropagation()
                                         startRestTimer(exercise.restSeconds)
                                       }}
-                                      className="w-8 h-8 aspect-square rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-600 flex items-center justify-center transition-all active:scale-95 flex-shrink-0 border border-emerald-200"
+                                      className="w-10 h-10 aspect-square rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-600 flex items-center justify-center transition-all active:scale-95 flex-shrink-0 border border-emerald-200 shadow-sm"
                                     >
-                                      <Timer className="w-4 h-4" />
+                                      <Timer className="w-5 h-5" />
                                     </button>
                                   ) : (
                                     <span className="text-gray-300">-</span>
                                   )}
                                 </div>
                                 <div className="flex items-center justify-center">
-                                  <div className="w-9 h-9 aspect-square rounded-xl bg-green-500 flex items-center justify-center shadow-sm flex-shrink-0">
-                                    <Check className="w-4 h-4 text-white" />
+                                  <div className="w-10 h-10 aspect-square rounded-xl bg-green-500 flex items-center justify-center shadow-sm flex-shrink-0">
+                                    <Check className="w-5 h-5 text-white" />
                                   </div>
                                 </div>
                               </div>
@@ -1166,20 +1166,20 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     <div className="space-y-3">
                       {/* Table header if no sets logged yet */}
                       {exerciseSets.length === 0 && (
-                        <div className="grid grid-cols-[36px_50px_1fr_1fr_40px_44px] sm:grid-cols-[50px_70px_1fr_1fr_44px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 rounded-t-lg text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                        <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 rounded-t-lg text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wide">
                           <span className="text-center">SET</span>
-                          <span className="text-center text-[10px] sm:text-xs">FÖREG</span>
+                          <span className="text-center">FÖREG</span>
                           <span className="text-center">KG</span>
                           <span className="text-center">REPS</span>
-                          <span className="text-center text-[9px] sm:text-[10px]">VILA</span>
+                          <span className="text-center">VILA</span>
                           <span className="text-center"></span>
                         </div>
                       )}
 
                       {/* Current set input row */}
-                      <div className="grid grid-cols-[36px_50px_1fr_1fr_40px_44px] sm:grid-cols-[50px_70px_1fr_1fr_44px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border-2 border-blue-200 rounded-xl items-center">
+                      <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border-2 border-blue-200 rounded-xl items-center">
                         <span className="text-center text-sm font-bold text-blue-600">{exerciseSets.length + 1}</span>
-                        <span className="text-center text-[10px] sm:text-sm text-gray-400 truncate">
+                        <span className="text-center text-[10px] sm:text-xs text-gray-400 truncate">
                           {(() => {
                             const prevSets = previousSessionData?.sets?.filter(
                               (s: any) => s.exerciseId === exercise.exercise.id
@@ -1218,10 +1218,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           {exercise.restSeconds > 0 ? (
                             <button
                               onClick={() => startRestTimer(exercise.restSeconds)}
-                              className="w-8 h-8 aspect-square rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-600 flex items-center justify-center transition-all active:scale-95 flex-shrink-0 border border-emerald-200"
+                              className="w-10 h-10 aspect-square rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-600 flex items-center justify-center transition-all active:scale-95 flex-shrink-0 border border-emerald-200 shadow-sm"
                               title={`Vila ${exercise.restSeconds}s`}
                             >
-                              <Timer className="w-4 h-4" />
+                              <Timer className="w-5 h-5" />
                             </button>
                           ) : (
                             <span className="text-gray-300">-</span>
@@ -1246,9 +1246,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         ) || []
                         const prevSet = prevSets[exerciseSets.length + 1 + idx]
                         return (
-                          <div key={idx} className="grid grid-cols-[36px_50px_1fr_1fr_40px_44px] sm:grid-cols-[50px_70px_1fr_1fr_44px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl items-center">
+                          <div key={idx} className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl items-center">
                             <span className="text-center text-sm font-bold text-gray-400">{setNum}</span>
-                            <span className="text-center text-[10px] sm:text-sm text-gray-300 truncate">
+                            <span className="text-center text-[10px] sm:text-xs text-gray-300 truncate">
                               {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
                             </span>
                             <span className="text-center text-sm text-gray-300">-</span>
