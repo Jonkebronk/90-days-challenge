@@ -914,10 +914,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
               <CardHeader className={`${isExerciseComplete && !isExpanded ? 'py-2' : 'py-3'} px-4`}>
                 <div
-                  className="flex items-start justify-between cursor-pointer gap-3"
+                  className="flex items-center justify-between cursor-pointer gap-3"
                   onClick={() => toggleExercise(index)}
                 >
-                  <div className="flex items-start gap-3 flex-1">
+                  <div className="flex items-center gap-3 flex-1">
                     {/* Video/thumbnail preview on left */}
                     {(exercise.exercise.videoUrl || exercise.exercise.thumbnailUrl) ? (
                       <div
