@@ -14,7 +14,6 @@ import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
 import { WeekMacroDisplay } from '@/components/meal-plan/WeekMacroDisplay'
 import { AdjustMacrosWizard, MealMacros as WizardMealMacros } from '@/components/meal-plan/AdjustMacrosWizard'
 import { MealPlanGenerator } from '@/components/meal-plan-generator'
-import { MealPlanCatalog } from '@/components/meal-plan/catalog'
 import { RecommendedFoodsDialog } from '@/components/meal-plan-generator/RecommendedFoodsDialog'
 import { Carrot } from 'lucide-react'
 
@@ -117,7 +116,6 @@ export default function MealPlanPage() {
   const [flexibleTargetMacros, setFlexibleTargetMacros] = useState<{ protein: number; carbs: number; fat: number; kcal: number } | null>(null)
   const [showAdjustWizard, setShowAdjustWizard] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0) // For forcing FlexibleMealPlan reload
-  const [catalogOpen, setCatalogOpen] = useState(false)
   const [foodCategory, setFoodCategory] = useState<string | null>(null)
 
   const toggleMeal = (mealNumber: number) => {
@@ -378,13 +376,6 @@ export default function MealPlanPage() {
         onSave={handleSaveAdjustments}
       />
 
-      {/* Meal Plan Catalog */}
-      <MealPlanCatalog
-        open={catalogOpen}
-        onOpenChange={setCatalogOpen}
-        clientKcal={flexibleTargetMacros?.kcal || currentTarget.calories}
-      />
-
       {/* Guide Buttons - Hierarchical Layout */}
       <div className="space-y-3">
         {/* Huvudknappar (Primary) */}
@@ -400,15 +391,6 @@ export default function MealPlanPage() {
             <Carrot className="w-5 h-5" />
             Livsmedel
           </div>
-
-          {/* Inspiration - primär knapp med action */}
-          <Button
-            onClick={() => setCatalogOpen(true)}
-            className="bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 font-semibold shadow-sm"
-          >
-            <Sparkles className="w-5 h-5 mr-2" />
-            Inspiration
-          </Button>
         </div>
 
         {/* Subknappar under "Lär dig mer" (Secondary) */}
