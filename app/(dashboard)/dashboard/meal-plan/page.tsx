@@ -10,9 +10,8 @@ import { Utensils, Sparkles, Lightbulb, Info, ChevronDown, ChevronUp, UtensilsCr
 import { Pyramid } from '@/components/pyramid'
 import { nutritionPyramidLevels, nutritionFoundation } from '@/lib/data/pyramid-content'
 import { MDXPreview } from '@/components/mdx-preview'
-import { WeekCalendar } from '@/components/meal-plan/week-calendar'
 import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
-import { MacroDisplay } from '@/components/meal-plan/MacroDisplay'
+import { WeekMacroDisplay } from '@/components/meal-plan/WeekMacroDisplay'
 import { AdjustMacrosWizard, MealMacros as WizardMealMacros } from '@/components/meal-plan/AdjustMacrosWizard'
 import { MealPlanGenerator } from '@/components/meal-plan-generator'
 import { MealPlanCatalog } from '@/components/meal-plan/catalog'
@@ -349,16 +348,12 @@ export default function MealPlanPage() {
         colorScheme="red"
       />
 
-      {/* Week Calendar */}
-      <WeekCalendar
+      {/* Week Calendar + Macro Display */}
+      <WeekMacroDisplay
         dailyTargets={dailyTargets}
         selectedDay={selectedDay}
         onDaySelect={setSelectedDay}
         defaultCalories={totalDailyCalories}
-      />
-
-      {/* Macro Display with Adjust button */}
-      <MacroDisplay
         calories={currentTarget.calories}
         protein={currentTarget.protein}
         fat={currentTarget.fat}
