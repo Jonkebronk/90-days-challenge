@@ -160,6 +160,28 @@ const RECOMMENDED_FOODS: Record<string, CategoryData> = {
         items: ['Sweet Chili Sås Asia Mindre Socker Santa Maria (178)']
       }
     ]
+  },
+  spice: {
+    intro: 'Kryddor kan lyfta smaken på din mat utan att tillföra kalorier. Här är några tips för hur du använder kryddor på bästa sätt.',
+    subcategories: [
+      {
+        name: 'Tips',
+        items: ['Använd helst färska kryddor', 'Salta med sunt förnuft', 'Undvik blandkryddor (tex grillkrydda, citronpeppar)', 'Använd rena kryddor som cayenne, chili, curry etc.']
+      }
+    ]
+  },
+  cooking_fat: {
+    intro: 'Använd gärna matlagningspray istället för olja då det lätt kan bli för mycket och därmed extra kalorier. Pam Original Cooking Spray och Slender Chef Cooking Spray är exempel på dessa.\n\nOm du inte tycker det är något för dig så stek i olivolja, rapsolja eller kokosolja (smakfri variant).',
+    subcategories: [
+      {
+        name: 'Matlagningsspray (rekommenderas)',
+        items: ['Pam Original Cooking Spray', 'Slender Chef Cooking Spray']
+      },
+      {
+        name: 'Oljor för stekning',
+        items: ['Olivolja', 'Rapsolja', 'Kokosolja (smakfri variant)']
+      }
+    ]
   }
 };
 
@@ -170,6 +192,8 @@ const CATEGORY_CONFIG = {
   vegetable: { label: 'Grönsaker', icon: '🥬', color: 'text-emerald-700', bg: 'bg-emerald-50', subBg: 'bg-emerald-100/50' },
   berry: { label: 'Bär', icon: '🫐', color: 'text-purple-700', bg: 'bg-purple-50', subBg: 'bg-purple-100/50' },
   sauce: { label: 'Såser', icon: '🥫', color: 'text-orange-700', bg: 'bg-orange-50', subBg: 'bg-orange-100/50' },
+  spice: { label: 'Kryddor', icon: '🧂', color: 'text-yellow-700', bg: 'bg-yellow-50', subBg: 'bg-yellow-100/50' },
+  cooking_fat: { label: 'Matlagningsfett', icon: '🫒', color: 'text-lime-700', bg: 'bg-lime-50', subBg: 'bg-lime-100/50' },
 };
 
 interface RecommendedFoodsDialogProps {

@@ -15,6 +15,8 @@ import { WeekMacroDisplay } from '@/components/meal-plan/WeekMacroDisplay'
 import { AdjustMacrosWizard, MealMacros as WizardMealMacros } from '@/components/meal-plan/AdjustMacrosWizard'
 import { MealPlanGenerator } from '@/components/meal-plan-generator'
 import { MealPlanCatalog } from '@/components/meal-plan/catalog'
+import { RecommendedFoodsDialog } from '@/components/meal-plan-generator/RecommendedFoodsDialog'
+import { Carrot } from 'lucide-react'
 
 interface MealPlanItem {
   id: string
@@ -116,6 +118,7 @@ export default function MealPlanPage() {
   const [showAdjustWizard, setShowAdjustWizard] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0) // For forcing FlexibleMealPlan reload
   const [catalogOpen, setCatalogOpen] = useState(false)
+  const [foodCategory, setFoodCategory] = useState<string | null>(null)
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
@@ -392,6 +395,12 @@ export default function MealPlanPage() {
             Lär dig mer
           </div>
 
+          {/* Livsmedel - primär label */}
+          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white rounded-lg font-semibold shadow-sm">
+            <Carrot className="w-5 h-5" />
+            Livsmedel
+          </div>
+
           {/* Inspiration - primär knapp med action */}
           <Button
             onClick={() => setCatalogOpen(true)}
@@ -541,7 +550,50 @@ export default function MealPlanPage() {
             </DialogContent>
           </Dialog>
         </div>
+
+        {/* Subknappar under "Livsmedel" (Secondary) */}
+        <div className="flex flex-wrap gap-2 justify-center">
+          <Button variant="outline" size="sm" onClick={() => setFoodCategory('protein')} className="text-gray-700 border-gray-300 hover:bg-rose-50 hover:border-rose-400">
+            <span className="mr-1.5">🥩</span>
+            Protein
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setFoodCategory('carb')} className="text-gray-700 border-gray-300 hover:bg-amber-50 hover:border-amber-400">
+            <span className="mr-1.5">🌾</span>
+            Kolhydrater
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setFoodCategory('fat')} className="text-gray-700 border-gray-300 hover:bg-sky-50 hover:border-sky-400">
+            <span className="mr-1.5">🥑</span>
+            Fett
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setFoodCategory('vegetable')} className="text-gray-700 border-gray-300 hover:bg-emerald-50 hover:border-emerald-400">
+            <span className="mr-1.5">🥬</span>
+            Grönsaker
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setFoodCategory('berry')} className="text-gray-700 border-gray-300 hover:bg-purple-50 hover:border-purple-400">
+            <span className="mr-1.5">🫐</span>
+            Bär
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setFoodCategory('sauce')} className="text-gray-700 border-gray-300 hover:bg-orange-50 hover:border-orange-400">
+            <span className="mr-1.5">🥫</span>
+            Såser
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setFoodCategory('spice')} className="text-gray-700 border-gray-300 hover:bg-yellow-50 hover:border-yellow-400">
+            <span className="mr-1.5">🧂</span>
+            Kryddor
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setFoodCategory('cooking_fat')} className="text-gray-700 border-gray-300 hover:bg-lime-50 hover:border-lime-400">
+            <span className="mr-1.5">🫒</span>
+            Matlagningsfett
+          </Button>
+        </div>
       </div>
+
+      {/* Recommended Foods Dialog */}
+      <RecommendedFoodsDialog
+        open={foodCategory !== null}
+        onOpenChange={(open) => !open && setFoodCategory(null)}
+        category={foodCategory}
+      />
 
       {/* Main Content */}
       <div>
