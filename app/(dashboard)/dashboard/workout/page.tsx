@@ -11,6 +11,8 @@ import { Dumbbell, Calendar, Play, Coffee, ChevronRight, History, Trophy, Plus, 
 import Link from 'next/link'
 import { MDXPreview } from '@/components/mdx-preview'
 import { VideoPlayer } from '@/components/ui/video-player'
+import { Pyramid } from '@/components/pyramid'
+import { trainingPyramidLevels } from '@/lib/data/pyramid-content'
 
 // Helper to render text with markdown links [text](url)
 function renderTextWithLinks(text: string) {
@@ -286,6 +288,13 @@ export default function WorkoutPage() {
         )}
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
+
+      {/* Training Pyramid */}
+      <Pyramid
+        title="Träningspyramiden"
+        levels={trainingPyramidLevels}
+        colorScheme="blue"
+      />
 
       {/* Action buttons row */}
       <div className="flex flex-wrap gap-2 justify-center">

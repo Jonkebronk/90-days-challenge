@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Utensils, Sparkles, Lightbulb, Info, ChevronDown, ChevronUp, UtensilsCrossed, Wand2, BookOpen } from 'lucide-react'
+import { Pyramid } from '@/components/pyramid'
+import { nutritionPyramidLevels, nutritionFoundation } from '@/lib/data/pyramid-content'
 import { MDXPreview } from '@/components/mdx-preview'
 import { WeekCalendar } from '@/components/meal-plan/week-calendar'
 import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
@@ -338,6 +340,14 @@ export default function MealPlanPage() {
         </h1>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
+
+      {/* Nutrition Pyramid */}
+      <Pyramid
+        title="Nutritionspyramiden"
+        levels={nutritionPyramidLevels}
+        foundation={nutritionFoundation}
+        colorScheme="red"
+      />
 
       {/* Week Calendar */}
       <WeekCalendar
