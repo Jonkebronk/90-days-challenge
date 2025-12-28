@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Search, X, Apple, Database, Check } from 'lucide-react';
+import { Search, X, Apple, Database, Check, Heart } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -75,7 +75,7 @@ interface ProductSelectModalProps {
   showCategorySelector?: boolean; // Show dropdown to select target macro category
 }
 
-type SourceTab = 'products' | 'slv';
+type SourceTab = 'favorites' | 'products' | 'slv';
 
 // Get the macro field key for each category
 function getMacroKey(category: MacroCategory): 'protein' | 'carbs' | 'fat' {
@@ -179,6 +179,10 @@ export function ProductSelectModal({
   // Dynamiska subkategorier från databasen
   const [subcategories, setSubcategories] = useState<Subcategory[]>([{ key: 'all', label: 'Alla', count: 0 }]);
   const [subcategoriesLoading, setSubcategoriesLoading] = useState(false);
+
+  // Favoriter
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [favoriteProducts, setFavoriteProducts] = useState<Product[]>([]);
 
   // Reset subkategori och target category när kategori eller defaultSubcategory ändras
   useEffect(() => {
@@ -294,6 +298,48 @@ export function ProductSelectModal({
     fetchData();
   }, [isOpen, category, showCategorySelector]);
 
+  // Fetch user's favorites
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchFavorites = async () => {
+      try {
+        const res = await fetch('/api/favorites');
+        if (res.ok) {
+          const data = await res.json();
+          const favIds = new Set<string>();
+          const favProducts: Product[] = [];
+
+          for (const fav of data.favorites || []) {
+            const id = fav.productId || fav.foodItemId;
+            if (id) {
+              favIds.add(id);
+              // Convert to Product format for display
+              favProducts.push({
+                id: fav.productId || `fooditem-${fav.foodItemId}`,
+                name: fav.name,
+                brand: fav.brand,
+                image: fav.imageUrl,
+                kcal: Number(fav.product?.kcal || fav.foodItem?.kcal || 0),
+                protein: Number(fav.product?.protein || fav.foodItem?.protein || 0),
+                carbs: Number(fav.product?.carbs || fav.foodItem?.carbs || 0),
+                fat: Number(fav.product?.fat || fav.foodItem?.fat || 0),
+                macroCategory: fav.category,
+                source: fav.foodItemId ? 'slv' : 'product',
+              });
+            }
+          }
+          setFavorites(favIds);
+          setFavoriteProducts(favProducts);
+        }
+      } catch (err) {
+        console.error('Error fetching favorites:', err);
+      }
+    };
+
+    fetchFavorites();
+  }, [isOpen]);
+
   // Check if this is vegetable category (free, no macro calculation)
   const isVegetable = category === 'vegetable';
   const defaultVegetableGrams = 100;
@@ -315,8 +361,17 @@ export function ProductSelectModal({
     }));
   }, [slvFoods, category, showCategorySelector]);
 
-  // Get active source items
-  const sourceItems = activeTab === 'products' ? products : slvAsProducts;
+  // Get active source items (including favorites tab)
+  const sourceItems = useMemo(() => {
+    if (activeTab === 'favorites') {
+      // Filter favorites by category if not showing category selector
+      if (showCategorySelector) {
+        return favoriteProducts;
+      }
+      return favoriteProducts.filter(p => p.macroCategory === category);
+    }
+    return activeTab === 'products' ? products : slvAsProducts;
+  }, [activeTab, products, slvAsProducts, favoriteProducts, category, showCategorySelector]);
 
   // Calculate products with grams and filter
   const productsWithCalculations: ProductWithCalculation[] = useMemo(() => {
@@ -372,6 +427,70 @@ export function ProductSelectModal({
     });
   };
 
+  // Toggle favorite
+  const toggleFavorite = async (product: Product, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent product selection
+
+    const isFoodItem = product.id.startsWith('fooditem-');
+    const isSlv = product.id.startsWith('slv-');
+    const actualId = isFoodItem ? product.id.replace('fooditem-', '') : product.id;
+    const isFavorite = favorites.has(actualId);
+
+    // Optimistic update
+    if (isFavorite) {
+      setFavorites(prev => {
+        const next = new Set(prev);
+        next.delete(actualId);
+        return next;
+      });
+      setFavoriteProducts(prev => prev.filter(p => p.id !== product.id));
+    } else {
+      setFavorites(prev => new Set(prev).add(actualId));
+      setFavoriteProducts(prev => [...prev, product]);
+    }
+
+    try {
+      if (isFavorite) {
+        // Remove favorite
+        const param = isFoodItem ? `foodItemId=${actualId}` : `productId=${actualId}`;
+        await fetch(`/api/favorites?${param}`, { method: 'DELETE' });
+      } else {
+        // Add favorite (skip SLV products as they're not in our DB)
+        if (isSlv) return;
+
+        const body = isFoodItem
+          ? { foodItemId: actualId, name: product.name, imageUrl: product.image, category: product.macroCategory }
+          : { productId: actualId, name: product.name, brand: product.brand, imageUrl: product.image, category: product.macroCategory };
+
+        await fetch('/api/favorites', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+      }
+    } catch (err) {
+      console.error('Error toggling favorite:', err);
+      // Revert optimistic update on error
+      if (isFavorite) {
+        setFavorites(prev => new Set(prev).add(actualId));
+        setFavoriteProducts(prev => [...prev, product]);
+      } else {
+        setFavorites(prev => {
+          const next = new Set(prev);
+          next.delete(actualId);
+          return next;
+        });
+        setFavoriteProducts(prev => prev.filter(p => p.id !== product.id));
+      }
+    }
+  };
+
+  // Check if product is favorited
+  const isFavorited = (productId: string) => {
+    const actualId = productId.startsWith('fooditem-') ? productId.replace('fooditem-', '') : productId;
+    return favorites.has(actualId);
+  };
+
   // Check if a product is selected
   const isProductSelected = (productId: string) => {
     return selectedProducts.some(p => p.id === productId);
@@ -425,6 +544,23 @@ export function ProductSelectModal({
 
         {/* Source tabs */}
         <div className="flex border-b border-zinc-200">
+          <button
+            onClick={() => setActiveTab('favorites')}
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
+              activeTab === 'favorites'
+                ? 'border-b-2 border-red-500 text-red-600'
+                : 'text-zinc-500 hover:text-zinc-700'
+            )}
+          >
+            <Heart className="h-4 w-4" fill={activeTab === 'favorites' ? 'currentColor' : 'none'} />
+            Favoriter
+            {favorites.size > 0 && (
+              <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
+                {favorites.size}
+              </span>
+            )}
+          </button>
           <button
             onClick={() => setActiveTab('products')}
             className={cn(
@@ -637,6 +773,25 @@ export function ProductSelectModal({
                       {product.calculatedMacros.kcal} kcal
                     </div>
                   </div>
+
+                  {/* Favorite button - only for non-SLV products */}
+                  {!isSlvProduct && (
+                    <button
+                      onClick={(e) => toggleFavorite(product, e)}
+                      className={cn(
+                        'p-1.5 rounded-full transition-colors shrink-0',
+                        isFavorited(product.id)
+                          ? 'text-red-500 hover:text-red-600'
+                          : 'text-zinc-300 hover:text-red-400'
+                      )}
+                      title={isFavorited(product.id) ? 'Ta bort favorit' : 'Lägg till favorit'}
+                    >
+                      <Heart
+                        className="h-4 w-4"
+                        fill={isFavorited(product.id) ? 'currentColor' : 'none'}
+                      />
+                    </button>
+                  )}
                 </div>
 
                 {/* Macro breakdown */}
