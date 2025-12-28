@@ -72,7 +72,7 @@ export function RecipeSelectionDialog({
   const [isLoading, setIsLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [servingMultipliers, setServingMultipliers] = useState<Record<string, number>>({})
+  const [servingMultipliers, setServingMultipliers] = useState<Record<string, string>>({})
 
   // Customizer state
   const [customizerOpen, setCustomizerOpen] = useState(false)
@@ -185,7 +185,7 @@ export function RecipeSelectionDialog({
   })
 
   const handleSelectRecipe = (recipe: Recipe) => {
-    const multiplier = servingMultipliers[recipe.id] || 1
+    const multiplier = getServingMultiplier(recipe.id)
     onSelect(recipe, multiplier)
     onOpenChange(false)
     // Reset state
@@ -195,11 +195,18 @@ export function RecipeSelectionDialog({
     setShowFavoritesOnly(false)
   }
 
-  const getServingMultiplier = (recipeId: string) => {
-    return servingMultipliers[recipeId] || 1
+  const getServingMultiplier = (recipeId: string): number => {
+    const value = servingMultipliers[recipeId]
+    if (value === undefined || value === '') return 1
+    const parsed = parseFloat(value)
+    return isNaN(parsed) ? 1 : parsed
   }
 
-  const setServingMultiplier = (recipeId: string, value: number) => {
+  const getServingMultiplierDisplay = (recipeId: string): string => {
+    return servingMultipliers[recipeId] ?? '1'
+  }
+
+  const setServingMultiplier = (recipeId: string, value: string) => {
     setServingMultipliers((prev) => ({ ...prev, [recipeId]: value }))
   }
 
@@ -373,14 +380,11 @@ export function RecipeSelectionDialog({
                     </Label>
                     <Input
                       id={`multiplier-${recipe.id}`}
-                      type="number"
-                      min="0.1"
-                      step="0.1"
-                      value={multiplier}
-                      onChange={(e) =>
-                        setServingMultiplier(recipe.id, parseFloat(e.target.value) || 1)
-                      }
-                      className="w-20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      type="text"
+                      inputMode="decimal"
+                      value={getServingMultiplierDisplay(recipe.id)}
+                      onChange={(e) => setServingMultiplier(recipe.id, e.target.value)}
+                      className="w-20 text-center"
                     />
                     {canCustomize && (
                       <Button
