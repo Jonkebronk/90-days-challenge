@@ -127,7 +127,10 @@ export function Pyramid({ title, levels, foundation, colorScheme }: PyramidProps
       {/* Beskrivande text */}
       <p className="text-center text-xs sm:text-sm text-zinc-500 mt-4 max-w-md mx-auto leading-relaxed">
         Botten av pyramiden har <span className="font-semibold text-zinc-700">störst påverkan</span> på dina resultat.
-        Toppen har minst. Klicka på en nivå för mer info.
+        Toppen har minst.
+      </p>
+      <p className="text-center text-[10px] text-zinc-400 mt-3 uppercase tracking-wide">
+        Klicka på en nivå för mer info
       </p>
 
       {/* Dialog */}
