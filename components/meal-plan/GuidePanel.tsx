@@ -188,14 +188,14 @@ const RECOMMENDED_FOODS: Record<string, CategoryData> = {
 }
 
 const CATEGORY_CONFIG = {
-  protein: { label: 'Protein', icon: '🥩', color: 'text-rose-700', bg: 'bg-rose-50', subBg: 'bg-rose-100/50', hoverBg: 'hover:bg-rose-50' },
-  carb: { label: 'Kolhydrater', icon: '🌾', color: 'text-amber-700', bg: 'bg-amber-50', subBg: 'bg-amber-100/50', hoverBg: 'hover:bg-amber-50' },
-  fat: { label: 'Fett', icon: '🥑', color: 'text-sky-700', bg: 'bg-sky-50', subBg: 'bg-sky-100/50', hoverBg: 'hover:bg-sky-50' },
-  vegetable: { label: 'Grönsaker', icon: '🥬', color: 'text-emerald-700', bg: 'bg-emerald-50', subBg: 'bg-emerald-100/50', hoverBg: 'hover:bg-emerald-50' },
-  berry: { label: 'Bär', icon: '🫐', color: 'text-purple-700', bg: 'bg-purple-50', subBg: 'bg-purple-100/50', hoverBg: 'hover:bg-purple-50' },
-  sauce: { label: 'Såser', icon: '🥫', color: 'text-orange-700', bg: 'bg-orange-50', subBg: 'bg-orange-100/50', hoverBg: 'hover:bg-orange-50' },
-  spice: { label: 'Kryddor', icon: '🧂', color: 'text-yellow-700', bg: 'bg-yellow-50', subBg: 'bg-yellow-100/50', hoverBg: 'hover:bg-yellow-50' },
-  cooking_fat: { label: 'Matlagningsfett', icon: '🫒', color: 'text-lime-700', bg: 'bg-lime-50', subBg: 'bg-lime-100/50', hoverBg: 'hover:bg-lime-50' },
+  protein: { label: 'Protein', shortLabel: 'Prot', icon: '🥩', color: 'text-rose-700', bg: 'bg-rose-50', subBg: 'bg-rose-100/50', hoverBg: 'hover:bg-rose-50' },
+  carb: { label: 'Kolhydrater', shortLabel: 'Kolh', icon: '🌾', color: 'text-amber-700', bg: 'bg-amber-50', subBg: 'bg-amber-100/50', hoverBg: 'hover:bg-amber-50' },
+  fat: { label: 'Fett', shortLabel: 'Fett', icon: '🥑', color: 'text-sky-700', bg: 'bg-sky-50', subBg: 'bg-sky-100/50', hoverBg: 'hover:bg-sky-50' },
+  vegetable: { label: 'Grönsaker', shortLabel: 'Grön', icon: '🥬', color: 'text-emerald-700', bg: 'bg-emerald-50', subBg: 'bg-emerald-100/50', hoverBg: 'hover:bg-emerald-50' },
+  berry: { label: 'Bär', shortLabel: 'Bär', icon: '🫐', color: 'text-purple-700', bg: 'bg-purple-50', subBg: 'bg-purple-100/50', hoverBg: 'hover:bg-purple-50' },
+  sauce: { label: 'Såser', shortLabel: 'Sås', icon: '🥫', color: 'text-orange-700', bg: 'bg-orange-50', subBg: 'bg-orange-100/50', hoverBg: 'hover:bg-orange-50' },
+  spice: { label: 'Kryddor', shortLabel: 'Kryd', icon: '🧂', color: 'text-yellow-700', bg: 'bg-yellow-50', subBg: 'bg-yellow-100/50', hoverBg: 'hover:bg-yellow-50' },
+  cooking_fat: { label: 'Matlagningsfett', shortLabel: 'Olja', icon: '🫒', color: 'text-lime-700', bg: 'bg-lime-50', subBg: 'bg-lime-100/50', hoverBg: 'hover:bg-lime-50' },
 }
 
 interface GuidePanelProps {
@@ -449,13 +449,14 @@ export function GuidePanel({ mealPlanDescriptionContent, nutritionTipsContent }:
                     key={key}
                     onClick={() => setSelectedItem({ type: 'food', category: key })}
                     className={cn(
-                      "text-left px-2 md:px-3 py-2 rounded-lg text-xs md:text-sm transition-colors flex items-center gap-1.5 md:gap-2",
+                      "text-left px-1.5 md:px-3 py-1.5 md:py-2 rounded-lg text-[10px] md:text-sm transition-colors flex flex-col md:flex-row items-center gap-0.5 md:gap-2",
                       isSelected
                         ? cn(config.bg, config.color, "font-medium")
                         : cn("text-gray-600", config.hoverBg)
                     )}
                   >
                     <span className="shrink-0">{config.icon}</span>
+                    <span className="md:hidden truncate">{config.shortLabel}</span>
                     <span className="hidden md:inline truncate">{config.label}</span>
                   </button>
                 )
