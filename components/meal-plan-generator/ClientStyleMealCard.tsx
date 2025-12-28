@@ -514,14 +514,26 @@ export function ClientStyleMealCard({
       {/* Header */}
       <div className="py-3 px-4">
         {/* First row: Meal name + chevron */}
-        <div className="flex items-center gap-2">
-          {/* Left side: Icon + Name + Info */}
+        <div className="flex items-start gap-2">
+          {/* Left side: Icon + Name + Info + Macros */}
           <button
-            className="flex items-center gap-2 hover:opacity-70 transition-opacity cursor-pointer shrink-0"
+            className="flex items-start gap-2 hover:opacity-70 transition-opacity cursor-pointer shrink-0"
             onClick={() => setIsExpanded(!isExpanded)}
           >
-            <Utensils className="w-5 h-5 text-amber-500" />
-            <span className="text-base font-semibold text-zinc-900">{mealLabel}</span>
+            <Utensils className="w-5 h-5 text-amber-500 mt-0.5" />
+            <div className="flex flex-col items-start gap-1">
+              <span className="text-base font-semibold text-zinc-900">{mealLabel}</span>
+              {/* Macro text under meal name */}
+              <div className="flex items-center gap-2 flex-wrap text-xs text-zinc-500">
+                <span><span className="font-medium text-zinc-600">KCAL</span> {meal.totalMacros.kcal.toFixed(0)}</span>
+                <span className="text-zinc-300">·</span>
+                <span><span className="font-medium text-zinc-600">PROT</span> {meal.totalMacros.protein.toFixed(0)}g</span>
+                <span className="text-zinc-300">·</span>
+                <span><span className="font-medium text-zinc-600">KOLH</span> {meal.totalMacros.carbs.toFixed(0)}g</span>
+                <span className="text-zinc-300">·</span>
+                <span><span className="font-medium text-zinc-600">FETT</span> {meal.totalMacros.fat.toFixed(0)}g</span>
+              </div>
+            </div>
           </button>
 
           {/* Info icon with recommended macros popover */}
@@ -630,29 +642,6 @@ export function ClientStyleMealCard({
         </div>
       </div>
 
-      {/* TOTALT summary - always visible */}
-      <div className="px-4 pb-3 border-b border-zinc-100">
-        <div className="flex items-center justify-end">
-          <div className="flex items-center gap-4 text-xs">
-            <div className="text-center">
-              <div className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide">Kcal</div>
-              <div className="font-bold text-amber-600">{meal.totalMacros.kcal.toFixed(0)}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide">Prot</div>
-              <div className="font-bold text-rose-600">{meal.totalMacros.protein.toFixed(0)}g</div>
-            </div>
-            <div className="text-center">
-              <div className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide">Kolh</div>
-              <div className="font-bold text-amber-500">{meal.totalMacros.carbs.toFixed(0)}g</div>
-            </div>
-            <div className="text-center">
-              <div className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide">Fett</div>
-              <div className="font-bold text-sky-500">{meal.totalMacros.fat.toFixed(0)}g</div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Expanded content */}
       {isExpanded && (
