@@ -39,22 +39,12 @@ interface MealCardProps {
   instructions?: string
 }
 
-// Circular macro badge component
-function MacroBadge({ label, value, color }: { label: string, value: number, color: 'green' | 'red' | 'blue' | 'amber' }) {
-  const colorClasses = {
-    green: 'bg-emerald-500 text-white',
-    red: 'bg-rose-500 text-white',
-    blue: 'bg-blue-500 text-white',
-    amber: 'bg-amber-500 text-white'
-  }
-
+// Macro text display component
+function MacroText({ label, value, unit = '' }: { label: string, value: number, unit?: string }) {
   return (
-    <div className="flex items-center gap-1">
-      <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${colorClasses[color]}`}>
-        {label}
-      </div>
-      <span className="text-sm text-zinc-700">{value}</span>
-    </div>
+    <span className="text-xs text-zinc-500">
+      <span className="font-medium text-zinc-600">{label}</span> {value}{unit}
+    </span>
   )
 }
 
@@ -553,12 +543,15 @@ export function MealCard({
               </button>
             </div>
 
-            {/* Bottom row: Macro badges */}
-            <div className="flex items-center gap-3 ml-8">
-              <MacroBadge label="K" value={meal.kcal} color="green" />
-              <MacroBadge label="P" value={meal.protein} color="red" />
-              <MacroBadge label="F" value={meal.fat} color="blue" />
-              <MacroBadge label="C" value={meal.carbs} color="amber" />
+            {/* Bottom row: Macro text */}
+            <div className="flex items-center gap-2 ml-8 flex-wrap">
+              <MacroText label="KCAL" value={meal.kcal} />
+              <span className="text-zinc-300">·</span>
+              <MacroText label="PROT" value={meal.protein} unit="g" />
+              <span className="text-zinc-300">·</span>
+              <MacroText label="KOLH" value={meal.carbs} unit="g" />
+              <span className="text-zinc-300">·</span>
+              <MacroText label="FETT" value={meal.fat} unit="g" />
             </div>
           </div>
 

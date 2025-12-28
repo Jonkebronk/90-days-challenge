@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { MDXPreview } from '@/components/mdx-preview';
 
 interface PyramidLevelDialogProps {
   open: boolean;
@@ -38,8 +39,8 @@ export function PyramidLevelDialog({
             </DialogTitle>
           </div>
         </DialogHeader>
-        <div className="flex-1 overflow-y-auto pt-4 text-base text-zinc-700 leading-relaxed whitespace-pre-line">
-          {description}
+        <div className="flex-1 overflow-y-auto pt-4">
+          <MDXPreview content={description} />
         </div>
       </DialogContent>
     </Dialog>
