@@ -56,25 +56,7 @@ export function Pyramid({ title, levels, foundation, colorScheme }: PyramidProps
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-zinc-200 p-4 sm:p-6 mb-6">
-      <div className="flex items-start justify-center gap-3 sm:gap-4">
-        {/* Pil med påverkan-label - döljs på mobil */}
-        <div className="hidden sm:flex flex-col items-center justify-between h-[280px] sm:h-[360px] mt-12">
-          <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-zinc-400 text-center leading-tight">
-            Minst<br />påverkan
-          </div>
-          <div className="relative flex-1 w-0.5 bg-gradient-to-b from-zinc-300 to-zinc-600 my-2 rounded-full">
-            {/* Pil upp */}
-            <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-b-[8px] border-l-transparent border-r-transparent border-b-zinc-300" />
-            {/* Pil ner */}
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-r-[6px] border-t-[8px] border-l-transparent border-r-transparent border-t-zinc-600" />
-          </div>
-          <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-zinc-700 text-center leading-tight">
-            Störst<br />påverkan
-          </div>
-        </div>
-
-        {/* Pyramid-sektion */}
-        <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center">
           {/* Titel */}
           <h2 className={cn(
             'font-bold text-lg sm:text-xl tracking-wide uppercase mb-6 relative pb-3',
@@ -140,12 +122,12 @@ export function Pyramid({ title, levels, foundation, colorScheme }: PyramidProps
               {foundation.label}
             </button>
           )}
-        </div>
       </div>
 
-      {/* Mobilindikator för påverkan */}
-      <p className="sm:hidden text-center text-[10px] text-zinc-400 mt-4 uppercase tracking-wide">
-        Klicka på en nivå för mer info
+      {/* Beskrivande text */}
+      <p className="text-center text-xs sm:text-sm text-zinc-500 mt-4 max-w-md mx-auto leading-relaxed">
+        Botten av pyramiden har <span className="font-semibold text-zinc-700">störst påverkan</span> på dina resultat.
+        Toppen har minst. Klicka på en nivå för mer info.
       </p>
 
       {/* Dialog */}
