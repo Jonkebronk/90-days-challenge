@@ -373,6 +373,14 @@ export function ProductSelectModal({
     return activeTab === 'products' ? products : slvAsProducts;
   }, [activeTab, products, slvAsProducts, favoriteProducts, category, showCategorySelector]);
 
+  // Count favorites for current category (for badge display)
+  const categoryFavoritesCount = useMemo(() => {
+    if (showCategorySelector) {
+      return favoriteProducts.length;
+    }
+    return favoriteProducts.filter(p => p.macroCategory === category).length;
+  }, [favoriteProducts, category, showCategorySelector]);
+
   // Calculate products with grams and filter
   const productsWithCalculations: ProductWithCalculation[] = useMemo(() => {
     return sourceItems
@@ -555,9 +563,9 @@ export function ProductSelectModal({
           >
             <Heart className="h-4 w-4" fill={activeTab === 'favorites' ? 'currentColor' : 'none'} />
             Favoriter
-            {favorites.size > 0 && (
+            {categoryFavoritesCount > 0 && (
               <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">
-                {favorites.size}
+                {categoryFavoritesCount}
               </span>
             )}
           </button>
