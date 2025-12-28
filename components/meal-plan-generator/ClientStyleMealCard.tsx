@@ -696,6 +696,7 @@ export function ClientStyleMealCard({
                     )}
                   >
                     <Plus className="h-3 w-3" />
+                    Lägg till
                   </button>
                 </div>
                 <div className={cn("p-2", CATEGORY_CONFIG.vegetable.bg)}>
@@ -730,6 +731,7 @@ export function ClientStyleMealCard({
                     )}
                   >
                     <Plus className="h-3 w-3" />
+                    Lägg till
                   </button>
                 </div>
                 <div className={cn("p-2 space-y-1.5", CATEGORY_CONFIG.berry.bg)}>
