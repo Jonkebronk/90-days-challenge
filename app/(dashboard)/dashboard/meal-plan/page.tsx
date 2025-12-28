@@ -413,52 +413,38 @@ export default function MealPlanPage() {
                 <div key={meal.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
                   {/* Meal Header */}
                   <div
-                    className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="px-4 py-3 flex items-start justify-between cursor-pointer hover:bg-gray-50 transition-colors"
                     onClick={() => toggleMeal(meal.mealNumber)}
                   >
-                    <div className="flex items-center gap-2">
-                      <Utensils className="w-5 h-5 text-gold-primary" />
-                      <h3 className="text-base font-semibold text-gray-900">
-                        {meal.name || `Måltid ${meal.mealNumber}`}
-                      </h3>
-                      {recipeCount > 0 && (
-                        <span className="text-sm text-gray-500">({recipeCount} recept)</span>
-                      )}
+                    <div className="flex items-start gap-2">
+                      <Utensils className="w-5 h-5 text-gold-primary mt-0.5" />
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-base font-semibold text-gray-900">
+                            {meal.name || `Måltid ${meal.mealNumber}`}
+                          </h3>
+                          {recipeCount > 0 && (
+                            <span className="text-sm text-gray-500">({recipeCount} recept)</span>
+                          )}
+                        </div>
+                        {/* Macro text under meal name */}
+                        <div className="flex items-center gap-2 flex-wrap text-xs text-gray-500">
+                          <span><span className="font-medium text-gray-600">KCAL</span> {Math.round(Number(meal.totalCalories || 0))}</span>
+                          <span className="text-gray-300">·</span>
+                          <span><span className="font-medium text-gray-600">PROT</span> {Math.round(Number(meal.totalProtein || 0))}g</span>
+                          <span className="text-gray-300">·</span>
+                          <span><span className="font-medium text-gray-600">KOLH</span> {Math.round(Number(meal.totalCarbs || 0))}g</span>
+                          <span className="text-gray-300">·</span>
+                          <span><span className="font-medium text-gray-600">FETT</span> {Math.round(Number(meal.totalFat || 0))}g</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center">
                       {isExpanded ? (
                         <ChevronUp className="w-5 h-5 text-gray-400" />
                       ) : (
                         <ChevronDown className="w-5 h-5 text-gray-400" />
                       )}
-                    </div>
-                  </div>
-
-                  {/* Circular Macro Badges */}
-                  <div className="px-4 pb-3 flex items-center gap-2">
-                    <div className="flex items-center gap-1">
-                      <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-                        <span className="text-[10px] font-bold text-white">K</span>
-                      </div>
-                      <span className="text-sm text-gray-600">{Math.round(Number(meal.totalCarbs || 0))}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center">
-                        <span className="text-[10px] font-bold text-white">P</span>
-                      </div>
-                      <span className="text-sm text-gray-600">{Math.round(Number(meal.totalProtein || 0))}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
-                        <span className="text-[10px] font-bold text-white">F</span>
-                      </div>
-                      <span className="text-sm text-gray-600">{Math.round(Number(meal.totalFat || 0))}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div className="w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center">
-                        <span className="text-[10px] font-bold text-white">C</span>
-                      </div>
-                      <span className="text-sm text-gray-600">{Math.round(Number(meal.totalCalories || 0))}</span>
                     </div>
                   </div>
 

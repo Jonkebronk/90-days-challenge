@@ -93,15 +93,17 @@ Fem gram dagligen är en bra dos för majoriteten. Glöm också det här med upp
 
 **4. Omega 3**
 
-Det här är en av de essentiella fettsyror som kroppen inte själv kan tillverka utan behöver få i sig från kosten – eller via tillskott. Det är kopplat till god hjärt- och kärlhälsa och väl värt att köpa om du inte får i dig det i tillräcklig mängd från kosten. En daglig dos mellan två till fyra gram rekommenderas för att maximera hälsoeffekterna.
+Det här är en av de essentiella fettsyror som kroppen inte själv kan tillverka utan behöver få i sig från kosten – eller via tillskott. Det är kopplat till god hjärt- och kärlhälsa och väl värt att köpa om du inte får i dig det i tillräcklig mängd från kosten.
+
+En daglig dos mellan två till fyra gram rekommenderas för att maximera hälsoeffekterna.
 
 **5. Proteinpulver**
 
 Ett enkelt sätt att nå ditt proteinmål. En av de billigaste proteinkällorna per gram. Det finns tre vanligt förekommande typer:
 
-• Vasslekoncentrat (Whey Concentrate) – Det vanligaste och billigaste. Fungerar utmärkt för de flesta. Börja här.
-• Vassleisolat (Whey Isolate) – Renare, mindre laktosinnehåll. Välj om du får magbesvär av koncentrat.
-• Kasein – Långsamt upptag (upp till 7 timmar). Bra före sömn eller långa perioder utan mat.
+- Vasslekoncentrat (Whey Concentrate) – Det vanligaste och billigaste. Fungerar utmärkt för de flesta. Börja här.
+- Vassleisolat (Whey Isolate) – Renare, mindre laktosinnehåll. Välj om du får magbesvär av koncentrat.
+- Kasein – Långsamt upptag (upp till 7 timmar). Bra före sömn eller långa perioder utan mat.
 
 **6. Koffein**
 
