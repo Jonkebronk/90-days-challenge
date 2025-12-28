@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Search, ChefHat, Settings2 } from 'lucide-react'
+import { Search, ChefHat, Settings2, Heart } from 'lucide-react'
 import { toast } from 'sonner'
 import { RecipeCustomizerDialog } from '@/components/recipe-customizer'
 import type { CalculatedMacros } from '@/lib/types/meal-plan-generator'
@@ -78,6 +78,9 @@ export function RecipeSelectionDialog({
   const [customizerOpen, setCustomizerOpen] = useState(false)
   const [selectedRecipeForCustomize, setSelectedRecipeForCustomize] = useState<string | null>(null)
 
+  // Favorites state
+  const [favorites, setFavorites] = useState<Set<string>>(new Set())
+
   // Check if customization is available
   const canCustomize = !!(mealPlanId && mealIndex !== undefined)
 
@@ -85,8 +88,61 @@ export function RecipeSelectionDialog({
     if (open) {
       fetchRecipes()
       fetchCategories()
+      fetchFavorites()
     }
   }, [open])
+
+  const fetchFavorites = async () => {
+    try {
+      const res = await fetch('/api/recipes/favorites')
+      if (res.ok) {
+        const data = await res.json()
+        const favIds = new Set<string>()
+        for (const fav of data.favorites || []) {
+          if (fav.recipeId) {
+            favIds.add(fav.recipeId)
+          }
+        }
+        setFavorites(favIds)
+      }
+    } catch (err) {
+      console.error('Error fetching favorites:', err)
+    }
+  }
+
+  const toggleFavorite = async (recipeId: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    const isFavorite = favorites.has(recipeId)
+
+    // Optimistic update
+    if (isFavorite) {
+      setFavorites(prev => {
+        const next = new Set(prev)
+        next.delete(recipeId)
+        return next
+      })
+    } else {
+      setFavorites(prev => new Set(prev).add(recipeId))
+    }
+
+    try {
+      // Toggle endpoint handles both add and remove
+      const res = await fetch(`/api/recipes/${recipeId}/favorite`, { method: 'POST' })
+      if (!res.ok) throw new Error('Failed to toggle favorite')
+    } catch (err) {
+      console.error('Error toggling favorite:', err)
+      // Revert on error
+      if (isFavorite) {
+        setFavorites(prev => new Set(prev).add(recipeId))
+      } else {
+        setFavorites(prev => {
+          const next = new Set(prev)
+          next.delete(recipeId)
+          return next
+        })
+      }
+    }
+  }
 
   const fetchRecipes = async () => {
     try {
@@ -238,7 +294,23 @@ export function RecipeSelectionDialog({
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-zinc-900 font-medium">{recipe.title}</h3>
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="text-zinc-900 font-medium">{recipe.title}</h3>
+                        <button
+                          onClick={(e) => toggleFavorite(recipe.id, e)}
+                          className={`p-1.5 rounded-full transition-colors shrink-0 ${
+                            favorites.has(recipe.id)
+                              ? 'text-red-500 hover:text-red-600'
+                              : 'text-zinc-300 hover:text-red-400'
+                          }`}
+                          title={favorites.has(recipe.id) ? 'Ta bort favorit' : 'Lägg till favorit'}
+                        >
+                          <Heart
+                            className="h-5 w-5"
+                            fill={favorites.has(recipe.id) ? 'currentColor' : 'none'}
+                          />
+                        </button>
+                      </div>
                       <div className="flex flex-wrap items-center gap-2 mt-1">
                         <Badge className="bg-amber-100 text-amber-700 border border-amber-200 text-xs">
                           {recipe.category.name}
@@ -250,21 +322,19 @@ export function RecipeSelectionDialog({
                         )}
                       </div>
                       <p className="text-xs text-zinc-500 mt-1">
-                        {recipe.caloriesPerServing
-                          ? `${Math.round(recipe.caloriesPerServing * multiplier)} kcal`
-                          : '-'}{' '}
-                        •{' '}
-                        {recipe.proteinPerServing
-                          ? `P: ${Math.round(recipe.proteinPerServing * multiplier)}g`
-                          : '-'}{' '}
-                        •{' '}
-                        {recipe.fatPerServing
-                          ? `F: ${Math.round(recipe.fatPerServing * multiplier)}g`
-                          : '-'}{' '}
-                        •{' '}
-                        {recipe.carbsPerServing
-                          ? `K: ${Math.round(recipe.carbsPerServing * multiplier)}g`
-                          : '-'}
+                        {recipe.caloriesPerServing || recipe.proteinPerServing || recipe.fatPerServing || recipe.carbsPerServing ? (
+                          <>
+                            {recipe.caloriesPerServing ? `${Math.round(recipe.caloriesPerServing * multiplier)} kcal` : null}
+                            {recipe.caloriesPerServing && (recipe.proteinPerServing || recipe.fatPerServing || recipe.carbsPerServing) ? ' • ' : null}
+                            {recipe.proteinPerServing ? `P: ${Math.round(recipe.proteinPerServing * multiplier)}g` : null}
+                            {recipe.proteinPerServing && (recipe.fatPerServing || recipe.carbsPerServing) ? ' • ' : null}
+                            {recipe.fatPerServing ? `F: ${Math.round(recipe.fatPerServing * multiplier)}g` : null}
+                            {recipe.fatPerServing && recipe.carbsPerServing ? ' • ' : null}
+                            {recipe.carbsPerServing ? `K: ${Math.round(recipe.carbsPerServing * multiplier)}g` : null}
+                          </>
+                        ) : (
+                          <span className="text-zinc-400 italic">Makros ej angivna</span>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -285,7 +355,7 @@ export function RecipeSelectionDialog({
                       onChange={(e) =>
                         setServingMultiplier(recipe.id, parseFloat(e.target.value) || 1)
                       }
-                      className="w-20"
+                      className="w-20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     {canCustomize && (
                       <Button
