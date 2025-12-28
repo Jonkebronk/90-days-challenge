@@ -57,8 +57,8 @@ export function Pyramid({ title, levels, foundation, colorScheme }: PyramidProps
   return (
     <div className="bg-white rounded-xl shadow-sm border border-zinc-200 p-4 sm:p-6 mb-6">
       <div className="flex items-start justify-center gap-3 sm:gap-4">
-        {/* Pil med påverkan-label - döljs på mobil */}
-        <div className="hidden sm:flex flex-col items-center justify-between h-[280px] sm:h-[360px] mt-12">
+        {/* Pil med påverkan-label */}
+        <div className="flex flex-col items-center justify-between h-[260px] sm:h-[360px] mt-10 sm:mt-12">
           <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-zinc-400 text-center leading-tight">
             Minst<br />påverkan
           </div>
@@ -143,8 +143,8 @@ export function Pyramid({ title, levels, foundation, colorScheme }: PyramidProps
         </div>
       </div>
 
-      {/* Mobilindikator för påverkan */}
-      <p className="sm:hidden text-center text-[10px] text-zinc-400 mt-4 uppercase tracking-wide">
+      {/* Klicka-instruktion */}
+      <p className="text-center text-[10px] text-zinc-400 mt-4 uppercase tracking-wide">
         Klicka på en nivå för mer info
       </p>
 
