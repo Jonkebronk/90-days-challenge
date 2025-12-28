@@ -80,6 +80,7 @@ export function RecipeSelectionDialog({
 
   // Favorites state
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
 
   // Check if customization is available
   const canCustomize = !!(mealPlanId && mealIndex !== undefined)
@@ -178,8 +179,9 @@ export function RecipeSelectionDialog({
     const matchesSearch = recipe.title.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory =
       selectedCategory === 'all' || recipe.category.id === selectedCategory
+    const matchesFavorites = !showFavoritesOnly || favorites.has(recipe.id)
 
-    return matchesSearch && matchesCategory
+    return matchesSearch && matchesCategory && matchesFavorites
   })
 
   const handleSelectRecipe = (recipe: Recipe) => {
@@ -190,6 +192,7 @@ export function RecipeSelectionDialog({
     setSearchTerm('')
     setSelectedCategory('all')
     setServingMultipliers({})
+    setShowFavoritesOnly(false)
   }
 
   const getServingMultiplier = (recipeId: string) => {
@@ -262,6 +265,28 @@ export function RecipeSelectionDialog({
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        {/* Favorites filter */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+            className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
+              showFavoritesOnly
+                ? 'bg-red-100 text-red-600 border border-red-200'
+                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 border border-zinc-200'
+            }`}
+          >
+            <Heart className="h-4 w-4" fill={showFavoritesOnly ? 'currentColor' : 'none'} />
+            Favoriter
+            {favorites.size > 0 && (
+              <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                showFavoritesOnly ? 'bg-red-200 text-red-700' : 'bg-zinc-200 text-zinc-600'
+              }`}>
+                {favorites.size}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Recipe List */}
