@@ -500,58 +500,60 @@ export function MealCard({
         className="w-full cursor-pointer py-4 px-5 hover:bg-zinc-50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between">
           {/* Left side: Icon + Name + Macros */}
-          <div className="flex flex-col items-start gap-2">
-            {/* Top row: Icon + Name + Recipe count + Recipe button */}
-            <div className="flex items-center gap-3">
-              <Utensils className="w-5 h-5 text-amber-500" />
+          <div className="flex items-start gap-3">
+            <Utensils className="w-5 h-5 text-amber-500 mt-0.5" />
 
-              {isEditingMealName ? (
-                <input
-                  ref={mealNameInputRef}
-                  type="text"
-                  value={mealNameValue}
-                  onChange={(e) => setMealNameValue(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter') handleSaveMealName(); else if (e.key === 'Escape') setIsEditingMealName(false) }}
-                  onBlur={handleSaveMealName}
-                  onClick={(e) => e.stopPropagation()}
-                  className="px-2 py-0.5 text-lg font-semibold bg-white border border-amber-500 rounded text-zinc-900 focus:outline-none"
-                />
-              ) : (
-                <span
-                  onClick={(e) => { if (onUpdateMealName) { e.stopPropagation(); setIsEditingMealName(true) } }}
-                  className={`text-lg font-semibold text-zinc-900 ${onUpdateMealName ? 'cursor-text hover:text-amber-600' : ''}`}
+            <div className="flex flex-col items-start gap-1">
+              {/* Top row: Name + Recipe count + Recipe button */}
+              <div className="flex items-center gap-3">
+                {isEditingMealName ? (
+                  <input
+                    ref={mealNameInputRef}
+                    type="text"
+                    value={mealNameValue}
+                    onChange={(e) => setMealNameValue(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleSaveMealName(); else if (e.key === 'Escape') setIsEditingMealName(false) }}
+                    onBlur={handleSaveMealName}
+                    onClick={(e) => e.stopPropagation()}
+                    className="px-2 py-0.5 text-lg font-semibold bg-white border border-amber-500 rounded text-zinc-900 focus:outline-none"
+                  />
+                ) : (
+                  <span
+                    onClick={(e) => { if (onUpdateMealName) { e.stopPropagation(); setIsEditingMealName(true) } }}
+                    className={`text-lg font-semibold text-zinc-900 ${onUpdateMealName ? 'cursor-text hover:text-amber-600' : ''}`}
+                  >
+                    {meal.name}
+                  </span>
+                )}
+
+                {recipeCount > 0 && (
+                  <span className="text-sm text-zinc-500">({recipeCount} recept)</span>
+                )}
+
+                {/* Recipe button */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); fetchRecipeSuggestion() }}
+                  disabled={isLoadingRecipe}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded text-xs text-amber-600 hover:bg-amber-50 transition-colors disabled:opacity-50"
+                  title="Få receptförslag från AI"
                 >
-                  {meal.name}
-                </span>
-              )}
+                  <Sparkles className="w-3 h-3" />
+                  <span>Recept</span>
+                </button>
+              </div>
 
-              {recipeCount > 0 && (
-                <span className="text-sm text-zinc-500">({recipeCount} recept)</span>
-              )}
-
-              {/* Recipe button */}
-              <button
-                onClick={(e) => { e.stopPropagation(); fetchRecipeSuggestion() }}
-                disabled={isLoadingRecipe}
-                className="flex items-center gap-1 px-2 py-0.5 rounded text-xs text-amber-600 hover:bg-amber-50 transition-colors disabled:opacity-50"
-                title="Få receptförslag från AI"
-              >
-                <Sparkles className="w-3 h-3" />
-                <span>Recept</span>
-              </button>
-            </div>
-
-            {/* Bottom row: Macro text */}
-            <div className="flex items-center gap-2 ml-8 flex-wrap">
-              <MacroText label="KCAL" value={meal.kcal} />
-              <span className="text-zinc-300">·</span>
-              <MacroText label="PROT" value={meal.protein} unit="g" />
-              <span className="text-zinc-300">·</span>
-              <MacroText label="KOLH" value={meal.carbs} unit="g" />
-              <span className="text-zinc-300">·</span>
-              <MacroText label="FETT" value={meal.fat} unit="g" />
+              {/* Bottom row: Macro text */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <MacroText label="KCAL" value={meal.kcal} />
+                <span className="text-zinc-300">·</span>
+                <MacroText label="PROT" value={meal.protein} unit="g" />
+                <span className="text-zinc-300">·</span>
+                <MacroText label="KOLH" value={meal.carbs} unit="g" />
+                <span className="text-zinc-300">·</span>
+                <MacroText label="FETT" value={meal.fat} unit="g" />
+              </div>
             </div>
           </div>
 

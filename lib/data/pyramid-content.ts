@@ -87,7 +87,9 @@ Det finns dock en faktor som gör att många är skeptiska till att använda det
 
 Vätskan från kreatinet gör att dina muskler sväller i volym och med detta spänner de också ut huden vilket visuellt gör att du ser mer definierad ut. Och är inte större, mer definierade muskler precis vad vi vill ha? Jo. Exakt.
 
-Det är fullt normalt med en viktökning motsvarande två-tre procent av din kroppsvikt första månaden. När nivåerna i musklerna är fyllda kommer vikten inte längre att påverkas. Fem gram dagligen är en bra dos för majoriteten. Glöm också det här med uppehåll, det behövs inte. Du kan ta kreatin dag ut och dag in för resten av livet.
+Det är fullt normalt med en viktökning motsvarande två-tre procent av din kroppsvikt första månaden. När nivåerna i musklerna är fyllda kommer vikten inte längre att påverkas.
+
+Fem gram dagligen är en bra dos för majoriteten. Glöm också det här med uppehåll, det behövs inte. Du kan ta kreatin dag ut och dag in för resten av livet.
 
 **4. Omega 3**
 
@@ -106,8 +108,9 @@ Ett enkelt sätt att nå ditt proteinmål. En av de billigaste proteinkällorna 
 Väldokumenterad effekt på prestanda och trötthet. Kan förbättra styrketräning och ge energi när motivationen är låg.
 
 Dosering kan se väldigt olika ut utifrån tolerans och storlek men generella rekommendationer är:
-• Mot trötthet: 1-3 mg per kg kroppsvikt
-• För prestation: 4-6 mg per kg, 30-60 minuter före träning
+
+- Mot trötthet: 1-3 mg per kg kroppsvikt
+- För prestation: 4-6 mg per kg, 30-60 minuter före träning
 
 Använd det strategiskt. Om du dricker kaffe hela dagen försvinner effekten. Håll basintaget lågt så har du något att ta till när det verkligen behövs.
 
