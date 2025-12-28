@@ -428,14 +428,14 @@ export default function MealPlanPage() {
                           )}
                         </div>
                         {/* Macro text under meal name */}
-                        <div className="flex items-center gap-2 flex-wrap text-xs text-gray-500">
-                          <span><span className="font-medium text-gray-600">KCAL</span> {Math.round(Number(meal.totalCalories || 0))}</span>
+                        <div className="flex items-center gap-2 flex-wrap text-xs">
+                          <span><span className="font-medium text-gray-500">KCAL</span> <span className="font-bold text-amber-600">{Math.round(Number(meal.totalCalories || 0))}</span></span>
                           <span className="text-gray-300">·</span>
-                          <span><span className="font-medium text-gray-600">PROT</span> {Math.round(Number(meal.totalProtein || 0))}g</span>
+                          <span><span className="font-medium text-gray-500">PROT</span> <span className="font-bold text-rose-600">{Math.round(Number(meal.totalProtein || 0))}g</span></span>
                           <span className="text-gray-300">·</span>
-                          <span><span className="font-medium text-gray-600">KOLH</span> {Math.round(Number(meal.totalCarbs || 0))}g</span>
+                          <span><span className="font-medium text-gray-500">KOLH</span> <span className="font-bold text-amber-500">{Math.round(Number(meal.totalCarbs || 0))}g</span></span>
                           <span className="text-gray-300">·</span>
-                          <span><span className="font-medium text-gray-600">FETT</span> {Math.round(Number(meal.totalFat || 0))}g</span>
+                          <span><span className="font-medium text-gray-500">FETT</span> <span className="font-bold text-sky-500">{Math.round(Number(meal.totalFat || 0))}g</span></span>
                         </div>
                       </div>
                     </div>

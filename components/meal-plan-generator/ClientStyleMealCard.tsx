@@ -524,14 +524,14 @@ export function ClientStyleMealCard({
             <div className="flex flex-col items-start gap-1">
               <span className="text-base font-semibold text-zinc-900">{mealLabel}</span>
               {/* Macro text under meal name */}
-              <div className="flex items-center gap-2 flex-wrap text-xs text-zinc-500">
-                <span><span className="font-medium text-zinc-600">KCAL</span> {meal.totalMacros.kcal.toFixed(0)}</span>
+              <div className="flex items-center gap-2 flex-wrap text-xs">
+                <span><span className="font-medium text-zinc-500">KCAL</span> <span className="font-bold text-amber-600">{meal.totalMacros.kcal.toFixed(0)}</span></span>
                 <span className="text-zinc-300">·</span>
-                <span><span className="font-medium text-zinc-600">PROT</span> {meal.totalMacros.protein.toFixed(0)}g</span>
+                <span><span className="font-medium text-zinc-500">PROT</span> <span className="font-bold text-rose-600">{meal.totalMacros.protein.toFixed(0)}g</span></span>
                 <span className="text-zinc-300">·</span>
-                <span><span className="font-medium text-zinc-600">KOLH</span> {meal.totalMacros.carbs.toFixed(0)}g</span>
+                <span><span className="font-medium text-zinc-500">KOLH</span> <span className="font-bold text-amber-500">{meal.totalMacros.carbs.toFixed(0)}g</span></span>
                 <span className="text-zinc-300">·</span>
-                <span><span className="font-medium text-zinc-600">FETT</span> {meal.totalMacros.fat.toFixed(0)}g</span>
+                <span><span className="font-medium text-zinc-500">FETT</span> <span className="font-bold text-sky-500">{meal.totalMacros.fat.toFixed(0)}g</span></span>
               </div>
             </div>
           </button>

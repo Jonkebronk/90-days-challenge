@@ -39,11 +39,11 @@ interface MealCardProps {
   instructions?: string
 }
 
-// Macro text display component
-function MacroText({ label, value, unit = '' }: { label: string, value: number, unit?: string }) {
+// Macro text display component with colors
+function MacroText({ label, value, unit = '', color }: { label: string, value: number, unit?: string, color: string }) {
   return (
-    <span className="text-xs text-zinc-500">
-      <span className="font-medium text-zinc-600">{label}</span> {value}{unit}
+    <span className="text-xs">
+      <span className="font-medium text-zinc-500">{label}</span> <span className={`font-bold ${color}`}>{value}{unit}</span>
     </span>
   )
 }
@@ -546,13 +546,13 @@ export function MealCard({
 
               {/* Bottom row: Macro text */}
               <div className="flex items-center gap-2 flex-wrap">
-                <MacroText label="KCAL" value={meal.kcal} />
+                <MacroText label="KCAL" value={meal.kcal} color="text-amber-600" />
                 <span className="text-zinc-300">·</span>
-                <MacroText label="PROT" value={meal.protein} unit="g" />
+                <MacroText label="PROT" value={meal.protein} unit="g" color="text-rose-600" />
                 <span className="text-zinc-300">·</span>
-                <MacroText label="KOLH" value={meal.carbs} unit="g" />
+                <MacroText label="KOLH" value={meal.carbs} unit="g" color="text-amber-500" />
                 <span className="text-zinc-300">·</span>
-                <MacroText label="FETT" value={meal.fat} unit="g" />
+                <MacroText label="FETT" value={meal.fat} unit="g" color="text-sky-500" />
               </div>
             </div>
           </div>
