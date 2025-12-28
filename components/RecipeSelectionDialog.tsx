@@ -9,7 +9,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -19,7 +18,7 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Search, ChefHat, Settings2, Heart } from 'lucide-react'
+import { Search, ChefHat, Settings2, Heart, Plus, Minus } from 'lucide-react'
 import { toast } from 'sonner'
 import { RecipeCustomizerDialog } from '@/components/recipe-customizer'
 import type { CalculatedMacros } from '@/lib/types/meal-plan-generator'
@@ -227,7 +226,7 @@ export function RecipeSelectionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+      <DialogContent className="w-full max-w-4xl h-[90vh] sm:h-auto sm:max-h-[80vh] overflow-hidden flex flex-col p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>Välj recept</DialogTitle>
           <DialogDescription className="text-zinc-500">
@@ -236,42 +235,31 @@ export function RecipeSelectionDialog({
         </DialogHeader>
 
         {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="search" className="text-zinc-700">
-              Sök recept
-            </Label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-              <Input
-                id="search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Sök efter recept..."
-                className="pl-10"
-              />
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Sök efter recept..."
+              className="pl-10"
+            />
           </div>
-          <div>
-            <Label htmlFor="category" className="text-zinc-700">
-              Kategori
-            </Label>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">
-                  Alla kategorier
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger>
+              <SelectValue placeholder="Alla kategorier" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                Alla kategorier
+              </SelectItem>
+              {categories.map((cat) => (
+                <SelectItem key={cat.id} value={cat.id}>
+                  {cat.name}
                 </SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Favorites filter */}
@@ -311,23 +299,23 @@ export function RecipeSelectionDialog({
               return (
                 <div
                   key={recipe.id}
-                  className="p-4 bg-white border border-zinc-200 rounded-lg hover:border-amber-300 hover:bg-amber-50/50 transition-colors"
+                  className="p-3 sm:p-4 bg-white border border-zinc-200 rounded-lg hover:border-amber-300 hover:bg-amber-50/50 transition-colors"
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-3">
                     {recipe.coverImage ? (
                       <img
                         src={recipe.coverImage}
                         alt={recipe.title}
-                        className="w-16 h-16 object-cover rounded-lg shrink-0 bg-zinc-100"
+                        className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-lg shrink-0 bg-zinc-100"
                       />
                     ) : (
-                      <div className="w-16 h-16 bg-zinc-100 rounded-lg flex items-center justify-center shrink-0">
-                        <ChefHat className="h-8 w-8 text-zinc-400" />
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 bg-zinc-100 rounded-lg flex items-center justify-center shrink-0">
+                        <ChefHat className="h-6 w-6 sm:h-8 sm:w-8 text-zinc-400" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-zinc-900 font-medium">{recipe.title}</h3>
+                        <h3 className="text-sm sm:text-base text-zinc-900 font-medium leading-tight">{recipe.title}</h3>
                         <button
                           onClick={(e) => toggleFavorite(recipe.id, e)}
                           className={`p-1.5 rounded-full transition-colors shrink-0 ${
@@ -371,37 +359,60 @@ export function RecipeSelectionDialog({
                     </div>
                   </div>
                   {/* Portioner och knappar på egen rad */}
-                  <div className="flex items-center justify-end gap-3 mt-3 pt-3 border-t border-zinc-100">
-                    <Label
-                      htmlFor={`multiplier-${recipe.id}`}
-                      className="text-sm text-zinc-500"
-                    >
-                      Portioner:
-                    </Label>
-                    <Input
-                      id={`multiplier-${recipe.id}`}
-                      type="text"
-                      inputMode="decimal"
-                      value={getServingMultiplierDisplay(recipe.id)}
-                      onChange={(e) => setServingMultiplier(recipe.id, e.target.value)}
-                      className="w-20 text-center"
-                    />
-                    {canCustomize && (
+                  <div className="flex flex-wrap items-center justify-between gap-2 mt-3 pt-3 border-t border-zinc-100">
+                    {/* Portions selector with +/- buttons */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-zinc-500">Portioner:</span>
+                      <div className="flex items-center border border-zinc-200 rounded-lg overflow-hidden">
+                        <button
+                          onClick={() => {
+                            const current = getServingMultiplier(recipe.id)
+                            if (current > 0.5) {
+                              setServingMultiplier(recipe.id, (current - 0.5).toString())
+                            }
+                          }}
+                          className="p-2 hover:bg-zinc-100 active:bg-zinc-200 transition-colors"
+                          type="button"
+                        >
+                          <Minus className="h-4 w-4 text-zinc-600" />
+                        </button>
+                        <span className="px-3 py-1 min-w-[3rem] text-center font-medium text-zinc-900">
+                          {getServingMultiplier(recipe.id)}
+                        </span>
+                        <button
+                          onClick={() => {
+                            const current = getServingMultiplier(recipe.id)
+                            setServingMultiplier(recipe.id, (current + 0.5).toString())
+                          }}
+                          className="p-2 hover:bg-zinc-100 active:bg-zinc-200 transition-colors"
+                          type="button"
+                        >
+                          <Plus className="h-4 w-4 text-zinc-600" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-2">
+                      {canCustomize && (
+                        <Button
+                          onClick={() => handleCustomizeRecipe(recipe.id)}
+                          variant="outline"
+                          size="sm"
+                          className="border-amber-300 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
+                        >
+                          <Settings2 className="h-4 w-4 sm:mr-1" />
+                          <span className="hidden sm:inline">Anpassa</span>
+                        </Button>
+                      )}
                       <Button
-                        onClick={() => handleCustomizeRecipe(recipe.id)}
-                        variant="outline"
-                        className="border-amber-300 text-amber-700 hover:bg-amber-50 hover:text-amber-800"
+                        onClick={() => handleSelectRecipe(recipe)}
+                        size="sm"
+                        className="bg-amber-500 hover:bg-amber-600 text-white"
                       >
-                        <Settings2 className="h-4 w-4 mr-1" />
-                        Anpassa
+                        Välj
                       </Button>
-                    )}
-                    <Button
-                      onClick={() => handleSelectRecipe(recipe)}
-                      className="bg-amber-500 hover:bg-amber-600 text-white"
-                    >
-                      Välj
-                    </Button>
+                    </div>
                   </div>
                 </div>
               )
