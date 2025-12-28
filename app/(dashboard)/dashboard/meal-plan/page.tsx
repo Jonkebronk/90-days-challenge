@@ -382,146 +382,165 @@ export default function MealPlanPage() {
         clientKcal={flexibleTargetMacros?.kcal || currentTarget.calories}
       />
 
-      {/* Introduction Buttons */}
-      <div className="flex flex-wrap gap-3 justify-center">
-        {mealPlanDescriptionContent && (
+      {/* Guide Buttons - Hierarchical Layout */}
+      <div className="space-y-3">
+        {/* Huvudknappar (Primary) */}
+        <div className="flex flex-wrap gap-3 justify-center">
+          {/* Lär dig mer - primär label */}
+          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg font-semibold shadow-sm">
+            <BookOpen className="w-5 h-5" />
+            Lär dig mer
+          </div>
+
+          {/* Inspiration - primär knapp med action */}
+          <Button
+            onClick={() => setCatalogOpen(true)}
+            className="bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 font-semibold shadow-sm"
+          >
+            <Sparkles className="w-5 h-5 mr-2" />
+            Inspiration
+          </Button>
+        </div>
+
+        {/* Subknappar under "Lär dig mer" (Secondary) */}
+        <div className="flex flex-wrap gap-2 justify-center">
+          {/* Introduktion */}
+          {mealPlanDescriptionContent && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-400">
+                  <Info className="w-4 h-4 mr-1.5" />
+                  Introduktion
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-gray-200 flex items-center gap-2">
+                    <Info className="w-6 h-6 text-blue-500" />
+                    Om kostschemat
+                  </DialogTitle>
+                </DialogHeader>
+                <MDXPreview content={mealPlanDescriptionContent} theme="dark" />
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {/* Generella råd */}
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
-                <Info className="w-4 h-4 mr-2" />
-                Introduktion Kost
+              <Button variant="outline" size="sm" className="text-gray-700 border-gray-300 hover:bg-amber-50 hover:border-amber-400">
+                <Lightbulb className="w-4 h-4 mr-1.5" />
+                Generella råd
               </Button>
             </DialogTrigger>
             <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-gray-200 flex items-center gap-2">
-                  <Info className="w-6 h-6 text-blue-500" />
-                  Om kostschemat
+                  <Lightbulb className="w-6 h-6 text-amber-500" />
+                  Generella råd för kosten
                 </DialogTitle>
               </DialogHeader>
-              <MDXPreview content={mealPlanDescriptionContent} theme="dark" />
+              {nutritionTipsContent ? (
+                <MDXPreview content={nutritionTipsContent} theme="dark" />
+              ) : (
+                <p className="text-gray-400">Laddar råd...</p>
+              )}
             </DialogContent>
           </Dialog>
-        )}
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
-              <Lightbulb className="w-4 h-4 mr-2" />
-              Generella råd för kosten
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-gray-200 flex items-center gap-2">
-                <Lightbulb className="w-6 h-6 text-amber-500" />
-                Generella råd för kosten
-              </DialogTitle>
-            </DialogHeader>
-            {nutritionTipsContent ? (
-              <MDXPreview content={nutritionTipsContent} theme="dark" />
-            ) : (
-              <p className="text-gray-400">Laddar råd...</p>
-            )}
-          </DialogContent>
-        </Dialog>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all">
-              <BookOpen className="w-4 h-4 mr-2" />
-              Så här använder du din kostplan
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-gray-200 flex items-center gap-2">
-                <BookOpen className="w-6 h-6 text-emerald-500" />
-                Så här använder du din kostplan
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-6 text-gray-300">
-              <p>
-                Din kostplan kan anpassas helt efter dina egna preferenser. Det viktigaste är att du matchar makros korrekt och att dina matbyten håller samma kvalitet och näringsvärde.
-              </p>
-              <p>
-                Du kan variera maten dagligen, men se till att kvaliteten bibehålls. Prioritera hela, oprocessade livsmedel och tänk på mikronäringsämnena (vitaminer och mineraler) du får från maten – inte bara makronäringsämnena (protein, kolhydrater och fett).
-              </p>
 
-              <div>
-                <h2 className="text-amber-500 text-lg font-semibold mb-2">Hur du väljer livsmedel</h2>
-                <p className="mb-3">
-                  Trycker du på källorna, t.ex. proteinkälla för varje måltid, så får du upp en lista på rekommenderade livsmedel. Sen matchar du det mot livsmedlet du handlar.
-                </p>
-                <div className="bg-gray-800 p-4 rounded-lg space-y-2">
-                  <p><strong className="text-white">Nötkött 5 %</strong> = ICAS Nötfärs 5 %</p>
-                  <p><strong className="text-white">Kvarg 0,2 %</strong> = Kvarg Mild Persika Passion Laktosfri 0,2% 1000g Arla®</p>
-                </div>
-              </div>
-
-              <div>
-                <h2 className="text-amber-500 text-lg font-semibold mb-2">De tre grundpelarna</h2>
-                <ul className="list-disc list-inside space-y-1">
-                  <li><strong className="text-white">Dina kalorier</strong> styr din vikt.</li>
-                  <li><strong className="text-white">Dina makros</strong> styr din kroppssammansättning.</li>
-                  <li><strong className="text-white">Kvaliteten på din mat</strong> styr hur du mår.</li>
-                </ul>
-              </div>
-
-              <div>
-                <h2 className="text-amber-500 text-lg font-semibold mb-2">Antal måltider</h2>
-                <p className="mb-3">
-                  När du väljer hur många måltider per dag du vill äta är min rekommendation att sikta på fyra till fem. Det håller hungern i schack, energin jämn och gör det lättare att komma upp i protein.
-                </p>
-                <p className="mb-3">
-                  Men om du hellre vill äta tre måltider, eller sex, går det också utmärkt. Det viktigaste är att det passar din vardag. Det ska fungera i praktiken, inte skapa stress, frustration eller krocka med livspusslet.
+          {/* Så här använder du */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="text-gray-700 border-gray-300 hover:bg-emerald-50 hover:border-emerald-400">
+                <BookOpen className="w-4 h-4 mr-1.5" />
+                Så här använder du
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-900 border border-gold-primary/30 max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-gray-200 flex items-center gap-2">
+                  <BookOpen className="w-6 h-6 text-emerald-500" />
+                  Så här använder du din kostplan
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-6 text-gray-300">
+                <p>
+                  Din kostplan kan anpassas helt efter dina egna preferenser. Det viktigaste är att du matchar makros korrekt och att dina matbyten håller samma kvalitet och näringsvärde.
                 </p>
                 <p>
-                  Oavsett hur många måltider du väljer är principen enkel: du tar din totala mängd protein, kolhydrater och fett och delar upp det på antalet måltider du vill äta. Det är gynnsamt att ha något högre kolhydrater i måltiden före och efter träning för prestation och återhämtning.
+                  Du kan variera maten dagligen, men se till att kvaliteten bibehålls. Prioritera hela, oprocessade livsmedel och tänk på mikronäringsämnena (vitaminer och mineraler) du får från maten – inte bara makronäringsämnena (protein, kolhydrater och fett).
                 </p>
-              </div>
 
-              <div>
-                <h2 className="text-amber-500 text-lg font-semibold mb-2">Anpassa efter din hunger</h2>
-                <p className="mb-3">
-                  Försök hålla koll på när du är hungrig och planera ditt intag efter de tiderna. Många har till exempel inte så stor aptit på morgonen, men suget efter mat tar fart på kvällen.
-                </p>
-                <p className="mb-2">De personerna kan ha nytta av att justera intaget på något av följande sätt:</p>
-                <ul className="list-disc list-inside space-y-2 ml-2">
-                  <li>Äta en mindre frukost och lunch, sedan en större middag och kvällssnack.</li>
-                  <li>Äta mestadels protein och grönsaker (lågt kaloriinnehåll men stöttar muskler) på förmiddagen och eftermiddagen, och lägga mer kolhydrater på middagen och kvällsmålen.</li>
-                  <li>Ha längre tid mellan de tidigare målen och kortare tid mellan de senare. Till exempel kan du äta frukost när du vaknar och sedan vänta 6 timmar. Då äter du middag 5 timmar efter lunch och tar ett kvällssnack 2 timmar efter middagen – så att du är mätt när du är som hungrigast.</li>
-                </ul>
-                <p className="mt-3">
-                  Om du istället är en riktig morgonätare och inte lika sugen på kvällen kan du vända på rekommendationerna. Är du en eftermiddagsätare kan du helt enkelt äta fler mål, mer kalorier per mål, eller tätare måltider på eftermiddagen – och göra tvärtom på morgonen och kvällen.
-                </p>
-              </div>
+                <div>
+                  <h2 className="text-amber-500 text-lg font-semibold mb-2">Hur du väljer livsmedel</h2>
+                  <p className="mb-3">
+                    Trycker du på källorna, t.ex. proteinkälla för varje måltid, så får du upp en lista på rekommenderade livsmedel. Sen matchar du det mot livsmedlet du handlar.
+                  </p>
+                  <div className="bg-gray-800 p-4 rounded-lg space-y-2">
+                    <p><strong className="text-white">Nötkött 5 %</strong> = ICAS Nötfärs 5 %</p>
+                    <p><strong className="text-white">Kvarg 0,2 %</strong> = Kvarg Mild Persika Passion Laktosfri 0,2% 1000g Arla®</p>
+                  </div>
+                </div>
 
-              <div>
-                <h2 className="text-amber-500 text-lg font-semibold mb-2">Hundraårsregeln</h2>
-                <p className="mb-3">
-                  Välj livsmedel som fanns för hundra år sedan. Det innebär att du prioriterar råvaror som kött, fisk, potatis, ägg, grönsaker, frukt och mejeriprodukter, och undviker moderna ultraprocessade produkter. Välj helt enkelt saker som är så oprocessade som möjligt, med väldigt få saker på ingredienslistan.
-                </p>
-                <div className="bg-gray-800 p-4 rounded-lg">
-                  <p className="text-sm">
-                    <strong className="text-amber-400">Förtydligande om gråzoner:</strong> Hundraårsregeln är en vägledning, inte en absolut lag. Vissa livsmedel är mer bearbetade men fyller en praktisk funktion och har sin plats i en bra kosthållning. Proteinpulver, kvarg, havreflingor och frysta grönsaker är exempel på produkter som är okej även om de inte fanns i exakt samma form för hundra år sedan. Tumregeln: om ingredienslistan är kort och du känner igen allt som står där, är det troligen ett bra val.
+                <div>
+                  <h2 className="text-amber-500 text-lg font-semibold mb-2">De tre grundpelarna</h2>
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><strong className="text-white">Dina kalorier</strong> styr din vikt.</li>
+                    <li><strong className="text-white">Dina makros</strong> styr din kroppssammansättning.</li>
+                    <li><strong className="text-white">Kvaliteten på din mat</strong> styr hur du mår.</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h2 className="text-amber-500 text-lg font-semibold mb-2">Antal måltider</h2>
+                  <p className="mb-3">
+                    När du väljer hur många måltider per dag du vill äta är min rekommendation att sikta på fyra till fem. Det håller hungern i schack, energin jämn och gör det lättare att komma upp i protein.
+                  </p>
+                  <p className="mb-3">
+                    Men om du hellre vill äta tre måltider, eller sex, går det också utmärkt. Det viktigaste är att det passar din vardag. Det ska fungera i praktiken, inte skapa stress, frustration eller krocka med livspusslet.
+                  </p>
+                  <p>
+                    Oavsett hur många måltider du väljer är principen enkel: du tar din totala mängd protein, kolhydrater och fett och delar upp det på antalet måltider du vill äta. Det är gynnsamt att ha något högre kolhydrater i måltiden före och efter träning för prestation och återhämtning.
+                  </p>
+                </div>
+
+                <div>
+                  <h2 className="text-amber-500 text-lg font-semibold mb-2">Anpassa efter din hunger</h2>
+                  <p className="mb-3">
+                    Försök hålla koll på när du är hungrig och planera ditt intag efter de tiderna. Många har till exempel inte så stor aptit på morgonen, men suget efter mat tar fart på kvällen.
+                  </p>
+                  <p className="mb-2">De personerna kan ha nytta av att justera intaget på något av följande sätt:</p>
+                  <ul className="list-disc list-inside space-y-2 ml-2">
+                    <li>Äta en mindre frukost och lunch, sedan en större middag och kvällssnack.</li>
+                    <li>Äta mestadels protein och grönsaker (lågt kaloriinnehåll men stöttar muskler) på förmiddagen och eftermiddagen, och lägga mer kolhydrater på middagen och kvällsmålen.</li>
+                    <li>Ha längre tid mellan de tidigare målen och kortare tid mellan de senare. Till exempel kan du äta frukost när du vaknar och sedan vänta 6 timmar. Då äter du middag 5 timmar efter lunch och tar ett kvällssnack 2 timmar efter middagen – så att du är mätt när du är som hungrigast.</li>
+                  </ul>
+                  <p className="mt-3">
+                    Om du istället är en riktig morgonätare och inte lika sugen på kvällen kan du vända på rekommendationerna. Är du en eftermiddagsätare kan du helt enkelt äta fler mål, mer kalorier per mål, eller tätare måltider på eftermiddagen – och göra tvärtom på morgonen och kvällen.
+                  </p>
+                </div>
+
+                <div>
+                  <h2 className="text-amber-500 text-lg font-semibold mb-2">Hundraårsregeln</h2>
+                  <p className="mb-3">
+                    Välj livsmedel som fanns för hundra år sedan. Det innebär att du prioriterar råvaror som kött, fisk, potatis, ägg, grönsaker, frukt och mejeriprodukter, och undviker moderna ultraprocessade produkter. Välj helt enkelt saker som är så oprocessade som möjligt, med väldigt få saker på ingredienslistan.
+                  </p>
+                  <div className="bg-gray-800 p-4 rounded-lg">
+                    <p className="text-sm">
+                      <strong className="text-amber-400">Förtydligande om gråzoner:</strong> Hundraårsregeln är en vägledning, inte en absolut lag. Vissa livsmedel är mer bearbetade men fyller en praktisk funktion och har sin plats i en bra kosthållning. Proteinpulver, kvarg, havreflingor och frysta grönsaker är exempel på produkter som är okej även om de inte fanns i exakt samma form för hundra år sedan. Tumregeln: om ingredienslistan är kort och du känner igen allt som står där, är det troligen ett bra val.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="border-t border-gray-700 pt-4">
+                  <p className="text-center text-gray-400">
+                    Skicka mig ett meddelande om du har frågor eller känner dig osäker.
                   </p>
                 </div>
               </div>
-
-              <div className="border-t border-gray-700 pt-4">
-                <p className="text-center text-gray-400">
-                  Skicka mig ett meddelande om du har frågor eller känner dig osäker.
-                </p>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-        <Button
-          onClick={() => setCatalogOpen(true)}
-          className="bg-white border-2 border-gray-300 text-gray-900 hover:bg-gold-primary/10 hover:border-gold-primary transition-all"
-        >
-          <Sparkles className="w-4 h-4 mr-2" />
-          Inspiration
-        </Button>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Main Content */}
