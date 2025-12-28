@@ -1055,7 +1055,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         value={noteText}
                         onChange={(e) => setNoteText(e.target.value)}
                         placeholder="Skriv ner det du vill komma ihåg – som maskininställning, eller något att tänka på nästa gång."
-                        className="w-full p-3 bg-white border border-amber-200 rounded-lg text-sm text-gray-700 placeholder:text-amber-400 focus:border-amber-400 focus:ring-1 focus:ring-amber-400/20 focus:outline-none resize-none"
+                        className="w-full p-3 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 placeholder:text-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400/20 focus:outline-none resize-none"
                         rows={3}
                         autoFocus
                       />
@@ -1064,7 +1064,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           size="sm"
                           onClick={() => saveExerciseNote(exercise.id)}
                           disabled={isSavingNote}
-                          className="bg-amber-500 hover:bg-amber-600 text-white"
+                          className="bg-gray-800 hover:bg-gray-900 text-white"
                         >
                           {isSavingNote ? 'Sparar...' : 'Spara'}
                         </Button>
@@ -1075,7 +1075,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             setEditingNoteExerciseId(null)
                             setNoteText('')
                           }}
-                          className="text-amber-700 hover:text-amber-900 hover:bg-amber-100"
+                          className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                         >
                           Avbryt
                         </Button>
