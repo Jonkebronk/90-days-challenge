@@ -512,19 +512,99 @@ export function ClientStyleMealCard({
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-zinc-200 shadow-sm">
       {/* Header */}
-      <div className="py-3 px-4">
-        {/* First row: Meal name + chevron */}
-        <div className="flex items-start gap-2">
-          {/* Left side: Icon + Name + Info + Macros */}
-          <button
-            className="flex items-start gap-2 hover:opacity-70 transition-opacity cursor-pointer shrink-0"
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            <Utensils className="w-5 h-5 text-amber-500 mt-0.5" />
-            <div className="flex flex-col items-start gap-1">
-              <span className="text-base font-semibold text-zinc-900">{mealLabel}</span>
+      <button
+        className="w-full py-3 px-4 hover:bg-zinc-50 transition-colors cursor-pointer"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex items-start justify-between gap-2">
+          {/* Left side: Icon + Name + Macros */}
+          <div className="flex items-start gap-2 min-w-0 flex-1">
+            <Utensils className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
+            <div className="flex flex-col items-start gap-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-base font-semibold text-zinc-900">{mealLabel}</span>
+                {/* Info icon */}
+                {meal.targetMacros && meal.targetMacros.kcal > 0 && (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <span
+                        className="p-1 hover:bg-zinc-100 rounded-full transition-colors inline-flex"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Info className="w-4 h-4 text-zinc-400 hover:text-zinc-600" />
+                      </span>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-3" align="start">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs font-medium text-zinc-500">Rekommenderat för måltiden</span>
+                          {onUpdateMealMacros && (
+                            <span
+                              onClick={handleEditTarget}
+                              className="p-1 hover:bg-zinc-100 rounded transition-colors cursor-pointer"
+                            >
+                              <Pencil className="w-3 h-3 text-zinc-400" />
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 text-xs">
+                          <div className="text-center">
+                            <div className="text-[9px] text-zinc-400 uppercase font-medium">Kcal</div>
+                            <div className="font-bold text-amber-600">{Math.round(meal.targetMacros.kcal)}</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-[9px] text-zinc-400 uppercase font-medium">Prot</div>
+                            <div className="font-bold text-rose-600">{Math.round(meal.targetMacros.protein)}g</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-[9px] text-zinc-400 uppercase font-medium">Kolh</div>
+                            <div className="font-bold text-amber-500">{Math.round(meal.targetMacros.carbs)}g</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-[9px] text-zinc-400 uppercase font-medium">Fett</div>
+                            <div className="font-bold text-sky-500">{Math.round(meal.targetMacros.fat)}g</div>
+                          </div>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                )}
+                {/* Dinner tips - only for middag */}
+                {meal.type === 'middag' && (
+                  <span onClick={(e) => e.stopPropagation()}>
+                    <DinnerTipsDialog />
+                  </span>
+                )}
+                {/* Move up/down buttons */}
+                {(onMoveUp || onMoveDown) && (
+                  <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+                    <span
+                      onClick={() => !disabled && canMoveUp && onMoveUp?.(mealIndex)}
+                      className={cn(
+                        "p-1 rounded transition-colors cursor-pointer",
+                        canMoveUp && !disabled
+                          ? "hover:bg-zinc-100 text-zinc-500 hover:text-zinc-700"
+                          : "text-zinc-300 cursor-not-allowed"
+                      )}
+                    >
+                      <ArrowUp className="w-4 h-4" />
+                    </span>
+                    <span
+                      onClick={() => !disabled && canMoveDown && onMoveDown?.(mealIndex)}
+                      className={cn(
+                        "p-1 rounded transition-colors cursor-pointer",
+                        canMoveDown && !disabled
+                          ? "hover:bg-zinc-100 text-zinc-500 hover:text-zinc-700"
+                          : "text-zinc-300 cursor-not-allowed"
+                      )}
+                    >
+                      <ArrowDown className="w-4 h-4" />
+                    </span>
+                  </div>
+                )}
+              </div>
               {/* Macro text under meal name */}
-              <div className="flex items-center gap-2 flex-wrap text-xs">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-[11px] sm:text-xs">
                 <span><span className="font-medium text-zinc-500">KCAL</span> <span className="font-bold text-amber-600">{meal.totalMacros.kcal.toFixed(0)}</span></span>
                 <span className="text-zinc-300">·</span>
                 <span><span className="font-medium text-zinc-500">PROT</span> <span className="font-bold text-rose-600">{meal.totalMacros.protein.toFixed(0)}g</span></span>
@@ -534,113 +614,18 @@ export function ClientStyleMealCard({
                 <span><span className="font-medium text-zinc-500">FETT</span> <span className="font-bold text-sky-500">{meal.totalMacros.fat.toFixed(0)}g</span></span>
               </div>
             </div>
-          </button>
-
-          {/* Info icon with recommended macros popover */}
-          {meal.targetMacros && meal.targetMacros.kcal > 0 && (
-            <Popover>
-              <PopoverTrigger asChild>
-                <button
-                  className="p-1 hover:bg-zinc-100 rounded-full transition-colors"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Info className="w-4 h-4 text-zinc-400 hover:text-zinc-600" />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-3" align="start">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-medium text-zinc-500">Rekommenderat för måltiden</span>
-                    {onUpdateMealMacros && (
-                      <button
-                        onClick={handleEditTarget}
-                        className="p-1 hover:bg-zinc-100 rounded transition-colors"
-                        title="Redigera"
-                      >
-                        <Pencil className="w-3 h-3 text-zinc-400" />
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3 text-xs">
-                    <div className="text-center">
-                      <div className="text-[9px] text-zinc-400 uppercase font-medium">Kcal</div>
-                      <div className="font-bold text-amber-600">{Math.round(meal.targetMacros.kcal)}</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-[9px] text-zinc-400 uppercase font-medium">Prot</div>
-                      <div className="font-bold text-rose-600">{Math.round(meal.targetMacros.protein)}g</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-[9px] text-zinc-400 uppercase font-medium">Kolh</div>
-                      <div className="font-bold text-amber-500">{Math.round(meal.targetMacros.carbs)}g</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-[9px] text-zinc-400 uppercase font-medium">Fett</div>
-                      <div className="font-bold text-sky-500">{Math.round(meal.targetMacros.fat)}g</div>
-                    </div>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          )}
-
-          {/* Dinner tips dialog - only for middag */}
-          {meal.type === 'middag' && <DinnerTipsDialog />}
-
-          {/* Move up/down buttons */}
-          {(onMoveUp || onMoveDown) && (
-            <div className="flex items-center gap-0.5 ml-1">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onMoveUp?.(mealIndex);
-                }}
-                disabled={!canMoveUp || disabled}
-                className={cn(
-                  "p-1 rounded transition-colors",
-                  canMoveUp && !disabled
-                    ? "hover:bg-zinc-100 text-zinc-500 hover:text-zinc-700"
-                    : "text-zinc-300 cursor-not-allowed"
-                )}
-                title="Flytta upp"
-              >
-                <ArrowUp className="w-4 h-4" />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onMoveDown?.(mealIndex);
-                }}
-                disabled={!canMoveDown || disabled}
-                className={cn(
-                  "p-1 rounded transition-colors",
-                  canMoveDown && !disabled
-                    ? "hover:bg-zinc-100 text-zinc-500 hover:text-zinc-700"
-                    : "text-zinc-300 cursor-not-allowed"
-                )}
-                title="Flytta ner"
-              >
-                <ArrowDown className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-
-          {/* Spacer */}
-          <div className="flex-1" />
+          </div>
 
           {/* Right side: Chevron */}
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 hover:bg-zinc-100 rounded transition-colors shrink-0"
-          >
+          <div className="shrink-0">
             {isExpanded ? (
               <ChevronUp className="w-5 h-5 text-zinc-400" />
             ) : (
               <ChevronDown className="w-5 h-5 text-zinc-400" />
             )}
-          </button>
+          </div>
         </div>
-      </div>
+      </button>
 
 
       {/* Expanded content */}
