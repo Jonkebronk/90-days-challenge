@@ -63,8 +63,47 @@ export const nutritionPyramidLevels: PyramidLevel[] = [
     id: 'supplements',
     label: 'Tillskott',
     title: 'Tillskott',
-    description:
-      'Kosttillskott som proteinpulver, kreatin och vitaminer. De kan vara praktiska komplement, men namnet säger allt – de är tillägg, inte grunden. Inget tillskott kompenserar för dålig kost eller bristande träning. Få ordning på de andra nivåerna först. Sedan kan rätt tillskott ge några extra procent.',
+    description: `Här är en allmän rekommendation för kosttillskott och produkter som kan vara fördelaktiga att använda som komplettering till ditt kostupplägg. Detta är helt frivilligt och inga måsten.
+
+1. Multivitamin- och mineraltillskott
+En billig försäkring för att se till att du får i dig basbehovet av vitaminer och mineraler, framförallt om du inte är så flitig med frukt och grönt i kosten i övrigt. Gällande dosering, utgå från etiketten på den produkten du väljer.
+
+2. D-Vitamin
+Finns det inte D-vitamin i multivitaminen? Jo. Men ofta i lägre doser än vad vi skandinavier behöver under vinterhalvåret när mängden solljus är kraftigt begränsat. På sommaren då? Jo, solljus funkar, men i studier har man sett att tillskott är effektivare än solljus för att komma till rätta med brist på just D-vitamin.
+
+Livsmedelsverkets rekommendation är tio mikrogram (mcg) eller 400 internationella enheter (IE) per dag. Internationellt är rekommendationen högre. Den europeiska livsmedelssäkerhetsmyndigheten, EFSA, anser det säkert att ta tio gånger mer än Livsmedelsverket rekommenderar.
+
+Vill du veta vad som är optimal dos för dig? Gör ett blodprov hos Werlabs eller liknande aktör för att se om du först och främst har en brist. Testa en dosering och följ upp med nya test.
+
+3. Kreatin Monohydrat
+Det här är kungen av tillskott för oss som tränar på gym. Det ger oss både bättre prestationsförmåga och ökad styrka – något som hjälper oss att bygga muskler. Det är det mest effektiva lagliga tillskottet för att få ut mer av tiden i gymmet.
+
+Det finns dock en faktor som gör att många är skeptiska till att använda det: man binder vätska. Visst, absolut. Det stämmer. Det beror på att kreatinet drar med sig vatten in i muskelcellerna, där det lagras. Därför ska vi också skilja på vätska och vätska. Vätskan du binder upp i musklerna är absolut inte densamma som vätskan du binder upp under huden av att slänga i dig skräpmat med mycket salt.
+
+Vätskan från kreatinet gör att dina muskler sväller i volym och med detta spänner de också ut huden vilket visuellt gör att du ser mer definierad ut. Och är inte större, mer definierade muskler precis vad vi vill ha? Jo. Exakt.
+
+Det är fullt normalt med en viktökning motsvarande två-tre procent av din kroppsvikt första månaden. När nivåerna i musklerna är fyllda kommer vikten inte längre att påverkas. Fem gram dagligen är en bra dos för majoriteten. Glöm också det här med uppehåll, det behövs inte. Du kan ta kreatin dag ut och dag in för resten av livet.
+
+4. Omega 3
+Det här är en av de essentiella fettsyror som kroppen inte själv kan tillverka utan behöver få i sig från kosten – eller via tillskott. Det är kopplat till god hjärt- och kärlhälsa och väl värt att köpa om du inte får i dig det i tillräcklig mängd från kosten. En daglig dos mellan två till fyra gram rekommenderas för att maximera hälsoeffekterna.
+
+5. Proteinpulver
+Ett enkelt sätt att nå ditt proteinmål. En av de billigaste proteinkällorna per gram. Det finns tre vanligt förekommande typer:
+
+• Vasslekoncentrat (Whey Concentrate) – Det vanligaste och billigaste. Fungerar utmärkt för de flesta. Börja här.
+• Vassleisolat (Whey Isolate) – Renare, mindre laktosinnehåll. Välj om du får magbesvär av koncentrat.
+• Kasein – Långsamt upptag (upp till 7 timmar). Bra före sömn eller långa perioder utan mat.
+
+6. Koffein
+Väldokumenterad effekt på prestanda och trötthet. Kan förbättra styrketräning och ge energi när motivationen är låg.
+
+Dosering kan se väldigt olika ut utifrån tolerans och storlek men generella rekommendationer är:
+• Mot trötthet: 1-3 mg per kg kroppsvikt
+• För prestation: 4-6 mg per kg, 30-60 minuter före träning
+
+Tips: Använd det strategiskt. Om du dricker kaffe hela dagen försvinner effekten. Håll basintaget lågt så har du något att ta till när det verkligen behövs.
+
+Viktigt: Undvik efter kl 14 för att inte störa sömnen då koffein har en halveringstid på 6 timmar.`,
   },
   {
     id: 'nutrient-timing',

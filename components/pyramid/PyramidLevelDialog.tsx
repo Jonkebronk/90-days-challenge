@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 
@@ -30,7 +29,7 @@ export function PyramidLevelDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col">
         <DialogHeader className={cn('rounded-t-lg -m-6 mb-0 p-6 pb-4', headerBg)}>
           <div className="flex items-center gap-3">
             <div className={cn('w-1 h-8 rounded-full', accentColor)} />
@@ -39,9 +38,9 @@ export function PyramidLevelDialog({
             </DialogTitle>
           </div>
         </DialogHeader>
-        <DialogDescription className="text-base text-zinc-700 leading-relaxed pt-4">
+        <div className="flex-1 overflow-y-auto pt-4 text-base text-zinc-700 leading-relaxed whitespace-pre-line">
           {description}
-        </DialogDescription>
+        </div>
       </DialogContent>
     </Dialog>
   );
