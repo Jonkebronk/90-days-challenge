@@ -1039,12 +1039,12 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Coach Notes - Pinned note style */}
                   {exercise.coachNotes && (
-                    <div className="flex items-center gap-3 px-3 py-2.5 bg-amber-100 rounded-lg">
-                      <Pencil className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                      <p className="flex-1 text-sm text-amber-900 leading-snug">
+                    <div className="flex items-start gap-3 px-3 py-2.5 bg-amber-100 rounded-lg">
+                      <Pencil className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <p className="flex-1 text-sm text-amber-900 leading-snug whitespace-pre-line">
                         {exercise.coachNotes}
                       </p>
-                      <Pin className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                      <Pin className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                     </div>
                   )}
 
