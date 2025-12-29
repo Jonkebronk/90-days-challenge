@@ -182,13 +182,26 @@ export async function GET(
     })
 
     // Fetch personal records
-    const personalRecords = await prisma.personalRecord.findMany({
+    const personalRecordsRaw = await prisma.personalRecord.findMany({
       where: { userId: clientId },
-      include: {
-        exercise: { select: { id: true, name: true } },
-      },
       orderBy: { achievedAt: 'desc' },
     })
+
+    // Fetch exercise names for PRs
+    const prExerciseIds = [...new Set(personalRecordsRaw.map(pr => pr.exerciseId))]
+    const prExercises = prExerciseIds.length > 0
+      ? await prisma.exercise.findMany({
+          where: { id: { in: prExerciseIds } },
+          select: { id: true, name: true },
+        })
+      : []
+    const exerciseMap = new Map(prExercises.map(e => [e.id, e.name]))
+
+    // Map PRs with exercise names
+    const personalRecords = personalRecordsRaw.map(pr => ({
+      ...pr,
+      exerciseName: exerciseMap.get(pr.exerciseId) || 'Okänd övning',
+    }))
 
     // Calculate journey stats
     const totalWeeks = client.checkIns.length > 0
@@ -287,7 +300,7 @@ export async function GET(
       personalRecords: personalRecords.map(pr => ({
         id: pr.id,
         exerciseId: pr.exerciseId,
-        exerciseName: pr.exercise?.name || 'Okänd övning',
+        exerciseName: pr.exerciseName,
         recordType: pr.recordType,
         weightKg: pr.weightKg,
         reps: pr.reps,
