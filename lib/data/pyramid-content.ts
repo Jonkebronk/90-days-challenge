@@ -122,8 +122,61 @@ Undvik efter kl 14 för att inte störa sömnen då koffein har en halveringstid
     id: 'nutrient-timing',
     label: 'Näringstiming',
     title: 'Näringstiming',
-    description:
-      'När du äter dina måltider och hur du fördelar maten över dagen. Ska du äta innan eller efter träning? Hur många måltider per dag? Sanningen är att detta spelar relativt liten roll så länge kalorier och makros stämmer. Hitta en måltidsrytm som passar din vardag och gör det enkelt att hålla din plan.',
+    description: `När du äter dina måltider och hur du fördelar maten över dagen. Ska du äta innan eller efter träning? Hur många måltider per dag? Sanningen är att detta spelar relativt liten roll så länge kalorier och makros stämmer. Hitta en måltidsrytm som passar din vardag och gör det enkelt att hålla din plan.
+
+**Fördelning av makros**
+
+**Proteinfördelning över dagen**
+
+Ungefär 0,4–0,55 g protein per kg kroppsvikt per måltid.
+
+**Kolhydrater koncentrerade kring träning**
+
+Kolhydrater höjer insulin och främjar glukosupptag i musklerna och stödjer återhämtning.
+
+- **Före träning:** Kolhydrater fyller på glykogenförråden och ger bränsle för träningen.
+- **Efter träning:** Musklerna är extra känsliga för insulin och glukosupptag, vilket gör att kolhydrater effektivt återställer glykogenet och stödjer återhämtningen.
+
+Genom att koncentrera majoriteten av kolhydraterna hit maximerar du deras prestations- och återhämtningsnytta.
+
+**Lågt fettintag kring träning**
+
+Fett och kostfiber bör hållas lågt för att minimera risken för magbesvär under aktiviteten. Fett fördröjer magsäckstömningen och därmed upptaget av både protein och kolhydrater.
+
+- **Före träning:** Du vill ha snabbt tillgänglig energi, inte en långsam matsmältning som kan ge obehag.
+- **Efter träning:** Snabb leverans av aminosyror och glukos till musklerna prioriteras – och då är fett i vägen.
+
+Resten av dagen spelar fett däremot en viktig roll för hormonsyntesen, mättnad och absorption av fettlösliga vitaminer.
+
+**Måltidsfrekvens**
+
+Jag personligen tycker att en måltidsfrekvens med frukost, mindre mellanmål, lunch, mindre mellanmål, middag och kvällsmål (totalt sex måltider) passar mig – det håller blodsockret på en jämn nivå och jag blir aldrig så hungrig att jag får cravings eller tankar på att göra sämre kostval för snabb energi.
+
+**Min rekommendation: 4–6 måltider per dag**
+
+Det håller hungern i schack, energin jämn och gör det lättare att komma upp i protein. Men om du hellre vill äta tre måltider, eller sex, går det också utmärkt. Det viktigaste är att det passar din vardag – det ska fungera i praktiken, inte skapa stress eller krocka med livspusslet.
+
+**Måltidsintervall**
+
+- Ät med cirka 2–4 timmars mellanrum mellan måltider
+- Ät 1–2 timmar innan träning
+- Ät senast 1–2 timmar efter träning
+
+**Individuella hänsyn**
+
+Måltidsfrekvens och typ av måltid är väldigt individuellt – vi behöver ta hänsyn till din livssituation och vad som är hållbart för dig.
+
+**Exempel:** En kvarg och nötter är ett nyttigt mellanmål som är enkelt att ta med sig på jobbet eller om man är på språng – jämfört med ett mellanmål som kräver tillagning eller förberedelse.
+
+**Anpassa efter din hunger**
+
+Håll koll på när du är hungrig och planera intaget därefter. Många har inte stor aptit på morgonen men suget tar fart på kvällen.
+
+De personerna kan:
+
+- Äta mindre frukost/lunch, större middag och kvällssnack
+- Lägga mer kolhydrater på kvällsmåltiderna
+- Ha längre tid mellan morgonmålen, kortare på kvällen`,
   },
   {
     id: 'micronutrients',
