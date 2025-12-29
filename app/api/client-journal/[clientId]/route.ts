@@ -204,9 +204,15 @@ export async function GET(
     }))
 
     // Calculate journey stats
-    const totalWeeks = client.checkIns.length > 0
-      ? Math.max(...client.checkIns.map(ci => ci.weekNumber || 0))
-      : 0
+    // Count weeks based on check-ins (excluding start check-in) or calculate from first check-in date
+    const regularCheckIns = client.checkIns.filter(ci => !ci.isStartCheckIn)
+    const startCheckIn = client.checkIns.find(ci => ci.isStartCheckIn)
+
+    // Try weekNumber first, otherwise count regular check-ins as weeks
+    const maxWeekNumber = Math.max(...client.checkIns.map(ci => ci.weekNumber || 0))
+    const totalWeeks = maxWeekNumber > 0
+      ? maxWeekNumber
+      : regularCheckIns.length // Each regular check-in = 1 week
     const totalWorkouts = workoutSessions.length
     const totalPRs = personalRecords.length
     const ratingsWithValues = workoutSessions.filter(s => s.rating !== null)

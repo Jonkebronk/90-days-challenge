@@ -1210,7 +1210,10 @@ function ClientJournalContent() {
                       )}
 
                       {/* Regular check-ins */}
-                      {regularCheckIns.map((checkIn: any) => (
+                      {regularCheckIns.map((checkIn: any, index: number) => {
+                        // Calculate week number: if weekNumber is null, use reverse index (oldest = week 1)
+                        const calculatedWeek = checkIn.weekNumber || (regularCheckIns.length - index)
+                        return (
                 <div
                   key={checkIn.id}
                   className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
@@ -1220,7 +1223,7 @@ function ClientJournalContent() {
                       <ClipboardCheck className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600 flex-shrink-0" />
                       <div>
                         <h3 className="font-bold text-gray-900 text-sm sm:text-base">
-                          Vecka {checkIn.weekNumber || 'N/A'}
+                          Vecka {calculatedWeek}
                         </h3>
                         <p className="text-xs sm:text-sm text-gray-500">
                           {format(new Date(checkIn.createdAt), 'PP', { locale: sv })}
@@ -1411,8 +1414,8 @@ function ClientJournalContent() {
                     )}
                   </div>
                 </div>
-                      ))
-                    }
+                        )
+                      })}
                     </>
                   )
                 })()}
