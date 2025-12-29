@@ -1166,15 +1166,15 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Logged Sets - with table layout */}
                   {exerciseSets.length > 0 && (
-                    <div className="border border-gray-200 rounded-xl overflow-hidden">
+                    <div className="border border-gray-200 rounded-xl overflow-visible">
                       {/* Table header */}
-                      <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px_28px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px_32px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      <div className="grid grid-cols-[28px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        <span className="text-center"></span>
                         <span className="text-center">SET</span>
                         <span className="text-center">FÖREG</span>
                         <span className="text-center">REPS</span>
                         <span className="text-center">KG</span>
                         <span className="text-center">VILA</span>
-                        <span className="text-center"></span>
                         <span className="text-center"></span>
                       </div>
                       {exerciseSets.map((set, setIdx) => {
@@ -1226,9 +1226,53 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             ) : (
                               /* Display mode - table row - click to edit */
                               <div
-                                className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px_28px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px_32px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-xl items-center cursor-pointer hover:bg-gray-50 transition-colors"
+                                className="grid grid-cols-[28px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-xl items-center cursor-pointer hover:bg-gray-50 transition-colors"
                                 onClick={() => set.id && openEditModal(set)}
                               >
+                                {/* Kebab menu - first column */}
+                                <div className="relative flex items-center justify-center">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setActiveSetMenu(activeSetMenu === set.id ? null : set.id || null)
+                                    }}
+                                    className="p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-colors"
+                                  >
+                                    <MoreVertical className="w-4 h-4" />
+                                  </button>
+                                  {activeSetMenu === set.id && (
+                                    <>
+                                      <div
+                                        className="fixed inset-0 z-[100]"
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          setActiveSetMenu(null)
+                                        }}
+                                      />
+                                      <div className="absolute left-0 top-0 mt-8 bg-white rounded-lg shadow-2xl border border-gray-200 py-1 z-[101] min-w-[150px]">
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            addExtraSet(exercise.exercise.id, exercise.id)
+                                          }}
+                                          className="w-full px-3 py-2.5 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
+                                        >
+                                          <Plus className="w-4 h-4" /> Lägg till set
+                                        </button>
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            setActiveSetMenu(null)
+                                            deleteSetDirectly(set)
+                                          }}
+                                          className="w-full px-3 py-2.5 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
+                                        >
+                                          <Trash2 className="w-4 h-4" /> Ta bort set
+                                        </button>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
                                 <span className="text-center text-sm font-bold text-gray-700">{set.setNumber}</span>
                                 <span className="text-center text-xs sm:text-sm text-gray-600 font-medium truncate">
                                   {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
@@ -1258,50 +1302,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                   <div className="w-10 h-10 aspect-square rounded-xl bg-green-500 flex items-center justify-center shadow-sm flex-shrink-0">
                                     <Check className="w-5 h-5 text-white" />
                                   </div>
-                                </div>
-                                {/* Kebab menu */}
-                                <div className="relative flex items-center justify-center">
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setActiveSetMenu(activeSetMenu === set.id ? null : set.id || null)
-                                    }}
-                                    className="p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-colors"
-                                  >
-                                    <MoreVertical className="w-4 h-4" />
-                                  </button>
-                                  {activeSetMenu === set.id && (
-                                    <>
-                                      <div
-                                        className="fixed inset-0 z-40"
-                                        onClick={(e) => {
-                                          e.stopPropagation()
-                                          setActiveSetMenu(null)
-                                        }}
-                                      />
-                                      <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50 min-w-[150px]">
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation()
-                                            addExtraSet(exercise.exercise.id, exercise.id)
-                                          }}
-                                          className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
-                                        >
-                                          <Plus className="w-4 h-4" /> Lägg till set
-                                        </button>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation()
-                                            setActiveSetMenu(null)
-                                            deleteSetDirectly(set)
-                                          }}
-                                          className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
-                                        >
-                                          <Trash2 className="w-4 h-4" /> Ta bort set
-                                        </button>
-                                      </div>
-                                    </>
-                                  )}
                                 </div>
                               </div>
                             )}
