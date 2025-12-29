@@ -1247,9 +1247,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                       e.stopPropagation()
                                       setActiveSetMenu(activeSetMenu === set.id ? null : set.id || null)
                                     }}
-                                    className="p-1 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors"
+                                    className="p-1.5 rounded hover:bg-gray-200 text-gray-600 hover:text-gray-800 transition-colors"
                                   >
-                                    <MoreVertical className="w-4 h-4" />
+                                    <MoreVertical className="w-5 h-5" />
                                   </button>
                                   {activeSetMenu === set.id && (
                                     <>
@@ -1349,7 +1349,49 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                       {/* Current set input row */}
                       <div className="grid grid-cols-[24px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border-2 border-blue-200 rounded-xl items-center">
-                        <span className="text-center"></span>
+                        {/* Kebab menu for current input row */}
+                        <div className="relative flex items-center justify-center">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setActiveSetMenu(activeSetMenu === `input-${exercise.exercise.id}` ? null : `input-${exercise.exercise.id}`)
+                            }}
+                            className="p-1.5 rounded hover:bg-gray-200 text-gray-600 hover:text-gray-800 transition-colors"
+                          >
+                            <MoreVertical className="w-5 h-5" />
+                          </button>
+                          {activeSetMenu === `input-${exercise.exercise.id}` && (
+                            <>
+                              <div
+                                className="fixed inset-0 z-40"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setActiveSetMenu(null)
+                                }}
+                              />
+                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50 min-w-[140px]">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    addExtraSet(exercise.exercise.id, exercise.id, exerciseSets.length)
+                                  }}
+                                  className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
+                                >
+                                  <Plus className="w-4 h-4" /> Lägg till set
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    skipSet(exercise.exercise.id)
+                                  }}
+                                  className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
+                                >
+                                  <SkipForward className="w-4 h-4" /> Hoppa över
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
                         <span className="text-center text-sm font-bold text-blue-600">{exerciseSets.length + 1}</span>
                         <span className="text-center text-xs sm:text-sm text-gray-600 font-medium truncate">
                           {(() => {
@@ -1421,9 +1463,52 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           (s: any) => s.exerciseId === exercise.exercise.id
                         ) || []
                         const prevSet = prevSets[exerciseSets.length + 1 + idx]
+                        const menuId = `pending-${exercise.exercise.id}-${setNum}`
                         return (
                           <div key={idx} className="grid grid-cols-[24px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl items-center">
-                            <span className="text-center"></span>
+                            {/* Kebab menu for pending set */}
+                            <div className="relative flex items-center justify-center">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setActiveSetMenu(activeSetMenu === menuId ? null : menuId)
+                                }}
+                                className="p-1.5 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors"
+                              >
+                                <MoreVertical className="w-5 h-5" />
+                              </button>
+                              {activeSetMenu === menuId && (
+                                <>
+                                  <div
+                                    className="fixed inset-0 z-40"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setActiveSetMenu(null)
+                                    }}
+                                  />
+                                  <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50 min-w-[140px]">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        addExtraSet(exercise.exercise.id, exercise.id, setNum - 1)
+                                      }}
+                                      className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
+                                    >
+                                      <Plus className="w-4 h-4" /> Lägg till set
+                                    </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        skipSet(exercise.exercise.id)
+                                      }}
+                                      className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
+                                    >
+                                      <SkipForward className="w-4 h-4" /> Hoppa över
+                                    </button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
                             <span className="text-center text-sm font-bold text-gray-400">{setNum}</span>
                             <span className="text-center text-xs sm:text-sm text-gray-500 font-medium truncate">
                               {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
