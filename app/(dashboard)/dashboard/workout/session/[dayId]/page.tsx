@@ -524,7 +524,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       const completedExerciseIndex = workoutDay?.exercises.findIndex(ex => ex.exercise.id === exerciseId) ?? -1
       const exercise = completedExerciseIndex >= 0 ? workoutDay?.exercises[completedExerciseIndex] : null
 
-      if (exercise && setLogs[exerciseId]?.length + 1 >= exercise.sets) {
+      // Include extra sets in the total count
+      const totalSetsNeeded = exercise ? exercise.sets + (extraSets[exerciseId] || 0) : 0
+
+      if (exercise && setLogs[exerciseId]?.length + 1 >= totalSetsNeeded) {
         // All sets complete for this exercise - collapse it immediately
         const newExpanded = new Set(expandedExercises)
         newExpanded.delete(completedExerciseIndex)
@@ -534,7 +537,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         const nextIncompleteIndex = workoutDay?.exercises.findIndex((ex, idx) => {
           if (idx <= completedExerciseIndex) return false
           const exSets = setLogs[ex.exercise.id] || []
-          return exSets.length < ex.sets
+          const totalForEx = ex.sets + (extraSets[ex.exercise.id] || 0)
+          return exSets.length < totalForEx
         }) ?? -1
 
         if (nextIncompleteIndex >= 0) {
@@ -1000,19 +1004,21 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   <div className="flex items-center gap-3">
                     {/* Progress indicator */}
                     <div className="flex items-center gap-1.5">
-                      {Array.from({ length: exercise.sets }).map((_, idx) => (
+                      {Array.from({ length: totalSetsForExercise }).map((_, idx) => (
                         <div
                           key={idx}
                           className={`w-2.5 h-2.5 rounded-full transition-colors ${
                             idx < exerciseSets.length
                               ? 'bg-green-500'
-                              : 'bg-gray-300'
+                              : idx < exercise.sets
+                                ? 'bg-gray-300'
+                                : 'bg-amber-300'
                           }`}
                         />
                       ))}
                     </div>
                     <span className="text-sm text-gray-600 font-medium">
-                      {exerciseSets.length}/{exercise.sets}
+                      {exerciseSets.length}/{totalSetsForExercise}
                     </span>
                     {isExpanded ? (
                       <ChevronUp className="w-5 h-5 text-gray-500" />
