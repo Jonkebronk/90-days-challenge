@@ -599,13 +599,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         ]
       }))
 
-      // Open edit modal for the new set so user can fill in values
-      setEditingSet(newSet)
-      setEditReps('')
-      setEditWeight('')
-      setEditNotes('')
-
-      toast.success('Set tillagt - fyll i värden')
+      toast.success(`Set ${newSetNumber} tillagt - klicka för att redigera`)
     } catch (error) {
       console.error('Error adding set:', error)
       toast.error('Kunde inte lägga till set')
@@ -1285,11 +1279,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                 <span className="text-center text-xs sm:text-sm text-gray-600 font-medium truncate">
                                   {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
                                 </span>
-                                <span className="text-center text-sm font-semibold text-gray-800">
-                                  {set.setType === 'TIME' ? `${set.timeSeconds}s` : (set.reps || 0)}
+                                <span className={`text-center text-sm font-semibold ${set.reps === null ? 'text-amber-500' : 'text-gray-800'}`}>
+                                  {set.setType === 'TIME' ? `${set.timeSeconds}s` : (set.reps !== null ? set.reps : '—')}
                                 </span>
-                                <span className="text-center text-sm font-semibold text-gray-800">
-                                  {set.setType === 'WEIGHT' ? (set.notes || `${set.weightKg || 0}`) : '-'}
+                                <span className={`text-center text-sm font-semibold ${set.weightKg === null && !set.notes ? 'text-amber-500' : 'text-gray-800'}`}>
+                                  {set.setType === 'WEIGHT' ? (set.notes || (set.weightKg !== null ? set.weightKg : '—')) : '-'}
                                 </span>
                                 <div className="flex items-center justify-center">
                                   {exercise.restSeconds > 0 ? (
