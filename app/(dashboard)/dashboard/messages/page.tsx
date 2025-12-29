@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card'
 import {
   Send, Image as ImageIcon, X, ZoomIn, MessageCircle, Loader2,
   Search, Reply, Pencil, Trash2, Check, CheckCheck, MoreVertical, User,
-  Bold, Italic, Strikethrough, Smile
+  Bold, Italic, Strikethrough, Smile, ArrowLeft
 } from 'lucide-react'
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
 import { toast } from 'sonner'
@@ -147,6 +147,7 @@ export default function MessagesPage() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const [editCheckInId, setEditCheckInId] = useState<string | null>(null)
+  const [mobileShowChat, setMobileShowChat] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -250,6 +251,7 @@ export default function MessagesPage() {
         setContacts(data.contacts)
         if (data.contacts.length > 0 && !otherUserId) {
           setOtherUserId(data.contacts[0].id)
+          // Don't auto-show chat on mobile for first load
         }
       }
     } catch (error) {
@@ -591,14 +593,17 @@ export default function MessagesPage() {
       <div className="flex-1 flex flex-col lg:flex-row gap-4 min-h-0 overflow-hidden">
         {/* Sidebar - Contact List */}
         {isCoach && (
-          <div className="flex-shrink-0 lg:w-72">
+          <div className={`flex-shrink-0 lg:w-72 lg:block ${mobileShowChat ? 'hidden' : 'block'}`}>
             <Card className="bg-white border-2 border-gray-300 rounded-lg p-3 h-full overflow-y-auto">
               <h3 className="text-sm font-bold text-gray-900 mb-3">Konversationer</h3>
               <div className="space-y-2">
                 {contacts.map(contact => (
                   <button
                     key={contact.id}
-                    onClick={() => setOtherUserId(contact.id)}
+                    onClick={() => {
+                      setOtherUserId(contact.id)
+                      setMobileShowChat(true)
+                    }}
                     className={`w-full text-left p-3 rounded-lg transition-all relative ${
                       otherUserId === contact.id
                         ? 'bg-gradient-to-r from-gold-primary to-gold-secondary text-white'
@@ -656,13 +661,23 @@ export default function MessagesPage() {
         )}
 
         {/* Messages Area */}
-        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div className={`flex-1 flex flex-col min-h-0 overflow-hidden ${isCoach && !mobileShowChat ? 'hidden lg:flex' : 'flex'}`}>
           <Card className="bg-white border-2 border-gray-300 rounded-lg flex-1 flex flex-col min-h-0 overflow-hidden">
             {/* Contact Header with Search */}
             {selectedContact && (
               <div className="flex-shrink-0 p-3 sm:p-4 border-b-2 border-gray-200 bg-gray-50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
+                    {/* Back button on mobile */}
+                    {isCoach && (
+                      <button
+                        onClick={() => setMobileShowChat(false)}
+                        className="lg:hidden p-2 -ml-2 rounded-full hover:bg-gray-200 transition-colors"
+                        aria-label="Tillbaka till konversationer"
+                      >
+                        <ArrowLeft className="w-5 h-5 text-gray-600" />
+                      </button>
+                    )}
                     {/* Chat Header Avatar */}
                     {selectedContact.image ? (
                       <img
