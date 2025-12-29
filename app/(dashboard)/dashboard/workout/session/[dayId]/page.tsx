@@ -148,6 +148,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [noteText, setNoteText] = useState('')
   const [isSavingNote, setIsSavingNote] = useState(false)
 
+  // Extra sets per exercise (beyond the planned sets)
+  const [extraSets, setExtraSets] = useState<Record<string, number>>({})
+
   useEffect(() => {
     const loadData = async () => {
       const { dayId: id } = await params
@@ -547,65 +550,14 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     }
   }
 
-  // Add extra set
-  const addExtraSet = async (exerciseId: string, programExerciseId: string) => {
-    if (!sessionId || isLoggingSet) return
+  // Add extra set (adds an input row, doesn't create in database yet)
+  const addExtraSet = (exerciseId: string) => {
     setActiveSetMenu(null)
-    setIsLoggingSet(true)
-
-    const currentSets = setLogs[exerciseId] || []
-    const newSetNumber = currentSets.length + 1
-
-    try {
-      const response = await fetch(`/api/workout-sessions/${sessionId}/sets`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          exerciseId,
-          workoutProgramExerciseId: programExerciseId,
-          setNumber: newSetNumber,
-          setType: 'WEIGHT',
-          reps: null,
-          weightKg: null,
-          notes: null,
-          timeSeconds: null,
-          completed: true
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to add set')
-      }
-
-      const data = await response.json()
-
-      const newSet: SetLog = {
-        id: data.set.id,
-        exerciseId,
-        setNumber: newSetNumber,
-        setType: 'WEIGHT',
-        reps: null,
-        weightKg: null,
-        notes: null,
-        timeSeconds: null,
-        completed: true
-      }
-
-      setSetLogs(prev => ({
-        ...prev,
-        [exerciseId]: [
-          ...(prev[exerciseId] || []),
-          newSet
-        ]
-      }))
-
-      toast.success(`Set ${newSetNumber} tillagt - klicka för att redigera`)
-    } catch (error) {
-      console.error('Error adding set:', error)
-      toast.error('Kunde inte lägga till set')
-    } finally {
-      setIsLoggingSet(false)
-    }
+    setExtraSets(prev => ({
+      ...prev,
+      [exerciseId]: (prev[exerciseId] || 0) + 1
+    }))
+    toast.success('Extra set tillagt')
   }
 
   // Edit a set
@@ -928,7 +880,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             const isExpanded = expandedExercises.has(index)
             const isCurrent = index === currentExerciseIndex
             const exerciseSets = setLogs[exercise.exercise.id] || []
-            const isExerciseComplete = exerciseSets.length >= exercise.sets
+            const totalSetsForExercise = exercise.sets + (extraSets[exercise.exercise.id] || 0)
+            const isExerciseComplete = exerciseSets.length >= totalSetsForExercise
 
             // Check if this exercise is part of a superset
             const isSuperset = !!exercise.supersetGroupId
@@ -1255,7 +1208,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation()
-                                            addExtraSet(exercise.exercise.id, exercise.id)
+                                            addExtraSet(exercise.exercise.id)
                                           }}
                                           className="w-full px-3 py-2.5 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
                                         >
@@ -1319,7 +1272,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     <div className="space-y-3">
                       {/* Table header if no sets logged yet */}
                       {exerciseSets.length === 0 && (
-                        <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 rounded-t-lg text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                        <div className="grid grid-cols-[28px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 rounded-t-lg text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                          <span className="text-center"></span>
                           <span className="text-center">SET</span>
                           <span className="text-center">FÖREG</span>
                           <span className="text-center">REPS</span>
@@ -1330,7 +1284,41 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       )}
 
                       {/* Current set input row */}
-                      <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border-2 border-blue-200 rounded-xl items-center">
+                      <div className="grid grid-cols-[28px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border-2 border-blue-200 rounded-xl items-center">
+                        {/* Kebab menu */}
+                        <div className="relative flex items-center justify-center">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setActiveSetMenu(activeSetMenu === `input-${exercise.exercise.id}` ? null : `input-${exercise.exercise.id}`)
+                            }}
+                            className="p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-colors"
+                          >
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
+                          {activeSetMenu === `input-${exercise.exercise.id}` && (
+                            <>
+                              <div
+                                className="fixed inset-0 z-[100]"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setActiveSetMenu(null)
+                                }}
+                              />
+                              <div className="absolute left-0 top-0 mt-8 bg-white rounded-lg shadow-2xl border border-gray-200 py-1 z-[101] min-w-[150px]">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    addExtraSet(exercise.exercise.id)
+                                  }}
+                                  className="w-full px-3 py-2.5 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
+                                >
+                                  <Plus className="w-4 h-4" /> Lägg till set
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
                         <span className="text-center text-sm font-bold text-blue-600">{exerciseSets.length + 1}</span>
                         <span className="text-center text-xs sm:text-sm text-gray-600 font-medium truncate">
                           {(() => {
@@ -1392,14 +1380,49 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       </div>
 
                       {/* Remaining sets to show */}
-                      {Array.from({ length: exercise.sets - exerciseSets.length - 1 }).map((_, idx) => {
+                      {Array.from({ length: totalSetsForExercise - exerciseSets.length - 1 }).map((_, idx) => {
                         const setNum = exerciseSets.length + 2 + idx
                         const prevSets = previousSessionData?.sets?.filter(
                           (s: any) => s.exerciseId === exercise.exercise.id
                         ) || []
                         const prevSet = prevSets[exerciseSets.length + 1 + idx]
+                        const menuId = `pending-${exercise.exercise.id}-${setNum}`
                         return (
-                          <div key={idx} className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl items-center">
+                          <div key={idx} className="grid grid-cols-[28px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl items-center">
+                            {/* Kebab menu */}
+                            <div className="relative flex items-center justify-center">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setActiveSetMenu(activeSetMenu === menuId ? null : menuId)
+                                }}
+                                className="p-1 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors"
+                              >
+                                <MoreVertical className="w-4 h-4" />
+                              </button>
+                              {activeSetMenu === menuId && (
+                                <>
+                                  <div
+                                    className="fixed inset-0 z-[100]"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setActiveSetMenu(null)
+                                    }}
+                                  />
+                                  <div className="absolute left-0 top-0 mt-8 bg-white rounded-lg shadow-2xl border border-gray-200 py-1 z-[101] min-w-[150px]">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        addExtraSet(exercise.exercise.id)
+                                      }}
+                                      className="w-full px-3 py-2.5 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
+                                    >
+                                      <Plus className="w-4 h-4" /> Lägg till set
+                                    </button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
                             <span className="text-center text-sm font-bold text-gray-400">{setNum}</span>
                             <span className="text-center text-xs sm:text-sm text-gray-500 font-medium truncate">
                               {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
