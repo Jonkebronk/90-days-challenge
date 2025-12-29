@@ -294,6 +294,12 @@ type JourneyStats = {
   totalWorkouts: number
   totalPRs: number
   averageSessionRating: number | null
+  // Journey position data
+  journeyStartDate: string | null
+  daysSinceStart: number | null
+  currentWeek: number | null
+  currentPhase: number | null
+  phaseName: string | null
 }
 
 type JournalData = {
@@ -546,11 +552,60 @@ function ClientJournalContent() {
                 <h2 className="text-xl font-bold text-amber-500">Din Resa</h2>
               </div>
 
+              {/* Journey Position - Day, Week, Phase */}
+              {journalData.journeyStats?.daysSinceStart && (
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl shadow-sm p-4 sm:p-6 mb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-center gap-6">
+                      <div className="text-center">
+                        <p className="text-3xl sm:text-4xl font-bold text-amber-600">
+                          {journalData.journeyStats.daysSinceStart}
+                        </p>
+                        <p className="text-xs sm:text-sm text-amber-700">Dag</p>
+                      </div>
+                      <div className="h-12 w-px bg-amber-200" />
+                      <div className="text-center">
+                        <p className="text-3xl sm:text-4xl font-bold text-amber-600">
+                          {journalData.journeyStats.currentWeek}
+                        </p>
+                        <p className="text-xs sm:text-sm text-amber-700">Vecka</p>
+                      </div>
+                    </div>
+                    <div className="flex-1 max-w-xs">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-semibold text-amber-800">
+                          {journalData.journeyStats.phaseName}
+                        </span>
+                        <span className="text-xs text-amber-600">
+                          {Math.min(journalData.journeyStats.daysSinceStart, 90)}/90 dagar
+                        </span>
+                      </div>
+                      <div className="w-full bg-amber-200 rounded-full h-3">
+                        <div
+                          className="bg-gradient-to-r from-amber-500 to-orange-500 h-3 rounded-full transition-all duration-500"
+                          style={{ width: `${Math.min((journalData.journeyStats.daysSinceStart / 90) * 100, 100)}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between mt-1 text-[10px] text-amber-600">
+                        <span>Fas 1</span>
+                        <span>Fas 2</span>
+                        <span>Fas 3</span>
+                      </div>
+                    </div>
+                  </div>
+                  {journalData.journeyStats.journeyStartDate && (
+                    <p className="text-xs text-amber-600 mt-3">
+                      Startade: {format(new Date(journalData.journeyStats.journeyStartDate), 'PP', { locale: sv })}
+                    </p>
+                  )}
+                </div>
+              )}
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
                   <div className="flex items-center gap-2 mb-2">
                     <Calendar className="w-4 h-4 text-amber-500" />
-                    <p className="text-gray-500 text-sm">Veckor</p>
+                    <p className="text-gray-500 text-sm">Check-ins</p>
                   </div>
                   <p className="text-2xl sm:text-3xl font-bold text-gray-900">
                     {journalData.journeyStats?.totalWeeks || 0}

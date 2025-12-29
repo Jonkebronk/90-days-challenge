@@ -220,11 +220,66 @@ export async function GET(
       ? ratingsWithValues.reduce((sum, s) => sum + (s.rating || 0), 0) / ratingsWithValues.length
       : null
 
+    // Fetch assigned workout program to get actual start date
+    const assignedProgram = await prisma.assignedWorkoutProgram.findFirst({
+      where: { userId: clientId },
+      orderBy: { createdAt: 'desc' },
+      select: { startDate: true },
+    })
+
+    // Calculate journey position based on actual start date
+    let journeyStartDate: Date | null = null
+    let daysSinceStart: number | null = null
+    let currentWeek: number | null = null
+    let currentPhase: number | null = null
+    let phaseName: string | null = null
+
+    // Priority: 1. AssignedWorkoutProgram.startDate, 2. Start check-in date, 3. membershipStartDate
+    if (assignedProgram?.startDate) {
+      journeyStartDate = new Date(assignedProgram.startDate)
+    } else if (startCheckIn?.createdAt) {
+      journeyStartDate = new Date(startCheckIn.createdAt)
+    } else if (client.membershipStartDate) {
+      journeyStartDate = new Date(client.membershipStartDate)
+    }
+
+    if (journeyStartDate) {
+      const now = new Date()
+      // Calculate days since start (day 1 = first day)
+      const diffTime = now.getTime() - journeyStartDate.getTime()
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+      daysSinceStart = diffDays + 1 // Day 1 = first day
+
+      // Calculate current week (week 1 = days 1-7)
+      currentWeek = Math.ceil(daysSinceStart / 7)
+
+      // Calculate phase (Fas 1: days 1-30, Fas 2: days 31-60, Fas 3: days 61-90)
+      if (daysSinceStart <= 30) {
+        currentPhase = 1
+        phaseName = 'Fas 1: Grund'
+      } else if (daysSinceStart <= 60) {
+        currentPhase = 2
+        phaseName = 'Fas 2: Uppbyggnad'
+      } else if (daysSinceStart <= 90) {
+        currentPhase = 3
+        phaseName = 'Fas 3: Optimering'
+      } else {
+        currentPhase = 4
+        phaseName = 'Fas 4: Underhåll'
+      }
+    }
+
     const journeyStats = {
       totalWeeks,
       totalWorkouts,
       totalPRs,
       averageSessionRating,
+      // New journey position data
+      journeyStartDate,
+      daysSinceStart,
+      currentWeek,
+      currentPhase,
+      phaseName,
     }
 
     return NextResponse.json({
