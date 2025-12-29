@@ -552,12 +552,14 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     }
   }
 
-  // Add extra set (like drop set)
-  const addExtraSet = async (exerciseId: string, programExerciseId: string, afterSetNumber: number) => {
+  // Add extra set at the end
+  const addExtraSet = async (exerciseId: string, programExerciseId: string) => {
     if (!sessionId || isLoggingSet) return
     setActiveSetMenu(null)
 
-    // Just log an empty set that user can fill in
+    const currentSets = setLogs[exerciseId] || []
+    const newSetNumber = currentSets.length + 1
+
     setIsLoggingSet(true)
     try {
       const response = await fetch(`/api/workout-sessions/${sessionId}/sets`, {
@@ -566,11 +568,11 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         body: JSON.stringify({
           exerciseId,
           workoutProgramExerciseId: programExerciseId,
-          setNumber: afterSetNumber + 1,
+          setNumber: newSetNumber,
           setType: 'WEIGHT',
           reps: null,
           weightKg: null,
-          notes: 'Drop set',
+          notes: null,
           timeSeconds: null,
           completed: true
         })
@@ -589,31 +591,24 @@ export default function WorkoutSessionPage({ params }: PageProps) {
           {
             id: data.set.id,
             exerciseId,
-            setNumber: afterSetNumber + 1,
+            setNumber: newSetNumber,
             setType: 'WEIGHT',
             reps: null,
             weightKg: null,
-            notes: 'Drop set',
+            notes: null,
             timeSeconds: null,
             completed: true
           }
         ]
       }))
 
-      toast.success('Extra set tillagt')
+      toast.success('Set tillagt')
     } catch (error) {
       console.error('Error adding extra set:', error)
       toast.error('Kunde inte lägga till set')
     } finally {
       setIsLoggingSet(false)
     }
-  }
-
-  // Skip a set (mark as skipped)
-  const skipSet = (exerciseId: string) => {
-    setActiveSetMenu(null)
-    toast.info('Set hoppades över')
-    // For now, just close the menu - skipping means not logging it
   }
 
   // Edit a set
@@ -1254,39 +1249,30 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                   {activeSetMenu === set.id && (
                                     <>
                                       <div
-                                        className="fixed inset-0 z-40"
+                                        className="fixed inset-0 z-40 bg-black/20"
                                         onClick={(e) => {
                                           e.stopPropagation()
                                           setActiveSetMenu(null)
                                         }}
                                       />
-                                      <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50 min-w-[140px]">
+                                      <div className="fixed left-4 right-4 bottom-4 sm:absolute sm:left-0 sm:right-auto sm:bottom-auto sm:top-full sm:mt-1 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50 sm:min-w-[160px]">
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation()
-                                            addExtraSet(exercise.exercise.id, exercise.id, set.setNumber)
+                                            addExtraSet(exercise.exercise.id, exercise.id)
                                           }}
-                                          className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
+                                          className="w-full px-4 py-3 sm:py-2 text-left text-base sm:text-sm hover:bg-gray-100 flex items-center gap-3 text-gray-700"
                                         >
-                                          <Plus className="w-4 h-4" /> Lägg till set
-                                        </button>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation()
-                                            skipSet(exercise.exercise.id)
-                                          }}
-                                          className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
-                                        >
-                                          <SkipForward className="w-4 h-4" /> Hoppa över
+                                          <Plus className="w-5 h-5 sm:w-4 sm:h-4" /> Lägg till set
                                         </button>
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation()
                                             deleteSetDirectly(set)
                                           }}
-                                          className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
+                                          className="w-full px-4 py-3 sm:py-2 text-left text-base sm:text-sm hover:bg-gray-100 flex items-center gap-3 text-red-600"
                                         >
-                                          <X className="w-4 h-4" /> Ta bort set
+                                          <X className="w-5 h-5 sm:w-4 sm:h-4" /> Ta bort set
                                         </button>
                                       </div>
                                     </>
@@ -1363,30 +1349,21 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           {activeSetMenu === `input-${exercise.exercise.id}` && (
                             <>
                               <div
-                                className="fixed inset-0 z-40"
+                                className="fixed inset-0 z-40 bg-black/20"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   setActiveSetMenu(null)
                                 }}
                               />
-                              <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50 min-w-[140px]">
+                              <div className="fixed left-4 right-4 bottom-4 sm:absolute sm:left-0 sm:right-auto sm:bottom-auto sm:top-full sm:mt-1 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50 sm:min-w-[160px]">
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation()
-                                    addExtraSet(exercise.exercise.id, exercise.id, exerciseSets.length)
+                                    addExtraSet(exercise.exercise.id, exercise.id)
                                   }}
-                                  className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
+                                  className="w-full px-4 py-3 sm:py-2 text-left text-base sm:text-sm hover:bg-gray-100 flex items-center gap-3 text-gray-700"
                                 >
-                                  <Plus className="w-4 h-4" /> Lägg till set
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    skipSet(exercise.exercise.id)
-                                  }}
-                                  className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
-                                >
-                                  <SkipForward className="w-4 h-4" /> Hoppa över
+                                  <Plus className="w-5 h-5 sm:w-4 sm:h-4" /> Lägg till set
                                 </button>
                               </div>
                             </>
@@ -1480,30 +1457,21 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                               {activeSetMenu === menuId && (
                                 <>
                                   <div
-                                    className="fixed inset-0 z-40"
+                                    className="fixed inset-0 z-40 bg-black/20"
                                     onClick={(e) => {
                                       e.stopPropagation()
                                       setActiveSetMenu(null)
                                     }}
                                   />
-                                  <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50 min-w-[140px]">
+                                  <div className="fixed left-4 right-4 bottom-4 sm:absolute sm:left-0 sm:right-auto sm:bottom-auto sm:top-full sm:mt-1 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50 sm:min-w-[160px]">
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation()
-                                        addExtraSet(exercise.exercise.id, exercise.id, setNum - 1)
+                                        addExtraSet(exercise.exercise.id, exercise.id)
                                       }}
-                                      className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
+                                      className="w-full px-4 py-3 sm:py-2 text-left text-base sm:text-sm hover:bg-gray-100 flex items-center gap-3 text-gray-700"
                                     >
-                                      <Plus className="w-4 h-4" /> Lägg till set
-                                    </button>
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation()
-                                        skipSet(exercise.exercise.id)
-                                      }}
-                                      className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
-                                    >
-                                      <SkipForward className="w-4 h-4" /> Hoppa över
+                                      <Plus className="w-5 h-5 sm:w-4 sm:h-4" /> Lägg till set
                                     </button>
                                   </div>
                                 </>
