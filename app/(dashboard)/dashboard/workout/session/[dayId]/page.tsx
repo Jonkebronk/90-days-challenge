@@ -30,7 +30,6 @@ import {
   StickyNote,
   Pin,
   MoreHorizontal,
-  MoreVertical,
   List,
   Layers
 } from 'lucide-react'
@@ -126,12 +125,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [editWeight, setEditWeight] = useState<string>('')
   const [editNotes, setEditNotes] = useState<string>('')
   const [isUpdatingSet, setIsUpdatingSet] = useState(false)
-
-  // Prevent duplicate set logging
-  const [isLoggingSet, setIsLoggingSet] = useState(false)
-
-  // Set menu state (kebab menu)
-  const [activeSetMenu, setActiveSetMenu] = useState<string | null>(null)
 
   // Cancel/abandon session state
   const [showCancelModal, setShowCancelModal] = useState(false)
@@ -460,14 +453,12 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   }
 
   const logSet = async (exerciseId: string, programExerciseId: string, setNumber: number) => {
-    if (!sessionId || isLoggingSet) return
+    if (!sessionId) return
 
     // Blur any focused input to prevent iOS "Shake to Undo" dialog
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
     }
-
-    setIsLoggingSet(true)
 
     const reps = currentSetType !== 'TIME' ? (parseInt(currentReps) || null) : null
     // Parse weight - extract number if possible, keep original text as note
@@ -547,67 +538,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     } catch (error) {
       console.error('Error logging set:', error)
       toast.error('Kunde inte logga set')
-    } finally {
-      setIsLoggingSet(false)
-    }
-  }
-
-  // Add extra set at the end
-  const addExtraSet = async (exerciseId: string, programExerciseId: string) => {
-    if (!sessionId || isLoggingSet) return
-    setActiveSetMenu(null)
-
-    const currentSets = setLogs[exerciseId] || []
-    const newSetNumber = currentSets.length + 1
-
-    setIsLoggingSet(true)
-    try {
-      const response = await fetch(`/api/workout-sessions/${sessionId}/sets`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          exerciseId,
-          workoutProgramExerciseId: programExerciseId,
-          setNumber: newSetNumber,
-          setType: 'WEIGHT',
-          reps: null,
-          weightKg: null,
-          notes: null,
-          timeSeconds: null,
-          completed: true
-        })
-      })
-
-      const validResponse = await handleApiResponse(response, 'Kunde inte lägga till set')
-      if (!validResponse) return
-
-      const data = await validResponse.json()
-
-      // Update local state
-      setSetLogs(prev => ({
-        ...prev,
-        [exerciseId]: [
-          ...(prev[exerciseId] || []),
-          {
-            id: data.set.id,
-            exerciseId,
-            setNumber: newSetNumber,
-            setType: 'WEIGHT',
-            reps: null,
-            weightKg: null,
-            notes: null,
-            timeSeconds: null,
-            completed: true
-          }
-        ]
-      }))
-
-      toast.success('Set tillagt')
-    } catch (error) {
-      console.error('Error adding extra set:', error)
-      toast.error('Kunde inte lägga till set')
-    } finally {
-      setIsLoggingSet(false)
     }
   }
 
@@ -672,7 +602,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   // Delete a set directly (no confirmation)
   const deleteSetDirectly = async (setToDelete: SetLog) => {
     if (!sessionId || !setToDelete?.id) return
-    setActiveSetMenu(null)
 
     try {
       const response = await fetch(`/api/workout-sessions/${sessionId}/sets/${setToDelete.id}`, {
@@ -1174,8 +1103,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   {exerciseSets.length > 0 && (
                     <div className="border border-gray-200 rounded-xl overflow-hidden">
                       {/* Table header */}
-                      <div className="grid grid-cols-[24px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        <span className="text-center"></span>
+                      <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         <span className="text-center">SET</span>
                         <span className="text-center">FÖREG</span>
                         <span className="text-center">REPS</span>
@@ -1232,52 +1160,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             ) : (
                               /* Display mode - table row - click to edit */
                               <div
-                                className="grid grid-cols-[24px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-xl items-center cursor-pointer hover:bg-gray-50 transition-colors"
+                                className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-xl items-center cursor-pointer hover:bg-gray-50 transition-colors"
                                 onClick={() => set.id && openEditModal(set)}
                               >
-                                {/* Kebab menu */}
-                                <div className="relative flex items-center justify-center">
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setActiveSetMenu(activeSetMenu === set.id ? null : set.id || null)
-                                    }}
-                                    className="p-1.5 rounded hover:bg-gray-200 text-gray-600 hover:text-gray-800 transition-colors"
-                                  >
-                                    <MoreVertical className="w-5 h-5" />
-                                  </button>
-                                  {activeSetMenu === set.id && (
-                                    <>
-                                      <div
-                                        className="fixed inset-0 z-40 bg-black/20"
-                                        onClick={(e) => {
-                                          e.stopPropagation()
-                                          setActiveSetMenu(null)
-                                        }}
-                                      />
-                                      <div className="fixed left-4 right-4 bottom-4 sm:absolute sm:left-0 sm:right-auto sm:bottom-auto sm:top-full sm:mt-1 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50 sm:min-w-[160px]">
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation()
-                                            addExtraSet(exercise.exercise.id, exercise.id)
-                                          }}
-                                          className="w-full px-4 py-3 sm:py-2 text-left text-base sm:text-sm hover:bg-gray-100 flex items-center gap-3 text-gray-700"
-                                        >
-                                          <Plus className="w-5 h-5 sm:w-4 sm:h-4" /> Lägg till set
-                                        </button>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation()
-                                            deleteSetDirectly(set)
-                                          }}
-                                          className="w-full px-4 py-3 sm:py-2 text-left text-base sm:text-sm hover:bg-gray-100 flex items-center gap-3 text-red-600"
-                                        >
-                                          <X className="w-5 h-5 sm:w-4 sm:h-4" /> Ta bort set
-                                        </button>
-                                      </div>
-                                    </>
-                                  )}
-                                </div>
                                 <span className="text-center text-sm font-bold text-gray-700">{set.setNumber}</span>
                                 <span className="text-center text-xs sm:text-sm text-gray-600 font-medium truncate">
                                   {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
@@ -1322,8 +1207,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     <div className="space-y-3">
                       {/* Table header if no sets logged yet */}
                       {exerciseSets.length === 0 && (
-                        <div className="grid grid-cols-[24px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 rounded-t-lg text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                          <span className="text-center"></span>
+                        <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 rounded-t-lg text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wide">
                           <span className="text-center">SET</span>
                           <span className="text-center">FÖREG</span>
                           <span className="text-center">REPS</span>
@@ -1334,41 +1218,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       )}
 
                       {/* Current set input row */}
-                      <div className="grid grid-cols-[24px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border-2 border-blue-200 rounded-xl items-center">
-                        {/* Kebab menu for current input row */}
-                        <div className="relative flex items-center justify-center">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setActiveSetMenu(activeSetMenu === `input-${exercise.exercise.id}` ? null : `input-${exercise.exercise.id}`)
-                            }}
-                            className="p-1.5 rounded hover:bg-gray-200 text-gray-600 hover:text-gray-800 transition-colors"
-                          >
-                            <MoreVertical className="w-5 h-5" />
-                          </button>
-                          {activeSetMenu === `input-${exercise.exercise.id}` && (
-                            <>
-                              <div
-                                className="fixed inset-0 z-40 bg-black/20"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setActiveSetMenu(null)
-                                }}
-                              />
-                              <div className="fixed left-4 right-4 bottom-4 sm:absolute sm:left-0 sm:right-auto sm:bottom-auto sm:top-full sm:mt-1 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50 sm:min-w-[160px]">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    addExtraSet(exercise.exercise.id, exercise.id)
-                                  }}
-                                  className="w-full px-4 py-3 sm:py-2 text-left text-base sm:text-sm hover:bg-gray-100 flex items-center gap-3 text-gray-700"
-                                >
-                                  <Plus className="w-5 h-5 sm:w-4 sm:h-4" /> Lägg till set
-                                </button>
-                              </div>
-                            </>
-                          )}
-                        </div>
+                      <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border-2 border-blue-200 rounded-xl items-center">
                         <span className="text-center text-sm font-bold text-blue-600">{exerciseSets.length + 1}</span>
                         <span className="text-center text-xs sm:text-sm text-gray-600 font-medium truncate">
                           {(() => {
@@ -1421,14 +1271,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         <div className="flex justify-center">
                           <button
                             onClick={() => logSet(exercise.exercise.id, exercise.id, exerciseSets.length + 1)}
-                            disabled={!currentReps || isLoggingSet}
+                            disabled={!currentReps}
                             className="w-10 h-10 aspect-square rounded-xl bg-green-500 hover:bg-green-600 text-white disabled:opacity-40 disabled:bg-gray-200 flex items-center justify-center transition-all active:scale-95 shadow-sm flex-shrink-0"
                           >
-                            {isLoggingSet ? (
-                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            ) : (
-                              <Check className="w-5 h-5" />
-                            )}
+                            <Check className="w-5 h-5" />
                           </button>
                         </div>
                       </div>
@@ -1440,43 +1286,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           (s: any) => s.exerciseId === exercise.exercise.id
                         ) || []
                         const prevSet = prevSets[exerciseSets.length + 1 + idx]
-                        const menuId = `pending-${exercise.exercise.id}-${setNum}`
                         return (
-                          <div key={idx} className="grid grid-cols-[24px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl items-center">
-                            {/* Kebab menu for pending set */}
-                            <div className="relative flex items-center justify-center">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setActiveSetMenu(activeSetMenu === menuId ? null : menuId)
-                                }}
-                                className="p-1.5 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors"
-                              >
-                                <MoreVertical className="w-5 h-5" />
-                              </button>
-                              {activeSetMenu === menuId && (
-                                <>
-                                  <div
-                                    className="fixed inset-0 z-40 bg-black/20"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setActiveSetMenu(null)
-                                    }}
-                                  />
-                                  <div className="fixed left-4 right-4 bottom-4 sm:absolute sm:left-0 sm:right-auto sm:bottom-auto sm:top-full sm:mt-1 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50 sm:min-w-[160px]">
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation()
-                                        addExtraSet(exercise.exercise.id, exercise.id)
-                                      }}
-                                      className="w-full px-4 py-3 sm:py-2 text-left text-base sm:text-sm hover:bg-gray-100 flex items-center gap-3 text-gray-700"
-                                    >
-                                      <Plus className="w-5 h-5 sm:w-4 sm:h-4" /> Lägg till set
-                                    </button>
-                                  </div>
-                                </>
-                              )}
-                            </div>
+                          <div key={idx} className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl items-center">
                             <span className="text-center text-sm font-bold text-gray-400">{setNum}</span>
                             <span className="text-center text-xs sm:text-sm text-gray-500 font-medium truncate">
                               {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
