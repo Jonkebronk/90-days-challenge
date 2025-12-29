@@ -30,8 +30,10 @@ import {
   StickyNote,
   Pin,
   MoreHorizontal,
+  MoreVertical,
   List,
-  Layers
+  Layers,
+  Trash2
 } from 'lucide-react'
 import { RestTimerDialog, MinimizedRestBar } from '@/components/workout/rest-timer-dialog'
 import Link from 'next/link'
@@ -125,6 +127,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [editWeight, setEditWeight] = useState<string>('')
   const [editNotes, setEditNotes] = useState<string>('')
   const [isUpdatingSet, setIsUpdatingSet] = useState(false)
+
+  // Set menu state
+  const [activeSetMenu, setActiveSetMenu] = useState<string | null>(null)
+  const [isLoggingSet, setIsLoggingSet] = useState(false)
 
   // Cancel/abandon session state
   const [showCancelModal, setShowCancelModal] = useState(false)
@@ -538,6 +544,65 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     } catch (error) {
       console.error('Error logging set:', error)
       toast.error('Kunde inte logga set')
+    }
+  }
+
+  // Add extra set
+  const addExtraSet = async (exerciseId: string, programExerciseId: string) => {
+    if (!sessionId || isLoggingSet) return
+    setActiveSetMenu(null)
+    setIsLoggingSet(true)
+
+    const currentSets = setLogs[exerciseId] || []
+    const newSetNumber = currentSets.length + 1
+
+    try {
+      const response = await fetch(`/api/workout-sessions/${sessionId}/sets`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          exerciseId,
+          workoutProgramExerciseId: programExerciseId,
+          setNumber: newSetNumber,
+          setType: 'WEIGHT',
+          reps: null,
+          weightKg: null,
+          notes: null,
+          timeSeconds: null,
+          completed: true
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to add set')
+      }
+
+      const data = await response.json()
+
+      setSetLogs(prev => ({
+        ...prev,
+        [exerciseId]: [
+          ...(prev[exerciseId] || []),
+          {
+            id: data.set.id,
+            exerciseId,
+            setNumber: newSetNumber,
+            setType: 'WEIGHT',
+            reps: null,
+            weightKg: null,
+            notes: null,
+            timeSeconds: null,
+            completed: true
+          }
+        ]
+      }))
+
+      toast.success('Set tillagt')
+    } catch (error) {
+      console.error('Error adding set:', error)
+      toast.error('Kunde inte lägga till set')
+    } finally {
+      setIsLoggingSet(false)
     }
   }
 
@@ -1103,12 +1168,13 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   {exerciseSets.length > 0 && (
                     <div className="border border-gray-200 rounded-xl overflow-hidden">
                       {/* Table header */}
-                      <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px_28px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px_32px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         <span className="text-center">SET</span>
                         <span className="text-center">FÖREG</span>
                         <span className="text-center">REPS</span>
                         <span className="text-center">KG</span>
                         <span className="text-center">VILA</span>
+                        <span className="text-center"></span>
                         <span className="text-center"></span>
                       </div>
                       {exerciseSets.map((set, setIdx) => {
@@ -1160,7 +1226,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             ) : (
                               /* Display mode - table row - click to edit */
                               <div
-                                className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-xl items-center cursor-pointer hover:bg-gray-50 transition-colors"
+                                className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px_28px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px_32px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-xl items-center cursor-pointer hover:bg-gray-50 transition-colors"
                                 onClick={() => set.id && openEditModal(set)}
                               >
                                 <span className="text-center text-sm font-bold text-gray-700">{set.setNumber}</span>
@@ -1192,6 +1258,50 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                   <div className="w-10 h-10 aspect-square rounded-xl bg-green-500 flex items-center justify-center shadow-sm flex-shrink-0">
                                     <Check className="w-5 h-5 text-white" />
                                   </div>
+                                </div>
+                                {/* Kebab menu */}
+                                <div className="relative flex items-center justify-center">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setActiveSetMenu(activeSetMenu === set.id ? null : set.id || null)
+                                    }}
+                                    className="p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-colors"
+                                  >
+                                    <MoreVertical className="w-4 h-4" />
+                                  </button>
+                                  {activeSetMenu === set.id && (
+                                    <>
+                                      <div
+                                        className="fixed inset-0 z-40"
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          setActiveSetMenu(null)
+                                        }}
+                                      />
+                                      <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50 min-w-[150px]">
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            addExtraSet(exercise.exercise.id, exercise.id)
+                                          }}
+                                          className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
+                                        >
+                                          <Plus className="w-4 h-4" /> Lägg till set
+                                        </button>
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            setActiveSetMenu(null)
+                                            deleteSetDirectly(set)
+                                          }}
+                                          className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
+                                        >
+                                          <Trash2 className="w-4 h-4" /> Ta bort set
+                                        </button>
+                                      </div>
+                                    </>
+                                  )}
                                 </div>
                               </div>
                             )}
