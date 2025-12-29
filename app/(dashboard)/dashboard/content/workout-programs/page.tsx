@@ -652,7 +652,7 @@ export default function WorkoutProgramsPage() {
                             </Button>
                             <Button
                               onClick={handleAssignProgram}
-                              disabled={!selectedClientId || !programStartDate || !isMonday(programStartDate) || assigning}
+                              disabled={!selectedClientId || (!programStartDate && !clientHasExistingStartDate) || (programStartDate && !isMonday(programStartDate)) || assigning}
                               className="bg-gradient-to-r from-gold-primary to-gold-secondary text-white"
                             >
                               {assigning ? 'Tilldelar...' : 'Tilldela'}
