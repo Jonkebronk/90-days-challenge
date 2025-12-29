@@ -25,6 +25,20 @@ import {
   Ruler,
   Camera,
   Minus,
+  Star,
+  Trophy,
+  Dumbbell,
+  Zap,
+  Moon,
+  Brain,
+  Utensils,
+  RefreshCw,
+  Smile,
+  LayoutDashboard,
+  Calendar,
+  Clock,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react'
 import {
   LineChart,
@@ -34,6 +48,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from 'recharts'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
@@ -205,7 +220,14 @@ type CheckIn = {
   arms: number | null
   thighs: number | null
   calves: number | null
+  // Biofeedback (1-10 scale)
   energyLevel: number | null
+  sleepQuality: number | null
+  stressLevel: number | null
+  hungerLevel: number | null
+  recoveryLevel: number | null
+  moodLevel: number | null
+  // Legacy fields (1-5 scale)
   mood: number | null
   dietPlanAdherence: number | null
   workoutPlanAdherence: number | null
@@ -221,6 +243,57 @@ type CheckIn = {
   photoSide: string | null
   photoBack: string | null
   createdAt: string
+}
+
+type WorkoutSession = {
+  id: string
+  completedAt: string | null
+  durationMinutes: number | null
+  rating: number | null
+  ratingComment: string | null
+  notes: string | null
+  templateName: string | null
+  workoutProgramDay: {
+    name: string
+    dayNumber: number
+  } | null
+  sets: Array<{
+    exerciseId: string
+    exerciseName: string
+    setNumber: number
+    reps: number | null
+    weightKg: number | null
+  }>
+}
+
+type PersonalRecordData = {
+  id: string
+  exerciseId: string
+  exerciseName: string
+  recordType: string
+  weightKg: number | null
+  reps: number | null
+  volume: number | null
+  oneRepMax: number | null
+  achievedAt: string
+}
+
+type BiofeedbackEntry = {
+  date: string
+  weekNumber: number | null
+  energyLevel: number | null
+  sleepQuality: number | null
+  stressLevel: number | null
+  hungerLevel: number | null
+  recoveryLevel: number | null
+  moodLevel: number | null
+}
+
+type JourneyStats = {
+  totalWeeks: number
+  totalWorkouts: number
+  totalPRs: number
+  averageSessionRating: number | null
 }
 
 type JournalData = {
@@ -260,7 +333,51 @@ type JournalData = {
       photoSide: string | null
       photoBack: string | null
     }>
+    biofeedback: BiofeedbackEntry[]
   }
+  workoutSessions: WorkoutSession[]
+  personalRecords: PersonalRecordData[]
+  journeyStats: JourneyStats
+}
+
+// Biofeedback labels and colors
+const biofeedbackConfig = {
+  energyLevel: { label: 'Energi', icon: Zap, color: '#fbbf24' },
+  sleepQuality: { label: 'Sömn', icon: Moon, color: '#8b5cf6' },
+  stressLevel: { label: 'Stress', icon: Brain, color: '#ef4444', inverted: true },
+  hungerLevel: { label: 'Hunger', icon: Utensils, color: '#22c55e' },
+  recoveryLevel: { label: 'Återhämtning', icon: RefreshCw, color: '#3b82f6' },
+  moodLevel: { label: 'Humör', icon: Smile, color: '#f97316' },
+}
+
+const recordTypeLabels: Record<string, string> = {
+  max_weight: 'Max Vikt',
+  max_reps: 'Max Reps',
+  max_volume: 'Max Volym',
+  max_one_rep_max: '1RM',
+}
+
+// Helper to get color class based on value (1-10 scale)
+const getBiofeedbackColor = (value: number, inverted = false) => {
+  const effectiveValue = inverted ? 11 - value : value
+  if (effectiveValue >= 7) return 'text-green-500 bg-green-50'
+  if (effectiveValue >= 4) return 'text-yellow-500 bg-yellow-50'
+  return 'text-red-500 bg-red-50'
+}
+
+// Star Rating component
+const StarRating = ({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'md' }) => {
+  const sizeClass = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'
+  return (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map(star => (
+        <Star
+          key={star}
+          className={`${sizeClass} ${star <= rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`}
+        />
+      ))}
+    </div>
+  )
 }
 
 function ClientJournalContent() {
@@ -272,6 +389,7 @@ function ClientJournalContent() {
   const [journalData, setJournalData] = useState<JournalData | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingClients, setIsLoadingClients] = useState(true)
+  const [expandedSessions, setExpandedSessions] = useState<Set<string>>(new Set())
 
   const isCoach = (session?.user as any)?.role?.toUpperCase() === 'COACH'
   const isClient = (session?.user as any)?.role?.toUpperCase() === 'CLIENT'
@@ -399,9 +517,12 @@ function ClientJournalContent() {
 
       {/* Journal Content */}
       {!isLoading && journalData && (
-        <Tabs defaultValue="application" className="space-y-4 sm:space-y-6">
+        <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
           <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
             <TabsList className="bg-gray-100 border border-gray-200 w-max sm:w-auto">
+              <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 sm:px-3 data-[state=active]:bg-white data-[state=active]:text-amber-600 data-[state=active]:shadow-sm">
+                Översikt
+              </TabsTrigger>
               <TabsTrigger value="application" className="text-xs sm:text-sm px-2 sm:px-3 data-[state=active]:bg-white data-[state=active]:text-amber-600 data-[state=active]:shadow-sm">
                 Ansökan
               </TabsTrigger>
@@ -413,6 +534,314 @@ function ClientJournalContent() {
               </TabsTrigger>
             </TabsList>
           </div>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6 sm:space-y-8">
+            {/* Journey Summary Cards */}
+            <section>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold-light to-orange-500 flex items-center justify-center">
+                  <LayoutDashboard className="w-5 h-5 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-amber-500">Din Resa</h2>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Calendar className="w-4 h-4 text-amber-500" />
+                    <p className="text-gray-500 text-sm">Veckor</p>
+                  </div>
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">
+                    {journalData.journeyStats?.totalWeeks || 0}
+                  </p>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Dumbbell className="w-4 h-4 text-blue-500" />
+                    <p className="text-gray-500 text-sm">Träningspass</p>
+                  </div>
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">
+                    {journalData.journeyStats?.totalWorkouts || 0}
+                  </p>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Trophy className="w-4 h-4 text-yellow-500" />
+                    <p className="text-gray-500 text-sm">PRs</p>
+                  </div>
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">
+                    {journalData.journeyStats?.totalPRs || 0}
+                  </p>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Star className="w-4 h-4 text-amber-500" />
+                    <p className="text-gray-500 text-sm">Snittbetyg</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {journalData.journeyStats?.averageSessionRating ? (
+                      <>
+                        <p className="text-2xl sm:text-3xl font-bold text-gray-900">
+                          {journalData.journeyStats.averageSessionRating.toFixed(1)}
+                        </p>
+                        <StarRating rating={Math.round(journalData.journeyStats.averageSessionRating)} />
+                      </>
+                    ) : (
+                      <p className="text-2xl sm:text-3xl font-bold text-gray-400">-</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Biofeedback Section */}
+            {journalData.progression?.biofeedback && journalData.progression.biofeedback.length > 0 && (
+              <section>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                    <Zap className="w-5 h-5 text-white" />
+                  </div>
+                  <h2 className="text-xl font-bold text-purple-400">Biofeedback</h2>
+                </div>
+
+                {/* Current Status */}
+                {(() => {
+                  const latestBiofeedback = journalData.progression.biofeedback[journalData.progression.biofeedback.length - 1]
+                  return (
+                    <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6 mb-4">
+                      <h3 className="text-sm font-semibold text-gray-700 mb-3">Senaste Check-in</h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                        {Object.entries(biofeedbackConfig).map(([key, config]) => {
+                          const value = latestBiofeedback[key as keyof BiofeedbackEntry] as number | null
+                          if (!value) return null
+                          const IconComponent = config.icon
+                          const isInverted = 'inverted' in config && config.inverted
+                          return (
+                            <div
+                              key={key}
+                              className={`p-3 rounded-lg ${getBiofeedbackColor(value, isInverted)}`}
+                            >
+                              <div className="flex items-center gap-2 mb-1">
+                                <IconComponent className="w-4 h-4" />
+                                <span className="text-xs font-medium">{config.label}</span>
+                              </div>
+                              <p className="text-lg font-bold">{value}/10</p>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )
+                })()}
+
+                {/* Biofeedback Chart */}
+                {journalData.progression.biofeedback.length > 1 && (
+                  <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-4">Trender över tid</h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={journalData.progression.biofeedback.map((entry, idx) => ({
+                        ...entry,
+                        name: entry.weekNumber ? `V${entry.weekNumber}` : `${idx + 1}`,
+                      }))}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+                        <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
+                        <YAxis domain={[0, 10]} stroke="#9ca3af" fontSize={12} />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: 'white',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px'
+                          }}
+                        />
+                        <Legend />
+                        <Line type="monotone" dataKey="energyLevel" stroke="#fbbf24" strokeWidth={2} name="Energi" dot={{ r: 3 }} />
+                        <Line type="monotone" dataKey="sleepQuality" stroke="#8b5cf6" strokeWidth={2} name="Sömn" dot={{ r: 3 }} />
+                        <Line type="monotone" dataKey="moodLevel" stroke="#f97316" strokeWidth={2} name="Humör" dot={{ r: 3 }} />
+                        <Line type="monotone" dataKey="recoveryLevel" stroke="#3b82f6" strokeWidth={2} name="Återhämtning" dot={{ r: 3 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* Workout Sessions Section */}
+            <section>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                  <Dumbbell className="w-5 h-5 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-blue-400">Träningshistorik</h2>
+              </div>
+
+              {!journalData.workoutSessions || journalData.workoutSessions.length === 0 ? (
+                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8 text-center">
+                  <Dumbbell className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">Inga genomförda träningspass än</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {journalData.workoutSessions.slice(0, 10).map((session) => {
+                    const isExpanded = expandedSessions.has(session.id)
+                    const toggleExpand = () => {
+                      const newSet = new Set(expandedSessions)
+                      if (isExpanded) {
+                        newSet.delete(session.id)
+                      } else {
+                        newSet.add(session.id)
+                      }
+                      setExpandedSessions(newSet)
+                    }
+
+                    // Group sets by exercise
+                    const exerciseGroups = session.sets.reduce((acc, set) => {
+                      const name = set.exerciseName
+                      if (!acc[name]) acc[name] = []
+                      acc[name].push(set)
+                      return acc
+                    }, {} as Record<string, typeof session.sets>)
+
+                    return (
+                      <div
+                        key={session.id}
+                        className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden"
+                      >
+                        <div
+                          className="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50"
+                          onClick={toggleExpand}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                              <Dumbbell className="w-5 h-5 text-blue-500" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-gray-900">
+                                {session.workoutProgramDay?.name || session.templateName || 'Träningspass'}
+                              </h4>
+                              <div className="flex items-center gap-3 text-sm text-gray-500">
+                                {session.completedAt && (
+                                  <span>{format(new Date(session.completedAt), 'PP', { locale: sv })}</span>
+                                )}
+                                {session.durationMinutes && (
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    {session.durationMinutes} min
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            {session.rating && <StarRating rating={session.rating} size="md" />}
+                            {isExpanded ? (
+                              <ChevronUp className="w-5 h-5 text-gray-400" />
+                            ) : (
+                              <ChevronDown className="w-5 h-5 text-gray-400" />
+                            )}
+                          </div>
+                        </div>
+
+                        {isExpanded && (
+                          <div className="px-4 pb-4 pt-2 border-t border-gray-100 bg-gray-50">
+                            {session.ratingComment && (
+                              <p className="text-sm text-gray-600 mb-3 italic">&ldquo;{session.ratingComment}&rdquo;</p>
+                            )}
+                            {session.notes && (
+                              <p className="text-sm text-gray-600 mb-3">{session.notes}</p>
+                            )}
+                            <div className="space-y-2">
+                              {Object.entries(exerciseGroups).map(([exerciseName, sets]) => (
+                                <div key={exerciseName} className="text-sm">
+                                  <span className="font-medium text-gray-900">{exerciseName}</span>
+                                  <span className="text-gray-500 ml-2">
+                                    {sets.map(s => `${s.reps || 0}x${s.weightKg || 0}kg`).join(', ')}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                  {journalData.workoutSessions.length > 10 && (
+                    <p className="text-center text-sm text-gray-500">
+                      Visar 10 av {journalData.workoutSessions.length} träningspass
+                    </p>
+                  )}
+                </div>
+              )}
+            </section>
+
+            {/* Personal Records Section */}
+            <section>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center">
+                  <Trophy className="w-5 h-5 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-yellow-500">Personliga Rekord</h2>
+              </div>
+
+              {!journalData.personalRecords || journalData.personalRecords.length === 0 ? (
+                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-8 text-center">
+                  <Trophy className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">Inga personliga rekord än</p>
+                </div>
+              ) : (
+                <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                  <div className="divide-y divide-gray-100">
+                    {(() => {
+                      // Group PRs by exercise
+                      const prsByExercise = journalData.personalRecords.reduce((acc, pr) => {
+                        if (!acc[pr.exerciseName]) acc[pr.exerciseName] = []
+                        acc[pr.exerciseName].push(pr)
+                        return acc
+                      }, {} as Record<string, PersonalRecordData[]>)
+
+                      return Object.entries(prsByExercise).slice(0, 10).map(([exerciseName, prs]) => {
+                        const latestPR = prs[0]
+                        const isRecent = new Date(latestPR.achievedAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+
+                        return (
+                          <div key={exerciseName} className="p-4 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              {isRecent && (
+                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                              )}
+                              <div>
+                                <h4 className="font-medium text-gray-900">{exerciseName}</h4>
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                  {prs.map(pr => (
+                                    <span
+                                      key={pr.id}
+                                      className={`text-xs px-2 py-0.5 rounded ${
+                                        pr.recordType === 'max_weight' ? 'bg-amber-100 text-amber-700' :
+                                        pr.recordType === 'max_reps' ? 'bg-blue-100 text-blue-700' :
+                                        pr.recordType === 'max_one_rep_max' ? 'bg-green-100 text-green-700' :
+                                        'bg-purple-100 text-purple-700'
+                                      }`}
+                                    >
+                                      {recordTypeLabels[pr.recordType] || pr.recordType}
+                                      {pr.weightKg && `: ${pr.weightKg}kg`}
+                                      {pr.reps && !pr.weightKg && `: ${pr.reps} reps`}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                            <span className="text-xs text-gray-400">
+                              {format(new Date(latestPR.achievedAt), 'PP', { locale: sv })}
+                            </span>
+                          </div>
+                        )
+                      })
+                    })()}
+                  </div>
+                </div>
+              )}
+            </section>
+          </TabsContent>
 
           {/* Application Tab */}
           <TabsContent value="application" className="space-y-4 sm:space-y-6">
@@ -815,33 +1244,114 @@ function ClientJournalContent() {
                       </div>
                     )}
 
-                    {/* Ratings */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
-                      {checkIn.energyLevel && (
-                        <div>
-                          <Label className="text-gray-500 text-xs sm:text-sm">Energi</Label>
-                          <p className="text-gray-900 font-medium text-sm sm:text-base">{checkIn.energyLevel}/5</p>
+                    {/* Biofeedback Section */}
+                    {(checkIn.energyLevel || checkIn.sleepQuality || checkIn.stressLevel || checkIn.hungerLevel || checkIn.recoveryLevel || checkIn.moodLevel) && (
+                      <div>
+                        <Label className="text-gray-500 text-xs sm:text-sm mb-2 block">Biofeedback</Label>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                          {checkIn.energyLevel && (
+                            <div className={`p-2 rounded-lg ${getBiofeedbackColor(checkIn.energyLevel)}`}>
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <Zap className="w-3 h-3" />
+                                <span className="text-xs">Energi</span>
+                              </div>
+                              <p className="text-sm font-bold">{checkIn.energyLevel}/10</p>
+                            </div>
+                          )}
+                          {checkIn.sleepQuality && (
+                            <div className={`p-2 rounded-lg ${getBiofeedbackColor(checkIn.sleepQuality)}`}>
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <Moon className="w-3 h-3" />
+                                <span className="text-xs">Sömn</span>
+                              </div>
+                              <p className="text-sm font-bold">{checkIn.sleepQuality}/10</p>
+                            </div>
+                          )}
+                          {checkIn.stressLevel && (
+                            <div className={`p-2 rounded-lg ${getBiofeedbackColor(checkIn.stressLevel, true)}`}>
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <Brain className="w-3 h-3" />
+                                <span className="text-xs">Stress</span>
+                              </div>
+                              <p className="text-sm font-bold">{checkIn.stressLevel}/10</p>
+                            </div>
+                          )}
+                          {checkIn.hungerLevel && (
+                            <div className={`p-2 rounded-lg ${getBiofeedbackColor(checkIn.hungerLevel)}`}>
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <Utensils className="w-3 h-3" />
+                                <span className="text-xs">Hunger</span>
+                              </div>
+                              <p className="text-sm font-bold">{checkIn.hungerLevel}/10</p>
+                            </div>
+                          )}
+                          {checkIn.recoveryLevel && (
+                            <div className={`p-2 rounded-lg ${getBiofeedbackColor(checkIn.recoveryLevel)}`}>
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <RefreshCw className="w-3 h-3" />
+                                <span className="text-xs">Återhämtning</span>
+                              </div>
+                              <p className="text-sm font-bold">{checkIn.recoveryLevel}/10</p>
+                            </div>
+                          )}
+                          {checkIn.moodLevel && (
+                            <div className={`p-2 rounded-lg ${getBiofeedbackColor(checkIn.moodLevel)}`}>
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <Smile className="w-3 h-3" />
+                                <span className="text-xs">Humör</span>
+                              </div>
+                              <p className="text-sm font-bold">{checkIn.moodLevel}/10</p>
+                            </div>
+                          )}
                         </div>
-                      )}
-                      {checkIn.mood && (
-                        <div>
-                          <Label className="text-gray-500 text-xs sm:text-sm">Humör</Label>
-                          <p className="text-gray-900 font-medium text-sm sm:text-base">{checkIn.mood}/5</p>
-                        </div>
-                      )}
-                      {checkIn.dietPlanAdherence && (
-                        <div>
-                          <Label className="text-gray-500 text-xs sm:text-sm">Kost</Label>
-                          <p className="text-gray-900 font-medium text-sm sm:text-base">{checkIn.dietPlanAdherence}/5</p>
-                        </div>
-                      )}
-                      {checkIn.workoutPlanAdherence && (
-                        <div>
-                          <Label className="text-gray-500 text-xs sm:text-sm">Träning</Label>
-                          <p className="text-gray-900 font-medium text-sm sm:text-base">{checkIn.workoutPlanAdherence}/5</p>
-                        </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
+
+                    {/* Training & Diet Adherence */}
+                    {(checkIn.trainedAllSessions !== null || checkIn.hadDietDeviations !== null || checkIn.trainingComments || checkIn.dietComments) && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {(checkIn.trainedAllSessions !== null || checkIn.trainingComments) && (
+                          <div className="p-3 rounded-lg bg-blue-50">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Dumbbell className="w-4 h-4 text-blue-600" />
+                              <span className="text-sm font-medium text-blue-900">Träning</span>
+                              {checkIn.trainedAllSessions !== null && (
+                                <span className={`text-xs px-2 py-0.5 rounded ${checkIn.trainedAllSessions ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                  {checkIn.trainedAllSessions ? 'Alla pass' : 'Ej alla pass'}
+                                </span>
+                              )}
+                            </div>
+                            {checkIn.trainingComments && (
+                              <p className="text-sm text-blue-800">{checkIn.trainingComments}</p>
+                            )}
+                          </div>
+                        )}
+                        {(checkIn.hadDietDeviations !== null || checkIn.dietComments) && (
+                          <div className="p-3 rounded-lg bg-green-50">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Utensils className="w-4 h-4 text-green-600" />
+                              <span className="text-sm font-medium text-green-900">Kost</span>
+                              {checkIn.hadDietDeviations !== null && (
+                                <span className={`text-xs px-2 py-0.5 rounded ${!checkIn.hadDietDeviations ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                  {checkIn.hadDietDeviations ? 'Avsteg' : 'Följt plan'}
+                                </span>
+                              )}
+                            </div>
+                            {checkIn.dietComments && (
+                              <p className="text-sm text-green-800">{checkIn.dietComments}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Other Comments */}
+                    {checkIn.otherComments && (
+                      <div>
+                        <Label className="text-gray-500 text-xs sm:text-sm">Övriga kommentarer</Label>
+                        <p className="text-gray-900 mt-1 text-sm sm:text-base">{checkIn.otherComments}</p>
+                      </div>
+                    )}
 
                     {/* Sleep & Steps */}
                     {(checkIn.sleepNotes || checkIn.dailySteps) && (

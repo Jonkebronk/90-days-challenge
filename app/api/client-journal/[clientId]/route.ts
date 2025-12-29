@@ -142,6 +142,72 @@ export async function GET(
       }))
       .reverse() // Oldest first
 
+    // Biofeedback timeline for charts
+    const biofeedbackTimeline = client.checkIns
+      .filter((ci) =>
+        ci.energyLevel || ci.sleepQuality || ci.stressLevel ||
+        ci.hungerLevel || ci.recoveryLevel || ci.moodLevel
+      )
+      .map((ci) => ({
+        date: ci.createdAt,
+        weekNumber: ci.weekNumber,
+        energyLevel: ci.energyLevel,
+        sleepQuality: ci.sleepQuality,
+        stressLevel: ci.stressLevel,
+        hungerLevel: ci.hungerLevel,
+        recoveryLevel: ci.recoveryLevel,
+        moodLevel: ci.moodLevel,
+      }))
+      .reverse() // Oldest first for charts
+
+    // Fetch workout sessions with ratings
+    const workoutSessions = await prisma.workoutSessionLog.findMany({
+      where: {
+        userId: clientId,
+        completed: true,
+      },
+      include: {
+        workoutProgramDay: {
+          select: { name: true, dayNumber: true },
+        },
+        sets: {
+          include: {
+            exercise: { select: { id: true, name: true } },
+          },
+          orderBy: { createdAt: 'asc' },
+        },
+      },
+      orderBy: { completedAt: 'desc' },
+      take: 50, // Limit for performance
+    })
+
+    // Fetch personal records
+    const personalRecords = await prisma.personalRecord.findMany({
+      where: { userId: clientId },
+      include: {
+        exercise: { select: { id: true, name: true } },
+      },
+      orderBy: { achievedAt: 'desc' },
+    })
+
+    // Calculate journey stats
+    const totalWeeks = client.checkIns.length > 0
+      ? Math.max(...client.checkIns.map(ci => ci.weekNumber || 0))
+      : 0
+    const totalWorkouts = workoutSessions.length
+    const totalPRs = personalRecords.length
+    const ratingsWithValues = workoutSessions.filter(s => s.rating !== null)
+    const averageSessionRating = ratingsWithValues.length > 0
+      ? ratingsWithValues.reduce((sum, s) => sum + (s.rating || 0), 0) / ratingsWithValues.length
+      : null
+
+    const journeyStats = {
+      totalWeeks,
+      totalWorkouts,
+      totalPRs,
+      averageSessionRating,
+    }
+
     return NextResponse.json({
       client: {
         id: client.id,
@@ -193,12 +259,43 @@ export async function GET(
         weight: weightData,
         measurements: measurementsTimeline,
         photos: photoTimeline,
+        biofeedback: biofeedbackTimeline,
       },
       plans: {
         nutrition: client.nutritionPlan,
         calories: client.caloriePlan,
         workout: client.workoutPlan,
       },
+      // New data for Översikt dashboard
+      workoutSessions: workoutSessions.map(s => ({
+        id: s.id,
+        completedAt: s.completedAt,
+        durationMinutes: s.durationMinutes,
+        rating: s.rating,
+        ratingComment: s.ratingComment,
+        notes: s.notes,
+        templateName: s.templateName,
+        workoutProgramDay: s.workoutProgramDay,
+        sets: s.sets.map(set => ({
+          exerciseId: set.exerciseId,
+          exerciseName: set.exercise?.name || 'Okänd övning',
+          setNumber: set.setNumber,
+          reps: set.reps,
+          weightKg: set.weightKg,
+        })),
+      })),
+      personalRecords: personalRecords.map(pr => ({
+        id: pr.id,
+        exerciseId: pr.exerciseId,
+        exerciseName: pr.exercise?.name || 'Okänd övning',
+        recordType: pr.recordType,
+        weightKg: pr.weightKg,
+        reps: pr.reps,
+        volume: pr.volume,
+        oneRepMax: pr.oneRepMax,
+        achievedAt: pr.achievedAt,
+      })),
+      journeyStats,
     })
   } catch (error) {
     console.error('Failed to fetch client journal:', error)
