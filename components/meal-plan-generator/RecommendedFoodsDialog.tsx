@@ -133,7 +133,7 @@ const RECOMMENDED_FOODS: Record<string, CategoryData> = {
     ]
   },
   sauce: {
-    intro: 'Sås till maten är inget måste, det är ett val. För egen del är det inget jag väljer att lägga delar av mitt kaloriintag på dagligen utan det hör till valda enstaka tillfällen. Ska jag käka sås så ser jag gärna till att det inte springer iväg alldeles vilket det lätt gör med såser rika på fett.\n\nÄr du en såsfantast och väljer att inte tumma på den vanan trots att du vill ha kontroll på kosten, kika i hyllorna vad olika såser innehåller. Vissa kalorisnålare varianter är förvånansvärt bra. Jag rekommenderar Slender-såserna och de andra angivna nedan.\n\nDu kan även med fördel spara mellanmålen och göra såser på hela eller en del av kvargen från dina mellanmål. Makron från såsen dras av från övriga måltider för att bibehålla dina dagliga mål. Siffrorna anger kcal per 100g.',
+    intro: 'Sås till maten är inget måste, det är ett val. För egen del är det inget jag väljer att lägga delar av mitt kaloriintag på dagligen utan det hör till valda enstaka tillfällen. Ska jag käka sås så ser jag gärna till att det inte springer iväg alldeles vilket det lätt gör med såser rika på fett.\n\nÄr du en såsfantast och väljer att inte tumma på den vanan trots att du vill ha kontroll på kosten, kika i hyllorna vad olika såser innehåller. Vissa kalorisnålare varianter är förvånansvärt bra. Jag rekommenderar Slender-såserna och de andra angivna nedan.\n\nDu kan även med fördel spara mellanmålen och göra såser på hela eller en del av kvargen från dina mellanmål.',
     subcategories: [
       {
         name: 'Under 10 kcal',
