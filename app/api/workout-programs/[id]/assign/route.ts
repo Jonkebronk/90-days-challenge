@@ -59,6 +59,25 @@ export async function POST(
       )
     }
 
+    // Get existing active assignment to preserve start date if not provided
+    const existingAssignment = await prisma.assignedWorkoutProgram.findFirst({
+      where: {
+        userId: clientId,
+        active: true
+      },
+      select: { startDate: true }
+    })
+
+    // Determine start date: use provided date, or existing date, or default to today
+    let assignmentStartDate: Date
+    if (startDate) {
+      assignmentStartDate = new Date(startDate)
+    } else if (existingAssignment?.startDate) {
+      assignmentStartDate = existingAssignment.startDate
+    } else {
+      assignmentStartDate = new Date()
+    }
+
     // Deactivate all other active assignments for this client
     await prisma.assignedWorkoutProgram.updateMany({
       where: {
@@ -76,7 +95,7 @@ export async function POST(
         userId: clientId,
         workoutProgramId: id,
         coachId,
-        startDate: startDate ? new Date(startDate) : new Date(),
+        startDate: assignmentStartDate,
         active: true
       },
       include: {

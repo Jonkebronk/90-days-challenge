@@ -54,13 +54,26 @@ export async function GET() {
         height: true,
         currentWeight: true,
         gender: true,
+        // Get active workout program assignment to know challenge start date
+        assignedWorkoutPrograms: {
+          where: { active: true },
+          select: { startDate: true },
+          take: 1,
+        },
       },
       orderBy: {
         createdAt: 'desc',
       },
     })
 
-    return NextResponse.json({ clients, coach: null })
+    // Transform to include challengeStartDate at top level
+    const clientsWithStartDate = clients.map(client => ({
+      ...client,
+      challengeStartDate: client.assignedWorkoutPrograms[0]?.startDate || null,
+      assignedWorkoutPrograms: undefined, // Remove nested array
+    }))
+
+    return NextResponse.json({ clients: clientsWithStartDate, coach: null })
   } catch (error) {
     console.error('Failed to fetch clients:', error)
     return NextResponse.json(

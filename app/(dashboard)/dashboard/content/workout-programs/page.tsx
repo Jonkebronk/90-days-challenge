@@ -76,6 +76,7 @@ export default function WorkoutProgramsPage() {
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null)
   const [selectedClientId, setSelectedClientId] = useState<string>('')
   const [programStartDate, setProgramStartDate] = useState<string>('')
+  const [clientHasExistingStartDate, setClientHasExistingStartDate] = useState(false)
   const [assignDialogOpen, setAssignDialogOpen] = useState(false)
   const [assigning, setAssigning] = useState(false)
   const [assignments, setAssignments] = useState<Assignment[]>([])
@@ -184,12 +185,13 @@ export default function WorkoutProgramsPage() {
       return
     }
 
-    if (!programStartDate) {
+    // Only require start date if client doesn't have an existing one
+    if (!programStartDate && !clientHasExistingStartDate) {
       toast.error('Välj ett startdatum')
       return
     }
 
-    if (!isMonday(programStartDate)) {
+    if (programStartDate && !isMonday(programStartDate)) {
       toast.error('Startdatum måste vara en måndag')
       return
     }
@@ -200,13 +202,17 @@ export default function WorkoutProgramsPage() {
       const response = await fetch(`/api/workout-programs/${selectedProgramId}/assign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId: selectedClientId, startDate: programStartDate })
+        body: JSON.stringify({
+          clientId: selectedClientId,
+          startDate: programStartDate || undefined // Only send if specified
+        })
       })
 
       if (response.ok) {
         toast.success('Träningsprogram tilldelat!')
         setSelectedClientId('')
         setProgramStartDate('')
+        setClientHasExistingStartDate(false)
         await fetchPrograms()
         if (selectedProgramId) {
           await fetchAssignments(selectedProgramId)
@@ -465,12 +471,19 @@ export default function WorkoutProgramsPage() {
                   if (!open) {
                     setSelectedProgramId(null)
                     setSelectedClientId('')
+                    setProgramStartDate('')
+                    setClientHasExistingStartDate(false)
                     setAssignments([])
                   } else if (open) {
                     fetchAssignments(program.id)
                     if (clients.length === 1) {
                       // Auto-select if there's only one client
-                      setSelectedClientId(clients[0].id)
+                      const client = clients[0]
+                      setSelectedClientId(client.id)
+                      // Check if client has existing challenge start date
+                      if (client.challengeStartDate) {
+                        setClientHasExistingStartDate(true)
+                      }
                     }
                   }
                 }}>
@@ -555,7 +568,17 @@ export default function WorkoutProgramsPage() {
                             <label className="text-sm font-medium text-gray-700 mb-2 block">
                               Välj klient
                             </label>
-                            <Select value={selectedClientId} onValueChange={setSelectedClientId}>
+                            <Select value={selectedClientId} onValueChange={(value) => {
+                              setSelectedClientId(value)
+                              // Check if client has existing challenge start date
+                              const client = clients.find(c => c.id === value)
+                              if (client?.challengeStartDate) {
+                                setClientHasExistingStartDate(true)
+                                setProgramStartDate('') // Clear any manually entered date
+                              } else {
+                                setClientHasExistingStartDate(false)
+                              }
+                            }}>
                               <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                                 <SelectValue placeholder="Välj en klient..." />
                               </SelectTrigger>
@@ -571,38 +594,46 @@ export default function WorkoutProgramsPage() {
                             </Select>
                           </div>
 
-                          {/* Start Date Picker */}
-                          <div>
-                            <label className="text-sm font-medium text-gray-700 mb-2 block">
-                              Startdatum (90-dagars utmaning)
-                            </label>
-                            <div className="flex gap-2">
-                              <Input
-                                type="date"
-                                value={programStartDate}
-                                onChange={(e) => setProgramStartDate(e.target.value)}
-                                className="bg-white border-gray-300 text-gray-900 flex-1"
-                              />
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setProgramStartDate(getNextMonday())}
-                                className="border-gray-300 text-gray-700 text-xs whitespace-nowrap"
-                              >
-                                Nästa måndag
-                              </Button>
+                          {/* Start Date Picker - only show if client doesn't have existing start date */}
+                          {clientHasExistingStartDate ? (
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                              <p className="text-green-700 text-sm">
+                                ✓ Klienten har en pågående 90-dagars utmaning. Programmet tilldelas utan att ändra startdatum.
+                              </p>
                             </div>
-                            {programStartDate && !isMonday(programStartDate) && (
-                              <p className="text-amber-600 text-xs mt-1">
-                                Valt datum är inte en måndag. Programmet bör starta på en måndag.
-                              </p>
-                            )}
-                            {programStartDate && isMonday(programStartDate) && (
-                              <p className="text-green-600 text-xs mt-1">
-                                Dag 1 av 90 startar {new Date(programStartDate).toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })}
-                              </p>
-                            )}
-                          </div>
+                          ) : (
+                            <div>
+                              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                                Startdatum (90-dagars utmaning)
+                              </label>
+                              <div className="flex gap-2">
+                                <Input
+                                  type="date"
+                                  value={programStartDate}
+                                  onChange={(e) => setProgramStartDate(e.target.value)}
+                                  className="bg-white border-gray-300 text-gray-900 flex-1"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={() => setProgramStartDate(getNextMonday())}
+                                  className="border-gray-300 text-gray-700 text-xs whitespace-nowrap"
+                                >
+                                  Nästa måndag
+                                </Button>
+                              </div>
+                              {programStartDate && !isMonday(programStartDate) && (
+                                <p className="text-amber-600 text-xs mt-1">
+                                  Valt datum är inte en måndag. Programmet bör starta på en måndag.
+                                </p>
+                              )}
+                              {programStartDate && isMonday(programStartDate) && (
+                                <p className="text-green-600 text-xs mt-1">
+                                  Dag 1 av 90 startar {new Date(programStartDate).toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })}
+                                </p>
+                              )}
+                            </div>
+                          )}
 
                           <div className="flex gap-2 justify-end">
                             <Button
@@ -612,6 +643,7 @@ export default function WorkoutProgramsPage() {
                                 setSelectedProgramId(null)
                                 setSelectedClientId('')
                                 setProgramStartDate('')
+                                setClientHasExistingStartDate(false)
                                 setAssignments([])
                               }}
                               className="border-gray-300 text-gray-700"
