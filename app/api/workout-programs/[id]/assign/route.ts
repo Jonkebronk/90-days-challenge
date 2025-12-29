@@ -60,7 +60,7 @@ export async function POST(
     }
 
     // Get existing active assignment to preserve start date if not provided
-    const existingAssignment = await prisma.assignedWorkoutProgram.findFirst({
+    const currentActiveAssignment = await prisma.assignedWorkoutProgram.findFirst({
       where: {
         userId: clientId,
         active: true
@@ -72,8 +72,8 @@ export async function POST(
     let assignmentStartDate: Date
     if (startDate) {
       assignmentStartDate = new Date(startDate)
-    } else if (existingAssignment?.startDate) {
-      assignmentStartDate = existingAssignment.startDate
+    } else if (currentActiveAssignment?.startDate) {
+      assignmentStartDate = currentActiveAssignment.startDate
     } else {
       assignmentStartDate = new Date()
     }
