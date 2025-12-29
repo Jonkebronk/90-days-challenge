@@ -579,25 +579,33 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
       const data = await response.json()
 
+      const newSet: SetLog = {
+        id: data.set.id,
+        exerciseId,
+        setNumber: newSetNumber,
+        setType: 'WEIGHT',
+        reps: null,
+        weightKg: null,
+        notes: null,
+        timeSeconds: null,
+        completed: true
+      }
+
       setSetLogs(prev => ({
         ...prev,
         [exerciseId]: [
           ...(prev[exerciseId] || []),
-          {
-            id: data.set.id,
-            exerciseId,
-            setNumber: newSetNumber,
-            setType: 'WEIGHT',
-            reps: null,
-            weightKg: null,
-            notes: null,
-            timeSeconds: null,
-            completed: true
-          }
+          newSet
         ]
       }))
 
-      toast.success('Set tillagt')
+      // Open edit modal for the new set so user can fill in values
+      setEditingSet(newSet)
+      setEditReps('')
+      setEditWeight('')
+      setEditNotes('')
+
+      toast.success('Set tillagt - fyll i värden')
     } catch (error) {
       console.error('Error adding set:', error)
       toast.error('Kunde inte lägga till set')
