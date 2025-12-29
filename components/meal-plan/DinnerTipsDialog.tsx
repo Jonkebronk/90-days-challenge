@@ -37,50 +37,11 @@ export function DinnerTipsDialog({ trigger }: DinnerTipsDialogProps) {
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <div className="flex items-start gap-3">
-              <span className="text-xl">🍽️</span>
-              <div>
-                <h4 className="font-medium text-gray-900">Planera Framåt</h4>
-                <p className="text-sm text-gray-600">
-                  Bestäm vilken sorts middag det blir i förväg så du kan
-                  anpassa dina andra måltider under dagen.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-start gap-3">
               <span className="text-xl">🥗</span>
               <div>
                 <h4 className="font-medium text-gray-900">Portionskontroll utan att mäta</h4>
                 <p className="text-sm text-gray-600">
                   En knytnäve protein, en knytnäve kolhydrater, resten grönsaker.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-start gap-3">
-              <span className="text-xl">⏱️</span>
-              <div>
-                <h4 className="font-medium text-gray-900">Ät Lugnt</h4>
-                <p className="text-sm text-gray-600">
-                  Lägg ner gaffeln mellan tuggorna och njut av samtalet.
-                  Det tar 20 minuter för hjärnan att registrera mättnad.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-start gap-3">
-              <span className="text-xl">💚</span>
-              <div>
-                <h4 className="font-medium text-gray-900">Det är OK att Avvika</h4>
-                <p className="text-sm text-gray-600">
-                  Sociala måltider är en viktig del av livet.
-                  Balans över tid är viktigare än perfektion varje dag.
                 </p>
               </div>
             </div>
