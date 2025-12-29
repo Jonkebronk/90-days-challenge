@@ -52,10 +52,9 @@ export function DinnerTipsDialog({ trigger }: DinnerTipsDialogProps) {
             <div className="flex items-start gap-3">
               <span className="text-xl">🥗</span>
               <div>
-                <h4 className="font-medium text-gray-900">Fyll Tallriken Smart</h4>
+                <h4 className="font-medium text-gray-900">Portionskontroll utan att mäta</h4>
                 <p className="text-sm text-gray-600">
-                  Börja med grönsaker och fyll halva tallriken.
-                  Det ger näring och mättnad.
+                  En knytnäve protein, en knytnäve kolhydrater, resten grönsaker.
                 </p>
               </div>
             </div>
