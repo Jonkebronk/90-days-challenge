@@ -2876,10 +2876,14 @@ model GeneratedMealPlan {
   // Recipe suggestions per meal (manually added by coach)
   mealRecipes Json? // Record<number, MealRecipe[]> - indexed by meal index
 
+  // Whether this is a suggestion plan (created by coach as example)
+  isSuggestion Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([nutritionPlanId])
+  @@index([nutritionPlanId, isSuggestion])
   @@map("generated_meal_plans")
 }
 

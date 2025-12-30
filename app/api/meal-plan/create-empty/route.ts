@@ -23,11 +23,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { nutritionPlanId, mealConfigs, distributionMethod, forceRecreate } = body as {
+    const { nutritionPlanId, mealConfigs, distributionMethod, forceRecreate, isSuggestion } = body as {
       nutritionPlanId: string;
       mealConfigs?: MealConfig[];
       distributionMethod?: DistributionMethod;
       forceRecreate?: boolean;
+      isSuggestion?: boolean;
     };
 
     if (!nutritionPlanId) {
@@ -61,9 +62,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if a meal plan already exists for this nutrition plan
+    // Check if a meal plan already exists for this nutrition plan (with same isSuggestion type)
     const existingPlan = await prisma.generatedMealPlan.findFirst({
-      where: { nutritionPlanId },
+      where: { nutritionPlanId, isSuggestion: isSuggestion || false },
     });
 
     if (existingPlan && !forceRecreate) {
@@ -121,6 +122,7 @@ export async function POST(request: NextRequest) {
         meals: meals as any,
         targetMacros: dailyMacros as any,
         actualMacros: { protein: 0, carbs: 0, fat: 0, kcal: 0 } as any,
+        isSuggestion: isSuggestion || false,
       },
     });
 

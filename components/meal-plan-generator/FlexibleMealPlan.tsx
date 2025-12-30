@@ -27,6 +27,7 @@ interface FlexibleMealPlanProps {
   onSave?: (planId: string) => void;
   onMealPlanIdChange?: (newId: string) => void;
   onTotalsChange?: (totals: { kcal: number; protein: number; carbs: number; fat: number }) => void;
+  isSuggestion?: boolean; // Whether this is a coach's suggestion plan
 }
 
 interface FlexiblePlanState {
@@ -42,6 +43,7 @@ export function FlexibleMealPlan({
   onSave,
   onMealPlanIdChange,
   onTotalsChange,
+  isSuggestion = false,
 }: FlexibleMealPlanProps) {
   // Flexible plan state
   const [flexiblePlan, setFlexiblePlan] = useState<FlexiblePlanState | null>(null);
@@ -175,7 +177,7 @@ export function FlexibleMealPlan({
 
     try {
       // First, try to fetch existing meal plan
-      const existingResponse = await fetch(`/api/meal-plan/by-nutrition-plan/${nutritionPlanId}`);
+      const existingResponse = await fetch(`/api/meal-plan/by-nutrition-plan/${nutritionPlanId}?isSuggestion=${isSuggestion}`);
 
       if (existingResponse.ok) {
         const existingData = await existingResponse.json();
@@ -222,6 +224,7 @@ export function FlexibleMealPlan({
           nutritionPlanId,
           mealConfigs: DEFAULT_MEAL_CONFIGS,
           forceRecreate,
+          isSuggestion,
         }),
       });
 

@@ -507,190 +507,29 @@ export default function MealPlanPage() {
             </Dialog>
 
             <TabsContent value="meals" className="space-y-4 mt-4">
-              {/* Meals */}
-              {mealPlan.meals.map((meal) => {
-                const recipeCount = meal.options?.filter(o => o.recipe).length || 0
-                const isExpanded = expandedMeals.has(meal.mealNumber)
-
-                // Parse ingredient sources
-                const carbItems = meal.carbSource ? meal.carbSource.split(/ELLER|eller/).map(s => s.trim()).filter(Boolean) : []
-                const proteinItems = meal.proteinSource ? meal.proteinSource.split(/ELLER|eller/).map(s => s.trim()).filter(Boolean) : []
-                const fatItems = meal.fatSource ? meal.fatSource.split(/ELLER|eller/).map(s => s.trim()).filter(Boolean) : []
-
-                return (
-                <div key={meal.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-                  {/* Meal Header */}
-                  <div
-                    className="px-4 py-3 flex items-start justify-between cursor-pointer hover:bg-gray-50 transition-colors"
-                    onClick={() => toggleMeal(meal.mealNumber)}
-                  >
-                    <div className="flex items-start gap-2">
-                      <Utensils className="w-5 h-5 text-gold-primary mt-0.5" />
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-base font-semibold text-gray-900">
-                            {meal.name || `Måltid ${meal.mealNumber}`}
-                          </h3>
-                          {recipeCount > 0 && (
-                            <span className="text-sm text-gray-500">({recipeCount} recept)</span>
-                          )}
-                        </div>
-                        {/* Macro text under meal name */}
-                        <div className="flex items-center gap-2 flex-wrap text-xs">
-                          <span><span className="font-medium text-gray-500">KCAL</span> <span className="font-bold text-amber-600">{Math.round(Number(meal.totalCalories || 0))}</span></span>
-                          <span className="text-gray-300">·</span>
-                          <span><span className="font-medium text-gray-500">PROT</span> <span className="font-bold text-rose-600">{Math.round(Number(meal.totalProtein || 0))}g</span></span>
-                          <span className="text-gray-300">·</span>
-                          <span><span className="font-medium text-gray-500">KOLH</span> <span className="font-bold text-amber-500">{Math.round(Number(meal.totalCarbs || 0))}g</span></span>
-                          <span className="text-gray-300">·</span>
-                          <span><span className="font-medium text-gray-500">FETT</span> <span className="font-bold text-sky-500">{Math.round(Number(meal.totalFat || 0))}g</span></span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center">
-                      {isExpanded ? (
-                        <ChevronUp className="w-5 h-5 text-gray-400" />
-                      ) : (
-                        <ChevronDown className="w-5 h-5 text-gray-400" />
-                      )}
-                    </div>
+              {/* Förslag kostschema - Coach's suggestion using FlexibleMealPlan */}
+              {nutritionPlanId && flexibleTargetMacros ? (
+                <MealPlanGenerator
+                  nutritionPlanId={nutritionPlanId}
+                  targetMacros={flexibleTargetMacros}
+                  onSave={() => {
+                    fetchNutritionPlan()
+                  }}
+                  isSuggestion={true}
+                />
+              ) : (
+                <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm">
+                  <div className="text-center">
+                    <Wand2 className="w-12 h-12 mx-auto text-purple-500 mb-4" />
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">
+                      Ingen kostplan tilldelad
+                    </h3>
+                    <p className="text-gray-500 text-sm">
+                      En kostplan med makromål behöver skapas först för att kunna lägga till förslag
+                    </p>
                   </div>
-
-                  {/* Expandable Content */}
-                  {isExpanded && (
-                    <div className="px-4 pb-4 space-y-3">
-                      {/* INSTRUKTIONER Card */}
-                      {meal.description && (
-                        <div className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden">
-                          <div className="px-4 py-2 border-b border-gray-200">
-                            <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide">
-                              Instruktioner
-                            </h4>
-                          </div>
-                          <div className="p-4">
-                            <p className="text-sm text-gray-700 leading-relaxed">{meal.description}</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* PROTEIN Card */}
-                      {proteinItems.length > 0 && (
-                        <div className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden">
-                          <div className="px-4 py-2 border-b border-gray-200">
-                            <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide">Protein</h4>
-                          </div>
-                          <div className="p-4">
-                            <ul className="space-y-1">
-                              {proteinItems.map((item, idx) => (
-                                <li key={idx}>
-                                  <div className="flex items-start gap-2">
-                                    <span className="text-gray-400 mt-1">•</span>
-                                    <span className="text-sm text-gray-700">{item}</span>
-                                  </div>
-                                  {idx < proteinItems.length - 1 && (
-                                    <div className="my-3 flex items-center justify-center">
-                                      <span className="text-sm font-semibold text-amber-500 uppercase">ELLER</span>
-                                    </div>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* KOLHYDRATER Card */}
-                      {carbItems.length > 0 && (
-                        <div className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden">
-                          <div className="px-4 py-2 border-b border-gray-200">
-                            <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide">Kolhydrater</h4>
-                          </div>
-                          <div className="p-4">
-                            <ul className="space-y-1">
-                              {carbItems.map((item, idx) => (
-                                <li key={idx}>
-                                  <div className="flex items-start gap-2">
-                                    <span className="text-gray-400 mt-1">•</span>
-                                    <span className="text-sm text-gray-700">{item}</span>
-                                  </div>
-                                  {idx < carbItems.length - 1 && (
-                                    <div className="my-3 flex items-center justify-center">
-                                      <span className="text-sm font-semibold text-amber-500 uppercase">ELLER</span>
-                                    </div>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* FETT Card */}
-                      {fatItems.length > 0 && (
-                        <div className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden">
-                          <div className="px-4 py-2 border-b border-gray-200">
-                            <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide">Fett</h4>
-                          </div>
-                          <div className="p-4">
-                            <ul className="space-y-1">
-                              {fatItems.map((item, idx) => (
-                                <li key={idx}>
-                                  <div className="flex items-start gap-2">
-                                    <span className="text-gray-400 mt-1">•</span>
-                                    <span className="text-sm text-gray-700">{item}</span>
-                                  </div>
-                                  {idx < fatItems.length - 1 && (
-                                    <div className="my-3 flex items-center justify-center">
-                                      <span className="text-sm font-semibold text-amber-500 uppercase">ELLER</span>
-                                    </div>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Recipe Thumbnails */}
-                      {recipeCount > 0 && (
-                        <div className="pt-3 border-t border-gray-200">
-                          <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-3">
-                            Receptförslag
-                          </h4>
-                          <div className="flex gap-3 overflow-x-auto pb-1">
-                            {meal.options?.map((option) => option.recipe && (
-                              <Link
-                                key={option.id}
-                                href={`/dashboard/recipes/${option.recipe.id}`}
-                                className="flex-shrink-0 group"
-                              >
-                                <div className="w-[140px]">
-                                  {option.recipe.coverImage ? (
-                                    <img
-                                      src={option.recipe.coverImage}
-                                      alt={option.recipe.title}
-                                      className="w-full h-[100px] object-cover rounded-lg border border-gray-200 group-hover:border-gold-primary transition-all"
-                                    />
-                                  ) : (
-                                    <div className="w-full h-[100px] bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 group-hover:border-gold-primary transition-all">
-                                      <span className="text-3xl">🍽️</span>
-                                    </div>
-                                  )}
-                                  <p className="text-xs text-gray-600 mt-2 line-clamp-2 group-hover:text-gold-primary transition-colors">
-                                    {option.recipe.title}
-                                  </p>
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
-                )
-              })}
-
+              )}
             </TabsContent>
 
             <TabsContent value="flexible" className="space-y-4 mt-4">

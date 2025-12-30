@@ -18,9 +18,11 @@ export async function GET(
     }
 
     const { nutritionPlanId } = await params;
+    const { searchParams } = new URL(request.url);
+    const isSuggestion = searchParams.get('isSuggestion') === 'true';
 
     const generatedPlan = await prisma.generatedMealPlan.findFirst({
-      where: { nutritionPlanId },
+      where: { nutritionPlanId, isSuggestion },
       include: {
         nutritionPlan: {
           select: {
