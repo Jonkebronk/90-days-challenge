@@ -204,9 +204,10 @@ interface GuidePanelProps {
 }
 
 type SelectedItem =
-  | { type: 'intro' }
-  | { type: 'tips' }
+  | { type: 'flexible' }
   | { type: 'howto' }
+  | { type: 'practical' }
+  | { type: 'faq' }
   | { type: 'food'; category: keyof typeof CATEGORY_CONFIG }
 
 export function GuidePanel({ mealPlanDescriptionContent, nutritionTipsContent }: GuidePanelProps) {
@@ -260,48 +261,230 @@ export function GuidePanel({ mealPlanDescriptionContent, nutritionTipsContent }:
     )
   }
 
-  const renderHowToContent = () => (
-    <div className="space-y-6 text-gray-700">
-      <p>
-        Din kostplan kan anpassas helt efter dina egna preferenser. Det viktigaste är att du matchar makros korrekt och att dina matbyten håller samma kvalitet och näringsvärde.
-      </p>
-      <p>
-        Du kan variera maten dagligen, men se till att kvaliteten bibehålls. Prioritera hela, oprocessade livsmedel och tänk på mikronäringsämnena (vitaminer och mineraler) du får från maten – inte bara makronäringsämnena (protein, kolhydrater och fett).
-      </p>
+  // Content for each guide section
+  const guideContent = {
+    flexible: `**Flexibel kosthållning**
 
-      <div>
-        <h2 className="text-amber-600 text-lg font-semibold mb-2">Hur du väljer livsmedel</h2>
-        <p className="mb-3">
-          Trycker du på källorna, t.ex. proteinkälla för varje måltid, så får du upp en lista på rekommenderade livsmedel. Sen matchar du det mot livsmedlet du handlar.
-        </p>
-        <div className="bg-gray-100 p-4 rounded-lg space-y-2">
-          <p><strong className="text-gray-900">Nötkött 5 %</strong> = ICAS Nötfärs 5 %</p>
-          <p><strong className="text-gray-900">Kvarg 0,2 %</strong> = Kvarg Mild Persika Passion Laktosfri 0,2% 1000g Arla</p>
-        </div>
-      </div>
+Jag har byggt den här kostmodulen för att låta dig anpassa din kost utifrån ditt liv. Vi har alla olika preferenser, scheman och behov av variation – och din kostplan ska fungera för dig, inte tvärtom.
 
-      <div>
-        <h2 className="text-amber-600 text-lg font-semibold mb-2">De tre grundpelarna</h2>
-        <ul className="list-disc list-inside space-y-1">
-          <li><strong className="text-gray-900">Dina kalorier</strong> styr din vikt.</li>
-          <li><strong className="text-gray-900">Dina makros</strong> styr din kroppssammansättning.</li>
-          <li><strong className="text-gray-900">Kvaliteten på din mat</strong> styr hur du mår.</li>
-        </ul>
-      </div>
+**Varför flexibilitet fungerar**
 
-      <div>
-        <h2 className="text-amber-600 text-lg font-semibold mb-2">Hundraårsregeln</h2>
-        <p className="mb-3">
-          Välj livsmedel som fanns för hundra år sedan. Det innebär att du prioriterar råvaror som kött, fisk, potatis, ägg, grönsaker, frukt och mejeriprodukter, och undviker moderna ultraprocessade produkter.
-        </p>
-        <div className="bg-gray-100 p-4 rounded-lg">
-          <p className="text-sm">
-            <strong className="text-amber-600">Förtydligande om gråzoner:</strong> Hundraårsregeln är en vägledning, inte en absolut lag. Vissa livsmedel är mer bearbetade men fyller en praktisk funktion och har sin plats i en bra kosthållning.
-          </p>
-        </div>
-      </div>
-    </div>
-  )
+Rigida dieter misslyckas oftare än flexibla. Forskning visar att personer med ett flexibelt förhållningssätt till mat har:
+
+- Lägre kroppsvikt över tid
+- Färre episoder av överätande
+- Bättre relation till mat
+- Högre sannolikhet att behålla resultaten
+
+Anledningen är enkel: en plan du faktiskt kan följa slår alltid en "perfekt" plan du ger upp efter tre veckor.
+
+**Grundprincipen**
+
+Din kostplan kan anpassas helt efter dina egna preferenser. Det viktigaste är att du matchar makros korrekt och att dina matbyten håller samma kvalitet och näringsvärde.
+
+Du kan variera maten dagligen, men se till att kvaliteten bibehålls. Prioritera hela, oprocessade livsmedel och tänk på mikronäringsämnena (vitaminer och mineraler) du får från maten – inte bara makronäringsämnena (protein, kolhydrater och fett).
+
+**De tre grundpelarna**
+
+- **Dina kalorier** styr din vikt
+- **Dina makros** styr din kroppssammansättning
+- **Kvaliteten på din mat** styr hur du mår
+
+**Hundraårsregeln**
+
+Välj livsmedel som fanns för hundra år sedan. Det innebär att du prioriterar råvaror som kött, fisk, potatis, ägg, grönsaker, frukt och mejeriprodukter – och undviker moderna ultraprocessade produkter.
+
+*Förtydligande om gråzoner:* Hundraårsregeln är en vägledning, inte en absolut lag. Vissa livsmedel är mer bearbetade men fyller en praktisk funktion och har sin plats i en bra kosthållning. Proteinpulver, kvarg och fullkornspasta är exempel på detta.
+
+**Hur du väljer livsmedel**
+
+Trycker du på källorna (t.ex. proteinkälla) för varje måltid får du upp en lista på rekommenderade livsmedel. Sen matchar du det mot livsmedlet du handlar.
+
+*Exempel:*
+- Nötkött 5% = ICAs Nötfärs 5%
+- Kvarg 0,2% = Arla Kvarg Mild Persika Passion Laktosfri 0,2% 1000g
+
+**Vad du kan byta ut**
+
+- **Proteinkällor:** Kyckling kan bytas mot fisk, ägg, kvarg, bönor eller annat med liknande proteininnehåll.
+- **Kolhydratkällor:** Ris kan bytas mot potatis, pasta, bulgur, quinoa eller bröd – så länge mängden kolhydrater matchar.
+- **Fettkällor:** Olivolja kan bytas mot avokado, nötter eller annan fettkälla med samma kalorimängd.
+- **Grönsaker:** Byt fritt mellan grönsaker. Mer variation betyder mer variation i näringsämnen.
+
+**Vad du bör tänka på**
+
+- **Matcha makros** – Om du byter ut något, se till att protein, kolhydrater och fett blir ungefär samma
+- **Behåll kvaliteten** – Byt inte bort fullkornspasta mot godis bara för att kolhydraterna matchar
+- **Tänk på mättnad** – Vissa livsmedel mättar mer än andra. 400 kcal från havregryn håller dig mätt längre än 400 kcal från juice
+
+**Variation är bra**
+
+Större variation i maten betyder mer variation i näringsämnen – och det är positivt.
+
+Att äta samma saker varje dag kan fungera kortsiktigt, men i längden:
+- Ökar risken för näringsbrister
+- Blir tråkigt och ökar risken att ge upp
+- Gör det svårare att äta socialt
+
+Jag uppmuntrar dig att variera. Testa nya livsmedel, prova recept från receptbanken, och gör kostplanen till din egen.
+
+**Receptbanken**
+
+Om du blir uttråkad eller vill ha inspiration – kolla i receptbanken. Alla recept kan redigeras och anpassas så de passar in i din kostplan.
+
+Du kan också skapa egna måltider och spara dem för framtida bruk.`,
+
+    howto: `**Så använder du kostplanen**
+
+**Översikt**
+
+Din kostplan är uppdelad i måltider: Frukost, Lunch, Mellanmål, Middag och Kvällsmål. Varje måltid visar sina makros (kalorier, protein, kolhydrater och fett) så du alltid har koll på helheten.
+
+**Antal måltider**
+
+Du kan själv justera hur många måltider du vill äta per dag. Standardupplägget är fem måltider (Frukost, Lunch, Mellanmål, Middag, Kvällsmål), men det går att anpassa efter vad som fungerar för dig.
+
+Vissa föredrar tre större måltider, andra vill ha sex mindre. Det spelar ingen roll för resultatet – så länge du träffar dina totala kalorier och makros över dagen.
+
+Välj det upplägg som passar din vardag och gör det lättare att hålla planen.
+
+**Steg för steg**
+
+**1. Välj måltid**
+Klicka på den måltid du vill redigera för att expandera den.
+
+**2. Lägg till livsmedel**
+Klicka på "+ Lägg till" vid den kategori du vill fylla i:
+- Proteinkällor (röd) – Kyckling, fisk, ägg, kvarg etc.
+- Kolhydrater (gul) – Ris, potatis, havregryn etc.
+- Fettkällor (grön) – Olivolja, nötter, avokado etc.
+
+**3. Välj från listan**
+Du får upp en lista med rekommenderade livsmedel. Välj det som matchar vad du har hemma eller ska handla.
+
+*Exempel:*
+- "Kycklingfilé (rå)" i listan = Kycklingfilé du köper i butiken
+- "Kvarg (1%)" i listan = Arla Kvarg eller liknande
+
+**4. Justera mängden**
+Ändra gramvikten så det passar dina makros. Systemet räknar om automatiskt.
+
+*Kom ihåg: Alla vikter är råvikter – du väger maten innan tillagning.*
+
+**5. Lägg till grönsaker och bär**
+Under "Tillbehör" kan du lägga till grönsaker och bär. Dessa är mer fria – ät de sorter du gillar och i den mängd som passar.
+
+**6. Använd receptförslag**
+Under varje måltid finns receptförslag som passar dina makros. Klicka på ett recept för att se ingredienser och instruktioner. Alla recept kan anpassas.
+
+**Hittar du inte ett livsmedel?**
+
+Om du inte hittar det du söker i listan kan du skicka en förfrågan till mig. Klicka på "Förfrågan om livsmedel" och fyll i:
+- Livsmedelsnamn (t.ex. "Kvarg vanilj")
+- Märke (t.ex. "Lindahls")
+- Kategori (valfritt)
+- Bild på framsidan och innehållsförteckning (valfritt men hjälper)
+
+Jag granskar förfrågan och lägger till livsmedlet i databasen om det passar in.
+
+**Tips för smidigare vardag**
+
+- **Spara favoriter** – Hittar du kombinationer som funkar, spara dem för snabbare planering
+- **Meal prep** – Förbered flera måltider samtidigt och portionera upp
+- **Byt fritt inom kategori** – Trött på kyckling? Byt till fisk eller kvarg så länge makros matchar
+- **Grönsaker är fria** – Fyll på med grönsaker för mättnad utan att stressa över exakta mängder
+
+**Om något inte stämmer**
+
+Ibland matchar inte livsmedlet i butiken exakt med listan. Då gör du så här:
+1. Kolla näringsvärdet på förpackningen
+2. Jämför protein, kolhydrater och fett per 100g
+3. Om det är ungefär samma – kör på
+4. Om det skiljer mycket – justera mängden eller välj annat
+
+*Exempel: Listan säger "Kvarg 1%" men du hittar bara 0,2%. Ingen fara – skillnaden är minimal. Använd den du hittar.*
+
+**Vanliga misstag att undvika**
+
+- **Glömma att väga rått** – Tillagad vikt ≠ råvikt. 100g rått ris blir ca 250g kokt
+- **Skippa grönsaker** – De ger volym, mättnad och mikronäringsämnen
+- **Stressa över perfektion** – Inom ±5g spelar ingen roll. Sikta på "tillräckligt bra"`,
+
+    practical: `**Praktiska riktlinjer**
+
+**Råvikter**
+
+Alla vikter i kostplanen är råvikter – det vill säga matens vikt innan tillagning.
+
+Du väger kycklingen upptinad men rå, potatisen oskalad och rå, riset okokt. Grönsaker och bär kan vägas frysta.
+
+*Viktigt: "Råvikt" betyder inte att maten ska ätas rå. Det är bara vikten innan tillagning.*
+
+**Matlagning**
+
+Använd gärna matlagningsspray istället för olja – det är lätt att hälla för mycket och därmed få i sig extra kalorier utan att tänka på det.
+
+*Exempel på matlagningssprays:*
+- Pam Original Cooking Spray
+- Slender Chef Cooking Spray
+
+Om spray inte är något för dig, stek i olivolja eller kokosolja (smakfri variant). Mät upp mängden så du vet vad du får i dig.
+
+**Kryddor**
+
+- Använd helst färska kryddor
+- Salta med sunt förnuft
+- Undvik blandkryddor (grillkrydda, citronpeppar etc.) – de innehåller ofta socker och tillsatser
+- Använd rena kryddor som cayenne, chili, curry, paprika, vitlök, oregano
+
+**Grönsaker**
+
+Ät grönsaker du gillar. Exempel:
+- Isbergssallad, spenat, ruccola
+- Broccoli, blomkål, zucchini
+- Gurka, tomat, paprika
+- Morötter, sparris, haricots verts
+
+*Tips: Frysta och hackade grönsaker är smidigt, billigt och lika näringsrikt som färska.*
+
+**Såser**
+
+Vill du ha sås till en måltid? Kolla i receptbankens såsavsnitt eller välj en lågkalorisås. Undvik färdiga såser med mycket socker och fett.
+
+**Drycker**
+
+- **Vatten** – Förstahandsvalet, alltid
+- **Kaffe och te** – Utan socker, gärna utan mjölk
+- **Kalorifria läskedrycker och energidrycker** – Går bra, men vatten är bättre`,
+
+    faq: `**Vanliga frågor**
+
+**Hur ska jag väga maten?**
+
+Du väger all mat rå – upptinad kyckling, rå potatis, okokt ris. Grönsaker och bär kan vägas frysta.
+
+**Ska riset ätas okokt?**
+
+Nej, riset ska självklart kokas. "Råvikt" betyder bara att du väger det innan tillagning.
+
+**Jag kissar väldigt mycket. Är det normalt?**
+
+Helt normalt de första 10 dagarna. Du går ner i vätska, särskilt om du minskat kolhydraterna, och det ska ut någonstans. Inget att oroa sig över.
+
+**Vad är magert nötkött?**
+
+Nötkött med max 5% fetthalt.
+
+---
+
+**Det viktigaste**
+
+Din kostplan ska fungera i praktiken. Den ska inte skapa stress, frustration eller krocka med livspusslet.
+
+*Perfekt är fienden till bra.* En plan som är 80% rätt och som du faktiskt följer slår en plan som är 100% rätt på pappret men som du ger upp efter en vecka.
+
+Har du frågor om byten eller anpassningar? Det är bara att skriva.`
+  }
 
   const renderContent = () => {
     if (!selectedItem) {
@@ -313,20 +496,14 @@ export function GuidePanel({ mealPlanDescriptionContent, nutritionTipsContent }:
     }
 
     switch (selectedItem.type) {
-      case 'intro':
-        return mealPlanDescriptionContent ? (
-          <MDXPreview content={mealPlanDescriptionContent} />
-        ) : (
-          <p className="text-gray-400">Laddar innehåll...</p>
-        )
-      case 'tips':
-        return nutritionTipsContent ? (
-          <MDXPreview content={nutritionTipsContent} />
-        ) : (
-          <p className="text-gray-400">Laddar råd...</p>
-        )
+      case 'flexible':
+        return <MDXPreview content={guideContent.flexible} />
       case 'howto':
-        return renderHowToContent()
+        return <MDXPreview content={guideContent.howto} />
+      case 'practical':
+        return <MDXPreview content={guideContent.practical} />
+      case 'faq':
+        return <MDXPreview content={guideContent.faq} />
       case 'food':
         return renderFoodContent(selectedItem.category)
       default:
@@ -341,7 +518,7 @@ export function GuidePanel({ mealPlanDescriptionContent, nutritionTipsContent }:
         <div className="md:w-56 border-b md:border-b-0 md:border-r border-gray-200 p-3 shrink-0">
           {/* Mobile: Horizontal button group */}
           <div className="flex md:flex-col gap-2">
-            {/* Lar dig mer grupp */}
+            {/* Kostguide grupp */}
             <div className="flex-1 md:flex-none">
               <button
                 onClick={() => toggleGroup('learn')}
@@ -349,8 +526,8 @@ export function GuidePanel({ mealPlanDescriptionContent, nutritionTipsContent }:
               >
                 <span className="flex items-center gap-1.5 md:gap-2">
                   <BookOpen className="w-4 h-4" />
-                  <span className="hidden sm:inline">Lär dig mer</span>
-                  <span className="sm:hidden">Lärande</span>
+                  <span className="hidden sm:inline">Kostguide</span>
+                  <span className="sm:hidden">Guide</span>
                 </span>
                 <ChevronDown className={cn("w-4 h-4 transition-transform", expandedGroup === 'learn' && "rotate-180")} />
               </button>
@@ -373,30 +550,18 @@ export function GuidePanel({ mealPlanDescriptionContent, nutritionTipsContent }:
 
           {/* Expanded sub-items */}
           {expandedGroup === 'learn' && (
-            <div className="mt-2 md:ml-2 grid grid-cols-3 md:grid-cols-1 gap-1">
+            <div className="mt-2 md:ml-2 grid grid-cols-2 md:grid-cols-1 gap-1">
               <button
-                onClick={() => setSelectedItem({ type: 'intro' })}
+                onClick={() => setSelectedItem({ type: 'flexible' })}
                 className={cn(
                   "text-left px-2 md:px-3 py-2 rounded-lg text-xs md:text-sm transition-colors flex items-center gap-1.5 md:gap-2",
-                  selectedItem?.type === 'intro'
+                  selectedItem?.type === 'flexible'
                     ? "bg-blue-100 text-blue-700 font-medium"
                     : "text-gray-600 hover:bg-gray-100"
                 )}
               >
                 <Info className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
-                <span className="truncate">Intro</span>
-              </button>
-              <button
-                onClick={() => setSelectedItem({ type: 'tips' })}
-                className={cn(
-                  "text-left px-2 md:px-3 py-2 rounded-lg text-xs md:text-sm transition-colors flex items-center gap-1.5 md:gap-2",
-                  selectedItem?.type === 'tips'
-                    ? "bg-amber-100 text-amber-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-100"
-                )}
-              >
-                <Lightbulb className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
-                <span className="truncate">Råd</span>
+                <span className="truncate">Flexibel kost</span>
               </button>
               <button
                 onClick={() => setSelectedItem({ type: 'howto' })}
@@ -408,7 +573,31 @@ export function GuidePanel({ mealPlanDescriptionContent, nutritionTipsContent }:
                 )}
               >
                 <BookOpen className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
-                <span className="truncate">Guide</span>
+                <span className="truncate">Så använder du</span>
+              </button>
+              <button
+                onClick={() => setSelectedItem({ type: 'practical' })}
+                className={cn(
+                  "text-left px-2 md:px-3 py-2 rounded-lg text-xs md:text-sm transition-colors flex items-center gap-1.5 md:gap-2",
+                  selectedItem?.type === 'practical'
+                    ? "bg-amber-100 text-amber-700 font-medium"
+                    : "text-gray-600 hover:bg-gray-100"
+                )}
+              >
+                <Lightbulb className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+                <span className="truncate">Praktiska tips</span>
+              </button>
+              <button
+                onClick={() => setSelectedItem({ type: 'faq' })}
+                className={cn(
+                  "text-left px-2 md:px-3 py-2 rounded-lg text-xs md:text-sm transition-colors flex items-center gap-1.5 md:gap-2",
+                  selectedItem?.type === 'faq'
+                    ? "bg-purple-100 text-purple-700 font-medium"
+                    : "text-gray-600 hover:bg-gray-100"
+                )}
+              >
+                <Info className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+                <span className="truncate">Vanliga frågor</span>
               </button>
             </div>
           )}
