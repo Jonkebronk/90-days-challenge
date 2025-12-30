@@ -199,24 +199,15 @@ const CATEGORY_CONFIG = {
 }
 
 interface GuidePanelProps {
-  mealPlanDescriptionContent: string
-  nutritionTipsContent: string
+  mealPlanDescriptionContent?: string
+  nutritionTipsContent?: string
 }
 
-type SelectedItem =
-  | { type: 'flexible' }
-  | { type: 'howto' }
-  | { type: 'practical' }
-  | { type: 'faq' }
-  | { type: 'food'; category: keyof typeof CATEGORY_CONFIG }
-
-export function GuidePanel({ mealPlanDescriptionContent, nutritionTipsContent }: GuidePanelProps) {
-  const [expandedGroup, setExpandedGroup] = useState<'learn' | 'food' | null>('learn')
-  const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null)
-
-  const toggleGroup = (group: 'learn' | 'food') => {
-    setExpandedGroup(prev => prev === group ? null : group)
-  }
+export function GuidePanel({ }: GuidePanelProps) {
+  const [guideExpanded, setGuideExpanded] = useState(false)
+  const [foodExpanded, setFoodExpanded] = useState(true)
+  const [selectedGuide, setSelectedGuide] = useState<'flexible' | 'howto' | 'practical' | 'faq' | null>(null)
+  const [selectedFood, setSelectedFood] = useState<keyof typeof CATEGORY_CONFIG | null>(null)
 
   const renderFoodContent = (category: keyof typeof CATEGORY_CONFIG) => {
     const config = CATEGORY_CONFIG[category]
@@ -486,155 +477,136 @@ Din kostplan ska fungera i praktiken. Den ska inte skapa stress, frustration ell
 Har du frågor om byten eller anpassningar? Det är bara att skriva.`
   }
 
-  const renderContent = () => {
-    if (!selectedItem) {
-      return (
-        <div className="flex items-center justify-center h-full text-gray-400">
-          <p>Välj ett alternativ i menyn</p>
-        </div>
-      )
-    }
-
-    switch (selectedItem.type) {
-      case 'flexible':
-        return <MDXPreview content={guideContent.flexible} />
-      case 'howto':
-        return <MDXPreview content={guideContent.howto} />
-      case 'practical':
-        return <MDXPreview content={guideContent.practical} />
-      case 'faq':
-        return <MDXPreview content={guideContent.faq} />
-      case 'food':
-        return renderFoodContent(selectedItem.category)
-      default:
-        return null
-    }
+  const renderGuideContent = () => {
+    if (!selectedGuide) return null
+    return <MDXPreview content={guideContent[selectedGuide]} />
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="flex flex-col md:flex-row">
-        {/* Sidebar - horizontal on mobile, vertical on desktop */}
-        <div className="md:w-56 border-b md:border-b-0 md:border-r border-gray-200 p-3 shrink-0">
-          {/* Mobile: Horizontal button group */}
-          <div className="flex md:flex-col gap-2">
-            {/* Kostguide grupp */}
-            <div className="flex-1 md:flex-none">
-              <button
-                onClick={() => toggleGroup('learn')}
-                className="w-full flex items-center justify-between p-2 md:p-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold shadow-sm hover:from-blue-700 hover:to-blue-600 transition-all text-sm md:text-base"
-              >
-                <span className="flex items-center gap-1.5 md:gap-2">
-                  <BookOpen className="w-4 h-4" />
-                  <span className="hidden sm:inline">Kostguide</span>
-                  <span className="sm:hidden">Guide</span>
-                </span>
-                <ChevronDown className={cn("w-4 h-4 transition-transform", expandedGroup === 'learn' && "rotate-180")} />
-              </button>
-            </div>
+    <div className="space-y-3">
+      {/* Kostguide Section */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <button
+          onClick={() => setGuideExpanded(!guideExpanded)}
+          className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold hover:from-blue-700 hover:to-blue-600 transition-all"
+        >
+          <span className="flex items-center gap-2">
+            <BookOpen className="w-5 h-5" />
+            Kostguide
+          </span>
+          <ChevronDown className={cn("w-5 h-5 transition-transform", guideExpanded && "rotate-180")} />
+        </button>
 
-            {/* Livsmedel grupp */}
-            <div className="flex-1 md:flex-none">
+        {guideExpanded && (
+          <div className="p-3">
+            {/* Guide buttons */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
               <button
-                onClick={() => toggleGroup('food')}
-                className="w-full flex items-center justify-between p-2 md:p-2.5 rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold shadow-sm hover:from-emerald-700 hover:to-emerald-600 transition-all text-sm md:text-base"
-              >
-                <span className="flex items-center gap-1.5 md:gap-2">
-                  <Carrot className="w-4 h-4" />
-                  Livsmedel
-                </span>
-                <ChevronDown className={cn("w-4 h-4 transition-transform", expandedGroup === 'food' && "rotate-180")} />
-              </button>
-            </div>
-          </div>
-
-          {/* Expanded sub-items */}
-          {expandedGroup === 'learn' && (
-            <div className="mt-2 md:ml-2 grid grid-cols-2 md:grid-cols-1 gap-1">
-              <button
-                onClick={() => setSelectedItem({ type: 'flexible' })}
+                onClick={() => setSelectedGuide(selectedGuide === 'flexible' ? null : 'flexible')}
                 className={cn(
-                  "text-left px-2 md:px-3 py-2 rounded-lg text-xs md:text-sm transition-colors flex items-center gap-1.5 md:gap-2",
-                  selectedItem?.type === 'flexible'
+                  "px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2",
+                  selectedGuide === 'flexible'
                     ? "bg-blue-100 text-blue-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-100"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 )}
               >
-                <Info className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+                <Info className="w-4 h-4 shrink-0" />
                 <span className="truncate">Flexibel kost</span>
               </button>
               <button
-                onClick={() => setSelectedItem({ type: 'howto' })}
+                onClick={() => setSelectedGuide(selectedGuide === 'howto' ? null : 'howto')}
                 className={cn(
-                  "text-left px-2 md:px-3 py-2 rounded-lg text-xs md:text-sm transition-colors flex items-center gap-1.5 md:gap-2",
-                  selectedItem?.type === 'howto'
+                  "px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2",
+                  selectedGuide === 'howto'
                     ? "bg-emerald-100 text-emerald-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-100"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 )}
               >
-                <BookOpen className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+                <BookOpen className="w-4 h-4 shrink-0" />
                 <span className="truncate">Så använder du</span>
               </button>
               <button
-                onClick={() => setSelectedItem({ type: 'practical' })}
+                onClick={() => setSelectedGuide(selectedGuide === 'practical' ? null : 'practical')}
                 className={cn(
-                  "text-left px-2 md:px-3 py-2 rounded-lg text-xs md:text-sm transition-colors flex items-center gap-1.5 md:gap-2",
-                  selectedItem?.type === 'practical'
+                  "px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2",
+                  selectedGuide === 'practical'
                     ? "bg-amber-100 text-amber-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-100"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 )}
               >
-                <Lightbulb className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+                <Lightbulb className="w-4 h-4 shrink-0" />
                 <span className="truncate">Praktiska tips</span>
               </button>
               <button
-                onClick={() => setSelectedItem({ type: 'faq' })}
+                onClick={() => setSelectedGuide(selectedGuide === 'faq' ? null : 'faq')}
                 className={cn(
-                  "text-left px-2 md:px-3 py-2 rounded-lg text-xs md:text-sm transition-colors flex items-center gap-1.5 md:gap-2",
-                  selectedItem?.type === 'faq'
+                  "px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2",
+                  selectedGuide === 'faq'
                     ? "bg-purple-100 text-purple-700 font-medium"
-                    : "text-gray-600 hover:bg-gray-100"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 )}
               >
-                <Info className="w-3 h-3 md:w-3.5 md:h-3.5 shrink-0" />
+                <Info className="w-4 h-4 shrink-0" />
                 <span className="truncate">Vanliga frågor</span>
               </button>
             </div>
-          )}
 
-          {expandedGroup === 'food' && (
-            <div className="mt-2 md:ml-2 grid grid-cols-4 md:grid-cols-1 gap-1">
+            {/* Guide content */}
+            {selectedGuide && (
+              <div className="border-t border-gray-200 pt-3 max-h-[400px] overflow-y-auto">
+                {renderGuideContent()}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Livsmedel Section */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <button
+          onClick={() => setFoodExpanded(!foodExpanded)}
+          className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold hover:from-emerald-700 hover:to-emerald-600 transition-all"
+        >
+          <span className="flex items-center gap-2">
+            <Carrot className="w-5 h-5" />
+            Livsmedel
+          </span>
+          <ChevronDown className={cn("w-5 h-5 transition-transform", foodExpanded && "rotate-180")} />
+        </button>
+
+        {foodExpanded && (
+          <div className="p-3">
+            {/* Food category buttons */}
+            <div className="grid grid-cols-4 md:grid-cols-8 gap-1 mb-3">
               {(Object.keys(CATEGORY_CONFIG) as Array<keyof typeof CATEGORY_CONFIG>).map((key) => {
                 const config = CATEGORY_CONFIG[key]
-                const isSelected = selectedItem?.type === 'food' && selectedItem.category === key
+                const isSelected = selectedFood === key
                 return (
                   <button
                     key={key}
-                    onClick={() => setSelectedItem({ type: 'food', category: key })}
+                    onClick={() => setSelectedFood(isSelected ? null : key)}
                     className={cn(
-                      "text-left px-1.5 md:px-3 py-1.5 md:py-2 rounded-lg text-[10px] md:text-sm transition-colors flex flex-col md:flex-row items-center gap-0.5 md:gap-2",
+                      "px-2 py-2 rounded-lg text-xs transition-colors flex flex-col items-center gap-1",
                       isSelected
                         ? cn(config.bg, config.color, "font-medium")
-                        : cn("text-gray-600", config.hoverBg)
+                        : cn("bg-gray-100 text-gray-600", config.hoverBg)
                     )}
                   >
-                    <span className="shrink-0">{config.icon}</span>
-                    <span className="md:hidden truncate">{config.shortLabel}</span>
-                    <span className="hidden md:inline truncate">{config.label}</span>
+                    <span className="text-base">{config.icon}</span>
+                    <span className="truncate">{config.shortLabel}</span>
                   </button>
                 )
               })}
             </div>
-          )}
-        </div>
 
-        {/* Content Panel */}
-        <div className={cn(
-          "flex-1 p-3 md:p-4 overflow-y-auto",
-          selectedItem ? "min-h-[250px] max-h-[400px] md:min-h-[300px] md:max-h-[500px]" : "min-h-[100px]"
-        )}>
-          {renderContent()}
-        </div>
+            {/* Food content */}
+            {selectedFood && (
+              <div className="border-t border-gray-200 pt-3 max-h-[400px] overflow-y-auto">
+                {renderFoodContent(selectedFood)}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
