@@ -1,8 +1,16 @@
+export interface PyramidSubItem {
+  id: string;
+  label: string;
+  title: string;
+  description: string;
+}
+
 export interface PyramidLevel {
   id: string;
   label: string;
   title: string;
   description: string;
+  subItems?: PyramidSubItem[];
 }
 
 export interface PyramidFoundation {
@@ -142,8 +150,6 @@ Det håller hungern i schack, energin jämn och gör det lättare att komma upp 
 
 Måltidsfrekvens och typ av måltid är väldigt individuellt – vi behöver ta hänsyn till din livssituation och vad som är hållbart för dig.
 
-**Exempel:** En kvarg och nötter är ett nyttigt mellanmål som är enkelt att ta med sig på jobbet eller om man är på språng – jämfört med ett mellanmål som kräver tillagning eller förberedelse.
-
 **Anpassa efter din hunger**
 
 Håll koll på när du är hungrig och planera intaget därefter. Många har inte stor aptit på morgonen men suget tar fart på kvällen.
@@ -176,7 +182,23 @@ Fett och kostfiber bör hållas lågt för att minimera risken för magbesvär u
 - **Före träning:** Du vill ha snabbt tillgänglig energi, inte en långsam matsmältning som kan ge obehag.
 - **Efter träning:** Snabb leverans av aminosyror och glukos till musklerna prioriteras – och då är fett i vägen.
 
-Resten av dagen spelar fett däremot en viktig roll för hormonsyntesen, mättnad och absorption av fettlösliga vitaminer.`,
+Resten av dagen spelar fett däremot en viktig roll för hormonsyntesen, mättnad och absorption av fettlösliga vitaminer.
+
+**Varför kolhydratfria mellanmål?**
+
+Ifall du har mellanmål på måltidsschemat så är det smart att försöka hålla mellanmålen fria från kolhydrater under en viktminskningsfas:
+
+**Stabil energi och mättnad**
+
+Protein och fett ger en jämn blodsockerkurva utan de insulintoppar som kolhydrater skapar. Det håller dig mätt längre och undviker energidippar mellan huvudmålen.
+
+**Koncentrerad kolhydrateffekt**
+
+När du samlar alla kolhydrater till måltiderna närmast träningen maximerar du deras nytta: fulla glykogendepåer inför passet och snabb återfyllnad/starta återhämtningen efteråt.
+
+**Praktiskt upplägg för mellanmål**
+
+En kvarg eller whey proteinpulver och nötter är ett nyttigt mellanmål som är enkelt att ta med sig på jobbet eller om man är på språng – jämfört med ett mellanmål som kräver tillagning eller förberedelse.`,
   },
   {
     id: 'micronutrients',
@@ -234,6 +256,103 @@ Resten av dagen spelar fett däremot en viktig roll för hormonsyntesen, mättna
     title: 'Makronutrienter',
     description:
       'Protein, kolhydrater och fett – de tre makronäringsämnena. Medan kalorier styr vikten, påverkar makros vad viktförändringen består av. Tillräckligt med protein skyddar och bygger muskler. Fett behövs för hormoner och hälsa. Kolhydrater ger energi till träningen. Rätt balans gör stor skillnad för resultat och hur du mår.',
+    subItems: [
+      {
+        id: 'protein',
+        label: 'Protein',
+        title: 'Protein',
+        description: `Protein är den viktigaste makronutrienten för dig som vill bygga eller behålla muskler. Det är bokstavligen dina byggstenar.
+
+**Varför protein är så viktigt**
+
+Cellerna i din kropp bryts ner och byggs upp konstant. För att de ska kunna repareras och byggas upp krävs protein.
+
+Protein består av aminosyror, varav nio är essentiella – kroppen kan inte tillverka dem själv utan måste få dem via maten. Till skillnad från kolhydrater och fett har kroppen ingen lagringskapacitet för aminosyror. Det gör dagligt intag avgörande.
+
+**Fördelarna med högproteinintag**
+
+- **Bevarar muskelmassa vid viktnedgång** – Tillräckligt protein skyddar dina muskler från att brytas ner i ett kaloriunderskott
+- **Ökar mättnaden** – Du känner dig nöjd längre och risken för överätande minskar
+- **Minskar cravings** – Stabilt proteinintag håller blodsockret jämnare
+- **Högre kaloriförbränning** – Protein har tre gånger högre termisk effekt än kolhydrater eller fett. Du förbränner 20–30% av proteinets kalorier bara genom att smälta det
+- **Bygger muskler** – Utan tillräckligt protein kan kroppen inte bygga ny muskelvävnad
+
+**Hur mycket protein behöver du?**
+
+Rekommendation: 1.6–2,5 gram per kilo kroppsvikt
+
+**Proteinkvalitet**
+
+- Animaliskt protein (kyckling, fisk, ägg, mejeriprodukter) har högre biologiskt värde – det tas upp och används mer effektivt
+
+**Perspektiv**
+
+Protein är inte förhandlingsbart. Får du i dig tillräckligt protein har du löst halva pusslet för en framgångsrik kroppsförändring.`,
+      },
+      {
+        id: 'carbohydrates',
+        label: 'Kolhydrater',
+        title: 'Kolhydrater',
+        description: `Kolhydrater har fått oförtjänt dåligt rykte. Sanningen? De är varken onda eller magiska. De är ett verktyg och rätt använt ger de dig energi, bättre träning och god hälsa.
+
+**Vad är kolhydrater?**
+
+Kolhydrater är ett samlingsnamn för stärkelse, sockerarter och kostfibrer. Hit hör pasta, potatis, ris, bröd, frukt och grönsaker.
+
+När du äter kolhydrater bryts de ner till glukos som används som energi direkt eller lagras som glykogen i musklerna. Glykogen är musklernas bränsle vid träning.
+
+**Varför kolhydrater är viktiga**
+
+- **Träningsprestanda** – Styrketräning kräver glykogen som bränsle
+- **Återhämtning** – Kolhydrater efter träning fyller på glykogenlagren
+- **Tarmhälsa** – Fibrer matar dina goda tarmbakterier
+- **Välmående** – Kolhydrater är goda. Att helt utesluta dem gör kosten svår att hålla
+
+**Fiber**
+
+Fiber är en kolhydrat som kroppen inte kan bryta ner, men som är viktig för mättnad, tarmhälsa och blodsockerreglering.
+
+Rekommendation: 25–35g per dag
+
+Bra fiberkällor: Havregryn, baljväxter, fullkornsprodukter, grönsaker, frukt, nötter och frön.
+
+**Glykemiskt index (GI)**
+
+GI mäter hur snabbt en kolhydrat höjer blodsockret. Men GI övervärderas ofta.
+
+I verkligheten äter vi sällan kolhydrater isolerat. När du kombinerar kolhydrater med protein, fett och fiber sänks GI automatiskt. Fokusera på blandade måltider i stället för att jaga lågt GI.
+
+**Perspektiv**
+
+Kolhydrater är inte fienden. Ät de mängder som passar din plan och sluta stressa över timing och typer.`,
+      },
+      {
+        id: 'fat',
+        label: 'Fett',
+        title: 'Fett',
+        description: `Fett har länge varit kostens syndabock. Idag vet vi bättre. Fett är inte bara ofarligt i rimliga mängder, det är nödvändigt för din hälsa, dina hormoner och dina resultat.
+
+**Varför du behöver fett**
+
+- **Hormonproduktion** – Fett är råmaterialet för könshormoner som testosteron och östrogen
+- **Vitaminupptag** – Vitamin A, D, E och K är fettlösliga. Utan fett kan kroppen inte ta upp dem
+- **Hjärnfunktion** – Din hjärna består till ~60% av fett. Omega-3 är särskilt viktigt
+- **Mättnad** – Fett smakar gott och håller dig nöjd längre
+
+**Typer av fett**
+
+| Typ | Källor | Kommentar |
+|-----|--------|-----------|
+| Omättat (enkel- & fleromättat) | Olivolja, avokado, nötter, fet fisk | Bör utgöra majoriteten |
+| Omega-3 | Lax, makrill, chiafrön, valnötter | De flesta får för lite – prioritera |
+| Mättat | Kött, smör, ost, grädde | I måttliga mängder – okej för friska |
+| Transfett | Processad mat, friterad mat | Undvik helt |
+
+**Varning**
+
+En handfull nötter (~30g) innehåller cirka 180 kcal. Nötsmör är ännu lättare att överäta. Mät upp om du är i ett kaloriunderskott.`,
+      },
+    ],
   },
   {
     id: 'energy-balance',

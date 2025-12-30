@@ -785,34 +785,6 @@ export function AdjustMacrosWizard({ open, onOpenChange, nutritionPlanId, curren
                 <p className="text-sm text-gray-500">Välj vilka måltider som är före och efter träning</p>
               </div>
 
-              {/* Info box */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-2">
-                <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-                <div className="text-sm text-blue-700">
-                  <strong>Riktlinjer:</strong> Protein sprids jämnt över dagens måltider, kolhydraterna läggs främst kring träningspassen, och fettintaget hålls lågt i anslutning till träning.{' '}
-                  <button
-                    onClick={() => setShowMacroExplanation(true)}
-                    className="text-blue-600 underline hover:text-blue-800 font-medium"
-                  >
-                    Läs mer
-                  </button>
-                </div>
-              </div>
-
-              {/* Carb-free snacks info */}
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2">
-                <Info className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-                <div className="text-sm text-amber-700">
-                  <strong>Mellanmål:</strong> Mellanmål hålls kolhydratfria – kolhydraterna läggs istället på pre/post-workout.{' '}
-                  <button
-                    onClick={() => setShowSnackExplanation(true)}
-                    className="text-amber-600 underline hover:text-amber-800 font-medium"
-                  >
-                    Varför?
-                  </button>
-                </div>
-              </div>
-
               {/* Meal names editor */}
               <div>
                 <Label className="text-sm font-medium">Måltidsnamn</Label>

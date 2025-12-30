@@ -140,6 +140,7 @@ export function Pyramid({ title, levels, foundation, colorScheme }: PyramidProps
         title={selectedLevel?.title || ''}
         description={selectedLevel?.description || ''}
         colorScheme={colorScheme}
+        subItems={selectedLevel && 'subItems' in selectedLevel ? selectedLevel.subItems : undefined}
       />
     </div>
   );
