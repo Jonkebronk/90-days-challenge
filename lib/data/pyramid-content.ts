@@ -73,58 +73,94 @@ export const nutritionPyramidLevels: PyramidLevel[] = [
     title: 'Tillskott',
     description: `Kosttillskott som proteinpulver, kreatin och vitaminer. De kan vara praktiska komplement, men namnet säger allt – de är tillägg, inte grunden. Fokusera på de viktigare nivåerna först – när du har kalorier, makros och måltidsrytm på plats kan tillskott ge en liten extra skjuts. Men de kommer aldrig att kompensera för brister i grunden.
 
-Här är en allmän rekommendation för kosttillskott och produkter som kan vara fördelaktiga att använda som komplettering till ditt kostupplägg. Detta är helt frivilligt och inga måsten.
+Här är en allmän rekommendation för kosttillskott och produkter som kan vara fördelaktiga att använda som komplettering till ditt kostupplägg. Detta är helt frivilligt och inga måsten.`,
+    subItems: [
+      {
+        id: 'multivitamin',
+        label: 'Multivitamin',
+        title: 'Multivitamin- och mineraltillskott',
+        description: `En billig försäkring för att se till att du får i dig basbehovet av vitaminer och mineraler, framförallt om du inte är så flitig med frukt och grönt i kosten i övrigt.
 
-**1. Multivitamin- och mineraltillskott**
+**Dosering**
 
-En billig försäkring för att se till att du får i dig basbehovet av vitaminer och mineraler, framförallt om du inte är så flitig med frukt och grönt i kosten i övrigt. Gällande dosering, utgå från etiketten på den produkten du väljer.
+Utgå från etiketten på den produkten du väljer.`,
+      },
+      {
+        id: 'd-vitamin',
+        label: 'D-Vitamin',
+        title: 'D-Vitamin',
+        description: `Finns det inte D-vitamin i multivitaminen? Jo. Men ofta i lägre doser än vad vi skandinavier behöver under vinterhalvåret när mängden solljus är kraftigt begränsat. På sommaren då? Jo, solljus funkar, men i studier har man sett att tillskott är effektivare än solljus för att komma till rätta med brist på just D-vitamin.
 
-**2. D-Vitamin**
-
-Finns det inte D-vitamin i multivitaminen? Jo. Men ofta i lägre doser än vad vi skandinavier behöver under vinterhalvåret när mängden solljus är kraftigt begränsat. På sommaren då? Jo, solljus funkar, men i studier har man sett att tillskott är effektivare än solljus för att komma till rätta med brist på just D-vitamin.
+**Rekommendation**
 
 Livsmedelsverkets rekommendation är tio mikrogram (mcg) eller 400 internationella enheter (IE) per dag. Internationellt är rekommendationen högre. Den europeiska livsmedelssäkerhetsmyndigheten, EFSA, anser det säkert att ta tio gånger mer än Livsmedelsverket rekommenderar.
 
-Vill du veta vad som är optimal dos för dig? Gör ett blodprov hos Werlabs eller liknande aktör för att se om du först och främst har en brist. Testa en dosering och följ upp med nya test.
+**Optimal dos för dig?**
 
-**3. Kreatin Monohydrat**
+Vill du veta vad som är optimal dos för dig? Gör ett blodprov hos Werlabs eller liknande aktör för att se om du först och främst har en brist. Testa en dosering och följ upp med nya test.`,
+      },
+      {
+        id: 'creatine',
+        label: 'Kreatin',
+        title: 'Kreatin Monohydrat',
+        description: `Det här är kungen av tillskott för oss som tränar på gym. Det ger oss både bättre prestationsförmåga och ökad styrka – något som hjälper oss att bygga muskler. Det är det mest effektiva lagliga tillskottet för att få ut mer av tiden i gymmet.
 
-Det här är kungen av tillskott för oss som tränar på gym. Det ger oss både bättre prestationsförmåga och ökad styrka – något som hjälper oss att bygga muskler. Det är det mest effektiva lagliga tillskottet för att få ut mer av tiden i gymmet.
+**Vätskeretention**
 
 Det finns dock en faktor som gör att många är skeptiska till att använda det: man binder vätska. Visst, absolut. Det stämmer. Det beror på att kreatinet drar med sig vatten in i muskelcellerna, där det lagras. Därför ska vi också skilja på vätska och vätska. Vätskan du binder upp i musklerna är absolut inte densamma som vätskan du binder upp under huden av att slänga i dig skräpmat med mycket salt.
 
 Vätskan från kreatinet gör att dina muskler sväller i volym och med detta spänner de också ut huden vilket visuellt gör att du ser mer definierad ut. Och är inte större, mer definierade muskler precis vad vi vill ha? Jo. Exakt.
 
+**Viktökning**
+
 Det är fullt normalt med en viktökning motsvarande två-tre procent av din kroppsvikt första månaden. När nivåerna i musklerna är fyllda kommer vikten inte längre att påverkas.
 
-Fem gram dagligen är en bra dos för majoriteten. Glöm också det här med uppehåll, det behövs inte. Du kan ta kreatin dag ut och dag in för resten av livet.
+**Dosering**
 
-**4. Omega 3**
+Fem gram dagligen är en bra dos för majoriteten. Glöm också det här med uppehåll, det behövs inte. Du kan ta kreatin dag ut och dag in för resten av livet.`,
+      },
+      {
+        id: 'omega3',
+        label: 'Omega 3',
+        title: 'Omega 3',
+        description: `Det här är en av de essentiella fettsyror som kroppen inte själv kan tillverka utan behöver få i sig från kosten – eller via tillskott. Det är kopplat till god hjärt- och kärlhälsa och väl värt att köpa om du inte får i dig det i tillräcklig mängd från kosten.
 
-Det här är en av de essentiella fettsyror som kroppen inte själv kan tillverka utan behöver få i sig från kosten – eller via tillskott. Det är kopplat till god hjärt- och kärlhälsa och väl värt att köpa om du inte får i dig det i tillräcklig mängd från kosten.
+**Dosering**
 
-En daglig dos mellan två till fyra gram rekommenderas för att maximera hälsoeffekterna.
+En daglig dos mellan två till fyra gram rekommenderas för att maximera hälsoeffekterna.`,
+      },
+      {
+        id: 'protein-powder',
+        label: 'Proteinpulver',
+        title: 'Proteinpulver',
+        description: `Ett enkelt sätt att nå ditt proteinmål. En av de billigaste proteinkällorna per gram.
 
-**5. Proteinpulver**
+**Typer av proteinpulver**
 
-Ett enkelt sätt att nå ditt proteinmål. En av de billigaste proteinkällorna per gram. Det finns tre vanligt förekommande typer:
+- **Vasslekoncentrat (Whey Concentrate)** – Det vanligaste och billigaste. Fungerar utmärkt för de flesta. Börja här.
+- **Vassleisolat (Whey Isolate)** – Renare, mindre laktosinnehåll. Välj om du får magbesvär av koncentrat.
+- **Kasein** – Långsamt upptag (upp till 7 timmar). Bra före sömn eller långa perioder utan mat.`,
+      },
+      {
+        id: 'caffeine',
+        label: 'Koffein',
+        title: 'Koffein',
+        description: `Väldokumenterad effekt på prestanda och trötthet. Kan förbättra styrketräning och ge energi när motivationen är låg.
 
-- Vasslekoncentrat (Whey Concentrate) – Det vanligaste och billigaste. Fungerar utmärkt för de flesta. Börja här.
-- Vassleisolat (Whey Isolate) – Renare, mindre laktosinnehåll. Välj om du får magbesvär av koncentrat.
-- Kasein – Långsamt upptag (upp till 7 timmar). Bra före sömn eller långa perioder utan mat.
-
-**6. Koffein**
-
-Väldokumenterad effekt på prestanda och trötthet. Kan förbättra styrketräning och ge energi när motivationen är låg.
+**Dosering**
 
 Dosering kan se väldigt olika ut utifrån tolerans och storlek men generella rekommendationer är:
 
-- Mot trötthet: 1-3 mg per kg kroppsvikt
-- För prestation: 4-6 mg per kg, 30-60 minuter före träning
+- **Mot trötthet:** 1-3 mg per kg kroppsvikt
+- **För prestation:** 4-6 mg per kg, 30-60 minuter före träning
+
+**Strategisk användning**
 
 Använd det strategiskt. Om du dricker kaffe hela dagen försvinner effekten. Håll basintaget lågt så har du något att ta till när det verkligen behövs.
 
 Undvik efter kl 14 för att inte störa sömnen då koffein har en halveringstid på 6 timmar.`,
+      },
+    ],
   },
   {
     id: 'nutrient-timing',
