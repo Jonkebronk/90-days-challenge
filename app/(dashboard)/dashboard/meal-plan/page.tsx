@@ -115,6 +115,7 @@ export default function MealPlanPage() {
   const [refreshKey, setRefreshKey] = useState(0) // For forcing FlexibleMealPlan reload
   const [pyramidExpanded, setPyramidExpanded] = useState(false)
   const [macrosExpanded, setMacrosExpanded] = useState(false)
+  const [consumedTotals, setConsumedTotals] = useState<{ kcal: number; protein: number; carbs: number; fat: number }>({ kcal: 0, protein: 0, carbs: 0, fat: 0 })
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
@@ -459,19 +460,19 @@ export default function MealPlanPage() {
                   <div className="flex items-center gap-4 bg-blue-50 rounded-lg px-4 py-2">
                     <div className="text-center flex-1">
                       <div className="text-[10px] font-semibold text-orange-500 uppercase tracking-wide">KCAL</div>
-                      <div className="text-lg font-bold text-gray-900">{currentIntake.calories}</div>
+                      <div className="text-lg font-bold text-gray-900">{consumedTotals.kcal}</div>
                     </div>
                     <div className="text-center flex-1">
                       <div className="text-[10px] font-semibold text-rose-500 uppercase tracking-wide">PROT</div>
-                      <div className="text-lg font-bold text-gray-900">{currentIntake.protein}g</div>
+                      <div className="text-lg font-bold text-gray-900">{consumedTotals.protein}g</div>
                     </div>
                     <div className="text-center flex-1">
                       <div className="text-[10px] font-semibold text-sky-500 uppercase tracking-wide">KOLH</div>
-                      <div className="text-lg font-bold text-gray-900">{currentIntake.carbs}g</div>
+                      <div className="text-lg font-bold text-gray-900">{consumedTotals.carbs}g</div>
                     </div>
                     <div className="text-center flex-1">
                       <div className="text-[10px] font-semibold text-amber-500 uppercase tracking-wide">FETT</div>
-                      <div className="text-lg font-bold text-gray-900">{currentIntake.fat}g</div>
+                      <div className="text-lg font-bold text-gray-900">{consumedTotals.fat}g</div>
                     </div>
                   </div>
                 </div>
@@ -701,6 +702,7 @@ export default function MealPlanPage() {
                   onMealPlanIdChange={(newId: string) => {
                     setFlexibleMealPlanId(newId)
                   }}
+                  onTotalsChange={setConsumedTotals}
                 />
               ) : (
                 <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm">

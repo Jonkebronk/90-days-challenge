@@ -26,6 +26,7 @@ interface FlexibleMealPlanProps {
   targetMacros: MacroTargets;
   onSave?: (planId: string) => void;
   onMealPlanIdChange?: (newId: string) => void;
+  onTotalsChange?: (totals: { kcal: number; protein: number; carbs: number; fat: number }) => void;
 }
 
 interface FlexiblePlanState {
@@ -40,6 +41,7 @@ export function FlexibleMealPlan({
   targetMacros,
   onSave,
   onMealPlanIdChange,
+  onTotalsChange,
 }: FlexibleMealPlanProps) {
   // Flexible plan state
   const [flexiblePlan, setFlexiblePlan] = useState<FlexiblePlanState | null>(null);
@@ -99,6 +101,19 @@ export function FlexibleMealPlan({
       loadOrCreatePlan();
     }
   }, [nutritionPlanId, hasLoaded]);
+
+  // Notify parent of totals changes
+  useEffect(() => {
+    if (flexiblePlan && onTotalsChange) {
+      const totals = {
+        kcal: Math.round(flexiblePlan.meals.reduce((acc, meal) => acc + meal.totalMacros.kcal, 0)),
+        protein: Math.round(flexiblePlan.meals.reduce((acc, meal) => acc + meal.totalMacros.protein, 0)),
+        carbs: Math.round(flexiblePlan.meals.reduce((acc, meal) => acc + meal.totalMacros.carbs, 0)),
+        fat: Math.round(flexiblePlan.meals.reduce((acc, meal) => acc + meal.totalMacros.fat, 0)),
+      };
+      onTotalsChange(totals);
+    }
+  }, [flexiblePlan, onTotalsChange]);
 
   // Load recipe suggestions for each meal type
   useEffect(() => {
