@@ -412,6 +412,262 @@ En handfull nötter (~30g) innehåller cirka 180 kcal. Nötsmör är ännu lätt
     title: 'Energibalans (viktigast)',
     description:
       'Kalorier in minus kalorier ut avgör om du går upp, ner eller håller vikten. Punkt. Äter du mer än du förbränner går du upp i vikt – oavsett om kalorierna kommer från kyckling eller choklad. Äter du mindre går du ner. Detta är fysikens lagar och den viktigaste faktorn för din kroppskomposition.',
+    subItems: [
+      {
+        id: 'energy-balance-basics',
+        label: 'Energibalans',
+        title: 'Energibalans',
+        description: `Du kanske minns från skolan: energi kan inte förstöras, den kan bara ändra form. Det gäller även din kropp. All mat du äter är energi – och den energin måste ta vägen någonstans.
+
+**Vad är kalorier?**
+
+Kalorier är ett mått på energi, precis som meter mäter längd eller kilo mäter vikt. När vi pratar om mat använder vi kalorier (kcal) för att beskriva hur mycket energi maten ger dig.
+
+Det viktiga är att förstå: kalorier är ett mått på energi, inte en fysisk substans. Det som existerar fysiskt är makronäringsämnen – protein, kolhydrater och fett – och de innehåller olika mängder energi per gram.
+
+**Energibalansens lag**
+
+Din kropp följer samma fysiska lagar som allt annat i universum:
+
+- **Äter du mer energi än du förbränner** → överskottet lagras som kroppsfett
+- **Äter du mindre energi än du förbränner** → kroppen tar från fettreserverna
+- **Äter du lika mycket som du förbränner** → vikten står still
+
+Det finns inga genvägar. Inga dieter, tillskott eller träningsformer kan ändra denna grundlag. De kan bara påverka hur lätt eller svårt det är att följa den.
+
+**Vad är TDEE?**
+
+TDEE (Total Daily Energy Expenditure) är den totala mängd energi du förbränner varje dag. Det är unikt för dig och beror på:
+
+- Din kroppsstorlek och sammansättning
+- Din ålder och kön
+- Din aktivitetsnivå
+- Din ämnesomsättning
+
+Du kan inte kopiera någon annans kaloriintag och förvänta dig samma resultat. Dina behov är unika – och det här programmet hjälper dig räkna ut dem.
+
+**Kaloriunderskott – nyckeln till fettförlust**
+
+För att förlora fett behöver du skapa ett kaloriunderskott. Det betyder helt enkelt att du äter mindre än du förbränner.
+
+När du gör det tvingas kroppen hämta energi från lagrad energi – ditt kroppsfett. Det är precis så fettförlust fungerar. Inget mer, inget mindre.
+
+Du kan skapa underskott på två sätt:
+
+- Äta mindre
+- Röra dig mer
+
+I praktiken fungerar en kombination bäst. Men kom ihåg: det är mycket lättare att låta bli att äta 300 kalorier än att förbränna dem genom träning.
+
+**Metoder vs principer**
+
+Här kommer en avgörande insikt: alla dieter som fungerar gör samma sak – de skapar ett kaloriunderskott. De använder bara olika metoder.
+
+- **Fasta (16:8)** – Begränsar tiden du äter, vilket gör att de flesta äter mindre totalt.
+- **LCHF/Keto** – Tar bort kolhydrater, vilket ofta halverar kaloriintaget automatiskt.
+- **Paleo** – Undviker processad mat, vilket leder till färre kalorier och mer mättnad.
+- **Lågfettkost** – Tar bort fett (9 kcal/g), vilket sänker kalorierna drastiskt.
+
+Ingen av dessa metoder är magisk. De är olika vägar till samma destination: ett kaloriunderskott.
+
+Välj den metod som passar din livsstil och gör det enkelt för dig att hålla underskottet. Det finns inget "bäst" – det finns bara det som fungerar för dig.
+
+**Perspektiv**
+
+Att förstå energibalans befriar dig från diettrender och marknadsföring. Du behöver aldrig mer undra om du "borde" köra keto, fasta eller något annat.
+
+Frågan är alltid densamma: Hjälper den här metoden mig att hålla ett kaloriunderskott på ett hållbart sätt?
+
+Om ja – kör. Om nej – prova något annat.
+
+Principen förändras aldrig. Bara metoderna.`,
+      },
+      {
+        id: 'metabolism',
+        label: 'Din ämnesomsättning',
+        title: 'Din ämnesomsättning',
+        description: `Ämnesomsättningen är mängden energi din kropp förbränner varje dag. Den är helt individuell – och att förstå den är nyckeln till att sluta gissa och börja få resultat.
+
+**Varför din ämnesomsättning är unik**
+
+Det spelar ingen roll hur många kalorier din kompis eller granne äter. Du måste förhålla dig till din egen kropp och din egen ämnesomsättning.
+
+Den påverkas av flera faktorer:
+
+- **Kroppssammansättning** – Mer muskelmassa = högre ämnesomsättning
+- **Ålder** – Ämnesomsättningen sjunker ofta med åldern
+- **Kön** – Män har generellt högre ämnesomsättning än kvinnor
+- **Hormonnivåer** – Påverkar hur kroppen hanterar energi
+- **Fysisk aktivitet** – Både träning och vardagsrörelse spelar roll
+- **Kost** – Typ av mat påverkar, protein kräver mer energi att bryta ner
+- **Sömn** – Dålig sömn kan sänka ämnesomsättningen
+- **Stress** – Höga stressnivåer kan påverka fettlagring
+
+**Ämnesomsättningens fyra delar**
+
+Din totala dagliga energiförbrukning (TDEE) består av fyra komponenter:
+
+**1. Basalmetabolism (BMR) – ca 60%**
+
+Den energi kroppen behöver för att överleva: andning, hjärtslag, organfunktion. Även om du låg stilla i sängen hela dagen skulle du förbränna dessa kalorier.
+
+BMR är kopplad till din kroppsmassa, längd, ålder och kön – väger du mer och är längre krävs mer energi för att hålla kroppen igång.
+
+**2. NEAT (vardagsrörelse) – ca 15–30%**
+
+Non-Exercise Activity Thermogenesis. All rörelse utanför planerad träning: gå till kylskåpet, pilla med pennan, ta trapporna, stå upp, gestikulera när du pratar.
+
+NEAT är den mest anpassningsbara delen av din ämnesomsättning – och ofta den mest underskattade. När kroppen känner att energin inte räcker börjar den automatiskt spara: du blinkar mindre, rör dig långsammare, väljer hissen utan att tänka på det.
+
+Det är därför vi spårar steg: för att motverka denna nedreglering.
+
+**3. Träningsaktivitet (EAT) – ca 5–10%**
+
+Den energi du förbränner under planerade träningspass. Överraskande nog är detta en mindre del än de flesta tror – ännu en anledning att inte förlita sig enbart på träning för fettförlust.
+
+**4. Termisk effekt av mat (TEF) – ca 10%**
+
+Energin som krävs för att smälta och tillgodogöra sig maten du äter. Olika makros kräver olika mycket energi:
+
+- **Protein:** 20–30% av kalorierna går åt till nedbrytning
+- **Kolhydrater:** 5–10%
+- **Fett:** 0–3%
+
+Det är en av anledningarna till att proteinrik kost är överlägsen för fettförlust – du förbränner mer bara av att smälta maten.
+
+**Räkna ut din ämnesomsättning**
+
+Vi använder Mifflin-St Jeor-formeln, som anses vara den mest precisa för de flesta. Den tar hänsyn till din vikt, längd, ålder och kön.
+
+**Steg 1: Räkna ut din basalmetabolism (BMR)**
+
+- **Män:** (10 × vikt i kg) + (6,25 × längd i cm) − (5 × ålder) + 5
+- **Kvinnor:** (10 × vikt i kg) + (6,25 × längd i cm) − (5 × ålder) − 161
+
+*Exempel – Man, 80 kg, 180 cm, 35 år:*
+(10 × 80) + (6,25 × 180) − (5 × 35) + 5 = 800 + 1125 − 175 + 5 = **1 755 kcal**
+
+*Exempel – Kvinna, 65 kg, 165 cm, 30 år:*
+(10 × 65) + (6,25 × 165) − (5 × 30) − 161 = 650 + 1031 − 150 − 161 = **1 370 kcal**
+
+**Steg 2: Multiplicera med din aktivitetsfaktor**
+
+| Faktor | Nivå | Vad det betyder |
+|--------|------|-----------------|
+| × 1,2 | Stillasittande | Kontorsjobb, ingen träning, <5 000 steg/dag |
+| × 1,375 | Lätt aktiv | Stillasittande jobb, träning 1–2 ggr/vecka, 5 000–7 500 steg/dag |
+| × 1,55 | Måttligt aktiv | Träning 3–4 ggr/vecka, 7 500–10 000 steg/dag |
+| × 1,725 | Mycket aktiv | Träning 5–6 ggr/vecka, fysiskt jobb, 10 000–12 500 steg/dag |
+| × 1,9 | Extremt aktiv | Hård träning dagligen + fysiskt jobb, >12 500 steg/dag |
+
+*Samma man (1 755 BMR) med olika aktivitetsnivåer:*
+
+| Nivå | Beräkning | TDEE |
+|------|-----------|------|
+| Stillasittande | 1 755 × 1,2 | 2 106 kcal/dag |
+| Lätt aktiv | 1 755 × 1,375 | 2 413 kcal/dag |
+| Måttligt aktiv | 1 755 × 1,55 | 2 720 kcal/dag |
+| Mycket aktiv | 1 755 × 1,725 | 3 027 kcal/dag |
+
+**Varning:** Detta är ditt ungefärliga underhållsbehov – det du behöver för att hålla vikten stabil.
+
+För fettförlust skapar vi ett underskott på 500–700 kalorier per dag, vilket ger cirka 0,5–0,7 kg fettförlust per vecka.
+
+*Exempel (mannen ovan, måttligt aktiv):*
+- Underhåll: 2 720 kcal
+- För ~500g fettförlust/vecka: 2 720 − 550 = **2 170 kcal/dag**
+- För ~700g fettförlust/vecka: 2 720 − 770 = **1 950 kcal/dag**
+
+**En utgångspunkt, inte en sanning**
+
+Formeln ger dig en startpunkt. Verkligheten kan se annorlunda ut.
+
+Efter 2–3 veckor utvärderar vi:
+
+- Går vikten ner i rätt takt? → Fortsätt
+- Går vikten ner för snabbt? → Öka kalorierna något
+- Står vikten still? → Minska kalorierna eller öka aktiviteten
+
+Din ämnesomsättning är inte statisk. Den anpassar sig efter vad du gör. Därför justerar vi längs vägen istället för att fastna i en siffra.
+
+**Perspektiv**
+
+Att förstå din ämnesomsättning ger dig kontroll. Du slutar gissa, slutar jämföra dig med andra och börjar arbeta med din egen kropp.
+
+Du kommer få dina personliga siffror i det här programmet. Jag gör beräkningarna åt dig – du behöver bara följa planen.`,
+      },
+      {
+        id: 'body-fat',
+        label: 'Kroppsfett',
+        title: 'Kroppsfett',
+        description: `Om du läser det här är det troligen för att du vill förändra din kroppssammansättning. Och det är helt okej – du är här av en anledning. Låt mig förklara vad kroppsfett egentligen är och hur du gör dig av med det.
+
+**Vad är kroppsfett?**
+
+Kroppsfett är lagrad energi. Inget mer, inget mindre.
+
+När kroppen får mer energi genom mat och dryck än den använder just då, sparar den överskottet som fett. Det är kroppens naturliga sätt att överleva – en reservtank för sämre tider.
+
+Tänk på det så här: kroppsfett är energi som din kropp har tagit hand om och sparat. Det är inte ett tecken på misslyckande. Det är helt enkelt hur kroppen fungerar när energibalansen över tid har lutat åt ena hållet.
+
+När du förstår mekanismen blir förändring både enklare och mer hållbar.
+
+**Hur blir du av med det?**
+
+Nu när du vet hur fett lagras är det enkelt att förstå hur du blir av med det:
+
+Du behöver använda mer energi än du tillför.
+
+Det kallas för ett kaloriunderskott. När du skapar det tvingas kroppen ta energi från reserverna – ditt lagrade fett.
+
+När kroppen förbränner fett bryts det ner till fettsyror och glycerol som används som energi. Fettet lämnar kroppen genom koldioxid när du andas ut och genom vatten via svett och urin.
+
+Det är precis så enkelt som det låter.
+
+**Myten om att omvandla fett till muskler**
+
+Många tror att man kan "omvandla" fett till muskler. Tyvärr fungerar det inte så.
+
+Fett är lagrad energi. Muskler byggs av protein. Det är två helt olika processer.
+
+Du kan förlora fett och bygga muskler – men det är inte samma sak som att omvandla det ena till det andra. Det är som att säga att du omvandlar pengar till kunskap när du köper en bok. Du gör två separata saker.
+
+**Kan du göra båda samtidigt?**
+
+Ja, men det går mycket långsammare än att göra det i olika faser.
+
+Även under perfekta förhållanden kan tränade personer max bygga 2–3 kg muskler per år. Nybörjare kan bygga mer initialt, men takten avtar snabbt. Jämför det med 0,5 kg fettförlust per vecka – du ser skillnaden?
+
+Mitt råd: Om du har fett att tappa, fokusera på det först. Du kommer se resultat varje vecka och hålla motivationen uppe. När du är nöjd med din fettprocent kan du sedan fokusera på muskelbygge.
+
+**De tre nycklarna för att tappa fett, inte muskler**
+
+När du går ner i vikt vill du förstås tappa fett – inte muskler. Här är vad som krävs:
+
+**1. Ät tillräckligt med protein**
+Muskler behöver byggstenar för att bevaras. Sikta på 1,6–2,5 gram protein per kilo kroppsvikt.
+
+**2. Träna tungt**
+Styrketräning signalerar till kroppen att musklerna behövs. Utan den signalen har kroppen ingen anledning att behålla dem.
+
+**3. Håll ett rimligt underskott**
+Ju större underskott, desto större risk för muskelförlust. 500–700 kalorier under ditt underhåll är en bra balans mellan resultat och bevarande.
+
+**Bonus: Varför styrketräning är överlägset**
+
+Styrketräning är faktiskt effektivare per tidsenhet än promenader för fettförbränning. Det beror på efterförbränning (EPOC) – du fortsätter bränna kalorier i 24–48 timmar efter passet.
+
+Plus att mer muskelmassa ger högre förbränning dygnet runt. Det är en investering som betalar sig.
+
+**Perspektiv**
+
+Kroppsfett är inte fienden. Det är bara energi på fel ställe vid fel tidpunkt.
+
+Du har full kontroll över processen: skapa ett underskott, skydda musklerna med protein och träning, var tålmodig. Fettet kommer försvinna – det har inget val.
+
+Det handlar inte om att straffa kroppen. Det handlar om att förstå hur den fungerar och arbeta med den, inte mot den.`,
+      },
+    ],
   },
 ];
 
