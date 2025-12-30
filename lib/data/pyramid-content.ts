@@ -166,11 +166,13 @@ Undvik efter kl 14 för att inte störa sömnen då koffein har en halveringstid
     id: 'nutrient-timing',
     label: 'Näringstiming',
     title: 'Näringstiming',
-    description: `När du äter dina måltider och hur du fördelar maten över dagen. Ska du äta innan eller efter träning? Hur många måltider per dag? Sanningen är att detta spelar relativt liten roll så länge kalorier och makros stämmer. Hitta en måltidsrytm som passar din vardag och gör det enkelt att hålla din plan.
-
-**Måltidsfrekvens**
-
-Jag personligen tycker att en måltidsfrekvens med frukost, mindre mellanmål, lunch, mindre mellanmål, middag och kvällsmål (totalt sex måltider) passar mig – det håller blodsockret på en jämn nivå och jag blir aldrig så hungrig att jag får cravings eller tankar på att göra sämre kostval för snabb energi.
+    description: `När du äter dina måltider och hur du fördelar maten över dagen. Ska du äta innan eller efter träning? Hur många måltider per dag? Sanningen är att detta spelar relativt liten roll så länge kalorier och makros stämmer. Hitta en måltidsrytm som passar din vardag och gör det enkelt att hålla din plan.`,
+    subItems: [
+      {
+        id: 'meal-frequency',
+        label: 'Måltidsfrekvens',
+        title: 'Måltidsfrekvens',
+        description: `Jag personligen tycker att en måltidsfrekvens med frukost, mindre mellanmål, lunch, mindre mellanmål, middag och kvällsmål (totalt sex måltider) passar mig – det håller blodsockret på en jämn nivå och jag blir aldrig så hungrig att jag får cravings eller tankar på att göra sämre kostval för snabb energi.
 
 **Min rekommendation: 4–6 måltider per dag**
 
@@ -180,11 +182,13 @@ Det håller hungern i schack, energin jämn och gör det lättare att komma upp 
 
 - Ät med cirka 2–4 timmars mellanrum mellan måltider
 - Ät 1–2 timmar innan träning
-- Ät senast 1–2 timmar efter träning
-
-**Individuella hänsyn**
-
-Måltidsfrekvens och typ av måltid är väldigt individuellt – vi behöver ta hänsyn till din livssituation och vad som är hållbart för dig.
+- Ät senast 1–2 timmar efter träning`,
+      },
+      {
+        id: 'individual-adaptation',
+        label: 'Anpassa efter dig',
+        title: 'Anpassa efter dig',
+        description: `Måltidsfrekvens och typ av måltid är väldigt individuellt – vi behöver ta hänsyn till din livssituation och vad som är hållbart för dig.
 
 **Anpassa efter din hunger**
 
@@ -194,11 +198,13 @@ De personerna kan:
 
 - Äta mindre frukost/lunch, större middag och kvällssnack
 - Lägga mer kolhydrater på kvällsmåltiderna
-- Ha längre tid mellan morgonmålen, kortare på kvällen
-
-**Fördelning av makros**
-
-**Proteinfördelning över dagen**
+- Ha längre tid mellan morgonmålen, kortare på kvällen`,
+      },
+      {
+        id: 'macro-distribution',
+        label: 'Makrofördelning',
+        title: 'Makrofördelning',
+        description: `**Proteinfördelning över dagen**
 
 Ungefär 0,4–0,55 g protein per kg kroppsvikt per måltid.
 
@@ -235,6 +241,8 @@ När du samlar alla kolhydrater till måltiderna närmast träningen maximerar d
 **Praktiskt upplägg för mellanmål**
 
 En kvarg eller whey proteinpulver och nötter är ett nyttigt mellanmål som är enkelt att ta med sig på jobbet eller om man är på språng – jämfört med ett mellanmål som kräver tillagning eller förberedelse.`,
+      },
+    ],
   },
   {
     id: 'micronutrients',
