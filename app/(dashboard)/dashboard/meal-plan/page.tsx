@@ -405,49 +405,80 @@ export default function MealPlanPage() {
 
             {/* Compact Macros Bar - below tabs */}
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mt-4">
-              {/* Compact bar - always visible */}
+              {/* Header row with date and Justera button */}
+              <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100">
+                <div className="flex items-center gap-2 text-gray-700">
+                  <span className="text-amber-500">📅</span>
+                  <span className="font-medium text-sm">
+                    {new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + 1 + selectedDay)).toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' })}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setShowAdjustWizard(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all shadow-sm"
+                >
+                  <Wand2 className="w-3.5 h-3.5" />
+                  Justera mål
+                </button>
+              </div>
+
+              {/* Macros content - clickable to expand */}
               <button
                 onClick={() => setMacrosExpanded(!macrosExpanded)}
-                className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
+                className="w-full px-4 py-3 hover:bg-gray-50 transition-colors text-left"
               >
-                <div className="flex items-center gap-4 flex-wrap">
-                  {/* Date */}
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <span className="text-amber-500">📅</span>
-                    <span className="font-medium text-sm">
-                      {new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + 1 + selectedDay)).toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' })}
-                    </span>
-                  </div>
-
-                  {/* Dagtotalt Card Style */}
-                  <div className="flex items-center gap-4 bg-blue-50 rounded-lg px-3 py-1.5">
-                    <div className="text-center">
+                {/* Makro mål section */}
+                <div className="mb-3">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Makro mål</p>
+                  <div className="flex items-center gap-4 bg-emerald-50 rounded-lg px-4 py-2">
+                    <div className="text-center flex-1">
                       <div className="text-[10px] font-semibold text-orange-500 uppercase tracking-wide">KCAL</div>
-                      <div className="text-base font-bold text-gray-900">{currentTarget.calories}</div>
+                      <div className="text-lg font-bold text-gray-900">{currentTarget.calories}</div>
                     </div>
-                    <div className="text-center">
+                    <div className="text-center flex-1">
                       <div className="text-[10px] font-semibold text-rose-500 uppercase tracking-wide">PROT</div>
-                      <div className="text-base font-bold text-gray-900">{currentTarget.protein}g</div>
+                      <div className="text-lg font-bold text-gray-900">{currentTarget.protein}g</div>
                     </div>
-                    <div className="text-center">
+                    <div className="text-center flex-1">
                       <div className="text-[10px] font-semibold text-sky-500 uppercase tracking-wide">KOLH</div>
-                      <div className="text-base font-bold text-gray-900">{currentTarget.carbs}g</div>
+                      <div className="text-lg font-bold text-gray-900">{currentTarget.carbs}g</div>
                     </div>
-                    <div className="text-center">
+                    <div className="text-center flex-1">
                       <div className="text-[10px] font-semibold text-amber-500 uppercase tracking-wide">FETT</div>
-                      <div className="text-base font-bold text-gray-900">{currentTarget.fat}g</div>
+                      <div className="text-lg font-bold text-gray-900">{currentTarget.fat}g</div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span
-                    onClick={(e) => { e.stopPropagation(); setShowAdjustWizard(true); }}
-                    className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-md hover:bg-amber-200 transition-colors cursor-pointer"
-                  >
-                    Justera
-                  </span>
-                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${macrosExpanded ? 'rotate-180' : ''}`} />
+                {/* Divider */}
+                <div className="border-t border-dashed border-gray-300 my-3"></div>
+
+                {/* Dagtotalt section */}
+                <div>
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Dagtotalt</p>
+                  <div className="flex items-center gap-4 bg-blue-50 rounded-lg px-4 py-2">
+                    <div className="text-center flex-1">
+                      <div className="text-[10px] font-semibold text-orange-500 uppercase tracking-wide">KCAL</div>
+                      <div className="text-lg font-bold text-gray-900">{currentIntake.calories}</div>
+                    </div>
+                    <div className="text-center flex-1">
+                      <div className="text-[10px] font-semibold text-rose-500 uppercase tracking-wide">PROT</div>
+                      <div className="text-lg font-bold text-gray-900">{currentIntake.protein}g</div>
+                    </div>
+                    <div className="text-center flex-1">
+                      <div className="text-[10px] font-semibold text-sky-500 uppercase tracking-wide">KOLH</div>
+                      <div className="text-lg font-bold text-gray-900">{currentIntake.carbs}g</div>
+                    </div>
+                    <div className="text-center flex-1">
+                      <div className="text-[10px] font-semibold text-amber-500 uppercase tracking-wide">FETT</div>
+                      <div className="text-lg font-bold text-gray-900">{currentIntake.fat}g</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Expand indicator */}
+                <div className="flex justify-center mt-2">
+                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${macrosExpanded ? 'rotate-180' : ''}`} />
                 </div>
               </button>
 
