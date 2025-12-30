@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Utensils, Sparkles, ChevronDown, ChevronUp, UtensilsCrossed, Wand2 } from 'lucide-react'
+import { Utensils, Sparkles, ChevronDown, ChevronUp, UtensilsCrossed, Wand2, Calendar } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Pyramid } from '@/components/pyramid'
 import { nutritionPyramidLevels, nutritionFoundation } from '@/lib/data/pyramid-content'
 import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
@@ -114,7 +115,7 @@ export default function MealPlanPage() {
   const [showAdjustWizard, setShowAdjustWizard] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0) // For forcing FlexibleMealPlan reload
   const [pyramidExpanded, setPyramidExpanded] = useState(false)
-  const [macrosExpanded, setMacrosExpanded] = useState(false)
+  const [weekViewOpen, setWeekViewOpen] = useState(false)
   const [consumedTotals, setConsumedTotals] = useState<{ kcal: number; protein: number; carbs: number; fat: number }>({ kcal: 0, protein: 0, carbs: 0, fat: 0 })
 
   const toggleMeal = (mealNumber: number) => {
@@ -408,12 +409,15 @@ export default function MealPlanPage() {
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mt-4">
               {/* Header row with date and Justera button */}
               <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100">
-                <div className="flex items-center gap-2 text-gray-700">
-                  <span className="text-amber-500">📅</span>
+                <button
+                  onClick={() => setWeekViewOpen(true)}
+                  className="flex items-center gap-2 text-gray-700 hover:text-amber-600 transition-colors"
+                >
+                  <Calendar className="w-4 h-4 text-amber-500" />
                   <span className="font-medium text-sm">
                     {new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + 1 + selectedDay)).toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' })}
                   </span>
-                </div>
+                </button>
                 <button
                   onClick={() => setShowAdjustWizard(true)}
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all shadow-sm"
@@ -423,11 +427,8 @@ export default function MealPlanPage() {
                 </button>
               </div>
 
-              {/* Macros content - clickable to expand */}
-              <button
-                onClick={() => setMacrosExpanded(!macrosExpanded)}
-                className="w-full px-4 py-3 hover:bg-gray-50 transition-colors text-left"
-              >
+              {/* Macros content */}
+              <div className="px-4 py-3">
                 {/* Makro mål section */}
                 <div className="mb-3">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Makro mål</p>
@@ -476,30 +477,34 @@ export default function MealPlanPage() {
                     </div>
                   </div>
                 </div>
-
-                {/* Expand indicator */}
-                <div className="flex justify-center mt-2">
-                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${macrosExpanded ? 'rotate-180' : ''}`} />
-                </div>
-              </button>
-
-              {/* Expanded view with calendar */}
-              {macrosExpanded && (
-                <div className="border-t border-gray-100 p-4">
-                  <WeekMacroDisplay
-                    dailyTargets={dailyTargets}
-                    selectedDay={selectedDay}
-                    onDaySelect={setSelectedDay}
-                    defaultCalories={totalDailyCalories}
-                    calories={currentTarget.calories}
-                    protein={currentTarget.protein}
-                    fat={currentTarget.fat}
-                    carbs={currentTarget.carbs}
-                    onAdjustClick={() => setShowAdjustWizard(true)}
-                  />
-                </div>
-              )}
+              </div>
             </div>
+
+            {/* Week View Dialog */}
+            <Dialog open={weekViewOpen} onOpenChange={setWeekViewOpen}>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Veckoöversikt</DialogTitle>
+                </DialogHeader>
+                <WeekMacroDisplay
+                  dailyTargets={dailyTargets}
+                  selectedDay={selectedDay}
+                  onDaySelect={(day) => {
+                    setSelectedDay(day)
+                    setWeekViewOpen(false)
+                  }}
+                  defaultCalories={totalDailyCalories}
+                  calories={currentTarget.calories}
+                  protein={currentTarget.protein}
+                  fat={currentTarget.fat}
+                  carbs={currentTarget.carbs}
+                  onAdjustClick={() => {
+                    setWeekViewOpen(false)
+                    setShowAdjustWizard(true)
+                  }}
+                />
+              </DialogContent>
+            </Dialog>
 
             <TabsContent value="meals" className="space-y-4 mt-4">
               {/* Meals */}
