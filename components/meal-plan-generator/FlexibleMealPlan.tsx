@@ -1041,43 +1041,6 @@ export function FlexibleMealPlan({
             ))}
           </div>
 
-          {/* Dagtotal - summering av alla måltider */}
-          {flexiblePlan.meals.length > 0 && (
-            <div className="bg-white rounded-2xl p-4 border border-zinc-200 shadow-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-zinc-700 uppercase tracking-wide">
-                  Dagtotalt
-                </span>
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="text-center">
-                    <div className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide">Kcal</div>
-                    <div className="font-bold text-amber-600">
-                      {Math.round(flexiblePlan.meals.reduce((acc, meal) => acc + meal.totalMacros.kcal, 0))}
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide">Prot</div>
-                    <div className="font-bold text-rose-600">
-                      {Math.round(flexiblePlan.meals.reduce((acc, meal) => acc + meal.totalMacros.protein, 0))}g
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide">Kolh</div>
-                    <div className="font-bold text-amber-500">
-                      {Math.round(flexiblePlan.meals.reduce((acc, meal) => acc + meal.totalMacros.carbs, 0))}g
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-[10px] text-zinc-400 uppercase font-medium tracking-wide">Fett</div>
-                    <div className="font-bold text-sky-500">
-                      {Math.round(flexiblePlan.meals.reduce((acc, meal) => acc + meal.totalMacros.fat, 0))}g
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
           {error && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
