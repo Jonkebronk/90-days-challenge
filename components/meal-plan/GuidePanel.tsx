@@ -195,7 +195,7 @@ const CATEGORY_CONFIG = {
   berry: { label: 'Bär', shortLabel: 'Bär', icon: '🫐', color: 'text-purple-700', bg: 'bg-purple-50', subBg: 'bg-purple-100/50', hoverBg: 'hover:bg-purple-50' },
   sauce: { label: 'Såser', shortLabel: 'Sås', icon: '🥫', color: 'text-orange-700', bg: 'bg-orange-50', subBg: 'bg-orange-100/50', hoverBg: 'hover:bg-orange-50' },
   spice: { label: 'Kryddor', shortLabel: 'Kryd', icon: '🧂', color: 'text-yellow-700', bg: 'bg-yellow-50', subBg: 'bg-yellow-100/50', hoverBg: 'hover:bg-yellow-50' },
-  cooking_fat: { label: 'Matlagningsfett', shortLabel: 'Olja', icon: '🫒', color: 'text-lime-700', bg: 'bg-lime-50', subBg: 'bg-lime-100/50', hoverBg: 'hover:bg-lime-50' },
+  cooking_fat: { label: 'Matlagningsfett', shortLabel: 'Olja', icon: '🛢️', color: 'text-lime-700', bg: 'bg-lime-50', subBg: 'bg-lime-100/50', hoverBg: 'hover:bg-lime-50' },
 }
 
 interface GuidePanelProps {
