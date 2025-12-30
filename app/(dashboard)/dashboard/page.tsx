@@ -908,11 +908,7 @@ export default function DashboardPage() {
                 <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-[#FFD700] to-orange-400 bg-clip-text text-transparent">Dag {programInfo.programDay}</span>
                 <span className="text-xs sm:text-sm text-[#B8860B]">av 90</span>
               </div>
-              <span className={`text-xs font-medium ${
-                programInfo.phase === 1 ? 'text-green-500' :
-                programInfo.phase === 2 ? 'text-blue-500' :
-                'text-amber-500'
-              }`}>
+              <span className="text-xs font-medium text-[#B8860B]">
                 Fas {programInfo.phase} ({programInfo.phase === 1 ? 'dag 1-28' : programInfo.phase === 2 ? 'dag 29-56' : 'dag 57-90'})
               </span>
             </div>
