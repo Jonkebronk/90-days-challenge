@@ -113,6 +113,8 @@ export default function MealPlanPage() {
   const [flexibleTargetMacros, setFlexibleTargetMacros] = useState<{ protein: number; carbs: number; fat: number; kcal: number } | null>(null)
   const [showAdjustWizard, setShowAdjustWizard] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0) // For forcing FlexibleMealPlan reload
+  const [pyramidExpanded, setPyramidExpanded] = useState(false)
+  const [macrosExpanded, setMacrosExpanded] = useState(false)
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
@@ -337,26 +339,58 @@ export default function MealPlanPage() {
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
 
-      {/* Nutrition Pyramid */}
-      <Pyramid
-        title="Nutritionspyramiden"
-        levels={nutritionPyramidLevels}
-        foundation={nutritionFoundation}
-        colorScheme="red"
-      />
+      {/* Nutrition Pyramid - Collapsible */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <button
+          onClick={() => setPyramidExpanded(!pyramidExpanded)}
+          className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-rose-600 to-rose-500 text-white font-semibold hover:from-rose-700 hover:to-rose-600 transition-all"
+        >
+          <span className="flex items-center gap-2">
+            <span className="text-lg">🔺</span>
+            Nutritionspyramiden
+          </span>
+          <ChevronDown className={`w-5 h-5 transition-transform ${pyramidExpanded ? 'rotate-180' : ''}`} />
+        </button>
+        {pyramidExpanded && (
+          <div className="p-4">
+            <Pyramid
+              title=""
+              levels={nutritionPyramidLevels}
+              foundation={nutritionFoundation}
+              colorScheme="red"
+            />
+          </div>
+        )}
+      </div>
 
-      {/* Week Calendar + Macro Display */}
-      <WeekMacroDisplay
-        dailyTargets={dailyTargets}
-        selectedDay={selectedDay}
-        onDaySelect={setSelectedDay}
-        defaultCalories={totalDailyCalories}
-        calories={currentTarget.calories}
-        protein={currentTarget.protein}
-        fat={currentTarget.fat}
-        carbs={currentTarget.carbs}
-        onAdjustClick={() => setShowAdjustWizard(true)}
-      />
+      {/* Week Calendar + Macro Display - Collapsible */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <button
+          onClick={() => setMacrosExpanded(!macrosExpanded)}
+          className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold hover:from-amber-600 hover:to-orange-600 transition-all"
+        >
+          <span className="flex items-center gap-2">
+            <span className="text-lg">📊</span>
+            Makros & Kalender
+          </span>
+          <ChevronDown className={`w-5 h-5 transition-transform ${macrosExpanded ? 'rotate-180' : ''}`} />
+        </button>
+        {macrosExpanded && (
+          <div className="p-4">
+            <WeekMacroDisplay
+              dailyTargets={dailyTargets}
+              selectedDay={selectedDay}
+              onDaySelect={setSelectedDay}
+              defaultCalories={totalDailyCalories}
+              calories={currentTarget.calories}
+              protein={currentTarget.protein}
+              fat={currentTarget.fat}
+              carbs={currentTarget.carbs}
+              onAdjustClick={() => setShowAdjustWizard(true)}
+            />
+          </div>
+        )}
+      </div>
 
       {/* Adjust Macros Wizard */}
       <AdjustMacrosWizard
