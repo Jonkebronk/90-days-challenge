@@ -380,21 +380,21 @@ export default function MealPlanPage() {
 
       {/* Main Content */}
       <div>
-          <Tabs defaultValue="meals" className="w-full">
+          <Tabs defaultValue="flexible" className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-gray-100 border border-gray-200 rounded-xl p-1">
-              <TabsTrigger
-                value="meals"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-600 rounded-lg transition-all"
-              >
-                <Utensils className="w-4 h-4 mr-2" />
-                Kostschema
-              </TabsTrigger>
               <TabsTrigger
                 value="flexible"
                 className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-600 rounded-lg transition-all"
               >
                 <UtensilsCrossed className="w-4 h-4 mr-2" />
                 Flexibel
+              </TabsTrigger>
+              <TabsTrigger
+                value="meals"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-600 rounded-lg transition-all"
+              >
+                <Utensils className="w-4 h-4 mr-2" />
+                Kostschema
               </TabsTrigger>
             </TabsList>
 

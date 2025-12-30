@@ -205,7 +205,7 @@ interface GuidePanelProps {
 
 export function GuidePanel({ }: GuidePanelProps) {
   const [guideExpanded, setGuideExpanded] = useState(false)
-  const [foodExpanded, setFoodExpanded] = useState(true)
+  const [foodExpanded, setFoodExpanded] = useState(false)
   const [selectedGuide, setSelectedGuide] = useState<'flexible' | 'howto' | 'practical' | 'faq' | null>(null)
   const [selectedFood, setSelectedFood] = useState<keyof typeof CATEGORY_CONFIG | null>(null)
 
