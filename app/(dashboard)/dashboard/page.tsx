@@ -998,34 +998,6 @@ export default function DashboardPage() {
               })}
             </div>
 
-            {/* Sleep row */}
-            <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-indigo-500 py-2.5 px-2">
-                <Moon className="w-4 h-4" />
-                <span className="text-xs font-medium hidden sm:inline">Sömn</span>
-              </div>
-              {weekDays.map((date, index) => {
-                const dateStr = getLocalDateString(date)
-                const sleepData = dailySleep[dateStr]
-                const goodSleep = sleepData && sleepData.hours >= 7
-                return (
-                  <button
-                    key={index}
-                    onClick={() => openSleepModal(date)}
-                    className="flex items-center justify-center py-2.5 text-xs sm:text-sm hover:bg-gray-50 transition-colors cursor-pointer"
-                  >
-                    {sleepData ? (
-                      <span className={`font-medium ${goodSleep ? 'text-green-500' : 'text-indigo-500'}`}>
-                        {sleepData.hours}h
-                      </span>
-                    ) : (
-                      <span className="text-gray-300">-</span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-
             {/* Training row */}
             <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
               <div className="flex items-center gap-1.5 text-orange-500 py-2.5 px-2">
@@ -1079,7 +1051,7 @@ export default function DashboardPage() {
 
           {/* Tip text */}
           <p className="text-xs text-gray-400 mt-4 text-center">
-            Tryck på vikt, steg, sömn för att registrera manuellt
+            Tryck på vikt, steg för att registrera manuellt
           </p>
 
           {/* Link to knowledge base */}
