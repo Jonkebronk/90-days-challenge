@@ -591,11 +591,11 @@ En person som tränar 5 gånger i veckan men i övrigt är stillasittande kan ha
 Svara ärligt på dessa tre frågor:
 
 **1. Hur många steg går du i snitt per dag?**
-- <5 000 steg → Stillasittande
+- Under 5 000 steg → Stillasittande
 - 5 000–7 500 steg → Lätt aktiv
 - 7 500–10 000 steg → Måttligt aktiv
 - 10 000–12 500 steg → Mycket aktiv
-- >12 500 steg → Extremt aktiv
+- Över 12 500 steg → Extremt aktiv
 
 **2. Hur många träningspass per vecka?**
 - 0–1 → Dra ner en nivå
