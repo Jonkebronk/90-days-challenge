@@ -499,7 +499,7 @@ Den påverkas av flera faktorer:
 - **Kön** – Män har generellt högre ämnesomsättning än kvinnor
 - **Hormonnivåer** – Påverkar hur kroppen hanterar energi
 - **Fysisk aktivitet** – Både träning och vardagsrörelse spelar roll
-- **Kost** – Typ av mat påverkar, protein kräver mer energi att bryta ner
+- **Kost** – Typ av mat påverkar, protein kräver mest energi att bryta ner
 - **Sömn** – Dålig sömn kan sänka ämnesomsättningen
 - **Stress** – Höga stressnivåer kan påverka fettlagring
 
@@ -533,11 +533,13 @@ Energin som krävs för att smälta och tillgodogöra sig maten du äter. Olika 
 - **Kolhydrater:** 5–10%
 - **Fett:** 0–3%
 
-Det är en av anledningarna till att proteinrik kost är överlägsen för fettförlust – du förbränner mer bara av att smälta maten.
-
-**Räkna ut din ämnesomsättning**
-
-Vi använder Mifflin-St Jeor-formeln, som anses vara den mest precisa för de flesta. Den tar hänsyn till din vikt, längd, ålder och kön.
+Det är en av anledningarna till att proteinrik kost är överlägsen för fettförlust – du förbränner mer bara av att smälta maten.`,
+      },
+      {
+        id: 'metabolism-calculation',
+        label: 'Räkna ut din ämnesomsättning',
+        title: 'Räkna ut din ämnesomsättning',
+        description: `Vi använder Mifflin-St Jeor-formeln, som anses vara den mest precisa för de flesta. Den tar hänsyn till din vikt, längd, ålder och kön.
 
 **Steg 1: Räkna ut din basalmetabolism (BMR)**
 
@@ -551,6 +553,8 @@ Vi använder Mifflin-St Jeor-formeln, som anses vara den mest precisa för de fl
 (10 × 65) + (6,25 × 165) − (5 × 30) − 161 = 650 + 1031 − 150 − 161 = **1 370 kcal**
 
 **Steg 2: Multiplicera med din aktivitetsfaktor**
+
+Här kommer den viktiga delen. Din aktivitetsfaktor baseras på din totala rörelse – inte bara träning.
 
 | Faktor | Nivå | Vad det betyder |
 |--------|------|-----------------|
@@ -569,7 +573,47 @@ Vi använder Mifflin-St Jeor-formeln, som anses vara den mest precisa för de fl
 | Måttligt aktiv | 1 755 × 1,55 | 2 720 kcal/dag |
 | Mycket aktiv | 1 755 × 1,725 | 3 027 kcal/dag |
 
-**Varning:** Detta är ditt ungefärliga underhållsbehov – det du behöver för att hålla vikten stabil.
+**Varning: De flesta överskattar sin aktivitet**
+
+Det här är den vanligaste fällan. Någon tänker "jag tränar 4 gånger i veckan" och väljer "mycket aktiv". Men verkligheten ser ofta annorlunda ut:
+
+- Sitter still 8–10 timmar på jobbet
+- Kör bil till och från
+- Tar hissen, sitter i soffan på kvällen
+- Träningen står bara för 5–10% av total förbränning
+
+Det är din vardagsrörelse (NEAT) som avgör vilken faktor som stämmer – inte bara träningen.
+
+En person som tränar 5 gånger i veckan men i övrigt är stillasittande kan ha lägre TDEE än någon som aldrig tränar men går 15 000 steg om dagen på jobbet.
+
+**Hur vet du vilken nivå du är?**
+
+Svara ärligt på dessa tre frågor:
+
+**1. Hur många steg går du i snitt per dag?**
+- <5 000 steg → Stillasittande
+- 5 000–7 500 steg → Lätt aktiv
+- 7 500–10 000 steg → Måttligt aktiv
+- 10 000–12 500 steg → Mycket aktiv
+- >12 500 steg → Extremt aktiv
+
+**2. Hur många träningspass per vecka?**
+- 0–1 → Dra ner en nivå
+- 2–3 → Behåll nivån
+- 4–5 → Höj eventuellt en nivå
+- 6+ → Höj en nivå
+
+**3. Hur fysiskt är ditt jobb?**
+- Stillasittande (kontor) → Dra ner en nivå
+- Blandat (går en del) → Behåll nivån
+- Fysiskt (står/går mest) → Höj en nivå
+- Tungt fysiskt (bygge, lager) → Höj en nivå
+
+**Tumregel:** Om du är osäker, välj den lägre nivån. Det är bättre att börja försiktigt och justera uppåt än att överskatta och inte se resultat.
+
+**Från underhåll till underskott**
+
+Siffran du räknar ut är ditt ungefärliga underhållsbehov – det du behöver för att hålla vikten stabil.
 
 För fettförlust skapar vi ett underskott på 500–700 kalorier per dag, vilket ger cirka 0,5–0,7 kg fettförlust per vecka.
 
