@@ -394,14 +394,14 @@ export default function MealPlanPage() {
                 className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-600 rounded-lg transition-all"
               >
                 <UtensilsCrossed className="w-4 h-4 mr-2" />
-                Flexibel
+                Kostschema
               </TabsTrigger>
               <TabsTrigger
                 value="meals"
                 className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-600 rounded-lg transition-all"
               >
                 <Utensils className="w-4 h-4 mr-2" />
-                Kostschema
+                Förslag
               </TabsTrigger>
             </TabsList>
 
