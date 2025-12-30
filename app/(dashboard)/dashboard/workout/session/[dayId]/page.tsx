@@ -990,20 +990,27 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       {isExpanded && exercise.tempo && (
                         <div className="mt-1 flex items-center gap-1.5">
                           <span className="text-xs text-teal-600 font-semibold">TEMPO: {exercise.tempo}</span>
-                          <div className="relative group">
-                            <Info className="w-3.5 h-3.5 text-teal-500 cursor-help" />
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                              <p className="font-semibold mb-1.5">Tempo förklaring:</p>
-                              <p className="text-gray-300 leading-relaxed">
-                                Siffrorna anger sekunder för varje fas:<br/>
-                                <span className="text-teal-300">1:a</span> - Excentrisk (sänkning)<br/>
-                                <span className="text-teal-300">2:a</span> - Paus i botten<br/>
-                                <span className="text-teal-300">3:e</span> - Koncentrisk (lyft)<br/>
-                                <span className="text-teal-300">4:e</span> - Paus i toppen
-                              </p>
-                              <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
-                            </div>
-                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              toast.info(
+                                <div className="text-sm">
+                                  <p className="font-semibold mb-2">Tempo förklaring:</p>
+                                  <p className="text-gray-600 leading-relaxed">
+                                    Siffrorna anger sekunder för varje fas:<br/>
+                                    <span className="font-medium">1:a</span> - Excentrisk (sänkning)<br/>
+                                    <span className="font-medium">2:a</span> - Paus i botten<br/>
+                                    <span className="font-medium">3:e</span> - Koncentrisk (lyft)<br/>
+                                    <span className="font-medium">4:e</span> - Paus i toppen
+                                  </p>
+                                </div>,
+                                { duration: 6000 }
+                              )
+                            }}
+                            className="p-0.5 rounded-full hover:bg-teal-100 transition-colors"
+                          >
+                            <Info className="w-3.5 h-3.5 text-teal-500" />
+                          </button>
                         </div>
                       )}
                     </div>
