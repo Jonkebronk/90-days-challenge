@@ -622,9 +622,15 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     }
   }
 
-  // Delete a set directly (no confirmation)
-  const deleteSetDirectly = async (setToDelete: SetLog) => {
+  // Delete a set directly (no confirmation) - only for extra sets
+  const deleteSetDirectly = async (setToDelete: SetLog, programmedSets: number) => {
     if (!sessionId || !setToDelete?.id) return
+
+    // Safety check: only allow deleting extra sets
+    if (setToDelete.setNumber <= programmedSets) {
+      toast.error('Kan inte ta bort programmerade set')
+      return
+    }
 
     try {
       const response = await fetch(`/api/workout-sessions/${sessionId}/sets/${setToDelete.id}`, {
@@ -643,6 +649,14 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         }
         return updated
       })
+
+      // Decrement extra sets counter
+      setExtraSets(prev => ({
+        ...prev,
+        [setToDelete.exerciseId]: Math.max(0, (prev[setToDelete.exerciseId] || 0) - 1)
+      }))
+
+      toast.success('Set borttaget')
     } catch (error) {
       console.error('Error deleting set:', error)
       toast.error('Kunde inte ta bort set')
@@ -1220,16 +1234,19 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                                         >
                                           <Plus className="w-4 h-4" /> Lägg till set
                                         </button>
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation()
-                                            setActiveSetMenu(null)
-                                            deleteSetDirectly(set)
-                                          }}
-                                          className="w-full px-3 py-2.5 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
-                                        >
-                                          <Trash2 className="w-4 h-4" /> Ta bort set
-                                        </button>
+                                        {/* Only show delete for extra sets (beyond programmed sets) */}
+                                        {set.setNumber > exercise.sets && (
+                                          <button
+                                            onClick={(e) => {
+                                              e.stopPropagation()
+                                              setActiveSetMenu(null)
+                                              deleteSetDirectly(set, exercise.sets)
+                                            }}
+                                            className="w-full px-3 py-2.5 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
+                                          >
+                                            <Trash2 className="w-4 h-4" /> Ta bort set
+                                          </button>
+                                        )}
                                       </div>
                                     </>
                                   )}
