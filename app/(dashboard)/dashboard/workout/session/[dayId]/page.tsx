@@ -30,10 +30,8 @@ import {
   StickyNote,
   Pin,
   MoreHorizontal,
-  MoreVertical,
   List,
-  Layers,
-  Trash2
+  Layers
 } from 'lucide-react'
 import { RestTimerDialog, MinimizedRestBar } from '@/components/workout/rest-timer-dialog'
 import Link from 'next/link'
@@ -128,10 +126,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [editNotes, setEditNotes] = useState<string>('')
   const [isUpdatingSet, setIsUpdatingSet] = useState(false)
 
-  // Set menu state
-  const [activeSetMenu, setActiveSetMenu] = useState<string | null>(null)
-  const [isLoggingSet, setIsLoggingSet] = useState(false)
-
   // Cancel/abandon session state
   const [showCancelModal, setShowCancelModal] = useState(false)
   const [isCancelling, setIsCancelling] = useState(false)
@@ -147,9 +141,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [editingNoteExerciseId, setEditingNoteExerciseId] = useState<string | null>(null)
   const [noteText, setNoteText] = useState('')
   const [isSavingNote, setIsSavingNote] = useState(false)
-
-  // Extra sets per exercise (beyond the planned sets)
-  const [extraSets, setExtraSets] = useState<Record<string, number>>({})
 
   useEffect(() => {
     const loadData = async () => {
@@ -524,10 +515,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       const completedExerciseIndex = workoutDay?.exercises.findIndex(ex => ex.exercise.id === exerciseId) ?? -1
       const exercise = completedExerciseIndex >= 0 ? workoutDay?.exercises[completedExerciseIndex] : null
 
-      // Include extra sets in the total count
-      const totalSetsNeeded = exercise ? exercise.sets + (extraSets[exerciseId] || 0) : 0
-
-      if (exercise && setLogs[exerciseId]?.length + 1 >= totalSetsNeeded) {
+      if (exercise && setLogs[exerciseId]?.length + 1 >= exercise.sets) {
         // All sets complete for this exercise - collapse it immediately
         const newExpanded = new Set(expandedExercises)
         newExpanded.delete(completedExerciseIndex)
@@ -537,8 +525,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         const nextIncompleteIndex = workoutDay?.exercises.findIndex((ex, idx) => {
           if (idx <= completedExerciseIndex) return false
           const exSets = setLogs[ex.exercise.id] || []
-          const totalForEx = ex.sets + (extraSets[ex.exercise.id] || 0)
-          return exSets.length < totalForEx
+          return exSets.length < ex.sets
         }) ?? -1
 
         if (nextIncompleteIndex >= 0) {
@@ -552,16 +539,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       console.error('Error logging set:', error)
       toast.error('Kunde inte logga set')
     }
-  }
-
-  // Add extra set (adds an input row, doesn't create in database yet)
-  const addExtraSet = (exerciseId: string) => {
-    setActiveSetMenu(null)
-    setExtraSets(prev => ({
-      ...prev,
-      [exerciseId]: (prev[exerciseId] || 0) + 1
-    }))
-    toast.success('Extra set tillagt')
   }
 
   // Edit a set
@@ -622,15 +599,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
     }
   }
 
-  // Delete a set directly (no confirmation) - only for extra sets
-  const deleteSetDirectly = async (setToDelete: SetLog, programmedSets: number) => {
+  // Delete a set directly (no confirmation)
+  const deleteSetDirectly = async (setToDelete: SetLog) => {
     if (!sessionId || !setToDelete?.id) return
-
-    // Safety check: only allow deleting extra sets
-    if (setToDelete.setNumber <= programmedSets) {
-      toast.error('Kan inte ta bort programmerade set')
-      return
-    }
 
     try {
       const response = await fetch(`/api/workout-sessions/${sessionId}/sets/${setToDelete.id}`, {
@@ -649,14 +620,6 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         }
         return updated
       })
-
-      // Decrement extra sets counter
-      setExtraSets(prev => ({
-        ...prev,
-        [setToDelete.exerciseId]: Math.max(0, (prev[setToDelete.exerciseId] || 0) - 1)
-      }))
-
-      toast.success('Set borttaget')
     } catch (error) {
       console.error('Error deleting set:', error)
       toast.error('Kunde inte ta bort set')
@@ -898,8 +861,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             const isExpanded = expandedExercises.has(index)
             const isCurrent = index === currentExerciseIndex
             const exerciseSets = setLogs[exercise.exercise.id] || []
-            const totalSetsForExercise = exercise.sets + (extraSets[exercise.exercise.id] || 0)
-            const isExerciseComplete = exerciseSets.length >= totalSetsForExercise
+            const isExerciseComplete = exerciseSets.length >= exercise.sets
 
             // Check if this exercise is part of a superset
             const isSuperset = !!exercise.supersetGroupId
@@ -1018,21 +980,19 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   <div className="flex items-center gap-3">
                     {/* Progress indicator */}
                     <div className="flex items-center gap-1.5">
-                      {Array.from({ length: totalSetsForExercise }).map((_, idx) => (
+                      {Array.from({ length: exercise.sets }).map((_, idx) => (
                         <div
                           key={idx}
                           className={`w-2.5 h-2.5 rounded-full transition-colors ${
                             idx < exerciseSets.length
                               ? 'bg-green-500'
-                              : idx < exercise.sets
-                                ? 'bg-gray-300'
-                                : 'bg-amber-300'
+                              : 'bg-gray-300'
                           }`}
                         />
                       ))}
                     </div>
                     <span className="text-sm text-gray-600 font-medium">
-                      {exerciseSets.length}/{totalSetsForExercise}
+                      {exerciseSets.length}/{exercise.sets}
                     </span>
                     {isExpanded ? (
                       <ChevronUp className="w-5 h-5 text-gray-500" />
@@ -1141,10 +1101,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
                   {/* Logged Sets - with table layout */}
                   {exerciseSets.length > 0 && (
-                    <div className="border border-gray-200 rounded-xl overflow-visible">
+                    <div className="border border-gray-200 rounded-xl overflow-hidden">
                       {/* Table header */}
-                      <div className="grid grid-cols-[28px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        <span className="text-center"></span>
+                      <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2.5 bg-gray-50 border-b border-gray-200 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         <span className="text-center">SET</span>
                         <span className="text-center">FÖREG</span>
                         <span className="text-center">REPS</span>
@@ -1201,74 +1160,18 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                             ) : (
                               /* Display mode - table row - click to edit */
                               <div
-                                className="grid grid-cols-[28px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-xl items-center cursor-pointer hover:bg-gray-50 transition-colors"
+                                className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-xl items-center cursor-pointer hover:bg-gray-50 transition-colors"
                                 onClick={() => set.id && openEditModal(set)}
                               >
-                                {/* Kebab menu - first column - only show if last set OR extra set */}
-                                <div className="relative flex items-center justify-center">
-                                  {(setIdx === exerciseSets.length - 1 || set.setNumber > exercise.sets) ? (
-                                    <>
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation()
-                                          setActiveSetMenu(activeSetMenu === set.id ? null : set.id || null)
-                                        }}
-                                        className="p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-colors"
-                                      >
-                                        <MoreVertical className="w-4 h-4" />
-                                      </button>
-                                      {activeSetMenu === set.id && (
-                                        <>
-                                          <div
-                                            className="fixed inset-0 z-[100]"
-                                            onClick={(e) => {
-                                              e.stopPropagation()
-                                              setActiveSetMenu(null)
-                                            }}
-                                          />
-                                          <div className="absolute left-0 top-0 mt-8 bg-white rounded-lg shadow-2xl border border-gray-200 py-1 z-[101] min-w-[150px]">
-                                            {/* Only show "Lägg till set" on the last logged set */}
-                                            {setIdx === exerciseSets.length - 1 && (
-                                              <button
-                                                onClick={(e) => {
-                                                  e.stopPropagation()
-                                                  addExtraSet(exercise.exercise.id)
-                                                }}
-                                                className="w-full px-3 py-2.5 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-gray-700"
-                                              >
-                                                <Plus className="w-4 h-4" /> Lägg till set
-                                              </button>
-                                            )}
-                                            {/* Only show delete for extra sets (beyond programmed sets) */}
-                                            {set.setNumber > exercise.sets && (
-                                              <button
-                                                onClick={(e) => {
-                                                  e.stopPropagation()
-                                                  setActiveSetMenu(null)
-                                                  deleteSetDirectly(set, exercise.sets)
-                                                }}
-                                                className="w-full px-3 py-2.5 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
-                                              >
-                                                <Trash2 className="w-4 h-4" /> Ta bort set
-                                              </button>
-                                            )}
-                                          </div>
-                                        </>
-                                      )}
-                                    </>
-                                  ) : (
-                                    <span className="w-4 h-4" /> /* Empty space for alignment */
-                                  )}
-                                </div>
                                 <span className="text-center text-sm font-bold text-gray-700">{set.setNumber}</span>
                                 <span className="text-center text-xs sm:text-sm text-gray-600 font-medium truncate">
                                   {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
                                 </span>
-                                <span className={`text-center text-sm font-semibold ${set.reps === null ? 'text-amber-500' : 'text-gray-800'}`}>
-                                  {set.setType === 'TIME' ? `${set.timeSeconds}s` : (set.reps !== null ? set.reps : '—')}
+                                <span className="text-center text-sm font-semibold text-gray-800">
+                                  {set.setType === 'TIME' ? `${set.timeSeconds}s` : (set.reps || 0)}
                                 </span>
-                                <span className={`text-center text-sm font-semibold ${set.weightKg === null && !set.notes ? 'text-amber-500' : 'text-gray-800'}`}>
-                                  {set.setType === 'WEIGHT' ? (set.notes || (set.weightKg !== null ? set.weightKg : '—')) : '-'}
+                                <span className="text-center text-sm font-semibold text-gray-800">
+                                  {set.setType === 'WEIGHT' ? (set.notes || `${set.weightKg || 0}`) : '-'}
                                 </span>
                                 <div className="flex items-center justify-center">
                                   {exercise.restSeconds > 0 ? (
@@ -1304,8 +1207,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                     <div className="space-y-3">
                       {/* Table header if no sets logged yet */}
                       {exerciseSets.length === 0 && (
-                        <div className="grid grid-cols-[28px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 rounded-t-lg text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                          <span className="text-center"></span>
+                        <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-100 rounded-t-lg text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wide">
                           <span className="text-center">SET</span>
                           <span className="text-center">FÖREG</span>
                           <span className="text-center">REPS</span>
@@ -1316,11 +1218,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       )}
 
                       {/* Current set input row */}
-                      <div className="grid grid-cols-[28px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border-2 border-blue-200 rounded-xl items-center">
-                        {/* Empty space for alignment (no menu on input row) */}
-                        <div className="flex items-center justify-center">
-                          <span className="w-4 h-4" />
-                        </div>
+                      <div className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border-2 border-blue-200 rounded-xl items-center">
                         <span className="text-center text-sm font-bold text-blue-600">{exerciseSets.length + 1}</span>
                         <span className="text-center text-xs sm:text-sm text-gray-600 font-medium truncate">
                           {(() => {
@@ -1382,18 +1280,14 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       </div>
 
                       {/* Remaining sets to show */}
-                      {Array.from({ length: totalSetsForExercise - exerciseSets.length - 1 }).map((_, idx) => {
+                      {Array.from({ length: exercise.sets - exerciseSets.length - 1 }).map((_, idx) => {
                         const setNum = exerciseSets.length + 2 + idx
                         const prevSets = previousSessionData?.sets?.filter(
                           (s: any) => s.exerciseId === exercise.exercise.id
                         ) || []
                         const prevSet = prevSets[exerciseSets.length + 1 + idx]
                         return (
-                          <div key={idx} className="grid grid-cols-[28px_32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[32px_44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl items-center">
-                            {/* Empty space for alignment (no menu on pending rows) */}
-                            <div className="flex items-center justify-center">
-                              <span className="w-4 h-4" />
-                            </div>
+                          <div key={idx} className="grid grid-cols-[32px_48px_1fr_1fr_44px_44px] sm:grid-cols-[44px_64px_1fr_1fr_52px_52px] gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl items-center">
                             <span className="text-center text-sm font-bold text-gray-400">{setNum}</span>
                             <span className="text-center text-xs sm:text-sm text-gray-500 font-medium truncate">
                               {prevSet ? (prevSet.setType === 'TIME' ? `${prevSet.timeSeconds}s` : `${prevSet.reps || 0}×${prevSet.weightKg || 0}`) : '-'}
