@@ -248,11 +248,13 @@ En kvarg eller whey proteinpulver och nötter är ett nyttigt mellanmål som är
     id: 'micronutrients',
     label: 'Mikronutrienter',
     title: 'Mikronutrienter',
-    description: `Vitaminer, mineraler och vatten. Dessa syns inte på vågen direkt, men brister påverkar din hälsa, energi och prestation på sikt. Lösningen är enkel: ät varierat, få i dig grönsaker och frukt dagligen, och drick tillräckligt med vatten. Inget magiskt – bara grunderna.
-
-**Vitaminer**
-
-**Fettlösliga vitaminer** (lagras i kroppen):
+    description: `Vitaminer, mineraler och vatten. Dessa syns inte på vågen direkt, men brister påverkar din hälsa, energi och prestation på sikt. Lösningen är enkel: ät varierat, få i dig grönsaker och frukt dagligen, och drick tillräckligt med vatten. Inget magiskt – bara grunderna.`,
+    subItems: [
+      {
+        id: 'vitamins',
+        label: 'Vitaminer',
+        title: 'Vitaminer',
+        description: `**Fettlösliga vitaminer** (lagras i kroppen):
 
 | Vitamin | Funktion | Naturliga källor |
 |---------|----------|------------------|
@@ -270,11 +272,13 @@ En kvarg eller whey proteinpulver och nötter är ett nyttigt mellanmål som är
 | B2 (Riboflavin) | Nedbrytning av fett, kolhydrater, protein | Kött, ägg, mejeriprodukter, fullkorn |
 | B6 | Proteinomsättning, nervfunktion | Kött, fisk, potatis, bananer |
 | B12 | Blodbildning, nervsystem | Kött, fisk, ägg, mejeriprodukter |
-| Folsyra (B9) | Celldelning, blodbildning | Gröna bladgrönsaker, baljväxter, lever |
-
-**Mineraler**
-
-| Mineral | Funktion | Naturliga källor |
+| Folsyra (B9) | Celldelning, blodbildning | Gröna bladgrönsaker, baljväxter, lever |`,
+      },
+      {
+        id: 'minerals',
+        label: 'Mineraler',
+        title: 'Mineraler',
+        description: `| Mineral | Funktion | Naturliga källor |
 |---------|----------|------------------|
 | Järn | Syretransport i blodet | Kött, lever, baljväxter, gröna bladgrönsaker |
 | Kalcium | Skelett, tänder, muskelfunktion | Mejeriprodukter, grönkål, mandel |
@@ -282,17 +286,21 @@ En kvarg eller whey proteinpulver och nötter är ett nyttigt mellanmål som är
 | Zink | Immunförsvar, sårläkning | Kött, skaldjur, nötter, ost |
 | Kalium | Blodtryck, muskelfunktion | Banan, potatis, avokado, spenat |
 | Selen | Antioxidant, sköldkörtelfunktion | Fisk, nötter (särskilt paranötter), ägg |
-| Jod | Sköldkörtelfunktion | Fisk, skaldjur, mejeriprodukter, jodiserat salt |
-
-**Praktiska riktlinjer**
-
-**Fiber:** Sikta på 25-35g per dag för mättnad och tarmhälsa.
+| Jod | Sköldkörtelfunktion | Fisk, skaldjur, mejeriprodukter, jodiserat salt |`,
+      },
+      {
+        id: 'practical-guidelines',
+        label: 'Praktiska riktlinjer',
+        title: 'Praktiska riktlinjer',
+        description: `**Fiber:** Sikta på 25-35g per dag för mättnad och tarmhälsa.
 
 **Vatten:** Cirka 30-40 ml per kg kroppsvikt som bas, mer vid träning.
 
 **Ha koll på:** D-vitamin (särskilt på vintern i Sverige), järn (vid menstruation), magnesium och omega-3 vid lågt fiskintag.
 
 **Tips:** "Ät regnbågen" – ju fler färger på tallriken, desto bredare spektrum av mikronäringsämnen.`,
+      },
+    ],
   },
   {
     id: 'macronutrients',
