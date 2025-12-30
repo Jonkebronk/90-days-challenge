@@ -363,35 +363,6 @@ export default function MealPlanPage() {
         )}
       </div>
 
-      {/* Week Calendar + Macro Display - Collapsible */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <button
-          onClick={() => setMacrosExpanded(!macrosExpanded)}
-          className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold hover:from-amber-600 hover:to-orange-600 transition-all"
-        >
-          <span className="flex items-center gap-2">
-            <span className="text-lg">📊</span>
-            Makros & Kalender
-          </span>
-          <ChevronDown className={`w-5 h-5 transition-transform ${macrosExpanded ? 'rotate-180' : ''}`} />
-        </button>
-        {macrosExpanded && (
-          <div className="p-4">
-            <WeekMacroDisplay
-              dailyTargets={dailyTargets}
-              selectedDay={selectedDay}
-              onDaySelect={setSelectedDay}
-              defaultCalories={totalDailyCalories}
-              calories={currentTarget.calories}
-              protein={currentTarget.protein}
-              fat={currentTarget.fat}
-              carbs={currentTarget.carbs}
-              onAdjustClick={() => setShowAdjustWizard(true)}
-            />
-          </div>
-        )}
-      </div>
-
       {/* Adjust Macros Wizard */}
       <AdjustMacrosWizard
         open={showAdjustWizard}
@@ -411,6 +382,78 @@ export default function MealPlanPage() {
         mealPlanDescriptionContent={mealPlanDescriptionContent}
         nutritionTipsContent={nutritionTipsContent}
       />
+
+      {/* Compact Macros Bar */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        {/* Compact bar - always visible */}
+        <button
+          onClick={() => setMacrosExpanded(!macrosExpanded)}
+          className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
+        >
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* Date */}
+            <div className="flex items-center gap-2 text-gray-700">
+              <span className="text-amber-500">📅</span>
+              <span className="font-medium text-sm">
+                {new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + 1 + selectedDay)).toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' })}
+              </span>
+            </div>
+
+            {/* Calories */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-orange-500">🔥</span>
+              <span className="font-bold text-gray-900">{currentTarget.calories}</span>
+              <span className="text-xs text-gray-500">kcal</span>
+            </div>
+
+            {/* Macros */}
+            <div className="flex items-center gap-3 text-sm">
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-rose-500"></span>
+                <span className="font-semibold text-gray-700">{currentTarget.protein}g</span>
+                <span className="text-gray-400 text-xs">P</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span className="font-semibold text-gray-700">{currentTarget.fat}g</span>
+                <span className="text-gray-400 text-xs">F</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-sky-500"></span>
+                <span className="font-semibold text-gray-700">{currentTarget.carbs}g</span>
+                <span className="text-gray-400 text-xs">K</span>
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span
+              onClick={(e) => { e.stopPropagation(); setShowAdjustWizard(true); }}
+              className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-md hover:bg-amber-200 transition-colors cursor-pointer"
+            >
+              Justera
+            </span>
+            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${macrosExpanded ? 'rotate-180' : ''}`} />
+          </div>
+        </button>
+
+        {/* Expanded view with calendar */}
+        {macrosExpanded && (
+          <div className="border-t border-gray-100 p-4">
+            <WeekMacroDisplay
+              dailyTargets={dailyTargets}
+              selectedDay={selectedDay}
+              onDaySelect={setSelectedDay}
+              defaultCalories={totalDailyCalories}
+              calories={currentTarget.calories}
+              protein={currentTarget.protein}
+              fat={currentTarget.fat}
+              carbs={currentTarget.carbs}
+              onAdjustClick={() => setShowAdjustWizard(true)}
+            />
+          </div>
+        )}
+      </div>
 
       {/* Main Content */}
       <div>
