@@ -290,32 +290,6 @@ export function GuidePanel({ mealPlanDescriptionContent, nutritionTipsContent }:
       </div>
 
       <div>
-        <h2 className="text-amber-600 text-lg font-semibold mb-2">Antal måltider</h2>
-        <p className="mb-3">
-          När du väljer hur många måltider per dag du vill äta är min rekommendation att sikta på fyra till fem. Det håller hungern i schack, energin jämn och gör det lättare att komma upp i protein.
-        </p>
-        <p className="mb-3">
-          Men om du hellre vill äta tre måltider, eller sex, går det också utmärkt. Det viktigaste är att det passar din vardag. Det ska fungera i praktiken, inte skapa stress, frustration eller krocka med livspusslet.
-        </p>
-        <p>
-          Oavsett hur många måltider du väljer är principen enkel: du tar din totala mängd protein, kolhydrater och fett och delar upp det på antalet måltider du vill äta. Det är gynnsamt att ha något högre kolhydrater i måltiden före och efter träning för prestation och återhämtning.
-        </p>
-      </div>
-
-      <div>
-        <h2 className="text-amber-600 text-lg font-semibold mb-2">Anpassa efter din hunger</h2>
-        <p className="mb-3">
-          Försök hålla koll på när du är hungrig och planera ditt intag efter de tiderna. Många har till exempel inte så stor aptit på morgonen, men suget efter mat tar fart på kvällen.
-        </p>
-        <p className="mb-2">De personerna kan ha nytta av att justera intaget på något av följande sätt:</p>
-        <ul className="list-disc list-inside space-y-2 ml-2">
-          <li>Äta en mindre frukost och lunch, sedan en större middag och kvällssnack.</li>
-          <li>Äta mestadels protein och grönsaker (lågt kaloriinnehåll men stöttar muskler) på förmiddagen och eftermiddagen, och lägga mer kolhydrater på middagen och kvällsmålen.</li>
-          <li>Ha längre tid mellan de tidigare målen och kortare tid mellan de senare.</li>
-        </ul>
-      </div>
-
-      <div>
         <h2 className="text-amber-600 text-lg font-semibold mb-2">Hundraårsregeln</h2>
         <p className="mb-3">
           Välj livsmedel som fanns för hundra år sedan. Det innebär att du prioriterar råvaror som kött, fisk, potatis, ägg, grönsaker, frukt och mejeriprodukter, och undviker moderna ultraprocessade produkter.
