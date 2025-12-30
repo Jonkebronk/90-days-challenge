@@ -142,6 +142,17 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   const [noteText, setNoteText] = useState('')
   const [isSavingNote, setIsSavingNote] = useState(false)
 
+  // Extra sets per exercise (beyond the planned sets)
+  const [extraSets, setExtraSets] = useState<Record<string, number>>({})
+
+  // Add extra set to an exercise
+  const addExtraSet = (exerciseId: string) => {
+    setExtraSets(prev => ({
+      ...prev,
+      [exerciseId]: (prev[exerciseId] || 0) + 1
+    }))
+  }
+
   useEffect(() => {
     const loadData = async () => {
       const { dayId: id } = await params
@@ -515,7 +526,10 @@ export default function WorkoutSessionPage({ params }: PageProps) {
       const completedExerciseIndex = workoutDay?.exercises.findIndex(ex => ex.exercise.id === exerciseId) ?? -1
       const exercise = completedExerciseIndex >= 0 ? workoutDay?.exercises[completedExerciseIndex] : null
 
-      if (exercise && setLogs[exerciseId]?.length + 1 >= exercise.sets) {
+      // Include extra sets in the total count
+      const totalSetsNeeded = exercise ? exercise.sets + (extraSets[exerciseId] || 0) : 0
+
+      if (exercise && setLogs[exerciseId]?.length + 1 >= totalSetsNeeded) {
         // All sets complete for this exercise - collapse it immediately
         const newExpanded = new Set(expandedExercises)
         newExpanded.delete(completedExerciseIndex)
@@ -525,7 +539,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
         const nextIncompleteIndex = workoutDay?.exercises.findIndex((ex, idx) => {
           if (idx <= completedExerciseIndex) return false
           const exSets = setLogs[ex.exercise.id] || []
-          return exSets.length < ex.sets
+          const totalForEx = ex.sets + (extraSets[ex.exercise.id] || 0)
+          return exSets.length < totalForEx
         }) ?? -1
 
         if (nextIncompleteIndex >= 0) {
@@ -861,7 +876,8 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             const isExpanded = expandedExercises.has(index)
             const isCurrent = index === currentExerciseIndex
             const exerciseSets = setLogs[exercise.exercise.id] || []
-            const isExerciseComplete = exerciseSets.length >= exercise.sets
+            const totalSetsForExercise = exercise.sets + (extraSets[exercise.exercise.id] || 0)
+            const isExerciseComplete = exerciseSets.length >= totalSetsForExercise
 
             // Check if this exercise is part of a superset
             const isSuperset = !!exercise.supersetGroupId
@@ -980,19 +996,21 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                   <div className="flex items-center gap-3">
                     {/* Progress indicator */}
                     <div className="flex items-center gap-1.5">
-                      {Array.from({ length: exercise.sets }).map((_, idx) => (
+                      {Array.from({ length: totalSetsForExercise }).map((_, idx) => (
                         <div
                           key={idx}
                           className={`w-2.5 h-2.5 rounded-full transition-colors ${
                             idx < exerciseSets.length
                               ? 'bg-green-500'
-                              : 'bg-gray-300'
+                              : idx < exercise.sets
+                                ? 'bg-gray-300'
+                                : 'bg-amber-300'
                           }`}
                         />
                       ))}
                     </div>
                     <span className="text-sm text-gray-600 font-medium">
-                      {exerciseSets.length}/{exercise.sets}
+                      {exerciseSets.length}/{totalSetsForExercise}
                     </span>
                     {isExpanded ? (
                       <ChevronUp className="w-5 h-5 text-gray-500" />
@@ -1280,7 +1298,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                       </div>
 
                       {/* Remaining sets to show */}
-                      {Array.from({ length: exercise.sets - exerciseSets.length - 1 }).map((_, idx) => {
+                      {Array.from({ length: totalSetsForExercise - exerciseSets.length - 1 }).map((_, idx) => {
                         const setNum = exerciseSets.length + 2 + idx
                         const prevSets = previousSessionData?.sets?.filter(
                           (s: any) => s.exerciseId === exercise.exercise.id
@@ -1301,6 +1319,15 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                           </div>
                         )
                       })}
+
+                      {/* Add new set button */}
+                      <button
+                        onClick={() => addExtraSet(exercise.exercise.id)}
+                        className="w-full py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center gap-1.5"
+                      >
+                        <Plus className="w-4 h-4" />
+                        LÄGG TILL SET
+                      </button>
                     </div>
                   )}
                 </CardContent>
