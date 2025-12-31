@@ -1039,7 +1039,7 @@ export default function DashboardPage() {
       </Suspense>
 
       {/* Welcome Header - MacroFactor style */}
-      <div className="mb-6 lg:hidden">
+      <div className="mb-6">
         {/* Avatar with initial */}
         <div className="w-14 h-14 rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 flex items-center justify-center mb-3">
           <span className="text-white text-xl font-bold">
@@ -1052,15 +1052,6 @@ export default function DashboardPage() {
           <span className="bg-gradient-to-r from-pink-500 to-blue-500 bg-clip-text text-transparent">HEJ</span>
           <span className="text-white"> {session?.user?.name?.split(' ')[0]?.toUpperCase() || 'CHAMPION'},</span>
         </h1>
-      </div>
-
-      {/* Welcome Header - Desktop version */}
-      <div className="hidden lg:block text-center mb-6 sm:mb-8">
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
-        <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3 sm:mb-4">
-          Hej {session?.user?.name?.split(' ')[0] || 'Champion'}!
-        </h1>
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
 
       {/* Check-in Card */}
