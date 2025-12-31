@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Dumbbell, Utensils, MessageSquare, User } from 'lucide-react'
+import { Dumbbell, Utensils, MessageSquare, User, Menu } from 'lucide-react'
 import Image from 'next/image'
 
 const tabs = [
@@ -11,6 +11,7 @@ const tabs = [
   { href: '/dashboard/meal-plan', label: 'KOST', icon: Utensils },
   { href: '/dashboard/messages', label: 'MEDDELANDE', icon: MessageSquare },
   { href: '/dashboard/profile', label: 'PROFIL', icon: User },
+  { href: '/dashboard/menu', label: 'MENY', icon: Menu },
 ]
 
 export function MobileBottomNav() {
