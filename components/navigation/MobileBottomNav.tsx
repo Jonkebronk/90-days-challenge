@@ -2,14 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Dumbbell, Utensils, BookOpen, User } from 'lucide-react'
+import { Dumbbell, Utensils, MessageSquare, User } from 'lucide-react'
 import Image from 'next/image'
 
 const tabs = [
   { href: '/dashboard', label: 'HEM', icon: 'logo' as const },
   { href: '/dashboard/workout', label: 'TRÄNING', icon: Dumbbell },
   { href: '/dashboard/meal-plan', label: 'KOST', icon: Utensils },
-  { href: '/dashboard/articles', label: 'UTBILDNING', icon: BookOpen },
+  { href: '/dashboard/messages', label: 'MEDDELANDE', icon: MessageSquare },
   { href: '/dashboard/profile', label: 'PROFIL', icon: User },
 ]
 
