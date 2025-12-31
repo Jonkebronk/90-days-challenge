@@ -34,8 +34,10 @@ import {
   Scale,
   Moon,
   Brain,
-  User
+  User,
+  RefreshCw
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { FitbitConnectCard } from '@/components/fitness/FitbitConnectCard'
 import { WithingsConnectCard } from '@/components/fitness/WithingsConnectCard'
@@ -156,6 +158,9 @@ export default function DashboardPage() {
 
   // Withings state
   const [withingsConnected, setWithingsConnected] = useState(false)
+
+  // Sync all connections state
+  const [isSyncingAll, setIsSyncingAll] = useState(false)
 
   const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
   const userId = (session?.user as any)?.id
@@ -448,6 +453,32 @@ export default function DashboardPage() {
 
     } catch (error) {
       console.error('Error fetching calendar data:', error)
+    }
+  }
+
+  // Sync all connections (Fitbit + Withings)
+  const handleSyncAll = async () => {
+    if (!fitbitConnected && !withingsConnected) return
+
+    setIsSyncingAll(true)
+    try {
+      const syncPromises: Promise<any>[] = []
+
+      if (fitbitConnected) {
+        syncPromises.push(fetch('/api/fitbit/sync', { method: 'POST' }))
+      }
+      if (withingsConnected) {
+        syncPromises.push(fetch('/api/withings/sync', { method: 'POST' }))
+      }
+
+      await Promise.all(syncPromises)
+      await fetchClientCalendarData()
+      toast.success('Synkronisering klar')
+    } catch (error) {
+      console.error('Error syncing all:', error)
+      toast.error('Synkronisering misslyckades')
+    } finally {
+      setIsSyncingAll(false)
     }
   }
 
@@ -920,7 +951,7 @@ export default function DashboardPage() {
           {/* Header row - Days */}
           <div className="min-w-[320px]">
             {/* Day headers */}
-            <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)]">
+            <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px]">
               <div></div>
               {weekDays.map((date, index) => {
                 const isToday = isSameDay(date, new Date())
@@ -943,10 +974,14 @@ export default function DashboardPage() {
                   </button>
                 )
               })}
+              {/* Average column header */}
+              <div className="flex flex-col items-center justify-center py-2 px-1">
+                <span className="text-[10px] sm:text-xs font-medium text-gray-400">Ø</span>
+              </div>
             </div>
 
             {/* Weight row */}
-            <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
+            <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px] border-t border-gray-100">
               <div className="flex items-center gap-1.5 text-purple-500 py-2.5 px-2">
                 <Scale className="w-4 h-4" />
                 <span className="text-xs font-medium hidden sm:inline">Vikt</span>
@@ -968,10 +1003,19 @@ export default function DashboardPage() {
                   </button>
                 )
               })}
+              {/* Weight average */}
+              <div className="flex items-center justify-center py-2.5 text-xs sm:text-sm bg-gray-50/50">
+                {(() => {
+                  const weights = Object.values(dailyWeights).filter(w => w !== undefined)
+                  if (weights.length === 0) return <span className="text-gray-300">-</span>
+                  const avg = weights.reduce((a, b) => a + b, 0) / weights.length
+                  return <span className="font-medium text-purple-500">{avg.toFixed(1)}</span>
+                })()}
+              </div>
             </div>
 
             {/* Steps row */}
-            <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
+            <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px] border-t border-gray-100">
               <div className="flex items-center gap-1.5 text-emerald-500 py-2.5 px-2">
                 <Footprints className="w-4 h-4" />
                 <span className="text-xs font-medium hidden sm:inline">Steg</span>
@@ -996,10 +1040,19 @@ export default function DashboardPage() {
                   </button>
                 )
               })}
+              {/* Steps average */}
+              <div className="flex items-center justify-center py-2.5 text-xs sm:text-sm bg-gray-50/50">
+                {(() => {
+                  const stepsValues = Object.values(dailySteps).filter(s => s && s.steps > 0).map(s => s.steps)
+                  if (stepsValues.length === 0) return <span className="text-gray-300">-</span>
+                  const avg = stepsValues.reduce((a, b) => a + b, 0) / stepsValues.length
+                  return <span className="font-medium text-emerald-500">{avg >= 1000 ? `${(avg / 1000).toFixed(1)}k` : Math.round(avg)}</span>
+                })()}
+              </div>
             </div>
 
             {/* Training row */}
-            <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
+            <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px] border-t border-gray-100">
               <div className="flex items-center gap-1.5 text-orange-500 py-2.5 px-2">
                 <Dumbbell className="w-4 h-4" />
                 <span className="text-xs font-medium hidden sm:inline">Träning</span>
@@ -1020,10 +1073,12 @@ export default function DashboardPage() {
                   </div>
                 )
               })}
+              {/* Empty cell for average column */}
+              <div className="bg-gray-50/50"></div>
             </div>
 
             {/* Check-in row */}
-            <div className="grid grid-cols-[70px_repeat(7,1fr)] sm:grid-cols-[90px_repeat(7,1fr)] border-t border-gray-100">
+            <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px] border-t border-gray-100">
               <div className="flex items-center gap-1.5 text-blue-500 py-2.5 px-2">
                 <Calendar className="w-4 h-4" />
                 <span className="text-xs font-medium hidden sm:inline">Check-in</span>
@@ -1046,6 +1101,8 @@ export default function DashboardPage() {
                   </div>
                 )
               })}
+              {/* Empty cell for average column */}
+              <div className="bg-gray-50/50"></div>
             </div>
           </div>
 
@@ -1065,7 +1122,19 @@ export default function DashboardPage() {
               onClick={() => setIsConnectionsExpanded(!isConnectionsExpanded)}
               className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <span className="text-sm font-medium text-gray-600">Kopplingar</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-600">Kopplingar</span>
+                {(fitbitConnected || withingsConnected) && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleSyncAll(); }}
+                    disabled={isSyncingAll}
+                    className="p-1.5 rounded-full hover:bg-gray-200 transition-colors"
+                    title="Synka alla kopplingar"
+                  >
+                    <RefreshCw className={`w-4 h-4 text-gray-500 ${isSyncingAll ? 'animate-spin' : ''}`} />
+                  </button>
+                )}
+              </div>
               <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isConnectionsExpanded ? 'rotate-180' : ''}`} />
             </button>
 
