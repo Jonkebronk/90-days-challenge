@@ -17,8 +17,8 @@ export function MobileBottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-[#1a3a4a] border-t border-gray-700 lg:hidden z-50 pb-[env(safe-area-inset-bottom)]">
-      <div className="flex justify-around items-center h-20 pb-4">
+    <nav className="fixed inset-x-0 bottom-0 bg-[#1a3a4a] border-t border-gray-700 lg:hidden z-[100] pb-[env(safe-area-inset-bottom)]">
+      <div className="flex justify-around items-center h-20 pb-4 pt-2">
         {tabs.map((tab) => {
           const isActive = pathname === tab.href ||
             (tab.href !== '/dashboard' && pathname.startsWith(tab.href))
