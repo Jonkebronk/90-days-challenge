@@ -35,12 +35,85 @@ import {
   Moon,
   Brain,
   User,
-  RefreshCw
+  RefreshCw,
+  Ruler,
+  Camera,
+  ClipboardList,
+  Target
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { FitbitConnectCard } from '@/components/fitness/FitbitConnectCard'
 import { WithingsConnectCard } from '@/components/fitness/WithingsConnectCard'
+
+// Mät dina resultat - hårdkodat innehåll
+const MEASUREMENT_CONTENT = [
+  {
+    id: 'vikt',
+    icon: Scale,
+    title: 'Vikt',
+    subtitle: 'Daglig vägning',
+    content: `**Väg dig varje morgon** - naken, efter toalettbesök, innan frukost.
+
+**Fokusera på veckosnittet**, inte dagliga svängningar. Vikten kan variera 1-2 kg dag till dag beroende på:
+- Vätskebalans
+- Matintag kvällen innan
+- Stress och sömn
+- Menscykeln
+
+**Tips:** Använd appen för att se ditt veckosnitt automatiskt.`
+  },
+  {
+    id: 'matt',
+    icon: Ruler,
+    title: 'Mått',
+    subtitle: 'Veckovis mätning',
+    content: `**Mät en gång i veckan** på samma dag och tid.
+
+**Mätpunkter:**
+- **Midja:** Vid naveln, avslappnad
+- **Höft:** Bredaste stället
+- **Lår:** Mitt på låret
+- **Överarm:** Mitt på biceps
+
+**Tips:** Använd ett mjukt måttband och dra inte åt för hårt.`
+  },
+  {
+    id: 'bilder',
+    icon: Camera,
+    title: 'Bilder',
+    subtitle: 'Månadvis fotografering',
+    content: `**Ta progressbilder en gång i månaden** för visuell jämförelse.
+
+**Tre vinklar:**
+- Framifrån
+- Från sidan
+- Bakifrån
+
+**Tips för konsekventa bilder:**
+- Samma belysning
+- Samma ställe
+- Samma tid på dagen
+- Samma kläder (eller minimalt)`
+  },
+  {
+    id: 'rutin',
+    icon: ClipboardList,
+    title: 'Din mätrutin',
+    subtitle: 'Sammanfattning',
+    content: `**Dagligen:**
+- Väg dig på morgonen
+
+**Veckovis:**
+- Ta mått (samma dag varje vecka)
+- Gör check-in på söndagar
+
+**Månatligen:**
+- Ta progressbilder
+
+**Kom ihåg:** Mätning är ett verktyg för feedback, inte ett mått på ditt värde.`
+  }
+]
 
 // Separate component for handling search params (requires Suspense boundary)
 function FitbitCallbackHandler({ userId, onSync }: { userId: string | undefined; onSync: () => void }) {
@@ -161,6 +234,10 @@ export default function DashboardPage() {
 
   // Sync all connections state
   const [isSyncingAll, setIsSyncingAll] = useState(false)
+
+  // Mät dina resultat section
+  const [isMeasurementsExpanded, setIsMeasurementsExpanded] = useState(false)
+  const [selectedMeasurement, setSelectedMeasurement] = useState<string | null>(null)
 
   const isCoach = session?.user && (session.user as any).role?.toUpperCase() === 'COACH'
   const userId = (session?.user as any)?.id
@@ -1111,10 +1188,71 @@ export default function DashboardPage() {
             Tryck på vikt, steg för att registrera manuellt
           </p>
 
-          {/* Link to knowledge base */}
-          <p className="text-xs text-gray-500 mt-2 text-center">
-            Läs mer om <Link href="/dashboard/articles/category/mat-dina-resultat" className="text-purple-500 hover:text-purple-700 underline">hur vi mäter dina resultat</Link> i kunskapsbanken
-          </p>
+          {/* Mät dina resultat - Expanderbar sektion */}
+          <div className="mt-4">
+            <button
+              onClick={() => setIsMeasurementsExpanded(!isMeasurementsExpanded)}
+              className="w-full flex items-center justify-center gap-2 text-xs text-purple-500 hover:text-purple-700 transition-colors py-2"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Hur vi mäter dina resultat</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isMeasurementsExpanded ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isMeasurementsExpanded && (
+              <div className="mt-3 space-y-3">
+                {/* Kort-grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {MEASUREMENT_CONTENT.map((item) => {
+                    const Icon = item.icon
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => setSelectedMeasurement(
+                          selectedMeasurement === item.id ? null : item.id
+                        )}
+                        className={`p-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-center transition-all ${
+                          selectedMeasurement === item.id ? 'ring-2 ring-purple-500 bg-purple-100' : ''
+                        }`}
+                      >
+                        <Icon className="w-5 h-5 mx-auto text-purple-500 mb-1.5" />
+                        <p className="text-xs font-medium text-gray-800">{item.title}</p>
+                        <p className="text-[10px] text-gray-500">{item.subtitle}</p>
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Inline dialog för valt kort */}
+                {selectedMeasurement && (
+                  <div className="p-4 bg-purple-50/50 rounded-xl border border-purple-100">
+                    <div className="flex items-start gap-3">
+                      {(() => {
+                        const item = MEASUREMENT_CONTENT.find(m => m.id === selectedMeasurement)
+                        if (!item) return null
+                        const Icon = item.icon
+                        return (
+                          <>
+                            <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                              <Icon className="w-5 h-5 text-purple-600" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-gray-900 text-sm mb-2">{item.title}</h4>
+                              <div className="text-xs text-gray-700 whitespace-pre-line leading-relaxed">
+                                {item.content.split('**').map((part, i) =>
+                                  i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+                                )}
+                              </div>
+                            </div>
+                          </>
+                        )
+                      })()}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Connections Section - Collapsible */}
           <div className="mt-4">

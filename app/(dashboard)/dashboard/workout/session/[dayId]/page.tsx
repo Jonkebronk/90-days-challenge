@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
+import { Slider } from '@/components/ui/slider'
 import { VideoPlayer } from '@/components/ui/video-player'
 import {
   Dumbbell,
@@ -145,6 +146,9 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
   // Extra sets per exercise (beyond the planned sets)
   const [extraSets, setExtraSets] = useState<Record<string, number>>({})
+
+  // RPE (Rate of Perceived Exertion) per exercise
+  const [exerciseRPE, setExerciseRPE] = useState<Record<string, number>>({})
 
   // Add extra set to an exercise
   const addExtraSet = (exerciseId: string) => {
@@ -1350,6 +1354,46 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         <Plus className="w-4 h-4" />
                         LÄGG TILL SET
                       </button>
+
+                      {/* RPE (Intensity Rating) Slider */}
+                      <div className="mt-4 pt-4 border-t border-gray-100">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-sm text-gray-600">
+                            Intensity rating • E{index + 1}
+                          </span>
+                          <div className="group relative">
+                            <button className="p-1 rounded-full hover:bg-gray-100" title="Vad är RPE?">
+                              <Info className="w-4 h-4 text-gray-400" />
+                            </button>
+                            <div className="absolute right-0 bottom-full mb-2 w-48 p-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                              <p className="font-semibold mb-1">RPE Skala:</p>
+                              <p>1-4: Lätt</p>
+                              <p>5-6: Måttlig</p>
+                              <p>7-8: Tungt</p>
+                              <p>9: Mycket tungt (1 rep kvar)</p>
+                              <p>10: Maximal ansträngning</p>
+                            </div>
+                          </div>
+                        </div>
+                        <Slider
+                          value={[exerciseRPE[exercise.exercise.id] || 5]}
+                          onValueChange={(value) => setExerciseRPE(prev => ({
+                            ...prev,
+                            [exercise.exercise.id]: value[0]
+                          }))}
+                          min={1}
+                          max={10}
+                          step={1}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-xs text-gray-400 mt-2">
+                          <span>1 - Lätt</span>
+                          <span className="font-medium text-gray-600">
+                            {exerciseRPE[exercise.exercise.id] || 5}
+                          </span>
+                          <span>10 - Max</span>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </CardContent>
