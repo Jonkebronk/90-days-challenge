@@ -150,6 +150,30 @@ export default function WorkoutSessionPage({ params }: PageProps) {
   // RPE (Rate of Perceived Exertion) per exercise
   const [exerciseRPE, setExerciseRPE] = useState<Record<string, number>>({})
 
+  // Save RPE to database (debounced)
+  const saveExerciseRPE = async (exerciseId: string, rpe: number) => {
+    if (!sessionId) return
+    try {
+      await fetch(`/api/workout-sessions/${sessionId}/exercise-rpe`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ exerciseId, rpe })
+      })
+    } catch (error) {
+      console.error('Error saving RPE:', error)
+    }
+  }
+
+  // Handle RPE slider change
+  const handleRPEChange = (exerciseId: string, value: number) => {
+    setExerciseRPE(prev => ({
+      ...prev,
+      [exerciseId]: value
+    }))
+    // Save to database
+    saveExerciseRPE(exerciseId, value)
+  }
+
   // Add extra set to an exercise
   const addExtraSet = (exerciseId: string) => {
     setExtraSets(prev => ({
@@ -427,6 +451,17 @@ export default function WorkoutSessionPage({ params }: PageProps) {
             }
 
             setSetLogs(restoredLogs)
+
+            // Restore RPE values from sets (take the RPE from the first set of each exercise that has one)
+            const restoredRPE: Record<string, number> = {}
+            for (const set of incompleteSession.sets) {
+              if (set.rpe && !restoredRPE[set.exerciseId]) {
+                restoredRPE[set.exerciseId] = set.rpe
+              }
+            }
+            if (Object.keys(restoredRPE).length > 0) {
+              setExerciseRPE(restoredRPE)
+            }
 
             // Find current exercise index (first incomplete or first with remaining sets)
             // This is handled by the existing UI logic
@@ -1377,10 +1412,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
                         </div>
                         <Slider
                           value={[exerciseRPE[exercise.exercise.id] || 5]}
-                          onValueChange={(value) => setExerciseRPE(prev => ({
-                            ...prev,
-                            [exercise.exercise.id]: value[0]
-                          }))}
+                          onValueChange={(value) => handleRPEChange(exercise.exercise.id, value[0])}
                           min={1}
                           max={10}
                           step={1}
