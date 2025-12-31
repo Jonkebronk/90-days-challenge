@@ -447,8 +447,8 @@ export default function DashboardLayout({
         </div>
       </main>
 
-      {/* Mobile Bottom Navigation - shown for all users on mobile */}
-      <MobileBottomNav />
+      {/* Mobile Bottom Navigation */}
+      {isClient && <MobileBottomNav />}
     </div>
   )
 }
