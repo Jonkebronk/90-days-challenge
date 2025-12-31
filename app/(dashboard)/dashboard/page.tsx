@@ -1067,7 +1067,7 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Check-in Card */}
+      {/* Check-in Card - Gold theme */}
       <div className="max-w-6xl mx-auto mb-6">
         <div className="bg-[#1a3a4a] rounded-2xl p-4">
           <div className="flex items-center justify-between mb-3">
@@ -1078,7 +1078,7 @@ export default function DashboardPage() {
               </p>
             </div>
             <Link href="/dashboard/check-in">
-              <button className="bg-gradient-to-r from-pink-500 to-pink-600 text-white font-bold text-xs px-4 py-2 rounded-lg hover:from-pink-600 hover:to-pink-700 transition-all">
+              <button className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-gray-900 font-bold text-xs px-4 py-2 rounded-lg hover:from-[#FFA500] hover:to-[#FF8C00] transition-all">
                 {checkInStatus.hasStartCheckIn ? 'CHECK IN' : 'STARTA'}
               </button>
             </Link>
@@ -1086,7 +1086,7 @@ export default function DashboardPage() {
           {/* Progress bar */}
           <div className="h-1.5 bg-gray-700 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-pink-500 to-blue-500 rounded-full transition-all"
+              className="h-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] rounded-full transition-all"
               style={{ width: `${(checkInStatus.progress || 0) * 100}%` }}
             />
           </div>
@@ -2047,119 +2047,6 @@ export default function DashboardPage() {
       </div>
       )}
 
-      {/* Main Action Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
-
-        {/* Check-in Card */}
-        <Link href="/dashboard/check-in">
-          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <Calendar className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-            </div>
-            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Check-in</h3>
-            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Veckocheckning</p>
-          </div>
-        </Link>
-
-        {/* Progress Card */}
-        <Link href="/dashboard/progress">
-          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <TrendingUp className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-            </div>
-            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Framsteg</h3>
-            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Din utveckling</p>
-          </div>
-        </Link>
-
-        {/* Kostschema Card */}
-        <Link href="/dashboard/meal-plan">
-          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <Utensils className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-            </div>
-            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Kostschema</h3>
-            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Måltidsplan</p>
-          </div>
-        </Link>
-
-        {/* Träningsprogram Card */}
-        <Link href="/dashboard/workout">
-          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-purple-400 to-purple-500 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <Dumbbell className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-            </div>
-            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Träning</h3>
-            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Träningsprogram</p>
-          </div>
-        </Link>
-
-        {/* Kunskapskartan Card */}
-        <Link href="/dashboard/articles/skill-tree">
-          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-            </div>
-            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Kunskap</h3>
-            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Kunskapskartan</p>
-          </div>
-        </Link>
-
-        {/* Recept Card */}
-        <Link href="/dashboard/recipes">
-          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <ChefHat className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-            </div>
-            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Recept</h3>
-            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Matinspiration</p>
-          </div>
-        </Link>
-
-        {/* Livsmedelbanken Card */}
-        <Link href="/dashboard/content/food-items">
-          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <Apple className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-            </div>
-            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Livsmedel</h3>
-            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Näringsinnehåll</p>
-          </div>
-        </Link>
-
-        {/* Meddelanden Card */}
-        <Link href="/dashboard/messages">
-          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <MessageSquare className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-            </div>
-            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Meddelanden</h3>
-            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Kontakta coach</p>
-          </div>
-        </Link>
-
-        {/* Vanliga frågor Card */}
-        <Link href="/dashboard/faqs">
-          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <HelpCircle className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-            </div>
-            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">FAQ</h3>
-            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Vanliga frågor</p>
-          </div>
-        </Link>
-
-        {/* Profil Card */}
-        <Link href="/dashboard/profile">
-          <div className="group relative bg-white border border-gray-200 rounded-xl p-3 sm:p-4 hover:border-gold-primary hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden flex flex-col items-center justify-center">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-md">
-              <User className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-            </div>
-            <h3 className="text-sm sm:text-base font-bold text-gray-900 text-center">Profil</h3>
-            <p className="text-gray-500 text-center text-[10px] sm:text-xs mt-0.5 hidden sm:block">Dina inställningar</p>
-          </div>
-        </Link>
-      </div>
     </div>
   )
 }
