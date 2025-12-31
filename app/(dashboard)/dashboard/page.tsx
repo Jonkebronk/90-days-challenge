@@ -1055,9 +1055,15 @@ export default function DashboardPage() {
 
         {/* Day counter and phase */}
         {programInfo && (
-          <p className="text-sm text-gray-400 mt-2">
-            DAG {programInfo.programDay} AV 90 • FAS {programInfo.phase}
-          </p>
+          <div className="mt-2">
+            <p className="text-lg">
+              <span className="font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">Dag {programInfo.programDay}</span>
+              <span className="text-[#B8860B]"> av 90</span>
+            </p>
+            <p className="text-sm text-[#B8860B]">
+              Fas {programInfo.phase} ({programInfo.phase === 1 ? 'dag 1-28' : programInfo.phase === 2 ? 'dag 29-56' : 'dag 57-90'})
+            </p>
+          </div>
         )}
       </div>
 
