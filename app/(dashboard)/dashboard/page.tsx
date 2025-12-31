@@ -417,6 +417,53 @@ export default function DashboardPage() {
     })
   }
 
+  // Calculate check-in status for the check-in card
+  const getCheckInStatus = () => {
+    const today = new Date()
+    const dayOfWeek = today.getDay() // 0 = Sunday
+
+    // Check if user has done start check-in
+    const startCheckIn = checkIns.find((ci: any) => ci.isStartCheckIn)
+    const hasStartCheckIn = !!startCheckIn
+
+    if (!hasStartCheckIn) {
+      return { type: 'start', text: 'Kom igång med din första check-in', progress: 0, hasStartCheckIn: false }
+    }
+
+    // Find the most recent regular check-in (not start check-in)
+    const regularCheckIns = checkIns.filter((ci: any) => !ci.isStartCheckIn)
+    const lastCheckIn = regularCheckIns.length > 0 ? regularCheckIns[0] : null
+
+    // Calculate last Sunday
+    const lastSunday = new Date(today)
+    lastSunday.setDate(today.getDate() - dayOfWeek)
+    lastSunday.setHours(0, 0, 0, 0)
+
+    // Check if there's a check-in this week
+    if (lastCheckIn) {
+      const checkInDate = new Date(lastCheckIn.createdAt)
+      if (checkInDate >= lastSunday) {
+        return { type: 'done', text: 'Check-in genomförd denna vecka', progress: 1, hasStartCheckIn: true }
+      }
+    }
+
+    // Calculate days since/until Sunday
+    if (dayOfWeek === 0) {
+      return { type: 'due', text: 'Din check-in är idag!', progress: 1, hasStartCheckIn: true }
+    }
+
+    // Days since last Sunday (overdue)
+    const daysSinceSunday = dayOfWeek
+    return {
+      type: 'overdue',
+      text: `Din check-in är ${daysSinceSunday} ${daysSinceSunday === 1 ? 'dag' : 'dagar'} försenad`,
+      progress: Math.min(daysSinceSunday / 7, 1),
+      hasStartCheckIn: true
+    }
+  }
+
+  const checkInStatus = getCheckInStatus()
+
   const weekDays = getWeekDays()
   const programInfo = getProgramInfo()
   const trainingDays = getTrainingDaysForWeek()
@@ -1000,6 +1047,32 @@ export default function DashboardPage() {
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
 
+      {/* Check-in Card */}
+      <div className="max-w-6xl mx-auto mb-6">
+        <div className="bg-[#1a3a4a] rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h3 className="text-white font-bold text-sm">CHECK-IN</h3>
+              <p className="text-gray-300 text-xs mt-0.5">
+                {checkInStatus.text}
+              </p>
+            </div>
+            <Link href="/dashboard/check-in">
+              <button className="bg-gradient-to-r from-pink-500 to-pink-600 text-white font-bold text-xs px-4 py-2 rounded-lg hover:from-pink-600 hover:to-pink-700 transition-all">
+                {checkInStatus.hasStartCheckIn ? 'CHECK IN' : 'STARTA'}
+              </button>
+            </Link>
+          </div>
+          {/* Progress bar */}
+          <div className="h-1.5 bg-gray-700 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-pink-500 to-blue-500 rounded-full transition-all"
+              style={{ width: `${(checkInStatus.progress || 0) * 100}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Week Calendar Widget */}
       <div className="max-w-6xl mx-auto">
         {/* Header with Day Counter and Phase Info - Outside card */}
@@ -1154,33 +1227,6 @@ export default function DashboardPage() {
               <div className="bg-gray-50/50"></div>
             </div>
 
-            {/* Check-in row */}
-            <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px] border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-blue-500 py-2.5 px-2">
-                <Calendar className="w-4 h-4" />
-                <span className="text-xs font-medium hidden sm:inline">Check-in</span>
-              </div>
-              {weekDays.map((date, index) => {
-                const weekdayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1
-                const isSunday = weekdayIndex === 6
-                const completedCheckIn = hasCheckIn(date)
-                return (
-                  <div key={index} className="flex items-center justify-center py-2.5">
-                    {isSunday ? (
-                      completedCheckIn ? (
-                        <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
-                      ) : (
-                        <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-blue-400"></div>
-                      )
-                    ) : (
-                      <span className="text-gray-300">-</span>
-                    )}
-                  </div>
-                )
-              })}
-              {/* Empty cell for average column */}
-              <div className="bg-gray-50/50"></div>
-            </div>
           </div>
 
           {/* Tip text */}

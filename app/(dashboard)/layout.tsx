@@ -48,6 +48,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { ForegroundNotification } from '@/components/ForegroundNotification'
+import { MobileBottomNav } from '@/components/navigation/MobileBottomNav'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -440,11 +441,14 @@ export default function DashboardLayout({
       </header>
 
       {/* Main Content */}
-      <main className="w-full bg-gray-900 min-h-[calc(100vh-64px)]">
+      <main className="w-full bg-gray-900 min-h-[calc(100vh-64px)] pb-20 lg:pb-0">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {children}
         </div>
       </main>
+
+      {/* Mobile Bottom Navigation */}
+      {isClient && <MobileBottomNav />}
     </div>
   )
 }
