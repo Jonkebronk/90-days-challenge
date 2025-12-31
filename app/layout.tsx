@@ -21,7 +21,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#D4AF37", // Gold primary color
+  viewportFit: "cover", // Enable safe area insets on iOS
+  themeColor: "#1f2937", // Dark gray to match mobile top bar
 };
 
 export default function RootLayout({

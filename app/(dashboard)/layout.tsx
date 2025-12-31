@@ -162,6 +162,9 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-gray-900 overflow-x-hidden">
+      {/* Mobile Top Safe Area Bar - covers status bar on iOS */}
+      <div className="fixed top-0 inset-x-0 h-[env(safe-area-inset-top)] bg-gray-900 z-[100] lg:hidden" />
+
       {/* Foreground push notification listener */}
       <ForegroundNotification />
 
@@ -441,7 +444,7 @@ export default function DashboardLayout({
       </header>
 
       {/* Main Content */}
-      <main className="w-full bg-gray-900 min-h-screen lg:min-h-[calc(100vh-64px)] pb-28 lg:pb-0">
+      <main className="w-full bg-gray-900 min-h-screen lg:min-h-[calc(100vh-64px)] pt-[env(safe-area-inset-top)] lg:pt-0 pb-28 lg:pb-0">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {children}
         </div>
