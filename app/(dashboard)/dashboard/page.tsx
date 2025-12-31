@@ -1038,10 +1038,10 @@ export default function DashboardPage() {
         <WithingsCallbackHandler userId={userId} onSync={fetchClientCalendarData} />
       </Suspense>
 
-      {/* Welcome Header - MacroFactor style */}
+      {/* Welcome Header */}
       <div className="mb-6">
-        {/* Avatar with initial */}
-        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 flex items-center justify-center mb-3">
+        {/* Avatar with initial - gold gradient */}
+        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FFD700] via-[#FFA500] to-[#FF8C00] flex items-center justify-center mb-3">
           <span className="text-white text-xl font-bold">
             {session?.user?.name?.charAt(0).toUpperCase() || 'U'}
           </span>
@@ -1049,9 +1049,16 @@ export default function DashboardPage() {
 
         {/* Greeting */}
         <h1 className="text-2xl sm:text-3xl font-black">
-          <span className="bg-gradient-to-r from-pink-500 to-blue-500 bg-clip-text text-transparent">HEJ</span>
+          <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">HEJ</span>
           <span className="text-white"> {session?.user?.name?.split(' ')[0]?.toUpperCase() || 'CHAMPION'},</span>
         </h1>
+
+        {/* Day counter and phase */}
+        {programInfo && (
+          <p className="text-sm text-gray-400 mt-2">
+            DAG {programInfo.programDay} AV 90 • FAS {programInfo.phase}
+          </p>
+        )}
       </div>
 
       {/* Check-in Card */}
