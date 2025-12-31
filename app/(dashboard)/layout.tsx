@@ -161,7 +161,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 overflow-x-hidden">
+    <div className="h-screen bg-gray-900 flex flex-col overflow-hidden lg:block lg:h-auto lg:min-h-screen lg:overflow-visible">
       {/* Foreground push notification listener */}
       <ForegroundNotification />
 
@@ -440,14 +440,14 @@ export default function DashboardLayout({
         )}
       </header>
 
-      {/* Main Content */}
-      <main className="w-full bg-gray-900 min-h-screen lg:min-h-[calc(100vh-64px)] pb-28 lg:pb-0">
+      {/* Main Content - scrollable on mobile */}
+      <main className="flex-1 overflow-y-auto bg-gray-900 lg:overflow-visible lg:min-h-[calc(100vh-64px)]">
         <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {children}
         </div>
       </main>
 
-      {/* Mobile Bottom Navigation */}
+      {/* Mobile Bottom Navigation - always visible at bottom */}
       {isClient && <MobileBottomNav />}
     </div>
   )
