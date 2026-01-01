@@ -1040,31 +1040,36 @@ export default function DashboardPage() {
 
       {/* Welcome Header */}
       <div className="mb-6">
-        {/* Avatar with initial - gold gradient */}
-        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FFD700] via-[#FFA500] to-[#FF8C00] flex items-center justify-center mb-3">
-          <span className="text-white text-xl font-bold">
-            {session?.user?.name?.charAt(0).toUpperCase() || 'U'}
-          </span>
+        {/* Top row: Avatar + Day counter */}
+        <div className="flex items-start justify-between">
+          {/* Left: Avatar */}
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#FFD700] via-[#FFA500] to-[#FF8C00] flex items-center justify-center">
+            <span className="text-white text-xl font-bold">
+              {session?.user?.name?.charAt(0).toUpperCase() || 'U'}
+            </span>
+          </div>
+
+          {/* Right: Day counter badge */}
+          {programInfo && (
+            <div className="text-right">
+              <div className="inline-flex items-center gap-2 bg-[#1a3a4a] rounded-full px-4 py-2">
+                <span className="text-lg font-black bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+                  DAG {programInfo.programDay}
+                </span>
+                <span className="text-gray-400 font-medium">/ 90</span>
+              </div>
+              <p className="text-xs text-[#B8860B] mt-1 mr-2">
+                Fas {programInfo.phase} ({programInfo.phase === 1 ? 'dag 1-28' : programInfo.phase === 2 ? 'dag 29-56' : 'dag 57-90'})
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Greeting */}
-        <h1 className="text-2xl sm:text-3xl font-black">
+        <h1 className="text-2xl sm:text-3xl font-black mt-3">
           <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">HEJ</span>
           <span className="text-white"> {session?.user?.name?.split(' ')[0]?.toUpperCase() || 'CHAMPION'},</span>
         </h1>
-
-        {/* Day counter and phase */}
-        {programInfo && (
-          <div className="mt-2">
-            <p className="text-lg">
-              <span className="font-bold bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">Dag {programInfo.programDay}</span>
-              <span className="text-[#B8860B]"> av 90</span>
-            </p>
-            <p className="text-sm text-[#B8860B]">
-              Fas {programInfo.phase} ({programInfo.phase === 1 ? 'dag 1-28' : programInfo.phase === 2 ? 'dag 29-56' : 'dag 57-90'})
-            </p>
-          </div>
-        )}
       </div>
 
       {/* Check-in Card - Gold theme */}
