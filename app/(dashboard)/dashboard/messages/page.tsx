@@ -577,7 +577,7 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-5rem)] lg:h-[calc(100vh-6rem)] max-w-full overflow-hidden -mx-4 sm:-mx-6 lg:mx-0 -my-6">
+    <div className="fixed inset-0 top-0 bottom-20 lg:relative lg:inset-auto lg:bottom-auto flex flex-col max-w-full overflow-hidden bg-white lg:h-[calc(100vh-8rem)] lg:rounded-lg lg:border-2 lg:border-gray-300">
       <div className="flex-1 flex flex-col lg:flex-row gap-0 lg:gap-4 min-h-0 overflow-hidden">
         {/* Sidebar - Contact List */}
         {isCoach && (
@@ -650,7 +650,7 @@ export default function MessagesPage() {
 
         {/* Messages Area */}
         <div className={`flex-1 flex flex-col min-h-0 overflow-hidden ${isCoach && !mobileShowChat ? 'hidden lg:flex' : 'flex'}`}>
-          <Card className="bg-white border-0 lg:border-2 lg:border-gray-300 rounded-none lg:rounded-lg flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div className="bg-white flex-1 flex flex-col min-h-0 overflow-hidden">
             {/* Contact Header with Search */}
             {selectedContact && (
               <div className="flex-shrink-0 p-3 sm:p-4 border-b-2 border-gray-200 bg-gray-50">
@@ -978,7 +978,7 @@ export default function MessagesPage() {
                 </Button>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </div>
 
