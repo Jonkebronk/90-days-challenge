@@ -577,20 +577,8 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] sm:h-[calc(100vh-10rem)] max-w-full overflow-hidden">
-      {/* Header */}
-      <div className="flex-shrink-0 text-center mb-4 sm:mb-6">
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 opacity-30" />
-        <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
-          Meddelanden
-        </h1>
-        <p className="text-gray-500 mt-1 text-sm">
-          Kommunicera med din {isCoach ? 'klient' : 'coach'}
-        </p>
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 opacity-30" />
-      </div>
-
-      <div className="flex-1 flex flex-col lg:flex-row gap-4 min-h-0 overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-5rem)] lg:h-[calc(100vh-6rem)] max-w-full overflow-hidden -mx-4 sm:-mx-6 lg:mx-0 -my-6">
+      <div className="flex-1 flex flex-col lg:flex-row gap-0 lg:gap-4 min-h-0 overflow-hidden">
         {/* Sidebar - Contact List */}
         {isCoach && (
           <div className={`flex-shrink-0 lg:w-72 lg:block ${mobileShowChat ? 'hidden' : 'block'}`}>
@@ -662,7 +650,7 @@ export default function MessagesPage() {
 
         {/* Messages Area */}
         <div className={`flex-1 flex flex-col min-h-0 overflow-hidden ${isCoach && !mobileShowChat ? 'hidden lg:flex' : 'flex'}`}>
-          <Card className="bg-white border-2 border-gray-300 rounded-lg flex-1 flex flex-col min-h-0 overflow-hidden">
+          <Card className="bg-white border-0 lg:border-2 lg:border-gray-300 rounded-none lg:rounded-lg flex-1 flex flex-col min-h-0 overflow-hidden">
             {/* Contact Header with Search */}
             {selectedContact && (
               <div className="flex-shrink-0 p-3 sm:p-4 border-b-2 border-gray-200 bg-gray-50">

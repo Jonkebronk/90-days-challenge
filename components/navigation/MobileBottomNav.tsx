@@ -39,7 +39,7 @@ export function MobileBottomNav() {
                   alt="Hem"
                   width={24}
                   height={24}
-                  className={isActive ? 'brightness-0 invert' : 'opacity-60'}
+                  className={isActive ? 'brightness-0 invert' : 'brightness-0 invert opacity-60'}
                 />
               ) : (
                 <Icon className="w-6 h-6" />
