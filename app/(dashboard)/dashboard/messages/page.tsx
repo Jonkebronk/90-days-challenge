@@ -633,7 +633,7 @@ export default function MessagesPage() {
           <div className="bg-white flex-1 flex flex-col min-h-0 overflow-hidden">
             {/* Contact Header with Search */}
             {selectedContact && (
-              <div className="flex-shrink-0 p-3 sm:p-4 pt-[env(safe-area-inset-top)] border-b border-gray-700 bg-[#1a3a4a]">
+              <div className="flex-shrink-0 px-3 sm:px-4 pb-3 sm:pb-4 pt-[calc(env(safe-area-inset-top)+12px)] border-b border-gray-700 bg-[#1a3a4a]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {/* Back button on mobile */}
