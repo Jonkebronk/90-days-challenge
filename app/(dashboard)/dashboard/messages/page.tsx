@@ -653,17 +653,17 @@ export default function MessagesPage() {
           <div className="bg-white flex-1 flex flex-col min-h-0 overflow-hidden">
             {/* Contact Header with Search */}
             {selectedContact && (
-              <div className="flex-shrink-0 p-3 sm:p-4 border-b-2 border-gray-200 bg-gray-50">
+              <div className="flex-shrink-0 p-3 sm:p-4 pt-[env(safe-area-inset-top)] border-b border-gray-700 bg-[#1a3a4a]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {/* Back button on mobile */}
                     {isCoach && (
                       <button
                         onClick={() => setMobileShowChat(false)}
-                        className="lg:hidden p-2 -ml-2 rounded-full hover:bg-gray-200 transition-colors"
+                        className="lg:hidden p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
                         aria-label="Tillbaka till konversationer"
                       >
-                        <ArrowLeft className="w-5 h-5 text-gray-600" />
+                        <ArrowLeft className="w-5 h-5 text-white" />
                       </button>
                     )}
                     {/* Chat Header Avatar */}
@@ -681,15 +681,15 @@ export default function MessagesPage() {
                       </div>
                     )}
                     <div>
-                      <h3 className="text-base font-bold text-gray-900">{selectedContact.name}</h3>
-                      {typingUser && <p className="text-xs text-green-600 animate-pulse">{typingUser} skriver...</p>}
+                      <h3 className="text-base font-bold text-white">{selectedContact.name}</h3>
+                      {typingUser && <p className="text-xs text-green-400 animate-pulse">{typingUser} skriver...</p>}
                     </div>
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowSearch(!showSearch)}
-                    className={showSearch ? 'text-gold-primary' : 'text-gray-500'}
+                    className={showSearch ? 'text-gold-primary' : 'text-white/70 hover:text-white hover:bg-white/10'}
                   >
                     <Search className="w-5 h-5" />
                   </Button>
