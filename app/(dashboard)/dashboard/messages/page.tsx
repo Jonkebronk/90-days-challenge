@@ -932,13 +932,13 @@ export default function MessagesPage() {
                           className="fixed inset-0 z-40"
                           onClick={() => setShowEmojiPicker(false)}
                         />
-                        {/* Position above input and nav - wide and short */}
-                        <div className="fixed bottom-44 left-4 right-4 sm:absolute sm:bottom-10 sm:right-0 sm:left-auto z-50">
+                        {/* Keyboard-style emoji picker from bottom */}
+                        <div className="fixed bottom-20 left-0 right-0 sm:absolute sm:bottom-10 sm:right-0 sm:left-auto sm:w-[320px] z-50 bg-gray-100 border-t border-gray-300">
                           <EmojiPicker
                             onEmojiClick={onEmojiClick}
                             width="100%"
-                            height={200}
-                            searchDisabled
+                            height={250}
+                            searchPlaceholder="Sök emoji"
                             skinTonesDisabled
                             previewConfig={{ showPreview: false }}
                           />
