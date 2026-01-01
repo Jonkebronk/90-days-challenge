@@ -20,7 +20,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#D4AF37", // Gold primary color
+  themeColor: "#1a3a4a", // Match navigation bar color
 };
 
 export default function RootLayout({

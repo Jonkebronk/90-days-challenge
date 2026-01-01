@@ -4,8 +4,8 @@
   "description": "Transform din kropp och hälsa på 90 dagar. Din vägvisare till bättre hälsa med personlig coaching, träningsprogram och kostplaner.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#D4AF37",
-  "theme_color": "#D4AF37",
+  "background_color": "#1a3a4a",
+  "theme_color": "#1a3a4a",
   "orientation": "portrait-primary",
   "icons": [
     {
