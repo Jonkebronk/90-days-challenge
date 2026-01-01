@@ -932,12 +932,12 @@ export default function MessagesPage() {
                           className="fixed inset-0 z-40"
                           onClick={() => setShowEmojiPicker(false)}
                         />
-                        {/* Position above input and nav */}
-                        <div className="fixed bottom-44 right-4 sm:absolute sm:bottom-10 sm:right-0 z-50">
+                        {/* Position above input and nav - wide and short */}
+                        <div className="fixed bottom-44 left-4 right-4 sm:absolute sm:bottom-10 sm:right-0 sm:left-auto z-50">
                           <EmojiPicker
                             onEmojiClick={onEmojiClick}
-                            width={280}
-                            height={280}
+                            width="100%"
+                            height={200}
                             searchDisabled
                             skinTonesDisabled
                             previewConfig={{ showPreview: false }}
