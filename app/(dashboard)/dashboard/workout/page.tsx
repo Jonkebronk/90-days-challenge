@@ -274,21 +274,6 @@ export default function WorkoutPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center mb-6 sm:mb-8">
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
-        <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent mb-3 sm:mb-4">
-          {workoutProgram.name}
-        </h1>
-        {programHasWeeks && currentWeekData && (
-          <p className="text-purple-400 font-semibold text-sm sm:text-base">
-            {currentWeekData.title || `Vecka ${currentWeek}`}
-            {currentWeekData.description && ` - ${currentWeekData.description}`}
-          </p>
-        )}
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
-      </div>
-
       {/* Training Pyramid */}
       <Pyramid
         title="Träningspyramiden"
