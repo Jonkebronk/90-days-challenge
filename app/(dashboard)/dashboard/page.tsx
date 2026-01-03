@@ -39,7 +39,8 @@ import {
   Ruler,
   Camera,
   ClipboardList,
-  Target
+  Target,
+  Link2
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
@@ -1105,9 +1106,9 @@ export default function DashboardPage() {
           {/* Header row - Days */}
           <div className="min-w-[320px]">
             {/* Day headers */}
-            <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px]">
+            <div className="grid grid-cols-[40px_repeat(7,1fr)_40px] sm:grid-cols-[50px_repeat(7,1fr)_45px]">
               {/* Synk-knapp i vänstra hörnet */}
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center px-1">
                 {(fitbitConnected || withingsConnected) && (
                   <button
                     onClick={handleSyncAll}
@@ -1147,10 +1148,9 @@ export default function DashboardPage() {
             </div>
 
             {/* Weight row */}
-            <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px] border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-purple-500 py-2 px-2">
+            <div className="grid grid-cols-[40px_repeat(7,1fr)_40px] sm:grid-cols-[50px_repeat(7,1fr)_45px] border-t border-gray-100">
+              <div className="flex items-center justify-center text-purple-500 py-2">
                 <Scale className="w-4 h-4" />
-                <span className="text-xs font-medium hidden sm:inline">Vikt</span>
               </div>
               {weekDays.map((date, index) => {
                 const dateStr = getLocalDateString(date)
@@ -1181,10 +1181,9 @@ export default function DashboardPage() {
             </div>
 
             {/* Steps row */}
-            <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px] border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-emerald-500 py-2 px-2">
+            <div className="grid grid-cols-[40px_repeat(7,1fr)_40px] sm:grid-cols-[50px_repeat(7,1fr)_45px] border-t border-gray-100">
+              <div className="flex items-center justify-center text-emerald-500 py-2">
                 <Footprints className="w-4 h-4" />
-                <span className="text-xs font-medium hidden sm:inline">Steg</span>
               </div>
               {weekDays.map((date, index) => {
                 const dateStr = getLocalDateString(date)
@@ -1218,10 +1217,9 @@ export default function DashboardPage() {
             </div>
 
             {/* Training row */}
-            <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px] border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-orange-500 py-2 px-2">
+            <div className="grid grid-cols-[40px_repeat(7,1fr)_40px] sm:grid-cols-[50px_repeat(7,1fr)_45px] border-t border-gray-100">
+              <div className="flex items-center justify-center text-orange-500 py-2">
                 <Dumbbell className="w-4 h-4" />
-                <span className="text-xs font-medium hidden sm:inline">Träning</span>
               </div>
               {weekDays.map((date, index) => {
                 const weekdayIndex = date.getDay() === 0 ? 6 : date.getDay() - 1
@@ -1250,49 +1248,113 @@ export default function DashboardPage() {
             Tryck på vikt, steg för att registrera manuellt
           </p>
 
-          {/* Kopplingar - Minimalistisk ikon-rad */}
-          <div className="mt-2 flex items-center justify-center gap-4">
-            {/* Withings */}
+          {/* Kopplingar - En knapp */}
+          <div className="mt-2 flex items-center justify-center">
             <button
               onClick={() => setIsConnectionsExpanded(!isConnectionsExpanded)}
-              className="flex items-center gap-1.5 text-gray-500 hover:text-gray-700 transition-colors"
-              title={withingsConnected ? 'Withings kopplad' : 'Koppla Withings'}
+              className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
             >
-              <Scale className="w-4 h-4" />
-              <span className={`w-2 h-2 rounded-full ${withingsConnected ? 'bg-green-500' : 'bg-gray-300'}`} />
-            </button>
-
-            {/* Fitbit */}
-            <button
-              onClick={() => setIsConnectionsExpanded(!isConnectionsExpanded)}
-              className="flex items-center gap-1.5 text-gray-500 hover:text-gray-700 transition-colors"
-              title={fitbitConnected ? 'Fitbit kopplad' : 'Koppla Fitbit'}
-            >
-              <Footprints className="w-4 h-4" />
-              <span className={`w-2 h-2 rounded-full ${fitbitConnected ? 'bg-green-500' : 'bg-gray-300'}`} />
+              <Link2 className="w-3.5 h-3.5" />
+              <span>Kopplingar</span>
+              {(withingsConnected || fitbitConnected) && (
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+              )}
+              <ChevronDown className={`w-3 h-3 transition-transform ${isConnectionsExpanded ? 'rotate-180' : ''}`} />
             </button>
           </div>
 
-          {/* Expanded connections panel */}
+          {/* Expanded connections panel - Minimalistisk */}
           {isConnectionsExpanded && (
-            <div className="mt-2 p-3 bg-gray-50 rounded-lg space-y-3">
-              <WithingsConnectCard
-                onConnectionChange={(connected) => {
-                  setWithingsConnected(connected)
-                  if (connected) {
-                    fetchClientCalendarData()
-                  }
-                }}
-                onSync={() => fetchClientCalendarData()}
-              />
-              <FitbitConnectCard
-                onConnectionChange={(connected) => {
-                  setFitbitConnected(connected)
-                  if (connected) {
-                    fetchClientCalendarData()
-                  }
-                }}
-              />
+            <div className="mt-2 px-2 py-2 bg-gray-50 rounded-lg">
+              {/* Withings */}
+              <div className="flex items-center justify-between py-1.5">
+                <div className="flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-purple-500" />
+                  <span className="text-xs text-gray-600">Withings</span>
+                  {withingsConnected && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  )}
+                </div>
+                {withingsConnected ? (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={async () => {
+                        try {
+                          await fetch('/api/withings/sync', { method: 'POST' })
+                          fetchClientCalendarData()
+                          toast.success('Withings synkad')
+                        } catch { toast.error('Fel vid synk') }
+                      }}
+                      className="text-[10px] text-gray-500 hover:text-gray-700 px-1.5 py-0.5 rounded hover:bg-gray-200"
+                    >
+                      Synka
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (confirm('Koppla bort Withings?')) {
+                          await fetch('/api/withings/disconnect', { method: 'POST' })
+                          setWithingsConnected(false)
+                        }
+                      }}
+                      className="text-[10px] text-red-500 hover:text-red-700 px-1.5 py-0.5 rounded hover:bg-red-50"
+                    >
+                      Koppla bort
+                    </button>
+                  </div>
+                ) : (
+                  <a
+                    href="/api/withings/auth"
+                    className="text-[10px] text-purple-600 hover:text-purple-800 px-1.5 py-0.5 rounded hover:bg-purple-50"
+                  >
+                    Koppla
+                  </a>
+                )}
+              </div>
+
+              {/* Fitbit */}
+              <div className="flex items-center justify-between py-1.5 border-t border-gray-200">
+                <div className="flex items-center gap-2">
+                  <Footprints className="w-4 h-4 text-emerald-500" />
+                  <span className="text-xs text-gray-600">Fitbit</span>
+                  {fitbitConnected && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  )}
+                </div>
+                {fitbitConnected ? (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={async () => {
+                        try {
+                          await fetch('/api/fitbit/sync', { method: 'POST' })
+                          fetchClientCalendarData()
+                          toast.success('Fitbit synkad')
+                        } catch { toast.error('Fel vid synk') }
+                      }}
+                      className="text-[10px] text-gray-500 hover:text-gray-700 px-1.5 py-0.5 rounded hover:bg-gray-200"
+                    >
+                      Synka
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (confirm('Koppla bort Fitbit?')) {
+                          await fetch('/api/fitbit/disconnect', { method: 'POST' })
+                          setFitbitConnected(false)
+                        }
+                      }}
+                      className="text-[10px] text-red-500 hover:text-red-700 px-1.5 py-0.5 rounded hover:bg-red-50"
+                    >
+                      Koppla bort
+                    </button>
+                  </div>
+                ) : (
+                  <a
+                    href="/api/fitbit/auth"
+                    className="text-[10px] text-emerald-600 hover:text-emerald-800 px-1.5 py-0.5 rounded hover:bg-emerald-50"
+                  >
+                    Koppla
+                  </a>
+                )}
+              </div>
             </div>
           )}
         </div>
