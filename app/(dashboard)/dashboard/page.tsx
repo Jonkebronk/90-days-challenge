@@ -1101,12 +1101,24 @@ export default function DashboardPage() {
       {/* Week Calendar Widget */}
       <div className="max-w-6xl mx-auto">
         {/* Week Calendar Grid */}
-        <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 overflow-x-auto">
+        <div className="bg-white border border-gray-200 rounded-xl p-2 sm:p-3 overflow-x-auto">
           {/* Header row - Days */}
           <div className="min-w-[320px]">
             {/* Day headers */}
             <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px]">
-              <div></div>
+              {/* Synk-knapp i vänstra hörnet */}
+              <div className="flex items-center justify-center">
+                {(fitbitConnected || withingsConnected) && (
+                  <button
+                    onClick={handleSyncAll}
+                    disabled={isSyncingAll}
+                    className="p-1 rounded hover:bg-gray-100 transition-colors"
+                    title="Synka alla kopplingar"
+                  >
+                    <RefreshCw className={`w-4 h-4 text-gray-400 ${isSyncingAll ? 'animate-spin' : ''}`} />
+                  </button>
+                )}
+              </div>
               {weekDays.map((date, index) => {
                 const isToday = isSameDay(date, new Date())
                 return (
@@ -1136,7 +1148,7 @@ export default function DashboardPage() {
 
             {/* Weight row */}
             <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px] border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-purple-500 py-2.5 px-2">
+              <div className="flex items-center gap-1.5 text-purple-500 py-2 px-2">
                 <Scale className="w-4 h-4" />
                 <span className="text-xs font-medium hidden sm:inline">Vikt</span>
               </div>
@@ -1147,7 +1159,7 @@ export default function DashboardPage() {
                   <button
                     key={index}
                     onClick={() => openWeightModal(date)}
-                    className="flex items-center justify-center py-2.5 text-xs sm:text-sm hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="flex items-center justify-center py-2 text-xs sm:text-sm hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     {weight !== undefined ? (
                       <span className="font-medium text-purple-500">{weight.toFixed(1)}</span>
@@ -1158,7 +1170,7 @@ export default function DashboardPage() {
                 )
               })}
               {/* Weight average */}
-              <div className="flex items-center justify-center py-2.5 text-xs sm:text-sm bg-gray-50/50">
+              <div className="flex items-center justify-center py-2 text-xs sm:text-sm bg-gray-50/50">
                 {(() => {
                   const weights = Object.values(dailyWeights).filter(w => w !== undefined)
                   if (weights.length === 0) return <span className="text-gray-300">-</span>
@@ -1170,7 +1182,7 @@ export default function DashboardPage() {
 
             {/* Steps row */}
             <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px] border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-emerald-500 py-2.5 px-2">
+              <div className="flex items-center gap-1.5 text-emerald-500 py-2 px-2">
                 <Footprints className="w-4 h-4" />
                 <span className="text-xs font-medium hidden sm:inline">Steg</span>
               </div>
@@ -1182,7 +1194,7 @@ export default function DashboardPage() {
                   <button
                     key={index}
                     onClick={() => openStepsModal(date)}
-                    className="flex items-center justify-center py-2.5 text-xs sm:text-sm hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="flex items-center justify-center py-2 text-xs sm:text-sm hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     {stepsData ? (
                       <span className={`font-medium ${metStepGoal ? 'text-green-500' : 'text-emerald-500'}`}>
@@ -1195,7 +1207,7 @@ export default function DashboardPage() {
                 )
               })}
               {/* Steps average */}
-              <div className="flex items-center justify-center py-2.5 text-xs sm:text-sm bg-gray-50/50">
+              <div className="flex items-center justify-center py-2 text-xs sm:text-sm bg-gray-50/50">
                 {(() => {
                   const stepsValues = Object.values(dailySteps).filter(s => s && s.steps > 0).map(s => s.steps)
                   if (stepsValues.length === 0) return <span className="text-gray-300">-</span>
@@ -1207,7 +1219,7 @@ export default function DashboardPage() {
 
             {/* Training row */}
             <div className="grid grid-cols-[70px_repeat(7,1fr)_50px] sm:grid-cols-[90px_repeat(7,1fr)_55px] border-t border-gray-100">
-              <div className="flex items-center gap-1.5 text-orange-500 py-2.5 px-2">
+              <div className="flex items-center gap-1.5 text-orange-500 py-2 px-2">
                 <Dumbbell className="w-4 h-4" />
                 <span className="text-xs font-medium hidden sm:inline">Träning</span>
               </div>
@@ -1216,7 +1228,7 @@ export default function DashboardPage() {
                 const isTrainingDay = trainingDays.includes(weekdayIndex)
                 const completedWorkout = hasCompletedWorkout(date)
                 return (
-                  <div key={index} className="flex items-center justify-center py-2.5">
+                  <div key={index} className="flex items-center justify-center py-2">
                     {completedWorkout ? (
                       <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
                     ) : isTrainingDay ? (
@@ -1234,123 +1246,121 @@ export default function DashboardPage() {
           </div>
 
           {/* Tip text */}
-          <p className="text-xs text-gray-400 mt-4 text-center">
+          <p className="text-xs text-gray-400 mt-2 text-center">
             Tryck på vikt, steg för att registrera manuellt
           </p>
 
-          {/* Mät dina resultat - Expanderbar sektion */}
-          <div className="mt-4">
-            <button
-              onClick={() => setIsMeasurementsExpanded(!isMeasurementsExpanded)}
-              className="w-full flex items-center justify-center gap-2 text-xs text-purple-500 hover:text-purple-700 transition-colors py-2"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Hur vi mäter dina resultat</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isMeasurementsExpanded ? 'rotate-180' : ''}`} />
-            </button>
-
-            {isMeasurementsExpanded && (
-              <div className="mt-3 space-y-3">
-                {/* Kort-grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {MEASUREMENT_CONTENT.map((item) => {
-                    const Icon = item.icon
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => setSelectedMeasurement(
-                          selectedMeasurement === item.id ? null : item.id
-                        )}
-                        className={`p-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-center transition-all ${
-                          selectedMeasurement === item.id ? 'ring-2 ring-purple-500 bg-purple-100' : ''
-                        }`}
-                      >
-                        <Icon className="w-5 h-5 mx-auto text-purple-500 mb-1.5" />
-                        <p className="text-xs font-medium text-gray-800">{item.title}</p>
-                        <p className="text-[10px] text-gray-500">{item.subtitle}</p>
-                      </button>
-                    )
-                  })}
-                </div>
-
-                {/* Inline dialog för valt kort */}
-                {selectedMeasurement && (
-                  <div className="p-4 bg-purple-50/50 rounded-xl border border-purple-100">
-                    <div className="flex items-start gap-3">
-                      {(() => {
-                        const item = MEASUREMENT_CONTENT.find(m => m.id === selectedMeasurement)
-                        if (!item) return null
-                        const Icon = item.icon
-                        return (
-                          <>
-                            <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
-                              <Icon className="w-5 h-5 text-purple-600" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-semibold text-gray-900 text-sm mb-2">{item.title}</h4>
-                              <div className="text-xs text-gray-700 whitespace-pre-line leading-relaxed">
-                                {item.content.split('**').map((part, i) =>
-                                  i % 2 === 1 ? <strong key={i}>{part}</strong> : part
-                                )}
-                              </div>
-                            </div>
-                          </>
-                        )
-                      })()}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Connections Section - Collapsible */}
-          <div className="mt-4">
+          {/* Kopplingar - Minimalistisk ikon-rad */}
+          <div className="mt-2 flex items-center justify-center gap-4">
+            {/* Withings */}
             <button
               onClick={() => setIsConnectionsExpanded(!isConnectionsExpanded)}
-              className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-1.5 text-gray-500 hover:text-gray-700 transition-colors"
+              title={withingsConnected ? 'Withings kopplad' : 'Koppla Withings'}
             >
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-600">Kopplingar</span>
-                {(fitbitConnected || withingsConnected) && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleSyncAll(); }}
-                    disabled={isSyncingAll}
-                    className="p-1.5 rounded-full hover:bg-gray-200 transition-colors"
-                    title="Synka alla kopplingar"
-                  >
-                    <RefreshCw className={`w-4 h-4 text-gray-500 ${isSyncingAll ? 'animate-spin' : ''}`} />
-                  </button>
-                )}
-              </div>
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isConnectionsExpanded ? 'rotate-180' : ''}`} />
+              <Scale className="w-4 h-4" />
+              <span className={`w-2 h-2 rounded-full ${withingsConnected ? 'bg-green-500' : 'bg-gray-300'}`} />
             </button>
 
-            {isConnectionsExpanded && (
-              <div className="mt-3 space-y-3">
-                {/* Withings Connection */}
-                <WithingsConnectCard
-                  onConnectionChange={(connected) => {
-                    setWithingsConnected(connected)
-                    if (connected) {
-                      fetchClientCalendarData()
-                    }
-                  }}
-                  onSync={() => fetchClientCalendarData()}
-                />
-
-                {/* Fitbit Connection */}
-                <FitbitConnectCard
-                  onConnectionChange={(connected) => {
-                    setFitbitConnected(connected)
-                    if (connected) {
-                      fetchClientCalendarData()
-                    }
-                  }}
-                />
-              </div>
-            )}
+            {/* Fitbit */}
+            <button
+              onClick={() => setIsConnectionsExpanded(!isConnectionsExpanded)}
+              className="flex items-center gap-1.5 text-gray-500 hover:text-gray-700 transition-colors"
+              title={fitbitConnected ? 'Fitbit kopplad' : 'Koppla Fitbit'}
+            >
+              <Footprints className="w-4 h-4" />
+              <span className={`w-2 h-2 rounded-full ${fitbitConnected ? 'bg-green-500' : 'bg-gray-300'}`} />
+            </button>
           </div>
+
+          {/* Expanded connections panel */}
+          {isConnectionsExpanded && (
+            <div className="mt-2 p-3 bg-gray-50 rounded-lg space-y-3">
+              <WithingsConnectCard
+                onConnectionChange={(connected) => {
+                  setWithingsConnected(connected)
+                  if (connected) {
+                    fetchClientCalendarData()
+                  }
+                }}
+                onSync={() => fetchClientCalendarData()}
+              />
+              <FitbitConnectCard
+                onConnectionChange={(connected) => {
+                  setFitbitConnected(connected)
+                  if (connected) {
+                    fetchClientCalendarData()
+                  }
+                }}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Hur vi mäter dina resultat - Separat kort */}
+        <div className="bg-white border border-gray-200 rounded-xl p-3 mt-3">
+          <button
+            onClick={() => setIsMeasurementsExpanded(!isMeasurementsExpanded)}
+            className="w-full flex items-center justify-center gap-2 text-xs text-purple-500 hover:text-purple-700 transition-colors py-1"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Hur vi mäter dina resultat</span>
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isMeasurementsExpanded ? 'rotate-180' : ''}`} />
+          </button>
+
+          {isMeasurementsExpanded && (
+            <div className="mt-3 space-y-3">
+              {/* Kort-grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {MEASUREMENT_CONTENT.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setSelectedMeasurement(
+                        selectedMeasurement === item.id ? null : item.id
+                      )}
+                      className={`p-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-center transition-all ${
+                        selectedMeasurement === item.id ? 'ring-2 ring-purple-500 bg-purple-100' : ''
+                      }`}
+                    >
+                      <Icon className="w-5 h-5 mx-auto text-purple-500 mb-1.5" />
+                      <p className="text-xs font-medium text-gray-800">{item.title}</p>
+                      <p className="text-[10px] text-gray-500">{item.subtitle}</p>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Inline dialog för valt kort */}
+              {selectedMeasurement && (
+                <div className="p-4 bg-purple-50/50 rounded-xl border border-purple-100">
+                  <div className="flex items-start gap-3">
+                    {(() => {
+                      const item = MEASUREMENT_CONTENT.find(m => m.id === selectedMeasurement)
+                      if (!item) return null
+                      const Icon = item.icon
+                      return (
+                        <>
+                          <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                            <Icon className="w-5 h-5 text-purple-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-gray-900 text-sm mb-2">{item.title}</h4>
+                            <div className="text-xs text-gray-700 whitespace-pre-line leading-relaxed">
+                              {item.content.split('**').map((part, i) =>
+                                i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+                              )}
+                            </div>
+                          </div>
+                        </>
+                      )
+                    })()}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
