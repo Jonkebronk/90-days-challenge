@@ -1583,7 +1583,7 @@ export default function WorkoutSessionPage({ params }: PageProps) {
 
       {/* Slider mode: Bottom bar with next exercise */}
       {viewMode === 'slider' && !isWorkoutComplete && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+        <div className="fixed bottom-16 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 pb-[env(safe-area-inset-bottom)] lg:bottom-0">
           <div className="max-w-4xl mx-auto p-3 sm:p-4">
             {/* REST Timer Display - Show when resting */}
             {isResting ? (

@@ -19,7 +19,7 @@ export function MobileBottomNav() {
 
   return (
     <nav className="flex-shrink-0 bg-[#1a3a4a] border-t border-gray-700 lg:hidden pb-[env(safe-area-inset-bottom)]">
-      <div className="grid grid-cols-6 h-16 pt-2 pb-1">
+      <div className="grid grid-cols-6 h-16 pt-2 pb-4">
         {tabs.map((tab) => {
           const isActive = pathname === tab.href ||
             (tab.href !== '/dashboard' && pathname.startsWith(tab.href))
