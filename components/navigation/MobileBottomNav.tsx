@@ -10,7 +10,7 @@ const tabs = [
   { href: '/dashboard/meal-plan', label: 'KOST', icon: Utensils },
   { href: '/dashboard/workout', label: 'TRÄNING', icon: Dumbbell },
   { href: '/dashboard/articles', label: 'UTBILDNING', icon: BookOpen },
-  { href: '/dashboard/messages', label: 'MEDDELANDE', icon: MessageSquare },
+  { href: '/dashboard/messages', label: 'CHATT', icon: MessageSquare },
   { href: '/dashboard/profile', label: 'PROFIL', icon: User },
 ]
 
