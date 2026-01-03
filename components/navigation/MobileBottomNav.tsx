@@ -10,8 +10,8 @@ const tabs = [
   { href: '/dashboard/workout', label: 'TRÄNING', icon: Dumbbell },
   { href: '/dashboard/meal-plan', label: 'KOST', icon: Utensils },
   { href: '/dashboard/messages', label: 'MEDDELANDE', icon: MessageSquare },
-  { href: '/dashboard/profile', label: 'PROFIL', icon: User },
   { href: '/dashboard/articles', label: 'UTBILDNING', icon: BookOpen },
+  { href: '/dashboard/profile', label: 'PROFIL', icon: User },
 ]
 
 export function MobileBottomNav() {
