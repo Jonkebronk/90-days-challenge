@@ -233,6 +233,22 @@ export default function DashboardPage() {
   // Withings state
   const [withingsConnected, setWithingsConnected] = useState(false)
 
+  // Check Withings connection on mount
+  useEffect(() => {
+    const checkWithingsConnection = async () => {
+      try {
+        const response = await fetch('/api/withings/sync')
+        if (response.ok) {
+          const data = await response.json()
+          setWithingsConnected(data.connected)
+        }
+      } catch (error) {
+        console.error('Error checking Withings connection:', error)
+      }
+    }
+    checkWithingsConnection()
+  }, [])
+
   // Sync all connections state
   const [isSyncingAll, setIsSyncingAll] = useState(false)
 
