@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Utensils, Sparkles, ChevronDown, ChevronUp, UtensilsCrossed, Wand2, Calendar } from 'lucide-react'
+import { Utensils, ChevronDown, UtensilsCrossed, Wand2, Calendar } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Pyramid } from '@/components/pyramid'
 import { nutritionPyramidLevels, nutritionFoundation } from '@/lib/data/pyramid-content'
@@ -279,39 +279,19 @@ export default function MealPlanPage() {
     )
   }
 
-  if (!mealPlan) {
-    return (
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="text-center mb-6 sm:mb-8">
-          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
-          <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
-            Kostschema
-          </h1>
-          <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
-        </div>
-
-        {/* Empty State */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm">
-          <div className="text-center">
-            <Sparkles className="w-12 h-12 mx-auto text-gold-primary mb-4" />
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
-              Inget kostschema ännu
-            </h3>
-            <p className="text-gray-500 text-sm">
-              Din coach kommer snart att tilldela ett personligt kostschema till dig
-            </p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Calculate total daily intake including supplements
-  const totalDailyProtein = Number(mealPlan.totalProtein || 0) + Number(mealPlan.preWorkoutProtein || 0) + Number(mealPlan.postWorkoutProtein || 0)
-  const totalDailyFat = Number(mealPlan.totalFat || 0) + Number(mealPlan.preWorkoutFat || 0) + Number(mealPlan.postWorkoutFat || 0)
-  const totalDailyCarbs = Number(mealPlan.totalCarbs || 0) + Number(mealPlan.preWorkoutCarbs || 0) + Number(mealPlan.postWorkoutCarbs || 0)
-  const totalDailyCalories = Number(mealPlan.totalCalories || 0) + Number(mealPlan.preWorkoutCalories || 0) + Number(mealPlan.postWorkoutCalories || 0)
+  // Calculate total daily intake including supplements (use flexibleTargetMacros as fallback)
+  const totalDailyProtein = mealPlan
+    ? Number(mealPlan.totalProtein || 0) + Number(mealPlan.preWorkoutProtein || 0) + Number(mealPlan.postWorkoutProtein || 0)
+    : (flexibleTargetMacros?.protein || 0)
+  const totalDailyFat = mealPlan
+    ? Number(mealPlan.totalFat || 0) + Number(mealPlan.preWorkoutFat || 0) + Number(mealPlan.postWorkoutFat || 0)
+    : (flexibleTargetMacros?.fat || 0)
+  const totalDailyCarbs = mealPlan
+    ? Number(mealPlan.totalCarbs || 0) + Number(mealPlan.preWorkoutCarbs || 0) + Number(mealPlan.postWorkoutCarbs || 0)
+    : (flexibleTargetMacros?.carbs || 0)
+  const totalDailyCalories = mealPlan
+    ? Number(mealPlan.totalCalories || 0) + Number(mealPlan.preWorkoutCalories || 0) + Number(mealPlan.postWorkoutCalories || 0)
+    : (flexibleTargetMacros?.kcal || 0)
 
   // Get target for selected day (fallback to plan totals if no specific target)
   const selectedDayTarget = dailyTargets.find(t => t.dayOfWeek === selectedDay)
@@ -336,7 +316,7 @@ export default function MealPlanPage() {
       <div className="text-center mb-6 sm:mb-8">
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
         <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
-          {mealPlan.name}
+          {mealPlan?.name || 'Kostschema'}
         </h1>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
       </div>
@@ -520,12 +500,12 @@ export default function MealPlanPage() {
               ) : (
                 <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm">
                   <div className="text-center">
-                    <Wand2 className="w-12 h-12 mx-auto text-purple-500 mb-4" />
+                    <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
                     <h3 className="text-lg font-bold text-gray-900 mb-2">
-                      Ingen kostplan tilldelad
+                      Laddar...
                     </h3>
                     <p className="text-gray-500 text-sm">
-                      En kostplan med makromål behöver skapas först för att kunna lägga till förslag
+                      Vänta medan vi förbereder dina förslag
                     </p>
                   </div>
                 </div>
@@ -551,12 +531,12 @@ export default function MealPlanPage() {
               ) : (
                 <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm">
                   <div className="text-center">
-                    <Wand2 className="w-12 h-12 mx-auto text-purple-500 mb-4" />
+                    <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
                     <h3 className="text-lg font-bold text-gray-900 mb-2">
-                      Ingen kostplan tilldelad
+                      Laddar kostschema...
                     </h3>
                     <p className="text-gray-500 text-sm">
-                      Din coach behöver först skapa en kostplan med makromål för att du ska kunna använda flexibel kosthållning
+                      Vänta medan vi förbereder ditt kostschema
                     </p>
                   </div>
                 </div>
