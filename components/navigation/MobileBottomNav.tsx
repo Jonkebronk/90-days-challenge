@@ -37,12 +37,12 @@ export function MobileBottomNav() {
                 <Image
                   src="/images/compass-icon-black.svg"
                   alt="Hem"
-                  width={22}
-                  height={22}
+                  width={28}
+                  height={28}
                   className={isActive ? 'brightness-0 invert' : 'brightness-0 invert opacity-60'}
                 />
               ) : (
-                <Icon className="w-5 h-5" />
+                <Icon className="w-6 h-6" />
               )}
               <span className="text-[9px] mt-1 font-medium">{tab.label}</span>
             </Link>
