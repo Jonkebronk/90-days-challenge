@@ -326,6 +326,24 @@ export default function MealPlanPage() {
 
       {/* Main Content */}
       <div className="space-y-4">
+        {/* Actions row - above NutritionHub */}
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={() => setRedistributeTrigger(prev => prev + 1)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-[#1A3A4A] text-sm font-medium rounded-full hover:bg-gray-50 transition-all shadow-sm"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Fördela om
+          </button>
+          <button
+            onClick={() => setShowAdjustWizard(true)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#E91E8C] text-white text-sm font-medium rounded-full hover:bg-[#d11a7d] transition-all shadow-sm"
+          >
+            <Wand2 className="w-4 h-4" />
+            Justera mål
+          </button>
+        </div>
+
         {/* NutritionHub - Calorie display + macro targets */}
         <NutritionHub
           targetCalories={currentTarget.calories}
@@ -333,24 +351,6 @@ export default function MealPlanPage() {
           targetCarbs={currentTarget.carbs}
           targetFat={currentTarget.fat}
         />
-
-        {/* Actions row */}
-        <div className="flex items-center justify-end gap-2 px-2">
-          <button
-            onClick={() => setRedistributeTrigger(prev => prev + 1)}
-            className="flex items-center gap-1.5 px-4 py-2 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full hover:bg-gray-200 transition-all"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            Fördela om
-          </button>
-          <button
-            onClick={() => setShowAdjustWizard(true)}
-            className="flex items-center gap-1.5 px-4 py-2 bg-[#E91E8C] text-white text-xs font-semibold rounded-full hover:bg-[#d11a7d] transition-all shadow-sm"
-          >
-            <Wand2 className="w-3.5 h-3.5" />
-            Justera mål
-          </button>
-        </div>
 
         {/* Meal Plan Content */}
         {nutritionPlanId && flexibleTargetMacros ? (
