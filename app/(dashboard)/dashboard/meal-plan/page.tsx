@@ -5,10 +5,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Utensils, ChevronDown, UtensilsCrossed, Wand2, Calendar } from 'lucide-react'
+import { Utensils, UtensilsCrossed, Wand2, Calendar } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Pyramid } from '@/components/pyramid'
-import { nutritionPyramidLevels, nutritionFoundation } from '@/lib/data/pyramid-content'
 import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
 import { WeekMacroDisplay } from '@/components/meal-plan/WeekMacroDisplay'
 import { AdjustMacrosWizard, MealMacros as WizardMealMacros } from '@/components/meal-plan/AdjustMacrosWizard'
@@ -114,7 +112,6 @@ export default function MealPlanPage() {
   const [flexibleTargetMacros, setFlexibleTargetMacros] = useState<{ protein: number; carbs: number; fat: number; kcal: number } | null>(null)
   const [showAdjustWizard, setShowAdjustWizard] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0) // For forcing FlexibleMealPlan reload
-  const [pyramidExpanded, setPyramidExpanded] = useState(false)
   const [weekViewOpen, setWeekViewOpen] = useState(false)
   const [consumedTotals, setConsumedTotals] = useState<{ kcal: number; protein: number; carbs: number; fat: number }>({ kcal: 0, protein: 0, carbs: 0, fat: 0 })
 
@@ -319,30 +316,6 @@ export default function MealPlanPage() {
           {mealPlan?.name || 'Kostschema'}
         </h1>
         <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
-      </div>
-
-      {/* Nutrition Pyramid - Collapsible */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <button
-          onClick={() => setPyramidExpanded(!pyramidExpanded)}
-          className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-rose-600 to-rose-500 text-white font-semibold hover:from-rose-700 hover:to-rose-600 transition-all"
-        >
-          <span className="flex items-center gap-2">
-            <span className="text-lg">🔺</span>
-            Nutritionspyramiden
-          </span>
-          <ChevronDown className={`w-5 h-5 transition-transform ${pyramidExpanded ? 'rotate-180' : ''}`} />
-        </button>
-        {pyramidExpanded && (
-          <div className="p-4">
-            <Pyramid
-              title=""
-              levels={nutritionPyramidLevels}
-              foundation={nutritionFoundation}
-              colorScheme="red"
-            />
-          </div>
-        )}
       </div>
 
       {/* Adjust Macros Wizard */}
