@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry, Pencil, ArrowUp, ArrowDown, Info, Check, MoreHorizontal, Heart } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry, Pencil, ArrowUp, ArrowDown, Info, MoreHorizontal, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -394,17 +394,62 @@ export function ClientStyleMealCard({
     <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
       {/* Header - New design matching reference */}
       <div className="p-4">
-        {/* Meal type badge + calories */}
+        {/* Meal type badge + calories + menu */}
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs font-bold text-[#1A3A4A] uppercase tracking-wider">
             {mealLabel.toUpperCase()}
           </span>
-          <span className="text-sm font-semibold text-[#1A3A4A]">
-            {Math.round(meal.totalMacros.kcal)} cals
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-[#1A3A4A]">
+              {Math.round(meal.totalMacros.kcal)} kcal
+            </span>
+            {/* Actions dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                  <MoreHorizontal className="w-5 h-5 text-gray-500" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {onAddMealRecipe && (
+                  <DropdownMenuItem onClick={() => onAddMealRecipe(mealIndex)}>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Byt Recept
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={() => { /* TODO: Save as favorite */ }}>
+                  <Heart className="w-4 h-4 mr-2" />
+                  Spara som Favorit
+                </DropdownMenuItem>
+                {onUpdateMealMacros && meal.targetMacros && (
+                  <DropdownMenuItem onClick={handleEditTarget}>
+                    <Pencil className="w-4 h-4 mr-2" />
+                    Redigera mål
+                  </DropdownMenuItem>
+                )}
+                {/* Move up/down */}
+                {(onMoveUp || onMoveDown) && (
+                  <>
+                    {canMoveUp && onMoveUp && (
+                      <DropdownMenuItem onClick={() => onMoveUp(mealIndex)}>
+                        <ArrowUp className="w-4 h-4 mr-2" />
+                        Flytta upp
+                      </DropdownMenuItem>
+                    )}
+                    {canMoveDown && onMoveDown && (
+                      <DropdownMenuItem onClick={() => onMoveDown(mealIndex)}>
+                        <ArrowDown className="w-4 h-4 mr-2" />
+                        Flytta ner
+                      </DropdownMenuItem>
+                    )}
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
-        {/* Main content row: Image + Name + Actions */}
+        {/* Main content row: Image + Name */}
         <div className="flex items-start gap-3">
           {/* Meal/Recipe image */}
           <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
@@ -423,73 +468,18 @@ export function ClientStyleMealCard({
 
           {/* Meal name and info */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex-1 min-w-0">
-                {mealRecipes.length > 0 ? (
-                  <button
-                    onClick={() => handleRecipeClick(mealRecipes[0].recipeId)}
-                    className="text-base font-semibold text-[#1A3A4A] hover:text-[#E91E8C] transition-colors text-left truncate block"
-                  >
-                    {mealRecipes[0].name}
-                  </button>
-                ) : (
-                  <span className="text-base font-semibold text-[#1A3A4A]">
-                    {allItems.length > 0 ? allItems[0].selected.name : 'Ingen mat vald'}
-                  </span>
-                )}
-              </div>
-
-              {/* Check icon + Menu */}
-              <div className="flex items-center gap-1 shrink-0">
-                <div className="w-6 h-6 rounded-full bg-[#4ECDC4] flex items-center justify-center">
-                  <Check className="w-4 h-4 text-white" />
-                </div>
-
-                {/* Actions dropdown */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                      <MoreHorizontal className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    {onAddMealRecipe && (
-                      <DropdownMenuItem onClick={() => onAddMealRecipe(mealIndex)}>
-                        <RefreshCw className="w-4 h-4 mr-2" />
-                        Byt Recept
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem onClick={() => { /* TODO: Save as favorite */ }}>
-                      <Heart className="w-4 h-4 mr-2" />
-                      Spara som Favorit
-                    </DropdownMenuItem>
-                    {onUpdateMealMacros && meal.targetMacros && (
-                      <DropdownMenuItem onClick={handleEditTarget}>
-                        <Pencil className="w-4 h-4 mr-2" />
-                        Redigera mål
-                      </DropdownMenuItem>
-                    )}
-                    {/* Move up/down */}
-                    {(onMoveUp || onMoveDown) && (
-                      <>
-                        {canMoveUp && onMoveUp && (
-                          <DropdownMenuItem onClick={() => onMoveUp(mealIndex)}>
-                            <ArrowUp className="w-4 h-4 mr-2" />
-                            Flytta upp
-                          </DropdownMenuItem>
-                        )}
-                        {canMoveDown && onMoveDown && (
-                          <DropdownMenuItem onClick={() => onMoveDown(mealIndex)}>
-                            <ArrowDown className="w-4 h-4 mr-2" />
-                            Flytta ner
-                          </DropdownMenuItem>
-                        )}
-                      </>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
+            {mealRecipes.length > 0 ? (
+              <button
+                onClick={() => handleRecipeClick(mealRecipes[0].recipeId)}
+                className="text-base font-semibold text-[#1A3A4A] hover:text-[#E91E8C] transition-colors text-left truncate block"
+              >
+                {mealRecipes[0].name}
+              </button>
+            ) : (
+              <span className="text-base font-semibold text-[#1A3A4A]">
+                {allItems.length > 0 ? allItems[0].selected.name : 'Ingen mat vald'}
+              </span>
+            )}
 
             {/* Dinner tips - only for middag */}
             {meal.type === 'middag' && (
@@ -503,19 +493,19 @@ export function ClientStyleMealCard({
         {/* Macro row - horizontal */}
         <div className="flex items-center justify-between mt-4 px-2 py-2 bg-[#F5F7FA] rounded-lg">
           <div className="text-center">
-            <div className="text-[10px] font-semibold text-gray-500 uppercase">CALS</div>
-            <div className="text-sm font-bold text-[#1A3A4A]">{Math.round(meal.totalMacros.kcal)}cal</div>
+            <div className="text-[10px] font-semibold text-gray-500 uppercase">KCAL</div>
+            <div className="text-sm font-bold text-[#1A3A4A]">{Math.round(meal.totalMacros.kcal)}</div>
           </div>
           <div className="text-center">
-            <div className="text-[10px] font-semibold text-gray-500 uppercase">CARBS</div>
+            <div className="text-[10px] font-semibold text-gray-500 uppercase">KOLH</div>
             <div className="text-sm font-bold text-[#1A3A4A]">{meal.totalMacros.carbs.toFixed(1)}g</div>
           </div>
           <div className="text-center">
-            <div className="text-[10px] font-semibold text-gray-500 uppercase">FAT</div>
+            <div className="text-[10px] font-semibold text-gray-500 uppercase">FETT</div>
             <div className="text-sm font-bold text-[#1A3A4A]">{meal.totalMacros.fat.toFixed(1)}g</div>
           </div>
           <div className="text-center">
-            <div className="text-[10px] font-semibold text-gray-500 uppercase">PROTEIN</div>
+            <div className="text-[10px] font-semibold text-gray-500 uppercase">PROT</div>
             <div className="text-sm font-bold text-[#1A3A4A]">{meal.totalMacros.protein.toFixed(1)}g</div>
           </div>
         </div>
@@ -529,7 +519,7 @@ export function ClientStyleMealCard({
         >
           <div className="flex items-center gap-2">
             <Utensils className="w-4 h-4 text-[#E91E8C]" />
-            <span className="text-sm font-semibold text-[#1A3A4A]">Ingredients</span>
+            <span className="text-sm font-semibold text-[#1A3A4A]">Ingredienser</span>
           </div>
           {isExpanded ? (
             <ChevronUp className="w-5 h-5 text-gray-400" />
