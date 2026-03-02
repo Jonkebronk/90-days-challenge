@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry, Pencil, ArrowUp, ArrowDown, Info, MoreHorizontal, Heart } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry, Pencil, ArrowUp, ArrowDown, Info, MoreHorizontal, Heart, Type } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -255,6 +255,10 @@ export function ClientStyleMealCard({
   const [editTargetOpen, setEditTargetOpen] = useState(false);
   const [editTargetValues, setEditTargetValues] = useState<CalculatedMacros | null>(null);
 
+  // Edit meal name dialog state
+  const [editNameOpen, setEditNameOpen] = useState(false);
+  const [editNameValue, setEditNameValue] = useState('');
+
   // Handle recipe click
   const handleRecipeClick = (recipeId: string) => {
     setSelectedRecipeId(recipeId);
@@ -421,6 +425,15 @@ export function ClientStyleMealCard({
                   <Heart className="w-4 h-4 mr-2" />
                   Spara som Favorit
                 </DropdownMenuItem>
+                {onUpdateMealName && (
+                  <DropdownMenuItem onClick={() => {
+                    setEditNameValue(meal.customName || '');
+                    setEditNameOpen(true);
+                  }}>
+                    <Type className="w-4 h-4 mr-2" />
+                    Byt namn på måltid
+                  </DropdownMenuItem>
+                )}
                 {onUpdateMealMacros && meal.targetMacros && (
                   <DropdownMenuItem onClick={handleEditTarget}>
                     <Pencil className="w-4 h-4 mr-2" />
@@ -818,6 +831,48 @@ export function ClientStyleMealCard({
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Meal Name Dialog */}
+      <Dialog open={editNameOpen} onOpenChange={setEditNameOpen}>
+        <DialogContent className="max-w-sm" onOpenAutoFocus={(e) => e.preventDefault()}>
+          <DialogHeader>
+            <DialogTitle>Byt namn på måltid</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-zinc-700">Namn</label>
+              <Input
+                type="text"
+                value={editNameValue}
+                onChange={(e) => setEditNameValue(e.target.value)}
+                placeholder={defaultLabel}
+                className="mt-1"
+              />
+              <p className="text-xs text-zinc-500 mt-1">
+                Lämna tomt för att använda standardnamn ({defaultLabel})
+              </p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setEditNameOpen(false)}>
+                Avbryt
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (onUpdateMealName) {
+                    onUpdateMealName(mealIndex, editNameValue.trim());
+                  }
+                  setEditNameOpen(false);
+                }}
+                disabled={disabled}
+                className="bg-[#E91E8C] hover:bg-[#d11a7d]"
+              >
+                Spara
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
