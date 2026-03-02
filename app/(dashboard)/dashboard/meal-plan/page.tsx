@@ -366,10 +366,6 @@ export default function MealPlanPage() {
                 targetProtein={currentTarget.protein}
                 targetCarbs={currentTarget.carbs}
                 targetFat={currentTarget.fat}
-                consumedCalories={consumedTotals.kcal}
-                consumedProtein={consumedTotals.protein}
-                consumedCarbs={consumedTotals.carbs}
-                consumedFat={consumedTotals.fat}
               />
 
               {/* Actions row */}
