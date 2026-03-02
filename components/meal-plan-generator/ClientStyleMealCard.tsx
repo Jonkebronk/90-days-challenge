@@ -400,9 +400,13 @@ export function ClientStyleMealCard({
       <div className="p-4">
         {/* Meal type badge + calories + menu */}
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold text-[#1A3A4A] uppercase tracking-wider">
-            {mealLabel.toUpperCase()}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-[#1A3A4A] uppercase tracking-wider">
+              {mealLabel.toUpperCase()}
+            </span>
+            {/* Dinner tips - only for middag */}
+            {meal.type === 'middag' && <DinnerTipsDialog />}
+          </div>
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-[#1A3A4A]">
               {Math.round(meal.totalMacros.kcal)} kcal
@@ -494,12 +498,6 @@ export function ClientStyleMealCard({
               </span>
             )}
 
-            {/* Dinner tips - only for middag */}
-            {meal.type === 'middag' && (
-              <span className="inline-block mt-1">
-                <DinnerTipsDialog />
-              </span>
-            )}
           </div>
         </div>
 
