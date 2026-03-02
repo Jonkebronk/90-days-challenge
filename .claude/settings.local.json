@@ -82,7 +82,10 @@
       "Bash(xargs cat:*)",
       "Bash(dir /b *.md)",
       "WebFetch(domain:www.setproduct.com)",
-      "WebFetch(domain:cieden.com)"
+      "WebFetch(domain:cieden.com)",
+      "Bash(test:*)",
+      "Bash(dir \"C:\\\\Users\\\\johnn\\\\90-days-challenge\\\\*.md\")",
+      "Bash(dir \"C:\\\\Users\\\\johnn\\\\90-days-challenge\\\\.claude\"\")"
     ],
     "deny": [],
     "ask": []

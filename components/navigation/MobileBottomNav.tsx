@@ -19,7 +19,7 @@ export function MobileBottomNav() {
 
   return (
     <nav className="flex-shrink-0 bg-[#1a3a4a] border-t border-gray-700 lg:hidden pb-[env(safe-area-inset-bottom)]">
-      <div className="grid grid-cols-6 h-16 pt-2 pb-4">
+      <div className="grid grid-cols-6 h-20 pt-3 pb-4">
         {tabs.map((tab) => {
           const isActive = pathname === tab.href ||
             (tab.href !== '/dashboard' && pathname.startsWith(tab.href))
@@ -37,14 +37,14 @@ export function MobileBottomNav() {
                 <Image
                   src="/images/compass-icon-black.svg"
                   alt="Hem"
-                  width={28}
-                  height={28}
+                  width={32}
+                  height={32}
                   className={isActive ? 'brightness-0 invert' : 'brightness-0 invert opacity-60'}
                 />
               ) : (
-                <Icon className="w-6 h-6" />
+                <Icon className="w-7 h-7" />
               )}
-              <span className="text-[9px] mt-1 font-medium">{tab.label}</span>
+              <span className="text-[10px] mt-1.5 font-medium">{tab.label}</span>
             </Link>
           )
         })}
