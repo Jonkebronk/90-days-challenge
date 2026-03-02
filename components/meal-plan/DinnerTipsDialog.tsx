@@ -30,18 +30,22 @@ export function DinnerTipsDialog({ trigger }: DinnerTipsDialogProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg">
-            Tips for Social Middag med Familjen
+            Social Middag med Familjen
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
+          <p className="text-sm text-gray-600 leading-relaxed">
+            Middagen är familjestund – inte räknestund. Vi håller det enkelt med portionskontroll och kalorimedvetenhet, utan att fastna i makrodetaljerna.
+          </p>
+
           <div className="space-y-2">
             <div className="flex items-start gap-3">
               <span className="text-xl">🥗</span>
               <div>
                 <h4 className="font-medium text-gray-900">Portionskontroll utan att mäta</h4>
                 <p className="text-sm text-gray-600">
-                  En knytnäve protein, en knytnäve kolhydrater, resten grönsaker.
+                  En knytnäve protein, en knytnäve kolhydrater och resten grönsaker.
                 </p>
               </div>
             </div>
