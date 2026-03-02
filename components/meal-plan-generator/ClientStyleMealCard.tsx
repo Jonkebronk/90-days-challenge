@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry, Pencil, ArrowUp, ArrowDown, Info } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Utensils, Leaf, RefreshCw, X, Cherry, Pencil, ArrowUp, ArrowDown, Info, Check, MoreHorizontal, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ProductSelectModal } from './ProductSelectModal';
 import { RecipeDetailDialog } from './RecipeDetailDialog';
 import { FoodItemDetailDialog } from './FoodItemDetailDialog';
@@ -67,7 +68,7 @@ function GramInput({
       onBlur={handleSave}
       onKeyDown={handleKeyDown}
       disabled={disabled}
-      className="w-14 text-center text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded px-1 py-0.5 focus:outline-none focus:border-amber-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+      className="w-14 text-center text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded px-1 py-0.5 focus:outline-none focus:border-[#4ECDC4] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       min="0"
     />
   );
@@ -292,10 +293,6 @@ export function ClientStyleMealCard({
     }
   };
 
-  // Calculate progress percentage
-  const targetKcal = meal.targetMacros?.kcal || 0;
-  const progressPercent = targetKcal > 0 ? Math.round((meal.totalMacros.kcal / targetKcal) * 100) : 0;
-
   // Get items by category - separate berries from other carbs
   const proteinItems = meal.items.filter(item => item.category === 'protein');
   const carbItems = meal.items.filter(item => item.category === 'carb' && !isBerry(item.selected.name));
@@ -304,7 +301,7 @@ export function ClientStyleMealCard({
   const vegetableItems = meal.items.filter(item => item.category === 'vegetable');
 
   const canHaveSauce = meal.type === 'lunch' || meal.type === 'middag';
-  
+
   // Open product select modal
   const handleOpenSelectModal = (category: MacroCategory, targetMacro: number, defaultSubcategory?: string) => {
     setSelectCategory(category);
@@ -338,577 +335,370 @@ export function ClientStyleMealCard({
     }
   };
 
-  // Render a single food item - two row layout
-  const renderFoodItem = (
-    item: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros; image?: string | null } },
-    category: MacroCategory,
-    configKey: string
-  ) => {
-    const macros = item.selected.macros;
+  // Get first recipe image as meal image (if available)
+  const mealImage = mealRecipes.length > 0 ? mealRecipes[0].image : null;
 
+  // Render ingredient row for new design
+  const renderIngredientRow = (
+    item: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros; image?: string | null } },
+    category: MacroCategory
+  ) => {
     return (
       <div
         key={item.selected.foodId}
-        className="py-2 px-1 space-y-1.5"
+        className="flex items-center justify-between py-1.5 border-b border-gray-100 last:border-b-0"
       >
-        {/* Row 1: Image + Name */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <span className="text-gray-400">•</span>
           <button
             onClick={() => handleFoodClick(item.selected.foodId, item.selected.name, item.selected.grams)}
-            className="w-9 h-9 rounded-full overflow-hidden bg-zinc-100 shrink-0 hover:ring-2 hover:ring-amber-400 transition-all"
-          >
-            {item.selected.image ? (
-              <img
-                src={item.selected.image}
-                alt={item.selected.name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-zinc-400">
-                <Utensils className="w-4 h-4" />
-              </div>
-            )}
-          </button>
-          <button
-            onClick={() => handleFoodClick(item.selected.foodId, item.selected.name, item.selected.grams)}
-            className="flex-1 text-left text-sm font-medium text-zinc-800 hover:text-amber-600 transition-colors truncate"
+            className="text-sm text-[#1A3A4A] hover:text-[#E91E8C] transition-colors truncate"
           >
             {item.selected.name}
           </button>
         </div>
-
-        {/* Row 2: Gram + Macros + Actions */}
-        <div className="flex items-center gap-2 pl-11">
-          {/* Gram input */}
-          <div className="flex items-center gap-1 shrink-0">
-            <GramInput
-              value={item.selected.grams}
-              onChange={(grams) => handleGramInputChange(category, item.selected.foodId, grams)}
-              disabled={disabled}
-            />
-            <span className="text-[10px] text-zinc-400">g</span>
-          </div>
-
-          {/* Macros with labels on top */}
-          <div className="flex items-center gap-2 sm:gap-3 text-xs tabular-nums flex-1">
-            <div className="text-center">
-              <div className="text-[8px] text-zinc-400 uppercase font-medium">Kcal</div>
-              <div className="font-bold text-amber-600">{Math.round(macros.kcal)}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-[8px] text-zinc-400 uppercase font-medium">P</div>
-              <div className="font-bold text-rose-600">{macros.protein.toFixed(0)}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-[8px] text-zinc-400 uppercase font-medium">K</div>
-              <div className="font-bold text-amber-500">{macros.carbs.toFixed(0)}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-[8px] text-zinc-400 uppercase font-medium">F</div>
-              <div className="font-bold text-sky-500">{macros.fat.toFixed(0)}</div>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-0.5 shrink-0">
-            <button
-              onClick={() => !disabled && handleOpenSelectModal(category, getTargetMacro(category))}
-              disabled={disabled}
-              className="p-1 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 disabled:opacity-30 transition-colors"
-              title="Byt"
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-            </button>
-            {onRemoveFood && (
-              <button
-                onClick={() => !disabled && onRemoveFood(mealIndex, category, item.selected.foodId)}
-                disabled={disabled}
-                className="p-1 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 disabled:opacity-30 transition-colors"
-                title="Ta bort"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Render a complete category section with header
-  const renderCategorySection = (
-    items: { category: MacroCategory; selected: { foodId: string; name: string; grams: number; macros: CalculatedMacros; image?: string | null }; isAlternative?: boolean }[],
-    category: MacroCategory,
-    configKey: string,
-    showAddButton: boolean = true
-  ) => {
-    const config = CATEGORY_CONFIG[configKey];
-    const targetMacro = getTargetMacro(category);
-
-    // Separate primary items from alternatives
-    const primaryItems = items.filter(item => !item.isAlternative);
-    const alternativeItems = items.filter(item => item.isAlternative);
-
-    return (
-      <div key={configKey} className={cn("rounded-xl overflow-hidden border", config.border)}>
-        {/* Section header */}
-        <div className={cn("px-3 py-2 flex items-center justify-between", config.headerBg)}>
+        <div className="flex items-center gap-2 shrink-0">
+          <GramInput
+            value={item.selected.grams}
+            onChange={(grams) => handleGramInputChange(category, item.selected.foodId, grams)}
+            disabled={disabled}
+          />
+          <span className="text-xs text-gray-400">g</span>
           <button
-            onClick={() => setRecommendedCategory(configKey)}
-            className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+            onClick={() => !disabled && handleOpenSelectModal(category, getTargetMacro(category))}
+            disabled={disabled}
+            className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 disabled:opacity-30 transition-colors"
+            title="Byt"
           >
-            <span className="text-base">{config.icon}</span>
-            <span className={cn("font-semibold text-sm", config.text)}>{config.label}</span>
+            <RefreshCw className="h-3.5 w-3.5" />
           </button>
-          {showAddButton && (
+          {onRemoveFood && (
             <button
-              onClick={() => !disabled && handleOpenSelectModal(category, targetMacro)}
+              onClick={() => !disabled && onRemoveFood(mealIndex, category, item.selected.foodId)}
               disabled={disabled}
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors",
-                "bg-white/60 hover:bg-white", config.text
-              )}
+              className="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500 disabled:opacity-30 transition-colors"
+              title="Ta bort"
             >
-              <Plus className="h-3 w-3" />
-              Lägg till
+              <X className="h-3.5 w-3.5" />
             </button>
-          )}
-        </div>
-
-        {/* Items */}
-        <div className={cn("p-2", config.bg)}>
-          {items.length > 0 ? (
-            <div className="space-y-1.5">
-              {/* Primary items - shown together without ELLER */}
-              {primaryItems.map((item) => (
-                <div key={item.selected.foodId}>
-                  {renderFoodItem(item, category, configKey)}
-                </div>
-              ))}
-
-              {/* Alternative items - shown with ELLER separator */}
-              {alternativeItems.map((item, index) => (
-                <div key={item.selected.foodId}>
-                  {/* ELLER separator before each alternative */}
-                  {(primaryItems.length > 0 || index > 0) && (
-                    <div className="flex items-center justify-center py-1.5">
-                      <span className="text-xs font-bold text-amber-500 tracking-wider">ELLER</span>
-                    </div>
-                  )}
-                  {renderFoodItem(item, category, configKey)}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-3 text-sm text-zinc-400 italic">
-              Inga {config.label.toLowerCase()} tillagda
-            </div>
           )}
         </div>
       </div>
     );
   };
+
+  // Combine all items for ingredients display
+  const allItems = [...proteinItems, ...carbItems, ...fatItems, ...vegetableItems, ...berryItems];
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-zinc-200 shadow-sm">
-      {/* Header */}
-      <button
-        className="w-full py-3 px-4 hover:bg-zinc-50 transition-colors cursor-pointer"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <div className="flex items-start justify-between gap-2">
-          {/* Left side: Icon + Name + Macros */}
-          <div className="flex items-start gap-2 min-w-0 flex-1">
-            <Utensils className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
-            <div className="flex flex-col items-start gap-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-base font-semibold text-zinc-900">{mealLabel}</span>
-                {/* Info icon */}
-                {meal.targetMacros && meal.targetMacros.kcal > 0 && (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <span
-                        className="p-1 hover:bg-zinc-100 rounded-full transition-colors inline-flex"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Info className="w-4 h-4 text-zinc-400 hover:text-zinc-600" />
-                      </span>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-3" align="start">
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-xs font-medium text-zinc-500">Rekommenderat för måltiden</span>
-                          {onUpdateMealMacros && (
-                            <span
-                              onClick={handleEditTarget}
-                              className="p-1 hover:bg-zinc-100 rounded transition-colors cursor-pointer"
-                            >
-                              <Pencil className="w-3 h-3 text-zinc-400" />
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-3 text-xs">
-                          <div className="text-center">
-                            <div className="text-[9px] text-zinc-400 uppercase font-medium">Kcal</div>
-                            <div className="font-bold text-amber-600">{Math.round(meal.targetMacros.kcal)}</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-[9px] text-zinc-400 uppercase font-medium">Prot</div>
-                            <div className="font-bold text-rose-600">{Math.round(meal.targetMacros.protein)}g</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-[9px] text-zinc-400 uppercase font-medium">Kolh</div>
-                            <div className="font-bold text-amber-500">{Math.round(meal.targetMacros.carbs)}g</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-[9px] text-zinc-400 uppercase font-medium">Fett</div>
-                            <div className="font-bold text-sky-500">{Math.round(meal.targetMacros.fat)}g</div>
-                          </div>
-                        </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                )}
-                {/* Dinner tips - only for middag */}
-                {meal.type === 'middag' && (
-                  <span onClick={(e) => e.stopPropagation()}>
-                    <DinnerTipsDialog />
-                  </span>
-                )}
-                {/* Move up/down buttons */}
-                {(onMoveUp || onMoveDown) && (
-                  <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
-                    <span
-                      onClick={() => !disabled && canMoveUp && onMoveUp?.(mealIndex)}
-                      className={cn(
-                        "p-1 rounded transition-colors cursor-pointer",
-                        canMoveUp && !disabled
-                          ? "hover:bg-zinc-100 text-zinc-500 hover:text-zinc-700"
-                          : "text-zinc-300 cursor-not-allowed"
-                      )}
-                    >
-                      <ArrowUp className="w-4 h-4" />
-                    </span>
-                    <span
-                      onClick={() => !disabled && canMoveDown && onMoveDown?.(mealIndex)}
-                      className={cn(
-                        "p-1 rounded transition-colors cursor-pointer",
-                        canMoveDown && !disabled
-                          ? "hover:bg-zinc-100 text-zinc-500 hover:text-zinc-700"
-                          : "text-zinc-300 cursor-not-allowed"
-                      )}
-                    >
-                      <ArrowDown className="w-4 h-4" />
-                    </span>
-                  </div>
-                )}
+    <div className="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
+      {/* Header - New design matching reference */}
+      <div className="p-4">
+        {/* Meal type badge + calories */}
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs font-bold text-[#1A3A4A] uppercase tracking-wider">
+            {mealLabel.toUpperCase()}
+          </span>
+          <span className="text-sm font-semibold text-[#1A3A4A]">
+            {Math.round(meal.totalMacros.kcal)} cals
+          </span>
+        </div>
+
+        {/* Main content row: Image + Name + Actions */}
+        <div className="flex items-start gap-3">
+          {/* Meal/Recipe image */}
+          <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+            {mealImage ? (
+              <img
+                src={mealImage}
+                alt={mealLabel}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                <Utensils className="w-6 h-6" />
               </div>
-              {/* Macro text under meal name */}
-              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap text-[11px] sm:text-xs">
-                <span><span className="font-medium text-zinc-500">KCAL</span> <span className="font-bold text-amber-600">{meal.totalMacros.kcal.toFixed(0)}</span></span>
-                <span className="text-zinc-300">·</span>
-                <span><span className="font-medium text-zinc-500">PROT</span> <span className="font-bold text-rose-600">{meal.totalMacros.protein.toFixed(0)}g</span></span>
-                <span className="text-zinc-300">·</span>
-                <span><span className="font-medium text-zinc-500">KOLH</span> <span className="font-bold text-amber-500">{meal.totalMacros.carbs.toFixed(0)}g</span></span>
-                <span className="text-zinc-300">·</span>
-                <span><span className="font-medium text-zinc-500">FETT</span> <span className="font-bold text-sky-500">{meal.totalMacros.fat.toFixed(0)}g</span></span>
-              </div>
-            </div>
+            )}
           </div>
 
-          {/* Right side: Chevron */}
-          <div className="shrink-0">
-            {isExpanded ? (
-              <ChevronUp className="w-5 h-5 text-zinc-400" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-zinc-400" />
+          {/* Meal name and info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                {mealRecipes.length > 0 ? (
+                  <button
+                    onClick={() => handleRecipeClick(mealRecipes[0].recipeId)}
+                    className="text-base font-semibold text-[#1A3A4A] hover:text-[#E91E8C] transition-colors text-left truncate block"
+                  >
+                    {mealRecipes[0].name}
+                  </button>
+                ) : (
+                  <span className="text-base font-semibold text-[#1A3A4A]">
+                    {allItems.length > 0 ? allItems[0].selected.name : 'Ingen mat vald'}
+                  </span>
+                )}
+              </div>
+
+              {/* Check icon + Menu */}
+              <div className="flex items-center gap-1 shrink-0">
+                <div className="w-6 h-6 rounded-full bg-[#4ECDC4] flex items-center justify-center">
+                  <Check className="w-4 h-4 text-white" />
+                </div>
+
+                {/* Actions dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                      <MoreHorizontal className="w-5 h-5 text-gray-500" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    {onAddMealRecipe && (
+                      <DropdownMenuItem onClick={() => onAddMealRecipe(mealIndex)}>
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Byt Recept
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem onClick={() => { /* TODO: Save as favorite */ }}>
+                      <Heart className="w-4 h-4 mr-2" />
+                      Spara som Favorit
+                    </DropdownMenuItem>
+                    {onUpdateMealMacros && meal.targetMacros && (
+                      <DropdownMenuItem onClick={handleEditTarget}>
+                        <Pencil className="w-4 h-4 mr-2" />
+                        Redigera mål
+                      </DropdownMenuItem>
+                    )}
+                    {/* Move up/down */}
+                    {(onMoveUp || onMoveDown) && (
+                      <>
+                        {canMoveUp && onMoveUp && (
+                          <DropdownMenuItem onClick={() => onMoveUp(mealIndex)}>
+                            <ArrowUp className="w-4 h-4 mr-2" />
+                            Flytta upp
+                          </DropdownMenuItem>
+                        )}
+                        {canMoveDown && onMoveDown && (
+                          <DropdownMenuItem onClick={() => onMoveDown(mealIndex)}>
+                            <ArrowDown className="w-4 h-4 mr-2" />
+                            Flytta ner
+                          </DropdownMenuItem>
+                        )}
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+
+            {/* Dinner tips - only for middag */}
+            {meal.type === 'middag' && (
+              <span className="inline-block mt-1">
+                <DinnerTipsDialog />
+              </span>
             )}
           </div>
         </div>
-      </button>
 
-
-      {/* Expanded content */}
-      {isExpanded && (
-        <div className="px-5 pb-5 space-y-3">
-          {/* MAKRONÄRINGSÄMNEN - Huvudsektioner */}
-          <div className="space-y-3">
-            {/* Proteinkällor */}
-            {renderCategorySection(proteinItems, 'protein', 'protein')}
-
-            {/* Kolhydrater */}
-            {renderCategorySection(carbItems, 'carb', 'carb')}
-
-            {/* Fettkällor */}
-            {renderCategorySection(fatItems, 'fat', 'fat')}
+        {/* Macro row - horizontal */}
+        <div className="flex items-center justify-between mt-4 px-2 py-2 bg-[#F5F7FA] rounded-lg">
+          <div className="text-center">
+            <div className="text-[10px] font-semibold text-gray-500 uppercase">CALS</div>
+            <div className="text-sm font-bold text-[#1A3A4A]">{Math.round(meal.totalMacros.kcal)}cal</div>
           </div>
-
-          {/* TILLBEHÖR - Separata sektioner */}
-          <div className="pt-2 border-t border-zinc-200">
-            <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-2">
-              Tillbehör
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {/* Grönsaker */}
-              <div className={cn("rounded-xl overflow-hidden border", CATEGORY_CONFIG.vegetable.border)}>
-                <div className={cn("px-3 py-2 flex items-center justify-between", CATEGORY_CONFIG.vegetable.headerBg)}>
-                  <button
-                    onClick={() => setRecommendedCategory('vegetable')}
-                    className="flex items-center gap-2 hover:opacity-70 transition-opacity"
-                  >
-                    <span className="text-base">{CATEGORY_CONFIG.vegetable.icon}</span>
-                    <span className={cn("font-semibold text-sm", CATEGORY_CONFIG.vegetable.text)}>
-                      {CATEGORY_CONFIG.vegetable.label}
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => !disabled && handleOpenSelectModal('vegetable', 0)}
-                    disabled={disabled}
-                    className={cn(
-                      "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors",
-                      "bg-white/60 hover:bg-white", CATEGORY_CONFIG.vegetable.text
-                    )}
-                  >
-                    <Plus className="h-3 w-3" />
-                    Lägg till
-                  </button>
-                </div>
-                <div className={cn("p-2", CATEGORY_CONFIG.vegetable.bg)}>
-                  {vegetableItems.length > 0 ? (
-                    vegetableItems.map(item => renderFoodItem(item, 'vegetable', 'vegetable'))
-                  ) : (
-                    <div className="text-center py-2 text-sm text-zinc-400 italic">
-                      Inga grönsaker tillagda
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Bär */}
-              <div className={cn("rounded-xl overflow-hidden border", CATEGORY_CONFIG.berry.border)}>
-                <div className={cn("px-3 py-2 flex items-center justify-between", CATEGORY_CONFIG.berry.headerBg)}>
-                  <button
-                    onClick={() => setRecommendedCategory('berry')}
-                    className="flex items-center gap-2 hover:opacity-70 transition-opacity"
-                  >
-                    <span className="text-base">{CATEGORY_CONFIG.berry.icon}</span>
-                    <span className={cn("font-semibold text-sm", CATEGORY_CONFIG.berry.text)}>
-                      {CATEGORY_CONFIG.berry.label}
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => !disabled && handleOpenSelectModal('carb', getTargetMacro('carb'), 'Bär')}
-                    disabled={disabled}
-                    className={cn(
-                      "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors",
-                      "bg-white/60 hover:bg-white", CATEGORY_CONFIG.berry.text
-                    )}
-                  >
-                    <Plus className="h-3 w-3" />
-                    Lägg till
-                  </button>
-                </div>
-                <div className={cn("p-2 space-y-1.5", CATEGORY_CONFIG.berry.bg)}>
-                  {berryItems.length > 0 ? (
-                    berryItems.map(item => renderFoodItem(item, 'carb', 'berry'))
-                  ) : (
-                    <div className="text-center py-2 text-sm text-zinc-400 italic">
-                      Inga bär tillagda
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+          <div className="text-center">
+            <div className="text-[10px] font-semibold text-gray-500 uppercase">CARBS</div>
+            <div className="text-sm font-bold text-[#1A3A4A]">{meal.totalMacros.carbs.toFixed(1)}g</div>
           </div>
+          <div className="text-center">
+            <div className="text-[10px] font-semibold text-gray-500 uppercase">FAT</div>
+            <div className="text-sm font-bold text-[#1A3A4A]">{meal.totalMacros.fat.toFixed(1)}g</div>
+          </div>
+          <div className="text-center">
+            <div className="text-[10px] font-semibold text-gray-500 uppercase">PROTEIN</div>
+            <div className="text-sm font-bold text-[#1A3A4A]">{meal.totalMacros.protein.toFixed(1)}g</div>
+          </div>
+        </div>
+      </div>
 
-          {/* Sås - endast för lunch/middag */}
-          {canHaveSauce && (
-            <div className={cn("rounded-xl overflow-hidden border", CATEGORY_CONFIG.sauce.border)}>
-              <div className={cn("px-3 py-2 flex items-center justify-between", CATEGORY_CONFIG.sauce.headerBg)}>
+      {/* Expandable Ingredients section */}
+      <div className="border-t border-gray-100">
+        <button
+          className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <div className="flex items-center gap-2">
+            <Utensils className="w-4 h-4 text-[#E91E8C]" />
+            <span className="text-sm font-semibold text-[#1A3A4A]">Ingredients</span>
+          </div>
+          {isExpanded ? (
+            <ChevronUp className="w-5 h-5 text-gray-400" />
+          ) : (
+            <ChevronDown className="w-5 h-5 text-gray-400" />
+          )}
+        </button>
+
+        {isExpanded && (
+          <div className="px-4 pb-4 space-y-4">
+            {/* All ingredients list */}
+            <div className="space-y-1">
+              {allItems.map((item) => renderIngredientRow(item, item.category))}
+
+              {/* Sauce if present */}
+              {meal.sauce && (
+                <div className="flex items-center justify-between py-1.5 border-b border-gray-100 last:border-b-0">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="text-gray-400">•</span>
+                    <button
+                      onClick={() => handleFoodClick(meal.sauce!.foodId, meal.sauce!.name, meal.sauce!.grams)}
+                      className="text-sm text-[#1A3A4A] hover:text-[#E91E8C] transition-colors truncate"
+                    >
+                      {meal.sauce.name}
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <GramInput
+                      value={meal.sauce.grams}
+                      onChange={(grams) => onUpdateGrams && onUpdateGrams(mealIndex, 'sauce', grams, meal.sauce!.foodId)}
+                      disabled={disabled}
+                    />
+                    <span className="text-xs text-gray-400">g</span>
+                    <button
+                      onClick={() => onRemoveSauce(mealIndex)}
+                      disabled={disabled}
+                      className="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500 disabled:opacity-30 transition-colors"
+                      title="Ta bort"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Add buttons for each category */}
+            <div className="pt-2 border-t border-gray-100">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                Lägg till
+              </p>
+              <div className="flex flex-wrap gap-2">
                 <button
-                  onClick={() => setRecommendedCategory('sauce')}
-                  className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+                  onClick={() => !disabled && handleOpenSelectModal('protein', getTargetMacro('protein'))}
+                  disabled={disabled}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors disabled:opacity-50"
                 >
-                  <span className="text-base">{CATEGORY_CONFIG.sauce.icon}</span>
-                  <span className={cn("font-semibold text-sm", CATEGORY_CONFIG.sauce.text)}>
-                    {CATEGORY_CONFIG.sauce.label}
-                  </span>
+                  <Plus className="w-3 h-3" />
+                  Protein
                 </button>
-                {!meal.sauce && (
+                <button
+                  onClick={() => !disabled && handleOpenSelectModal('carb', getTargetMacro('carb'))}
+                  disabled={disabled}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50"
+                >
+                  <Plus className="w-3 h-3" />
+                  Kolhydrat
+                </button>
+                <button
+                  onClick={() => !disabled && handleOpenSelectModal('fat', getTargetMacro('fat'))}
+                  disabled={disabled}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-yellow-50 text-yellow-700 hover:bg-yellow-100 transition-colors disabled:opacity-50"
+                >
+                  <Plus className="w-3 h-3" />
+                  Fett
+                </button>
+                <button
+                  onClick={() => !disabled && handleOpenSelectModal('vegetable', 0)}
+                  disabled={disabled}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-green-50 text-green-700 hover:bg-green-100 transition-colors disabled:opacity-50"
+                >
+                  <Plus className="w-3 h-3" />
+                  Grönsaker
+                </button>
+                <button
+                  onClick={() => !disabled && handleOpenSelectModal('carb', getTargetMacro('carb'), 'Bär')}
+                  disabled={disabled}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors disabled:opacity-50"
+                >
+                  <Plus className="w-3 h-3" />
+                  Bär
+                </button>
+                {canHaveSauce && !meal.sauce && (
                   <button
                     onClick={() => onAddSauce(mealIndex)}
                     disabled={disabled}
-                    className={cn(
-                      "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-colors",
-                      "bg-white/60 hover:bg-white", CATEGORY_CONFIG.sauce.text
-                    )}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-orange-50 text-orange-700 hover:bg-orange-100 transition-colors disabled:opacity-50"
                   >
-                    <Plus className="h-3 w-3" />
-                    Lägg till
+                    <Plus className="w-3 h-3" />
+                    Sås
                   </button>
                 )}
               </div>
-              <div className={cn("p-2", CATEGORY_CONFIG.sauce.bg)}>
-                {meal.sauce ? (
-                  <div className="py-2 px-1 space-y-1.5">
-                    {/* Row 1: Image + Name */}
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleFoodClick(meal.sauce!.foodId, meal.sauce!.name, meal.sauce!.grams)}
-                        className="w-9 h-9 rounded-full overflow-hidden bg-zinc-100 shrink-0 hover:ring-2 hover:ring-orange-400 transition-all"
+            </div>
+
+            {/* Recipes section */}
+            {onAddMealRecipe && (
+              <div className="pt-3 border-t border-gray-100">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                  Receptförslag
+                </p>
+
+                {mealRecipes.length > 0 && (
+                  <div className="space-y-2 mb-2">
+                    {mealRecipes.map((recipe) => (
+                      <div
+                        key={recipe.id}
+                        className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                        onClick={() => handleRecipeClick(recipe.recipeId)}
                       >
-                        {meal.sauce.image ? (
-                          <img
-                            src={meal.sauce.image}
-                            alt={meal.sauce.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-zinc-400">
-                            <Utensils className="w-4 h-4" />
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 shrink-0">
+                          {recipe.image ? (
+                            <img
+                              src={recipe.image}
+                              alt={recipe.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              <Utensils className="w-5 h-5" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-sm text-[#1A3A4A] truncate">
+                            {recipe.name}
                           </div>
+                        </div>
+                        {onRemoveMealRecipe && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onRemoveMealRecipe(mealIndex, recipe.id);
+                            }}
+                            disabled={disabled}
+                            className="p-1.5 rounded hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
+                            title="Ta bort"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
                         )}
-                      </button>
-                      <button
-                        onClick={() => handleFoodClick(meal.sauce!.foodId, meal.sauce!.name, meal.sauce!.grams)}
-                        className="flex-1 text-left text-sm font-medium text-zinc-800 hover:text-orange-600 transition-colors truncate"
-                      >
-                        {meal.sauce.name}
-                      </button>
-                    </div>
-
-                    {/* Row 2: Gram + Macros + Actions */}
-                    <div className="flex items-center gap-2 pl-11">
-                      {/* Gram input */}
-                      <div className="flex items-center gap-1 shrink-0">
-                        <GramInput
-                          value={meal.sauce.grams}
-                          onChange={(grams) => onUpdateGrams && onUpdateGrams(mealIndex, 'sauce', grams, meal.sauce!.foodId)}
-                          disabled={disabled}
-                        />
-                        <span className="text-[10px] text-zinc-400">g</span>
                       </div>
-
-                      {/* Macros with labels on top */}
-                      <div className="flex items-center gap-2 sm:gap-3 text-xs tabular-nums flex-1">
-                        <div className="text-center">
-                          <div className="text-[8px] text-zinc-400 uppercase font-medium">Kcal</div>
-                          <div className="font-bold text-amber-600">{Math.round(meal.sauce.macros.kcal)}</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-[8px] text-zinc-400 uppercase font-medium">P</div>
-                          <div className="font-bold text-rose-600">{meal.sauce.macros.protein.toFixed(0)}</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-[8px] text-zinc-400 uppercase font-medium">K</div>
-                          <div className="font-bold text-amber-500">{meal.sauce.macros.carbs.toFixed(0)}</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-[8px] text-zinc-400 uppercase font-medium">F</div>
-                          <div className="font-bold text-sky-500">{meal.sauce.macros.fat.toFixed(0)}</div>
-                        </div>
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex items-center gap-0.5 shrink-0">
-                        <button
-                          onClick={() => !disabled && handleOpenSelectModal('sauce', 0)}
-                          disabled={disabled}
-                          className="p-1 rounded hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 disabled:opacity-30 transition-colors"
-                          title="Byt"
-                        >
-                          <RefreshCw className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          onClick={() => onRemoveSauce(mealIndex)}
-                          disabled={disabled}
-                          className="p-1 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 disabled:opacity-30 transition-colors"
-                          title="Ta bort"
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-2 text-sm text-zinc-400 italic">
-                    Ingen sås tillagd
+                    ))}
                   </div>
                 )}
+
+                <button
+                  onClick={() => onAddMealRecipe(mealIndex)}
+                  disabled={disabled}
+                  className="w-full py-2 px-3 border border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-[#E91E8C] hover:text-[#E91E8C] hover:bg-pink-50/50 transition-colors flex items-center justify-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Lägg till recept
+                </button>
               </div>
-            </div>
-          )}
-
-          {/* Receptförslag - manuellt hanterade */}
-          {onAddMealRecipe && (
-            <div className="pt-3 mt-2 border-t border-zinc-200">
-              <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-3">
-                Receptförslag
-              </div>
-
-              {mealRecipes.length > 0 ? (
-                <div className="space-y-2">
-                  {mealRecipes.map((recipe) => (
-                    <div
-                      key={recipe.id}
-                      className="flex items-center gap-3 p-2 bg-zinc-50 rounded-lg hover:bg-zinc-100 transition-colors cursor-pointer"
-                      onClick={() => handleRecipeClick(recipe.recipeId)}
-                    >
-                      {/* Recipe image - round */}
-                      <div className="w-10 h-10 rounded-full overflow-hidden bg-zinc-200 shrink-0">
-                        {recipe.image ? (
-                          <img
-                            src={recipe.image}
-                            alt={recipe.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-zinc-400">
-                            <Utensils className="w-5 h-5" />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Recipe info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm text-zinc-800 truncate">
-                          {recipe.name}
-                        </div>
-                      </div>
-
-                      {/* Remove button */}
-                      {onRemoveMealRecipe && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onRemoveMealRecipe(mealIndex, recipe.id);
-                          }}
-                          disabled={disabled}
-                          className="p-1.5 rounded hover:bg-red-50 text-zinc-400 hover:text-red-500 transition-colors"
-                          title="Ta bort"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-
-              {/* Add recipe button */}
-              <button
-                onClick={() => onAddMealRecipe(mealIndex)}
-                disabled={disabled}
-                className="w-full mt-2 py-2 px-3 border border-dashed border-zinc-300 rounded-lg text-sm text-zinc-500 hover:border-amber-400 hover:text-amber-600 hover:bg-amber-50/50 transition-colors flex items-center justify-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Lägg till alternativ
-              </button>
-            </div>
-          )}
-
-        </div>
-      )}
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Product Select Modal */}
       {selectCategory && (
@@ -1031,7 +821,7 @@ export function ClientStyleMealCard({
                   size="sm"
                   onClick={handleSaveTarget}
                   disabled={disabled}
-                  className="bg-amber-500 hover:bg-amber-600"
+                  className="bg-[#E91E8C] hover:bg-[#d11a7d]"
                 >
                   Spara
                 </Button>

@@ -12,6 +12,7 @@ import { WeekMacroDisplay } from '@/components/meal-plan/WeekMacroDisplay'
 import { AdjustMacrosWizard, MealMacros as WizardMealMacros } from '@/components/meal-plan/AdjustMacrosWizard'
 import { MealPlanGenerator } from '@/components/meal-plan-generator'
 import { GuidePanel } from '@/components/meal-plan/GuidePanel'
+import { NutritionHub } from '@/components/meal-plan/NutritionHub'
 
 interface MealPlanItem {
   id: string
@@ -358,78 +359,37 @@ export default function MealPlanPage() {
               </TabsTrigger>
             </TabsList>
 
-            {/* Compact Macros Bar - below tabs */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mt-4">
-              {/* Header row with date and Justera button */}
-              <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100">
+            {/* NutritionHub - Calorie circle + macro targets */}
+            <div className="mt-4">
+              <NutritionHub
+                targetCalories={currentTarget.calories}
+                targetProtein={currentTarget.protein}
+                targetCarbs={currentTarget.carbs}
+                targetFat={currentTarget.fat}
+                consumedCalories={consumedTotals.kcal}
+                consumedProtein={consumedTotals.protein}
+                consumedCarbs={consumedTotals.carbs}
+                consumedFat={consumedTotals.fat}
+              />
+
+              {/* Actions row */}
+              <div className="flex items-center justify-between mt-3 px-2">
                 <button
                   onClick={() => setWeekViewOpen(true)}
-                  className="flex items-center gap-2 text-gray-700 hover:text-amber-600 transition-colors"
+                  className="flex items-center gap-2 text-gray-600 hover:text-[#E91E8C] transition-colors"
                 >
-                  <Calendar className="w-4 h-4 text-amber-500" />
+                  <Calendar className="w-4 h-4" />
                   <span className="font-medium text-sm">
                     {new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + 1 + selectedDay)).toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' })}
                   </span>
                 </button>
                 <button
                   onClick={() => setShowAdjustWizard(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all shadow-sm"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-[#E91E8C] text-white text-xs font-semibold rounded-full hover:bg-[#d11a7d] transition-all shadow-sm"
                 >
                   <Wand2 className="w-3.5 h-3.5" />
                   Justera mål
                 </button>
-              </div>
-
-              {/* Macros content */}
-              <div className="px-4 py-3">
-                {/* Makro mål section */}
-                <div className="mb-3">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Makro mål</p>
-                  <div className="flex items-center gap-4 bg-emerald-50 rounded-lg px-4 py-2">
-                    <div className="text-center flex-1">
-                      <div className="text-[10px] font-semibold text-orange-500 uppercase tracking-wide">KCAL</div>
-                      <div className="text-lg font-bold text-gray-900">{currentTarget.calories}</div>
-                    </div>
-                    <div className="text-center flex-1">
-                      <div className="text-[10px] font-semibold text-rose-500 uppercase tracking-wide">PROT</div>
-                      <div className="text-lg font-bold text-gray-900">{currentTarget.protein}g</div>
-                    </div>
-                    <div className="text-center flex-1">
-                      <div className="text-[10px] font-semibold text-sky-500 uppercase tracking-wide">KOLH</div>
-                      <div className="text-lg font-bold text-gray-900">{currentTarget.carbs}g</div>
-                    </div>
-                    <div className="text-center flex-1">
-                      <div className="text-[10px] font-semibold text-amber-500 uppercase tracking-wide">FETT</div>
-                      <div className="text-lg font-bold text-gray-900">{currentTarget.fat}g</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div className="border-t border-dashed border-gray-300 my-3"></div>
-
-                {/* Dagtotalt section */}
-                <div>
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Dagtotalt</p>
-                  <div className="flex items-center gap-4 bg-blue-50 rounded-lg px-4 py-2">
-                    <div className="text-center flex-1">
-                      <div className="text-[10px] font-semibold text-orange-500 uppercase tracking-wide">KCAL</div>
-                      <div className="text-lg font-bold text-gray-900">{consumedTotals.kcal}</div>
-                    </div>
-                    <div className="text-center flex-1">
-                      <div className="text-[10px] font-semibold text-rose-500 uppercase tracking-wide">PROT</div>
-                      <div className="text-lg font-bold text-gray-900">{consumedTotals.protein}g</div>
-                    </div>
-                    <div className="text-center flex-1">
-                      <div className="text-[10px] font-semibold text-sky-500 uppercase tracking-wide">KOLH</div>
-                      <div className="text-lg font-bold text-gray-900">{consumedTotals.carbs}g</div>
-                    </div>
-                    <div className="text-center flex-1">
-                      <div className="text-[10px] font-semibold text-amber-500 uppercase tracking-wide">FETT</div>
-                      <div className="text-lg font-bold text-gray-900">{consumedTotals.fat}g</div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
