@@ -44,7 +44,7 @@ export function MobileBottomNav() {
               ) : (
                 <Icon className="w-8 h-8" strokeWidth={2.5} />
               )}
-              <span className="text-[11px] mt-1.5 font-semibold tracking-wide">{tab.label}</span>
+              <span className="text-[9px] mt-1.5 font-semibold">{tab.label}</span>
             </Link>
           )
         })}
