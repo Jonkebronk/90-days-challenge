@@ -2,13 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Utensils, UtensilsCrossed, Wand2, Calendar, RefreshCw } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
-import { WeekMacroDisplay } from '@/components/meal-plan/WeekMacroDisplay'
+import { Wand2, RefreshCw } from 'lucide-react'
 import { AdjustMacrosWizard, MealMacros as WizardMealMacros } from '@/components/meal-plan/AdjustMacrosWizard'
 import { MealPlanGenerator } from '@/components/meal-plan-generator'
 import { GuidePanel } from '@/components/meal-plan/GuidePanel'
@@ -113,7 +107,6 @@ export default function MealPlanPage() {
   const [flexibleTargetMacros, setFlexibleTargetMacros] = useState<{ protein: number; carbs: number; fat: number; kcal: number } | null>(null)
   const [showAdjustWizard, setShowAdjustWizard] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0) // For forcing FlexibleMealPlan reload
-  const [weekViewOpen, setWeekViewOpen] = useState(false)
   const [consumedTotals, setConsumedTotals] = useState<{ kcal: number; protein: number; carbs: number; fat: number }>({ kcal: 0, protein: 0, carbs: 0, fat: 0 })
   const [redistributeTrigger, setRedistributeTrigger] = useState(0)
 
@@ -311,15 +304,6 @@ export default function MealPlanPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center mb-6 sm:mb-8">
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
-        <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
-          {mealPlan?.name || 'Kostschema'}
-        </h1>
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
-      </div>
-
       {/* Adjust Macros Wizard */}
       <AdjustMacrosWizard
         open={showAdjustWizard}
@@ -341,150 +325,61 @@ export default function MealPlanPage() {
       />
 
       {/* Main Content */}
-      <div>
-          <Tabs defaultValue="flexible" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-gray-100 border border-gray-200 rounded-xl p-1">
-              <TabsTrigger
-                value="flexible"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-600 rounded-lg transition-all"
-              >
-                <UtensilsCrossed className="w-4 h-4 mr-2" />
-                Kostschema
-              </TabsTrigger>
-              <TabsTrigger
-                value="meals"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FFD700] data-[state=active]:to-[#FFA500] data-[state=active]:text-[#0a0a0a] text-gray-600 rounded-lg transition-all"
-              >
-                <Utensils className="w-4 h-4 mr-2" />
-                Förslag
-              </TabsTrigger>
-            </TabsList>
+      <div className="space-y-4">
+        {/* NutritionHub - Calorie display + macro targets */}
+        <NutritionHub
+          targetCalories={currentTarget.calories}
+          targetProtein={currentTarget.protein}
+          targetCarbs={currentTarget.carbs}
+          targetFat={currentTarget.fat}
+        />
 
-            {/* NutritionHub - Calorie circle + macro targets */}
-            <div className="mt-4">
-              <NutritionHub
-                targetCalories={currentTarget.calories}
-                targetProtein={currentTarget.protein}
-                targetCarbs={currentTarget.carbs}
-                targetFat={currentTarget.fat}
-              />
+        {/* Actions row */}
+        <div className="flex items-center justify-end gap-2 px-2">
+          <button
+            onClick={() => setRedistributeTrigger(prev => prev + 1)}
+            className="flex items-center gap-1.5 px-4 py-2 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full hover:bg-gray-200 transition-all"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            Fördela om
+          </button>
+          <button
+            onClick={() => setShowAdjustWizard(true)}
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#E91E8C] text-white text-xs font-semibold rounded-full hover:bg-[#d11a7d] transition-all shadow-sm"
+          >
+            <Wand2 className="w-3.5 h-3.5" />
+            Justera mål
+          </button>
+        </div>
 
-              {/* Actions row */}
-              <div className="flex items-center justify-between mt-3 px-2">
-                <button
-                  onClick={() => setWeekViewOpen(true)}
-                  className="flex items-center gap-2 text-gray-600 hover:text-[#E91E8C] transition-colors"
-                >
-                  <Calendar className="w-4 h-4" />
-                  <span className="font-medium text-sm">
-                    {new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + 1 + selectedDay)).toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' })}
-                  </span>
-                </button>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setRedistributeTrigger(prev => prev + 1)}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full hover:bg-gray-200 transition-all"
-                  >
-                    <RefreshCw className="w-3.5 h-3.5" />
-                    Fördela om
-                  </button>
-                  <button
-                    onClick={() => setShowAdjustWizard(true)}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-[#E91E8C] text-white text-xs font-semibold rounded-full hover:bg-[#d11a7d] transition-all shadow-sm"
-                  >
-                    <Wand2 className="w-3.5 h-3.5" />
-                    Justera mål
-                  </button>
-                </div>
-              </div>
+        {/* Meal Plan Content */}
+        {nutritionPlanId && flexibleTargetMacros ? (
+          <MealPlanGenerator
+            key={refreshKey}
+            nutritionPlanId={nutritionPlanId}
+            targetMacros={flexibleTargetMacros}
+            onSave={() => {
+              fetchNutritionPlan()
+            }}
+            onMealPlanIdChange={(newId: string) => {
+              setFlexibleMealPlanId(newId)
+            }}
+            onTotalsChange={setConsumedTotals}
+            redistributeTrigger={redistributeTrigger}
+          />
+        ) : (
+          <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm">
+            <div className="text-center">
+              <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-gray-900 mb-2">
+                Laddar kostschema...
+              </h3>
+              <p className="text-gray-500 text-sm">
+                Vänta medan vi förbereder ditt kostschema
+              </p>
             </div>
-
-            {/* Week View Dialog */}
-            <Dialog open={weekViewOpen} onOpenChange={setWeekViewOpen}>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Veckoöversikt</DialogTitle>
-                </DialogHeader>
-                <WeekMacroDisplay
-                  dailyTargets={dailyTargets}
-                  selectedDay={selectedDay}
-                  onDaySelect={(day) => {
-                    setSelectedDay(day)
-                    setWeekViewOpen(false)
-                  }}
-                  defaultCalories={totalDailyCalories}
-                  calories={currentTarget.calories}
-                  protein={currentTarget.protein}
-                  fat={currentTarget.fat}
-                  carbs={currentTarget.carbs}
-                  onAdjustClick={() => {
-                    setWeekViewOpen(false)
-                    setShowAdjustWizard(true)
-                  }}
-                />
-              </DialogContent>
-            </Dialog>
-
-            <TabsContent value="meals" className="space-y-4 mt-4">
-              {/* Förslag kostschema - Coach's suggestion using FlexibleMealPlan */}
-              {nutritionPlanId && flexibleTargetMacros ? (
-                <MealPlanGenerator
-                  nutritionPlanId={nutritionPlanId}
-                  targetMacros={flexibleTargetMacros}
-                  onSave={() => {
-                    fetchNutritionPlan()
-                  }}
-                  isSuggestion={true}
-                />
-              ) : (
-                <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm">
-                  <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">
-                      Laddar...
-                    </h3>
-                    <p className="text-gray-500 text-sm">
-                      Vänta medan vi förbereder dina förslag
-                    </p>
-                  </div>
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="flexible" className="space-y-4 mt-4">
-              {/* Flexibel kosthållning - MealPlanGenerator */}
-              {nutritionPlanId && flexibleTargetMacros ? (
-                <MealPlanGenerator
-                  key={refreshKey} // Force remount when wizard saves
-                  nutritionPlanId={nutritionPlanId}
-                  targetMacros={flexibleTargetMacros}
-                  onSave={() => {
-                    // Refresh when saved
-                    fetchNutritionPlan()
-                  }}
-                  onMealPlanIdChange={(newId: string) => {
-                    setFlexibleMealPlanId(newId)
-                  }}
-                  onTotalsChange={setConsumedTotals}
-                  redistributeTrigger={redistributeTrigger}
-                />
-              ) : (
-                <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm">
-                  <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-gold-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">
-                      Laddar kostschema...
-                    </h3>
-                    <p className="text-gray-500 text-sm">
-                      Vänta medan vi förbereder ditt kostschema
-                    </p>
-                  </div>
-                </div>
-              )}
-
-            </TabsContent>
-
-          </Tabs>
+          </div>
+        )}
       </div>
     </div>
   )

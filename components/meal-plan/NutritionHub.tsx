@@ -19,7 +19,7 @@ export function NutritionHub({
       <div className="flex flex-col items-center mb-6">
         <span className="text-4xl font-bold text-[#1A3A4A]">{targetCalories}</span>
         <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-1">
-          KALORIER MÅL
+          KALORIER
         </span>
       </div>
 
