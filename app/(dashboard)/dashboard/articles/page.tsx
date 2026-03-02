@@ -8,21 +8,12 @@ import { TreeDeciduous, ChevronRight } from 'lucide-react'
 export default function ArticlesPage() {
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center mb-6 sm:mb-8">
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mb-4 sm:mb-6 opacity-30" />
-        <h1 className="font-['Orbitron',sans-serif] text-2xl sm:text-3xl md:text-4xl font-black tracking-[2px] sm:tracking-[3px] uppercase bg-gradient-to-br from-gold-light to-orange-500 bg-clip-text text-transparent">
-          Utbildning
-        </h1>
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-[#FFD700] to-transparent mt-4 sm:mt-6 opacity-30" />
-      </div>
-
       {/* Pyramider-sektion */}
       <div className="space-y-4">
-        <h2 className="text-lg font-bold text-gray-800 uppercase tracking-wide text-center">
+        <h2 className="text-xl font-bold text-white uppercase tracking-wide text-center">
           Prioriteringspyramider
         </h2>
-        <p className="text-sm text-gray-600 text-center max-w-lg mx-auto">
+        <p className="text-sm text-gray-300 text-center max-w-lg mx-auto">
           Klicka på valfri nivå för att lära dig mer. Botten har störst påverkan på dina resultat.
         </p>
 
