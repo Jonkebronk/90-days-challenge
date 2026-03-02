@@ -273,11 +273,10 @@ export function ClientStyleMealCard({
     setFoodDialogOpen(true);
   };
 
-  // Calculate display name - use customName if set, otherwise default label
-  const defaultLabel = mealNumber
+  // Calculate display name for header - always use meal type
+  const mealLabel = mealNumber
     ? `${MEAL_TYPE_LABELS[meal.type]} ${mealNumber}`
     : MEAL_TYPE_LABELS[meal.type];
-  const mealLabel = meal.customName || defaultLabel;
 
   // Handle edit target macros
   const handleEditTarget = (e: React.MouseEvent) => {
@@ -485,7 +484,11 @@ export function ClientStyleMealCard({
 
           {/* Meal name and info */}
           <div className="flex-1 min-w-0">
-            {mealRecipes.length > 0 ? (
+            {meal.customName ? (
+              <span className="text-base font-semibold text-[#1A3A4A]">
+                {meal.customName}
+              </span>
+            ) : mealRecipes.length > 0 ? (
               <button
                 onClick={() => handleRecipeClick(mealRecipes[0].recipeId)}
                 className="text-base font-semibold text-[#1A3A4A] hover:text-[#E91E8C] transition-colors text-left truncate block"
@@ -497,7 +500,6 @@ export function ClientStyleMealCard({
                 {allItems.length > 0 ? allItems[0].selected.name : 'Ingen mat vald'}
               </span>
             )}
-
           </div>
         </div>
 
@@ -845,11 +847,11 @@ export function ClientStyleMealCard({
                 type="text"
                 value={editNameValue}
                 onChange={(e) => setEditNameValue(e.target.value)}
-                placeholder={defaultLabel}
+                placeholder="T.ex. Frukost, Kvällssnack..."
                 className="mt-1"
               />
               <p className="text-xs text-zinc-500 mt-1">
-                Lämna tomt för att använda standardnamn ({defaultLabel})
+                Lämna tomt för att visa ingrediensnamn
               </p>
             </div>
             <div className="flex justify-end gap-2">
