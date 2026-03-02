@@ -30,21 +30,21 @@ export function MobileBottomNav() {
               key={tab.href}
               href={tab.href}
               className={`flex flex-col items-center justify-center ${
-                isActive ? 'text-white' : 'text-gray-400'
+                isActive ? 'text-[#e91e8c]' : 'text-gray-400'
               }`}
             >
               {Icon === 'logo' ? (
                 <Image
                   src="/images/compass-icon-black.svg"
                   alt="Hem"
-                  width={32}
-                  height={32}
-                  className={isActive ? 'brightness-0 invert' : 'brightness-0 invert opacity-60'}
+                  width={36}
+                  height={36}
+                  className={isActive ? 'brightness-0 invert sepia saturate-[10] hue-rotate-[280deg]' : 'brightness-0 invert opacity-60'}
                 />
               ) : (
-                <Icon className="w-7 h-7" />
+                <Icon className="w-8 h-8" strokeWidth={2.5} />
               )}
-              <span className="text-[10px] mt-1.5 font-medium">{tab.label}</span>
+              <span className="text-[11px] mt-1.5 font-semibold tracking-wide">{tab.label}</span>
             </Link>
           )
         })}
