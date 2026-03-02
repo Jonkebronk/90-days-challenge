@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Utensils, UtensilsCrossed, Wand2, Calendar } from 'lucide-react'
+import { Utensils, UtensilsCrossed, Wand2, Calendar, RefreshCw } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { MacroSummary, MealMacros } from '@/components/meal-plan/macro-summary'
 import { WeekMacroDisplay } from '@/components/meal-plan/WeekMacroDisplay'
@@ -115,6 +115,7 @@ export default function MealPlanPage() {
   const [refreshKey, setRefreshKey] = useState(0) // For forcing FlexibleMealPlan reload
   const [weekViewOpen, setWeekViewOpen] = useState(false)
   const [consumedTotals, setConsumedTotals] = useState<{ kcal: number; protein: number; carbs: number; fat: number }>({ kcal: 0, protein: 0, carbs: 0, fat: 0 })
+  const [redistributeTrigger, setRedistributeTrigger] = useState(0)
 
   const toggleMeal = (mealNumber: number) => {
     setExpandedMeals(prev => {
@@ -379,13 +380,22 @@ export default function MealPlanPage() {
                     {new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + 1 + selectedDay)).toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' })}
                   </span>
                 </button>
-                <button
-                  onClick={() => setShowAdjustWizard(true)}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-[#E91E8C] text-white text-xs font-semibold rounded-full hover:bg-[#d11a7d] transition-all shadow-sm"
-                >
-                  <Wand2 className="w-3.5 h-3.5" />
-                  Justera mål
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setRedistributeTrigger(prev => prev + 1)}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full hover:bg-gray-200 transition-all"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    Fördela om
+                  </button>
+                  <button
+                    onClick={() => setShowAdjustWizard(true)}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-[#E91E8C] text-white text-xs font-semibold rounded-full hover:bg-[#d11a7d] transition-all shadow-sm"
+                  >
+                    <Wand2 className="w-3.5 h-3.5" />
+                    Justera mål
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -456,6 +466,7 @@ export default function MealPlanPage() {
                     setFlexibleMealPlanId(newId)
                   }}
                   onTotalsChange={setConsumedTotals}
+                  redistributeTrigger={redistributeTrigger}
                 />
               ) : (
                 <div className="bg-white border border-gray-200 rounded-2xl p-12 shadow-sm">

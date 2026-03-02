@@ -28,6 +28,7 @@ interface FlexibleMealPlanProps {
   onMealPlanIdChange?: (newId: string) => void;
   onTotalsChange?: (totals: { kcal: number; protein: number; carbs: number; fat: number }) => void;
   isSuggestion?: boolean; // Whether this is a coach's suggestion plan
+  redistributeTrigger?: number; // Increment to trigger redistribute dialog from parent
 }
 
 interface FlexiblePlanState {
@@ -44,6 +45,7 @@ export function FlexibleMealPlan({
   onMealPlanIdChange,
   onTotalsChange,
   isSuggestion = false,
+  redistributeTrigger = 0,
 }: FlexibleMealPlanProps) {
   // Flexible plan state
   const [flexiblePlan, setFlexiblePlan] = useState<FlexiblePlanState | null>(null);
@@ -95,6 +97,13 @@ export function FlexibleMealPlan({
 
   // Redistribute dialog state
   const [redistributeOpen, setRedistributeOpen] = useState(false);
+
+  // Open redistribute dialog when triggered from parent
+  useEffect(() => {
+    if (redistributeTrigger > 0) {
+      setRedistributeOpen(true);
+    }
+  }, [redistributeTrigger]);
 
   // Load existing meal plan or create new one on mount
   useEffect(() => {
@@ -1047,46 +1056,6 @@ export function FlexibleMealPlan({
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-
-          {/* Actions */}
-          <div className="flex justify-between items-center pt-4 border-t border-zinc-200">
-            <Button
-              variant="outline"
-              onClick={() => createEmptyPlan(true)}
-              disabled={isLoading}
-              className="text-zinc-600"
-            >
-              Rensa allt
-            </Button>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setRedistributeOpen(true)}
-                disabled={isLoading}
-                className="text-zinc-600"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Fördela om
-              </Button>
-              <Button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="bg-amber-500 hover:bg-amber-600"
-              >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Sparar...
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Spara
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
         </>
       )}
 
