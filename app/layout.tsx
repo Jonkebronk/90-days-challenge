@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "sonner";
 import SessionProvider from "@/components/providers/SessionProvider";
 import { constructMetadata } from "@/lib/metadata";
 import { PWARegister } from "@/components/pwa-register";
+import { PWASplash } from "@/components/pwa-splash";
 
 export const metadata: Metadata = constructMetadata({
   title: "Friskvårdskompassen - Din vägvisare till bättre hälsa",
@@ -32,6 +33,7 @@ export default function RootLayout({
     <html lang="sv" className="overflow-x-hidden">
       <body className="antialiased overflow-x-hidden">
         <SessionProvider>
+          <PWASplash />
           {/* <PWARegister /> */}
           {/* Temporarily disabled to fix cache issues */}
           {children}
