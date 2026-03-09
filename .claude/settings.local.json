@@ -85,7 +85,10 @@
       "WebFetch(domain:cieden.com)",
       "Bash(test:*)",
       "Bash(dir \"C:\\\\Users\\\\johnn\\\\90-days-challenge\\\\*.md\")",
-      "Bash(dir \"C:\\\\Users\\\\johnn\\\\90-days-challenge\\\\.claude\"\")"
+      "Bash(dir \"C:\\\\Users\\\\johnn\\\\90-days-challenge\\\\.claude\"\")",
+      "Bash(powershell -Command \"$word = New-Object -ComObject Word.Application; $doc = $word.Documents.Open\\(''C:\\\\Users\\\\johnn\\\\Downloads\\\\GammaBomb.docx''\\); $doc.Content.Text; $doc.Close\\(\\); $word.Quit\\(\\)\")",
+      "Bash(powershell:*)",
+      "Bash(copy:*)"
     ],
     "deny": [],
     "ask": []

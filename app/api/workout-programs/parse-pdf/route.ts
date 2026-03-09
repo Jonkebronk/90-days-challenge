@@ -4,6 +4,10 @@ import { authOptions } from '@/lib/auth'
 import Anthropic from '@anthropic-ai/sdk'
 import type { ParsedWorkoutProgram } from '@/types/workout-program-parser'
 
+// Force Node.js runtime (not Edge) for pdf-parse compatibility
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 const pdfParse = require('pdf-parse')
 
 const anthropic = new Anthropic()
@@ -102,15 +106,18 @@ export async function POST(request: NextRequest) {
     let extractedText = ''
 
     try {
-      const data = await pdfParse(buffer, {
-        // Disable test file that causes issues in serverless
-        max: 0
-      })
+      console.log('Starting PDF parse, buffer size:', buffer.length)
+      const data = await pdfParse(buffer)
       extractedText = data.text
+      console.log('PDF parsed successfully, text length:', extractedText.length)
     } catch (pdfError: any) {
-      console.error('Error parsing PDF:', pdfError)
+      console.error('Error parsing PDF:', pdfError?.message, pdfError?.stack)
       return NextResponse.json(
-        { error: `Failed to parse PDF file: ${pdfError?.message || 'Unknown error'}` },
+        {
+          error: 'Failed to parse PDF file',
+          details: pdfError?.message || 'Unknown error',
+          stack: process.env.NODE_ENV === 'development' ? pdfError?.stack : undefined
+        },
         { status: 500 }
       )
     }

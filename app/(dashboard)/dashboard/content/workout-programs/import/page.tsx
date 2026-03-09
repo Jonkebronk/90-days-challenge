@@ -81,7 +81,10 @@ export default function ImportWorkoutProgramPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Kunde inte läsa PDF-filen')
+        const errorMsg = data.details
+          ? `${data.error}: ${data.details}`
+          : data.error || 'Kunde inte läsa PDF-filen'
+        throw new Error(errorMsg)
       }
 
       setRawText(data.rawText)
