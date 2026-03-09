@@ -102,12 +102,15 @@ export async function POST(request: NextRequest) {
     let extractedText = ''
 
     try {
-      const data = await pdfParse(buffer)
+      const data = await pdfParse(buffer, {
+        // Disable test file that causes issues in serverless
+        max: 0
+      })
       extractedText = data.text
-    } catch (pdfError) {
+    } catch (pdfError: any) {
       console.error('Error parsing PDF:', pdfError)
       return NextResponse.json(
-        { error: 'Failed to parse PDF file' },
+        { error: `Failed to parse PDF file: ${pdfError?.message || 'Unknown error'}` },
         { status: 500 }
       )
     }
