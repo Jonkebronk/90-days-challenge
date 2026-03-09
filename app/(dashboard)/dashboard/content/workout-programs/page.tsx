@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Plus, Search, Edit, Trash2, Dumbbell, Calendar, Users, ChevronRight, UserPlus, X, ArrowLeft, BookOpen } from 'lucide-react'
+import { Plus, Search, Edit, Trash2, Dumbbell, Calendar, Users, ChevronRight, UserPlus, X, ArrowLeft, BookOpen, Upload } from 'lucide-react'
 import Link from 'next/link'
 import * as LucideIcons from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -320,12 +320,20 @@ export default function WorkoutProgramsPage() {
             Skapa och hantera träningsprogram för dina klienter
           </p>
         </div>
-        <Link href="/dashboard/content/workout-programs/create">
-          <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold">
-            <Plus className="w-4 h-4 mr-2" />
-            Skapa program
-          </Button>
-        </Link>
+        <div className="flex gap-3">
+          <Link href="/dashboard/content/workout-programs/import">
+            <Button variant="outline" className="border-gold-primary/40 text-gold-primary hover:bg-gold-primary/10">
+              <Upload className="w-4 h-4 mr-2" />
+              Importera PDF
+            </Button>
+          </Link>
+          <Link href="/dashboard/content/workout-programs/create">
+            <Button className="bg-gradient-to-r from-gold-primary to-gold-secondary hover:from-gold-secondary hover:to-gold-primary text-white font-semibold">
+              <Plus className="w-4 h-4 mr-2" />
+              Skapa program
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Search */}
